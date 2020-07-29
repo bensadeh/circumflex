@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -15,10 +16,10 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "circumflex",
 	Short: "Circumflex lets you browse Hacker News in your terminal",
-	Long: ``,
+	Long:  ``,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	Run: func(cmd *cobra.Command, args []string) {fmt.Println("Hello world") },
+	Run: func(cmd *cobra.Command, args []string) { fmt.Println("Hello world") },
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
