@@ -16,7 +16,8 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "circumflex",
 	Short: "Circumflex lets you browse Hacker News in your terminal",
-	Long:  ``,
+	Long:  `Circumflex is a command line interface (CLI) for browsing Hacker News. 
+	 Built with Go.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) { fmt.Println("Hello world") },
