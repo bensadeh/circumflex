@@ -15,8 +15,8 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "circumflex",
-	Short: "Circumflex lets you browse Hacker News in your terminal",
-	Long:  `Circumflex is a command line interface (CLI) for browsing Hacker News. 
+	Short: "Circumflex is a Hacker News browser for your terminal",
+	Long: `Circumflex is a Hacker News browser for your terminal. 
 	 Built with Go.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
