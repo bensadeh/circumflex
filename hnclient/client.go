@@ -54,7 +54,7 @@ func NewClient() *Client {
 func (c *Client) GetResource(url string) ([]byte, error) {
 	httpClient := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
-	req.Close = true
+	req.Close = false
 	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err

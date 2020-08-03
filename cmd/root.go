@@ -4,6 +4,10 @@ import (
 	"fmt"
 	"os"
 
+	// "hnclient"
+
+	hn "circumflex/hnclient"
+
 	"github.com/spf13/cobra"
 
 	homedir "github.com/mitchellh/go-homedir"
@@ -30,6 +34,16 @@ func Execute() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
+	client := hn.NewClient()
+	mostPopular, _ := client.GetTopStories(30) // You can request up to 500 of the top stories at once
+
+	for _, value := range mostPopular {
+		story, _ := client.GetStory(value)
+		fmt.Printf(story.Title + "\n")
+		// fmt.Printf("- %d\n", value)
+	}
+
 }
 
 func init() {
