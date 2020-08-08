@@ -2,10 +2,11 @@ package main
 
 import (
 	"circumflex/cmd"
-	"fmt"
 	"time"
 
+	"github.com/gdamore/tcell"
 	"github.com/gocolly/colly"
+	"gitlab.com/tslocum/cview"
 )
 
 func main() {
@@ -20,11 +21,25 @@ func main() {
 	})
 
 	c.Visit("https://news.ycombinator.com")
-	// fmt.Println(snapshot.Stories)
 
+	app := cview.NewApplication()
+	list := cview.NewList()
 
-	for _, s := range snapshot.Stories {
-		fmt.Println(s.Title)
+	list.SetBackgroundTransparent(false)
+	list.SetBackgroundColor(tcell.ColorDefault)
+	list.SetMainTextColor(tcell.ColorDefault)
+	list.SetSecondaryTextColor(tcell.ColorGray)
+
+	reset := func() {
+		list.Clear()
+		for _, s := range snapshot.Stories {
+			list.AddItem(s.Title, s.Title, 0, nil)
+		}
+	}
+
+	reset()
+	if err := app.SetRoot(list, true).EnableMouse(true).Run(); err != nil {
+		panic(err)
 	}
 
 }
