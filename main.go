@@ -22,6 +22,10 @@ func main() {
 
 	c.Visit("https://news.ycombinator.com")
 
+	// for _, s := range snapshot.Stories {
+	// 	fmt.Println(s.Username)
+	// }
+
 	app := cview.NewApplication()
 	list := cview.NewList()
 
@@ -33,7 +37,7 @@ func main() {
 	reset := func() {
 		list.Clear()
 		for _, s := range snapshot.Stories {
-			list.AddItem(s.Title, s.Title, 0, nil)
+			list.AddItem(s.Title, s.Username, 0, nil)
 		}
 	}
 
@@ -45,9 +49,10 @@ func main() {
 }
 
 type Story struct {
-	Rank  string
-	Title string
-	URL   string
+	Rank     string
+	Title    string
+	URL      string
+	Username string
 }
 
 type topStoriesSnapshot struct {
@@ -59,6 +64,8 @@ func CreateStory(e *colly.HTMLElement) Story {
 	rank := e.ChildText(".rank")
 	url := e.ChildAttr(".storylink", "href")
 	title := e.ChildText(".storylink")
+	metaDataRow := e.DOM.Next()
+	username := metaDataRow.Find(".hnuser").Text()
 
-	return Story{Rank: rank, URL: url, Title: title}
+	return Story{Rank: rank, URL: url, Title: title, Username: username}
 }
