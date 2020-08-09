@@ -1,29 +1,26 @@
 package main
 
 import (
+	"circumflex/client"
 	"circumflex/cmd"
-	"time"
+	"fmt"
 
 	"github.com/gdamore/tcell"
-	"github.com/gocolly/colly"
 	"gitlab.com/tslocum/cview"
 )
 
 func main() {
 	cmd.Execute()
 
-	c := colly.NewCollector()
-	snapshot := topStoriesSnapshot{FoundAt: time.Now()}
+	client := client.NewHNClient()
+	pp, err := client.GetTopStories(30)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	c.OnHTML(".athing", func(e *colly.HTMLElement) {
-		story := CreateStory(e)
-		snapshot.Stories = append(snapshot.Stories, story)
-	})
-
-	c.Visit("https://news.ycombinator.com")
-
-	// for _, s := range snapshot.Stories {
-	// 	fmt.Println(s.Username)
+	// for _, v := range *pp {
+	// 	fmt.Println(v.Title)
 	// }
 
 	app := cview.NewApplication()
@@ -36,8 +33,8 @@ func main() {
 
 	reset := func() {
 		list.Clear()
-		for _, s := range snapshot.Stories {
-			list.AddItem(s.Title, s.Username, 0, nil)
+		for _, s := range *pp {
+			list.AddItem(s.Title, s.Author, 0, nil)
 		}
 	}
 
@@ -46,26 +43,4 @@ func main() {
 		panic(err)
 	}
 
-}
-
-type Story struct {
-	Rank     string
-	Title    string
-	URL      string
-	Username string
-}
-
-type topStoriesSnapshot struct {
-	Stories []Story
-	FoundAt time.Time
-}
-
-func CreateStory(e *colly.HTMLElement) Story {
-	rank := e.ChildText(".rank")
-	url := e.ChildAttr(".storylink", "href")
-	title := e.ChildText(".storylink")
-	metaDataRow := e.DOM.Next()
-	username := metaDataRow.Find(".hnuser").Text()
-
-	return Story{Rank: rank, URL: url, Title: title, Username: username}
 }
