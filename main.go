@@ -30,6 +30,7 @@ func main() {
 	list.SetBackgroundColor(tcell.ColorDefault)
 	list.SetMainTextColor(tcell.ColorDefault)
 	list.SetSecondaryTextColor(tcell.ColorGray)
+	list.ShowSecondaryText(false)
 
 	reset := func() {
 		list.Clear()
