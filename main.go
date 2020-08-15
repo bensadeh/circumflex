@@ -1,21 +1,21 @@
 package main
 
 import (
+	"fmt"
 	// "circumflex/client"
 	"circumflex/cmd"
 	"encoding/json"
 	"flag"
 
-	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
-	"text/tabwriter"
 
 	// "github.com/gdamore/tcell"
 	"github.com/gocolly/colly"
+	"github.com/TylerBrock/colorjson"
 	// "gitlab.com/tslocum/cview"
 )
 
@@ -114,29 +114,14 @@ func comments() {
 	enc.SetIndent("", "  ")
 
 	// Dump json to the standard output
-	enc.Encode(comments)
+	// enc.Encode(comments)
 
-//########################
+	f := colorjson.NewFormatter()
+	f.Indent = 2
+	f.RawStrings = false
 
-	// Observe how the b's and the d's, despite appearing in the
-	// second cell of each line, belong to different columns.
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, '.', tabwriter.AlignRight|tabwriter.Debug)
-	fmt.Fprintln(w, "a\tb\tc")
-	fmt.Fprintln(w, "aa\tbb\tcc")
-	fmt.Fprintln(w, "aaa\t") // trailing tab
-	fmt.Fprintln(w, "aaaa\tdddd\teeee")
-	w.Flush()
-
-	for _, s := range comments {
-		fmt.Fprintln(w, s.Author + ": " + s.Comment)
-		for _, t := range s.Replies {
-			fmt.Fprintln(w, "\t" + t.Author + ": " + t.Comment)
-
-		}
-	}
-
-//########################
-
+	s, _ := f.Marshal(comments)
+	fmt.Println(string(s))
 
 
 	// Pager logic
@@ -145,16 +130,16 @@ func comments() {
 	// Could read $PAGER rather than hardcoding the path.
 	cmd := exec.Command("/usr/bin/less")
 
-	// stringComments := ""
-	// for _, s := range comments {
-	// 	stringComments = stringComments + s.Author + ": " + s.Comment +  "\n"
-	// 	for _, t := range s.Replies {
-	// 		stringComments = stringComments + t.Author + ": " + t.Comment
-	// 	}
-	// }
+	stringComments := ""
+	for _, s := range comments {
+		stringComments = stringComments + s.Author + ": " + s.Comment +  "\n"
+		for _, t := range s.Replies {
+			stringComments = stringComments + t.Author + ": " + t.Comment
+		}
+	}
 
 	// Feed it with the string you want to display.
-	// cmd.Stdin = strings.NewReader(stringComments)
+	cmd.Stdin = strings.NewReader(stringComments)
 
 	// This is crucial - otherwise it will write to a null device.
 	cmd.Stdout = os.Stdout
