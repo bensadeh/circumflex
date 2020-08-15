@@ -6,12 +6,13 @@ import (
 	"encoding/json"
 	"flag"
 
-	// "fmt"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
+	"text/tabwriter"
 
 	// "github.com/gdamore/tcell"
 	"github.com/gocolly/colly"
@@ -115,6 +116,21 @@ func comments() {
 	// Dump json to the standard output
 	enc.Encode(comments)
 
+//########################
+
+	// Observe how the b's and the d's, despite appearing in the
+	// second cell of each line, belong to different columns.
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, '.', tabwriter.AlignRight|tabwriter.Debug)
+	fmt.Fprintln(w, "a\tb\tc")
+	fmt.Fprintln(w, "aa\tbb\tcc")
+	fmt.Fprintln(w, "aaa\t") // trailing tab
+	fmt.Fprintln(w, "aaaa\tdddd\teeee")
+	w.Flush()
+
+//########################
+
+
+
 	// Pager logic
 	// pager := os.ExpandEnv("$PAGER")
 
@@ -123,7 +139,10 @@ func comments() {
 
 	stringComments := ""
 	for _, s := range comments {
-		stringComments = stringComments + s.Comment
+		stringComments = stringComments + s.Author + ": " + s.Comment +  "\n"
+		for _, t := range s.Replies {
+			stringComments = stringComments + t.Author + ": " + t.Comment
+		}
 	}
 
 	// Feed it with the string you want to display.
