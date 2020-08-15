@@ -127,6 +127,14 @@ func comments() {
 	fmt.Fprintln(w, "aaaa\tdddd\teeee")
 	w.Flush()
 
+	for _, s := range comments {
+		fmt.Fprintln(w, s.Author + ": " + s.Comment)
+		for _, t := range s.Replies {
+			fmt.Fprintln(w, "\t" + t.Author + ": " + t.Comment)
+
+		}
+	}
+
 //########################
 
 
@@ -137,16 +145,16 @@ func comments() {
 	// Could read $PAGER rather than hardcoding the path.
 	cmd := exec.Command("/usr/bin/less")
 
-	stringComments := ""
-	for _, s := range comments {
-		stringComments = stringComments + s.Author + ": " + s.Comment +  "\n"
-		for _, t := range s.Replies {
-			stringComments = stringComments + t.Author + ": " + t.Comment
-		}
-	}
+	// stringComments := ""
+	// for _, s := range comments {
+	// 	stringComments = stringComments + s.Author + ": " + s.Comment +  "\n"
+	// 	for _, t := range s.Replies {
+	// 		stringComments = stringComments + t.Author + ": " + t.Comment
+	// 	}
+	// }
 
 	// Feed it with the string you want to display.
-	cmd.Stdin = strings.NewReader(stringComments)
+	// cmd.Stdin = strings.NewReader(stringComments)
 
 	// This is crucial - otherwise it will write to a null device.
 	cmd.Stdout = os.Stdout
