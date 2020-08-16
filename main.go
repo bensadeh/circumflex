@@ -13,10 +13,12 @@ import (
 	"strconv"
 	"strings"
 
-	// "github.com/gdamore/tcell"
-	"github.com/gocolly/colly"
 	"github.com/TylerBrock/colorjson"
+	"github.com/gdamore/tcell"
+	"github.com/gocolly/colly"
+
 	// "gitlab.com/tslocum/cview"
+	"github.com/rivo/tview"
 )
 
 func main() {
@@ -123,7 +125,6 @@ func comments() {
 	s, _ := f.Marshal(comments)
 	fmt.Println(string(s))
 
-
 	// Pager logic
 	// pager := os.ExpandEnv("$PAGER")
 
@@ -132,7 +133,7 @@ func comments() {
 
 	stringComments := ""
 	for _, s := range comments {
-		stringComments = stringComments + s.Author + ": " + s.Comment +  "\n"
+		stringComments = stringComments + s.Author + ": " + s.Comment + "\n"
 		for _, t := range s.Replies {
 			stringComments = stringComments + t.Author + ": " + t.Comment
 		}
@@ -150,4 +151,26 @@ func comments() {
 		log.Fatal(err)
 	}
 
+	grid := tview.NewGrid().SetColumns(5, 5, 5, 5, 0).SetRows(5, 5, 5, 5, 5, 5, 5, 5, 5)
+	grid.AddItem(getTextView("author", "asdf asdf \n asdf"), 0, 0, 1, 5, 0, 0, false)
+	grid.AddItem(getTextView("author", "asdf asdf \n asdf"), 1, 1, 1, 4, 0, 0, false)
+	grid.AddItem(getTextView("author", "asdf asdf \n asdf"), 2, 1, 1, 4, 0, 0, false)
+	grid.AddItem(getTextView("author", "asdf asdf \n asdf"), 3, 0, 1, 5, 0, 0, false)
+	grid.AddItem(getTextView("author", "asdf asdf \n asdf"), 4, 1, 1, 4, 0, 0, false)
+	grid.AddItem(getTextView("author", "asdf asdf \n asdf"), 5, 2, 1, 3, 0, 0, false)
+	grid.AddItem(getTextView("author", "asdf asdf \n asdf"), 6, 2, 1, 3, 0, 0, false)
+	grid.AddItem(getTextView("author", "asdf asdf \n asdf"), 7, 1, 1, 4, 0, 0, false)
+	if err := tview.NewApplication().SetRoot(grid, true).Run(); err != nil {
+		panic(err)
+	}
+
 }
+
+func getTextView(author string, comment string) *tview.TextView {
+	textView := tview.NewTextView().
+		SetText("[yellow]" + author + "\n[white]" + comment).
+		SetDynamicColors(true)
+	textView.SetBorder(true).SetBorderColor(tcell.ColorBlue)
+	return textView
+}
+
