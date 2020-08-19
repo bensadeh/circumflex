@@ -19,6 +19,8 @@ import (
 
 	"gitlab.com/tslocum/cview"
 	// "github.com/rivo/tview"
+	"github.com/eidolon/wordwrap"
+	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
 
 func main() {
@@ -145,7 +147,7 @@ func comments() {
 
 	commentTree := ""
 	for _, s := range comments {
-		commentTree = prettyPrintComments(*s, &commentTree)
+		commentTree = prettyPrintComments(*s, &commentTree, 0)
 
 	}
 
@@ -178,12 +180,24 @@ func comments() {
 
 }
 
-func prettyPrintComments(c comment, commentTree *string) string {
-	fmt.Print("Top Level")
-	*commentTree = *commentTree + c.Author + ": " + c.Comment + "\n"
+func prettyPrintComments(c comment, commentTree *string, indentlevel int) string {
+	x, _ := terminal.Width()
+	wrapper := wordwrap.Wrapper(int(x) - indentlevel - 1, false)
+	wrapped := wrapper(c.Author + ": " + c.Comment)
+	wrappedAndIndentedComment := wordwrap.Indent(wrapped, getindent(indentlevel), true)
+	wrappedAndIndentedComment = "\n" + wrappedAndIndentedComment + "\n"
+
+	*commentTree = *commentTree + wrappedAndIndentedComment
 	for _, s := range c.Replies {
-		fmt.Print("One Level Down Level")
-		prettyPrintComments(*s, commentTree)
+		prettyPrintComments(*s, commentTree, indentlevel + 10)
 	}
 	return *commentTree
+}
+
+func getindent(level int) string {
+	indentation := " "
+	for i := 1; i < level; i++ {
+		indentation = indentation + " "
+	}
+	return indentation
 }
