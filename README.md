@@ -1,4 +1,6 @@
-# Circumflex
+<img src="circumflex.png" width="300" />
+
+
 Circumflex lets you browse Hacker News in your terminal. WIP.
 
 ## Frameworks and Credits
