@@ -131,16 +131,27 @@ func comments() {
 	// Could read $PAGER rather than hardcoding the path.
 	cmd := exec.Command("/usr/bin/less")
 
-	stringComments := ""
+	// stringComments := ""
+	// for _, s := range comments {
+	// 	stringComments = stringComments + s.Author + ": " + s.Comment + "\n"
+	// 	for _, t := range s.Replies {
+	// 		wrapper := wordwrap.Wrapper(20, false)
+	// 		wrapped := wrapper(t.Comment)
+	// 		indented := wordwrap.Indent(wrapped, "            ", true)
+
+	// 		stringComments = stringComments + t.Author + ": " + indented
+	// 	}
+	// }
+
+	commentTree := ""
 	for _, s := range comments {
-		stringComments = stringComments + s.Author + ": " + s.Comment + "\n"
-		for _, t := range s.Replies {
-			stringComments = stringComments + t.Author + ": " + t.Comment
-		}
+		commentTree = prettyPrintComments(*s, &commentTree)
+
 	}
 
 	// Feed it with the string you want to display.
-	cmd.Stdin = strings.NewReader(stringComments)
+	// cmd.Stdin = strings.NewReader(stringComments)
+	cmd.Stdin = strings.NewReader(commentTree)
 
 	// This is crucial - otherwise it will write to a null device.
 	cmd.Stdout = os.Stdout
@@ -158,11 +169,21 @@ func comments() {
 			AddChild(cview.NewTreeNode("GrandChild")).
 			AddChild(cview.NewTreeNode("GrandChild"))).
 		AddChild(cview.NewTreeNode("Second Child")).
-			AddChild(cview.NewTreeNode("GrandChild")).
-			AddChild(cview.NewTreeNode("GrandChild"))
+		AddChild(cview.NewTreeNode("GrandChild")).
+		AddChild(cview.NewTreeNode("GrandChild"))
 
 	tree.SetRoot(root).SetCurrentNode(root)
 
 	cview.NewApplication().SetRoot(tree, true).Run()
 
+}
+
+func prettyPrintComments(c comment, commentTree *string) string {
+	fmt.Print("Top Level")
+	*commentTree = *commentTree + c.Author + ": " + c.Comment + "\n"
+	for _, s := range c.Replies {
+		fmt.Print("One Level Down Level")
+		prettyPrintComments(*s, commentTree)
+	}
+	return *commentTree
 }
