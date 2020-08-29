@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	// "circumflex/client"
+	"circumflex/client"
 	"circumflex/cmd"
 	"encoding/json"
 	"flag"
@@ -14,8 +15,9 @@ import (
 	"strings"
 
 	"github.com/TylerBrock/colorjson"
-	// "github.com/gdamore/tcell"
+	"github.com/gdamore/tcell"
 	"github.com/gocolly/colly"
+	"gitlab.com/tslocum/cview"
 
 	// "github.com/rivo/tview"
 	"github.com/eidolon/wordwrap"
@@ -24,38 +26,43 @@ import (
 
 func main() {
 	cmd.Execute()
+	y, _ := terminal.Height()
+	storiesToFetch := int(y / 2)
 
-	// client := client.NewHNClient()
-	// pp, err := client.GetTopStories(30)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
+	client := client.NewHNClient()
+	pp, err := client.GetTopStories(storiesToFetch)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// for _, v := range *pp {
+	// 	fmt.Println(v.Title)
 	// }
 
-	// // for _, v := range *pp {
-	// // 	fmt.Println(v.Title)
-	// // }
+	app := cview.NewApplication()
+	list := cview.NewList()
 
-	// app := cview.NewApplication()
-	// list := cview.NewList()
+	list.SetBackgroundTransparent(false)
+	list.SetBackgroundColor(tcell.ColorDefault)
+	list.SetMainTextColor(tcell.ColorDefault)
+	list.SetSecondaryTextColor(tcell.ColorGray)
+	list.ShowSecondaryText(true)
 
-	// list.SetBackgroundTransparent(false)
-	// list.SetBackgroundColor(tcell.ColorDefault)
-	// list.SetMainTextColor(tcell.ColorDefault)
-	// list.SetSecondaryTextColor(tcell.ColorGray)
-	// list.ShowSecondaryText(false)
+	reset := func() {
+		list.Clear()
+		for _, s := range *pp {
+			points := strconv.Itoa(s.Points)
+			comments := strconv.Itoa(s.Comments)
+			secondary := "  " + points + " points by " + s.Author + " (" + comments + " comments)"
+			list.AddItem(s.Title, secondary, 0, nil)
+		}
+	}
 
-	// reset := func() {
-	// 	list.Clear()
-	// 	for _, s := range *pp {
-	// 		list.AddItem(s.Title, s.Author, 0, nil)
-	// 	}
-	// }
-
-	// reset()
-	// if err := app.SetRoot(list, true).EnableMouse(true).Run(); err != nil {
-	// 	panic(err)
-	// }
+	reset()
+	if err := app.SetRoot(list, true).EnableMouse(true).Run(); err != nil {
+		panic(err)
+	}
 
 	comments()
 }
