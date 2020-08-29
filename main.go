@@ -55,7 +55,9 @@ func main() {
 			points := strconv.Itoa(s.Points)
 			comments := strconv.Itoa(s.Comments)
 			secondary := "  " + points + " points by " + s.Author + " (" + comments + " comments)"
-			list.AddItem(s.Title, secondary, 0, nil)
+			list.AddItem(s.Title, secondary, 0, func() {
+				lessComments()
+			})
 		}
 	}
 
@@ -64,7 +66,7 @@ func main() {
 		panic(err)
 	}
 
-	comments()
+	// comments()
 }
 
 type comment struct {
@@ -75,7 +77,7 @@ type comment struct {
 	depth   int
 }
 
-func comments() {
+func lessComments() {
 	var itemID string
 	flag.StringVar(&itemID, "id", "24089281", "hackernews post id")
 	flag.Parse()

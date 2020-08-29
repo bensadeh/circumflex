@@ -13,20 +13,20 @@ func TestNewFeedItem(t *testing.T) {
 		want Item
 
 		wantErr bool
-	}{{"basic test", Item{Author: "asd", Title: "asda", URI: "http://google.com", Rank: 1, Points: 1, Comments: 1}, false},
-		{"invalid uri", Item{Author: "asd", Title: "asda", URI: "a.com", Rank: 1, Points: 1, Comments: 1}, true},
-		{"empty author", Item{Author: "", Title: "asda", URI: "http://a.com", Rank: 1, Points: 1, Comments: 1}, true},
-		{"empty title", Item{Author: "asdsa", Title: "", URI: "http://a.com", Rank: 1, Points: 1, Comments: 1}, true},
-		{"<0 rank", Item{Author: "asdsa", Title: "asda", URI: "http://a.com", Rank: -1, Points: 1, Comments: 1}, true},
-		{"<0 points", Item{Author: "asd", Title: "asda", URI: "http://a.com", Rank: 1, Points: -1, Comments: 1}, true},
-		{"<0 comments", Item{Author: "asd", Title: "asda", URI: "http://a.com", Rank: 1, Points: 1, Comments: -1}, true},
-		{"author with more than 256 characters", Item{Author: longStr, Title: "asda", URI: "http://a.com", Rank: 1, Points: 1, Comments: -1}, true},
-		{"title with more than 256 characters", Item{Author: "asd", Title: longStr, URI: "http://a.com", Rank: 1, Points: 1, Comments: -1}, true},
+	}{{"basic test", Item{Author: "asd", Title: "asda", ID: "12345", URI: "http://google.com", Rank: 1, Points: 1, Comments: 1}, false},
+		{"invalid uri", Item{Author: "asd", Title: "asda", ID: "12345", URI: "a.com", Rank: 1, Points: 1, Comments: 1}, true},
+		{"empty author", Item{Author: "", Title: "asda", ID: "12345", URI: "http://a.com", Rank: 1, Points: 1, Comments: 1}, true},
+		{"empty title", Item{Author: "asdsa", Title: "", ID: "12345", URI: "http://a.com", Rank: 1, Points: 1, Comments: 1}, true},
+		{"<0 rank", Item{Author: "asdsa", Title: "asda", ID: "12345", URI: "http://a.com", Rank: -1, Points: 1, Comments: 1}, true},
+		{"<0 points", Item{Author: "asd", Title: "asda", ID: "12345", URI: "http://a.com", Rank: 1, Points: -1, Comments: 1}, true},
+		{"<0 comments", Item{Author: "asd", Title: "asda", ID: "12345", URI: "http://a.com", Rank: 1, Points: 1, Comments: -1}, true},
+		{"author with more than 256 characters", Item{Author: longStr, Title: "asda", ID: "12345", URI: "http://a.com", Rank: 1, Points: 1, Comments: -1}, true},
+		{"title with more than 256 characters", Item{Author: "asd", Title: longStr, ID: "12345", URI: "http://a.com", Rank: 1, Points: 1, Comments: -1}, true},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewItem(tt.want.Title, tt.want.URI, tt.want.Author, tt.want.Points, tt.want.Comments, tt.want.Rank)
+			got, err := NewItem(tt.want.Title, tt.want.URI, tt.want.Author, tt.want.ID, tt.want.Points, tt.want.Comments, tt.want.Rank)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewFeedItem() error = %v, wantErr %v", err, tt.wantErr)
 				return
