@@ -17,7 +17,6 @@ import (
 	// "github.com/gdamore/tcell"
 	"github.com/gocolly/colly"
 
-	"gitlab.com/tslocum/cview"
 	// "github.com/rivo/tview"
 	"github.com/eidolon/wordwrap"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
@@ -164,32 +163,18 @@ func comments() {
 		log.Fatal(err)
 	}
 
-	tree := cview.NewTreeView()
-
-	root := cview.NewTreeNode("Root").
-		AddChild(cview.NewTreeNode("First Child").
-			AddChild(cview.NewTreeNode("GrandChild")).
-			AddChild(cview.NewTreeNode("GrandChild"))).
-		AddChild(cview.NewTreeNode("Second Child")).
-		AddChild(cview.NewTreeNode("GrandChild")).
-		AddChild(cview.NewTreeNode("GrandChild"))
-
-	tree.SetRoot(root).SetCurrentNode(root)
-
-	cview.NewApplication().SetRoot(tree, true).Run()
-
 }
 
 func prettyPrintComments(c comment, commentTree *string, indentlevel int) string {
 	x, _ := terminal.Width()
-	wrapper := wordwrap.Wrapper(int(x) - indentlevel - 1, false)
+	wrapper := wordwrap.Wrapper(int(x)-indentlevel-1, false)
 	wrapped := wrapper(c.Author + ": " + c.Comment)
 	wrappedAndIndentedComment := wordwrap.Indent(wrapped, getindent(indentlevel), true)
 	wrappedAndIndentedComment = "\n" + wrappedAndIndentedComment + "\n"
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
 	for _, s := range c.Replies {
-		prettyPrintComments(*s, commentTree, indentlevel + 10)
+		prettyPrintComments(*s, commentTree, indentlevel+10)
 	}
 	return *commentTree
 }
