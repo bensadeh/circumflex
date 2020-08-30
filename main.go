@@ -38,10 +38,6 @@ func main() {
 		return
 	}
 
-	// for _, v := range *pp {
-	// 	fmt.Println(v.Title)
-	// }
-
 	app := cview.NewApplication()
 	list := cview.NewList()
 
@@ -50,6 +46,16 @@ func main() {
 	list.SetMainTextColor(tcell.ColorDefault)
 	list.SetSecondaryTextColor(tcell.ColorGray)
 	list.ShowSecondaryText(true)
+	list.SetSelectedFunc(func(i int, a string, b string, c rune) {
+		app.Suspend(func() {
+			fmt.Println(strconv.Itoa(i) + " SelectedFunction")
+			for index, s := range *pp {
+				if index == i {
+					lessComments(s.ID)
+				}
+			}
+		})
+	})
 
 	addListItems(list, pp, app)
 	if err := app.SetRoot(list, true).EnableMouse(false).Run(); err != nil {
@@ -60,15 +66,11 @@ func main() {
 
 func addListItems(list *cview.List, pp *[]feed.Item, app *cview.Application) {
 	list.Clear()
-	for _, s := range *pp {
+	for i, s := range *pp {
 		points := strconv.Itoa(s.Points)
 		comments := strconv.Itoa(s.Comments)
 		secondary := "  " + points + " points by " + s.Author + " (" + comments + " comments)"
-		list.AddItem(s.Title, secondary, 0, func() {
-			app.Suspend(func() {
-				lessComments(s.ID)
-			})
-		})
+		list.InsertItem(i, s.Title, secondary, 0, nil)
 	}
 }
 
