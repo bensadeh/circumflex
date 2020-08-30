@@ -48,7 +48,6 @@ func main() {
 	list.ShowSecondaryText(true)
 	list.SetSelectedFunc(func(i int, a string, b string, c rune) {
 		app.Suspend(func() {
-			fmt.Println(strconv.Itoa(i) + " SelectedFunction")
 			for index, s := range *pp {
 				if index == i {
 					lessComments(s.ID)
@@ -83,7 +82,6 @@ type comment struct {
 }
 
 func lessComments(itemID string) {
-	fmt.Println(itemID)
 	comments := make([]*comment, 0)
 
 	// Instantiate default collector
