@@ -51,23 +51,23 @@ func main() {
 	list.SetSecondaryTextColor(tcell.ColorGray)
 	list.ShowSecondaryText(true)
 
-	reset(list, pp)
+	addListItems(list, pp, app)
 	if err := app.SetRoot(list, true).EnableMouse(false).Run(); err != nil {
 		panic(err)
 	}
 
-	lessComments("24303832")
 }
 
-func reset(list *cview.List, pp *[]feed.Item) {
+func addListItems(list *cview.List, pp *[]feed.Item, app *cview.Application) {
 	list.Clear()
 	for _, s := range *pp {
 		points := strconv.Itoa(s.Points)
 		comments := strconv.Itoa(s.Comments)
 		secondary := "  " + points + " points by " + s.Author + " (" + comments + " comments)"
 		list.AddItem(s.Title, secondary, 0, func() {
-			fmt.Println("XYZ")
-			// textView()
+			app.Suspend(func() {
+				lessComments(s.ID)
+			})
 		})
 	}
 }
@@ -81,6 +81,7 @@ type comment struct {
 }
 
 func lessComments(itemID string) {
+	fmt.Println(itemID)
 	comments := make([]*comment, 0)
 
 	// Instantiate default collector
