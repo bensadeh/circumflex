@@ -134,7 +134,7 @@ func lessComments(itemID string) {
 	// pager := os.ExpandEnv("$PAGER")
 
 	// Could read $PAGER rather than hardcoding the path.
-	cmd := exec.Command("/usr/bin/less")
+	cmd := exec.Command("/usr/bin/less", "-R")
 
 	commentTree := ""
 	for _, s := range comments {
@@ -160,9 +160,11 @@ func lessComments(itemID string) {
 func prettyPrintComments(c comment, commentTree *string, indentlevel int) string {
 	x, _ := terminal.Width()
 	wrapper := wordwrap.Wrapper(int(x)-indentlevel-1, false)
-	wrapped := wrapper(c.Author + ": " + c.Comment)
+	wrapped := wrapper(c.Comment)
 	wrappedAndIndentedComment := wordwrap.Indent(wrapped, getindent(indentlevel), true)
-	wrappedAndIndentedComment = "\n" + wrappedAndIndentedComment + "\n"
+	wrappedAndIndentedAuthor := wordwrap.Indent(c.Author, getindent(indentlevel), true)
+
+	wrappedAndIndentedComment = "\033[1m" + wrappedAndIndentedAuthor + "\033[21m" + "\n" + "\n" + wrappedAndIndentedComment + "\n" + "\n"
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
 	for _, s := range c.Replies {
