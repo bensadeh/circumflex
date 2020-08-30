@@ -1,12 +1,14 @@
 package main
 
 import (
-	"fmt"
-	// "circumflex/client"
 	"circumflex/client"
+	"circumflex/client/feed"
 	"circumflex/cmd"
+	"fmt"
+
+	// "circumflex/client"
+
 	"encoding/json"
-	"flag"
 
 	"log"
 	"os"
@@ -49,24 +51,25 @@ func main() {
 	list.SetSecondaryTextColor(tcell.ColorGray)
 	list.ShowSecondaryText(true)
 
-	reset := func() {
-		list.Clear()
-		for _, s := range *pp {
-			points := strconv.Itoa(s.Points)
-			comments := strconv.Itoa(s.Comments)
-			secondary := "  " + points + " points by " + s.Author + " (" + comments + " comments)"
-			list.AddItem(s.Title, secondary, 0, func() {
-				lessComments()
-			})
-		}
-	}
-
-	reset()
-	if err := app.SetRoot(list, true).EnableMouse(true).Run(); err != nil {
+	reset(list, pp)
+	if err := app.SetRoot(list, true).EnableMouse(false).Run(); err != nil {
 		panic(err)
 	}
 
-	// comments()
+	lessComments("24303832")
+}
+
+func reset(list *cview.List, pp *[]feed.Item) {
+	list.Clear()
+	for _, s := range *pp {
+		points := strconv.Itoa(s.Points)
+		comments := strconv.Itoa(s.Comments)
+		secondary := "  " + points + " points by " + s.Author + " (" + comments + " comments)"
+		list.AddItem(s.Title, secondary, 0, func() {
+			fmt.Println("XYZ")
+			// textView()
+		})
+	}
 }
 
 type comment struct {
@@ -77,16 +80,7 @@ type comment struct {
 	depth   int
 }
 
-func lessComments() {
-	var itemID string
-	flag.StringVar(&itemID, "id", "24089281", "hackernews post id")
-	flag.Parse()
-
-	if itemID == "" {
-		log.Println("Hackernews post id required")
-		os.Exit(1)
-	}
-
+func lessComments(itemID string) {
 	comments := make([]*comment, 0)
 
 	// Instantiate default collector
@@ -140,18 +134,6 @@ func lessComments() {
 
 	// Could read $PAGER rather than hardcoding the path.
 	cmd := exec.Command("/usr/bin/less")
-
-	// stringComments := ""
-	// for _, s := range comments {
-	// 	stringComments = stringComments + s.Author + ": " + s.Comment + "\n"
-	// 	for _, t := range s.Replies {
-	// 		wrapper := wordwrap.Wrapper(20, false)
-	// 		wrapped := wrapper(t.Comment)
-	// 		indented := wordwrap.Indent(wrapped, "            ", true)
-
-	// 		stringComments = stringComments + t.Author + ": " + indented
-	// 	}
-	// }
 
 	commentTree := ""
 	for _, s := range comments {
