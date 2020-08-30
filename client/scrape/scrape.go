@@ -6,8 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/PuerkitoBio/goquery"
 	"circumflex/client/feed"
+
+	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
 )
 
@@ -74,6 +75,8 @@ func (s HNScraper) ScrapeHNFeed(maxItems int) (*[]feed.Item, error) {
 
 //processFeedItem extracts the current html element and tries to create a feed Item
 func processFeedItem(e *colly.HTMLElement) (*feed.Item, error) {
+	id := e.Attr("id")
+
 	rank := e.ChildText(".rank")
 	rankSplit := strings.Split(rank, ".")
 	if len(rankSplit) == 0 {
@@ -109,6 +112,6 @@ func processFeedItem(e *colly.HTMLElement) (*feed.Item, error) {
 	if err != nil {
 		commentsI = 0
 	}
-	feedItem, err := feed.NewItem(title, link, author, scoreI, commentsI, rankI)
+	feedItem, err := feed.NewItem(title, link, author, id, scoreI, commentsI, rankI)
 	return &feedItem, err
 }

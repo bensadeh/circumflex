@@ -1,11 +1,14 @@
 package main
 
 import (
-	"fmt"
-	// "circumflex/client"
+	"circumflex/client"
+	"circumflex/client/feed"
 	"circumflex/cmd"
+	"fmt"
+
+	// "circumflex/client"
+
 	"encoding/json"
-	"flag"
 
 	"log"
 	"os"
@@ -14,10 +17,10 @@ import (
 	"strings"
 
 	"github.com/TylerBrock/colorjson"
-	// "github.com/gdamore/tcell"
+	"github.com/gdamore/tcell"
 	"github.com/gocolly/colly"
-
 	"gitlab.com/tslocum/cview"
+
 	// "github.com/rivo/tview"
 	"github.com/eidolon/wordwrap"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
@@ -25,40 +28,50 @@ import (
 
 func main() {
 	cmd.Execute()
+	y, _ := terminal.Height()
+	storiesToFetch := int(y / 2)
 
-	// client := client.NewHNClient()
-	// pp, err := client.GetTopStories(30)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
+	client := client.NewHNClient()
+	pp, err := client.GetTopStories(storiesToFetch)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	// // for _, v := range *pp {
-	// // 	fmt.Println(v.Title)
-	// // }
+	app := cview.NewApplication()
+	list := cview.NewList()
 
-	// app := cview.NewApplication()
-	// list := cview.NewList()
+	list.SetBackgroundTransparent(false)
+	list.SetBackgroundColor(tcell.ColorDefault)
+	list.SetMainTextColor(tcell.ColorDefault)
+	list.SetSecondaryTextColor(tcell.ColorGray)
+	list.ShowSecondaryText(true)
+	list.SetSelectedFunc(func(i int, a string, b string, c rune) {
+		app.Suspend(func() {
+			fmt.Println(strconv.Itoa(i) + " SelectedFunction")
+			for index, s := range *pp {
+				if index == i {
+					lessComments(s.ID)
+				}
+			}
+		})
+	})
 
-	// list.SetBackgroundTransparent(false)
-	// list.SetBackgroundColor(tcell.ColorDefault)
-	// list.SetMainTextColor(tcell.ColorDefault)
-	// list.SetSecondaryTextColor(tcell.ColorGray)
-	// list.ShowSecondaryText(false)
+	addListItems(list, pp, app)
+	if err := app.SetRoot(list, true).EnableMouse(false).Run(); err != nil {
+		panic(err)
+	}
 
-	// reset := func() {
-	// 	list.Clear()
-	// 	for _, s := range *pp {
-	// 		list.AddItem(s.Title, s.Author, 0, nil)
-	// 	}
-	// }
+}
 
-	// reset()
-	// if err := app.SetRoot(list, true).EnableMouse(true).Run(); err != nil {
-	// 	panic(err)
-	// }
-
-	comments()
+func addListItems(list *cview.List, pp *[]feed.Item, app *cview.Application) {
+	list.Clear()
+	for i, s := range *pp {
+		points := strconv.Itoa(s.Points)
+		comments := strconv.Itoa(s.Comments)
+		secondary := "  " + points + " points by " + s.Author + " (" + comments + " comments)"
+		list.InsertItem(i, s.Title, secondary, 0, nil)
+	}
 }
 
 type comment struct {
@@ -69,16 +82,8 @@ type comment struct {
 	depth   int
 }
 
-func comments() {
-	var itemID string
-	flag.StringVar(&itemID, "id", "24089281", "hackernews post id")
-	flag.Parse()
-
-	if itemID == "" {
-		log.Println("Hackernews post id required")
-		os.Exit(1)
-	}
-
+func lessComments(itemID string) {
+	fmt.Println(itemID)
 	comments := make([]*comment, 0)
 
 	// Instantiate default collector
@@ -133,18 +138,6 @@ func comments() {
 	// Could read $PAGER rather than hardcoding the path.
 	cmd := exec.Command("/usr/bin/less")
 
-	// stringComments := ""
-	// for _, s := range comments {
-	// 	stringComments = stringComments + s.Author + ": " + s.Comment + "\n"
-	// 	for _, t := range s.Replies {
-	// 		wrapper := wordwrap.Wrapper(20, false)
-	// 		wrapped := wrapper(t.Comment)
-	// 		indented := wordwrap.Indent(wrapped, "            ", true)
-
-	// 		stringComments = stringComments + t.Author + ": " + indented
-	// 	}
-	// }
-
 	commentTree := ""
 	for _, s := range comments {
 		commentTree = prettyPrintComments(*s, &commentTree, 0)
@@ -164,32 +157,18 @@ func comments() {
 		log.Fatal(err)
 	}
 
-	tree := cview.NewTreeView()
-
-	root := cview.NewTreeNode("Root").
-		AddChild(cview.NewTreeNode("First Child").
-			AddChild(cview.NewTreeNode("GrandChild")).
-			AddChild(cview.NewTreeNode("GrandChild"))).
-		AddChild(cview.NewTreeNode("Second Child")).
-		AddChild(cview.NewTreeNode("GrandChild")).
-		AddChild(cview.NewTreeNode("GrandChild"))
-
-	tree.SetRoot(root).SetCurrentNode(root)
-
-	cview.NewApplication().SetRoot(tree, true).Run()
-
 }
 
 func prettyPrintComments(c comment, commentTree *string, indentlevel int) string {
 	x, _ := terminal.Width()
-	wrapper := wordwrap.Wrapper(int(x) - indentlevel - 1, false)
+	wrapper := wordwrap.Wrapper(int(x)-indentlevel-1, false)
 	wrapped := wrapper(c.Author + ": " + c.Comment)
 	wrappedAndIndentedComment := wordwrap.Indent(wrapped, getindent(indentlevel), true)
 	wrappedAndIndentedComment = "\n" + wrappedAndIndentedComment + "\n"
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
 	for _, s := range c.Replies {
-		prettyPrintComments(*s, commentTree, indentlevel + 10)
+		prettyPrintComments(*s, commentTree, indentlevel+10)
 	}
 	return *commentTree
 }
