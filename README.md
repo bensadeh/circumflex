@@ -20,7 +20,7 @@
 </p>
 
 ## Installation
-`circumflex` is built with go. Simply:
+`circumflex` is written in Go. Simply:
 
     go install
 
