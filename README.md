@@ -1,4 +1,6 @@
-<img src="circumflex.png" width="300" />
+<p align="center">
+  <img src="circumflex.png" width="300" alt="^"/>
+</p>
 
 ---
 
