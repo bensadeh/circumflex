@@ -2,7 +2,7 @@
   <img src="circumflex.png" width="300" alt="^"/>
 </p>
 
----
+#
 
 circumflex lets you browse Hacker News in your terminal. WIP.
 
