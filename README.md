@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="circumflex.png" width="300" alt="^"/>
+  <img src="images/circumflex.png" width="300" alt="^"/>
 </p>
 
 #
