@@ -3,8 +3,9 @@
 </p>
 
 #
+> Work in progress
 
-`circumflex` is a command line tool for browsing Hacker News submissions and reading comments. Work in progress.
+`circumflex` is a command line tool for browsing Hacker News submissions and reading comments.
 
 ## Features
 - Simple overview of top submissions
@@ -19,8 +20,11 @@
 </p>
 
 ## Installation
+`circumflex` is built with go. Simply:
 
     go install
+
+And you're good to go.
 
 ## Frameworks and Credits
 `circumflex` uses:
