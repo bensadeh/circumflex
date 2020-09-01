@@ -164,7 +164,7 @@ func prettyPrintComments(c comment, commentTree *string, indentlevel int) string
 	wrappedAndIndentedComment := wordwrap.Indent(wrapped, getindent(indentlevel), true)
 	wrappedAndIndentedAuthor := wordwrap.Indent(c.Author, getindent(indentlevel), true)
 
-	wrappedAndIndentedComment = "\033[1m" + wrappedAndIndentedAuthor + "\033[21m" + "\n" + "\n" + wrappedAndIndentedComment + "\n" + "\n"
+	wrappedAndIndentedComment = "\033[1m" + wrappedAndIndentedAuthor + "\033[21m" + "\n" + wrappedAndIndentedComment + "\n" + "\n"
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
 	for _, s := range c.Replies {
