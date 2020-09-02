@@ -22,7 +22,7 @@
 ## Installation
 `circumflex` is written in Go. Simply:
 
-    go install
+    $ go install
 
 And you're good to go.
 
