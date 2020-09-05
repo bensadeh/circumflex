@@ -50,7 +50,9 @@ func main() {
 		app.Suspend(func() {
 			//Clear screen to avoid seeing the terminal before
 			//this program was started
-			print("\033[H\033[2J")
+			c := exec.Command("clear")
+			c.Stdout = os.Stdout
+			c.Run()
 
 			for index, s := range *pp {
 				if index == i {
