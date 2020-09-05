@@ -48,6 +48,10 @@ func main() {
 	list.ShowSecondaryText(true)
 	list.SetSelectedFunc(func(i int, a string, b string, c rune) {
 		app.Suspend(func() {
+			//Clear screen to avoid seeing the terminal before
+			//this program was started
+			print("\033[H\033[2J")
+
 			for index, s := range *pp {
 				if index == i {
 					lessComments(s.ID)
