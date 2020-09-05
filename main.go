@@ -149,7 +149,6 @@ func lessComments(itemID string) {
 	}
 
 	// Feed it with the string you want to display.
-	// cmd.Stdin = strings.NewReader(stringComments)
 	cmd.Stdin = strings.NewReader(commentTree)
 
 	// This is crucial - otherwise it will write to a null device.
