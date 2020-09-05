@@ -174,7 +174,7 @@ func prettyPrintComments(c comment, commentTree *string, indentlevel int) string
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
 	for _, s := range c.Replies {
-		prettyPrintComments(*s, commentTree, indentlevel+10)
+		prettyPrintComments(*s, commentTree, indentlevel+5)
 	}
 	return *commentTree
 }
