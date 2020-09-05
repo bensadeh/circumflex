@@ -9,11 +9,12 @@ require (
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/gdamore/tcell v1.3.0
 	github.com/gocolly/colly v1.2.0
-	github.com/gocolly/colly/v2 v2.1.0
+	github.com/gocolly/colly/v2 v2.1.0 // indirect
 	github.com/golang/mock v1.3.1
+	github.com/hokaccha/go-prettyjson v0.0.0-20190818114111-108c894c2c0e // indirect
 	github.com/mattn/go-colorable v0.1.7 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/rivo/tview v0.0.0-20200712113419-c65badfc3d92
+	github.com/rivo/tview v0.0.0-20200712113419-c65badfc3d92 // indirect
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.0
 	github.com/wayneashleyberry/terminal-dimensions v1.0.0
