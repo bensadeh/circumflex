@@ -133,9 +133,6 @@ func lessComments(itemID string) {
 	f.Indent = 2
 	f.RawStrings = false
 
-	s, _ := f.Marshal(comments)
-	fmt.Println(string(s))
-
 	// Pager logic
 	// pager := os.ExpandEnv("$PAGER")
 
