@@ -166,8 +166,8 @@ func prettyPrintComments(c comment, commentTree *string, indentlevel int) string
 	x, _ := terminal.Width()
 	wrapper := wordwrap.Wrapper(int(x)-indentlevel-1, false)
 	wrapped := wrapper(c.Comment)
-	wrappedAndIndentedComment := wordwrap.Indent(wrapped, getindent(indentlevel), true)
-	wrappedAndIndentedAuthor := wordwrap.Indent(c.Author, getindent(indentlevel), true)
+	wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(indentlevel), true)
+	wrappedAndIndentedAuthor := wordwrap.Indent(c.Author, getIndentBlock(indentlevel), true)
 
 	wrappedAndIndentedComment = "\033[1m" + wrappedAndIndentedAuthor + "\033[21m" + "\n" + wrappedAndIndentedComment + "\n" + "\n"
 
@@ -178,7 +178,7 @@ func prettyPrintComments(c comment, commentTree *string, indentlevel int) string
 	return *commentTree
 }
 
-func getindent(level int) string {
+func getIndentBlock(level int) string {
 	indentation := " "
 	for i := 1; i < level; i++ {
 		indentation = indentation + " "
