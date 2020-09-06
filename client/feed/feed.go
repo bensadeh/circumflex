@@ -12,6 +12,7 @@ type Item struct {
 	URI      string `json:"uri"`
 	Author   string `json:"author"`
 	ID       string `json:"id"`
+	Age      string `json:"age"`
 	Points   int    `json:"points"`
 	Comments int    `json:"comments"`
 	Rank     int    `json:"rank"`
@@ -21,7 +22,7 @@ type Item struct {
 // title and author are non empty strings not longer than 256 characters
 // uri is a valid URI
 //points, comments and rank are integers >= 0.
-func NewItem(title, link, author, id string, score, comments, rank int) (Item, error) {
+func NewItem(title, link, author, id, age string, score, comments, rank int) (Item, error) {
 	if author != "" {
 		if len(author) > 256 {
 			author = author[:256]
@@ -53,6 +54,6 @@ func NewItem(title, link, author, id string, score, comments, rank int) (Item, e
 		return Item{}, fmt.Errorf("feed item does not contain a valid URI, got %s", link)
 	}
 
-	return Item{title, link, author, id, score, comments, rank}, nil
+	return Item{title, link, author, id, age, score, comments, rank}, nil
 
 }

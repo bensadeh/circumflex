@@ -99,6 +99,7 @@ func processFeedItem(e *colly.HTMLElement) (*feed.Item, error) {
 	if err != nil {
 		scoreI = 0
 	}
+	age := metaDataRow.Find(".age").Text()
 	author := metaDataRow.Find(".hnuser").Text()
 	var comments string
 	metaDataRow.Find("a").EachWithBreak((func(i int, s *goquery.Selection) bool {
@@ -112,6 +113,6 @@ func processFeedItem(e *colly.HTMLElement) (*feed.Item, error) {
 	if err != nil {
 		commentsI = 0
 	}
-	feedItem, err := feed.NewItem(title, link, author, id, scoreI, commentsI, rankI)
+	feedItem, err := feed.NewItem(title, link, author, id, age, scoreI, commentsI, rankI)
 	return &feedItem, err
 }
