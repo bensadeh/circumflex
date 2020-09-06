@@ -67,7 +67,7 @@ func addListItems(list *cview.List, pp *[]feed.Item, app *cview.Application) {
 	for i, s := range *pp {
 		points := strconv.Itoa(s.Points)
 		comments := strconv.Itoa(s.Comments)
-		secondary := "  " + points + " points by " + s.Author + " (" + comments + " comments)"
+		secondary := "  " + points + " points by " + s.Author + " | " + comments + " comments"
 		list.InsertItem(i, s.Title, secondary, 0, nil)
 	}
 }
