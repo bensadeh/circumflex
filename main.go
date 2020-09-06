@@ -65,10 +65,20 @@ func main() {
 func addListItems(list *cview.List, pp *[]feed.Item, app *cview.Application) {
 	list.Clear()
 	for i, s := range *pp {
+		rank := i + 1
+		indentedRank := strconv.Itoa(rank) + "." + getRankIndentBlock(rank)
 		points := strconv.Itoa(s.Points)
 		comments := strconv.Itoa(s.Comments)
-		secondary := "  " + points + " points by " + s.Author + " " + s.Age + " | " + comments + " comments"
-		list.InsertItem(i, s.Title, secondary, 0, nil)
+		secondary := "    " + points + " points by " + s.Author + " " + s.Age + " | " + comments + " comments"
+		list.AddItem(indentedRank+s.Title, secondary, 0, nil)
+	}
+}
+
+func getRankIndentBlock(rank int) string {
+	if rank > 9 {
+		return " "
+	} else {
+		return "  "
 	}
 }
 
