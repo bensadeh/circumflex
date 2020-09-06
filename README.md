@@ -33,4 +33,4 @@ And you're good to go.
 * [colly](https://github.com/gocolly/colly) and [go-hackernews](https://github.com/jacktantram/go-hackernews) for scraping
 * `less` for viewing comments
 * [Palenight Theme for iTerm2](https://github.com/JonathanSpeek/palenight-iterm2) for the color scheme
-* [JetBrains Mono](https://www.jetbrains.com/lp/mono/) for the font
+* [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) for the font
