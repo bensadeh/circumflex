@@ -16,7 +16,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/TylerBrock/colorjson"
 	"github.com/gdamore/tcell"
 	"github.com/gocolly/colly"
 	"gitlab.com/tslocum/cview"
@@ -125,13 +124,6 @@ func lessComments(itemID string) {
 
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
-
-	// Dump json to the standard output
-	// enc.Encode(comments)
-
-	f := colorjson.NewFormatter()
-	f.Indent = 2
-	f.RawStrings = false
 
 	// Pager logic
 	// pager := os.ExpandEnv("$PAGER")
