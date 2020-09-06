@@ -84,7 +84,7 @@ func getRankIndentBlock(rank int) string {
 }
 
 func outputStringToLess(output string) {
-	cmd := exec.Command("/usr/bin/less", "-R")
+	cmd := exec.Command("less", "-R")
 	cmd.Stdin = strings.NewReader(output)
 	cmd.Stdout = os.Stdout
 
