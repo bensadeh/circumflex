@@ -75,10 +75,12 @@ func addListItems(list *cview.List, pp *[]feed.Item, app *cview.Application) {
 }
 
 func getRankIndentBlock(rank int) string {
+	largeIndent := "  "
+	smallIndent := " "
 	if rank > 9 {
-		return " "
+		return smallIndent
 	}
-	return "  "
+	return largeIndent
 }
 
 func outputStringToLess(output string) {
