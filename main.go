@@ -8,8 +8,6 @@ import (
 
 	// "circumflex/client"
 
-	"encoding/json"
-
 	"log"
 	"os"
 	"os/exec"
@@ -122,20 +120,17 @@ func lessComments(itemID string) {
 
 	c.Visit("https://news.ycombinator.com/item?id=" + itemID)
 
-	enc := json.NewEncoder(os.Stdout)
-	enc.SetIndent("", "  ")
+	commentTree := ""
+	for _, s := range comments {
+		commentTree = prettyPrintComments(*s, &commentTree, 0)
+
+	}
 
 	// Pager logic
 	// pager := os.ExpandEnv("$PAGER")
 
 	// Could read $PAGER rather than hardcoding the path.
 	cmd := exec.Command("/usr/bin/less", "-R")
-
-	commentTree := ""
-	for _, s := range comments {
-		commentTree = prettyPrintComments(*s, &commentTree, 0)
-
-	}
 
 	// Feed it with the string you want to display.
 	cmd.Stdin = strings.NewReader(commentTree)
