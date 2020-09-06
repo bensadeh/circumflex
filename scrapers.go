@@ -64,7 +64,8 @@ func scrapeComments(itemID string) string {
 
 func prettyPrintComments(c comment, commentTree *string, indentlevel int) string {
 	x, _ := terminal.Width()
-	wrapper := wordwrap.Wrapper(int(x)-indentlevel-1, false)
+	rightPadding := 3
+	wrapper := wordwrap.Wrapper(int(x)-indentlevel-rightPadding, false)
 	wrapped := wrapper(c.Comment)
 	wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(indentlevel), true)
 	wrappedAndIndentedAuthor := wordwrap.Indent(c.Author, getIndentBlock(indentlevel), true)
