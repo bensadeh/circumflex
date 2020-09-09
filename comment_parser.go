@@ -69,5 +69,7 @@ func replaceHTML(input string) string {
 	input = strings.ReplaceAll(input, "<p>", "\n")
 	input = strings.ReplaceAll(input, "<i>", "\033[3m")
 	input = strings.ReplaceAll(input, "</i>", "\033[0m")
+	input = strings.ReplaceAll(input, "<pre><code>", "")
+	input = strings.ReplaceAll(input, "</code></pre>", "")
 	return input
 }
