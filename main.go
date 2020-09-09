@@ -4,6 +4,7 @@ import (
 	"circumflex/client"
 	"circumflex/client/feed"
 	"circumflex/cmd"
+	"encoding/json"
 	"fmt"
 
 	"log"
@@ -46,11 +47,18 @@ func main() {
 			c.Stdout = os.Stdout
 			c.Run()
 
-			for index, _ := range *pp {
+			for index, s := range *pp {
 				if index == i {
-					JSON, _ := getJSON("http://node-hnapi.herokuapp.com/item/3338485")
+					JSON, _ := getJSON("http://node-hnapi.herokuapp.com/item/" + s.ID)
+					var jComments = new(Comments)
+					json.Unmarshal(JSON, jComments)
 
-					outputStringToLess(string(JSON))
+					commentTree := ""
+					for _, s := range jComments.Replies {
+						commentTree = prettyPrintComments(*s, &commentTree, 0)
+					}
+
+					outputStringToLess(commentTree)
 				}
 			}
 		})
@@ -62,6 +70,20 @@ func main() {
 	}
 
 }
+
+type Comments struct {
+	Author  string      `json:"user"`
+	Comment string      `json:"content"`
+	Replies []*Comments `json:"comments"`
+}
+
+// type comment struct {
+// 	Author  string `selector:"a.hnuser"`
+// 	URL     string `selector:".age a[href]" attr:"href"`
+// 	Comment string `selector:".comment"`
+// 	Replies []*comment
+// 	depth   int
+// }
 
 func addListItems(list *cview.List, pp *[]feed.Item, app *cview.Application) {
 	list.Clear()

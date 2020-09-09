@@ -6,12 +6,6 @@ import (
 	"time"
 )
 
-type Comments struct {
-	Name    string
-	Body    string
-	Comment []Comments
-}
-
 var myClient = &http.Client{Timeout: 10 * time.Second}
 
 func getJSON(url string) ([]byte, error) {
