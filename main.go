@@ -76,6 +76,9 @@ type Comments struct {
 	Author  string      `json:"user"`
 	Title   string      `json:"title"`
 	Comment string      `json:"content"`
+	Time    string      `json:"time_ago"`
+	Points  string      `json:"points"`
+	URL     string      `json:"url"`
 	Replies []*Comments `json:"comments"`
 }
 
