@@ -68,11 +68,12 @@ func replaceCharacters(input string) string {
 
 func replaceHTML(input string) string {
 	input = strings.Replace(input, "<p>", "", 1)
+
 	input = strings.ReplaceAll(input, "<p>", "\n")
 	input = strings.ReplaceAll(input, "<i>", "\033[3m")
 	input = strings.ReplaceAll(input, "</i>", "\033[0m")
-	input = strings.ReplaceAll(input, "<pre><code>", "")
-	input = strings.ReplaceAll(input, "</code></pre>", "")
+	input = strings.ReplaceAll(input, "<pre><code>", "\033[2m")
+	input = strings.ReplaceAll(input, "</code></pre>", "\033[0m")
 	return input
 }
 
