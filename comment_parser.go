@@ -2,6 +2,7 @@ package main
 
 import (
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/eidolon/wordwrap"
@@ -9,7 +10,14 @@ import (
 )
 
 func appendCommentsHeader(comment Comments, commentTree *string) {
-	*commentTree += "\033[1m" + comment.Title + "\033[0m" + "\n" + "\n"
+	headline := "\033[1m" + comment.Title + "\033[0m" + "\033[2m" + "  (" + comment.Domain + ")" + "\033[0m" + "\n"
+	*commentTree += headline
+	*commentTree += "\033[3m" + strconv.Itoa(comment.Points) + " points by " + "\033[1m" + comment.Author + "\033[0m\033[3m" + " " + comment.Time + "\033[0m\n"
+	hiddenCharacters := 16
+	for i := 1; i < len(headline)-hiddenCharacters; i++ {
+		*commentTree += "-"
+	}
+	*commentTree += "\n\n"
 }
 
 func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op string) string {
