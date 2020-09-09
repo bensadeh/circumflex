@@ -14,7 +14,7 @@ type Comments struct {
 
 var myClient = &http.Client{Timeout: 10 * time.Second}
 
-func getJSON(url string, target interface{}) ([]byte, error) {
+func getJSON(url string) ([]byte, error) {
 	r, err := myClient.Get(url)
 	if err != nil {
 		return nil, err

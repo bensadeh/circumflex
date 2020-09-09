@@ -18,10 +18,6 @@ import (
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
 
-type Foo struct {
-	Bar string
-}
-
 func main() {
 	cmd.Execute()
 	y, _ := terminal.Height()
@@ -52,11 +48,8 @@ func main() {
 
 			for index, _ := range *pp {
 				if index == i {
-					foo1 := new(Foo) // or &Foo{}
-					JSON, _ := getJSON("http://node-hnapi.herokuapp.com/item/3338485", foo1)
-					println(JSON)
+					JSON, _ := getJSON("http://node-hnapi.herokuapp.com/item/3338485")
 
-					// _ := scrapeComments(s.ID)
 					outputStringToLess(string(JSON))
 				}
 			}
