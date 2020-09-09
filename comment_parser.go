@@ -12,7 +12,7 @@ import (
 func appendCommentsHeader(comment Comments, commentTree *string) {
 	headline := "\033[1m" + comment.Title + "\033[0m" + "\033[2m" + "  (" + comment.Domain + ")" + "\033[0m" + "\n"
 	*commentTree += headline
-	*commentTree += strconv.Itoa(comment.Points) + " points by " + "\033[1m" + comment.Author + "\033[0m" + " " + comment.Time + "| " + strconv.Itoa(comment.CommentsCount) + " comments" + "\n"
+	*commentTree += strconv.Itoa(comment.Points) + " points by " + "\033[1m" + comment.Author + "\033[0m" + " " + comment.Time + " | " + strconv.Itoa(comment.CommentsCount) + " comments" + "\n"
 	hiddenCharacters := 16
 	for i := 1; i < len(headline)-hiddenCharacters; i++ {
 		*commentTree += "-"
