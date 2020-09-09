@@ -21,8 +21,6 @@ func prettyPrintComments(c Comments, commentTree *string, indentlevel int) strin
 		fullComment += wrappedAndIndentedComment + "\n" + "\n"
 	}
 
-	// wrapped := wrapper(comment)
-	// wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(indentlevel), true)
 	wrappedAndIndentedAuthor := wordwrap.Indent(c.Author, getIndentBlock(indentlevel), true)
 
 	wrappedAndIndentedComment := "\033[1m" + wrappedAndIndentedAuthor + "\033[0m" + "\n" + fullComment
