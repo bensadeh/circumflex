@@ -54,6 +54,7 @@ func main() {
 					json.Unmarshal(JSON, jComments)
 					originalPoster := s.Author
 					commentTree := ""
+					appendCommentsHeader(*jComments, &commentTree)
 					for _, s := range jComments.Replies {
 						commentTree = prettyPrintComments(*s, &commentTree, 0, originalPoster)
 					}
@@ -73,6 +74,7 @@ func main() {
 
 type Comments struct {
 	Author  string      `json:"user"`
+	Title   string      `json:"title"`
 	Comment string      `json:"content"`
 	Replies []*Comments `json:"comments"`
 }

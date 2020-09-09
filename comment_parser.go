@@ -8,6 +8,10 @@ import (
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
 
+func appendCommentsHeader(comment Comments, commentTree *string) {
+	*commentTree += "\033[7m" + comment.Title + "\033[0m" + "\n" + "\n"
+}
+
 func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op string) string {
 	x, _ := terminal.Width()
 	rightPadding := 3
