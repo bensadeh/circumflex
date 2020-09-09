@@ -77,14 +77,6 @@ type Comments struct {
 	Replies []*Comments `json:"comments"`
 }
 
-// type comment struct {
-// 	Author  string `selector:"a.hnuser"`
-// 	URL     string `selector:".age a[href]" attr:"href"`
-// 	Comment string `selector:".comment"`
-// 	Replies []*comment
-// 	depth   int
-// }
-
 func addListItems(list *cview.List, pp *[]feed.Item, app *cview.Application) {
 	list.Clear()
 	for i, s := range *pp {
