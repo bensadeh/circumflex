@@ -52,10 +52,10 @@ func main() {
 					JSON, _ := getJSON("http://node-hnapi.herokuapp.com/item/" + s.ID)
 					var jComments = new(Comments)
 					json.Unmarshal(JSON, jComments)
-
+					originalPoster := s.Author
 					commentTree := ""
 					for _, s := range jComments.Replies {
-						commentTree = prettyPrintComments(*s, &commentTree, 0)
+						commentTree = prettyPrintComments(*s, &commentTree, 0, originalPoster)
 					}
 
 					outputStringToLess(commentTree)

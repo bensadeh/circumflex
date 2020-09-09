@@ -7,11 +7,12 @@ import (
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
 
-func prettyPrintComments(c Comments, commentTree *string, indentlevel int) string {
+func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op string) string {
 	x, _ := terminal.Width()
 	rightPadding := 3
 	comment := parseComment(c.Comment)
 	wrapper := wordwrap.Wrapper(int(x)-indentlevel-rightPadding, false)
+	markedAuthor := markOP(c.Author, op)
 
 	fullComment := ""
 	commentLines := strings.Split(comment, "\n")
@@ -21,15 +22,22 @@ func prettyPrintComments(c Comments, commentTree *string, indentlevel int) strin
 		fullComment += wrappedAndIndentedComment + "\n" + "\n"
 	}
 
-	wrappedAndIndentedAuthor := wordwrap.Indent(c.Author, getIndentBlock(indentlevel), true)
+	wrappedAndIndentedAuthor := wordwrap.Indent(markedAuthor, getIndentBlock(indentlevel), true)
 
 	wrappedAndIndentedComment := "\033[1m" + wrappedAndIndentedAuthor + "\033[0m" + "\n" + fullComment
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
 	for _, s := range c.Replies {
-		prettyPrintComments(*s, commentTree, indentlevel+5)
+		prettyPrintComments(*s, commentTree, indentlevel+5, op)
 	}
 	return *commentTree
+}
+
+func markOP(author, op string) string {
+	if author == op {
+		return author + "\033[31;m" + " OP" + "\033[0m"
+	}
+	return author
 }
 
 func getIndentBlock(level int) string {
