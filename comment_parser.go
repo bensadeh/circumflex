@@ -36,7 +36,7 @@ func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op st
 	}
 
 	wrappedAndIndentedAuthor := wordwrap.Indent(markedAuthor, getIndentBlock(indentlevel), true)
-	wrappedAndIndentedComment := "\033[1m" + wrappedAndIndentedAuthor + "\033[0m" + "\n" + fullComment
+	wrappedAndIndentedComment := "\033[1m" + wrappedAndIndentedAuthor + "\033[0m " + "\033[2m" + c.Time + "\033[0m\n" + fullComment
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
 	for _, s := range c.Replies {
