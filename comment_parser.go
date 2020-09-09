@@ -51,6 +51,7 @@ func parseComment(comment string) string {
 func replaceCharacters(input string) string {
 	input = strings.ReplaceAll(input, "&#x27;", "'")
 	input = strings.ReplaceAll(input, "&gt;", ">")
+	input = strings.ReplaceAll(input, "&lt;", "<")
 	input = strings.ReplaceAll(input, "&#x2F;", "/")
 	input = strings.ReplaceAll(input, "&quot;", "\"")
 	input = strings.ReplaceAll(input, "&amp;", "&")
