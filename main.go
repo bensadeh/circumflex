@@ -79,6 +79,7 @@ type Comments struct {
 	Time    string      `json:"time_ago"`
 	Points  string      `json:"points"`
 	URL     string      `json:"url"`
+	Domain  string      `json:"domain"`
 	Replies []*Comments `json:"comments"`
 }
 
