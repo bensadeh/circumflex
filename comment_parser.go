@@ -1,6 +1,7 @@
 package main
 
 import (
+	"regexp"
 	"strings"
 
 	"github.com/eidolon/wordwrap"
@@ -51,7 +52,8 @@ func getIndentBlock(level int) string {
 func parseComment(comment string) string {
 	fixedHTML := replaceHTML(comment)
 	fixedHTMLAndCharacters := replaceCharacters(fixedHTML)
-	return fixedHTMLAndCharacters
+	fixedHTMLAndCharactersAndHrefs := handleHrefTag(fixedHTMLAndCharacters)
+	return fixedHTMLAndCharactersAndHrefs
 }
 
 func replaceCharacters(input string) string {
@@ -72,4 +74,12 @@ func replaceHTML(input string) string {
 	input = strings.ReplaceAll(input, "<pre><code>", "")
 	input = strings.ReplaceAll(input, "</code></pre>", "")
 	return input
+}
+
+func handleHrefTag(input string) string {
+	var expForFirstTag = regexp.MustCompile(`<a href="`)
+	replacedInput := expForFirstTag.ReplaceAllString(input, "\033[4m")
+
+	var validID = regexp.MustCompile(`" rel="nofollow">(.*?)<\/a>`)
+	return validID.ReplaceAllString(replacedInput, "\033[0m")
 }
