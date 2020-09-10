@@ -10,6 +10,17 @@ import (
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
 
+const (
+	NORMAL = "\033[0m"
+	BOLD   = "\033[1m"
+	DIMMED = "\033[2m"
+	ITALIC = "\033[3m"
+	GREEN  = "\033[32;m"
+	RED    = "\033[31;m"
+	LINK_1 = "\033]8;;"
+	LINK_2 = "\033]8;;\a"
+)
+
 type Comments struct {
 	Author        string      `json:"user"`
 	Title         string      `json:"title"`
@@ -23,9 +34,9 @@ type Comments struct {
 }
 
 func appendCommentsHeader(comment Comments, commentTree *string) {
-	headline := "\033[1m" + comment.Title + "\033[0m" + "\033[2m" + "  (" + comment.Domain + ")" + "\033[0m" + "\n"
+	headline := BOLD + comment.Title + NORMAL + DIMMED + "  (" + comment.Domain + ")" + NORMAL + "\n"
 	*commentTree += headline
-	*commentTree += strconv.Itoa(comment.Points) + " points by " + "\033[1m" + comment.Author + "\033[0m" + " " + comment.Time + " | " + strconv.Itoa(comment.CommentsCount) + " comments" + "\n"
+	*commentTree += strconv.Itoa(comment.Points) + " points by " + BOLD + comment.Author + NORMAL + " " + comment.Time + " | " + strconv.Itoa(comment.CommentsCount) + " comments" + "\n"
 	for i := 0; i < term.Len(headline); i++ {
 		*commentTree += "-"
 	}
@@ -48,7 +59,7 @@ func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op st
 	}
 
 	wrappedAndIndentedAuthor := wordwrap.Indent(markedAuthor, getIndentBlock(indentlevel), true)
-	wrappedAndIndentedComment := "\033[1m" + wrappedAndIndentedAuthor + "\033[0m " + getRightAlignedTimeAgo(markedAuthor, c.Time, indentlevel)
+	wrappedAndIndentedComment := BOLD + wrappedAndIndentedAuthor + NORMAL + " " + getRightAlignedTimeAgo(markedAuthor, c.Time, indentlevel)
 	wrappedAndIndentedComment += fullComment
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
@@ -71,17 +82,17 @@ func getRightAlignedTimeAgo(author string, timeAgo string, indentLevel int) stri
 		paddingBetweenAuthorAndTime += " "
 	}
 
-	return paddingBetweenAuthorAndTime + "\033[2m" + timeAgo + "\033[0m\n"
+	return paddingBetweenAuthorAndTime + DIMMED + timeAgo + NORMAL + "\n"
 
 }
 
 func markOPAndMods(author, op string) string {
 	markedAuthor := author
 	if author == "dang" || author == "sctb" {
-		markedAuthor = author + "\033[32;m" + " mod" + "\033[0m"
+		markedAuthor = author + GREEN + " mod" + NORMAL
 	}
 	if author == op {
-		markedAuthor = markedAuthor + "\033[31;m" + " OP" + "\033[0m"
+		markedAuthor = markedAuthor + RED + " OP" + NORMAL
 	}
 	return markedAuthor
 }
@@ -115,22 +126,22 @@ func replaceHTML(input string) string {
 	input = strings.Replace(input, "<p>", "", 1)
 
 	input = strings.ReplaceAll(input, "<p>", "\n")
-	input = strings.ReplaceAll(input, "<i>", "\033[3m")
-	input = strings.ReplaceAll(input, "</i>", "\033[0m")
-	input = strings.ReplaceAll(input, "<pre><code>", "\033[2m")
-	input = strings.ReplaceAll(input, "</code></pre>", "\033[0m")
+	input = strings.ReplaceAll(input, "<i>", ITALIC)
+	input = strings.ReplaceAll(input, "</i>", NORMAL)
+	input = strings.ReplaceAll(input, "<pre><code>", DIMMED)
+	input = strings.ReplaceAll(input, "</code></pre>", NORMAL)
 	return input
 }
 
 func handleHrefTag(input string) string {
 	var expForFirstTag = regexp.MustCompile(`<a href="`)
-	replacedInput := expForFirstTag.ReplaceAllString(input, "\033]8;;")
+	replacedInput := expForFirstTag.ReplaceAllString(input, LINK_1)
 
 	var expForSecondTag = regexp.MustCompile(`" rel="nofollow">`)
 	replacedInput = expForSecondTag.ReplaceAllString(replacedInput, "\a")
 
 	var expForThirdTag = regexp.MustCompile(`<\/a>`)
-	replacedInput = expForThirdTag.ReplaceAllString(replacedInput, "\033]8;;\a")
+	replacedInput = expForThirdTag.ReplaceAllString(replacedInput, LINK_2)
 
 	return replacedInput
 }
