@@ -106,8 +106,13 @@ func replaceHTML(input string) string {
 
 func handleHrefTag(input string) string {
 	var expForFirstTag = regexp.MustCompile(`<a href="`)
-	replacedInput := expForFirstTag.ReplaceAllString(input, "\033[4m")
+	replacedInput := expForFirstTag.ReplaceAllString(input, "\033]8;;")
 
-	var validID = regexp.MustCompile(`" rel="nofollow">(.*?)<\/a>`)
-	return validID.ReplaceAllString(replacedInput, "\033[0m")
+	var expForSecondTag = regexp.MustCompile(`" rel="nofollow">`)
+	replacedInput = expForSecondTag.ReplaceAllString(replacedInput, "\a")
+
+	var expForThirdTag = regexp.MustCompile(`<\/a>`)
+	replacedInput = expForThirdTag.ReplaceAllString(replacedInput, "\033]8;;\a")
+
+	return replacedInput
 }
