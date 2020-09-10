@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	term "github.com/MichaelMure/go-term-text"
 	"github.com/eidolon/wordwrap"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
@@ -25,8 +26,7 @@ func appendCommentsHeader(comment Comments, commentTree *string) {
 	headline := "\033[1m" + comment.Title + "\033[0m" + "\033[2m" + "  (" + comment.Domain + ")" + "\033[0m" + "\n"
 	*commentTree += headline
 	*commentTree += strconv.Itoa(comment.Points) + " points by " + "\033[1m" + comment.Author + "\033[0m" + " " + comment.Time + " | " + strconv.Itoa(comment.CommentsCount) + " comments" + "\n"
-	hiddenCharacters := 16
-	for i := 1; i < len(headline)-hiddenCharacters; i++ {
+	for i := 0; i < term.Len(headline); i++ {
 		*commentTree += "-"
 	}
 	*commentTree += "\n\n"
@@ -48,7 +48,7 @@ func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op st
 	}
 
 	wrappedAndIndentedAuthor := wordwrap.Indent(markedAuthor, getIndentBlock(indentlevel), true)
-	wrappedAndIndentedComment := "\033[1m" + wrappedAndIndentedAuthor + "\033[0m " + "\033[2m" + c.Time + "\033[0m\n"
+	wrappedAndIndentedComment := "\033[1m" + wrappedAndIndentedAuthor + "\033[0m " + getRightAlignedTimeAgo(markedAuthor, c.Time, indentlevel)
 	wrappedAndIndentedComment += fullComment
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
@@ -56,6 +56,23 @@ func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op st
 		prettyPrintComments(*s, commentTree, indentlevel+5, op)
 	}
 	return *commentTree
+}
+
+func getRightAlignedTimeAgo(author string, timeAgo string, indentLevel int) string {
+	screenWidth, _ := terminal.Width()
+	authorLength := term.Len(author)
+	timeAgoLength := term.Len(timeAgo)
+	paddingBetweenAuthorAndTime := ""
+	padding := 6
+
+	numberOfSpaces := int(screenWidth) - authorLength - timeAgoLength - padding - indentLevel
+
+	for i := 0; i < numberOfSpaces; i++ {
+		paddingBetweenAuthorAndTime += " "
+	}
+
+	return paddingBetweenAuthorAndTime + "\033[2m" + timeAgo + "\033[0m\n"
+
 }
 
 func markOPAndMods(author, op string) string {

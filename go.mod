@@ -3,6 +3,7 @@ module circumflex
 go 1.14
 
 require (
+	github.com/MichaelMure/go-term-text v0.2.9
 	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/TylerBrock/colorjson v0.0.0-20200706003622-8a50f05110d2
 	github.com/eidolon/wordwrap v0.0.0-20161011182207-e0f54129b8bb
