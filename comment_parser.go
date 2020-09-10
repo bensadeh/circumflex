@@ -9,6 +9,18 @@ import (
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
 
+type Comments struct {
+	Author        string      `json:"user"`
+	Title         string      `json:"title"`
+	Comment       string      `json:"content"`
+	CommentsCount int         `json:"comments_count"`
+	Time          string      `json:"time_ago"`
+	Points        int         `json:"points"`
+	URL           string      `json:"url"`
+	Domain        string      `json:"domain"`
+	Replies       []*Comments `json:"comments"`
+}
+
 func appendCommentsHeader(comment Comments, commentTree *string) {
 	headline := "\033[1m" + comment.Title + "\033[0m" + "\033[2m" + "  (" + comment.Domain + ")" + "\033[0m" + "\n"
 	*commentTree += headline
@@ -25,7 +37,7 @@ func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op st
 	rightPadding := 3
 	comment := parseComment(c.Comment)
 	wrapper := wordwrap.Wrapper(int(x)-indentlevel-rightPadding, false)
-	markedAuthor := markOP(c.Author, op)
+	markedAuthor := markOPAndMods(c.Author, op)
 
 	fullComment := ""
 	commentLines := strings.Split(comment, "\n")
@@ -45,11 +57,15 @@ func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op st
 	return *commentTree
 }
 
-func markOP(author, op string) string {
-	if author == op {
-		return author + "\033[31;m" + " OP" + "\033[0m"
+func markOPAndMods(author, op string) string {
+	markedAuthor := author
+	if author == "dang" || author == "sctb" {
+		markedAuthor = author + "\033[32;m" + " mod" + "\033[0m"
 	}
-	return author
+	if author == op {
+		markedAuthor = markedAuthor + "\033[31;m" + " OP" + "\033[0m"
+	}
+	return markedAuthor
 }
 
 func getIndentBlock(level int) string {

@@ -72,18 +72,6 @@ func main() {
 
 }
 
-type Comments struct {
-	Author        string      `json:"user"`
-	Title         string      `json:"title"`
-	Comment       string      `json:"content"`
-	CommentsCount int         `json:"comments_count"`
-	Time          string      `json:"time_ago"`
-	Points        int         `json:"points"`
-	URL           string      `json:"url"`
-	Domain        string      `json:"domain"`
-	Replies       []*Comments `json:"comments"`
-}
-
 func addListItems(list *cview.List, pp *[]feed.Item, app *cview.Application) {
 	list.Clear()
 	for i, s := range *pp {
