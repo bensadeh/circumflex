@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"strings"
 
-	term "github.com/MichaelMure/go-term-text"
 	"github.com/eidolon/wordwrap"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
@@ -63,7 +62,7 @@ func parseRootComment(comment string) string {
 		return ""
 	}
 
-	x, _ := terminal.Width()
+	x, _ := ga.Width()
 	wrapper := wordwrap.Wrapper(int(x), false)
 	parsedComment := parseComment(comment)
 
@@ -124,8 +123,7 @@ func prettyPrintComments(c Comments, commentTree *string, level int, indentSize 
 	}
 
 	wrappedAndIndentedAuthor := wordwrap.Indent(markedAuthor, getIndentBlockWithoutBar(level, indentSize), true)
-	wrappedAndIndentedComment := wrappedAndIndentedAuthor + " " + getRightAlignedTimeAgo(markedAuthor, c.Time, level, actualIndentSize)
-	// wrappedAndIndentedComment := wrappedAndIndentedAuthor + NewLine
+	wrappedAndIndentedComment := wrappedAndIndentedAuthor + " " + Dimmed + timeAgo + Normal + NewLine
 	wrappedAndIndentedComment += fullComment
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
@@ -140,28 +138,6 @@ func max(x, y int) int {
 		return y
 	}
 	return x
-}
-
-func getRightAlignedTimeAgo(author string, timeAgo string, level int, indentSize int) string {
-	screenWidth, _ := terminal.Width()
-	formattedTimeAgo := Dimmed + timeAgo + Normal
-	authorLength := term.Len(author)
-	timeAgoLength := term.Len(timeAgo)
-	paddingBetweenAuthorAndTime := ""
-	padding := 0
-	if level == 0 {
-		padding = 1
-	} else {
-		padding = 2
-	}
-
-	numberOfSpaces := int(screenWidth) - authorLength - timeAgoLength - indentSize - padding
-
-	for i := 0; i < numberOfSpaces; i++ {
-		paddingBetweenAuthorAndTime += " "
-	}
-
-	return formattedTimeAgo + NewLine
 }
 
 func markOPAndMods(author, op string) string {
