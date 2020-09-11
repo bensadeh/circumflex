@@ -173,7 +173,7 @@ func getIndentBlock(level int) string {
 	if level == 0 {
 		return ""
 	}
-	indentation := getColoredIndentBlock(level) + "▏" + NORMAL
+	indentation := getColoredIndentBlock(level) + "▎" + NORMAL
 	for i := 0; i < level; i++ {
 		indentation = " " + indentation
 	}
