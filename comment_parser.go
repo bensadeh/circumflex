@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -17,8 +18,9 @@ const (
 	ITALIC        = "\033[3m"
 	GREEN         = "\033[32;m"
 	RED           = "\033[31;m"
-	LINK_1        = "\033]8;;"
-	LINK_2        = "\033]8;;\a"
+	Link_1        = "\033]8;;"
+	Link_2        = "\a"
+	Link_3        = "\033]8;;\a"
 	NewLine       = "\n"
 	DoubleNewLine = "\n\n"
 )
@@ -65,6 +67,20 @@ func appendCommentsHeader(c Comments, commentTree *string) {
 
 	*commentTree += DoubleNewLine
 
+}
+
+func getDomainText(domain string, URL string, id string) string {
+	if domain != "" {
+		return DIMMED + "  (" + getHyperlinkText(URL, domain) + ")" + NORMAL
+	} else {
+		linkToComments := "https://news.ycombinator.com/item?id=" + id
+		linkText := "item?id=" + id
+		return DIMMED + "  (" + getHyperlinkText(linkToComments, linkText) + ")" + NORMAL
+	}
+}
+
+func getHyperlinkText(URL string, text string) string {
+	return fmt.Sprintf("%d%d%d%d%d", Link_1, URL, Link_2, text, Link_3)
 }
 
 func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op string) string {
@@ -159,13 +175,13 @@ func replaceHTML(input string) string {
 
 func handleHrefTag(input string) string {
 	var expForFirstTag = regexp.MustCompile(`<a href="`)
-	replacedInput := expForFirstTag.ReplaceAllString(input, LINK_1)
+	replacedInput := expForFirstTag.ReplaceAllString(input, Link_1)
 
 	var expForSecondTag = regexp.MustCompile(`" rel="nofollow">`)
-	replacedInput = expForSecondTag.ReplaceAllString(replacedInput, "\a")
+	replacedInput = expForSecondTag.ReplaceAllString(replacedInput, Link_2)
 
 	var expForThirdTag = regexp.MustCompile(`<\/a>`)
-	replacedInput = expForThirdTag.ReplaceAllString(replacedInput, LINK_2)
+	replacedInput = expForThirdTag.ReplaceAllString(replacedInput, Link_3)
 
 	return replacedInput
 }
