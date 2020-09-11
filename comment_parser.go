@@ -170,7 +170,7 @@ func getRightAlignedTimeAgo(author string, timeAgo string, level int) string {
 func markOPAndMods(author, op string) string {
 	markedAuthor := Bold + author + Normal
 	if author == "dang" || author == "sctb" {
-		markedAuthor = author + Green + " mod" + Normal
+		markedAuthor = markedAuthor + Green + " mod" + Normal
 	}
 	if author == op {
 		markedAuthor = markedAuthor + Red + " OP" + Normal
