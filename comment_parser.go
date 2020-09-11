@@ -39,7 +39,7 @@ type Comments struct {
 
 func appendCommentsHeader(c Comments, commentTree *string) {
 	headline := BOLD + c.Title + NORMAL + getDomainText(c.Domain, c.URL, c.ID) + NewLine
-	infoLine := strconv.Itoa(c.Points) + " points by " + BOLD + c.Author + NORMAL + " " + c.Time + " | " + strconv.Itoa(c.CommentsCount) + " comments" + DoubleNewLine
+	infoLine := strconv.Itoa(c.Points) + " points by " + BOLD + c.Author + NORMAL + " " + c.Time + " | " + strconv.Itoa(c.CommentsCount) + " comments"
 	*commentTree += headline + infoLine
 	titleBarLength := term.Len(headline)
 
@@ -49,9 +49,13 @@ func appendCommentsHeader(c Comments, commentTree *string) {
 
 	commentLines := strings.Split(comment, NewLine)
 	lastParagraph := len(commentLines) - 1
+	firstParagraph := 0
 	for i, line := range commentLines {
 		wrapped := wrapper(line)
 		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(0), true)
+		if i == firstParagraph {
+			wrappedAndIndentedComment = DoubleNewLine + wrappedAndIndentedComment
+		}
 		if i == lastParagraph {
 			fullComment += wrappedAndIndentedComment + NewLine
 		} else {
@@ -61,7 +65,8 @@ func appendCommentsHeader(c Comments, commentTree *string) {
 
 	*commentTree += fullComment
 
-	for i := 0; i < titleBarLength; i++ {
+	x, _ := terminal.Width()
+	for i := 0; i < int(x); i++ {
 		*commentTree += "-"
 	}
 
