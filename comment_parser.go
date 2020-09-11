@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -34,11 +33,12 @@ type Comments struct {
 	Points        int         `json:"points"`
 	URL           string      `json:"url"`
 	Domain        string      `json:"domain"`
+	ID            int         `json:"id"`
 	Replies       []*Comments `json:"comments"`
 }
 
 func appendCommentsHeader(c Comments, commentTree *string) {
-	headline := BOLD + c.Title + NORMAL + DIMMED + "  (" + c.Domain + ")" + NORMAL + NewLine
+	headline := BOLD + c.Title + NORMAL + getDomainText(c.Domain, c.URL, c.ID) + NewLine
 	infoLine := strconv.Itoa(c.Points) + " points by " + BOLD + c.Author + NORMAL + " " + c.Time + " | " + strconv.Itoa(c.CommentsCount) + " comments" + DoubleNewLine
 	*commentTree += headline + infoLine
 	titleBarLength := term.Len(headline)
@@ -69,18 +69,18 @@ func appendCommentsHeader(c Comments, commentTree *string) {
 
 }
 
-func getDomainText(domain string, URL string, id string) string {
+func getDomainText(domain string, URL string, id int) string {
 	if domain != "" {
-		return DIMMED + "  (" + getHyperlinkText(URL, domain) + ")" + NORMAL
+		return " (" + getHyperlinkText(URL, domain) + ")"
 	} else {
-		linkToComments := "https://news.ycombinator.com/item?id=" + id
-		linkText := "item?id=" + id
-		return DIMMED + "  (" + getHyperlinkText(linkToComments, linkText) + ")" + NORMAL
+		linkToComments := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
+		linkText := "item?id=" + strconv.Itoa(id)
+		return " (" + getHyperlinkText(linkToComments, linkText) + ")"
 	}
 }
 
 func getHyperlinkText(URL string, text string) string {
-	return fmt.Sprintf("%d%d%d%d%d", Link_1, URL, Link_2, text, Link_3)
+	return Link_1 + URL + Link_2 + text + Link_3
 }
 
 func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op string) string {
