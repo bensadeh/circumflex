@@ -99,11 +99,11 @@ func getHyperlinkText(URL string, text string) string {
 	return Link1 + URL + Link2 + text + Link3
 }
 
-func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op string) string {
+func prettyPrintComments(c Comments, commentTree *string, level int, op string) string {
 	x, _ := terminal.Width()
 	rightPadding := 3
 	comment := parseComment(c.Comment)
-	wrapper := wordwrap.Wrapper(int(x)-indentlevel-rightPadding, false)
+	wrapper := wordwrap.Wrapper(int(x)-level-rightPadding, false)
 	markedAuthor := markOPAndMods(c.Author, op)
 
 	fullComment := ""
@@ -111,8 +111,8 @@ func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op st
 	lastParagraph := len(paragraphs) - 1
 	for i, paragraph := range paragraphs {
 		wrapped := wrapper(paragraph)
-		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(indentlevel), true)
-		barOnEmptyLine := wordwrap.Indent("", getIndentBlock(indentlevel), true)
+		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(level), true)
+		barOnEmptyLine := wordwrap.Indent("", getIndentBlock(level), true)
 
 		if i == lastParagraph {
 			fullComment += wrappedAndIndentedComment + DoubleNewLine
@@ -121,25 +121,25 @@ func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op st
 		fullComment += wrappedAndIndentedComment + NewLine + barOnEmptyLine + NewLine
 	}
 
-	wrappedAndIndentedAuthor := wordwrap.Indent(markedAuthor, getIndentBlockWithoutBar(indentlevel), true)
-	wrappedAndIndentedComment := wrappedAndIndentedAuthor + " " + getRightAlignedTimeAgo(markedAuthor, c.Time, indentlevel)
+	wrappedAndIndentedAuthor := wordwrap.Indent(markedAuthor, getIndentBlockWithoutBar(level), true)
+	wrappedAndIndentedComment := wrappedAndIndentedAuthor + " " + getRightAlignedTimeAgo(markedAuthor, c.Time, level)
 	wrappedAndIndentedComment += fullComment
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
 	for _, s := range c.Replies {
-		prettyPrintComments(*s, commentTree, indentlevel+1, op)
+		prettyPrintComments(*s, commentTree, level+1, op)
 	}
 	return *commentTree
 }
 
-func getRightAlignedTimeAgo(author string, timeAgo string, indentLevel int) string {
+func getRightAlignedTimeAgo(author string, timeAgo string, level int) string {
 	screenWidth, _ := terminal.Width()
 	authorLength := term.Len(author)
 	timeAgoLength := term.Len(timeAgo)
 	paddingBetweenAuthorAndTime := ""
 	padding := 6
 
-	numberOfSpaces := int(screenWidth) - authorLength - timeAgoLength - padding - indentLevel
+	numberOfSpaces := int(screenWidth) - authorLength - timeAgoLength - padding - level
 
 	for i := 0; i < numberOfSpaces; i++ {
 		paddingBetweenAuthorAndTime += " "
