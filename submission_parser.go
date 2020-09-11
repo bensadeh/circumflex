@@ -7,10 +7,6 @@ import (
 	"gitlab.com/tslocum/cview"
 )
 
-type RootSubmission struct {
-	Submissions []*Submission `json:"comments"`
-}
-
 type Submission struct {
 	ID            int    `json:"id"`
 	Title         string `json:"title"`
