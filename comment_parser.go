@@ -11,19 +11,19 @@ import (
 )
 
 const (
-	NORMAL        = "\033[0m"
-	BOLD          = "\033[1m"
-	DIMMED        = "\033[2m"
-	ITALIC        = "\033[3m"
+	Normal        = "\033[0m"
+	Bold          = "\033[1m"
+	Dimmed        = "\033[2m"
+	Italic        = "\033[3m"
 	Red           = "\033[31;m"
 	Green         = "\033[32;m"
 	Yellow        = "\033[33;m"
 	Blue          = "\033[34;m"
 	Purple        = "\033[35;m"
 	Teal          = "\033[36;m"
-	Link_1        = "\033]8;;"
-	Link_2        = "\a"
-	Link_3        = "\033]8;;\a"
+	Link1         = "\033]8;;"
+	Link2         = "\a"
+	Link3         = "\033]8;;\a"
 	NewLine       = "\n"
 	DoubleNewLine = "\n\n"
 )
@@ -42,8 +42,8 @@ type Comments struct {
 }
 
 func appendCommentsHeader(c Comments, commentTree *string) {
-	headline := BOLD + c.Title + NORMAL + getDomainText(c.Domain, c.URL, c.ID) + NewLine
-	infoLine := strconv.Itoa(c.Points) + " points by " + BOLD + c.Author + NORMAL + " " + c.Time + " | " + strconv.Itoa(c.CommentsCount) + " comments" + NewLine
+	headline := Bold + c.Title + Normal + getDomainText(c.Domain, c.URL, c.ID) + NewLine
+	infoLine := strconv.Itoa(c.Points) + " points by " + Bold + c.Author + Normal + " " + c.Time + " | " + strconv.Itoa(c.CommentsCount) + " comments" + NewLine
 	*commentTree += headline + infoLine
 	*commentTree += parseRootComment(c.Comment)
 
@@ -53,7 +53,6 @@ func appendCommentsHeader(c Comments, commentTree *string) {
 	}
 
 	*commentTree += DoubleNewLine
-
 }
 
 func parseRootComment(comment string) string {
@@ -94,7 +93,7 @@ func getDomainText(domain string, URL string, id int) string {
 }
 
 func getHyperlinkText(URL string, text string) string {
-	return Link_1 + URL + Link_2 + text + Link_3
+	return Link1 + URL + Link2 + text + Link3
 }
 
 func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op string) string {
@@ -143,17 +142,17 @@ func getRightAlignedTimeAgo(author string, timeAgo string, indentLevel int) stri
 		paddingBetweenAuthorAndTime += " "
 	}
 
-	return paddingBetweenAuthorAndTime + DIMMED + timeAgo + NORMAL + NewLine
+	return paddingBetweenAuthorAndTime + Dimmed + timeAgo + Normal + NewLine
 
 }
 
 func markOPAndMods(author, op string) string {
-	markedAuthor := BOLD + author + NORMAL
+	markedAuthor := Bold + author + Normal
 	if author == "dang" || author == "sctb" {
-		markedAuthor = author + Green + " mod" + NORMAL
+		markedAuthor = author + Green + " mod" + Normal
 	}
 	if author == op {
-		markedAuthor = markedAuthor + Red + " OP" + NORMAL
+		markedAuthor = markedAuthor + Red + " OP" + Normal
 	}
 	return markedAuthor
 }
@@ -173,7 +172,7 @@ func getIndentBlock(level int) string {
 	if level == 0 {
 		return ""
 	}
-	indentation := getColoredIndentBlock(level) + "▎" + NORMAL
+	indentation := getColoredIndentBlock(level) + "▎" + Normal
 	for i := 0; i < level; i++ {
 		indentation = " " + indentation
 	}
@@ -207,7 +206,7 @@ func getColoredIndentBlock(level int) string {
 	case 12:
 		return Purple
 	default:
-		return Red
+		return Normal
 	}
 }
 
@@ -232,22 +231,22 @@ func replaceHTML(input string) string {
 	input = strings.Replace(input, "<p>", "", 1)
 
 	input = strings.ReplaceAll(input, "<p>", NewLine)
-	input = strings.ReplaceAll(input, "<i>", ITALIC)
-	input = strings.ReplaceAll(input, "</i>", NORMAL)
-	input = strings.ReplaceAll(input, "<pre><code>", DIMMED)
-	input = strings.ReplaceAll(input, "</code></pre>", NORMAL)
+	input = strings.ReplaceAll(input, "<i>", Italic)
+	input = strings.ReplaceAll(input, "</i>", Normal)
+	input = strings.ReplaceAll(input, "<pre><code>", Dimmed)
+	input = strings.ReplaceAll(input, "</code></pre>", Normal)
 	return input
 }
 
 func handleHrefTag(input string) string {
 	var expForFirstTag = regexp.MustCompile(`<a href="`)
-	replacedInput := expForFirstTag.ReplaceAllString(input, Link_1)
+	replacedInput := expForFirstTag.ReplaceAllString(input, Link1)
 
 	var expForSecondTag = regexp.MustCompile(`" rel="nofollow">`)
-	replacedInput = expForSecondTag.ReplaceAllString(replacedInput, Link_2)
+	replacedInput = expForSecondTag.ReplaceAllString(replacedInput, Link2)
 
 	var expForThirdTag = regexp.MustCompile(`<\/a>`)
-	replacedInput = expForThirdTag.ReplaceAllString(replacedInput, Link_3)
+	replacedInput = expForThirdTag.ReplaceAllString(replacedInput, Link3)
 
 	return replacedInput
 }
