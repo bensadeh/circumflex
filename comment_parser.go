@@ -73,7 +73,7 @@ func parseRootComment(comment string) string {
 	fullComment := ""
 	for i, line := range commentLines {
 		wrapped := wrapper(line)
-		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(0), true)
+		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(0, 0), true)
 		if i == firstParagraph {
 			fullComment = NewLine
 		}
@@ -99,11 +99,13 @@ func getHyperlinkText(URL string, text string) string {
 	return Link1 + URL + Link2 + text + Link3
 }
 
-func prettyPrintComments(c Comments, commentTree *string, level int, op string) string {
+func prettyPrintComments(c Comments, commentTree *string, level int, indentSize int, op string) string {
 	x, _ := terminal.Width()
-	rightPadding := 3
 	comment := parseComment(c.Comment)
-	wrapper := wordwrap.Wrapper(int(x)-level-rightPadding, false)
+	padding := 1 //hack: the wrapper is sometimes off by 1, so we pad the wrapper to end the line slightly earlier
+	actualIndentSize := getIndentSizeForLevel(level, indentSize)
+	limit := max(int(x)-actualIndentSize-padding, 40)
+	wrapper := wordwrap.Wrapper(limit, false)
 	markedAuthor := markOPAndMods(c.Author, op)
 
 	fullComment := ""
@@ -111,8 +113,8 @@ func prettyPrintComments(c Comments, commentTree *string, level int, op string) 
 	lastParagraph := len(paragraphs) - 1
 	for i, paragraph := range paragraphs {
 		wrapped := wrapper(paragraph)
-		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(level), true)
-		barOnEmptyLine := wordwrap.Indent("", getIndentBlock(level), true)
+		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(level, indentSize), true)
+		barOnEmptyLine := wordwrap.Indent("", getIndentBlock(level, indentSize), true)
 
 		if i == lastParagraph {
 			fullComment += wrappedAndIndentedComment + DoubleNewLine
@@ -121,15 +123,35 @@ func prettyPrintComments(c Comments, commentTree *string, level int, op string) 
 		fullComment += wrappedAndIndentedComment + NewLine + barOnEmptyLine + NewLine
 	}
 
-	wrappedAndIndentedAuthor := wordwrap.Indent(markedAuthor, getIndentBlockWithoutBar(level), true)
-	wrappedAndIndentedComment := wrappedAndIndentedAuthor + " " + getRightAlignedTimeAgo(markedAuthor, c.Time, level)
+	wrappedAndIndentedAuthor := wordwrap.Indent(markedAuthor, getIndentBlockWithoutBar(level, indentSize), true)
+	// wrappedAndIndentedComment := wrappedAndIndentedAuthor + " " + getRightAlignedTimeAgo(markedAuthor, c.Time, level)
+	wrappedAndIndentedComment := wrappedAndIndentedAuthor + NewLine
 	wrappedAndIndentedComment += fullComment
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
 	for _, s := range c.Replies {
-		prettyPrintComments(*s, commentTree, level+1, op)
+		if level == 0 {
+			prettyPrintComments(*s, commentTree, level+1, indentSize, op)
+		} else {
+			prettyPrintComments(*s, commentTree, level+1, indentSize, op)
+		}
 	}
 	return *commentTree
+}
+
+func max(x, y int) int {
+	if x < y {
+		return y
+	}
+	return x
+}
+
+func getIndentSizeForLevel(level int, indentSize int) int {
+	if level == 0 {
+		return 0
+	} else {
+		return indentSize * level
+	}
 }
 
 func getRightAlignedTimeAgo(author string, timeAgo string, level int) string {
@@ -160,23 +182,23 @@ func markOPAndMods(author, op string) string {
 	return markedAuthor
 }
 
-func getIndentBlockWithoutBar(level int) string {
+func getIndentBlockWithoutBar(level int, indentSize int) string {
 	if level == 0 {
 		return ""
 	}
 	indentation := " "
-	for i := 0; i < level; i++ {
-		indentation = " " + indentation
+	for i := 0; i < indentSize*level; i++ {
+		indentation += " "
 	}
 	return indentation
 }
 
-func getIndentBlock(level int) string {
+func getIndentBlock(level int, indentSize int) string {
 	if level == 0 {
 		return ""
 	}
 	indentation := getColoredIndentBlock(level) + "▎" + Normal
-	for i := 0; i < level; i++ {
+	for i := 0; i < indentSize*level; i++ {
 		indentation = " " + indentation
 	}
 	return indentation

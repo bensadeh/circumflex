@@ -46,7 +46,7 @@ func main() {
 					commentTree := ""
 					appendCommentsHeader(*jComments, &commentTree)
 					for _, s := range jComments.Replies {
-						commentTree = prettyPrintComments(*s, &commentTree, 0, originalPoster)
+						commentTree = prettyPrintComments(*s, &commentTree, 0, 5, originalPoster)
 					}
 
 					outputStringToLess(commentTree)
