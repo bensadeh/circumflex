@@ -1,10 +1,9 @@
 package main
 
 import (
-	"circumflex/client"
 	"circumflex/cmd"
 	"encoding/json"
-	"fmt"
+	"strconv"
 
 	"log"
 	"os"
@@ -13,21 +12,15 @@ import (
 
 	"github.com/gdamore/tcell"
 	"gitlab.com/tslocum/cview"
-
-	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
 
 func main() {
 	cmd.Execute()
-	y, _ := terminal.Height()
-	storiesToFetch := int(y / 2)
 
-	client := client.NewHNClient()
-	pp, err := client.GetTopStories(storiesToFetch)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	JSON, _ := get("http://node-hnapi.herokuapp.com/news?page=1")
+
+	var jSubmission []Submission
+	json.Unmarshal(JSON, &jSubmission)
 
 	app := cview.NewApplication()
 	list := cview.NewList()
@@ -45,12 +38,13 @@ func main() {
 			c.Stdout = os.Stdout
 			c.Run()
 
-			for index, s := range *pp {
+			for index := range jSubmission {
 				if index == i {
-					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + s.ID)
+					id := strconv.Itoa(jSubmission[i].ID)
+					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + id)
 					var jComments = new(Comments)
 					json.Unmarshal(JSON, jComments)
-					originalPoster := s.Author
+					originalPoster := jSubmission[i].Author
 					commentTree := ""
 					appendCommentsHeader(*jComments, &commentTree)
 					for _, s := range jComments.Replies {
@@ -63,7 +57,7 @@ func main() {
 		})
 	})
 
-	addListItems(list, pp, app)
+	addListItems(list, app, jSubmission)
 	if err := app.SetRoot(list, true).EnableMouse(false).Run(); err != nil {
 		panic(err)
 	}
