@@ -98,8 +98,8 @@ func markOPAndMods(author, op string) string {
 }
 
 func getIndentBlock(level int) string {
-	indentation := " "
-	for i := 1; i < level; i++ {
+	indentation := ""
+	for i := 0; i < level; i++ {
 		indentation = indentation + " "
 	}
 	return indentation
