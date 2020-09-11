@@ -83,11 +83,10 @@ func parseRootComment(comment string) string {
 func getDomainText(domain string, URL string, id int) string {
 	if domain != "" {
 		return " (" + getHyperlinkText(URL, domain) + ")"
-	} else {
-		linkToComments := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
-		linkText := "item?id=" + strconv.Itoa(id)
-		return " (" + getHyperlinkText(linkToComments, linkText) + ")"
 	}
+	linkToComments := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
+	linkText := "item?id=" + strconv.Itoa(id)
+	return " (" + getHyperlinkText(linkToComments, linkText) + ")"
 }
 
 func getHyperlinkText(URL string, text string) string {
