@@ -98,12 +98,9 @@ func getHyperlinkText(URL string, text string) string {
 	return Link1 + URL + Link2 + text + Link3
 }
 
-func prettyPrintComments(c Comments, commentTree *string, level int, indentSize int, op string) string {
-	x, _ := terminal.Width()
+func prettyPrintComments(c Comments, commentTree *string, level int, indentSize int, commmentWidth int, op string) string {
 	comment := parseComment(c.Comment)
-	padding := 1 //hack: the wrapper is sometimes off by 1, so we pad the wrapper to end the line slightly earlier
-	actualIndentSize := indentSize * level
-	limit := max(int(x)-actualIndentSize-padding, 40)
+	limit := getCommentWidth(level, indentSize, commmentWidth)
 	wrapper := wordwrap.Wrapper(limit, false)
 	markedAuthor := markOPAndMods(c.Author, op)
 
@@ -128,7 +125,7 @@ func prettyPrintComments(c Comments, commentTree *string, level int, indentSize 
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
 	for _, s := range c.Replies {
-		prettyPrintComments(*s, commentTree, level+1, indentSize, op)
+		prettyPrintComments(*s, commentTree, level+1, indentSize, commmentWidth, op)
 	}
 	return *commentTree
 }
@@ -138,6 +135,18 @@ func max(x, y int) int {
 		return y
 	}
 	return x
+}
+
+func getCommentWidth(level int, indentSize int, commmentWidth int) int {
+	if commmentWidth == 0 {
+		x, _ := terminal.Width()
+		// hack: the wrapper is sometimes off by 1, so we pad
+		// the wrapper to end the line slightly earlier
+		padding := 1
+		actualIndentSize := indentSize * level
+		return max(int(x)-actualIndentSize-padding, 40)
+	}
+	return commmentWidth
 }
 
 func markOPAndMods(author, op string) string {
