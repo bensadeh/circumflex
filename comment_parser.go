@@ -10,6 +10,7 @@ import (
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
 
+// ANSI escape codes
 const (
 	Normal        = "\033[0m"
 	Bold          = "\033[1m"
@@ -28,6 +29,8 @@ const (
 	DoubleNewLine = "\n\n"
 )
 
+// Comments represent the JSON structure as
+// retreived from cheeaun's unoffical HN API
 type Comments struct {
 	Author        string      `json:"user"`
 	Title         string      `json:"title"`

@@ -7,6 +7,8 @@ import (
 	"gitlab.com/tslocum/cview"
 )
 
+// Submission represents the JSON structure as
+// retreived from cheeaun's unoffical HN API
 type Submission struct {
 	ID            int    `json:"id"`
 	Title         string `json:"title"`
