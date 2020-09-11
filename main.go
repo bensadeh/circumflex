@@ -32,11 +32,9 @@ func main() {
 	list.ShowSecondaryText(true)
 	list.SetSelectedFunc(func(i int, a string, b string, c rune) {
 		app.Suspend(func() {
-			//Clear screen to avoid seeing the terminal before
-			//this program was started
-			c := exec.Command("clear")
-			c.Stdout = os.Stdout
-			c.Run()
+			// Clear screen to avoid seeing text between
+			// viewing submissions and comments
+			clearScreen()
 
 			for index := range jSubmission {
 				if index == i {
@@ -62,6 +60,12 @@ func main() {
 		panic(err)
 	}
 
+}
+
+func clearScreen() {
+	c := exec.Command("clear")
+	c.Stdout = os.Stdout
+	c.Run()
 }
 
 func outputStringToLess(output string) {
