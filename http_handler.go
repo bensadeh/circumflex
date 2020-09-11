@@ -8,7 +8,7 @@ import (
 
 var myClient = &http.Client{Timeout: 10 * time.Second}
 
-func getJSON(url string) ([]byte, error) {
+func get(url string) ([]byte, error) {
 	r, err := myClient.Get(url)
 	if err != nil {
 		return nil, err

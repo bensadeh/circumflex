@@ -49,7 +49,7 @@ func main() {
 
 			for index, s := range *pp {
 				if index == i {
-					JSON, _ := getJSON("http://node-hnapi.herokuapp.com/item/" + s.ID)
+					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + s.ID)
 					var jComments = new(Comments)
 					json.Unmarshal(JSON, jComments)
 					originalPoster := s.Author
