@@ -11,14 +11,16 @@ import (
 )
 
 const (
-	NORMAL = "\033[0m"
-	BOLD   = "\033[1m"
-	DIMMED = "\033[2m"
-	ITALIC = "\033[3m"
-	GREEN  = "\033[32;m"
-	RED    = "\033[31;m"
-	LINK_1 = "\033]8;;"
-	LINK_2 = "\033]8;;\a"
+	NORMAL        = "\033[0m"
+	BOLD          = "\033[1m"
+	DIMMED        = "\033[2m"
+	ITALIC        = "\033[3m"
+	GREEN         = "\033[32;m"
+	RED           = "\033[31;m"
+	LINK_1        = "\033]8;;"
+	LINK_2        = "\033]8;;\a"
+	NewLine       = "\n"
+	DoubleNewLine = "\n\n"
 )
 
 type Comments struct {
@@ -33,14 +35,36 @@ type Comments struct {
 	Replies       []*Comments `json:"comments"`
 }
 
-func appendCommentsHeader(comment Comments, commentTree *string) {
-	headline := BOLD + comment.Title + NORMAL + DIMMED + "  (" + comment.Domain + ")" + NORMAL + "\n"
-	*commentTree += headline
-	*commentTree += strconv.Itoa(comment.Points) + " points by " + BOLD + comment.Author + NORMAL + " " + comment.Time + " | " + strconv.Itoa(comment.CommentsCount) + " comments" + "\n"
-	for i := 0; i < term.Len(headline); i++ {
+func appendCommentsHeader(c Comments, commentTree *string) {
+	headline := BOLD + c.Title + NORMAL + DIMMED + "  (" + c.Domain + ")" + NORMAL + NewLine
+	infoLine := strconv.Itoa(c.Points) + " points by " + BOLD + c.Author + NORMAL + " " + c.Time + " | " + strconv.Itoa(c.CommentsCount) + " comments" + DoubleNewLine
+	*commentTree += headline + infoLine
+	titleBarLength := term.Len(headline)
+
+	fullComment := ""
+	comment := parseComment(c.Comment)
+	wrapper := wordwrap.Wrapper(titleBarLength, false)
+
+	commentLines := strings.Split(comment, NewLine)
+	lastParagraph := len(commentLines) - 1
+	for i, line := range commentLines {
+		wrapped := wrapper(line)
+		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(0), true)
+		if i == lastParagraph {
+			fullComment += wrappedAndIndentedComment + NewLine
+		} else {
+			fullComment += wrappedAndIndentedComment + DoubleNewLine
+		}
+	}
+
+	*commentTree += fullComment
+
+	for i := 0; i < titleBarLength; i++ {
 		*commentTree += "-"
 	}
-	*commentTree += "\n\n"
+
+	*commentTree += DoubleNewLine
+
 }
 
 func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op string) string {
@@ -51,11 +75,11 @@ func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op st
 	markedAuthor := markOPAndMods(c.Author, op)
 
 	fullComment := ""
-	commentLines := strings.Split(comment, "\n")
+	commentLines := strings.Split(comment, NewLine)
 	for _, line := range commentLines {
 		wrapped := wrapper(line)
 		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(indentlevel), true)
-		fullComment += wrappedAndIndentedComment + "\n" + "\n"
+		fullComment += wrappedAndIndentedComment + DoubleNewLine
 	}
 
 	wrappedAndIndentedAuthor := wordwrap.Indent(markedAuthor, getIndentBlock(indentlevel), true)
@@ -82,7 +106,7 @@ func getRightAlignedTimeAgo(author string, timeAgo string, indentLevel int) stri
 		paddingBetweenAuthorAndTime += " "
 	}
 
-	return paddingBetweenAuthorAndTime + DIMMED + timeAgo + NORMAL + "\n"
+	return paddingBetweenAuthorAndTime + DIMMED + timeAgo + NORMAL + NewLine
 
 }
 
@@ -125,7 +149,7 @@ func replaceCharacters(input string) string {
 func replaceHTML(input string) string {
 	input = strings.Replace(input, "<p>", "", 1)
 
-	input = strings.ReplaceAll(input, "<p>", "\n")
+	input = strings.ReplaceAll(input, "<p>", NewLine)
 	input = strings.ReplaceAll(input, "<i>", ITALIC)
 	input = strings.ReplaceAll(input, "</i>", NORMAL)
 	input = strings.ReplaceAll(input, "<pre><code>", DIMMED)
