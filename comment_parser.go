@@ -103,7 +103,7 @@ func prettyPrintComments(c Comments, commentTree *string, level int, indentSize 
 	x, _ := terminal.Width()
 	comment := parseComment(c.Comment)
 	padding := 1 //hack: the wrapper is sometimes off by 1, so we pad the wrapper to end the line slightly earlier
-	actualIndentSize := getIndentSizeForLevel(level, indentSize)
+	actualIndentSize := indentSize * level
 	limit := max(int(x)-actualIndentSize-padding, 40)
 	wrapper := wordwrap.Wrapper(limit, false)
 	markedAuthor := markOPAndMods(c.Author, op)
@@ -124,8 +124,8 @@ func prettyPrintComments(c Comments, commentTree *string, level int, indentSize 
 	}
 
 	wrappedAndIndentedAuthor := wordwrap.Indent(markedAuthor, getIndentBlockWithoutBar(level, indentSize), true)
-	// wrappedAndIndentedComment := wrappedAndIndentedAuthor + " " + getRightAlignedTimeAgo(markedAuthor, c.Time, level)
-	wrappedAndIndentedComment := wrappedAndIndentedAuthor + NewLine
+	wrappedAndIndentedComment := wrappedAndIndentedAuthor + " " + getRightAlignedTimeAgo(markedAuthor, c.Time, level, actualIndentSize)
+	// wrappedAndIndentedComment := wrappedAndIndentedAuthor + NewLine
 	wrappedAndIndentedComment += fullComment
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
@@ -142,29 +142,26 @@ func max(x, y int) int {
 	return x
 }
 
-func getIndentSizeForLevel(level int, indentSize int) int {
-	if level == 0 {
-		return 0
-	} else {
-		return indentSize * level
-	}
-}
-
-func getRightAlignedTimeAgo(author string, timeAgo string, level int) string {
+func getRightAlignedTimeAgo(author string, timeAgo string, level int, indentSize int) string {
 	screenWidth, _ := terminal.Width()
+	formattedTimeAgo := Dimmed + timeAgo + Normal
 	authorLength := term.Len(author)
 	timeAgoLength := term.Len(timeAgo)
 	paddingBetweenAuthorAndTime := ""
-	padding := 6
+	padding := 0
+	if level == 0 {
+		padding = 1
+	} else {
+		padding = 2
+	}
 
-	numberOfSpaces := int(screenWidth) - authorLength - timeAgoLength - padding - level
+	numberOfSpaces := int(screenWidth) - authorLength - timeAgoLength - indentSize - padding
 
 	for i := 0; i < numberOfSpaces; i++ {
 		paddingBetweenAuthorAndTime += " "
 	}
 
-	return paddingBetweenAuthorAndTime + Dimmed + timeAgo + Normal + NewLine
-
+	return paddingBetweenAuthorAndTime + formattedTimeAgo + NewLine
 }
 
 func markOPAndMods(author, op string) string {
