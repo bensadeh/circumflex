@@ -39,31 +39,9 @@ type Comments struct {
 
 func appendCommentsHeader(c Comments, commentTree *string) {
 	headline := BOLD + c.Title + NORMAL + getDomainText(c.Domain, c.URL, c.ID) + NewLine
-	infoLine := strconv.Itoa(c.Points) + " points by " + BOLD + c.Author + NORMAL + " " + c.Time + " | " + strconv.Itoa(c.CommentsCount) + " comments"
+	infoLine := strconv.Itoa(c.Points) + " points by " + BOLD + c.Author + NORMAL + " " + c.Time + " | " + strconv.Itoa(c.CommentsCount) + " comments" + NewLine
 	*commentTree += headline + infoLine
-	titleBarLength := term.Len(headline)
-
-	fullComment := ""
-	comment := parseComment(c.Comment)
-	wrapper := wordwrap.Wrapper(titleBarLength, false)
-
-	commentLines := strings.Split(comment, NewLine)
-	lastParagraph := len(commentLines) - 1
-	firstParagraph := 0
-	for i, line := range commentLines {
-		wrapped := wrapper(line)
-		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(0), true)
-		if i == firstParagraph {
-			wrappedAndIndentedComment = DoubleNewLine + wrappedAndIndentedComment
-		}
-		if i == lastParagraph {
-			fullComment += wrappedAndIndentedComment + NewLine
-		} else {
-			fullComment += wrappedAndIndentedComment + DoubleNewLine
-		}
-	}
-
-	*commentTree += fullComment
+	*commentTree += parseRootComment(c.Comment)
 
 	x, _ := terminal.Width()
 	for i := 0; i < int(x); i++ {
@@ -72,6 +50,34 @@ func appendCommentsHeader(c Comments, commentTree *string) {
 
 	*commentTree += DoubleNewLine
 
+}
+
+func parseRootComment(comment string) string {
+	if comment == "" {
+		return ""
+	}
+
+	x, _ := terminal.Width()
+	wrapper := wordwrap.Wrapper(int(x), false)
+	parsedComment := parseComment(comment)
+
+	commentLines := strings.Split(parsedComment, NewLine)
+	lastParagraph := len(commentLines) - 1
+	firstParagraph := 0
+	fullComment := ""
+	for i, line := range commentLines {
+		wrapped := wrapper(line)
+		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(0), true)
+		if i == firstParagraph {
+			fullComment = NewLine
+		}
+		if i == lastParagraph {
+			fullComment += wrappedAndIndentedComment + NewLine
+		} else {
+			fullComment += wrappedAndIndentedComment + DoubleNewLine
+		}
+	}
+	return fullComment
 }
 
 func getDomainText(domain string, URL string, id int) string {
