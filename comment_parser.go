@@ -161,7 +161,7 @@ func getRightAlignedTimeAgo(author string, timeAgo string, level int, indentSize
 		paddingBetweenAuthorAndTime += " "
 	}
 
-	return paddingBetweenAuthorAndTime + formattedTimeAgo + NewLine
+	return formattedTimeAgo + NewLine
 }
 
 func markOPAndMods(author, op string) string {
