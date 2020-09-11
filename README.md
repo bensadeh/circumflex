@@ -31,6 +31,6 @@ And you're good to go.
 * [cobra](https://github.com/spf13/cobra) for the CLI
 * [tcell](https://github.com/gdamore/tcell) and [cview](https://gitlab.com/tslocum/cview) for the UI
 * [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) for fetching submissions and comments
-* `less` for viewing comments
+* [less](http://greenwoodsoftware.com/less/) for viewing comments
 * [Palenight Theme for iTerm2](https://github.com/JonathanSpeek/palenight-iterm2) for the color scheme
 * [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) for the font
