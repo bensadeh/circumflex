@@ -130,11 +130,7 @@ func prettyPrintComments(c Comments, commentTree *string, level int, indentSize 
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
 	for _, s := range c.Replies {
-		if level == 0 {
-			prettyPrintComments(*s, commentTree, level+1, indentSize, op)
-		} else {
-			prettyPrintComments(*s, commentTree, level+1, indentSize, op)
-		}
+		prettyPrintComments(*s, commentTree, level+1, indentSize, op)
 	}
 	return *commentTree
 }
