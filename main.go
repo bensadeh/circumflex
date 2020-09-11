@@ -2,7 +2,6 @@ package main
 
 import (
 	"circumflex/client"
-	"circumflex/client/feed"
 	"circumflex/cmd"
 	"encoding/json"
 	"fmt"
@@ -10,7 +9,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"strconv"
 	"strings"
 
 	"github.com/gdamore/tcell"
@@ -70,27 +68,6 @@ func main() {
 		panic(err)
 	}
 
-}
-
-func addListItems(list *cview.List, pp *[]feed.Item, app *cview.Application) {
-	list.Clear()
-	for i, s := range *pp {
-		rank := i + 1
-		indentedRank := strconv.Itoa(rank) + "." + getRankIndentBlock(rank)
-		points := strconv.Itoa(s.Points)
-		comments := strconv.Itoa(s.Comments)
-		secondary := "    " + points + " points by " + s.Author + " " + s.Age + " | " + comments + " comments"
-		list.AddItem(indentedRank+s.Title, secondary, 0, nil)
-	}
-}
-
-func getRankIndentBlock(rank int) string {
-	largeIndent := "  "
-	smallIndent := " "
-	if rank > 9 {
-		return smallIndent
-	}
-	return largeIndent
 }
 
 func outputStringToLess(output string) {
