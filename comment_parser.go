@@ -62,7 +62,7 @@ func parseRootComment(comment string) string {
 		return ""
 	}
 
-	x, _ := ga.Width()
+	x, _ := terminal.Width()
 	wrapper := wordwrap.Wrapper(int(x), false)
 	parsedComment := parseComment(comment)
 
@@ -123,7 +123,7 @@ func prettyPrintComments(c Comments, commentTree *string, level int, indentSize 
 	}
 
 	wrappedAndIndentedAuthor := wordwrap.Indent(markedAuthor, getIndentBlockWithoutBar(level, indentSize), true)
-	wrappedAndIndentedComment := wrappedAndIndentedAuthor + " " + Dimmed + timeAgo + Normal + NewLine
+	wrappedAndIndentedComment := wrappedAndIndentedAuthor + " " + Dimmed + c.Time + Normal + NewLine
 	wrappedAndIndentedComment += fullComment
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
