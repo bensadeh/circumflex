@@ -15,8 +15,12 @@ const (
 	BOLD          = "\033[1m"
 	DIMMED        = "\033[2m"
 	ITALIC        = "\033[3m"
-	GREEN         = "\033[32;m"
-	RED           = "\033[31;m"
+	Red           = "\033[31;m"
+	Green         = "\033[32;m"
+	Yellow        = "\033[33;m"
+	Blue          = "\033[34;m"
+	Purple        = "\033[35;m"
+	Teal          = "\033[36;m"
 	Link_1        = "\033]8;;"
 	Link_2        = "\a"
 	Link_3        = "\033]8;;\a"
@@ -101,20 +105,27 @@ func prettyPrintComments(c Comments, commentTree *string, indentlevel int, op st
 	markedAuthor := markOPAndMods(c.Author, op)
 
 	fullComment := ""
-	commentLines := strings.Split(comment, NewLine)
-	for _, line := range commentLines {
-		wrapped := wrapper(line)
+	paragraphs := strings.Split(comment, NewLine)
+	lastParagraph := len(paragraphs) - 1
+	for i, paragraph := range paragraphs {
+		wrapped := wrapper(paragraph)
 		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(indentlevel), true)
-		fullComment += wrappedAndIndentedComment + DoubleNewLine
+		barOnEmptyLine := wordwrap.Indent("", getIndentBlock(indentlevel), true)
+
+		if i == lastParagraph {
+			fullComment += wrappedAndIndentedComment + DoubleNewLine
+			break
+		}
+		fullComment += wrappedAndIndentedComment + NewLine + barOnEmptyLine + NewLine
 	}
 
-	wrappedAndIndentedAuthor := wordwrap.Indent(markedAuthor, getIndentBlock(indentlevel), true)
-	wrappedAndIndentedComment := BOLD + wrappedAndIndentedAuthor + NORMAL + " " + getRightAlignedTimeAgo(markedAuthor, c.Time, indentlevel)
+	wrappedAndIndentedAuthor := wordwrap.Indent(markedAuthor, getIndentBlockWithoutBar(indentlevel), true)
+	wrappedAndIndentedComment := wrappedAndIndentedAuthor + " " + getRightAlignedTimeAgo(markedAuthor, c.Time, indentlevel)
 	wrappedAndIndentedComment += fullComment
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
 	for _, s := range c.Replies {
-		prettyPrintComments(*s, commentTree, indentlevel+5, op)
+		prettyPrintComments(*s, commentTree, indentlevel+1, op)
 	}
 	return *commentTree
 }
@@ -137,22 +148,67 @@ func getRightAlignedTimeAgo(author string, timeAgo string, indentLevel int) stri
 }
 
 func markOPAndMods(author, op string) string {
-	markedAuthor := author
+	markedAuthor := BOLD + author + NORMAL
 	if author == "dang" || author == "sctb" {
-		markedAuthor = author + GREEN + " mod" + NORMAL
+		markedAuthor = author + Green + " mod" + NORMAL
 	}
 	if author == op {
-		markedAuthor = markedAuthor + RED + " OP" + NORMAL
+		markedAuthor = markedAuthor + Red + " OP" + NORMAL
 	}
 	return markedAuthor
 }
 
-func getIndentBlock(level int) string {
-	indentation := ""
+func getIndentBlockWithoutBar(level int) string {
+	if level == 0 {
+		return ""
+	}
+	indentation := " "
 	for i := 0; i < level; i++ {
-		indentation = indentation + " "
+		indentation = " " + indentation
 	}
 	return indentation
+}
+
+func getIndentBlock(level int) string {
+	if level == 0 {
+		return ""
+	}
+	indentation := getColoredIndentBlock(level) + "▏" + NORMAL
+	for i := 0; i < level; i++ {
+		indentation = " " + indentation
+	}
+	return indentation
+}
+
+func getColoredIndentBlock(level int) string {
+	switch level {
+	case 1:
+		return Red
+	case 2:
+		return Yellow
+	case 3:
+		return Green
+	case 4:
+		return Blue
+	case 5:
+		return Teal
+	case 6:
+		return Purple
+	case 7:
+		return Red
+	case 8:
+		return Yellow
+	case 9:
+		return Green
+	case 10:
+		return Blue
+	case 11:
+		return Teal
+	case 12:
+		return Purple
+	default:
+		return Red
+	}
 }
 
 func parseComment(comment string) string {
