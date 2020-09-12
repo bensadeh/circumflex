@@ -137,16 +137,23 @@ func max(x, y int) int {
 	return x
 }
 
-func getCommentWidth(level int, indentSize int, commmentWidth int) int {
-	if commmentWidth == 0 {
-		x, _ := terminal.Width()
-		// hack: the wrapper is sometimes off by 1, so we pad
-		// the wrapper to end the line slightly earlier
-		padding := 1
-		actualIndentSize := indentSize * level
-		return max(int(x)-actualIndentSize-padding, 40)
+func getCommentWidth(level int, indentSize int, commentWidth int) int {
+	x, _ := terminal.Width()
+	screenWidth := int(x)
+	// hack: the wrapper is sometimes off by 1, so we pad
+	// the wrapper to end the line slightly earlier
+	padding := 1
+	actualIndentSize := indentSize * level
+	usableScreenSize := screenWidth - actualIndentSize - padding
+
+	if commentWidth == 0 {
+		return max(usableScreenSize, 40)
 	}
-	return commmentWidth
+	if usableScreenSize < commentWidth {
+		return usableScreenSize
+	}
+
+	return commentWidth
 }
 
 func markOPAndMods(author, op string) string {
