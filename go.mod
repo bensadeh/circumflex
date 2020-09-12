@@ -1,4 +1,4 @@
-module circumflex
+module clx
 
 go 1.14
 

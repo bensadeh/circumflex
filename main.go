@@ -1,7 +1,7 @@
 package main
 
 import (
-	"circumflex/cmd"
+	"clx/cmd"
 	"encoding/json"
 	"strconv"
 
