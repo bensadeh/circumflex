@@ -47,7 +47,7 @@ type Comments struct {
 func appendCommentsHeader(c Comments, commentTree *string) {
 	headline := Bold + c.Title + Normal + getDomainText(c.Domain, c.URL, c.ID) + NewLine
 	headlineWithoutHyperlink := Bold + c.Title + Normal + getDomainTextWithoutHyperlink(c.Domain, c.URL, c.ID) + NewLine
-	infoLine := strconv.Itoa(c.Points) + " points by " + Bold + c.Author + Normal + " " + c.Time + " | " + strconv.Itoa(c.CommentsCount) + " comments" + NewLine
+	infoLine := strconv.Itoa(c.Points) + " points by " + Bold + c.Author + Normal + " " + c.Time + " • " + strconv.Itoa(c.CommentsCount) + " comments" + NewLine
 	*commentTree += headline + infoLine
 	*commentTree += parseRootComment(c.Comment)
 
