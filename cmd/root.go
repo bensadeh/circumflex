@@ -16,11 +16,10 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "circumflex",
 	Short: "Circumflex is a Hacker News browser for your terminal",
-	Long: `Circumflex is a Hacker News browser for your terminal. 
-	 Built with Go.`,
+	Long:  `Circumflex is a Hacker News browser for your terminal.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -32,8 +31,6 @@ func Execute() {
 	}
 
 }
-
-
 
 func init() {
 	cobra.OnInitialize(initConfig)
