@@ -8,8 +8,10 @@
 `circumflex` is a command line tool for browsing Hacker&nbsp;News submissions and reading comments.
 
 ## Features
-- Simple overview of top submissions
-- Comments are properly wrapped, indented and piped to `less`
+- Overview of top submissions
+- Comment section can be read in `less`
+  * Comments are wrapped and color-indented
+  * Comments maintain proper formatting, including hyperlinks and italics
 
 <p align="center">
   <img src="images/mainview.png" width="700" alt="^"/>
