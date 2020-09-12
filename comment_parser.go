@@ -5,8 +5,9 @@ import (
 	"strconv"
 	"strings"
 
+	"clx/wordwrap"
+
 	term "github.com/MichaelMure/go-term-text"
-	"github.com/eidolon/wordwrap"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
 
