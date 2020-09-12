@@ -9,9 +9,8 @@
 
 ## Features
 - Overview of top submissions
-- Comment section can be read in `less`
-  * Comments are wrapped and color-indented
-  * Comments are properly formatted
+- View comments in `less`
+  * Comments are wrapped, color-indented and formatted
   * OP and moderators are labelled 
 
 <p align="center">
