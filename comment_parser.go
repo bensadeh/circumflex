@@ -10,25 +10,6 @@ import (
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
 
-// ANSI escape codes
-const (
-	Normal        = "\033[0m"
-	Bold          = "\033[1m"
-	Dimmed        = "\033[2m"
-	Italic        = "\033[3m"
-	Red           = "\033[31;m"
-	Green         = "\033[32;m"
-	Yellow        = "\033[33;m"
-	Blue          = "\033[34;m"
-	Purple        = "\033[35;m"
-	Teal          = "\033[36;m"
-	Link1         = "\033]8;;"
-	Link2         = "\a"
-	Link3         = "\033]8;;\a"
-	NewLine       = "\n"
-	DoubleNewLine = "\n\n"
-)
-
 // Comments represent the JSON structure as
 // retreived from cheeaun's unoffical HN API
 type Comments struct {
@@ -45,9 +26,9 @@ type Comments struct {
 }
 
 func appendCommentsHeader(c Comments, commentTree *string) {
-	headline := Bold + c.Title + Normal + getDomainText(c.Domain, c.URL, c.ID) + NewLine
-	headlineWithoutHyperlink := Bold + c.Title + Normal + getDomainTextWithoutHyperlink(c.Domain, c.URL, c.ID) + NewLine
-	infoLine := strconv.Itoa(c.Points) + " points by " + Bold + c.Author + Normal + " " + c.Time + " • " + strconv.Itoa(c.CommentsCount) + " comments" + NewLine
+	headline := bold(c.Title) + getDomainText(c.Domain, c.URL, c.ID) + NewLine
+	headlineWithoutHyperlink := bold(c.Title) + getDomainTextWithoutHyperlink(c.Domain, c.URL, c.ID) + NewLine
+	infoLine := strconv.Itoa(c.Points) + " points by " + bold(c.Author) + " " + c.Time + " • " + strconv.Itoa(c.CommentsCount) + " comments" + NewLine
 	*commentTree += headline + infoLine
 	*commentTree += parseRootComment(c.Comment)
 
@@ -130,7 +111,7 @@ func prettyPrintComments(c Comments, commentTree *string, level int, indentSize 
 	}
 
 	wrappedAndIndentedAuthor := wordwrap.Indent(markedAuthor, getIndentBlockWithoutBar(level, indentSize), true)
-	wrappedAndIndentedComment := wrappedAndIndentedAuthor + " " + Dimmed + c.Time + Normal + NewLine
+	wrappedAndIndentedComment := wrappedAndIndentedAuthor + " " + dimmed(c.Time) + NewLine
 	wrappedAndIndentedComment += fullComment
 
 	*commentTree = *commentTree + wrappedAndIndentedComment
@@ -167,12 +148,12 @@ func getCommentWidth(level int, indentSize int, commentWidth int) int {
 }
 
 func markOPAndMods(author, op string) string {
-	markedAuthor := Bold + author + Normal
+	markedAuthor := bold(author)
 	if author == "dang" || author == "sctb" {
-		markedAuthor = markedAuthor + Green + " mod" + Normal
+		markedAuthor = markedAuthor + green(" mod")
 	}
 	if author == op {
-		markedAuthor = markedAuthor + Red + " OP" + Normal
+		markedAuthor = markedAuthor + red(" OP")
 	}
 	return markedAuthor
 }
