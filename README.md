@@ -5,7 +5,7 @@
 #
 > Work in progress
 
-`circumflex` is a command line tool for browsing Hacker&nbsp;News submissions and reading comments.
+`circumflex` (`clx`) is a command line tool for browsing Hacker&nbsp;News submissions and reading comments.
 
 ## Features
 - Overview of top submissions
@@ -26,7 +26,9 @@
 
     $ go install
 
-And you're good to go.
+Then run with:
+
+    $ clx
 
 ## Frameworks and Credits
 `circumflex` uses:
