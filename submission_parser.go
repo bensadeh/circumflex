@@ -41,7 +41,7 @@ func getDomain(domain string) string {
 	if domain == "" {
 		return ""
 	}
-	return "[::d]" + " (" + domain + ")" + "[-:-:-]"
+	return "[::d]" + " " + paren(domain) + "[-:-:-]"
 }
 
 func getRankIndentBlock(rank int) string {

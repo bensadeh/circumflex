@@ -42,11 +42,11 @@ func appendCommentsHeader(c Comments, commentTree *string) {
 
 func getDomainText(domain string, URL string, id int) string {
 	if domain != "" {
-		return " (" + getHyperlinkText(URL, domain) + ")"
+		return " " + paren(getHyperlinkText(URL, domain))
 	}
 	linkToComments := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
 	linkText := "item?id=" + strconv.Itoa(id)
-	return " (" + getHyperlinkText(linkToComments, linkText) + ")"
+	return " " + paren(getHyperlinkText(linkToComments, linkText))
 }
 
 func getHyperlinkText(URL string, text string) string {
@@ -55,10 +55,10 @@ func getHyperlinkText(URL string, text string) string {
 
 func getDomainTextWithoutHyperlink(domain string, URL string, id int) string {
 	if domain != "" {
-		return " (" + domain + ")"
+		return " " + paren(domain)
 	}
 	linkText := "item?id=" + strconv.Itoa(id)
-	return " (" + linkText + ")"
+	return " " + paren(linkText)
 }
 
 func parseRootComment(comment string) string {

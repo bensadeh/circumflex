@@ -38,3 +38,7 @@ func red(text string) string {
 func green(text string) string {
 	return Green + text + Normal
 }
+
+func paren(text string) string {
+	return "(" + text + ")"
+}
