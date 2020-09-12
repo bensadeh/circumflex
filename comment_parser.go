@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	term "github.com/MichaelMure/go-term-text"
 	"github.com/eidolon/wordwrap"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
@@ -45,16 +46,38 @@ type Comments struct {
 
 func appendCommentsHeader(c Comments, commentTree *string) {
 	headline := Bold + c.Title + Normal + getDomainText(c.Domain, c.URL, c.ID) + NewLine
+	headlineWithoutHyperlink := Bold + c.Title + Normal + getDomainTextWithoutHyperlink(c.Domain, c.URL, c.ID) + NewLine
 	infoLine := strconv.Itoa(c.Points) + " points by " + Bold + c.Author + Normal + " " + c.Time + " | " + strconv.Itoa(c.CommentsCount) + " comments" + NewLine
 	*commentTree += headline + infoLine
 	*commentTree += parseRootComment(c.Comment)
 
-	x, _ := terminal.Width()
-	for i := 0; i < int(x); i++ {
+	headlineWithoutHyperlinkLength := term.Len(headlineWithoutHyperlink)
+	for i := 0; i < headlineWithoutHyperlinkLength; i++ {
 		*commentTree += "-"
 	}
 
 	*commentTree += DoubleNewLine
+}
+
+func getDomainText(domain string, URL string, id int) string {
+	if domain != "" {
+		return " (" + getHyperlinkText(URL, domain) + ")"
+	}
+	linkToComments := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
+	linkText := "item?id=" + strconv.Itoa(id)
+	return " (" + getHyperlinkText(linkToComments, linkText) + ")"
+}
+
+func getHyperlinkText(URL string, text string) string {
+	return Link1 + URL + Link2 + text + Link3
+}
+
+func getDomainTextWithoutHyperlink(domain string, URL string, id int) string {
+	if domain != "" {
+		return " (" + domain + ")"
+	}
+	linkText := "item?id=" + strconv.Itoa(id)
+	return " (" + linkText + ")"
 }
 
 func parseRootComment(comment string) string {
@@ -83,19 +106,6 @@ func parseRootComment(comment string) string {
 		}
 	}
 	return fullComment
-}
-
-func getDomainText(domain string, URL string, id int) string {
-	if domain != "" {
-		return " (" + getHyperlinkText(URL, domain) + ")"
-	}
-	linkToComments := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
-	linkText := "item?id=" + strconv.Itoa(id)
-	return " (" + getHyperlinkText(linkToComments, linkText) + ")"
-}
-
-func getHyperlinkText(URL string, text string) string {
-	return Link1 + URL + Link2 + text + Link3
 }
 
 func prettyPrintComments(c Comments, commentTree *string, level int, indentSize int, commmentWidth int, op string) string {
