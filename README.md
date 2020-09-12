@@ -11,7 +11,8 @@
 - Overview of top submissions
 - Comment section can be read in `less`
   * Comments are wrapped and color-indented
-  * Comments maintain proper formatting, including hyperlinks and italics
+  * Comments are properly formatted
+  * OP and moderators are labelled 
 
 <p align="center">
   <img src="images/mainview.png" width="700" alt="^"/>
