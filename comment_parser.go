@@ -181,37 +181,6 @@ func getIndentBlock(level int, indentSize int) string {
 	return indentation
 }
 
-func getColoredIndentBlock(level int) string {
-	switch level {
-	case 1:
-		return Red
-	case 2:
-		return Yellow
-	case 3:
-		return Green
-	case 4:
-		return Blue
-	case 5:
-		return Teal
-	case 6:
-		return Purple
-	case 7:
-		return Red
-	case 8:
-		return Yellow
-	case 9:
-		return Green
-	case 10:
-		return Blue
-	case 11:
-		return Teal
-	case 12:
-		return Purple
-	default:
-		return Normal
-	}
-}
-
 func parseComment(comment string) string {
 	fixedHTML := replaceHTML(comment)
 	fixedHTMLAndCharacters := replaceCharacters(fixedHTML)
