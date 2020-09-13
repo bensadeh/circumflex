@@ -3,8 +3,6 @@
 </p>
 
 #
-> Work in progress
-
 `circumflex` is a command line tool for browsing Hacker&nbsp;News submissions and reading comments.
 
 ## Features
