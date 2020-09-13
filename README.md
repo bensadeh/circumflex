@@ -12,7 +12,7 @@
 - View comments in `less`
   * Comments are wrapped and color-indented
   * Comments are formatted to show *italics*, <ins>hyperlinks</ins> and `code blocks`
-  * OP and moderators are labelled 
+  * Original poster (OP) and moderators are labelled
 
 <p align="center">
   <img src="images/mainview.png" width="700" alt="^"/>
