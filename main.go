@@ -16,6 +16,7 @@ import (
 
 func main() {
 	cmd.Execute()
+	clearScreen()
 
 	JSON, _ := get("http://node-hnapi.herokuapp.com/news?page=1")
 
@@ -32,10 +33,6 @@ func main() {
 	list.ShowSecondaryText(true)
 	list.SetSelectedFunc(func(i int, a string, b string, c rune) {
 		app.Suspend(func() {
-			// Clear screen to avoid seeing text between
-			// viewing submissions and comments
-			clearScreen()
-
 			for index := range jSubmission {
 				if index == i {
 					id := strconv.Itoa(jSubmission[i].ID)
