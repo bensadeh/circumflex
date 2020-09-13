@@ -217,8 +217,8 @@ func replaceHTML(input string) string {
 	input = strings.ReplaceAll(input, "<p>", NewLine)
 	input = strings.ReplaceAll(input, "<i>", Italic)
 	input = strings.ReplaceAll(input, "</i>", Normal)
-	input = strings.ReplaceAll(input, "<pre><code>", Dimmed)
-	input = strings.ReplaceAll(input, "</code></pre>", Normal)
+	input = strings.ReplaceAll(input, "<pre><code>", "")
+	input = strings.ReplaceAll(input, "</code></pre>", "")
 	return input
 }
 
