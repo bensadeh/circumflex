@@ -11,20 +11,19 @@ import (
 	"strings"
 
 	"github.com/gdamore/tcell"
+	terminal "github.com/wayneashleyberry/terminal-dimensions"
 	"gitlab.com/tslocum/cview"
 )
 
 func main() {
 	cmd.Execute()
 	clearScreen()
-
-	JSON, _ := get("http://node-hnapi.herokuapp.com/news?page=1")
-
-	var jSubmission []Submission
-	json.Unmarshal(JSON, &jSubmission)
+	submissionHandler := new(SubmissionHandler)
+	submissionHandler.Submissions = fetchSubmissions(1)
 
 	app := cview.NewApplication()
 	list := cview.NewList()
+	secondList := cview.NewList()
 
 	list.SetBackgroundTransparent(false)
 	list.SetBackgroundColor(tcell.ColorDefault)
@@ -33,13 +32,16 @@ func main() {
 	list.ShowSecondaryText(true)
 	list.SetSelectedFunc(func(i int, a string, b string, c rune) {
 		app.Suspend(func() {
-			for index := range jSubmission {
+			for index := range submissionHandler.Submissions {
+				if index == 16 {
+					return
+				}
 				if index == i {
-					id := strconv.Itoa(jSubmission[i].ID)
+					id := strconv.Itoa(submissionHandler.Submissions[i].ID)
 					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + id)
 					var jComments = new(Comments)
 					json.Unmarshal(JSON, jComments)
-					originalPoster := jSubmission[i].Author
+					originalPoster := submissionHandler.Submissions[i].Author
 					commentTree := ""
 					appendCommentsHeader(*jComments, &commentTree)
 					for _, s := range jComments.Replies {
@@ -52,11 +54,40 @@ func main() {
 		})
 	})
 
-	addListItems(list, app, jSubmission)
+	addListItems(list, app, submissionHandler.Submissions, secondList)
 	if err := app.SetRoot(list, true).EnableMouse(false).Run(); err != nil {
 		panic(err)
 	}
 
+}
+
+func addListItems(list *cview.List, app *cview.Application, sub []Submission, secondList *cview.List) {
+	y, _ := terminal.Height()
+	storiesToFetch := int(y/2) - 1
+
+	for i := 0; i < storiesToFetch; i++ {
+		primary, secondary := getSubmissionInfo(i, sub[i])
+		list.AddItem(primary, secondary, 0, nil)
+	}
+
+	list.AddItem("More", "", 0, func() {
+		for i := storiesToFetch; i < 30; i++ {
+			primary, secondary := getSubmissionInfo(i, sub[i])
+			secondList.AddItem(primary, secondary, 0, nil)
+		}
+		app.SetRoot(secondList, true)
+	})
+
+}
+
+func getSubmissionInfo(i int, submission Submission) (string, string) {
+	rank := i + 1
+	indentedRank := strconv.Itoa(rank) + "." + getRankIndentBlock(rank)
+	primary := indentedRank + submission.Title + getDomain(submission.Domain)
+	points := strconv.Itoa(submission.Points)
+	comments := strconv.Itoa(submission.CommentsCount)
+	secondary := "    " + points + " points by " + submission.Author + " " + submission.Time + " | " + comments + " comments"
+	return primary, secondary
 }
 
 func clearScreen() {
