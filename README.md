@@ -11,7 +11,7 @@
 - Overview of top submissions
 - View comments in `less`
   * Comments are wrapped and color-indented
-  * Comments are properly formatted to show *italics*, <ins>hyperlinks</ins> and `code blocks`
+  * Comments are properly formatted to show *italics*, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code blocks`
   * Original poster (OP) and moderators are labelled
 
 <p align="center">
