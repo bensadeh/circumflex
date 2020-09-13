@@ -101,6 +101,7 @@ func prettyPrintComments(c Comments, commentTree *string, level int, indentSize 
 	fullComment := ""
 	paragraphs := strings.Split(comment, NewLine)
 	lastParagraph := len(paragraphs) - 1
+	previousParagraphWasCodeBlock := false
 	for i, paragraph := range paragraphs {
 		wrapped := wrapper(paragraph)
 		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(level, indentSize), true)
@@ -108,8 +109,13 @@ func prettyPrintComments(c Comments, commentTree *string, level int, indentSize 
 
 		if strings.Contains(paragraph, Dimmed) {
 			fullComment += barOnEmptyLine + paragraph + NewLine
+			previousParagraphWasCodeBlock = true
 			continue
 		}
+		if previousParagraphWasCodeBlock {
+			fullComment += barOnEmptyLine + NewLine
+		}
+
 		if i == lastParagraph {
 			fullComment += wrappedAndIndentedComment + DoubleNewLine
 			break
@@ -219,6 +225,7 @@ func replaceHTML(input string) string {
 func parseCodeBlock(src string) string {
 	src = strings.Replace(src, "<p>", "", 1)
 	src = strings.ReplaceAll(src, "<p>", NewLine)
+	src = strings.ReplaceAll(src, "\n</code></pre>", "</code></pre>")
 
 	paragraphs := strings.Split(src, NewLine)
 	fullComment := ""
@@ -236,7 +243,9 @@ func parseCodeBlock(src string) string {
 			insideCodeBlock = true
 		}
 		if strings.Contains(paragraph, "</code></pre>") {
+			fullComment = fullComment + dimmed(paragraph) + NewLine
 			insideCodeBlock = false
+			continue
 		}
 		if insideCodeBlock {
 			fullComment = fullComment + dimmed(paragraph) + newlineType
