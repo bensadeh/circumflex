@@ -239,7 +239,7 @@ func parseCodeBlock(src string) string {
 			insideCodeBlock = false
 		}
 		if insideCodeBlock {
-			fullComment = fullComment + " " + dimmed(paragraph) + newlineType
+			fullComment = fullComment + dimmed(paragraph) + newlineType
 		} else {
 			fullComment += paragraph + newlineType
 		}
