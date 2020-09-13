@@ -11,7 +11,7 @@
 - Overview of top submissions
 - View comments in `less`
   * Comments are wrapped and color-indented
-  * Comments are formatted to show *italics*, <ins>hyperlinks</ins> and `code blocks`
+  * Text is formatted to show *italics*, <ins>hyperlinks</ins> and `code blocks`
   * Original poster (OP) and moderators are labelled
 
 <p align="center">
