@@ -29,12 +29,15 @@ type Comments struct {
 func appendCommentsHeader(c Comments, commentTree *string) {
 	headline := bold(c.Title) + getDomainText(c.Domain, c.URL, c.ID) + NewLine
 	headlineWithoutHyperlink := bold(c.Title) + getDomainTextWithoutHyperlink(c.Domain, c.URL, c.ID) + NewLine
-	infoLine := strconv.Itoa(c.Points) + " points by " + bold(c.Author) + " " + c.Time + " • " + strconv.Itoa(c.CommentsCount) + " comments" + NewLine
-	*commentTree += headline + infoLine
-	*commentTree += parseRootComment(c.Comment)
-
 	headlineWithoutHyperlinkLength := term.Len(headlineWithoutHyperlink)
-	for i := 0; i < headlineWithoutHyperlinkLength; i++ {
+	infoLine := strconv.Itoa(c.Points) + " points by " + bold(c.Author) + " " + c.Time + " • " + strconv.Itoa(c.CommentsCount) + " comments" + NewLine
+	infoLineLength := term.Len(infoLine)
+	longestLine := max(headlineWithoutHyperlinkLength, infoLineLength)
+
+	*commentTree += headline + infoLine
+	*commentTree += parseRootComment(c.Comment, longestLine)
+
+	for i := 0; i < longestLine; i++ {
 		*commentTree += "-"
 	}
 
@@ -62,13 +65,12 @@ func getDomainTextWithoutHyperlink(domain string, URL string, id int) string {
 	return " " + paren(linkText)
 }
 
-func parseRootComment(comment string) string {
+func parseRootComment(comment string, lineLength int) string {
 	if comment == "" {
 		return ""
 	}
 
-	x, _ := terminal.Width()
-	wrapper := wordwrap.Wrapper(int(x), false)
+	wrapper := wordwrap.Wrapper(lineLength, false)
 	parsedComment := parseComment(comment)
 
 	commentLines := strings.Split(parsedComment, NewLine)
