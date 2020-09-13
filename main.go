@@ -3,7 +3,6 @@ package main
 import (
 	"clx/cmd"
 	"encoding/json"
-	"strconv"
 
 	"log"
 	"os"
@@ -35,8 +34,8 @@ func main() {
 		app.Suspend(func() {
 			for index := range jSubmission {
 				if index == i {
-					id := strconv.Itoa(jSubmission[i].ID)
-					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + id)
+					// id := strconv.Itoa(jSubmission[i].ID)
+					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + "24440536")
 					var jComments = new(Comments)
 					json.Unmarshal(JSON, jComments)
 					originalPoster := jSubmission[i].Author

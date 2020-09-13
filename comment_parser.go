@@ -106,6 +106,10 @@ func prettyPrintComments(c Comments, commentTree *string, level int, indentSize 
 		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(level, indentSize), true)
 		barOnEmptyLine := wordwrap.Indent("", getIndentBlock(level, indentSize), true)
 
+		if strings.Contains(paragraph, Dimmed) {
+			fullComment += barOnEmptyLine + paragraph + NewLine
+			continue
+		}
 		if i == lastParagraph {
 			fullComment += wrappedAndIndentedComment + DoubleNewLine
 			break
@@ -184,10 +188,11 @@ func getIndentBlock(level int, indentSize int) string {
 }
 
 func parseComment(comment string) string {
-	fixedHTML := replaceHTML(comment)
-	fixedHTMLAndCharacters := replaceCharacters(fixedHTML)
-	fixedHTMLAndCharactersAndHrefs := handleHrefTag(fixedHTMLAndCharacters)
-	return fixedHTMLAndCharactersAndHrefs
+	comment = parseCodeBlock(comment)
+	comment = replaceHTML(comment)
+	comment = replaceCharacters(comment)
+	comment = handleHrefTag(comment)
+	return comment
 }
 
 func replaceCharacters(input string) string {
@@ -209,6 +214,38 @@ func replaceHTML(input string) string {
 	input = strings.ReplaceAll(input, "<pre><code>", Dimmed)
 	input = strings.ReplaceAll(input, "</code></pre>", Normal)
 	return input
+}
+
+func parseCodeBlock(src string) string {
+	src = strings.Replace(src, "<p>", "", 1)
+	src = strings.ReplaceAll(src, "<p>", NewLine)
+
+	paragraphs := strings.Split(src, NewLine)
+	fullComment := ""
+	insideCodeBlock := false
+	lastParagraph := len(paragraphs) - 1
+	for i, paragraph := range paragraphs {
+		newlineType := ""
+		if i == lastParagraph {
+			newlineType = ""
+		} else {
+			newlineType = NewLine
+		}
+
+		if strings.Contains(paragraph, "<pre><code>") {
+			insideCodeBlock = true
+		}
+		if strings.Contains(paragraph, "</code></pre>") {
+			insideCodeBlock = false
+		}
+		if insideCodeBlock {
+			fullComment = fullComment + " " + dimmed(paragraph) + newlineType
+		} else {
+			fullComment += paragraph + newlineType
+		}
+	}
+
+	return fullComment
 }
 
 func handleHrefTag(input string) string {
