@@ -23,33 +23,46 @@ func main() {
 	app := cview.NewApplication()
 	initNewPage(app, submissionHandler)
 
-	secondList := cview.NewList()
-
 	// Shortcuts to navigate the slides.
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Key() == tcell.KeyCtrlN {
-			// nextSlide()
+			nextSlide(app, submissionHandler)
 		} else if event.Key() == tcell.KeyCtrlP {
 			// previousSlide()
 		}
 		return event
 	})
 
-	addListItems(submissionHandler.Pages[0], app, submissionHandler.Submissions, secondList)
-	if err := app.SetRoot(submissionHandler.Pages[0], true).EnableMouse(false).Run(); err != nil {
+	firstPage := submissionHandler.Pages[0]
+	if err := app.SetRoot(firstPage, true).EnableMouse(false).Run(); err != nil {
 		panic(err)
 	}
 
 }
 
+func nextSlide(app *cview.Application, sh *SubmissionHandler) {
+	initNewPage(app, sh)
+	sh.CurrentPage++
+	pageToView := sh.Pages[sh.CurrentPage]
+
+	app.SetRoot(pageToView, true)
+	panic(sh.CurrentPage)
+}
+
 func initNewPage(app *cview.Application, sh *SubmissionHandler) {
 	y, _ := terminal.Height()
-	storiesToView := int(y / 2)
+	storiesToView := int(y/2) * (sh.CurrentPage + 1)
 	availableSubmissions := len(sh.Submissions)
+
 	if storiesToView > availableSubmissions {
 		fetchSubmissions(sh)
 	}
 
+	newPage := createNewList(app, sh)
+	sh.Pages = append(sh.Pages, newPage)
+}
+
+func createNewList(app *cview.Application, sh *SubmissionHandler) *cview.List {
 	list := cview.NewList()
 	list.SetBackgroundTransparent(false)
 	list.SetBackgroundColor(tcell.ColorDefault)
@@ -58,16 +71,15 @@ func initNewPage(app *cview.Application, sh *SubmissionHandler) {
 	list.ShowSecondaryText(true)
 	setSelectedFunction(app, list, sh)
 
-	sh.Pages = append(sh.Pages, list)
+	addListItems(list, app, sh)
+
+	return list
 }
 
 func setSelectedFunction(app *cview.Application, list *cview.List, sh *SubmissionHandler) {
 	list.SetSelectedFunc(func(i int, a string, b string, c rune) {
 		app.Suspend(func() {
 			for index := range sh.Submissions {
-				if index == 16 {
-					return
-				}
 				if index == i {
 					id := strconv.Itoa(sh.Submissions[i].ID)
 					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + id)
@@ -87,23 +99,15 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *Submissio
 	})
 }
 
-func addListItems(list *cview.List, app *cview.Application, sub []Submission, secondList *cview.List) {
+func addListItems(list *cview.List, app *cview.Application, sh *SubmissionHandler) {
 	y, _ := terminal.Height()
-	storiesToFetch := int(y/2) - 1
+	storiesToShow := int(y/2) * (sh.CurrentPage + 1)
+	startCounter := storiesToShow*(sh.CurrentPage+1) - storiesToShow
 
-	for i := 0; i < storiesToFetch; i++ {
-		primary, secondary := getSubmissionInfo(i, sub[i])
+	for i := startCounter; i < storiesToShow; i++ {
+		primary, secondary := getSubmissionInfo(i, sh.Submissions[i])
 		list.AddItem(primary, secondary, 0, nil)
 	}
-
-	list.AddItem("More", "", 0, func() {
-		for i := storiesToFetch; i < 30; i++ {
-			primary, secondary := getSubmissionInfo(i, sub[i])
-			secondList.AddItem(primary, secondary, 0, nil)
-		}
-		app.SetRoot(secondList, true)
-	})
-
 }
 
 func getSubmissionInfo(i int, submission Submission) (string, string) {

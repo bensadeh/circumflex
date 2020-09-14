@@ -12,6 +12,7 @@ type SubmissionHandler struct {
 	Submissions    []Submission
 	Pages          []*cview.List
 	PagesRetreived int
+	CurrentPage    int
 }
 
 // Submission represents the JSON structure as
@@ -29,7 +30,8 @@ type Submission struct {
 }
 
 func fetchSubmissions(sh *SubmissionHandler) {
-	p := strconv.Itoa(sh.PagesRetreived + 1)
+	sh.PagesRetreived++
+	p := strconv.Itoa(sh.PagesRetreived)
 	JSON, _ := get("http://node-hnapi.herokuapp.com/news?page=" + p)
 	var submissions []Submission
 	json.Unmarshal(JSON, &submissions)
