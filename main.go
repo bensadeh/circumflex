@@ -23,6 +23,7 @@ func main() {
 
 	app := cview.NewApplication()
 	list := getNewList(app, submissionHandler.Submissions)
+	submissionHandler.Pages = append(submissionHandler.Pages, list)
 	secondList := cview.NewList()
 
 	// Shortcuts to navigate the slides.
@@ -35,8 +36,8 @@ func main() {
 		return event
 	})
 
-	addListItems(list, app, submissionHandler.Submissions, secondList)
-	if err := app.SetRoot(list, true).EnableMouse(false).Run(); err != nil {
+	addListItems(submissionHandler.Pages[0], app, submissionHandler.Submissions, secondList)
+	if err := app.SetRoot(submissionHandler.Pages[0], true).EnableMouse(false).Run(); err != nil {
 		panic(err)
 	}
 
