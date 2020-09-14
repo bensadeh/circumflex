@@ -9,8 +9,9 @@ import (
 
 // SubmissionHandler stores submissions and pages
 type SubmissionHandler struct {
-	Submissions []Submission
-	Pages       []*cview.List
+	Submissions    []Submission
+	Pages          []*cview.List
+	PagesRetreived int
 }
 
 // Submission represents the JSON structure as
@@ -27,12 +28,12 @@ type Submission struct {
 	Type          string `json:"type"`
 }
 
-func fetchSubmissions(page int) []Submission {
-	p := strconv.Itoa(page)
+func fetchSubmissions(sh *SubmissionHandler) {
+	p := strconv.Itoa(sh.PagesRetreived + 1)
 	JSON, _ := get("http://node-hnapi.herokuapp.com/news?page=" + p)
 	var submissions []Submission
 	json.Unmarshal(JSON, &submissions)
-	return submissions
+	sh.Submissions = append(sh.Submissions, submissions...)
 }
 
 func getDomain(domain string) string {
