@@ -56,6 +56,12 @@ func initNewPage(app *cview.Application, sh *SubmissionHandler) {
 	list.SetMainTextColor(tcell.ColorDefault)
 	list.SetSecondaryTextColor(tcell.ColorGray)
 	list.ShowSecondaryText(true)
+	setSelectedFunction(app, list, sh)
+
+	sh.Pages = append(sh.Pages, list)
+}
+
+func setSelectedFunction(app *cview.Application, list *cview.List, sh *SubmissionHandler) {
 	list.SetSelectedFunc(func(i int, a string, b string, c rune) {
 		app.Suspend(func() {
 			for index := range sh.Submissions {
@@ -79,8 +85,6 @@ func initNewPage(app *cview.Application, sh *SubmissionHandler) {
 			}
 		})
 	})
-
-	sh.Pages = append(sh.Pages, list)
 }
 
 func addListItems(list *cview.List, app *cview.Application, sub []Submission, secondList *cview.List) {
