@@ -22,9 +22,28 @@ func main() {
 	submissionHandler.Submissions = fetchSubmissions(1)
 
 	app := cview.NewApplication()
-	list := cview.NewList()
+	list := getNewList(app, submissionHandler.Submissions)
 	secondList := cview.NewList()
 
+	// Shortcuts to navigate the slides.
+	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		if event.Key() == tcell.KeyCtrlN {
+			// nextSlide()
+		} else if event.Key() == tcell.KeyCtrlP {
+			// previousSlide()
+		}
+		return event
+	})
+
+	addListItems(list, app, submissionHandler.Submissions, secondList)
+	if err := app.SetRoot(list, true).EnableMouse(false).Run(); err != nil {
+		panic(err)
+	}
+
+}
+
+func getNewList(app *cview.Application, submissions []Submission) *cview.List {
+	list := cview.NewList()
 	list.SetBackgroundTransparent(false)
 	list.SetBackgroundColor(tcell.ColorDefault)
 	list.SetMainTextColor(tcell.ColorDefault)
@@ -32,16 +51,16 @@ func main() {
 	list.ShowSecondaryText(true)
 	list.SetSelectedFunc(func(i int, a string, b string, c rune) {
 		app.Suspend(func() {
-			for index := range submissionHandler.Submissions {
+			for index := range submissions {
 				if index == 16 {
 					return
 				}
 				if index == i {
-					id := strconv.Itoa(submissionHandler.Submissions[i].ID)
+					id := strconv.Itoa(submissions[i].ID)
 					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + id)
 					var jComments = new(Comments)
 					json.Unmarshal(JSON, jComments)
-					originalPoster := submissionHandler.Submissions[i].Author
+					originalPoster := submissions[i].Author
 					commentTree := ""
 					appendCommentsHeader(*jComments, &commentTree)
 					for _, s := range jComments.Replies {
@@ -54,11 +73,7 @@ func main() {
 		})
 	})
 
-	addListItems(list, app, submissionHandler.Submissions, secondList)
-	if err := app.SetRoot(list, true).EnableMouse(false).Run(); err != nil {
-		panic(err)
-	}
-
+	return list
 }
 
 func addListItems(list *cview.List, app *cview.Application, sub []Submission, secondList *cview.List) {

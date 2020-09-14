@@ -3,11 +3,14 @@ package main
 import (
 	"encoding/json"
 	"strconv"
+
+	"gitlab.com/tslocum/cview"
 )
 
 // SubmissionHandler
 type SubmissionHandler struct {
 	Submissions []Submission
+	Pages       *[]cview.List
 }
 
 // Submission represents the JSON structure as
