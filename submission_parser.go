@@ -7,7 +7,7 @@ import (
 	"gitlab.com/tslocum/cview"
 )
 
-// SubmissionHandler
+// SubmissionHandler stores submissions and pages
 type SubmissionHandler struct {
 	Submissions []Submission
 	Pages       *[]cview.List
