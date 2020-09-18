@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/MichaelMure/go-term-text v0.2.9
+	github.com/eidolon/wordwrap v0.0.0-20161011182207-e0f54129b8bb
 	github.com/gdamore/tcell v1.3.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.0.0

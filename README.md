@@ -38,7 +38,5 @@ The first keystroke is lost when viewing comments in `less`, see [gdamore/tcell#
 * [tcell](https://github.com/gdamore/tcell) and [cview](https://gitlab.com/tslocum/cview) for the UI
 * [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) for fetching submissions and comments
 * [less](http://greenwoodsoftware.com/less/) for viewing comments
-
-Screenshots use:
 * [Palenight Theme for iTerm2](https://github.com/JonathanSpeek/palenight-iterm2) for the color scheme
 * [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) for the font

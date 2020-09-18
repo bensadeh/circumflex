@@ -1,19 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"strconv"
 
+	terminal "github.com/wayneashleyberry/terminal-dimensions"
 	"gitlab.com/tslocum/cview"
 )
-
-// SubmissionHandler stores submissions and pages
-type SubmissionHandler struct {
-	Submissions    []Submission
-	Pages          []*cview.List
-	PagesRetreived int
-	CurrentPage    int
-}
 
 // Submission represents the JSON structure as
 // retreived from cheeaun's unoffical HN API
@@ -29,13 +21,20 @@ type Submission struct {
 	Type          string `json:"type"`
 }
 
-func fetchSubmissions(sh *SubmissionHandler) {
-	sh.PagesRetreived++
-	p := strconv.Itoa(sh.PagesRetreived)
-	JSON, _ := get("http://node-hnapi.herokuapp.com/news?page=" + p)
-	var submissions []Submission
-	json.Unmarshal(JSON, &submissions)
-	sh.Submissions = append(sh.Submissions, submissions...)
+func addListItems(list *cview.List, app *cview.Application, sub []Submission) {
+	y, _ := terminal.Height()
+	storiesToFetch := int(y / 2)
+
+	for i := 0; i < storiesToFetch; i++ {
+		rank := i + 1
+		indentedRank := strconv.Itoa(rank) + "." + getRankIndentBlock(rank)
+		primary := indentedRank + sub[i].Title + getDomain(sub[i].Domain)
+		points := strconv.Itoa(sub[i].Points)
+		comments := strconv.Itoa(sub[i].CommentsCount)
+		secondary := "    " + points + " points by " + sub[i].Author + " " + sub[i].Time + " | " + comments + " comments"
+		list.AddItem(primary, secondary, 0, nil)
+	}
+
 }
 
 func getDomain(domain string) string {
