@@ -10,9 +10,10 @@ import (
 // SubmissionHandler stores submissions and pages
 type SubmissionHandler struct {
 	Submissions    []Submission
-	Pages          []*cview.List
+	Pages          *cview.Pages
 	PagesRetreived int
 	CurrentPage    int
+	StoriesListed  int
 }
 
 // Submission represents the JSON structure as

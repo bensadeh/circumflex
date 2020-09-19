@@ -21,45 +21,51 @@ func main() {
 	submissionHandler := new(SubmissionHandler)
 
 	app := cview.NewApplication()
+	pages := cview.NewPages()
+	submissionHandler.Pages = pages
+
 	initNewPage(app, submissionHandler)
+	submissionHandler.Pages.SwitchToPage("0")
 
 	// Shortcuts to navigate the slides.
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Key() == tcell.KeyCtrlN {
 			nextSlide(app, submissionHandler)
 		} else if event.Key() == tcell.KeyCtrlP {
-			// previousSlide()
+			submissionHandler.Pages.SwitchToPage("0")
 		}
 		return event
 	})
 
-	firstPage := submissionHandler.Pages[0]
-	if err := app.SetRoot(firstPage, true).EnableMouse(false).Run(); err != nil {
+	if err := app.SetRoot(pages, true).EnableMouse(false).Run(); err != nil {
 		panic(err)
 	}
 
 }
 
 func nextSlide(app *cview.Application, sh *SubmissionHandler) {
-	initNewPage(app, sh)
 	sh.CurrentPage++
-	pageToView := sh.Pages[sh.CurrentPage]
+	initNewPage(app, sh)
+	sh.Pages.SwitchToPage("1")
+	// currentPage := strconv.Itoa(sh.CurrentPage)
+	// sh.Pages.SwitchToPage(currentPage)
 
-	app.SetRoot(pageToView, true)
-	panic(sh.CurrentPage)
+	// app.SetRoot(pageToView, true)
+	// panic(sh.CurrentPage)
 }
 
 func initNewPage(app *cview.Application, sh *SubmissionHandler) {
-	y, _ := terminal.Height()
-	storiesToView := int(y/2) * (sh.CurrentPage + 1)
-	availableSubmissions := len(sh.Submissions)
+	// y, _ := terminal.Height()
+	// storiesToView := int(y/2) * (sh.CurrentPage + 1)
+	// availableSubmissions := len(sh.Submissions)
 
-	if storiesToView > availableSubmissions {
-		fetchSubmissions(sh)
-	}
+	fetchSubmissions(sh)
 
-	newPage := createNewList(app, sh)
-	sh.Pages = append(sh.Pages, newPage)
+	list := createNewList(app, sh)
+	// sh.Pages = append(sh.Pages, newPage)
+
+	currentPage := strconv.Itoa(sh.CurrentPage)
+	sh.Pages.AddPage(currentPage, list, true, true)
 }
 
 func createNewList(app *cview.Application, sh *SubmissionHandler) *cview.List {
@@ -102,9 +108,9 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *Submissio
 func addListItems(list *cview.List, app *cview.Application, sh *SubmissionHandler) {
 	y, _ := terminal.Height()
 	storiesToShow := int(y/2) * (sh.CurrentPage + 1)
-	startCounter := storiesToShow*(sh.CurrentPage+1) - storiesToShow
 
-	for i := startCounter; i < storiesToShow; i++ {
+	for i := sh.StoriesListed; i < storiesToShow; i++ {
+		sh.StoriesListed++
 		primary, secondary := getSubmissionInfo(i, sh.Submissions[i])
 		list.AddItem(primary, secondary, 0, nil)
 	}
