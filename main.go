@@ -73,7 +73,7 @@ func createNewList(app *cview.Application, sh *SubmissionHandler) *cview.List {
 	list.SetBackgroundTransparent(false)
 	list.SetBackgroundColor(tcell.ColorDefault)
 	list.SetMainTextColor(tcell.ColorDefault)
-	list.SetSecondaryTextColor(tcell.ColorGray)
+	list.SetSecondaryTextColor(tcell.ColorDefault)
 	list.ShowSecondaryText(true)
 	setSelectedFunction(app, list, sh)
 
@@ -126,7 +126,7 @@ func getSubmissionInfo(i int, submission Submission) (string, string) {
 	primary := indentedRank + submission.Title + getDomain(submission.Domain)
 	points := strconv.Itoa(submission.Points)
 	comments := strconv.Itoa(submission.CommentsCount)
-	secondary := "    " + points + " points by " + submission.Author + " " + submission.Time + " | " + comments + " comments"
+	secondary := "[::d]" + "    " + points + " points by " + submission.Author + " " + submission.Time + " | " + comments + " comments" + "[-:-:-]"
 	return primary, secondary
 }
 
