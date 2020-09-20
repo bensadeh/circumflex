@@ -104,7 +104,12 @@ func prettyPrintComments(c Comments, commentTree *string, level int, indentSize 
 	previousParagraphWasCodeBlock := false
 	for i, paragraph := range paragraphs {
 		wrapped := wrapper(paragraph)
-		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(level, indentSize), true)
+		wrappedAndIndentedComment := ""
+		if wholeParagraphIsItalics(paragraph) {
+			wrappedAndIndentedComment = wordwrap.Indent(wrapped, getIndentBlock(level, indentSize)+Italic, true)
+		} else {
+			wrappedAndIndentedComment = wordwrap.Indent(wrapped, getIndentBlock(level, indentSize), true)
+		}
 		barOnEmptyLine := wordwrap.Indent("", getIndentBlock(level, indentSize), true)
 
 		if strings.Contains(paragraph, Dimmed) {
@@ -132,6 +137,13 @@ func prettyPrintComments(c Comments, commentTree *string, level int, indentSize 
 		prettyPrintComments(*s, commentTree, level+1, indentSize, commmentWidth, op)
 	}
 	return *commentTree
+}
+
+func wholeParagraphIsItalics(paragraph string) bool {
+	// Hack: check if the paragraph ends with a
+	// Normal code. If it does, it is likely the
+	// whole paragraph should be in italics.
+	return strings.HasSuffix(paragraph, Normal)
 }
 
 func max(x, y int) int {
