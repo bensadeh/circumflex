@@ -32,7 +32,7 @@ Then run with:
 ## Known issues
 The first keystroke is lost when viewing comments in `less`, see [gdamore/tcell#194](https://github.com/gdamore/tcell/issues/194).
 
-## Frameworks and Credits
+## Under the hood
 `circumflex` uses:
 * [cobra](https://github.com/spf13/cobra) for the CLI
 * [tcell](https://github.com/gdamore/tcell) and [cview](https://gitlab.com/tslocum/cview) for the UI
