@@ -1,7 +1,6 @@
 package main
 
 import (
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -187,7 +186,6 @@ func getIndentBlock(level int, indentSize int) string {
 func parseComment(comment string) string {
 	comment = replaceHTML(comment)
 	comment = replaceCharacters(comment)
-	comment = handleHrefTag(comment)
 	return comment
 }
 
@@ -208,18 +206,8 @@ func replaceHTML(input string) string {
 	input = strings.ReplaceAll(input, "</i>", Normal)
 	input = strings.ReplaceAll(input, "<pre><code>", Dimmed)
 	input = strings.ReplaceAll(input, "</code></pre>", Normal)
+	input = strings.ReplaceAll(input, `<a href="`, Link1)
+	input = strings.ReplaceAll(input, `" rel="nofollow">`, Link2)
+	input = strings.ReplaceAll(input, `</a>`, Link3)
 	return input
-}
-
-func handleHrefTag(input string) string {
-	var expForFirstTag = regexp.MustCompile(`<a href="`)
-	replacedInput := expForFirstTag.ReplaceAllString(input, Link1)
-
-	var expForSecondTag = regexp.MustCompile(`" rel="nofollow">`)
-	replacedInput = expForSecondTag.ReplaceAllString(replacedInput, Link2)
-
-	var expForThirdTag = regexp.MustCompile(`<\/a>`)
-	replacedInput = expForThirdTag.ReplaceAllString(replacedInput, Link3)
-
-	return replacedInput
 }
