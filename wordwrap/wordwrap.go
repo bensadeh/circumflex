@@ -1,6 +1,5 @@
-// Package wordwrap retreived from github.com/eidolon/wordwrap.
-// Modified to not include hidden characters when calculating
-// word and line length.
+// wordwrap retreived from github.com/eidolon/wordwrap. Modified
+// to not include hidden characters when calculating word and line length.
 package wordwrap
 
 import (

@@ -96,36 +96,21 @@ func parseRootComment(comment string, lineLength int) string {
 func prettyPrintComments(c Comments, commentTree *string, level int, indentSize int, commmentWidth int, op string) string {
 	comment := parseComment(c.Comment)
 	limit := getCommentWidth(level, indentSize, commmentWidth)
-	wrapper := wordwrap.Wrapper(limit, false)
 	markedAuthor := markOPAndMods(c.Author, op)
 
 	fullComment := ""
-	paragraphs := strings.Split(comment, NewLine)
+	paragraphs := strings.Split(comment, "<p>")
 	lastParagraph := len(paragraphs) - 1
-	previousParagraphWasCodeBlock := false
 	for i, paragraph := range paragraphs {
-		wrapped := wrapper(paragraph)
-		wrappedAndIndentedComment := ""
-		if wholeParagraphIsItalics(paragraph) {
-			wrappedAndIndentedComment = wordwrap.Indent(wrapped, getIndentBlock(level, indentSize)+Italic, true)
-		} else {
-			wrappedAndIndentedComment = wordwrap.Indent(wrapped, getIndentBlock(level, indentSize), true)
-		}
+		wrapped := wordwrap.WrapString(paragraph, uint(limit))
+		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(level, indentSize), true)
 		barOnEmptyLine := wordwrap.Indent("", getIndentBlock(level, indentSize), true)
-
-		if strings.Contains(paragraph, Dimmed) {
-			fullComment += barOnEmptyLine + paragraph + NewLine
-			previousParagraphWasCodeBlock = true
-			continue
-		}
-		if previousParagraphWasCodeBlock {
-			fullComment += barOnEmptyLine + NewLine
-		}
 
 		if i == lastParagraph {
 			fullComment += wrappedAndIndentedComment + DoubleNewLine
 			break
 		}
+
 		fullComment += wrappedAndIndentedComment + NewLine + barOnEmptyLine + NewLine
 	}
 
@@ -138,13 +123,6 @@ func prettyPrintComments(c Comments, commentTree *string, level int, indentSize 
 		prettyPrintComments(*s, commentTree, level+1, indentSize, commmentWidth, op)
 	}
 	return *commentTree
-}
-
-func wholeParagraphIsItalics(paragraph string) bool {
-	// Hack: check if the paragraph ends with a
-	// Normal code. If it does, it is likely the
-	// whole paragraph should be in italics.
-	return strings.HasSuffix(paragraph, Normal)
 }
 
 func max(x, y int) int {
@@ -199,7 +177,7 @@ func getIndentBlock(level int, indentSize int) string {
 	if level == 0 {
 		return ""
 	}
-	indentation := getColoredIndentBlock(level) + "▎" + Normal
+	indentation := Normal + getColoredIndentBlock(level) + "▎" + Normal
 	for i := 0; i < indentSize*level; i++ {
 		indentation = " " + indentation
 	}
@@ -207,7 +185,6 @@ func getIndentBlock(level int, indentSize int) string {
 }
 
 func parseComment(comment string) string {
-	comment = parseCodeBlock(comment)
 	comment = replaceHTML(comment)
 	comment = replaceCharacters(comment)
 	comment = handleHrefTag(comment)
@@ -227,47 +204,11 @@ func replaceCharacters(input string) string {
 func replaceHTML(input string) string {
 	input = strings.Replace(input, "<p>", "", 1)
 
-	input = strings.ReplaceAll(input, "<p>", NewLine)
 	input = strings.ReplaceAll(input, "<i>", Italic)
 	input = strings.ReplaceAll(input, "</i>", Normal)
-	input = strings.ReplaceAll(input, "<pre><code>", "")
-	input = strings.ReplaceAll(input, "</code></pre>", "")
+	input = strings.ReplaceAll(input, "<pre><code>", Dimmed)
+	input = strings.ReplaceAll(input, "</code></pre>", Normal)
 	return input
-}
-
-func parseCodeBlock(src string) string {
-	src = strings.Replace(src, "<p>", "", 1)
-	src = strings.ReplaceAll(src, "<p>", NewLine)
-	src = strings.ReplaceAll(src, "\n</code></pre>", "</code></pre>")
-
-	paragraphs := strings.Split(src, NewLine)
-	fullComment := ""
-	insideCodeBlock := false
-	lastParagraph := len(paragraphs) - 1
-	for i, paragraph := range paragraphs {
-		newlineType := ""
-		if i == lastParagraph {
-			newlineType = ""
-		} else {
-			newlineType = NewLine
-		}
-
-		if strings.Contains(paragraph, "<pre><code>") {
-			insideCodeBlock = true
-		}
-		if strings.Contains(paragraph, "</code></pre>") {
-			fullComment = fullComment + dimmed(paragraph) + NewLine
-			insideCodeBlock = false
-			continue
-		}
-		if insideCodeBlock {
-			fullComment = fullComment + dimmed(paragraph) + newlineType
-		} else {
-			fullComment += paragraph + newlineType
-		}
-	}
-
-	return fullComment
 }
 
 func handleHrefTag(input string) string {
