@@ -73,7 +73,7 @@ func parseRootComment(comment string, lineLength int) string {
 	wrapper := wordwrap.Wrapper(lineLength, false)
 	parsedComment := parseComment(comment)
 
-	commentLines := strings.Split(parsedComment, NewLine)
+	commentLines := strings.Split(parsedComment, "<p>")
 	lastParagraph := len(commentLines) - 1
 	firstParagraph := 0
 	fullComment := ""
