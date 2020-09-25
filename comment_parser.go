@@ -25,7 +25,17 @@ type Comments struct {
 	Replies       []*Comments `json:"comments"`
 }
 
-func appendCommentsHeader(c Comments, commentTree *string) {
+func printCommentTree(comments Comments, indentSize int, commmentWidth int) string {
+	header := getHeader(comments)
+	originalPoster := comments.Author
+	commentTree := ""
+	for _, reply := range comments.Replies {
+		commentTree += prettyPrintComments(*reply, 0, indentSize, commmentWidth, originalPoster)
+	}
+	return header + commentTree
+}
+
+func getHeader(c Comments) string {
 	headline := c.Title + getDomainText(c.Domain, c.URL, c.ID) + NewLine
 	headlineWithoutHyperlink := c.Title + getDomainTextWithoutHyperlink(c.Domain, c.URL, c.ID) + NewLine
 	headlineWithoutHyperlinkLength := term.Len(headlineWithoutHyperlink)
@@ -34,14 +44,14 @@ func appendCommentsHeader(c Comments, commentTree *string) {
 	infoLineLength := term.Len(infoLine)
 	longestLine := max(headlineWithoutHyperlinkLength, infoLineLength)
 
-	*commentTree += headline + infoLine
-	*commentTree += parseRootComment(c.Comment, longestLine)
+	header := headline + infoLine
+	header += parseRootComment(c.Comment, longestLine)
 
 	for i := 0; i < longestLine; i++ {
-		*commentTree += "-"
+		header += "-"
 	}
 
-	*commentTree += DoubleNewLine
+	return header + DoubleNewLine
 }
 
 func getDomainText(domain string, URL string, id int) string {
@@ -92,14 +102,14 @@ func parseRootComment(comment string, lineLength int) string {
 	return fullComment
 }
 
-func prettyPrintComments(c Comments, commentTree *string, level int, indentSize int, commmentWidth int, op string) string {
+func prettyPrintComments(c Comments, level int, indentSize int, commmentWidth int, op string) string {
 	comment := parseComment(c.Comment)
 	limit := getCommentWidth(level, indentSize, commmentWidth)
 	markedAuthor := markOPAndMods(c.Author, op)
 
-	fullComment := ""
 	paragraphs := strings.Split(comment, "<p>")
 	lastParagraph := len(paragraphs) - 1
+	fullComment := ""
 	for i, paragraph := range paragraphs {
 		wrapped := wordwrap.WrapString(paragraph, uint(limit))
 		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(level, indentSize), true)
@@ -117,11 +127,11 @@ func prettyPrintComments(c Comments, commentTree *string, level int, indentSize 
 	wrappedAndIndentedComment := wrappedAndIndentedAuthor + " " + dimmed(c.Time) + NewLine
 	wrappedAndIndentedComment += fullComment
 
-	*commentTree = *commentTree + wrappedAndIndentedComment
+	commentTree := wrappedAndIndentedComment
 	for _, s := range c.Replies {
-		prettyPrintComments(*s, commentTree, level+1, indentSize, commmentWidth, op)
+		commentTree += prettyPrintComments(*s, level+1, indentSize, commmentWidth, op)
 	}
-	return *commentTree
+	return commentTree
 }
 
 func max(x, y int) int {

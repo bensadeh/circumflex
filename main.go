@@ -95,13 +95,8 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *Submissio
 					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + id)
 					var jComments = new(Comments)
 					json.Unmarshal(JSON, jComments)
-					originalPoster := sh.Submissions[i].Author
-					commentTree := ""
-					appendCommentsHeader(*jComments, &commentTree)
-					for _, s := range jComments.Replies {
-						commentTree = prettyPrintComments(*s, &commentTree, 0, 5, 70, originalPoster)
-					}
 
+					commentTree := printCommentTree(*jComments, 5, 70)
 					outputStringToLess(commentTree)
 				}
 			}
