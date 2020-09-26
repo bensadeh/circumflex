@@ -80,7 +80,6 @@ func parseRootComment(comment string, lineLength int) string {
 		return ""
 	}
 
-	wrapper := wordwrap.Wrapper(lineLength, false)
 	parsedComment := parseComment(comment)
 
 	commentLines := strings.Split(parsedComment, "<p>")
@@ -88,7 +87,7 @@ func parseRootComment(comment string, lineLength int) string {
 	firstParagraph := 0
 	fullComment := ""
 	for i, line := range commentLines {
-		wrapped := wrapper(line)
+		wrapped := wordwrap.WrapString(line, uint(lineLength))
 		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(0, 0), true)
 		if i == firstParagraph {
 			fullComment = NewLine

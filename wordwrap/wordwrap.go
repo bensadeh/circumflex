@@ -1,13 +1,113 @@
-// wordwrap retreived from github.com/eidolon/wordwrap. Modified
-// to not include hidden characters when calculating word and line length.
 package wordwrap
 
 import (
 	"bytes"
 	"strings"
+	"unicode"
 
 	term "github.com/MichaelMure/go-term-text"
 )
+
+const (
+	normal = "\033[0m"
+	dimmed = "\033[2m"
+	italic = "\033[3m"
+)
+
+// WrapString wraps the given string within lim width in characters.
+func WrapString(s string, lim uint) string {
+	// Initialize a buffer with a slightly larger size to account for breaks
+	init := make([]byte, 0, len(s))
+	buf := bytes.NewBuffer(init)
+
+	var current uint
+	var wordBuf, spaceBuf bytes.Buffer
+
+	for _, char := range s {
+		if char == '\n' {
+			if wordBuf.Len() == 0 {
+				if current+uint(spaceBuf.Len()) > lim {
+					current = 0
+				} else {
+					current += uint(spaceBuf.Len())
+					spaceBuf.WriteTo(buf)
+				}
+				spaceBuf.Reset()
+			} else {
+				current += uint(spaceBuf.Len() + wordBuf.Len())
+				spaceBuf.WriteTo(buf)
+				spaceBuf.Reset()
+				wordBuf.WriteTo(buf)
+				wordBuf.Reset()
+			}
+			buf.WriteRune(char)
+			current = 0
+		} else if unicode.IsSpace(char) {
+			if spaceBuf.Len() == 0 || wordBuf.Len() > 0 {
+				current += uint(spaceBuf.Len() + wordBuf.Len())
+				spaceBuf.WriteTo(buf)
+				spaceBuf.Reset()
+				wordBuf.WriteTo(buf)
+				wordBuf.Reset()
+			}
+
+			spaceBuf.WriteRune(char)
+		} else {
+
+			wordBuf.WriteRune(char)
+
+			if current+uint(spaceBuf.Len()+wordBuf.Len()) > lim && uint(wordBuf.Len()) < lim {
+				buf.WriteRune('\n')
+				current = 0
+				spaceBuf.Reset()
+			}
+		}
+	}
+
+	if wordBuf.Len() == 0 {
+		if current+uint(spaceBuf.Len()) <= lim {
+			spaceBuf.WriteTo(buf)
+		}
+	} else {
+		spaceBuf.WriteTo(buf)
+		wordBuf.WriteTo(buf)
+	}
+
+	formatted := formatWrapped(buf.String())
+	return formatted
+}
+
+func formatWrapped(wrapped string) string {
+	lines := strings.Split(wrapped, "\n")
+	previousLineWasItalic := false
+	previousLineWasDim := false
+	formattedWrapped := ""
+	formattedLine := ""
+
+	for _, line := range lines {
+		if previousLineWasItalic {
+			formattedLine = italic + line + "\n"
+			formattedWrapped += formattedLine
+		} else if previousLineWasDim {
+			formattedLine = dimmed + line + "\n"
+			formattedWrapped += formattedLine
+		} else {
+			formattedLine = line + "\n"
+			formattedWrapped += formattedLine
+		}
+
+		previousLineWasItalic = containsUnclosedBlock(formattedLine, italic)
+		previousLineWasDim = containsUnclosedBlock(formattedLine, dimmed)
+	}
+	wrappedWithRemovedTrailingNewline := strings.TrimSuffix(formattedWrapped, "\n")
+	return wrappedWithRemovedTrailingNewline
+}
+
+func containsUnclosedBlock(line string, block string) bool {
+	numberOfOpenBlocks := strings.Count(line, block)
+	numberOfClosedBlocks := strings.Count(line, normal)
+	return numberOfOpenBlocks > numberOfClosedBlocks
+}
 
 // Indent a string with the given prefix at the start of either the first, or all lines.
 //
@@ -32,97 +132,4 @@ func Indent(input string, prefix string, prefixAll bool) string {
 	}
 
 	return strings.Join(result, "\n")
-}
-
-// WrapperFunc takes a given input string, and returns some wrapped output. The wrapping may
-// be altered by currying the wrapper function.
-type WrapperFunc func(string) string
-
-// Wrapper creates a curried wrapper function (see WrapperFunc) with the given options applied to
-// it. Create a WrapperFunc and store it is a variable, then re-use it elsewhere.
-//
-//  limit      - The maximum number of characters for a line.
-//  breakWords - Whether or not to break long words onto new lines.
-//
-// Example usage:
-//
-//  wrapper := wordwrap.Wrapper(10, false)
-//  wrapped := wrapper("This string would be split onto several new lines")
-func Wrapper(limit int, breakWords bool) WrapperFunc {
-	if limit < 1 {
-		panic("Wrapper limit cannot be less than 1.")
-	}
-
-	return func(input string) string {
-		var wrapped string
-
-		// Split string into array of words
-		words := strings.Fields(input)
-
-		if len(words) == 0 {
-			return wrapped
-		}
-
-		remaining := limit
-
-		if breakWords {
-			words = doBreakWords(words, limit)
-		}
-
-		for _, word := range words {
-			if term.Len(word)+1 > remaining {
-				if term.Len(wrapped) > 0 {
-					wrapped += "\n"
-				}
-
-				wrapped += word
-				remaining = limit - term.Len(word)
-			} else {
-				if term.Len(wrapped) > 0 {
-					wrapped += " "
-				}
-
-				wrapped += word
-				remaining = remaining - (term.Len(word) + 1)
-			}
-		}
-
-		return wrapped
-	}
-}
-
-// Break up any words in a given array of words that exceed the given limit.
-func doBreakWords(words []string, limit int) []string {
-	var result []string
-
-	for _, word := range words {
-		if term.Len(word) > limit {
-			var parts []string
-			var partBuf bytes.Buffer
-
-			for _, char := range word {
-				atLimit := partBuf.Len() == limit
-
-				if atLimit {
-					parts = append(parts, partBuf.String())
-
-					partBuf.Reset()
-				}
-
-				partBuf.WriteRune(char)
-			}
-
-			if partBuf.Len() > 0 {
-				parts = append(parts, partBuf.String())
-			}
-
-			for _, part := range parts {
-				result = append(result, part)
-			}
-		} else {
-			result = append(result, word)
-		}
-	}
-
-	return result
 }
