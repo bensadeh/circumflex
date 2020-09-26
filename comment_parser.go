@@ -123,7 +123,7 @@ func prettyPrintComments(c Comments, level int, indentSize int, commmentWidth in
 	}
 
 	author := wordwrap.Indent(markedAuthor, getIndentBlockWithoutBar(level, indentSize), true)
-	authorAndTimeStamp := author + " " + dimmed(c.Time) + NewLine
+	authorAndTimeStamp := author + " " + dimmed(c.Time) + getTopLevelCommentAnchor(level) + NewLine
 	fullCommentWithAuthor := authorAndTimeStamp + fullComment
 
 	for _, s := range c.Replies {
@@ -137,6 +137,13 @@ func max(x, y int) int {
 		return y
 	}
 	return x
+}
+
+func getTopLevelCommentAnchor(level int) string {
+	if level == 0 {
+		return " ::"
+	}
+	return ""
 }
 
 func getCommentWidth(level int, indentSize int, commentWidth int) int {
