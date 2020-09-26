@@ -81,26 +81,50 @@ func formatWrapped(wrapped string) string {
 	lines := strings.Split(wrapped, "\n")
 	previousLineWasItalic := false
 	previousLineWasDim := false
-	formattedWrapped := ""
-	formattedLine := ""
+	allFormattedLines := ""
 
 	for _, line := range lines {
+		currentLineIsUnclosedItalic := containsUnclosedBlock(line, italic)
+		currentLineIsUnclosedDim := containsUnclosedBlock(line, dimmed)
+
 		if previousLineWasItalic {
-			formattedLine = italic + line + "\n"
-			formattedWrapped += formattedLine
-		} else if previousLineWasDim {
-			formattedLine = dimmed + line + "\n"
-			formattedWrapped += formattedLine
-		} else {
-			formattedLine = line + "\n"
-			formattedWrapped += formattedLine
+			if lineClosesBlock(line, italic) {
+				previousLineWasItalic = false
+			} else {
+				previousLineWasItalic = true
+			}
+			allFormattedLines += italic + line + normal + "\n"
+			continue
 		}
 
-		previousLineWasItalic = containsUnclosedBlock(formattedLine, italic)
-		previousLineWasDim = containsUnclosedBlock(formattedLine, dimmed)
+		if previousLineWasDim {
+			if lineClosesBlock(line, dimmed) {
+				previousLineWasDim = false
+			} else {
+				previousLineWasDim = true
+			}
+			allFormattedLines += dimmed + line + normal + "\n"
+			continue
+		}
+
+		if currentLineIsUnclosedItalic || currentLineIsUnclosedDim {
+			allFormattedLines += line + normal + "\n"
+		} else {
+			allFormattedLines += line + "\n"
+		}
+
+		previousLineWasItalic = currentLineIsUnclosedItalic
+		previousLineWasDim = currentLineIsUnclosedDim
+
 	}
-	wrappedWithRemovedTrailingNewline := strings.TrimSuffix(formattedWrapped, "\n")
+	wrappedWithRemovedTrailingNewline := strings.TrimSuffix(allFormattedLines, "\n")
 	return wrappedWithRemovedTrailingNewline
+}
+
+func lineClosesBlock(line string, block string) bool {
+	numberOfOpenBlocks := strings.Count(line, block)
+	numberOfClosedBlocks := strings.Count(line, normal)
+	return numberOfOpenBlocks < numberOfClosedBlocks
 }
 
 func containsUnclosedBlock(line string, block string) bool {
