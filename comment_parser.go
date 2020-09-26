@@ -110,27 +110,26 @@ func prettyPrintComments(c Comments, level int, indentSize int, commmentWidth in
 	lastParagraph := len(paragraphs) - 1
 	fullComment := ""
 	for i, paragraph := range paragraphs {
-		wrapped := wordwrap.WrapString(paragraph, uint(limit))
-		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(level, indentSize), true)
-		barOnEmptyLine := wordwrap.Indent("", getIndentBlock(level, indentSize), true)
+		wrappedParagraph := wordwrap.WrapString(paragraph, uint(limit))
+		wrappedAndIndentedParagraph := wordwrap.Indent(wrappedParagraph, getIndentBlock(level, indentSize), true)
 
 		if i == lastParagraph {
-			fullComment += wrappedAndIndentedComment + DoubleNewLine
+			fullComment += wrappedAndIndentedParagraph + DoubleNewLine
 			break
 		}
 
-		fullComment += wrappedAndIndentedComment + NewLine + barOnEmptyLine + NewLine
+		barOnEmptyLine := wordwrap.Indent("", getIndentBlock(level, indentSize), true)
+		fullComment += wrappedAndIndentedParagraph + NewLine + barOnEmptyLine + NewLine
 	}
 
-	wrappedAndIndentedAuthor := wordwrap.Indent(markedAuthor, getIndentBlockWithoutBar(level, indentSize), true)
-	wrappedAndIndentedComment := wrappedAndIndentedAuthor + " " + dimmed(c.Time) + NewLine
-	wrappedAndIndentedComment += fullComment
+	author := wordwrap.Indent(markedAuthor, getIndentBlockWithoutBar(level, indentSize), true)
+	authorAndTimeStamp := author + " " + dimmed(c.Time) + NewLine
+	fullCommentWithAuthor := authorAndTimeStamp + fullComment
 
-	commentTree := wrappedAndIndentedComment
 	for _, s := range c.Replies {
-		commentTree += prettyPrintComments(*s, level+1, indentSize, commmentWidth, op)
+		fullCommentWithAuthor += prettyPrintComments(*s, level+1, indentSize, commmentWidth, op)
 	}
-	return commentTree
+	return fullCommentWithAuthor
 }
 
 func max(x, y int) int {
