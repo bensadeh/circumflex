@@ -11,7 +11,7 @@ import (
 )
 
 // Comments represent the JSON structure as
-// retreived from cheeaun's unoffical HN API
+// retrieved from cheeaun's unofficial HN API
 type Comments struct {
 	Author        string      `json:"user"`
 	Title         string      `json:"title"`
@@ -25,12 +25,12 @@ type Comments struct {
 	Replies       []*Comments `json:"comments"`
 }
 
-func printCommentTree(comments Comments, indentSize int, commmentWidth int) string {
+func printCommentTree(comments Comments, indentSize int, commentWith int) string {
 	header := getHeader(comments)
 	originalPoster := comments.Author
 	commentTree := ""
 	for _, reply := range comments.Replies {
-		commentTree += prettyPrintComments(*reply, 0, indentSize, commmentWidth, originalPoster)
+		commentTree += prettyPrintComments(*reply, 0, indentSize, commentWith, originalPoster)
 	}
 	return header + commentTree
 }
@@ -101,9 +101,9 @@ func parseRootComment(comment string, lineLength int) string {
 	return fullComment
 }
 
-func prettyPrintComments(c Comments, level int, indentSize int, commmentWidth int, op string) string {
+func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int, op string) string {
 	comment := parseComment(c.Comment)
-	limit := getCommentWidth(level, indentSize, commmentWidth)
+	limit := getCommentWidth(level, indentSize, commentWidth)
 	markedAuthor := markOPAndMods(c.Author, op)
 
 	paragraphs := strings.Split(comment, "<p>")
@@ -127,7 +127,7 @@ func prettyPrintComments(c Comments, level int, indentSize int, commmentWidth in
 	fullCommentWithAuthor := authorAndTimeStamp + fullComment
 
 	for _, s := range c.Replies {
-		fullCommentWithAuthor += prettyPrintComments(*s, level+1, indentSize, commmentWidth, op)
+		fullCommentWithAuthor += prettyPrintComments(*s, level+1, indentSize, commentWidth, op)
 	}
 	return fullCommentWithAuthor
 }
