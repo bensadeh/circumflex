@@ -77,7 +77,7 @@ func createNewList(app *cview.Application, sh *SubmissionHandler) *cview.List {
 	list.ShowSecondaryText(true)
 	setSelectedFunction(app, list, sh)
 
-	addListItems(list, app, sh)
+	addListItems(list, sh)
 
 	return list
 }
@@ -87,12 +87,12 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *Submissio
 		app.Suspend(func() {
 			for index := range sh.Submissions {
 				if index == i {
-					y, _ := terminal.Height()
-					storiesToView := int(y / 2)
-					storyRank := (sh.CurrentPage)*storiesToView + i
+					// y, _ := terminal.Height()
+					// storiesToView := int(y / 2)
+					// storyRank := (sh.CurrentPage)*storiesToView + i
 
-					id := strconv.Itoa(sh.Submissions[storyRank].ID)
-					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + id)
+					// id := strconv.Itoa(sh.Submissions[storyRank].ID)
+					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + "24445936")
 					var jComments = new(Comments)
 					json.Unmarshal(JSON, jComments)
 
@@ -104,7 +104,7 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *Submissio
 	})
 }
 
-func addListItems(list *cview.List, app *cview.Application, sh *SubmissionHandler) {
+func addListItems(list *cview.List, sh *SubmissionHandler) {
 	y, _ := terminal.Height()
 	storiesToShow := int(y/2) * (sh.CurrentPage + 1)
 
@@ -128,15 +128,15 @@ func getSubmissionInfo(i int, submission Submission) (string, string) {
 func clearScreen() {
 	c := exec.Command("clear")
 	c.Stdout = os.Stdout
-	c.Run()
+	_ = c.Run()
 }
 
 func outputStringToLess(output string) {
-	cmd := exec.Command("less", "-r")
-	cmd.Stdin = strings.NewReader(output)
-	cmd.Stdout = os.Stdout
+	command := exec.Command("less", "-r")
+	command.Stdin = strings.NewReader(output)
+	command.Stdout = os.Stdout
 
-	err := cmd.Run()
+	err := command.Run()
 	if err != nil {
 		log.Fatal(err)
 	}

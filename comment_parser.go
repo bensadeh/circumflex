@@ -37,7 +37,7 @@ func printCommentTree(comments Comments, indentSize int, commentWith int) string
 
 func getHeader(c Comments) string {
 	headline := c.Title + getDomainText(c.Domain, c.URL, c.ID) + NewLine
-	headlineWithoutHyperlink := c.Title + getDomainTextWithoutHyperlink(c.Domain, c.URL, c.ID) + NewLine
+	headlineWithoutHyperlink := c.Title + getDomainTextWithoutHyperlink(c.Domain, c.ID) + NewLine
 	headlineWithoutHyperlinkLength := term.Len(headlineWithoutHyperlink)
 	infoLine := dimmed(strconv.Itoa(c.Points)+" points by "+c.Author+" "+c.Time+" • "+strconv.Itoa(c.CommentsCount)+" comments") + NewLine
 
@@ -67,7 +67,7 @@ func getHyperlinkText(URL string, text string) string {
 	return Link1 + URL + Link2 + text + Link3
 }
 
-func getDomainTextWithoutHyperlink(domain string, URL string, id int) string {
+func getDomainTextWithoutHyperlink(domain string, id int) string {
 	if domain != "" {
 		return " " + paren(domain)
 	}

@@ -17,7 +17,7 @@ const (
 // WrapString wraps the given string within lim width in characters.
 func WrapString(s string, lim uint) string {
 	// Initialize a buffer with a slightly larger size to account for breaks
-	init := make([]byte, 0, len(s))
+	init := make([]byte, 0, term.Len(s))
 	buf := bytes.NewBuffer(init)
 
 	var current uint

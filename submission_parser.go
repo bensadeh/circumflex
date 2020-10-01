@@ -17,7 +17,7 @@ type SubmissionHandler struct {
 }
 
 // Submission represents the JSON structure as
-// retreived from cheeaun's unoffical HN API
+// retrieved from cheeaun's unofficial HN API
 type Submission struct {
 	ID            int    `json:"id"`
 	Title         string `json:"title"`
@@ -35,7 +35,7 @@ func fetchSubmissions(sh *SubmissionHandler) {
 	p := strconv.Itoa(sh.PagesRetreived)
 	JSON, _ := get("http://node-hnapi.herokuapp.com/news?page=" + p)
 	var submissions []Submission
-	json.Unmarshal(JSON, &submissions)
+	_ = json.Unmarshal(JSON, &submissions)
 	sh.Submissions = append(sh.Submissions, submissions...)
 }
 
