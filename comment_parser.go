@@ -141,7 +141,7 @@ func max(x, y int) int {
 
 func getTopLevelCommentAnchor(level int) string {
 	if level == 0 {
-		return " ::"
+		return dimmed(" ::")
 	}
 	return ""
 }
