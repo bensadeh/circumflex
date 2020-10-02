@@ -1,7 +1,7 @@
 package main
 
 import (
-	newwrap "github.com/MichaelMure/go-term-text"
+	text "github.com/MichaelMure/go-term-text"
 	"regexp"
 	"strconv"
 	"strings"
@@ -92,12 +92,12 @@ func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int
 	adjustedCommentWidth := getAdjustedCommentWidth(level, indentSize, commentWidth)
 
 	indentBlock := getIndentBlock(level, indentSize)
-	paddingWithBlock := newwrap.WrapPad(indentBlock)
-	wrappedAndPaddedComment, _ := newwrap.Wrap(comment, adjustedCommentWidth+indentSize, paddingWithBlock)
+	paddingWithBlock := text.WrapPad(indentBlock)
+	wrappedAndPaddedComment, _ := text.Wrap(comment, adjustedCommentWidth+indentSize, paddingWithBlock)
 
-	paddingWithNoBlock := newwrap.WrapPad(getIndentBlockWithoutBar(level, indentSize))
+	paddingWithNoBlock := text.WrapPad(getIndentBlockWithoutBar(level, indentSize))
 	author := labelAuthor(c.Author, originalPoster, parentPoster) + " " + dimmed(c.Time) + getTopLevelCommentAnchor(level) + NewLine
-	paddedAuthor, _ := newwrap.Wrap(author, commentWidth, paddingWithNoBlock)
+	paddedAuthor, _ := text.Wrap(author, commentWidth, paddingWithNoBlock)
 	fullComment := paddedAuthor + wrappedAndPaddedComment + DoubleNewLine
 	fullComment = applyURLs(fullComment, URLs)
 
