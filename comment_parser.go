@@ -1,10 +1,9 @@
 package main
 
 import (
+	newwrap "github.com/MichaelMure/go-term-text"
 	"strconv"
 	"strings"
-
-	"clx/wordwrap"
 
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
@@ -66,24 +65,24 @@ func parseRootComment(comment string, lineLength int) string {
 		return ""
 	}
 
-	parsedComment := parseComment(comment)
-
-	commentLines := strings.Split(parsedComment, "<p>")
-	lastParagraph := len(commentLines) - 1
-	firstParagraph := 0
+	//parsedComment := parseComment(comment)
+	//
+	//commentLines := strings.Split(parsedComment, "<p>")
+	//lastParagraph := len(commentLines) - 1
+	//firstParagraph := 0
 	fullComment := ""
-	for i, line := range commentLines {
-		wrapped := wordwrap.WrapString(line, uint(lineLength))
-		wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(0, 0), true)
-		if i == firstParagraph {
-			fullComment = NewLine
-		}
-		if i == lastParagraph {
-			fullComment += wrappedAndIndentedComment + NewLine
-		} else {
-			fullComment += wrappedAndIndentedComment + DoubleNewLine
-		}
-	}
+	//for i, line := range commentLines {
+	//	wrapped := wordwrap.WrapString(line, uint(lineLength))
+	//	wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(0, 0), true)
+	//	if i == firstParagraph {
+	//		fullComment = NewLine
+	//	}
+	//	if i == lastParagraph {
+	//		fullComment += wrappedAndIndentedComment + NewLine
+	//	} else {
+	//		fullComment += wrappedAndIndentedComment + DoubleNewLine
+	//	}
+	//}
 	return fullComment
 }
 
@@ -92,25 +91,14 @@ func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int
 	limit := getCommentWidth(level, indentSize, commentWidth)
 	markedAuthor := markOPAndMods(c.Author, op)
 
-	paragraphs := strings.Split(comment, "<p>")
-	lastParagraph := len(paragraphs) - 1
-	fullComment := ""
-	for i, paragraph := range paragraphs {
-		wrappedParagraph := wordwrap.WrapString(paragraph, uint(limit))
-		wrappedAndIndentedParagraph := wordwrap.Indent(wrappedParagraph, getIndentBlock(level, indentSize), true)
+	indentBlock := getIndentBlock(level, indentSize)
+	paddingWithBlock := newwrap.WrapPad(indentBlock)
+	wrappedAndPaddedComment, _ := newwrap.Wrap(comment, limit, paddingWithBlock)
 
-		if i == lastParagraph {
-			fullComment += wrappedAndIndentedParagraph + DoubleNewLine
-			break
-		}
-
-		barOnEmptyLine := wordwrap.Indent("", getIndentBlock(level, indentSize), true)
-		fullComment += wrappedAndIndentedParagraph + NewLine + barOnEmptyLine + NewLine
-	}
-
-	author := wordwrap.Indent(markedAuthor, getIndentBlockWithoutBar(level, indentSize), true)
+	paddingWithNoBlock := newwrap.WrapPad(getIndentBlockWithoutBar(level, indentSize))
+	author, _ := newwrap.Wrap(markedAuthor, commentWidth, paddingWithNoBlock)
 	authorAndTimeStamp := author + " " + dimmed(c.Time) + getTopLevelCommentAnchor(level) + NewLine
-	fullCommentWithAuthor := authorAndTimeStamp + fullComment
+	fullCommentWithAuthor := authorAndTimeStamp + wrappedAndPaddedComment + DoubleNewLine
 
 	for _, s := range c.Replies {
 		fullCommentWithAuthor += prettyPrintComments(*s, level+1, indentSize, commentWidth, op)
@@ -202,12 +190,16 @@ func replaceCharacters(input string) string {
 func replaceHTML(input string) string {
 	input = strings.Replace(input, "<p>", "", 1)
 
+	input = strings.ReplaceAll(input, "<p>", DoubleNewLine)
 	input = strings.ReplaceAll(input, "<i>", Italic)
 	input = strings.ReplaceAll(input, "</i>", Normal)
 	input = strings.ReplaceAll(input, "<pre><code>", Dimmed)
 	input = strings.ReplaceAll(input, "</code></pre>", Normal)
-	input = strings.ReplaceAll(input, `<a href="`, Link1)
-	input = strings.ReplaceAll(input, `" rel="nofollow">`, Link2)
-	input = strings.ReplaceAll(input, `</a>`, Link3)
+	//input = strings.ReplaceAll(input, `<a href="`, Link1)
+	//input = strings.ReplaceAll(input, `" rel="nofollow">`, Link2)
+	//input = strings.ReplaceAll(input, `</a>`, Link3)
+	input = strings.ReplaceAll(input, `<a href="`, "")
+	input = strings.ReplaceAll(input, `" rel="nofollow">`, "")
+	input = strings.ReplaceAll(input, `</a>`, "")
 	return input
 }
