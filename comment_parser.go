@@ -88,7 +88,7 @@ func parseRootComment(comment string, lineLength int) string {
 }
 
 func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int, op string) string {
-	comment := parseComment(c.Comment)
+	comment, _ := parseComment(c.Comment)
 	adjustedCommentWidth := getAdjustedCommentWidth(level, indentSize, commentWidth)
 
 	indentBlock := getIndentBlock(level, indentSize)
@@ -171,11 +171,11 @@ func getIndentBlock(level int, indentSize int) string {
 	return indentation
 }
 
-func parseComment(comment string) string {
+func parseComment(comment string) (string, []string) {
 	comment = replaceCharacters(comment)
-	_ = extractLinks(comment)
 	comment = replaceHTML(comment)
-	return comment
+	URLs := extractURLs(comment)
+	return comment, URLs
 }
 
 func replaceCharacters(input string) string {
@@ -204,15 +204,14 @@ func replaceHTML(input string) string {
 
 
 
-func extractLinks(input string) []string {
+func extractURLs(input string) []string {
 	expForFirstTag := regexp.MustCompile(`<a href=".*?"`)
-	links := expForFirstTag.FindAllString(input, 10)
+	URLs := expForFirstTag.FindAllString(input, 10)
 
-	//println("Number of Links: " + strconv.Itoa(len(links)))
-	for _, link := range links {
-		link = strings.ReplaceAll(link, `<a href="`, "")
-		link = strings.ReplaceAll(link, `"`, "")
-		println(link)
+	for _, URL := range URLs {
+		URL = strings.ReplaceAll(URL, `<a href="`, "")
+		URL = strings.ReplaceAll(URL, `"`, "")
+		println(URL)
 	}
-	return links
+	return URLs
 }
