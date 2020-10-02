@@ -88,22 +88,21 @@ func parseRootComment(comment string, lineLength int) string {
 
 func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int, op string) string {
 	comment := parseComment(c.Comment)
-	limit := getCommentWidth(level, indentSize, commentWidth)
-	markedAuthor := markOPAndMods(c.Author, op)
+	adjustedCommentWidth := getAdjustedCommentWidth(level, indentSize, commentWidth)
 
 	indentBlock := getIndentBlock(level, indentSize)
 	paddingWithBlock := newwrap.WrapPad(indentBlock)
-	wrappedAndPaddedComment, _ := newwrap.Wrap(comment, limit, paddingWithBlock)
+	wrappedAndPaddedComment, _ := newwrap.Wrap(comment, adjustedCommentWidth + indentSize, paddingWithBlock)
 
 	paddingWithNoBlock := newwrap.WrapPad(getIndentBlockWithoutBar(level, indentSize))
-	author, _ := newwrap.Wrap(markedAuthor, commentWidth, paddingWithNoBlock)
-	authorAndTimeStamp := author + " " + dimmed(c.Time) + getTopLevelCommentAnchor(level) + NewLine
-	fullCommentWithAuthor := authorAndTimeStamp + wrappedAndPaddedComment + DoubleNewLine
+	author := markOPAndMods(c.Author, op) + " " + dimmed(c.Time) + getTopLevelCommentAnchor(level) + NewLine
+	paddedAuthor, _ := newwrap.Wrap(author, commentWidth, paddingWithNoBlock)
+	fullComment := paddedAuthor + wrappedAndPaddedComment + DoubleNewLine
 
 	for _, s := range c.Replies {
-		fullCommentWithAuthor += prettyPrintComments(*s, level+1, indentSize, commentWidth, op)
+		fullComment += prettyPrintComments(*s, level+1, indentSize, commentWidth, op)
 	}
-	return fullCommentWithAuthor
+	return fullComment
 }
 
 func getTopLevelCommentAnchor(level int) string {
@@ -113,14 +112,14 @@ func getTopLevelCommentAnchor(level int) string {
 	return ""
 }
 
-func getCommentWidth(level int, indentSize int, commentWidth int) int {
+// Adjusted comment width shortens the commentWidth if the available screen size
+// is smaller than the size of the commentWidth
+func getAdjustedCommentWidth(level int, indentSize int, commentWidth int) int {
 	x, _ := terminal.Width()
 	screenWidth := int(x)
-	// hack: the wrapper is sometimes off by 1, so we pad
-	// the wrapper to end the line slightly earlier
-	padding := 1
-	actualIndentSize := indentSize * level
-	usableScreenSize := screenWidth - actualIndentSize - padding
+
+	currentIndentSize := indentSize * level
+	usableScreenSize := screenWidth - currentIndentSize
 
 	if commentWidth == 0 {
 		return max(usableScreenSize, 40)
