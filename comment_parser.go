@@ -29,7 +29,7 @@ func printCommentTree(comments Comments, indentSize int, commentWith int) string
 	originalPoster := comments.Author
 	commentTree := ""
 	for _, reply := range comments.Replies {
-		commentTree += prettyPrintComments(*reply, 0, indentSize, commentWith, originalPoster)
+		commentTree += prettyPrintComments(*reply, 0, indentSize, commentWith, originalPoster, "")
 	}
 	return header + commentTree
 }
@@ -87,7 +87,7 @@ func parseRootComment(comment string, lineLength int) string {
 	return fullComment
 }
 
-func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int, op string) string {
+func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int, originalPoster string, parentPoster string) string {
 	comment, URLs := parseComment(c.Comment)
 	adjustedCommentWidth := getAdjustedCommentWidth(level, indentSize, commentWidth)
 
@@ -96,13 +96,17 @@ func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int
 	wrappedAndPaddedComment, _ := newwrap.Wrap(comment, adjustedCommentWidth+indentSize, paddingWithBlock)
 
 	paddingWithNoBlock := newwrap.WrapPad(getIndentBlockWithoutBar(level, indentSize))
-	author := markOPAndMods(c.Author, op) + " " + dimmed(c.Time) + getTopLevelCommentAnchor(level) + NewLine
+	author := labelAuthor(c.Author, originalPoster, parentPoster) + " " + dimmed(c.Time) + getTopLevelCommentAnchor(level) + NewLine
 	paddedAuthor, _ := newwrap.Wrap(author, commentWidth, paddingWithNoBlock)
 	fullComment := paddedAuthor + wrappedAndPaddedComment + DoubleNewLine
 	fullComment = applyURLs(fullComment, URLs)
 
+	if level == 0 {
+		parentPoster = c.Author
+	}
+
 	for _, s := range c.Replies {
-		fullComment += prettyPrintComments(*s, level+1, indentSize, commentWidth, op)
+		fullComment += prettyPrintComments(*s, level+1, indentSize, commentWidth, originalPoster, parentPoster)
 	}
 	return fullComment
 }
@@ -164,15 +168,21 @@ func max(x, y int) int {
 	}
 	return x
 }
-func markOPAndMods(author, op string) string {
-	markedAuthor := bold(author)
-	if author == "dang" || author == "sctb" {
-		markedAuthor = markedAuthor + green(" mod")
+func labelAuthor(author, originalPoster, parentPoster string) string {
+	authorInBold := bold(author)
+
+	switch author {
+	case "dang":
+		return authorInBold + green(" mod")
+	case "sctb":
+		return authorInBold + green(" mod")
+	case originalPoster:
+		return authorInBold + red(" OP")
+	case parentPoster:
+		return authorInBold + purple(" PP")
+	default:
+		return authorInBold
 	}
-	if author == op {
-		markedAuthor = markedAuthor + red(" OP")
-	}
-	return markedAuthor
 }
 
 func getIndentBlockWithoutBar(level int, indentSize int) string {

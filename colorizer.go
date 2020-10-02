@@ -40,6 +40,10 @@ func green(text string) string {
 	return Green + text + Normal
 }
 
+func purple(text string) string {
+	return Purple + text + Normal
+}
+
 func paren(text string) string {
 	return "(" + text + ")"
 }
