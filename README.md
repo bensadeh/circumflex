@@ -3,7 +3,7 @@
 </p>
 
 #
-`circumflex` is a command line tool for browsing Hacker&nbsp;News submissions and reading comments.
+`circumflex` is a command line tool for browsing Hacker&nbsp;News submissions and comments.
 
 ## Features
 - Overview of top submissions
