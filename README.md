@@ -37,7 +37,7 @@ The first keystroke is lost when viewing comments in `less`, see [gdamore/tcell#
 * [cobra](https://github.com/spf13/cobra) for the CLI
 * [tcell](https://github.com/gdamore/tcell) and [cview](https://gitlab.com/tslocum/cview) for the UI
 * [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) for fetching submissions and comments
-* [less](http://greenwoodsoftware.com/less/) for viewing comments
+* [`less`](http://greenwoodsoftware.com/less/) for viewing comments
 * [Wordwrap](https://github.com/eidolon/wordwrap) and [go-wordwrap](https://github.com/mitchellh/go-wordwrap) for wrapping and indenting comments
 
 Screenshots use:
