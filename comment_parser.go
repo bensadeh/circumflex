@@ -88,7 +88,7 @@ func parseRootComment(comment string, lineLength int) string {
 }
 
 func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int, op string) string {
-	comment, _ := parseComment(c.Comment)
+	comment, URLs := parseComment(c.Comment)
 	adjustedCommentWidth := getAdjustedCommentWidth(level, indentSize, commentWidth)
 
 	indentBlock := getIndentBlock(level, indentSize)
@@ -99,11 +99,37 @@ func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int
 	author := markOPAndMods(c.Author, op) + " " + dimmed(c.Time) + getTopLevelCommentAnchor(level) + NewLine
 	paddedAuthor, _ := newwrap.Wrap(author, commentWidth, paddingWithNoBlock)
 	fullComment := paddedAuthor + wrappedAndPaddedComment + DoubleNewLine
+	fullComment = applyURLs(fullComment, URLs)
 
 	for _, s := range c.Replies {
 		fullComment += prettyPrintComments(*s, level+1, indentSize, commentWidth, op)
 	}
 	return fullComment
+}
+
+func applyURLs(comment string, URLs []string) string {
+	for _, URL := range URLs {
+		truncatedURL := truncateURL(URL)
+		URLWithHyperlinkCode := getHyperlinkText(URL, truncatedURL)
+		comment = strings.ReplaceAll(comment, truncatedURL, URLWithHyperlinkCode)
+	}
+	return comment
+}
+
+func truncateURL(URL string) string {
+	if len(URL) < 60 {
+		return URL
+	}
+
+	truncatedURL := ""
+	for i, c := range URL {
+		if i == 60 {
+			truncatedURL += "..."
+			break
+		}
+		truncatedURL += string(c)
+	}
+	return truncatedURL
 }
 
 func getTopLevelCommentAnchor(level int) string {
@@ -175,6 +201,7 @@ func parseComment(comment string) (string, []string) {
 	comment = replaceCharacters(comment)
 	comment = replaceHTML(comment)
 	URLs := extractURLs(comment)
+	comment = trimURLs(comment)
 	return comment, URLs
 }
 
@@ -194,24 +221,25 @@ func replaceHTML(input string) string {
 	input = strings.ReplaceAll(input, "<p>", DoubleNewLine)
 	input = strings.ReplaceAll(input, "<i>", Italic)
 	input = strings.ReplaceAll(input, "</i>", Normal)
+	input = strings.ReplaceAll(input, "</a>", "")
 	input = strings.ReplaceAll(input, "<pre><code>", Dimmed)
 	input = strings.ReplaceAll(input, "</code></pre>", Normal)
-	//input = strings.ReplaceAll(input, `<a href="`, Link1)
-	//input = strings.ReplaceAll(input, `" rel="nofollow">`, Link2)
-	//input = strings.ReplaceAll(input, `</a>`, Link3)
 	return input
 }
 
-
-
 func extractURLs(input string) []string {
-	expForFirstTag := regexp.MustCompile(`<a href=".*?"`)
+	expForFirstTag := regexp.MustCompile(`<a href=".*?" rel="nofollow">`)
 	URLs := expForFirstTag.FindAllString(input, 10)
 
-	for _, URL := range URLs {
-		URL = strings.ReplaceAll(URL, `<a href="`, "")
-		URL = strings.ReplaceAll(URL, `"`, "")
-		println(URL)
+	for i, _ := range URLs {
+		URLs[i] = strings.ReplaceAll(URLs[i], `<a href="`, "")
+		URLs[i] = strings.ReplaceAll(URLs[i], `" rel="nofollow">`, "")
 	}
+
 	return URLs
+}
+
+func trimURLs(comment string) string {
+	expression := regexp.MustCompile(`<a href=".*?" rel="nofollow">`)
+	return expression.ReplaceAllString(comment, "")
 }
