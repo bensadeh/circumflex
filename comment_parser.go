@@ -2,6 +2,7 @@ package main
 
 import (
 	newwrap "github.com/MichaelMure/go-term-text"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -92,7 +93,7 @@ func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int
 
 	indentBlock := getIndentBlock(level, indentSize)
 	paddingWithBlock := newwrap.WrapPad(indentBlock)
-	wrappedAndPaddedComment, _ := newwrap.Wrap(comment, adjustedCommentWidth + indentSize, paddingWithBlock)
+	wrappedAndPaddedComment, _ := newwrap.Wrap(comment, adjustedCommentWidth+indentSize, paddingWithBlock)
 
 	paddingWithNoBlock := newwrap.WrapPad(getIndentBlockWithoutBar(level, indentSize))
 	author := markOPAndMods(c.Author, op) + " " + dimmed(c.Time) + getTopLevelCommentAnchor(level) + NewLine
@@ -171,8 +172,9 @@ func getIndentBlock(level int, indentSize int) string {
 }
 
 func parseComment(comment string) string {
-	comment = replaceHTML(comment)
 	comment = replaceCharacters(comment)
+	_ = extractLinks(comment)
+	comment = replaceHTML(comment)
 	return comment
 }
 
@@ -197,8 +199,20 @@ func replaceHTML(input string) string {
 	//input = strings.ReplaceAll(input, `<a href="`, Link1)
 	//input = strings.ReplaceAll(input, `" rel="nofollow">`, Link2)
 	//input = strings.ReplaceAll(input, `</a>`, Link3)
-	input = strings.ReplaceAll(input, `<a href="`, "")
-	input = strings.ReplaceAll(input, `" rel="nofollow">`, "")
-	input = strings.ReplaceAll(input, `</a>`, "")
 	return input
+}
+
+
+
+func extractLinks(input string) []string {
+	expForFirstTag := regexp.MustCompile(`<a href=".*?"`)
+	links := expForFirstTag.FindAllString(input, 10)
+
+	//println("Number of Links: " + strconv.Itoa(len(links)))
+	for _, link := range links {
+		link = strings.ReplaceAll(link, `<a href="`, "")
+		link = strings.ReplaceAll(link, `"`, "")
+		println(link)
+	}
+	return links
 }
