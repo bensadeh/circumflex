@@ -6,7 +6,6 @@ import (
 
 	"clx/wordwrap"
 
-	term "github.com/MichaelMure/go-term-text"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
 
@@ -26,7 +25,7 @@ type Comments struct {
 }
 
 func printCommentTree(comments Comments, indentSize int, commentWith int) string {
-	header := getHeader(comments)
+	header := getHeader(comments, commentWith)
 	originalPoster := comments.Author
 	commentTree := ""
 	for _, reply := range comments.Replies {
@@ -35,19 +34,14 @@ func printCommentTree(comments Comments, indentSize int, commentWith int) string
 	return header + commentTree
 }
 
-func getHeader(c Comments) string {
+func getHeader(c Comments, commentWidth int) string {
 	headline := c.Title + getDomainText(c.Domain, c.URL, c.ID) + NewLine
-	headlineWithoutHyperlink := c.Title + getDomainTextWithoutHyperlink(c.Domain, c.ID) + NewLine
-	headlineWithoutHyperlinkLength := term.Len(headlineWithoutHyperlink)
 	infoLine := dimmed(strconv.Itoa(c.Points)+" points by "+c.Author+" "+c.Time+" • "+strconv.Itoa(c.CommentsCount)+" comments") + NewLine
 
-	infoLineLength := term.Len(infoLine)
-	longestLine := max(headlineWithoutHyperlinkLength, infoLineLength)
-
 	header := headline + infoLine
-	header += parseRootComment(c.Comment, longestLine)
+	header += parseRootComment(c.Comment, commentWidth)
 
-	for i := 0; i < longestLine; i++ {
+	for i := 0; i < commentWidth; i++ {
 		header += "-"
 	}
 
@@ -65,14 +59,6 @@ func getDomainText(domain string, URL string, id int) string {
 
 func getHyperlinkText(URL string, text string) string {
 	return Link1 + URL + Link2 + text + Link3
-}
-
-func getDomainTextWithoutHyperlink(domain string, id int) string {
-	if domain != "" {
-		return " " + paren(domain)
-	}
-	linkText := "item?id=" + strconv.Itoa(id)
-	return " " + paren(linkText)
 }
 
 func parseRootComment(comment string, lineLength int) string {
@@ -132,13 +118,6 @@ func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int
 	return fullCommentWithAuthor
 }
 
-func max(x, y int) int {
-	if x < y {
-		return y
-	}
-	return x
-}
-
 func getTopLevelCommentAnchor(level int) string {
 	if level == 0 {
 		return dimmed(" ::")
@@ -165,6 +144,12 @@ func getCommentWidth(level int, indentSize int, commentWidth int) int {
 	return commentWidth
 }
 
+func max(x, y int) int {
+	if x < y {
+		return y
+	}
+	return x
+}
 func markOPAndMods(author, op string) string {
 	markedAuthor := bold(author)
 	if author == "dang" || author == "sctb" {
