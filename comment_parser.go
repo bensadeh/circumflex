@@ -61,30 +61,17 @@ func getHyperlinkText(URL string, text string) string {
 	return Link1 + URL + Link2 + text + Link3
 }
 
-func parseRootComment(comment string, lineLength int) string {
-	if comment == "" {
+func parseRootComment(c string, commentWidth int) string {
+	if c == "" {
 		return ""
 	}
 
-	//parsedComment := parseComment(comment)
-	//
-	//commentLines := strings.Split(parsedComment, "<p>")
-	//lastParagraph := len(commentLines) - 1
-	//firstParagraph := 0
-	fullComment := ""
-	//for i, line := range commentLines {
-	//	wrapped := wordwrap.WrapString(line, uint(lineLength))
-	//	wrappedAndIndentedComment := wordwrap.Indent(wrapped, getIndentBlock(0, 0), true)
-	//	if i == firstParagraph {
-	//		fullComment = NewLine
-	//	}
-	//	if i == lastParagraph {
-	//		fullComment += wrappedAndIndentedComment + NewLine
-	//	} else {
-	//		fullComment += wrappedAndIndentedComment + DoubleNewLine
-	//	}
-	//}
-	return fullComment
+	comment, URLs := parseComment(c)
+	adjustedCommentWidth := getAdjustedCommentWidth(0, 0, commentWidth)
+	wrappedComment, _ := text.Wrap(comment, adjustedCommentWidth)
+	wrappedComment = applyURLs(wrappedComment, URLs)
+
+	return wrappedComment + NewLine
 }
 
 func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int, originalPoster string, parentPoster string) string {
