@@ -20,6 +20,10 @@
   <img src="images/comments.png" width="700" alt="^"/>
 </p>
 
+<p align="center">
+  <img src="images/linkHighlights.png" width="700" alt="^"/>
+</p>
+
 ## Installation
 `circumflex` is written in Go. Simply:
 
