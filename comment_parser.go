@@ -93,12 +93,12 @@ func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int
 
 	indentBlock := getIndentBlock(level, indentSize)
 	paddingWithBlock := text.WrapPad(indentBlock)
-	wrappedAndPaddedComment, _ := text.Wrap(comment, adjustedCommentWidth+indentSize*level, paddingWithBlock)
+	wrappedAndPaddedComment, _ := text.Wrap(comment, adjustedCommentWidth, paddingWithBlock)
 
 	paddingWithNoBlock := text.WrapPad(getIndentBlockWithoutBar(level, indentSize))
 	replies := 0
 	author := labelAuthor(c.Author, originalPoster, parentPoster) + " " + dimmed(c.Time) + getTopLevelBar(level, getNumberOfReplies(c, &replies)) + NewLine
-	paddedAuthor, _ := text.Wrap(author, adjustedCommentWidth+indentSize*level, paddingWithNoBlock)
+	paddedAuthor, _ := text.Wrap(author, adjustedCommentWidth, paddingWithNoBlock)
 	fullComment := paddedAuthor + wrappedAndPaddedComment + DoubleNewLine
 	fullComment = applyURLs(fullComment, URLs)
 
@@ -174,7 +174,7 @@ func getAdjustedCommentWidth(level int, indentSize int, commentWidth int) int {
 		return usableScreenSize
 	}
 
-	return commentWidth
+	return commentWidth + indentSize*level
 }
 
 func max(x, y int) int {
