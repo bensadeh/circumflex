@@ -93,11 +93,11 @@ func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int
 
 	indentBlock := getIndentBlock(level, indentSize)
 	paddingWithBlock := text.WrapPad(indentBlock)
-	wrappedAndPaddedComment, _ := text.Wrap(comment, adjustedCommentWidth+indentSize, paddingWithBlock)
+	wrappedAndPaddedComment, _ := text.Wrap(comment, adjustedCommentWidth+indentSize*level, paddingWithBlock)
 
 	paddingWithNoBlock := text.WrapPad(getIndentBlockWithoutBar(level, indentSize))
 	author := labelAuthor(c.Author, originalPoster, parentPoster) + " " + dimmed(c.Time) + getTopLevelCommentAnchor(level) + NewLine
-	paddedAuthor, _ := text.Wrap(author, commentWidth, paddingWithNoBlock)
+	paddedAuthor, _ := text.Wrap(author, adjustedCommentWidth+indentSize*level, paddingWithNoBlock)
 	fullComment := paddedAuthor + wrappedAndPaddedComment + DoubleNewLine
 	fullComment = applyURLs(fullComment, URLs)
 
