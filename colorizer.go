@@ -6,6 +6,7 @@ const (
 	Bold          = "\033[1m"
 	Dimmed        = "\033[2m"
 	Italic        = "\033[3m"
+	Underline     = "\033[4m"
 	Red           = "\033[31m"
 	Green         = "\033[32m"
 	Yellow        = "\033[33m"
@@ -20,6 +21,10 @@ const (
 	DoubleNewLine = "\n\n"
 )
 
+func normal(text string) string {
+	return Normal + text + Normal
+}
+
 func bold(text string) string {
 	return Bold + text + Normal
 }
@@ -30,6 +35,10 @@ func italic(text string) string {
 
 func dimmed(text string) string {
 	return Dimmed + text + Normal
+}
+
+func underline(text string) string {
+	return Underline + text + Normal
 }
 
 func red(text string) string {

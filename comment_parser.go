@@ -83,8 +83,8 @@ func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int
 	wrappedAndPaddedComment, _ := text.Wrap(comment, adjustedCommentWidth, paddingWithBlock)
 
 	paddingWithNoBlock := text.WrapPad(getIndentBlockWithoutBar(level, indentSize))
-	replies := 0
-	author := labelAuthor(c.Author, originalPoster, parentPoster) + " " + dimmed(c.Time) + getTopLevelBar(level, getNumberOfReplies(c, &replies)) + NewLine
+
+	author := getCommentHeading(c, level, commentWidth, originalPoster, parentPoster)
 	paddedAuthor, _ := text.Wrap(author, adjustedCommentWidth, paddingWithNoBlock)
 	fullComment := paddedAuthor + wrappedAndPaddedComment + DoubleNewLine
 	fullComment = applyURLs(fullComment, URLs)
@@ -97,6 +97,33 @@ func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int
 		fullComment += prettyPrintComments(*s, level+1, indentSize, commentWidth, originalPoster, parentPoster)
 	}
 	return fullComment
+}
+
+func getCommentHeading(c Comments, level int, commentWidth int, originalPoster string, parentPoster string) string {
+	author := labelAuthor(c.Author, originalPoster, parentPoster) + " "
+	numberOfReplies := 0
+	headerLine := ""
+	timeAgo := dimmed(c.Time)
+	replies := getReplies(level, getNumberOfReplies(c, &numberOfReplies))
+	if level == 0 {
+		timeAgo = underline(timeAgo)
+		replies = underline(replies)
+		headerLine = getUnderlineString(author, timeAgo, replies, commentWidth)
+	}
+
+	return author + timeAgo + replies + headerLine + NewLine
+}
+
+func getUnderlineString(author string, timeAgo string, replies string, commentWidth int) string {
+	lengthOfUnderline := commentWidth - text.Len(author) - text.Len(timeAgo) - text.Len(replies)
+
+	headerLine := ""
+
+	for i := 0; i < lengthOfUnderline; i++ {
+		headerLine += " "
+	}
+
+	return dimmed(underline(headerLine))
 }
 
 func getNumberOfReplies(comments Comments, repliesSoFar *int) int {
@@ -132,15 +159,15 @@ func truncateURL(URL string) string {
 	return truncatedURL
 }
 
-func getTopLevelBar(level int, replies int) string {
+func getReplies(level int, replies int) string {
 	numberOfReplies := ""
 
 	if level == 0 {
 		if replies > 1 {
 			r := strconv.Itoa(replies)
-			numberOfReplies = " [" + r + " replies]"
+			numberOfReplies = " " + r + " ⤶"
 		}
-		return dimmed(" ::" + numberOfReplies)
+		return underline(dimmed(" ::" + numberOfReplies))
 	}
 	return ""
 }
@@ -241,17 +268,17 @@ func replaceHTML(input string) string {
 }
 
 func colorizeLinkNumbers(input string) string {
-	input = strings.ReplaceAll(input, "[0]", "[" + white("0") + "]")
-	input = strings.ReplaceAll(input, "[1]", "[" + red("1") + "]")
-	input = strings.ReplaceAll(input, "[2]", "[" + yellow("2") + "]")
-	input = strings.ReplaceAll(input, "[3]", "[" + green("3") + "]")
-	input = strings.ReplaceAll(input, "[4]", "[" + blue("4") + "]")
-	input = strings.ReplaceAll(input, "[5]", "[" + teal("5") + "]")
-	input = strings.ReplaceAll(input, "[6]", "[" + purple("6") + "]")
-	input = strings.ReplaceAll(input, "[7]", "[" + white("7") + "]")
-	input = strings.ReplaceAll(input, "[8]", "[" + red("8") + "]")
-	input = strings.ReplaceAll(input, "[9]", "[" + yellow("9") + "]")
-	input = strings.ReplaceAll(input, "[10]", "[" + green("10") + "]")
+	input = strings.ReplaceAll(input, "[0]", "["+white("0")+"]")
+	input = strings.ReplaceAll(input, "[1]", "["+red("1")+"]")
+	input = strings.ReplaceAll(input, "[2]", "["+yellow("2")+"]")
+	input = strings.ReplaceAll(input, "[3]", "["+green("3")+"]")
+	input = strings.ReplaceAll(input, "[4]", "["+blue("4")+"]")
+	input = strings.ReplaceAll(input, "[5]", "["+teal("5")+"]")
+	input = strings.ReplaceAll(input, "[6]", "["+purple("6")+"]")
+	input = strings.ReplaceAll(input, "[7]", "["+white("7")+"]")
+	input = strings.ReplaceAll(input, "[8]", "["+red("8")+"]")
+	input = strings.ReplaceAll(input, "[9]", "["+yellow("9")+"]")
+	input = strings.ReplaceAll(input, "[10]", "["+green("10")+"]")
 	return input
 }
 
