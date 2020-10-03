@@ -212,6 +212,7 @@ func getIndentBlock(level int, indentSize int) string {
 func parseComment(comment string) (string, []string) {
 	comment = replaceCharacters(comment)
 	comment = replaceHTML(comment)
+	comment = colorizeLinkNumbers(comment)
 	URLs := extractURLs(comment)
 	comment = trimURLs(comment)
 	return comment, URLs
@@ -236,6 +237,21 @@ func replaceHTML(input string) string {
 	input = strings.ReplaceAll(input, "</a>", "")
 	input = strings.ReplaceAll(input, "<pre><code>", Dimmed)
 	input = strings.ReplaceAll(input, "</code></pre>", Normal)
+	return input
+}
+
+func colorizeLinkNumbers(input string) string {
+	input = strings.ReplaceAll(input, "[0]", "[" + white("0") + "]")
+	input = strings.ReplaceAll(input, "[1]", "[" + red("1") + "]")
+	input = strings.ReplaceAll(input, "[2]", "[" + yellow("2") + "]")
+	input = strings.ReplaceAll(input, "[3]", "[" + green("3") + "]")
+	input = strings.ReplaceAll(input, "[4]", "[" + blue("4") + "]")
+	input = strings.ReplaceAll(input, "[5]", "[" + teal("5") + "]")
+	input = strings.ReplaceAll(input, "[6]", "[" + purple("6") + "]")
+	input = strings.ReplaceAll(input, "[7]", "[" + white("7") + "]")
+	input = strings.ReplaceAll(input, "[8]", "[" + red("8") + "]")
+	input = strings.ReplaceAll(input, "[9]", "[" + yellow("9") + "]")
+	input = strings.ReplaceAll(input, "[10]", "[" + green("10") + "]")
 	return input
 }
 

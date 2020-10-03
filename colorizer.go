@@ -36,12 +36,28 @@ func red(text string) string {
 	return Red + text + Normal
 }
 
+func yellow(text string) string {
+	return Yellow + text + Normal
+}
+
 func green(text string) string {
 	return Green + text + Normal
 }
 
+func blue(text string) string {
+	return Blue + text + Normal
+}
+
+func teal(text string) string {
+	return Teal + text + Normal
+}
+
 func purple(text string) string {
 	return Purple + text + Normal
+}
+
+func white(text string) string {
+	return White + text + Normal
 }
 
 func paren(text string) string {
