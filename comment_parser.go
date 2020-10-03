@@ -96,7 +96,8 @@ func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int
 	wrappedAndPaddedComment, _ := text.Wrap(comment, adjustedCommentWidth+indentSize*level, paddingWithBlock)
 
 	paddingWithNoBlock := text.WrapPad(getIndentBlockWithoutBar(level, indentSize))
-	author := labelAuthor(c.Author, originalPoster, parentPoster) + " " + dimmed(c.Time) + getTopLevelCommentAnchor(level) + NewLine
+	replies := 0
+	author := labelAuthor(c.Author, originalPoster, parentPoster) + " " + dimmed(c.Time) + getTopLevelBar(level, getNumberOfReplies(c, &replies)) + NewLine
 	paddedAuthor, _ := text.Wrap(author, adjustedCommentWidth+indentSize*level, paddingWithNoBlock)
 	fullComment := paddedAuthor + wrappedAndPaddedComment + DoubleNewLine
 	fullComment = applyURLs(fullComment, URLs)
@@ -109,6 +110,14 @@ func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int
 		fullComment += prettyPrintComments(*s, level+1, indentSize, commentWidth, originalPoster, parentPoster)
 	}
 	return fullComment
+}
+
+func getNumberOfReplies(comments Comments, repliesSoFar *int) int {
+	for _, reply := range comments.Replies {
+		*repliesSoFar++
+		getNumberOfReplies(*reply, repliesSoFar)
+	}
+	return *repliesSoFar
 }
 
 func applyURLs(comment string, URLs []string) string {
@@ -136,9 +145,15 @@ func truncateURL(URL string) string {
 	return truncatedURL
 }
 
-func getTopLevelCommentAnchor(level int) string {
+func getTopLevelBar(level int, replies int) string {
+	numberOfReplies := ""
+
 	if level == 0 {
-		return dimmed(" ::")
+		if replies > 1 {
+			r := strconv.Itoa(replies)
+			numberOfReplies = " [" + r + " replies]"
+		}
+		return dimmed(" ::" + numberOfReplies)
 	}
 	return ""
 }
