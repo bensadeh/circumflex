@@ -243,7 +243,7 @@ func extractURLs(input string) []string {
 	expForFirstTag := regexp.MustCompile(`<a href=".*?" rel="nofollow">`)
 	URLs := expForFirstTag.FindAllString(input, 10)
 
-	for i, _ := range URLs {
+	for i := range URLs {
 		URLs[i] = strings.ReplaceAll(URLs[i], `<a href="`, "")
 		URLs[i] = strings.ReplaceAll(URLs[i], `" rel="nofollow">`, "")
 	}
