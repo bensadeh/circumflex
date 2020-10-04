@@ -40,9 +40,9 @@ Hacker News's text-centric approach lends itself well to be viewed in the termin
 </pre>
 
 ### Moving between top-level posts *(or: How I Stopped Worrying and Learned to Love `less`)*
-One of the most useful features of browsing comment threads is comment folding. However, since `less` is a pager, it does not support changing (or collapsing) the text it presents.
+`circumflex` does not support collapsing comments. This is because `less` is a pager and does not allow the text it presents to be changed.
 
-As an alternative, `circumflex` prints every top level comment with the anchor `::`. Using `less`'s search functionality, top-level comments can brew navigated by searching for the anchor and typing <kbd>n</kbd> or <kbd>N</kbd> to move forwards or backwards between the posts.
+As an alternative to collapsing comments, `circumflex` prints every top-level comment with the anchor `::`. Using `less`'s search functionality, one can move between top-level posts by searching for the anchor and typing <kbd>n</kbd> or <kbd>N</kbd> to move forwards or backwards.
 
 <pre>  
   <kbd>/</kbd>: search
