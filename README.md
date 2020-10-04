@@ -16,7 +16,7 @@
 ## Viewing comments
 
 ### Appearence
-Hacker News's text-centric approach lends itself well to be viewed in the terminal. Comments are color-indented to distinguish posts from their parents, siblings and children. Should your terminal support the relevant ANSI escape sequences, comments will be properly formatted in *italics*, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code blocks`. To give context to posts with many replies, Original Poster (OP), Parent Poster (PP) and moderators are labelled. References ([x]) are color-coded for easier readability.
+Hacker News's text-centric approach lends itself well to be viewed in the terminal. Comments are color-indented to distinguish posts from their parents, siblings and children. Should your terminal support the relevant ANSI escape sequences, comments will be properly formatted in *italics*, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code blocks`. To give context to posts with many replies, Original Poster (OP), Parent Poster (PP) and moderators are labelled. References (`[x]`) are color-coded for easier readability.
 
 <p align="center">
   <img src="images/comments.png" width="700" alt="^"/>
