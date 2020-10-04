@@ -180,7 +180,7 @@ func getReplies(level int, replies int) string {
 	numberOfReplies := ""
 
 	if level == 0 {
-		if replies > 1 {
+		if replies > 0 {
 			r := strconv.Itoa(replies)
 			numberOfReplies = " " + r + " ⤶"
 		}
