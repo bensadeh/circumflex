@@ -16,9 +16,9 @@
 ## Comment section
 
 ### Appearence
-Hacker News's text-centric approach lends itself well to be viewed in the terminal. 
+Should your terminal support the relevant ANSI escape sequences, text will be properly formatted in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code blocks`.
 
-Comments are color-indented to distinguish posts from their parents, siblings and children. Should your terminal support the relevant ANSI escape sequences, text will be properly formatted in *italics*, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code blocks`. To give context to posts with many replies, Original Poster (OP), Parent Poster (PP) and moderators are labelled. References (`[x]`) are color-coded for easier readability.
+Comments are color-indented to distinguish posts from their parents, siblings and children. To give context to comments with many replies, Original Poster (OP), Parent Poster (PP) and moderators are labelled. References (`[x]`) are color-coded for easier readability.
 
 <p align="center">
   <img src="images/comments.png" width="700" alt="^"/>
@@ -41,9 +41,9 @@ Comments are color-indented to distinguish posts from their parents, siblings an
 </pre>
 
 ### Moving between top-level posts *(or: How I Stopped Worrying and Learned to Love `less`)*
-`circumflex` does not support collapsing comments. This is because `less` is a pager and does not allow the text it presents to be changed.
+`less` does not support collapsing comments.
 
-As an alternative to collapsing comments, `circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality, one can move between top-level posts by searching for `::` and typing <kbd>n</kbd> or <kbd>N</kbd> to move forwards or backwards.
+As an alternative to moving between comment groups, `circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality, one can move between top-level posts by searching for `::` and typing <kbd>n</kbd> or <kbd>N</kbd> to move forwards or backwards.
 
 <pre>  
   <kbd>/</kbd>: search
