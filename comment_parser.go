@@ -85,8 +85,7 @@ func parseRootComment(c string, commentWidth int) string {
 	}
 
 	comment, URLs := parseComment(c)
-	adjustedCommentWidth := getAdjustedCommentWidth(0, 0, commentWidth)
-	wrappedComment, _ := text.Wrap(comment, adjustedCommentWidth)
+	wrappedComment, _ := text.Wrap(comment, commentWidth)
 	wrappedComment = applyURLs(wrappedComment, URLs)
 
 	return wrappedComment + NewLine
