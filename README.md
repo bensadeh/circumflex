@@ -7,7 +7,7 @@
 
 ## Features
 - Concise overview of top submissions
-- Pleasing and structured comments view
+- Formatted and structured view of comments
 
 <p align="center">
   <img src="images/mainview.png" width="700" alt="^"/>
