@@ -57,6 +57,9 @@ func getSeparator(commentWidth int) string {
 }
 
 func getHeadline(title, domain, URL string, id, commentWidth int) string {
+	if domain == "" {
+		domain = "item?id=" + strconv.Itoa(id)
+	}
 	headline := title + " " + paren(domain) + NewLine
 	wrappedHeadline, _ := text.Wrap(headline, commentWidth)
 	hyperlink := getHyperlink(domain, URL, id)
@@ -88,7 +91,7 @@ func parseRootComment(c string, commentWidth int) string {
 	wrappedComment, _ := text.Wrap(comment, commentWidth)
 	wrappedComment = applyURLs(wrappedComment, URLs)
 
-	return wrappedComment + NewLine
+	return NewLine + wrappedComment + NewLine
 }
 
 func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int, originalPoster string, parentPoster string) string {
