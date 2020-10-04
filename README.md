@@ -41,13 +41,15 @@ Hacker News's text-centric approach lends itself well to be viewed in the termin
 ### Moving between top-level posts *(or: How I Stopped Worrying and Learned to Love `less`)*
 `circumflex` does not support collapsing comments. This is because `less` is a pager and does not allow the text it presents to be changed.
 
-As an alternative to collapsing comments, `circumflex` prints every top-level comment with the anchor `::`. Using `less`'s search functionality, one can move between top-level posts by searching for the anchor and typing <kbd>n</kbd> or <kbd>N</kbd> to move forwards or backwards.
+As an alternative to collapsing comments, `circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality, one can move between top-level posts by searching for `::` and typing <kbd>n</kbd> or <kbd>N</kbd> to move forwards or backwards.
 
 <pre>  
   <kbd>/</kbd>: search
   <kbd>n</kbd>: repeat search forwards
   <kbd>N</kbd>: repeat search backward
 </pre>
+
+`less` remembers your search term between sessions. This means that after having searched for `::` once, for each subsequent thread, you can hit <kbd>n</kbd> without having to search for `::` each time.
 
 ## Installation
 `circumflex` is written in Go. Clone the repo and run:
