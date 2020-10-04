@@ -40,7 +40,7 @@ Comments are color-indented to distinguish posts from their parents, siblings an
   <kbd>q</kbd>: exit
 </pre>
 
-### Moving between top-level posts *(or: How I Stopped Worrying and Learned to Love `less`)*
+### Collapsing comments *(or: How I Stopped Worrying and Learned to Love `less`)*
 `less` does not support collapsing comments.
 
 As an alternative to moving between comment groups, `circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality, one can move between top-level posts by searching for `::` and typing <kbd>n</kbd> or <kbd>N</kbd> to move forwards or backwards.
