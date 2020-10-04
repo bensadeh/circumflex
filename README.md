@@ -36,6 +36,7 @@ Hacker News's text-centric approach lends itself well to be viewed in the termin
   <kbd>↑</kbd>, <kbd>k</kbd>: backward one line
   <kbd>d</kbd>: forward one half-window
   <kbd>u</kbd>: backward one half-window
+  <kbd>q</kbd>: exit
 </pre>
 
 ### Moving between top-level posts *(or: How I Stopped Worrying and Learned to Love `less`)*
@@ -50,7 +51,7 @@ As an alternative, `circumflex` prints every top level comment with the anchor `
 </pre>
 
 ## Installation
-`circumflex` is written in Go. Simply:
+`circumflex` is written in Go. Clone the repo and run:
 
     $ go install
 
