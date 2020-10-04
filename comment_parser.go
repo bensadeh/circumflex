@@ -35,26 +35,44 @@ func printCommentTree(comments Comments, indentSize int, commentWith int) string
 }
 
 func getHeader(c Comments, commentWidth int) string {
-	headline := c.Title + getDomainText(c.Domain, c.URL, c.ID) + NewLine
-	infoLine := dimmed(strconv.Itoa(c.Points)+" points by "+c.Author+" "+c.Time+" • "+strconv.Itoa(c.CommentsCount)+" comments") + NewLine
-
-	header := headline + infoLine
-	header += parseRootComment(c.Comment, commentWidth)
-
-	for i := 0; i < commentWidth; i++ {
-		header += "-"
-	}
-
-	return header + DoubleNewLine
+	headline := getHeadline(c.Title, c.Domain, c.URL, c.ID, commentWidth)
+	infoLine := getInfoLine(c.Points, c.Author, c.Time, c.CommentsCount)
+	submissionComment := parseRootComment(c.Comment, commentWidth)
+	separator := getSeparator(commentWidth)
+	return headline + infoLine + submissionComment + separator + DoubleNewLine
 }
 
-func getDomainText(domain string, URL string, id int) string {
+func getInfoLine(points int, author string, timeAgo string, numberOfComments int) string {
+	p := strconv.Itoa(points)
+	c := strconv.Itoa(numberOfComments)
+	return dimmed(p+" points by "+author+" "+timeAgo+" • "+c+" comments") + NewLine
+}
+
+func getSeparator(commentWidth int) string {
+	separator := ""
+	for i := 0; i < commentWidth; i++ {
+		separator += "-"
+	}
+	return separator
+}
+
+func getHeadline(title, domain, URL string, id, commentWidth int) string {
+	headline := title + " " + paren(domain) + NewLine
+	wrappedHeadline, _ := text.Wrap(headline, commentWidth)
+	hyperlink := getHyperlink(domain, URL, id)
+
+	wrappedHeadline = strings.ReplaceAll(wrappedHeadline, domain, hyperlink)
+
+	return wrappedHeadline
+}
+
+func getHyperlink(domain string, URL string, id int) string {
 	if domain != "" {
-		return " " + paren(getHyperlinkText(URL, domain))
+		return getHyperlinkText(URL, domain)
 	}
 	linkToComments := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
 	linkText := "item?id=" + strconv.Itoa(id)
-	return " " + paren(getHyperlinkText(linkToComments, linkText))
+	return getHyperlinkText(linkToComments, linkText)
 }
 
 func getHyperlinkText(URL string, text string) string {
