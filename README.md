@@ -39,7 +39,7 @@ To give context to posts with many replies, Original Poster (OP), Parent Poster 
 ### Collapsing comments *(or: How I Stopped Worrying and Learned to Love `less`)*
 `less` does not support collapsing comments.
 
-As an alternative to moving between comment groups, `circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality, one can move between top-level posts by searching for `::` and typing <kbd>n</kbd> or <kbd>N</kbd> to move forwards or backwards.
+To navigate between top-level comments, `circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality, one can move between top-level posts by searching for `::` and then <kbd>n</kbd> or <kbd>N</kbd> to move forwards or backwards.
 
 <pre>  
   <kbd>/</kbd>: search
@@ -47,7 +47,7 @@ As an alternative to moving between comment groups, `circumflex` prints every to
   <kbd>N</kbd>: repeat search backward
 </pre>
 
-`less` remembers your search term between sessions. This means that after having searched for `::` once, for each subsequent thread, you can hit <kbd>n</kbd> without having to search for `::` each time.
+To make things easier, `less` remembers your search term between sessions. This means that the next time you want to jump between top-level posts, you can hit <kbd>n</kbd> to go to the next `::` directly.
 
 ## Installation
 `circumflex` is written in Go. Clone the repo and run:
