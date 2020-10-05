@@ -18,7 +18,7 @@ Should your terminal support the relevant ANSI escape sequences, text will be pr
   <img src="images/comments.png" width="700" alt="^"/>
 </p>
 
-To give context to comments with many replies, Original Poster (OP), Parent Poster (PP) and moderators are labelled. References (`[x]`) are color-coded for easier readability.
+To give context to posts with many replies, Original Poster (OP), Parent Poster (PP) and moderators are labelled. References (`[1], [2], [3], […] `) are color-coded for easier readability.
 
 <p align="center">
   <img src="images/linkHighlights.png" width="700" alt="^"/>
