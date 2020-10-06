@@ -121,35 +121,39 @@ func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int
 
 func getCommentHeading(c Comments, level int, commentWidth int, originalPoster string, parentPoster string) string {
 	author := labelAuthor(c.Author, originalPoster, parentPoster) + " "
-	numberOfReplies := 0
 	headerLine := ""
 	timeAgo := dimmed(c.Time)
-	replies := getReplies(level, getNumberOfReplies(c, &numberOfReplies))
+	replies := getReplies(level, getReplyCount(c))
 	if level == 0 {
 		timeAgo = underline(timeAgo)
 		replies = underline(replies)
-		headerLine = getUnderlineString(author, timeAgo, replies, commentWidth)
+		anchor := "::"
+		headerLine = getWhitespaceFiller(author + anchor + timeAgo + replies, commentWidth)
 	}
 
-	return author + timeAgo + replies + headerLine + NewLine
+	return author + timeAgo + replies + dimmed(underline(headerLine)) + NewLine
 }
 
-func getUnderlineString(author string, timeAgo string, replies string, commentWidth int) string {
-	lengthOfUnderline := commentWidth - text.Len(author) - text.Len(timeAgo) - text.Len(replies)
-
+func getWhitespaceFiller(heading string, commentWidth int) string {
+	lengthOfUnderline := commentWidth - text.Len(heading)
 	headerLine := ""
 
 	for i := 0; i < lengthOfUnderline; i++ {
 		headerLine += " "
 	}
 
-	return dimmed(underline(headerLine))
+	return headerLine
 }
 
-func getNumberOfReplies(comments Comments, repliesSoFar *int) int {
+func getReplyCount(comments Comments) int {
+	numberOfReplies := 0
+	return calculateReplies(comments, &numberOfReplies)
+}
+
+func calculateReplies(comments Comments, repliesSoFar *int) int {
 	for _, reply := range comments.Replies {
 		*repliesSoFar++
-		getNumberOfReplies(*reply, repliesSoFar)
+		calculateReplies(*reply, repliesSoFar)
 	}
 	return *repliesSoFar
 }
