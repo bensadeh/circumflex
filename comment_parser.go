@@ -127,11 +127,12 @@ func getCommentHeading(c Comments, level int, commentWidth int, originalPoster s
 	if level == 0 {
 		timeAgo = underline(timeAgo)
 		replies = underline(replies)
-		anchor := "::"
-		headerLine = getWhitespaceFiller(author + anchor + timeAgo + replies, commentWidth)
+		anchor := " :: "
+		headerLine = anchor + getWhitespaceFiller(author+anchor+timeAgo+replies, commentWidth)
+		headerLine = dimmed(underline(headerLine))
 	}
 
-	return author + timeAgo + replies + dimmed(underline(headerLine)) + NewLine
+	return author + timeAgo + headerLine + replies + NewLine
 }
 
 func getWhitespaceFiller(heading string, commentWidth int) string {
@@ -191,7 +192,7 @@ func getReplies(level int, replies int) string {
 			r := strconv.Itoa(replies)
 			numberOfReplies = " " + r + " ⤶"
 		}
-		return underline(dimmed(" ::" + numberOfReplies))
+		return underline(dimmed(numberOfReplies))
 	}
 	return ""
 }
