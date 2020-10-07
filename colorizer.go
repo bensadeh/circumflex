@@ -41,6 +41,10 @@ func underline(text string) string {
 	return Underline + text + Normal
 }
 
+func dimmedAndUnderlined(text string) string {
+	return Dimmed + Underline + text + Normal
+}
+
 func red(text string) string {
 	return Red + text + Normal
 }

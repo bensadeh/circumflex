@@ -1,11 +1,11 @@
 package main
 
 import (
-	text "github.com/MichaelMure/go-term-text"
 	"regexp"
 	"strconv"
 	"strings"
 
+	text "github.com/MichaelMure/go-term-text"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
 
@@ -120,19 +120,18 @@ func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int
 }
 
 func getCommentHeading(c Comments, level int, commentWidth int, originalPoster string, parentPoster string) string {
-	author := labelAuthor(c.Author, originalPoster, parentPoster) + " "
-	headerLine := ""
-	timeAgo := dimmed(c.Time)
-	replies := getReplies(level, getReplyCount(c))
 	if level == 0 {
-		timeAgo = underline(timeAgo)
-		replies = underline(replies)
+		timeAgo := c.Time
+		author := labelAuthor(c.Author, originalPoster, parentPoster) + " "
+		replies := strconv.Itoa(getReplyCount(c)) + " ⤶"
 		anchor := " :: "
-		headerLine = anchor + getWhitespaceFiller(author+anchor+timeAgo+replies, commentWidth)
-		headerLine = dimmed(underline(headerLine))
+		headerLine := anchor + getWhitespaceFiller(author+anchor+timeAgo+replies, commentWidth)
+		return author + dimmedAndUnderlined(timeAgo + headerLine + replies) + NewLine
 	}
 
-	return author + timeAgo + headerLine + replies + NewLine
+	author := labelAuthor(c.Author, originalPoster, parentPoster) + " "
+
+	return author + dimmed(c.Time) + NewLine
 }
 
 func getWhitespaceFiller(heading string, commentWidth int) string {
@@ -182,19 +181,6 @@ func truncateURL(URL string) string {
 		truncatedURL += string(c)
 	}
 	return truncatedURL
-}
-
-func getReplies(level int, replies int) string {
-	numberOfReplies := ""
-
-	if level == 0 {
-		if replies > 0 {
-			r := strconv.Itoa(replies)
-			numberOfReplies = " " + r + " ⤶"
-		}
-		return underline(dimmed(numberOfReplies))
-	}
-	return ""
 }
 
 // Adjusted comment width shortens the commentWidth if the available screen size
