@@ -120,18 +120,26 @@ func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int
 }
 
 func getCommentHeading(c Comments, level int, commentWidth int, originalPoster string, parentPoster string) string {
+	timeAgo := c.Time
+	author := bold(c.Author)
+	label := getAuthorLabel(author, originalPoster, parentPoster) + " "
+
 	if level == 0 {
-		timeAgo := c.Time
-		author := labelAuthor(c.Author, originalPoster, parentPoster) + " "
-		replies := strconv.Itoa(getReplyCount(c)) + " ⤶"
+		replies := getRepliesTag(getReplyCount(c))
 		anchor := " :: "
-		headerLine := anchor + getWhitespaceFiller(author+anchor+timeAgo+replies, commentWidth)
-		return author + dimmedAndUnderlined(timeAgo + headerLine + replies) + NewLine
+		headerLine := anchor + getWhitespaceFiller(author+label+anchor+timeAgo+replies, commentWidth)
+		return author + label + dimmedAndUnderlined(timeAgo+headerLine+replies) + NewLine
 	}
 
-	author := labelAuthor(c.Author, originalPoster, parentPoster) + " "
+	return author + label + dimmed(timeAgo) + NewLine
+}
 
-	return author + dimmed(c.Time) + NewLine
+func getRepliesTag(numberOfReplies int) string {
+	if numberOfReplies == 0 {
+		return ""
+	}
+
+	return strconv.Itoa(numberOfReplies) + " ⤶"
 }
 
 func getWhitespaceFiller(heading string, commentWidth int) string {
@@ -208,20 +216,18 @@ func max(x, y int) int {
 	}
 	return x
 }
-func labelAuthor(author, originalPoster, parentPoster string) string {
-	authorInBold := bold(author)
-
+func getAuthorLabel(author, originalPoster, parentPoster string) string {
 	switch author {
 	case "dang":
-		return authorInBold + green(" mod")
+		return green(" mod")
 	case "sctb":
-		return authorInBold + green(" mod")
+		return green(" mod")
 	case originalPoster:
-		return authorInBold + red(" OP")
+		return red(" OP")
 	case parentPoster:
-		return authorInBold + purple(" PP")
+		return purple(" PP")
 	default:
-		return authorInBold
+		return ""
 	}
 }
 
