@@ -37,7 +37,7 @@ To give context to posts with many replies, Original Poster (OP), Parent Poster 
 </pre>
 
 ### Collapsing comments *(or: How I Stopped Worrying and Learned to Love `less`)*
-`less` does not support collapsing comments.
+Since `less` is a pager, it can view, but not modify the content it receives. As collapsing comment threads would in some way involve the content to change, `circumflex` does not support this feature.
 
 To navigate between top-level comments, `circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality, one can move between top-level posts by searching for `::` and then <kbd>n</kbd> or <kbd>N</kbd> to move forwards or backwards.
 
