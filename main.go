@@ -2,6 +2,7 @@ package main
 
 import (
 	"clx/cmd"
+	"clx/comment-parser"
 	"encoding/json"
 	"strconv"
 
@@ -93,10 +94,10 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *Submissio
 
 					id := strconv.Itoa(sh.Submissions[storyRank].ID)
 					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + id)
-					var jComments = new(Comments)
+					var jComments = new(comment_parser.Comments)
 					_ = json.Unmarshal(JSON, jComments)
 
-					commentTree := printCommentTree(*jComments, 5, 70)
+					commentTree := comment_parser.PrintCommentTree(*jComments, 5, 70)
 					outputStringToLess(commentTree)
 				}
 			}

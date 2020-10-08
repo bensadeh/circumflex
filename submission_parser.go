@@ -46,6 +46,10 @@ func getDomain(domain string) string {
 	return "[::d]" + " " + paren(domain) + "[-:-:-]"
 }
 
+func paren(text string) string {
+	return "(" + text + ")"
+}
+
 func getRankIndentBlock(rank int) string {
 	largeIndent := "  "
 	smallIndent := " "

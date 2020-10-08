@@ -1,4 +1,4 @@
-package main
+package comment_parser
 
 import (
 	"regexp"
@@ -24,7 +24,7 @@ type Comments struct {
 	Replies       []*Comments `json:"comments"`
 }
 
-func printCommentTree(comments Comments, indentSize int, commentWith int) string {
+func PrintCommentTree(comments Comments, indentSize int, commentWith int) string {
 	header := getHeader(comments, commentWith)
 	originalPoster := comments.Author
 	commentTree := ""

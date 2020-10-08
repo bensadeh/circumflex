@@ -1,4 +1,4 @@
-package main
+package comment_parser
 
 // ANSI escape codes
 const (
