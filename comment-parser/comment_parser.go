@@ -122,7 +122,7 @@ func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int
 func getCommentHeading(c Comments, level int, commentWidth int, originalPoster string, parentPoster string) string {
 	timeAgo := c.Time
 	author := bold(c.Author)
-	label := getAuthorLabel(author, originalPoster, parentPoster) + " "
+	label := getAuthorLabel(c.Author, originalPoster, parentPoster) + " "
 
 	if level == 0 {
 		replies := getRepliesTag(getReplyCount(c))
