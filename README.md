@@ -50,13 +50,17 @@ To navigate between top-level comments, `circumflex` prints every top-level comm
 To make things easier, `less` remembers your search term between sessions. This means that the next time you want to jump between top-level posts, you can hit <kbd>n</kbd> to go to the next `::` directly.
 
 ## Installation
-`circumflex` is written in Go. Clone the repo and run:
+`circumflex` is written in Go. Clone the repo and type:
 
-    $ go install
+```console
+go install
+```
 
 Then run with:
 
-    $ clx
+```console
+clx
+```
 
 ## Known issues
 The first keystroke is lost when viewing comments in `less`, see [gdamore/tcell#194](https://github.com/gdamore/tcell/issues/194).
