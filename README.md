@@ -29,8 +29,8 @@ To give context to posts with many replies, Original Poster (OP), Parent Poster 
 `circumflex` pipes comments to the pager `less`. Here is a short recap of commonly used navigation commands:
 
 <pre>
-  <kbd>↓</kbd>, <kbd>j</kbd>: forward one line
-  <kbd>↑</kbd>, <kbd>k</kbd>: backward one line
+  <kbd>j</kbd>, <kbd>↓</kbd>: forward one line
+  <kbd>k</kbd>, <kbd>↑</kbd>: backward one line
   <kbd>d</kbd>: forward one half-window
   <kbd>u</kbd>: backward one half-window
   <kbd>q</kbd>: exit
