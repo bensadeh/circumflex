@@ -128,7 +128,7 @@ func getCommentHeading(c Comments, level int, commentWidth int, originalPoster s
 		replies := getRepliesTag(getReplyCount(c))
 		anchor := " ::"
 		headerLine := getWhitespaceFiller(author+label+anchor+timeAgo+replies, commentWidth)
-		return author + label + dimmedAndUnderlined(timeAgo+anchor+headerLine+replies) + NewLine
+		return author + label + dimmedAndUnderlined(timeAgo+headerLine+replies+anchor) + NewLine
 	}
 
 	return author + label + dimmed(timeAgo) + NewLine
