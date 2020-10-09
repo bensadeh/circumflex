@@ -38,6 +38,14 @@ func main() {
 		return event
 	})
 
+	// Press 'q' to quit
+	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		if event.Rune() == 'q' {
+			app.Stop()
+		}
+		return event
+	})
+
 	if err := app.SetRoot(pages, true).EnableMouse(false).Run(); err != nil {
 		panic(err)
 	}
