@@ -104,7 +104,7 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *Submissio
 					var jComments = new(comment_parser.Comments)
 					_ = json.Unmarshal(JSON, jComments)
 
-					commentTree := comment_parser.PrintCommentTree(*jComments, 3, 70)
+					commentTree := comment_parser.PrintCommentTree(*jComments, 4, 70)
 					outputStringToLess(commentTree)
 				}
 			}
