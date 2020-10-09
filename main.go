@@ -4,6 +4,8 @@ import (
 	"clx/cmd"
 	"clx/comment-parser"
 	"encoding/json"
+	"fmt"
+	"runtime"
 	"strconv"
 
 	"log"
@@ -111,6 +113,33 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *Submissio
 			}
 		})
 	})
+
+	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		if event.Rune() == 'o' {
+			item := list.GetCurrentItem()
+			url := sh.Submissions[item].URL
+			openBrowser(url)
+		}
+		return event
+	})
+}
+
+func openBrowser(url string) {
+	var err error
+
+	switch runtime.GOOS {
+	case "linux":
+		err = exec.Command("xdg-open", url).Start()
+	case "windows":
+		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+	case "darwin":
+		err = exec.Command("open", url).Start()
+	default:
+		err = fmt.Errorf("unsupported platform")
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func addListItems(list *cview.List, sh *SubmissionHandler) {
