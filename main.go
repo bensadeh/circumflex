@@ -30,28 +30,25 @@ func main() {
 	initNewPage(app, submissionHandler)
 	submissionHandler.Pages.SwitchToPage("0")
 
-	// Shortcuts to navigate the slides.
-	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		if event.Key() == tcell.KeyCtrlN {
-			nextSlide(app, submissionHandler)
-		} else if event.Key() == tcell.KeyCtrlP {
-			submissionHandler.Pages.SwitchToPage("0")
-		}
-		return event
-	})
-
-	// Press 'q' to quit
-	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		if event.Rune() == 'q' {
-			app.Stop()
-		}
-		return event
-	})
+	setShortcuts(app, submissionHandler)
 
 	if err := app.SetRoot(pages, true).EnableMouse(false).Run(); err != nil {
 		panic(err)
 	}
 
+}
+
+func setShortcuts(app *cview.Application, submissionHandler *SubmissionHandler) {
+	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		if event.Key() == tcell.KeyCtrlN {
+			nextSlide(app, submissionHandler)
+		} else if event.Key() == tcell.KeyCtrlP {
+			submissionHandler.Pages.SwitchToPage("0")
+		} else if event.Rune() == 'q' {
+			app.Stop()
+		}
+		return event
+	})
 }
 
 func nextSlide(app *cview.Application, sh *SubmissionHandler) {
