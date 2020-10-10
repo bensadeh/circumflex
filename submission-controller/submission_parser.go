@@ -39,18 +39,28 @@ type SubmissionHandler struct {
 func NewSubmissionHandler() *SubmissionHandler {
 	sh := new(SubmissionHandler)
 	sh.Application = cview.NewApplication()
+	setShortcuts(sh.Application)
 	sh.Pages = cview.NewPages()
 	sh.MaxPages = 3
 	sh.ScreenHeight = getTerminalHeight()
 	sh.ViewableStoriesOnSinglePage = min(sh.ScreenHeight/2, maximumStoriesToDisplay)
-
 	sh.FetchSubmissions()
 
-	//list := createNewList(sh)
-	//sh.Pages.AddPage("0", list, true, true)
 	sh.Pages.SwitchToPage("0")
-
 	return sh
+}
+
+func setShortcuts(app *cview.Application) {
+	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		if event.Key() == tcell.KeyCtrlN {
+			//
+		} else if event.Key() == tcell.KeyCtrlP {
+			//
+		} else if event.Rune() == 'q' {
+			app.Stop()
+		}
+		return event
+	})
 }
 
 func getTerminalHeight() int {
@@ -76,20 +86,6 @@ func (sh *SubmissionHandler) NextPage() {
 
 func (sh *SubmissionHandler) GetStoriesToDisplay() int {
 	return sh.ViewableStoriesOnSinglePage
-}
-
-func createNewList(sh *SubmissionHandler) *cview.List {
-	list := cview.NewList()
-	list.SetBackgroundTransparent(false)
-	list.SetBackgroundColor(tcell.ColorDefault)
-	list.SetMainTextColor(tcell.ColorDefault)
-	list.SetSecondaryTextColor(tcell.ColorDefault)
-	list.ShowSecondaryText(true)
-	setSelectedFunction(sh.Application, list, sh)
-
-	addListItems(list, sh)
-
-	return list
 }
 
 func setSelectedFunction(app *cview.Application, list *cview.List, sh *SubmissionHandler) {
@@ -121,16 +117,6 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *Submissio
 		}
 		return event
 	})
-}
-
-func addListItems(list *cview.List, sh *SubmissionHandler) {
-	storiesToShow := sh.GetStoriesToDisplay() * (sh.CurrentPage + 1)
-
-	for i := sh.StoriesListed; i < storiesToShow; i++ {
-		sh.StoriesListed++
-		primary, secondary := sh.GetSubmissionInfo(i)
-		list.AddItem(primary, secondary, 0, nil)
-	}
 }
 
 func openBrowser(url string) {
