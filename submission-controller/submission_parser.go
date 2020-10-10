@@ -98,7 +98,7 @@ func (sh *SubmissionHandler) nextPage() {
 		sh.Pages.SwitchToPage(strconv.Itoa(nextPage))
 	}
 
-		sh.CurrentPage++
+	sh.CurrentPage++
 }
 
 func (sh *SubmissionHandler) previousPage() {
