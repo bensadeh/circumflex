@@ -31,13 +31,15 @@ type SubmissionHandler struct {
 	StoriesListed      int
 	ScreenHeight       int
 	StoriesToDisplay   int
+	MaxPages           int
 }
 
 func NewSubmissionHandler(app *cview.Application) *SubmissionHandler {
 	sh := new(SubmissionHandler)
 	sh.Pages = cview.NewPages()
+	sh.MaxPages = 3
 	sh.ScreenHeight = getTerminalHeight()
-	sh.StoriesToDisplay = min(sh.ScreenHeight / 2, maximumStoriesToDisplay)
+	sh.StoriesToDisplay = min(sh.ScreenHeight/2, maximumStoriesToDisplay)
 
 	sh.FetchSubmissions()
 
@@ -58,6 +60,15 @@ func min(x, y int) int {
 		return y
 	}
 	return x
+}
+
+func (sh *SubmissionHandler) NextPage() {
+	if sh.CurrentPage+1 > sh.MaxPages {
+		return
+	}
+
+	sh.CurrentPage++
+	sh.Pages.SwitchToPage(strconv.Itoa(sh.CurrentPage))
 }
 
 func (sh *SubmissionHandler) GetStoriesToDisplay() int {
@@ -179,7 +190,7 @@ type Submission struct {
 	Type          string `json:"type"`
 }
 
-func FetchSubmissions(sh *SubmissionHandler) {
+func (sh *SubmissionHandler) FetchSubmissions() {
 	sh.PageToFetchFromAPI++
 	p := strconv.Itoa(sh.PageToFetchFromAPI)
 	JSON, _ := http.Get("http://node-hnapi.herokuapp.com/news?page=" + p)
@@ -188,13 +199,8 @@ func FetchSubmissions(sh *SubmissionHandler) {
 	sh.Submissions = append(sh.Submissions, submissions...)
 }
 
-func (sh *SubmissionHandler) FetchSubmissions() {
-	sh.PageToFetchFromAPI++
-	p := strconv.Itoa(sh.PageToFetchFromAPI)
-	JSON, _ := http.Get("http://node-hnapi.herokuapp.com/news?page=" + p)
-	var submissions []Submission
-	_ = json.Unmarshal(JSON, &submissions)
-	sh.Submissions = append(sh.Submissions, submissions...)
+func (sh *SubmissionHandler) mapSubmissionsToListsAndPages() {
+
 }
 
 func (s Submission) GetDomain() string {
