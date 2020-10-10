@@ -31,6 +31,8 @@ func NewSubmissionHandler() *SubmissionHandler {
 	sh.ScreenHeight = int(y)
 	sh.StoriesToDisplay = min(sh.ScreenHeight / 2, maximumStoriesToDisplay)
 
+	sh.Pages = cview.NewPages()
+
 	return sh
 }
 

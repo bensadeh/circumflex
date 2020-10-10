@@ -24,17 +24,14 @@ func main() {
 	cmd.Execute()
 	clearScreen()
 	submissionHandler := subController.NewSubmissionHandler()
-
 	app := cview.NewApplication()
-	pages := cview.NewPages()
-	submissionHandler.Pages = pages
 
 	initNewPage(app, submissionHandler)
 	submissionHandler.Pages.SwitchToPage("0")
 
 	setShortcuts(app, submissionHandler)
 
-	if err := app.SetRoot(pages, true).EnableMouse(false).Run(); err != nil {
+	if err := app.SetRoot(submissionHandler.Pages, true).EnableMouse(false).Run(); err != nil {
 		panic(err)
 	}
 
@@ -142,6 +139,8 @@ func openBrowser(url string) {
 }
 
 func addListItems(list *cview.List, sh *subController.SubmissionHandler) {
+
+
 	storiesToShow := sh.GetStoriesToDisplay() * (sh.CurrentPage + 1)
 
 	for i := sh.StoriesListed; i < storiesToShow; i++ {
