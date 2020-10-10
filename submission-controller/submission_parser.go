@@ -207,18 +207,8 @@ func (sh *SubmissionHandler) FetchSubmissions() {
 	var submissions []Submission
 	_ = json.Unmarshal(JSON, &submissions)
 	sh.Submissions = append(sh.Submissions, submissions...)
-	//sh.mapSubmissionsToListsAndPages()
 	sh.mapSubmissions()
 }
-
-//func (sh *SubmissionHandler) mapSubmissionsToListsAndPages() {
-//	unmappedSubmissions := len(sh.Submissions) - sh.MappedSubmissions
-//
-//	for unmappedSubmissions < sh.ViewableStoriesOnSinglePage {
-//		sh.mapSubmissions()
-//		unmappedSubmissions = len(sh.Submissions) - sh.MappedSubmissions
-//	}
-//}
 
 func (sh *SubmissionHandler) mapSubmissions() {
 	for sh.hasStoriesToMap() {
