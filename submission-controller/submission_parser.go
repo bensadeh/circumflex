@@ -213,7 +213,7 @@ func (sh *SubmissionHandler) FetchSubmissions() {
 func (sh *SubmissionHandler) mapSubmissions() {
 	for sh.hasStoriesToMap() {
 		sub := sh.Submissions[sh.MappedSubmissions : sh.MappedSubmissions+sh.ViewableStoriesOnSinglePage]
-		list := createNewList2(sh)
+		list := createNewList(sh)
 		addSubmissionsToList(list, sub, sh)
 
 		sh.Pages.AddPage(strconv.Itoa(sh.MappedPages), list, true, true)
@@ -225,7 +225,7 @@ func (sh *SubmissionHandler) hasStoriesToMap() bool {
 	return len(sh.Submissions)-sh.MappedSubmissions > sh.ViewableStoriesOnSinglePage
 }
 
-func createNewList2(sh *SubmissionHandler) *cview.List {
+func createNewList(sh *SubmissionHandler) *cview.List {
 	list := cview.NewList()
 	list.SetBackgroundTransparent(false)
 	list.SetBackgroundColor(tcell.ColorDefault)
@@ -253,7 +253,8 @@ func (s Submission) getMainText(i int) string {
 }
 
 func (s Submission) getSecondaryText() string {
-	return "[::d]" + "    " + s.GetPoints() + " points by " + s.Author + " " + s.Time + " | " + s.GetComments() + " comments" + "[-:-:-]"
+	return "[::d]" + "    " + s.GetPoints() + " points by " + s.Author + " " +
+		s.Time + " | " + s.GetComments() + " comments" + "[-:-:-]"
 }
 
 func (s Submission) GetDomain() string {
