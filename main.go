@@ -23,11 +23,9 @@ import (
 func main() {
 	cmd.Execute()
 	clearScreen()
-	sh := subController.NewSubmissionHandler()
-	app := cview.NewApplication()
 
-	initNewPage(app, sh)
-	sh.Pages.SwitchToPage("0")
+	app := cview.NewApplication()
+	sh := subController.NewSubmissionHandler(app)
 
 	setShortcuts(app, sh)
 
@@ -139,8 +137,6 @@ func openBrowser(url string) {
 }
 
 func addListItems(list *cview.List, sh *subController.SubmissionHandler) {
-
-
 	storiesToShow := sh.GetStoriesToDisplay() * (sh.CurrentPage + 1)
 
 	for i := sh.StoriesListed; i < storiesToShow; i++ {
