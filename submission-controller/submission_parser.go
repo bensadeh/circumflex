@@ -3,6 +3,7 @@ package submission_controller
 import (
 	http "clx/http-handler"
 	"encoding/json"
+	terminal "github.com/wayneashleyberry/terminal-dimensions"
 	"strconv"
 
 	"gitlab.com/tslocum/cview"
@@ -10,11 +11,27 @@ import (
 
 // SubmissionHandler stores submissions and pages
 type SubmissionHandler struct {
-	Submissions    []Submission
-	Pages          *cview.Pages
-	PagesRetrieved int
-	CurrentPage    int
-	StoriesListed  int
+	Submissions      []Submission
+	Pages            *cview.Pages
+	PagesRetrieved   int
+	CurrentPage      int
+	StoriesListed    int
+	ScreenHeight     int
+	StoriesToDisplay int
+}
+
+func NewSubmissionHandler() *SubmissionHandler {
+	sh := new(SubmissionHandler)
+
+	y, _ := terminal.Height()
+	sh.ScreenHeight = int(y)
+	sh.StoriesToDisplay = sh.ScreenHeight / 2
+
+	return sh
+}
+
+func (sh *SubmissionHandler) GetStoriesToDisplay() int {
+	return sh.StoriesToDisplay
 }
 
 // Submission represents the JSON structure as
