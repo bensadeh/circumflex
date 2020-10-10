@@ -9,6 +9,10 @@ import (
 	"gitlab.com/tslocum/cview"
 )
 
+const (
+	maximumStoriesToDisplay = 30
+)
+
 // SubmissionHandler stores submissions and pages
 type SubmissionHandler struct {
 	Submissions      []Submission
@@ -25,9 +29,16 @@ func NewSubmissionHandler() *SubmissionHandler {
 
 	y, _ := terminal.Height()
 	sh.ScreenHeight = int(y)
-	sh.StoriesToDisplay = sh.ScreenHeight / 2
+	sh.StoriesToDisplay = min(sh.ScreenHeight / 2, maximumStoriesToDisplay)
 
 	return sh
+}
+
+func min(x, y int) int {
+	if x > y {
+		return y
+	}
+	return x
 }
 
 func (sh *SubmissionHandler) GetStoriesToDisplay() int {
