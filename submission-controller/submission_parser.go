@@ -42,7 +42,7 @@ func NewSubmissionHandler() *SubmissionHandler {
 	sh.Application = cview.NewApplication()
 	sh.setShortcuts()
 	sh.Pages = cview.NewPages()
-	sh.MaxPages = 3
+	sh.MaxPages = 2
 	sh.ScreenHeight = getTerminalHeight()
 	sh.ViewableStoriesOnSinglePage = min(sh.ScreenHeight/2, maximumStoriesToDisplay)
 	sh.FetchSubmissions()
