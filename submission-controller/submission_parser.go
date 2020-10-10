@@ -45,6 +45,23 @@ func (sh *SubmissionHandler) GetStoriesToDisplay() int {
 	return sh.StoriesToDisplay
 }
 
+func (sh *SubmissionHandler) GetSubmissionInfo(i int) (string, string) {
+	submission := sh.GetSubmission(i)
+
+	rank := i + 1
+	indentedRank := strconv.Itoa(rank) + "." + GetRankIndentBlock(rank)
+
+	primary := indentedRank + submission.Title + submission.GetDomain()
+
+	secondary := "[::d]" + "    " + submission.GetPoints() + " points by " + submission.Author + " " + submission.Time + " | " + submission.GetComments() + " comments" + "[-:-:-]"
+
+	return primary, secondary
+}
+
+func (sh *SubmissionHandler) GetSubmission(i int) Submission {
+	return sh.Submissions[i]
+}
+
 // Submission represents the JSON structure as
 // retrieved from cheeaun's unofficial HN API
 type Submission struct {
@@ -73,6 +90,22 @@ func GetDomain(domain string) string {
 		return ""
 	}
 	return "[::d]" + " " + paren(domain) + "[-:-:-]"
+}
+
+func (s Submission) GetDomain() string {
+	domain := s.Domain
+	if domain == "" {
+		return ""
+	}
+	return "[::d]" + " " + paren(domain) + "[-:-:-]"
+}
+
+func (s Submission) GetComments() string {
+	return strconv.Itoa(s.CommentsCount)
+}
+
+func (s Submission) GetPoints() string {
+	return strconv.Itoa(s.Points)
 }
 
 func paren(text string) string {

@@ -146,7 +146,8 @@ func addListItems(list *cview.List, sh *subController.SubmissionHandler) {
 
 	for i := sh.StoriesListed; i < storiesToShow; i++ {
 		sh.StoriesListed++
-		primary, secondary := getSubmissionInfo(i, sh.Submissions[i])
+		primary, secondary := sh.GetSubmissionInfo(i)
+		//primary, secondary := getSubmissionInfo(i, sh.Submissions[i])
 		list.AddItem(primary, secondary, 0, nil)
 	}
 }
