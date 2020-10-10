@@ -128,13 +128,9 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *submissio
 		app.Suspend(func() {
 			for index := range sh.Submissions {
 				if index == i {
-					y, _ := terminal.Height()
-					storiesToView := int(y / 2)
-					storyRank := (sh.CurrentPage)*storiesToView + i
-
-					id := strconv.Itoa(sh.Submissions[storyRank].ID)
+					id := getSubmissionID(i, sh)
 					JSON, _ := http_handler.Get("http://node-hnapi.herokuapp.com/item/" + id)
-					var jComments = new(commentparser.Comments)
+					jComments := new(commentparser.Comments)
 					_ = json.Unmarshal(JSON, jComments)
 
 					commentTree := commentparser.PrintCommentTree(*jComments, 4, 70)
@@ -152,6 +148,12 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *submissio
 		}
 		return event
 	})
+}
+
+func getSubmissionID(i int, sh *submissionHandler) string {
+	storyIndex := (sh.CurrentPage)*sh.ViewableStoriesOnSinglePage + i
+	s := sh.Submissions[storyIndex]
+	return strconv.Itoa(s.ID)
 }
 
 func openBrowser(url string) {
