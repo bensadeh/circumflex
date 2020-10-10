@@ -26,6 +26,7 @@ const (
 type SubmissionHandler struct {
 	Submissions                 []Submission
 	MappedSubmissions           int
+	MappedPages                 int
 	StoriesListed               int
 	Pages                       *cview.Pages
 	Application                 *cview.Application
@@ -186,24 +187,26 @@ func (sh *SubmissionHandler) FetchSubmissions() {
 	var submissions []Submission
 	_ = json.Unmarshal(JSON, &submissions)
 	sh.Submissions = append(sh.Submissions, submissions...)
-	sh.mapSubmissionsToListsAndPages()
+	//sh.mapSubmissionsToListsAndPages()
 	sh.mapSubmissions()
 }
 
-func (sh *SubmissionHandler) mapSubmissionsToListsAndPages() {
-	unmappedSubmissions := len(sh.Submissions) - sh.MappedSubmissions
-
-	for unmappedSubmissions < sh.ViewableStoriesOnSinglePage {
-		sh.mapSubmissions()
-		unmappedSubmissions = len(sh.Submissions) - sh.MappedSubmissions
-	}
-}
+//func (sh *SubmissionHandler) mapSubmissionsToListsAndPages() {
+//	unmappedSubmissions := len(sh.Submissions) - sh.MappedSubmissions
+//
+//	for unmappedSubmissions < sh.ViewableStoriesOnSinglePage {
+//		sh.mapSubmissions()
+//		unmappedSubmissions = len(sh.Submissions) - sh.MappedSubmissions
+//	}
+//}
 
 func (sh *SubmissionHandler) mapSubmissions() {
 	sub := sh.Submissions[sh.MappedSubmissions : sh.MappedSubmissions+sh.ViewableStoriesOnSinglePage]
 	list := createNewList2(sh)
 	addSubmissionsToList(list, sub)
-	sh.Pages.AddPage("0", list, true, true)
+
+	sh.Pages.AddPage(strconv.Itoa(sh.MappedPages), list, true, true)
+	sh.MappedPages++
 }
 
 func createNewList2(sh *SubmissionHandler) *cview.List {
