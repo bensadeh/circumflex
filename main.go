@@ -147,19 +147,8 @@ func addListItems(list *cview.List, sh *subController.SubmissionHandler) {
 	for i := sh.StoriesListed; i < storiesToShow; i++ {
 		sh.StoriesListed++
 		primary, secondary := sh.GetSubmissionInfo(i)
-		//primary, secondary := getSubmissionInfo(i, sh.Submissions[i])
 		list.AddItem(primary, secondary, 0, nil)
 	}
-}
-
-func getSubmissionInfo(i int, submission subController.Submission) (string, string) {
-	rank := i + 1
-	indentedRank := strconv.Itoa(rank) + "." + subController.GetRankIndentBlock(rank)
-	primary := indentedRank + submission.Title + subController.GetDomain(submission.Domain)
-	points := strconv.Itoa(submission.Points)
-	comments := strconv.Itoa(submission.CommentsCount)
-	secondary := "[::d]" + "    " + points + " points by " + submission.Author + " " + submission.Time + " | " + comments + " comments" + "[-:-:-]"
-	return primary, secondary
 }
 
 func clearScreen() {

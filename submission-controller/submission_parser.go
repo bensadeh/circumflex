@@ -85,13 +85,6 @@ func FetchSubmissions(sh *SubmissionHandler) {
 	sh.Submissions = append(sh.Submissions, submissions...)
 }
 
-func GetDomain(domain string) string {
-	if domain == "" {
-		return ""
-	}
-	return "[::d]" + " " + paren(domain) + "[-:-:-]"
-}
-
 func (s Submission) GetDomain() string {
 	domain := s.Domain
 	if domain == "" {
