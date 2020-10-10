@@ -1,6 +1,7 @@
-package main
+package submission_controller
 
 import (
+	http "clx/http-handler"
 	"encoding/json"
 	"strconv"
 
@@ -30,16 +31,16 @@ type Submission struct {
 	Type          string `json:"type"`
 }
 
-func fetchSubmissions(sh *SubmissionHandler) {
+func FetchSubmissions(sh *SubmissionHandler) {
 	sh.PagesRetrieved++
 	p := strconv.Itoa(sh.PagesRetrieved)
-	JSON, _ := get("http://node-hnapi.herokuapp.com/news?page=" + p)
+	JSON, _ := http.Get("http://node-hnapi.herokuapp.com/news?page=" + p)
 	var submissions []Submission
 	_ = json.Unmarshal(JSON, &submissions)
 	sh.Submissions = append(sh.Submissions, submissions...)
 }
 
-func getDomain(domain string) string {
+func GetDomain(domain string) string {
 	if domain == "" {
 		return ""
 	}
@@ -50,7 +51,7 @@ func paren(text string) string {
 	return "(" + text + ")"
 }
 
-func getRankIndentBlock(rank int) string {
+func GetRankIndentBlock(rank int) string {
 	largeIndent := "  "
 	smallIndent := " "
 	if rank > 9 {

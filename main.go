@@ -3,6 +3,8 @@ package main
 import (
 	"clx/cmd"
 	"clx/comment-parser"
+	"clx/http-handler"
+	subController "clx/submission-controller"
 	"encoding/json"
 	"fmt"
 	"runtime"
@@ -21,7 +23,7 @@ import (
 func main() {
 	cmd.Execute()
 	clearScreen()
-	submissionHandler := new(SubmissionHandler)
+	submissionHandler := new(subController.SubmissionHandler)
 
 	app := cview.NewApplication()
 	pages := cview.NewPages()
@@ -38,7 +40,7 @@ func main() {
 
 }
 
-func setShortcuts(app *cview.Application, submissionHandler *SubmissionHandler) {
+func setShortcuts(app *cview.Application, submissionHandler *subController.SubmissionHandler) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Key() == tcell.KeyCtrlN {
 			nextSlide(app, submissionHandler)
@@ -51,7 +53,7 @@ func setShortcuts(app *cview.Application, submissionHandler *SubmissionHandler) 
 	})
 }
 
-func nextSlide(app *cview.Application, sh *SubmissionHandler) {
+func nextSlide(app *cview.Application, sh *subController.SubmissionHandler) {
 	sh.CurrentPage++
 	initNewPage(app, sh)
 	sh.Pages.SwitchToPage("1")
@@ -62,12 +64,12 @@ func nextSlide(app *cview.Application, sh *SubmissionHandler) {
 	// panic(sh.CurrentPage)
 }
 
-func initNewPage(app *cview.Application, sh *SubmissionHandler) {
+func initNewPage(app *cview.Application, sh *subController.SubmissionHandler) {
 	// y, _ := terminal.Height()
 	// storiesToView := int(y/2) * (sh.CurrentPage + 1)
 	// availableSubmissions := len(sh.Submissions)
 
-	fetchSubmissions(sh)
+	subController.FetchSubmissions(sh)
 
 	list := createNewList(app, sh)
 	// sh.Pages = append(sh.Pages, newPage)
@@ -76,7 +78,7 @@ func initNewPage(app *cview.Application, sh *SubmissionHandler) {
 	sh.Pages.AddPage(currentPage, list, true, true)
 }
 
-func createNewList(app *cview.Application, sh *SubmissionHandler) *cview.List {
+func createNewList(app *cview.Application, sh *subController.SubmissionHandler) *cview.List {
 	list := cview.NewList()
 	list.SetBackgroundTransparent(false)
 	list.SetBackgroundColor(tcell.ColorDefault)
@@ -90,7 +92,7 @@ func createNewList(app *cview.Application, sh *SubmissionHandler) *cview.List {
 	return list
 }
 
-func setSelectedFunction(app *cview.Application, list *cview.List, sh *SubmissionHandler) {
+func setSelectedFunction(app *cview.Application, list *cview.List, sh *subController.SubmissionHandler) {
 	list.SetSelectedFunc(func(i int, a string, b string, c rune) {
 		app.Suspend(func() {
 			for index := range sh.Submissions {
@@ -100,7 +102,7 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *Submissio
 					storyRank := (sh.CurrentPage)*storiesToView + i
 
 					id := strconv.Itoa(sh.Submissions[storyRank].ID)
-					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + id)
+					JSON, _ := http_handler.Get("http://node-hnapi.herokuapp.com/item/" + id)
 					var jComments = new(comment_parser.Comments)
 					_ = json.Unmarshal(JSON, jComments)
 
@@ -139,7 +141,7 @@ func openBrowser(url string) {
 	}
 }
 
-func addListItems(list *cview.List, sh *SubmissionHandler) {
+func addListItems(list *cview.List, sh *subController.SubmissionHandler) {
 	y, _ := terminal.Height()
 	storiesToShow := int(y/2) * (sh.CurrentPage + 1)
 
@@ -150,10 +152,10 @@ func addListItems(list *cview.List, sh *SubmissionHandler) {
 	}
 }
 
-func getSubmissionInfo(i int, submission Submission) (string, string) {
+func getSubmissionInfo(i int, submission subController.Submission) (string, string) {
 	rank := i + 1
-	indentedRank := strconv.Itoa(rank) + "." + getRankIndentBlock(rank)
-	primary := indentedRank + submission.Title + getDomain(submission.Domain)
+	indentedRank := strconv.Itoa(rank) + "." + subController.GetRankIndentBlock(rank)
+	primary := indentedRank + submission.Title + subController.GetDomain(submission.Domain)
 	points := strconv.Itoa(submission.Points)
 	comments := strconv.Itoa(submission.CommentsCount)
 	secondary := "[::d]" + "    " + points + " points by " + submission.Author + " " + submission.Time + " | " + comments + " comments" + "[-:-:-]"
