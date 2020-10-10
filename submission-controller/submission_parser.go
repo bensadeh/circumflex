@@ -84,14 +84,21 @@ func (sh *SubmissionHandler) NextPage() {
 		return
 	}
 
+	_, primitive := sh.Pages.GetFrontPage()
+	list := primitive.(*cview.List)
+	currentlySelectedItem := list.GetCurrentItem()
+
 	if nextPage < sh.MappedPages {
-		sh.CurrentPage++
-		sh.Pages.SwitchToPage(strconv.Itoa(sh.CurrentPage))
+		sh.Pages.SwitchToPage(strconv.Itoa(nextPage))
+		_, p := sh.Pages.GetFrontPage()
+		l := p.(*cview.List)
+		l.SetCurrentItem(currentlySelectedItem)
 	} else {
 		sh.FetchSubmissions()
-		sh.CurrentPage++
-		sh.Pages.SwitchToPage(strconv.Itoa(sh.CurrentPage))
+		sh.Pages.SwitchToPage(strconv.Itoa(nextPage))
 	}
+
+		sh.CurrentPage++
 }
 
 func (sh *SubmissionHandler) PreviousPage() {
@@ -101,8 +108,16 @@ func (sh *SubmissionHandler) PreviousPage() {
 		return
 	}
 
+	_, primitive := sh.Pages.GetFrontPage()
+	list := primitive.(*cview.List)
+	currentlySelectedItem := list.GetCurrentItem()
+
 	sh.CurrentPage--
 	sh.Pages.SwitchToPage(strconv.Itoa(sh.CurrentPage))
+
+	_, p := sh.Pages.GetFrontPage()
+	l := p.(*cview.List)
+	l.SetCurrentItem(currentlySelectedItem)
 }
 
 func (sh *SubmissionHandler) GetStoriesToDisplay() int {
