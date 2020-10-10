@@ -40,7 +40,7 @@ type SubmissionHandler struct {
 func NewSubmissionHandler() *SubmissionHandler {
 	sh := new(SubmissionHandler)
 	sh.Application = cview.NewApplication()
-	setShortcuts(sh.Application)
+	sh.setShortcuts()
 	sh.Pages = cview.NewPages()
 	sh.MaxPages = 3
 	sh.ScreenHeight = getTerminalHeight()
@@ -51,10 +51,11 @@ func NewSubmissionHandler() *SubmissionHandler {
 	return sh
 }
 
-func setShortcuts(app *cview.Application) {
+func (sh *SubmissionHandler) setShortcuts() {
+	app := sh.Application
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Key() == tcell.KeyCtrlN {
-			//
+			sh.NextPage()
 		} else if event.Key() == tcell.KeyCtrlP {
 			//
 		} else if event.Rune() == 'q' {
@@ -77,12 +78,22 @@ func min(x, y int) int {
 }
 
 func (sh *SubmissionHandler) NextPage() {
-	if sh.CurrentPage+1 > sh.MaxPages {
-		return
-	}
-
-	sh.CurrentPage++
-	sh.Pages.SwitchToPage(strconv.Itoa(sh.CurrentPage))
+	//nextPage := sh.CurrentPage + 1
+	//
+	//if nextPage > sh.MaxPages {
+	//	return
+	//}
+	//
+	//if nextPage <= sh.MappedPages {
+	//	sh.CurrentPage++
+	//	sh.Pages.SwitchToPage(strconv.Itoa(sh.CurrentPage))
+	//}
+	//
+	//if nextPage >= sh.MappedPages {
+		sh.FetchSubmissions()
+		sh.CurrentPage++
+		sh.Pages.SwitchToPage(strconv.Itoa(sh.CurrentPage))
+	//}
 }
 
 func (sh *SubmissionHandler) GetStoriesToDisplay() int {
@@ -201,12 +212,18 @@ func (sh *SubmissionHandler) FetchSubmissions() {
 //}
 
 func (sh *SubmissionHandler) mapSubmissions() {
-	sub := sh.Submissions[sh.MappedSubmissions : sh.MappedSubmissions+sh.ViewableStoriesOnSinglePage]
-	list := createNewList2(sh)
-	addSubmissionsToList(list, sub)
+	for sh.hasStoriesToMap() {
+		sub := sh.Submissions[sh.MappedSubmissions : sh.MappedSubmissions+sh.ViewableStoriesOnSinglePage]
+		list := createNewList2(sh)
+		addSubmissionsToList(list, sub, sh)
 
-	sh.Pages.AddPage(strconv.Itoa(sh.MappedPages), list, true, true)
-	sh.MappedPages++
+		sh.Pages.AddPage(strconv.Itoa(sh.MappedPages), list, true, true)
+		sh.MappedPages++
+	}
+}
+
+func (sh *SubmissionHandler) hasStoriesToMap() bool {
+	return len(sh.Submissions)-sh.MappedSubmissions > sh.ViewableStoriesOnSinglePage
 }
 
 func createNewList2(sh *SubmissionHandler) *cview.List {
@@ -221,9 +238,11 @@ func createNewList2(sh *SubmissionHandler) *cview.List {
 	return list
 }
 
-func addSubmissionsToList(list *cview.List, submissions []Submission) {
-	for i, submission := range submissions {
-		list.AddItem(submission.getMainText(i), submission.getSecondaryText(), 0, nil)
+func addSubmissionsToList(list *cview.List, submissions []Submission, sh *SubmissionHandler) {
+
+	for _, submission := range submissions {
+		list.AddItem(submission.getMainText(sh.MappedSubmissions), submission.getSecondaryText(), 0, nil)
+		sh.MappedSubmissions++
 	}
 }
 
