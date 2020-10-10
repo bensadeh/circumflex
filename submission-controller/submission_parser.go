@@ -1,7 +1,7 @@
 package submission_controller
 
 import (
-	comment_parser "clx/comment-parser"
+	commentparser "clx/comment-parser"
 	"clx/http-handler"
 	http "clx/http-handler"
 	"encoding/json"
@@ -24,27 +24,30 @@ const (
 
 // SubmissionHandler stores submissions and pages
 type SubmissionHandler struct {
-	Submissions        []Submission
-	Pages              *cview.Pages
-	PageToFetchFromAPI int
-	CurrentPage        int
-	StoriesListed      int
-	ScreenHeight       int
-	StoriesToDisplay   int
-	MaxPages           int
+	Submissions                 []Submission
+	MappedSubmissions           int
+	StoriesListed               int
+	Pages                       *cview.Pages
+	Application                 *cview.Application
+	PageToFetchFromAPI          int
+	CurrentPage                 int
+	ScreenHeight                int
+	ViewableStoriesOnSinglePage int
+	MaxPages                    int
 }
 
-func NewSubmissionHandler(app *cview.Application) *SubmissionHandler {
+func NewSubmissionHandler() *SubmissionHandler {
 	sh := new(SubmissionHandler)
+	sh.Application = cview.NewApplication()
 	sh.Pages = cview.NewPages()
 	sh.MaxPages = 3
 	sh.ScreenHeight = getTerminalHeight()
-	sh.StoriesToDisplay = min(sh.ScreenHeight/2, maximumStoriesToDisplay)
+	sh.ViewableStoriesOnSinglePage = min(sh.ScreenHeight/2, maximumStoriesToDisplay)
 
 	sh.FetchSubmissions()
 
-	list := createNewList(app, sh)
-	sh.Pages.AddPage("0", list, true, true)
+	//list := createNewList(sh)
+	//sh.Pages.AddPage("0", list, true, true)
 	sh.Pages.SwitchToPage("0")
 
 	return sh
@@ -72,17 +75,17 @@ func (sh *SubmissionHandler) NextPage() {
 }
 
 func (sh *SubmissionHandler) GetStoriesToDisplay() int {
-	return sh.StoriesToDisplay
+	return sh.ViewableStoriesOnSinglePage
 }
 
-func createNewList(app *cview.Application, sh *SubmissionHandler) *cview.List {
+func createNewList(sh *SubmissionHandler) *cview.List {
 	list := cview.NewList()
 	list.SetBackgroundTransparent(false)
 	list.SetBackgroundColor(tcell.ColorDefault)
 	list.SetMainTextColor(tcell.ColorDefault)
 	list.SetSecondaryTextColor(tcell.ColorDefault)
 	list.ShowSecondaryText(true)
-	setSelectedFunction(app, list, sh)
+	setSelectedFunction(sh.Application, list, sh)
 
 	addListItems(list, sh)
 
@@ -100,10 +103,10 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *Submissio
 
 					id := strconv.Itoa(sh.Submissions[storyRank].ID)
 					JSON, _ := http_handler.Get("http://node-hnapi.herokuapp.com/item/" + id)
-					var jComments = new(comment_parser.Comments)
+					var jComments = new(commentparser.Comments)
 					_ = json.Unmarshal(JSON, jComments)
 
-					commentTree := comment_parser.PrintCommentTree(*jComments, 4, 70)
+					commentTree := commentparser.PrintCommentTree(*jComments, 4, 70)
 					outputStringToLess(commentTree)
 				}
 			}
@@ -197,10 +200,53 @@ func (sh *SubmissionHandler) FetchSubmissions() {
 	var submissions []Submission
 	_ = json.Unmarshal(JSON, &submissions)
 	sh.Submissions = append(sh.Submissions, submissions...)
+	sh.mapSubmissionsToListsAndPages()
+	sh.mapSubmissions()
 }
 
 func (sh *SubmissionHandler) mapSubmissionsToListsAndPages() {
+	unmappedSubmissions := len(sh.Submissions) - sh.MappedSubmissions
 
+	for unmappedSubmissions < sh.ViewableStoriesOnSinglePage {
+		sh.mapSubmissions()
+		unmappedSubmissions = len(sh.Submissions) - sh.MappedSubmissions
+	}
+}
+
+func (sh *SubmissionHandler) mapSubmissions() {
+	sub := sh.Submissions[sh.MappedSubmissions : sh.MappedSubmissions+sh.ViewableStoriesOnSinglePage]
+	list := createNewList2(sh)
+	addSubmissionsToList(list, sub)
+	sh.Pages.AddPage("0", list, true, true)
+}
+
+func createNewList2(sh *SubmissionHandler) *cview.List {
+	list := cview.NewList()
+	list.SetBackgroundTransparent(false)
+	list.SetBackgroundColor(tcell.ColorDefault)
+	list.SetMainTextColor(tcell.ColorDefault)
+	list.SetSecondaryTextColor(tcell.ColorDefault)
+	list.ShowSecondaryText(true)
+	setSelectedFunction(sh.Application, list, sh)
+
+	return list
+}
+
+func addSubmissionsToList(list *cview.List, submissions []Submission) {
+	for i, submission := range submissions {
+		list.AddItem(submission.getMainText(i), submission.getSecondaryText(), 0, nil)
+	}
+}
+
+func (s Submission) getMainText(i int) string {
+	rank := i + 1
+	indentedRank := strconv.Itoa(rank) + "." + GetRankIndentBlock(rank)
+
+	return indentedRank + s.Title + s.GetDomain()
+}
+
+func (s Submission) getSecondaryText() string {
+	return "[::d]" + "    " + s.GetPoints() + " points by " + s.Author + " " + s.Time + " | " + s.GetComments() + " comments" + "[-:-:-]"
 }
 
 func (s Submission) GetDomain() string {

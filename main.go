@@ -13,9 +13,8 @@ func main() {
 	cmd.Execute()
 	clearScreen()
 
-	app := cview.NewApplication()
-	sh := subController.NewSubmissionHandler(app)
-
+	sh := subController.NewSubmissionHandler()
+	app := sh.Application
 	setShortcuts(app)
 
 	if err := app.SetRoot(sh.Pages, true).EnableMouse(false).Run(); err != nil {
