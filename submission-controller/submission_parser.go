@@ -45,7 +45,7 @@ func NewSubmissionHandler() *SubmissionHandler {
 	sh.MaxPages = 2
 	sh.ScreenHeight = getTerminalHeight()
 	sh.ViewableStoriesOnSinglePage = min(sh.ScreenHeight/2, maximumStoriesToDisplay)
-	sh.FetchSubmissions()
+	sh.fetchSubmissions()
 
 	sh.Pages.SwitchToPage("0")
 	return sh
@@ -55,9 +55,9 @@ func (sh *SubmissionHandler) setShortcuts() {
 	app := sh.Application
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Key() == tcell.KeyCtrlN {
-			sh.NextPage()
+			sh.nextPage()
 		} else if event.Key() == tcell.KeyCtrlP {
-			sh.PreviousPage()
+			sh.previousPage()
 		} else if event.Rune() == 'q' {
 			app.Stop()
 		}
@@ -77,7 +77,7 @@ func min(x, y int) int {
 	return x
 }
 
-func (sh *SubmissionHandler) NextPage() {
+func (sh *SubmissionHandler) nextPage() {
 	nextPage := sh.CurrentPage + 1
 
 	if nextPage > sh.MaxPages {
@@ -94,14 +94,14 @@ func (sh *SubmissionHandler) NextPage() {
 		l := p.(*cview.List)
 		l.SetCurrentItem(currentlySelectedItem)
 	} else {
-		sh.FetchSubmissions()
+		sh.fetchSubmissions()
 		sh.Pages.SwitchToPage(strconv.Itoa(nextPage))
 	}
 
 		sh.CurrentPage++
 }
 
-func (sh *SubmissionHandler) PreviousPage() {
+func (sh *SubmissionHandler) previousPage() {
 	previousPage := sh.CurrentPage - 1
 
 	if previousPage < 0 {
@@ -120,7 +120,7 @@ func (sh *SubmissionHandler) PreviousPage() {
 	l.SetCurrentItem(currentlySelectedItem)
 }
 
-func (sh *SubmissionHandler) GetStoriesToDisplay() int {
+func (sh *SubmissionHandler) getStoriesToDisplay() int {
 	return sh.ViewableStoriesOnSinglePage
 }
 
@@ -184,7 +184,7 @@ func outputStringToLess(output string) {
 	}
 }
 
-func (sh *SubmissionHandler) GetSubmission(i int) Submission {
+func (sh *SubmissionHandler) getSubmission(i int) Submission {
 	return sh.Submissions[i]
 }
 
@@ -202,7 +202,7 @@ type Submission struct {
 	Type          string `json:"type"`
 }
 
-func (sh *SubmissionHandler) FetchSubmissions() {
+func (sh *SubmissionHandler) fetchSubmissions() {
 	sh.PageToFetchFromAPI++
 	p := strconv.Itoa(sh.PageToFetchFromAPI)
 	JSON, _ := http.Get("http://node-hnapi.herokuapp.com/news?page=" + p)
@@ -253,12 +253,12 @@ func addSubmissionsToList(list *cview.List, submissions []Submission, sh *Submis
 
 func (s Submission) getMainText(i int) string {
 	rank := i + 1
-	return strconv.Itoa(rank) + "." + GetRankIndentBlock(rank) + s.Title + s.GetDomain()
+	return strconv.Itoa(rank) + "." + getRankIndentBlock(rank) + s.Title + s.GetDomain()
 }
 
 func (s Submission) getSecondaryText() string {
-	return "[::d]" + "    " + s.GetPoints() + " points by " + s.Author + " " +
-		s.Time + " | " + s.GetComments() + " comments" + "[-:-:-]"
+	return "[::d]" + "    " + s.getPoints() + " points by " + s.Author + " " +
+		s.Time + " | " + s.getComments() + " comments" + "[-:-:-]"
 }
 
 func (s Submission) GetDomain() string {
@@ -269,11 +269,11 @@ func (s Submission) GetDomain() string {
 	return "[::d]" + " " + paren(domain) + "[-:-:-]"
 }
 
-func (s Submission) GetComments() string {
+func (s Submission) getComments() string {
 	return strconv.Itoa(s.CommentsCount)
 }
 
-func (s Submission) GetPoints() string {
+func (s Submission) getPoints() string {
 	return strconv.Itoa(s.Points)
 }
 
@@ -281,7 +281,7 @@ func paren(text string) string {
 	return "(" + text + ")"
 }
 
-func GetRankIndentBlock(rank int) string {
+func getRankIndentBlock(rank int) string {
 	largeIndent := "  "
 	smallIndent := " "
 	if rank > 9 {
