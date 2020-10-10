@@ -184,19 +184,6 @@ func outputStringToLess(output string) {
 	}
 }
 
-func (sh *SubmissionHandler) GetSubmissionInfo(i int) (string, string) {
-	submission := sh.GetSubmission(i)
-
-	rank := i + 1
-	indentedRank := strconv.Itoa(rank) + "." + GetRankIndentBlock(rank)
-
-	primary := indentedRank + submission.Title + submission.GetDomain()
-
-	secondary := "[::d]" + "    " + submission.GetPoints() + " points by " + submission.Author + " " + submission.Time + " | " + submission.GetComments() + " comments" + "[-:-:-]"
-
-	return primary, secondary
-}
-
 func (sh *SubmissionHandler) GetSubmission(i int) Submission {
 	return sh.Submissions[i]
 }
@@ -253,18 +240,20 @@ func createNewList(sh *SubmissionHandler) *cview.List {
 }
 
 func addSubmissionsToList(list *cview.List, submissions []Submission, sh *SubmissionHandler) {
-
 	for _, submission := range submissions {
-		list.AddItem(submission.getMainText(sh.MappedSubmissions), submission.getSecondaryText(), 0, nil)
+		list.AddItem(
+			submission.getMainText(sh.MappedSubmissions),
+			submission.getSecondaryText(),
+			0,
+			nil,
+		)
 		sh.MappedSubmissions++
 	}
 }
 
 func (s Submission) getMainText(i int) string {
 	rank := i + 1
-	indentedRank := strconv.Itoa(rank) + "." + GetRankIndentBlock(rank)
-
-	return indentedRank + s.Title + s.GetDomain()
+	return strconv.Itoa(rank) + "." + GetRankIndentBlock(rank) + s.Title + s.GetDomain()
 }
 
 func (s Submission) getSecondaryText() string {
