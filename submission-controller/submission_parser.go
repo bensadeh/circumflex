@@ -57,7 +57,7 @@ func (sh *SubmissionHandler) setShortcuts() {
 		if event.Key() == tcell.KeyCtrlN {
 			sh.NextPage()
 		} else if event.Key() == tcell.KeyCtrlP {
-			//
+			sh.PreviousPage()
 		} else if event.Rune() == 'q' {
 			app.Stop()
 		}
@@ -78,22 +78,31 @@ func min(x, y int) int {
 }
 
 func (sh *SubmissionHandler) NextPage() {
-	//nextPage := sh.CurrentPage + 1
-	//
-	//if nextPage > sh.MaxPages {
-	//	return
-	//}
-	//
-	//if nextPage <= sh.MappedPages {
-	//	sh.CurrentPage++
-	//	sh.Pages.SwitchToPage(strconv.Itoa(sh.CurrentPage))
-	//}
-	//
-	//if nextPage >= sh.MappedPages {
+	nextPage := sh.CurrentPage + 1
+
+	if nextPage > sh.MaxPages {
+		return
+	}
+
+	if nextPage < sh.MappedPages {
+		sh.CurrentPage++
+		sh.Pages.SwitchToPage(strconv.Itoa(sh.CurrentPage))
+	} else {
 		sh.FetchSubmissions()
 		sh.CurrentPage++
 		sh.Pages.SwitchToPage(strconv.Itoa(sh.CurrentPage))
-	//}
+	}
+}
+
+func (sh *SubmissionHandler) PreviousPage() {
+	previousPage := sh.CurrentPage - 1
+
+	if previousPage < 0 {
+		return
+	}
+
+	sh.CurrentPage--
+	sh.Pages.SwitchToPage(strconv.Itoa(sh.CurrentPage))
 }
 
 func (sh *SubmissionHandler) GetStoriesToDisplay() int {
