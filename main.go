@@ -23,15 +23,15 @@ import (
 func main() {
 	cmd.Execute()
 	clearScreen()
-	sb := subController.NewSubmissionHandler()
+	sh := subController.NewSubmissionHandler()
 	app := cview.NewApplication()
 
-	initNewPage(app, sb)
-	sb.Pages.SwitchToPage("0")
+	initNewPage(app, sh)
+	sh.Pages.SwitchToPage("0")
 
-	setShortcuts(app, sb)
+	setShortcuts(app, sh)
 
-	if err := app.SetRoot(sb.Pages, true).EnableMouse(false).Run(); err != nil {
+	if err := app.SetRoot(sh.Pages, true).EnableMouse(false).Run(); err != nil {
 		panic(err)
 	}
 
