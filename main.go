@@ -1,15 +1,14 @@
 package main
 
 import (
+	"clx/cli"
 	"clx/cmd"
 	subController "clx/submission-controller"
-	"os"
-	"os/exec"
 )
 
 func main() {
 	cmd.Execute()
-	clearScreen()
+	cli.Clear()
 
 	sh := subController.NewSubmissionHandler()
 
@@ -17,10 +16,4 @@ func main() {
 		panic(err)
 	}
 
-}
-
-func clearScreen() {
-	c := exec.Command("clear")
-	c.Stdout = os.Stdout
-	_ = c.Run()
 }

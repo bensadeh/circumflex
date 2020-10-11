@@ -2,19 +2,15 @@ package submission_controller
 
 import (
 	"clx/browser"
+	"clx/cli"
 	commentparser "clx/comment-parser"
 	"clx/http-handler"
 	http "clx/http-handler"
 	"encoding/json"
 	"github.com/gdamore/tcell"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
-	"log"
-	"os"
-	"os/exec"
-	"strconv"
-	"strings"
-
 	"gitlab.com/tslocum/cview"
+	"strconv"
 )
 
 const (
@@ -133,7 +129,7 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *submissio
 					_ = json.Unmarshal(JSON, jComments)
 
 					commentTree := commentparser.PrintCommentTree(*jComments, 4, 70)
-					outputStringToLess(commentTree)
+					cli.Less(commentTree)
 				}
 			}
 		})
@@ -153,17 +149,6 @@ func getSubmissionID(i int, sh *submissionHandler) string {
 	storyIndex := (sh.CurrentPage)*sh.ViewableStoriesOnSinglePage + i
 	s := sh.Submissions[storyIndex]
 	return strconv.Itoa(s.ID)
-}
-
-func outputStringToLess(output string) {
-	command := exec.Command("less", "-r")
-	command.Stdin = strings.NewReader(output)
-	command.Stdout = os.Stdout
-
-	err := command.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
 }
 
 func (sh *submissionHandler) getSubmission(i int) submission {
