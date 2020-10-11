@@ -170,10 +170,10 @@ func (sh *submissionHandler) fetchSubmissions() {
 	p := strconv.Itoa(sh.PageToFetchFromAPI)
 	submissions := getSubmissions("http://node-hnapi.herokuapp.com/news?page=" + p)
 	sh.Submissions = append(sh.Submissions, submissions...)
-	sh.mapSubmissions()
+	sh.mapSubmissionsToListItems()
 }
 
-func (sh *submissionHandler) mapSubmissions() {
+func (sh *submissionHandler) mapSubmissionsToListItems() {
 	for sh.hasStoriesToMap() {
 		sub := sh.Submissions[sh.MappedSubmissions : sh.MappedSubmissions+sh.ViewableStoriesOnSinglePage]
 		list := createNewList(sh)
