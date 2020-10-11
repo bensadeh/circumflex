@@ -21,24 +21,12 @@ const (
 	DoubleNewLine = "\n\n"
 )
 
-func normal(text string) string {
-	return Normal + text + Normal
-}
-
 func bold(text string) string {
 	return Bold + text + Normal
 }
 
-func italic(text string) string {
-	return Italic + text + Normal
-}
-
 func dimmed(text string) string {
 	return Dimmed + text + Normal
-}
-
-func underline(text string) string {
-	return Underline + text + Normal
 }
 
 func dimmedAndUnderlined(text string) string {
