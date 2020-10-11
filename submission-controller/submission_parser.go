@@ -86,13 +86,16 @@ func getHelpScreen() *cview.TextView {
 	return helpScreen
 }
 
+func (sh *submissionHandler) getCurrentPage() string {
+	return strconv.Itoa(sh.CurrentPage)
+}
+
 func (sh *submissionHandler) setShortcuts() {
 	app := sh.Application
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		currentPage, _ := sh.Pages.GetFrontPage()
 		if currentPage == "help" {
-			//TODO: set to last viewed page
-			sh.Pages.SwitchToPage("0")
+			sh.Pages.SwitchToPage(sh.getCurrentPage())
 			return event
 		}
 
