@@ -8,7 +8,18 @@ import (
 )
 
 const (
-	newLine = "\n"
+	helpScreenText = `
+j, ↓:          down
+h, ↑:          up
+
+Enter:         read comments
+o:             open in browser
+q:             quit
+h:             bring up this screen
+
+Ctrl + n:      next page
+Ctrl + p:      previous page
+`
 )
 
 func getHelpScreen() *cview.TextView {
@@ -24,25 +35,13 @@ func getHelpScreen() *cview.TextView {
 	helpScreen.Box.SetBorder(true)
 	helpScreen.Box.SetBorderAttributes(tcell.AttrDim)
 
-	t := ""
-
-	t += "j, ↓:          down" + newLine
-	t += "h, ↑:          up" + newLine
-	t += "" + newLine
-	t += "Enter:         read comments" + newLine
-	t += "o:             open in browser" + newLine
-	t += "q:             quit" + newLine
-	t += "h:             bring up this screen" + newLine
-	t += "" + newLine
-	t += "Ctrl + n:      next page" + newLine
-	t += "Ctrl + p:      previous page" + newLine
-
-	helpScreen.SetText(padLines(t))
+	helpScreen.SetText(padLines(helpScreenText))
 
 	return helpScreen
 }
 
 func padLines(s string) string {
+	newLine := "\n"
 	maxWidth := text.MaxLineLen(s)
 	lines := strings.Split(s, newLine)
 	paddedLines := ""
