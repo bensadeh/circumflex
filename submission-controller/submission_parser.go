@@ -5,11 +5,11 @@ import (
 	"clx/cli"
 	commentparser "clx/comment-parser"
 	"encoding/json"
+	text "github.com/MichaelMure/go-term-text"
 	"github.com/gdamore/tcell"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 	"gitlab.com/tslocum/cview"
 	"strconv"
-	text "github.com/MichaelMure/go-term-text"
 )
 
 const (
