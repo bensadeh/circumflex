@@ -4,8 +4,7 @@ import (
 	"clx/browser"
 	"clx/cli"
 	commentparser "clx/comment-parser"
-	"clx/http-handler"
-	http "clx/http-handler"
+	"clx/http"
 	"encoding/json"
 	"github.com/gdamore/tcell"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
@@ -124,7 +123,7 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *submissio
 			for index := range sh.Submissions {
 				if index == i {
 					id := getSubmissionID(i, sh)
-					JSON, _ := http_handler.Get("http://node-hnapi.herokuapp.com/item/" + id)
+					JSON, _ := http.Get("http://node-hnapi.herokuapp.com/item/" + id)
 					jComments := new(commentparser.Comments)
 					_ = json.Unmarshal(JSON, jComments)
 

@@ -1,4 +1,4 @@
-package http_handler
+package http
 
 import (
 	"io/ioutil"
