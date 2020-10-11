@@ -9,6 +9,7 @@ import (
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 	"gitlab.com/tslocum/cview"
 	"strconv"
+	text "github.com/MichaelMure/go-term-text"
 )
 
 const (
@@ -40,18 +41,69 @@ func NewSubmissionHandler() *submissionHandler {
 	sh.fetchSubmissions()
 
 	sh.Pages.SwitchToPage("0")
+
+
+	helpScreen := getHelpScreen()
+
+	sh.Pages.AddPage("help", helpScreen, true, false)
+
+
 	return sh
+}
+
+func getHelpScreen() *cview.TextView {
+	helpScreen := cview.NewTextView()
+	helpScreen.SetBackgroundColor(tcell.ColorDefault)
+	helpScreen.SetTextColor(tcell.ColorDefault)
+	helpScreen.SetTextAlign(cview.AlignLeft)
+	helpScreen.SetTitle("circumflex")
+	helpScreen.SetTitleColor(tcell.ColorDefault)
+	helpScreen.SetBorderColor(tcell.ColorDefault)
+	helpScreen.SetTextColor(tcell.ColorDefault)
+	helpScreen.Box.SetBorderPadding(10, 10, 10, 10)
+	helpScreen.Box.SetBorder(true)
+	helpScreen.Box.SetBorderAttributes(tcell.AttrDim)
+
+	newLine := "\n"
+	t := ""
+	t += "j, ↓:          down" + newLine
+	t += "h, ↑:          up" + newLine
+	t += newLine
+	t += "Enter:         read comments" + newLine
+	t += "o:             open submission in browser" + newLine
+	t += "q:             quit" + newLine
+	t += "h:             bring up this screen" + newLine
+	t += newLine
+	t += "Ctrl + n:      next page" + newLine
+	t += "Ctrl + p:      previous page" + newLine
+
+	x, _ := terminal.Width()
+	width := int(x)
+
+
+	helpScreen.SetText(text.LeftPadLines(t, width / 4))
+
+	return helpScreen
 }
 
 func (sh *submissionHandler) setShortcuts() {
 	app := sh.Application
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		currentPage, _ := sh.Pages.GetFrontPage()
+		if currentPage == "help" {
+			//TODO: set to last viewed page
+			sh.Pages.SwitchToPage("0")
+			return event
+		}
+
 		if event.Key() == tcell.KeyCtrlN {
 			sh.nextPage()
 		} else if event.Key() == tcell.KeyCtrlP {
 			sh.previousPage()
 		} else if event.Rune() == 'q' {
 			app.Stop()
+		} else if event.Rune() == 'h' {
+			sh.Pages.SwitchToPage("help")
 		}
 		return event
 	})
