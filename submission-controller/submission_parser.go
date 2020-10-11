@@ -1,17 +1,16 @@
 package submission_controller
 
 import (
+	"clx/browser"
 	commentparser "clx/comment-parser"
 	"clx/http-handler"
 	http "clx/http-handler"
 	"encoding/json"
-	"fmt"
 	"github.com/gdamore/tcell"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 	"log"
 	"os"
 	"os/exec"
-	"runtime"
 	"strconv"
 	"strings"
 
@@ -144,7 +143,7 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *submissio
 		if event.Rune() == 'o' {
 			item := list.GetCurrentItem()
 			url := sh.Submissions[item].URL
-			openBrowser(url)
+			browser.Open(url)
 		}
 		return event
 	})
@@ -154,24 +153,6 @@ func getSubmissionID(i int, sh *submissionHandler) string {
 	storyIndex := (sh.CurrentPage)*sh.ViewableStoriesOnSinglePage + i
 	s := sh.Submissions[storyIndex]
 	return strconv.Itoa(s.ID)
-}
-
-func openBrowser(url string) {
-	var err error
-
-	switch runtime.GOOS {
-	case "linux":
-		err = exec.Command("xdg-open", url).Start()
-	case "windows":
-		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
-	case "darwin":
-		err = exec.Command("open", url).Start()
-	default:
-		err = fmt.Errorf("unsupported platform")
-	}
-	if err != nil {
-		log.Fatal(err)
-	}
 }
 
 func outputStringToLess(output string) {
