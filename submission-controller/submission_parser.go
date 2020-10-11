@@ -55,7 +55,7 @@ func getHelpScreen() *cview.TextView {
 	helpScreen := cview.NewTextView()
 	helpScreen.SetBackgroundColor(tcell.ColorDefault)
 	helpScreen.SetTextColor(tcell.ColorDefault)
-	helpScreen.SetTextAlign(cview.AlignLeft)
+	helpScreen.SetTextAlign(cview.AlignCenter)
 	helpScreen.SetTitle("circumflex")
 	helpScreen.SetTitleColor(tcell.ColorDefault)
 	helpScreen.SetBorderColor(tcell.ColorDefault)
@@ -64,26 +64,33 @@ func getHelpScreen() *cview.TextView {
 	helpScreen.Box.SetBorder(true)
 	helpScreen.Box.SetBorderAttributes(tcell.AttrDim)
 
-	newLine := "\n"
+
 	t := ""
-	t += "j, ↓:          down" + newLine
-	t += "h, ↑:          up" + newLine
-	t += newLine
-	t += "Enter:         read comments" + newLine
-	t += "o:             open submission in browser" + newLine
-	t += "q:             quit" + newLine
-	t += "h:             bring up this screen" + newLine
-	t += newLine
-	t += "Ctrl + n:      next page" + newLine
-	t += "Ctrl + p:      previous page" + newLine
+	t += padString("j, ↓:          down")
+	t += padString("h, ↑:          up")
+	t += padString("")
+	t += padString("Enter:         read comments" )
+	t += padString("o:             open submission in browser" )
+	t += padString("q:             quit" )
+	t += padString("h:             bring up this screen" )
+	t += padString("")
+	t += padString("Ctrl + n:      next page" )
+	t += padString("Ctrl + p:      previous page" )
 
-	x, _ := terminal.Width()
-	width := int(x)
-
-
-	helpScreen.SetText(text.LeftPadLines(t, width / 4))
+	helpScreen.SetText(t)
 
 	return helpScreen
+}
+
+func padString(s string) string {
+	maxWidth := 40
+
+	spaces := ""
+	for i := 0; i < maxWidth - text.Len(s); i++ {
+		spaces += " "
+	}
+
+	return s + spaces + "\n"
 }
 
 func (sh *submissionHandler) getCurrentPage() string {
