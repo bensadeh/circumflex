@@ -1,6 +1,7 @@
-package http
+package submission_controller
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -8,7 +9,7 @@ import (
 
 var myClient = &http.Client{Timeout: 10 * time.Second}
 
-func Get(url string) ([]byte, error) {
+func get(url string) ([]byte, error) {
 	r, err := myClient.Get(url)
 	if err != nil {
 		return nil, err
@@ -21,4 +22,11 @@ func Get(url string) ([]byte, error) {
 	}
 
 	return body, nil
+}
+
+func getSubmissions(url string) []Submission{
+	JSON, _ := get(url)
+	var submissions []Submission
+	_ = json.Unmarshal(JSON, &submissions)
+	return submissions
 }

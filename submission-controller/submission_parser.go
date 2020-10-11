@@ -4,7 +4,6 @@ import (
 	"clx/browser"
 	"clx/cli"
 	commentparser "clx/comment-parser"
-	"clx/http"
 	"encoding/json"
 	"github.com/gdamore/tcell"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
@@ -17,7 +16,7 @@ const (
 )
 
 type submissionHandler struct {
-	Submissions                 []submission
+	Submissions                 []Submission
 	MappedSubmissions           int
 	MappedPages                 int
 	StoriesListed               int
@@ -123,7 +122,7 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *submissio
 			for index := range sh.Submissions {
 				if index == i {
 					id := getSubmissionID(i, sh)
-					JSON, _ := http.Get("http://node-hnapi.herokuapp.com/item/" + id)
+					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + id)
 					jComments := new(commentparser.Comments)
 					_ = json.Unmarshal(JSON, jComments)
 
@@ -150,11 +149,11 @@ func getSubmissionID(i int, sh *submissionHandler) string {
 	return strconv.Itoa(s.ID)
 }
 
-func (sh *submissionHandler) getSubmission(i int) submission {
+func (sh *submissionHandler) getSubmission(i int) Submission {
 	return sh.Submissions[i]
 }
 
-type submission struct {
+type Submission struct {
 	ID            int    `json:"id"`
 	Title         string `json:"title"`
 	Points        int    `json:"points"`
@@ -169,9 +168,7 @@ type submission struct {
 func (sh *submissionHandler) fetchSubmissions() {
 	sh.PageToFetchFromAPI++
 	p := strconv.Itoa(sh.PageToFetchFromAPI)
-	JSON, _ := http.Get("http://node-hnapi.herokuapp.com/news?page=" + p)
-	var submissions []submission
-	_ = json.Unmarshal(JSON, &submissions)
+	submissions := getSubmissions("http://node-hnapi.herokuapp.com/news?page=" + p)
 	sh.Submissions = append(sh.Submissions, submissions...)
 	sh.mapSubmissions()
 }
@@ -203,7 +200,7 @@ func createNewList(sh *submissionHandler) *cview.List {
 	return list
 }
 
-func addSubmissionsToList(list *cview.List, submissions []submission, sh *submissionHandler) {
+func addSubmissionsToList(list *cview.List, submissions []Submission, sh *submissionHandler) {
 	for _, submission := range submissions {
 		list.AddItem(
 			submission.getMainText(sh.MappedSubmissions),
@@ -215,17 +212,17 @@ func addSubmissionsToList(list *cview.List, submissions []submission, sh *submis
 	}
 }
 
-func (s submission) getMainText(i int) string {
+func (s Submission) getMainText(i int) string {
 	rank := i + 1
 	return strconv.Itoa(rank) + "." + getRankIndentBlock(rank) + s.Title + s.GetDomain()
 }
 
-func (s submission) getSecondaryText() string {
+func (s Submission) getSecondaryText() string {
 	return "[::d]" + "    " + s.getPoints() + " points by " + s.Author + " " +
 		s.Time + " | " + s.getComments() + " comments" + "[-:-:-]"
 }
 
-func (s submission) GetDomain() string {
+func (s Submission) GetDomain() string {
 	domain := s.Domain
 	if domain == "" {
 		return ""
@@ -233,11 +230,11 @@ func (s submission) GetDomain() string {
 	return "[::d]" + " " + paren(domain) + "[-:-:-]"
 }
 
-func (s submission) getComments() string {
+func (s Submission) getComments() string {
 	return strconv.Itoa(s.CommentsCount)
 }
 
-func (s submission) getPoints() string {
+func (s Submission) getPoints() string {
 	return strconv.Itoa(s.Points)
 }
 
