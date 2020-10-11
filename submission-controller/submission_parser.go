@@ -70,7 +70,7 @@ func getHelpScreen() *cview.TextView {
 	t += padString("h, ↑:          up")
 	t += padString("")
 	t += padString("Enter:         read comments" )
-	t += padString("o:             open submission in browser" )
+	t += padString("o:             open in browser" )
 	t += padString("q:             quit" )
 	t += padString("h:             bring up this screen" )
 	t += padString("")
