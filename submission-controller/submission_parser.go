@@ -5,7 +5,6 @@ import (
 	"clx/cli"
 	commentparser "clx/comment-parser"
 	"encoding/json"
-	text "github.com/MichaelMure/go-term-text"
 	"github.com/gdamore/tcell"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 	"gitlab.com/tslocum/cview"
@@ -14,6 +13,7 @@ import (
 
 const (
 	maximumStoriesToDisplay = 30
+	helpPage = "help"
 )
 
 type submissionHandler struct {
@@ -45,52 +45,9 @@ func NewSubmissionHandler() *submissionHandler {
 
 	helpScreen := getHelpScreen()
 
-	sh.Pages.AddPage("help", helpScreen, true, false)
-
+	sh.Pages.AddPage(helpPage, helpScreen, true, false)
 
 	return sh
-}
-
-func getHelpScreen() *cview.TextView {
-	helpScreen := cview.NewTextView()
-	helpScreen.SetBackgroundColor(tcell.ColorDefault)
-	helpScreen.SetTextColor(tcell.ColorDefault)
-	helpScreen.SetTextAlign(cview.AlignCenter)
-	helpScreen.SetTitle("circumflex")
-	helpScreen.SetTitleColor(tcell.ColorDefault)
-	helpScreen.SetBorderColor(tcell.ColorDefault)
-	helpScreen.SetTextColor(tcell.ColorDefault)
-	helpScreen.Box.SetBorderPadding(10, 10, 10, 10)
-	helpScreen.Box.SetBorder(true)
-	helpScreen.Box.SetBorderAttributes(tcell.AttrDim)
-
-
-	t := ""
-	t += padString("j, ↓:          down")
-	t += padString("h, ↑:          up")
-	t += padString("")
-	t += padString("Enter:         read comments" )
-	t += padString("o:             open in browser" )
-	t += padString("q:             quit" )
-	t += padString("h:             bring up this screen" )
-	t += padString("")
-	t += padString("Ctrl + n:      next page" )
-	t += padString("Ctrl + p:      previous page" )
-
-	helpScreen.SetText(t)
-
-	return helpScreen
-}
-
-func padString(s string) string {
-	maxWidth := 40
-
-	spaces := ""
-	for i := 0; i < maxWidth - text.Len(s); i++ {
-		spaces += " "
-	}
-
-	return s + spaces + "\n"
 }
 
 func (sh *submissionHandler) getCurrentPage() string {
@@ -101,7 +58,7 @@ func (sh *submissionHandler) setShortcuts() {
 	app := sh.Application
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		currentPage, _ := sh.Pages.GetFrontPage()
-		if currentPage == "help" {
+		if currentPage == helpPage {
 			sh.Pages.SwitchToPage(sh.getCurrentPage())
 			return event
 		}
@@ -113,7 +70,7 @@ func (sh *submissionHandler) setShortcuts() {
 		} else if event.Rune() == 'q' {
 			app.Stop()
 		} else if event.Rune() == 'h' {
-			sh.Pages.SwitchToPage("help")
+			sh.Pages.SwitchToPage(helpPage)
 		}
 		return event
 	})
