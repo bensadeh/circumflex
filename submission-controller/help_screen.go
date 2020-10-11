@@ -4,6 +4,11 @@ import (
 	text "github.com/MichaelMure/go-term-text"
 	"github.com/gdamore/tcell"
 	"gitlab.com/tslocum/cview"
+	"strings"
+)
+
+const (
+	newLine = "\n"
 )
 
 func getHelpScreen() *cview.TextView {
@@ -19,31 +24,41 @@ func getHelpScreen() *cview.TextView {
 	helpScreen.Box.SetBorder(true)
 	helpScreen.Box.SetBorderAttributes(tcell.AttrDim)
 
-
 	t := ""
-	t += padString("j, ↓:          down")
-	t += padString("h, ↑:          up")
-	t += padString("")
-	t += padString("Enter:         read comments" )
-	t += padString("o:             open in browser" )
-	t += padString("q:             quit" )
-	t += padString("h:             bring up this screen" )
-	t += padString("")
-	t += padString("Ctrl + n:      next page" )
-	t += padString("Ctrl + p:      previous page" )
 
-	helpScreen.SetText(t)
+	t += "j, ↓:          down" + newLine
+	t += "h, ↑:          up" + newLine
+	t += "" + newLine
+	t += "Enter:         read comments" + newLine
+	t += "o:             open in browser" + newLine
+	t += "q:             quit" + newLine
+	t += "h:             bring up this screen" + newLine
+	t += "" + newLine
+	t += "Ctrl + n:      next page" + newLine
+	t += "Ctrl + p:      previous page" + newLine
+
+	helpScreen.SetText(padLines(t))
 
 	return helpScreen
 }
 
-func padString(s string) string {
-	maxWidth := 40
+func padLines(s string) string {
+	maxWidth := text.MaxLineLen(s)
+	lines := strings.Split(s, newLine)
+	paddedLines := ""
 
-	spaces := ""
-	for i := 0; i < maxWidth - text.Len(s); i++ {
-		spaces += " "
+	for _, line := range lines {
+		paddedLines += padString(line, maxWidth) + newLine
 	}
 
-	return s + spaces + "\n"
+	return paddedLines
+}
+
+func padString(s string, maxWidth int) string {
+	paddedString := s
+
+	for i := 0; i < maxWidth-text.Len(s); i++ {
+		paddedString += " "
+	}
+	return paddedString
 }
