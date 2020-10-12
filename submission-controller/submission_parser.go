@@ -43,10 +43,7 @@ func NewSubmissionHandler() *submissionHandler {
 
 	sh.Pages.SwitchToPage("0")
 
-
-	helpScreen := getHelpScreen()
-
-	sh.Pages.AddPage(helpPage, helpScreen, true, false)
+	sh.Pages.AddPage(helpPage, getHelpScreen(), true, false)
 
 	return sh
 }
