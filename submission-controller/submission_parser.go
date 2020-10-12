@@ -14,6 +14,7 @@ import (
 const (
 	maximumStoriesToDisplay = 30
 	helpPage = "help"
+	maxPages = 2
 )
 
 type submissionHandler struct {
@@ -35,7 +36,7 @@ func NewSubmissionHandler() *submissionHandler {
 	sh.Application = cview.NewApplication()
 	sh.setShortcuts()
 	sh.Pages = cview.NewPages()
-	sh.MaxPages = 2
+	sh.MaxPages = maxPages
 	sh.ScreenHeight = getTerminalHeight()
 	sh.ViewableStoriesOnSinglePage = min(sh.ScreenHeight/2, maximumStoriesToDisplay)
 	sh.fetchSubmissions()
