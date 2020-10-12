@@ -202,7 +202,7 @@ func (sh *submissionHandler) mapSubmissionsToListItems() {
 }
 
 func (sh *submissionHandler) hasStoriesToMap() bool {
-	return len(sh.Submissions)-sh.MappedSubmissions > sh.ViewableStoriesOnSinglePage
+	return len(sh.Submissions)-sh.MappedSubmissions >= sh.ViewableStoriesOnSinglePage
 }
 
 func createNewList(sh *submissionHandler) *cview.List {
