@@ -39,7 +39,8 @@ func NewSubmissionHandler() *submissionHandler {
 	sh.MaxPages = maxPages
 	sh.ScreenHeight = getTerminalHeight()
 	sh.ViewableStoriesOnSinglePage = min(sh.ScreenHeight/2, maximumStoriesToDisplay)
-	sh.fetchSubmissions()
+	submissions, _ := sh.fetchSubmissions()
+	sh.mapSubmissions(submissions)
 
 	sh.Pages.SwitchToPage("0")
 
@@ -103,7 +104,8 @@ func (sh *submissionHandler) nextPage() {
 		l := p.(*cview.List)
 		l.SetCurrentItem(currentlySelectedItem)
 	} else {
-		sh.fetchSubmissions()
+		submissions, _ := sh.fetchSubmissions()
+		sh.mapSubmissions(submissions)
 		sh.Pages.SwitchToPage(strconv.Itoa(nextPage))
 	}
 
@@ -182,10 +184,13 @@ type Submission struct {
 	Type          string `json:"type"`
 }
 
-func (sh *submissionHandler) fetchSubmissions() {
+func (sh *submissionHandler) fetchSubmissions() ([]Submission, error){
 	sh.PageToFetchFromAPI++
 	p := strconv.Itoa(sh.PageToFetchFromAPI)
-	submissions := getSubmissions("http://node-hnapi.herokuapp.com/news?page=" + p)
+	return getSubmissions(p)
+}
+
+func (sh *submissionHandler) mapSubmissions(submissions []Submission) {
 	sh.Submissions = append(sh.Submissions, submissions...)
 	sh.mapSubmissionsToListItems()
 }

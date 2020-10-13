@@ -8,7 +8,17 @@ import (
 	"time"
 )
 
+const (
+	submissionURL = "http://node-hnapi.herokuapp.com/news?page="
+)
+
 var myClient = &http.Client{Timeout: 10 * time.Second}
+
+func getSubmissions(page string) ([]Submission, error) {
+	JSON, err := get(submissionURL + page)
+	submissions := unmarshalJSON(JSON)
+	return submissions, err
+}
 
 func get(url string) ([]byte, error) {
 	r, err := myClient.Get(url)
@@ -29,9 +39,8 @@ func closeStream(body io.ReadCloser) {
 	_ = body.Close()
 }
 
-func getSubmissions(url string) []Submission{
-	JSON, _ := get(url)
+func unmarshalJSON(stream []byte) []Submission {
 	var submissions []Submission
-	_ = json.Unmarshal(JSON, &submissions)
+	_ = json.Unmarshal(stream, &submissions)
 	return submissions
 }
