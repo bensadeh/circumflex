@@ -200,11 +200,8 @@ func getAdjustedCommentWidth(level int, indentSize int, commentWidth int) int {
 	currentIndentSize := indentSize * level
 	usableScreenSize := screenWidth - currentIndentSize
 
-	if commentWidth == 0 {
-		return max(usableScreenSize, 40)
-	}
 	if usableScreenSize < commentWidth {
-		return usableScreenSize
+		return usableScreenSize + currentIndentSize
 	}
 
 	return commentWidth + indentSize*level
