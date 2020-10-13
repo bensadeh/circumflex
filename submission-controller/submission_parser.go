@@ -13,8 +13,9 @@ import (
 
 const (
 	maximumStoriesToDisplay = 30
-	helpPage = "help"
-	maxPages = 2
+	helpPage                = "help"
+	offlinePage             = "offline"
+	maxPages                = 2
 )
 
 type submissionHandler struct {
@@ -29,6 +30,7 @@ type submissionHandler struct {
 	ScreenHeight                int
 	ViewableStoriesOnSinglePage int
 	MaxPages                    int
+	IsOffline                   bool
 }
 
 func NewSubmissionHandler() *submissionHandler {
@@ -39,14 +41,31 @@ func NewSubmissionHandler() *submissionHandler {
 	sh.MaxPages = maxPages
 	sh.ScreenHeight = getTerminalHeight()
 	sh.ViewableStoriesOnSinglePage = min(sh.ScreenHeight/2, maximumStoriesToDisplay)
-	submissions, _ := sh.fetchSubmissions()
+	submissions, err := sh.fetchSubmissions()
+	sh.IsOffline = getIsOfflineStatus(err)
 	sh.mapSubmissions(submissions)
 
-	sh.Pages.SwitchToPage("0")
-
 	sh.Pages.AddPage(helpPage, getHelpScreen(), true, false)
+	sh.Pages.AddPage(offlinePage, getOfflineScreen(), true, false)
+
+	startPage := getStartPage(sh.IsOffline)
+	sh.Pages.SwitchToPage(startPage)
 
 	return sh
+}
+
+func getIsOfflineStatus(err error) bool {
+	if err != nil {
+		return true
+	}
+	return false
+}
+
+func getStartPage(isOffline bool) string {
+	if isOffline {
+		return "offline"
+	}
+	return "0"
 }
 
 func (sh *submissionHandler) getCurrentPage() string {
@@ -184,7 +203,7 @@ type Submission struct {
 	Type          string `json:"type"`
 }
 
-func (sh *submissionHandler) fetchSubmissions() ([]Submission, error){
+func (sh *submissionHandler) fetchSubmissions() ([]Submission, error) {
 	sh.PageToFetchFromAPI++
 	p := strconv.Itoa(sh.PageToFetchFromAPI)
 	return getSubmissions(p)
