@@ -76,6 +76,14 @@ func (sh *submissionHandler) setShortcuts() {
 	app := sh.Application
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		currentPage, _ := sh.Pages.GetFrontPage()
+
+		if currentPage == offlinePage {
+			if event.Rune() == 'q' {
+				app.Stop()
+			}
+			return event
+		}
+
 		if currentPage == helpPage {
 			sh.Pages.SwitchToPage(sh.getCurrentPage())
 			return event
