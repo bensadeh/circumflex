@@ -194,11 +194,8 @@ func truncateURL(URL string) string {
 // Adjusted comment width shortens the commentWidth if the available screen size
 // is smaller than the size of the commentWidth
 func getAdjustedCommentWidth(level int, indentSize int, commentWidth int) int {
-	x, _ := terminal.Width()
-	screenWidth := int(x)
-
 	currentIndentSize := indentSize * level
-	usableScreenSize := screenWidth - currentIndentSize
+	usableScreenSize := getScreenWidth() - currentIndentSize
 
 	if usableScreenSize < commentWidth {
 		return usableScreenSize + currentIndentSize
@@ -207,11 +204,9 @@ func getAdjustedCommentWidth(level int, indentSize int, commentWidth int) int {
 	return commentWidth + indentSize*level
 }
 
-func max(x, y int) int {
-	if x < y {
-		return y
-	}
-	return x
+func getScreenWidth() int {
+	x, _ := terminal.Width()
+	return int(x)
 }
 func getAuthorLabel(author, originalPoster, parentPoster string) string {
 	switch author {
