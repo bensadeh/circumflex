@@ -9,16 +9,16 @@ import (
 
 const (
 	helpScreenText = `
-j, ↓:          down
-h, ↑:          up
+j, ↓:         down
+h, ↑:         up
+n, →:         next page
+p, ←:         previous page
 
-Enter:         read comments
-o:             open in browser
-q:             quit
-h:             bring up this screen
+Enter:        read comments
+o:            open in browser
+i, ?:         bring up this screen
 
-Ctrl + n:      next page
-Ctrl + p:      previous page
+q:            quit
 `
 )
 

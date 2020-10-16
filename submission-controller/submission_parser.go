@@ -89,13 +89,13 @@ func (sh *submissionHandler) setShortcuts() {
 			return event
 		}
 
-		if event.Key() == tcell.KeyCtrlN {
+		if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
 			sh.nextPage()
-		} else if event.Key() == tcell.KeyCtrlP {
+		} else if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
 			sh.previousPage()
 		} else if event.Rune() == 'q' {
 			app.Stop()
-		} else if event.Rune() == 'h' {
+		} else if event.Rune() == 'i' || event.Rune() == '?' {
 			sh.Pages.SwitchToPage(helpPage)
 		}
 		return event
