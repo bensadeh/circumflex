@@ -210,6 +210,8 @@ func getScreenWidth() int {
 }
 func getAuthorLabel(author, originalPoster, parentPoster string) string {
 	switch author {
+	case "":
+		return ""
 	case "dang":
 		return green(" mod")
 	case "sctb":
