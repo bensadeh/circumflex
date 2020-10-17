@@ -2,7 +2,7 @@ package submission_controller
 
 import (
 	text "github.com/MichaelMure/go-term-text"
-	"github.com/gdamore/tcell"
+	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 	"strings"
 )

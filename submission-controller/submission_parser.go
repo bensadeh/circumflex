@@ -5,7 +5,7 @@ import (
 	"clx/cli"
 	commentparser "clx/comment-parser"
 	"encoding/json"
-	"github.com/gdamore/tcell"
+	"github.com/gdamore/tcell/v2"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 	"gitlab.com/tslocum/cview"
 	"strconv"
@@ -124,7 +124,7 @@ func (sh *submissionHandler) nextPage() {
 
 	_, primitive := sh.Pages.GetFrontPage()
 	list := primitive.(*cview.List)
-	currentlySelectedItem := list.GetCurrentItem()
+	currentlySelectedItem := list.GetCurrentItemIndex()
 
 	if nextPage < sh.MappedPages {
 		sh.Pages.SwitchToPage(strconv.Itoa(nextPage))
@@ -149,7 +149,7 @@ func (sh *submissionHandler) previousPage() {
 
 	_, primitive := sh.Pages.GetFrontPage()
 	list := primitive.(*cview.List)
-	currentlySelectedItem := list.GetCurrentItem()
+	currentlySelectedItem := list.GetCurrentItemIndex()
 
 	sh.CurrentPage--
 	sh.Pages.SwitchToPage(strconv.Itoa(sh.CurrentPage))
@@ -164,7 +164,7 @@ func (sh *submissionHandler) getStoriesToDisplay() int {
 }
 
 func setSelectedFunction(app *cview.Application, list *cview.List, sh *submissionHandler) {
-	list.SetSelectedFunc(func(i int, a string, b string, c rune) {
+	list.SetSelectedFunc(func(i int, _ *cview.ListItem) {
 		app.Suspend(func() {
 			for index := range sh.Submissions {
 				if index == i {
@@ -182,7 +182,7 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *submissio
 
 	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Rune() == 'o' {
-			item := list.GetCurrentItem()
+			item := list.GetCurrentItemIndex()
 			url := sh.Submissions[item].URL
 			browser.Open(url)
 		}
@@ -252,12 +252,10 @@ func createNewList(sh *submissionHandler) *cview.List {
 
 func addSubmissionsToList(list *cview.List, submissions []Submission, sh *submissionHandler) {
 	for _, submission := range submissions {
-		list.AddItem(
-			submission.getMainText(sh.MappedSubmissions),
-			submission.getSecondaryText(),
-			0,
-			nil,
-		)
+		item := cview.NewListItem(submission.getMainText(sh.MappedSubmissions))
+		item.SetSecondaryText(submission.getSecondaryText())
+
+		list.AddItem(item)
 		sh.MappedSubmissions++
 	}
 }
