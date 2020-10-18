@@ -12,7 +12,7 @@
 ## Comment section
 
 ### Appearance
-Should your terminal support the relevant ANSI escape sequences, text will be properly formatted in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code blocks`. Comments are color-indented to distinguish posts from their parents, siblings and children.
+Comments are formatted in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code blocks`. Replies are color-indented to distinguish them from their parents, siblings and children.
 
 <p align="center">
   <img src="images/comments.png" width="700" alt="^"/>
