@@ -91,8 +91,8 @@ func NewSubmissionHandler() *submissionHandler {
 }
 
 func (sh *submissionHandler) getHeadline() string {
-	base := "[::r]   [Y[] Hacker News"
-	offset := -6
+	base := "[black:orange:]   [Y[] Hacker News"
+	offset := -16
 	whitespace := ""
 	for i := 0; i < sh.ScreenWidth-text.Len(base)-offset; i++ {
 		whitespace += " "
