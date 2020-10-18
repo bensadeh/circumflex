@@ -135,6 +135,11 @@ func (sh *submissionHandler) nextPage() {
 		submissions, _ := sh.fetchSubmissions()
 		sh.mapSubmissions(submissions)
 		sh.Pages.SwitchToPage(strconv.Itoa(nextPage))
+
+		_, p := sh.Pages.GetFrontPage()
+		l := p.(*cview.List)
+		sh.Application.ForceDraw()
+		l.SetCurrentItem(currentlySelectedItem)
 	}
 
 	sh.CurrentPage++
