@@ -37,9 +37,9 @@ To give context to posts with many replies, Original Poster (OP), Parent Poster 
 </pre>
 
 ### Jumping between top-level comments
-`circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality, one can move between these posts by searching for `::`.
+`circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality, one can move between these posts by searching for it.
 
-To navigate between top-level comments, press <kbd>/</kbd> to search for the string `::`. Then, press <kbd>n</kbd> and <kbd>N</kbd> to jump forwards and backwards, respectively.
+To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. Then, press <kbd>n</kbd> and <kbd>N</kbd> to jump forwards and backwards, respectively.
 
 <pre>  
   <kbd>/</kbd>: search
