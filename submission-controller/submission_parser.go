@@ -148,11 +148,6 @@ func (sh *submissionHandler) setShortcuts() {
 	})
 }
 
-func getTerminal() int {
-	y, _ := terminal.Height()
-	return int(y)
-}
-
 func min(x, y int) int {
 	if x > y {
 		return y
