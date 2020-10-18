@@ -72,7 +72,7 @@ func NewSubmissionHandler() *submissionHandler {
 	grid.SetColumns(3, 0, 3)
 	grid.SetBackgroundColor(tcell.ColorDefault)
 	grid.AddItem(newPrimitive(sh.getHeadline()), 0, 0, 1, 3, 0, 0, false)
-	sh.Footer = newPrimitive("0").(*cview.TextView)
+	sh.Footer = newPrimitive(sh.getFooterText()).(*cview.TextView)
 	grid.AddItem(sh.Footer, 2, 0, 1, 3, 0, 0, false)
 
 	grid.AddItem(padding, 1, 0, 1, 1, 0, 0, false)
@@ -116,6 +116,30 @@ func getStartPage(isOffline bool) string {
 
 func (sh *submissionHandler) getCurrentPage() string {
 	return strconv.Itoa(sh.CurrentPage)
+}
+
+func (sh *submissionHandler) getFooterText() string {
+	page := ""
+	switch sh.CurrentPage {
+	case 0:
+		page = "   •◦◦"
+	case 1:
+		page = "   ◦•◦"
+	case 2:
+		page = "   ◦◦•"
+	default:
+		page = ""
+	}
+	return sh.rightPadWithWhitespace(page)
+}
+
+func (sh *submissionHandler) rightPadWithWhitespace(s string) string {
+
+	whitespace := ""
+	for i := 0; i < sh.ScreenWidth-text.Len(s); i++ {
+		whitespace += " "
+	}
+	return s + whitespace
 }
 
 func (sh *submissionHandler) setShortcuts() {
@@ -186,7 +210,7 @@ func (sh *submissionHandler) nextPage() {
 	}
 
 	sh.CurrentPage++
-	sh.Footer.SetText(sh.getCurrentPage())
+	sh.Footer.SetText(sh.getFooterText())
 }
 
 func (sh *submissionHandler) previousPage() {
@@ -206,7 +230,7 @@ func (sh *submissionHandler) previousPage() {
 	_, p := sh.Pages.GetFrontPage()
 	l := p.(*cview.List)
 	l.SetCurrentItem(currentlySelectedItem)
-	sh.Footer.SetText(sh.getCurrentPage())
+	sh.Footer.SetText(sh.getFooterText())
 }
 
 func (sh *submissionHandler) getStoriesToDisplay() int {
