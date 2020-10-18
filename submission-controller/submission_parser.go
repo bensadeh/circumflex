@@ -263,7 +263,7 @@ func addSubmissionsToList(list *cview.List, submissions []Submission, sh *submis
 func (s Submission) getMainText(i int) string {
 	rank := i + 1
 	formattedTitle := formatTitle(s.Title)
-	return strconv.Itoa(rank) + "." + getRankIndentBlock(rank) + formattedTitle + s.GetDomain() 
+	return strconv.Itoa(rank) + "." + getRankIndentBlock(rank) + formattedTitle + s.GetDomain()
 }
 
 func formatTitle(title string) string {
@@ -275,9 +275,9 @@ func formatTitle(title string) string {
 func formatShowAndTell(title string) string {
 	reverse := "[::r]"
 	clear := "[-:-:-]"
-	title = strings.ReplaceAll(title, "Show HN:", reverse + "Show HN:" + clear)
-	title = strings.ReplaceAll(title, "Ask HN:", reverse + "Ask HN:" + clear)
-	title = strings.ReplaceAll(title, "Tell HN:", reverse + "Tell HN:" + clear)
+	title = strings.ReplaceAll(title, "Show HN:", reverse+"Show HN:"+clear)
+	title = strings.ReplaceAll(title, "Ask HN:", reverse+"Ask HN:"+clear)
+	title = strings.ReplaceAll(title, "Tell HN:", reverse+"Tell HN:"+clear)
 	return title
 }
 
