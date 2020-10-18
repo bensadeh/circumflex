@@ -64,19 +64,15 @@ func NewSubmissionHandler() *submissionHandler {
 	grid := cview.NewGrid()
 	grid.SetBorder(false)
 	grid.SetRows(2, 0, 1)
-	grid.SetColumns( 3, 0)
+	grid.SetColumns( 3, 0, 3)
 	grid.SetBackgroundColor(tcell.ColorDefault)
 	grid.AddItem(newPrimitive("[Y[] Hacker News"), 0, 0, 1, 3, 0, 0, false)
 	sh.Footer = newPrimitive("0").(*cview.TextView)
 	grid.AddItem(sh.Footer, 2, 0, 1, 3, 0, 0, false)
 
-	// Layout for screens narrower than 100 cells (padding and side bar are hidden).
-	grid.AddItem(padding, 0, 0, 0, 0, 0, 0, false)
-	grid.AddItem(main, 1, 0, 1, 4, 0, 0, true)
-
-	// Layout for screens wider than 100 cells.
-	grid.AddItem(padding, 1, 0, 1, 1, 0, 100, false)
-	grid.AddItem(main, 1, 1, 1, 2, 0, 100, true)
+	grid.AddItem(padding, 1, 0, 1, 1, 0, 0, false)
+	grid.AddItem(main, 1, 1, 1, 1, 0, 0, true)
+	grid.AddItem(newPrimitive(""), 1, 2, 1, 1, 0, 0, false)
 
 	sh.Grid = grid
 
