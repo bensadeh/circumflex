@@ -134,12 +134,12 @@ func (sh *submissionHandler) getFooterText() string {
 }
 
 func (sh *submissionHandler) rightPadWithWhitespace(s string) string {
-
+	offset := 3
 	whitespace := ""
-	for i := 0; i < sh.ScreenWidth-text.Len(s); i++ {
+	for i := 0; i < sh.ScreenWidth-text.Len(s)-offset; i++ {
 		whitespace += " "
 	}
-	return s + whitespace
+	return whitespace + s
 }
 
 func (sh *submissionHandler) setShortcuts() {
