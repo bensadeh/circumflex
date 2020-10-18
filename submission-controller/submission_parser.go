@@ -32,6 +32,8 @@ type submissionHandler struct {
 	ViewableStoriesOnSinglePage int
 	MaxPages                    int
 	IsOffline                   bool
+	Grid                        *cview.Grid
+	Footer                      *cview.TextView
 }
 
 func NewSubmissionHandler() *submissionHandler {
@@ -41,10 +43,42 @@ func NewSubmissionHandler() *submissionHandler {
 	sh.Pages = cview.NewPages()
 	sh.MaxPages = maxPages
 	sh.ScreenHeight = getTerminalHeight()
-	sh.ViewableStoriesOnSinglePage = min(sh.ScreenHeight/2, maximumStoriesToDisplay)
+	sh.ViewableStoriesOnSinglePage = min(sh.ScreenHeight/2-2, maximumStoriesToDisplay)
 	submissions, err := sh.fetchSubmissions()
 	sh.IsOffline = getIsOfflineStatus(err)
 	sh.mapSubmissions(submissions)
+
+	newPrimitive := func(text string) cview.Primitive {
+		tv := cview.NewTextView()
+		tv.SetTextAlign(cview.AlignCenter)
+		tv.SetText(text)
+		tv.SetBorder(false)
+		tv.SetBackgroundColor(tcell.ColorDefault)
+		tv.SetTextColor(tcell.ColorDefault)
+		tv.SetDynamicColors(true)
+		return tv
+	}
+	padding := newPrimitive("")
+	main := sh.Pages
+
+	grid := cview.NewGrid()
+	grid.SetBorder(false)
+	grid.SetRows(2, 0, 1)
+	grid.SetColumns( 3, 0)
+	grid.SetBackgroundColor(tcell.ColorDefault)
+	grid.AddItem(newPrimitive("[Y[] Hacker News"), 0, 0, 1, 3, 0, 0, false)
+	sh.Footer = newPrimitive("0").(*cview.TextView)
+	grid.AddItem(sh.Footer, 2, 0, 1, 3, 0, 0, false)
+
+	// Layout for screens narrower than 100 cells (padding and side bar are hidden).
+	grid.AddItem(padding, 0, 0, 0, 0, 0, 0, false)
+	grid.AddItem(main, 1, 0, 1, 4, 0, 0, true)
+
+	// Layout for screens wider than 100 cells.
+	grid.AddItem(padding, 1, 0, 1, 1, 0, 100, false)
+	grid.AddItem(main, 1, 1, 1, 2, 0, 100, true)
+
+	sh.Grid = grid
 
 	sh.Pages.AddPage(helpPage, getHelpScreen(), true, false)
 	sh.Pages.AddPage(offlinePage, getOfflineScreen(), true, false)
@@ -130,7 +164,9 @@ func (sh *submissionHandler) nextPage() {
 		sh.Pages.SwitchToPage(strconv.Itoa(nextPage))
 		_, p := sh.Pages.GetFrontPage()
 		l := p.(*cview.List)
+		sh.Application.ForceDraw()
 		l.SetCurrentItem(currentlySelectedItem)
+		sh.Application.ForceDraw()
 	} else {
 		submissions, _ := sh.fetchSubmissions()
 		sh.mapSubmissions(submissions)
@@ -140,9 +176,12 @@ func (sh *submissionHandler) nextPage() {
 		l := p.(*cview.List)
 		sh.Application.ForceDraw()
 		l.SetCurrentItem(currentlySelectedItem)
+		sh.Application.ForceDraw()
 	}
 
+
 	sh.CurrentPage++
+	sh.Footer.SetText(sh.getCurrentPage())
 }
 
 func (sh *submissionHandler) previousPage() {
@@ -162,6 +201,7 @@ func (sh *submissionHandler) previousPage() {
 	_, p := sh.Pages.GetFrontPage()
 	l := p.(*cview.List)
 	l.SetCurrentItem(currentlySelectedItem)
+	sh.Footer.SetText(sh.getCurrentPage())
 }
 
 func (sh *submissionHandler) getStoriesToDisplay() int {

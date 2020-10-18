@@ -12,7 +12,7 @@ func main() {
 
 	sh := subController.NewSubmissionHandler()
 
-	if err := sh.Application.SetRoot(sh.Pages, true).Run(); err != nil {
+	if err := sh.Application.SetRoot(sh.Grid, true).Run(); err != nil {
 		panic(err)
 	}
 
