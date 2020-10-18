@@ -5,6 +5,7 @@ import (
 	"clx/cli"
 	commentparser "clx/comment-parser"
 	"encoding/json"
+	text "github.com/MichaelMure/go-term-text"
 	"github.com/gdamore/tcell/v2"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 	"gitlab.com/tslocum/cview"
@@ -29,6 +30,7 @@ type submissionHandler struct {
 	PageToFetchFromAPI          int
 	CurrentPage                 int
 	ScreenHeight                int
+	ScreenWidth                 int
 	ViewableStoriesOnSinglePage int
 	MaxPages                    int
 	IsOffline                   bool
@@ -42,7 +44,10 @@ func NewSubmissionHandler() *submissionHandler {
 	sh.setShortcuts()
 	sh.Pages = cview.NewPages()
 	sh.MaxPages = maxPages
-	sh.ScreenHeight = getTerminalHeight()
+	height, _ := terminal.Height()
+	width, _ := terminal.Width()
+	sh.ScreenHeight = int(height)
+	sh.ScreenWidth = int(width)
 	sh.ViewableStoriesOnSinglePage = min(sh.ScreenHeight/2-2, maximumStoriesToDisplay)
 	submissions, err := sh.fetchSubmissions()
 	sh.IsOffline = getIsOfflineStatus(err)
@@ -50,7 +55,7 @@ func NewSubmissionHandler() *submissionHandler {
 
 	newPrimitive := func(text string) cview.Primitive {
 		tv := cview.NewTextView()
-		tv.SetTextAlign(cview.AlignCenter)
+		tv.SetTextAlign(cview.AlignLeft)
 		tv.SetText(text)
 		tv.SetBorder(false)
 		tv.SetBackgroundColor(tcell.ColorDefault)
@@ -64,9 +69,9 @@ func NewSubmissionHandler() *submissionHandler {
 	grid := cview.NewGrid()
 	grid.SetBorder(false)
 	grid.SetRows(2, 0, 1)
-	grid.SetColumns( 3, 0, 3)
+	grid.SetColumns(3, 0, 3)
 	grid.SetBackgroundColor(tcell.ColorDefault)
-	grid.AddItem(newPrimitive("[Y[] Hacker News"), 0, 0, 1, 3, 0, 0, false)
+	grid.AddItem(newPrimitive(sh.getHeadline()), 0, 0, 1, 3, 0, 0, false)
 	sh.Footer = newPrimitive("0").(*cview.TextView)
 	grid.AddItem(sh.Footer, 2, 0, 1, 3, 0, 0, false)
 
@@ -83,6 +88,16 @@ func NewSubmissionHandler() *submissionHandler {
 	sh.Pages.SwitchToPage(startPage)
 
 	return sh
+}
+
+func (sh *submissionHandler) getHeadline() string {
+	base := "[::r]   [Y[] Hacker News"
+	offset := -6
+	whitespace := ""
+	for i := 0; i < sh.ScreenWidth-text.Len(base)-offset; i++ {
+		whitespace += " "
+	}
+	return base + whitespace
 }
 
 func getIsOfflineStatus(err error) bool {
@@ -133,7 +148,7 @@ func (sh *submissionHandler) setShortcuts() {
 	})
 }
 
-func getTerminalHeight() int {
+func getTerminal() int {
 	y, _ := terminal.Height()
 	return int(y)
 }
@@ -174,7 +189,6 @@ func (sh *submissionHandler) nextPage() {
 		l.SetCurrentItem(currentlySelectedItem)
 		sh.Application.ForceDraw()
 	}
-
 
 	sh.CurrentPage++
 	sh.Footer.SetText(sh.getCurrentPage())
