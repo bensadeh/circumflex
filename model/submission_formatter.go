@@ -29,7 +29,7 @@ func dim(text string) string {
 }
 
 func paren(text string) string {
-	return "(" + text + ")"
+	return " (" + text + ")"
 }
 
 func getRankIndentBlock(rank int) string {
@@ -91,4 +91,15 @@ func formatYCStartups(title string) string {
 
 func orange(text string) string {
 	return "[orange]" + text + "[-:-:-]"
+}
+
+func GetSecondaryText(points int, author string, time string, comments int) string {
+	p := strconv.Itoa(points)
+	c := strconv.Itoa(comments)
+
+	return dim("    " +
+		p + " points " +
+		"by " + author + " " +
+		time + " | " +
+		c + " comments")
 }

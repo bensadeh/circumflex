@@ -316,25 +316,14 @@ func createNewList(sh *screenController) *cview.List {
 }
 
 func addSubmissionsToList(list *cview.List, submissions []Submission, sh *screenController) {
-	for _, submission := range submissions {
-		mainText := model.GetMainText(submission.Title, submission.Domain, sh.MappedSubmissions)
+	for _, s := range submissions {
+		mainText := model.GetMainText(s.Title, s.Domain, sh.MappedSubmissions)
+		secondaryText := model.GetSecondaryText(s.Points, s.Author, s.Time, s.CommentsCount)
+
 		item := cview.NewListItem(mainText)
-		item.SetSecondaryText(submission.getSecondaryText())
+		item.SetSecondaryText(secondaryText)
 
 		list.AddItem(item)
 		sh.MappedSubmissions++
 	}
-}
-
-func (s Submission) getSecondaryText() string {
-	return "[::d]" + "    " + s.getPoints() + " points by " + s.Author + " " +
-		s.Time + " | " + s.getComments() + " comments" + "[-:-:-]"
-}
-
-func (s Submission) getComments() string {
-	return strconv.Itoa(s.CommentsCount)
-}
-
-func (s Submission) getPoints() string {
-	return strconv.Itoa(s.Points)
 }
