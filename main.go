@@ -10,9 +10,9 @@ func main() {
 	cmd.Execute()
 	cli.Clear()
 
-	sh := subController.NewSubmissionHandler()
+	sc := subController.NewScreenController()
 
-	if err := sh.Application.SetRoot(sh.Grid, true).Run(); err != nil {
+	if err := sc.Application.SetRoot(sc.Grid, true).Run(); err != nil {
 		panic(err)
 	}
 

@@ -20,7 +20,7 @@ const (
 	maxPages                = 2
 )
 
-type submissionHandler struct {
+type screenController struct {
 	Submissions                 []Submission
 	MappedSubmissions           int
 	MappedPages                 int
@@ -38,20 +38,20 @@ type submissionHandler struct {
 	Footer                      *cview.TextView
 }
 
-func NewSubmissionHandler() *submissionHandler {
-	sh := new(submissionHandler)
-	sh.Application = cview.NewApplication()
-	sh.setShortcuts()
-	sh.Pages = cview.NewPages()
-	sh.MaxPages = maxPages
+func NewScreenController() *screenController {
+	sc := new(screenController)
+	sc.Application = cview.NewApplication()
+	sc.setShortcuts()
+	sc.Pages = cview.NewPages()
+	sc.MaxPages = maxPages
 	height, _ := terminal.Height()
 	width, _ := terminal.Width()
-	sh.ScreenHeight = int(height)
-	sh.ScreenWidth = int(width)
-	sh.ViewableStoriesOnSinglePage = min(sh.ScreenHeight/2-2, maximumStoriesToDisplay)
-	submissions, err := sh.fetchSubmissions()
-	sh.IsOffline = getIsOfflineStatus(err)
-	sh.mapSubmissions(submissions)
+	sc.ScreenHeight = int(height)
+	sc.ScreenWidth = int(width)
+	sc.ViewableStoriesOnSinglePage = min(sc.ScreenHeight/2-2, maximumStoriesToDisplay)
+	submissions, err := sc.fetchSubmissions()
+	sc.IsOffline = getIsOfflineStatus(err)
+	sc.mapSubmissions(submissions)
 
 	newPrimitive := func(text string) cview.Primitive {
 		tv := cview.NewTextView()
@@ -65,37 +65,37 @@ func NewSubmissionHandler() *submissionHandler {
 	}
 	leftMargin := newPrimitive("")
 	rightMargin := newPrimitive("")
-	main := sh.Pages
+	main := sc.Pages
 
 	grid := cview.NewGrid()
 	grid.SetBorder(false)
 	grid.SetRows(2, 0, 1)
 	grid.SetColumns(3, 0, 3)
 	grid.SetBackgroundColor(tcell.ColorDefault)
-	grid.AddItem(newPrimitive(sh.getHeadline()), 0, 0, 1, 3, 0, 0, false)
-	sh.Footer = newPrimitive(sh.getFooterText()).(*cview.TextView)
-	grid.AddItem(sh.Footer, 2, 0, 1, 3, 0, 0, false)
+	grid.AddItem(newPrimitive(sc.getHeadline()), 0, 0, 1, 3, 0, 0, false)
+	sc.Footer = newPrimitive(sc.getFooterText()).(*cview.TextView)
+	grid.AddItem(sc.Footer, 2, 0, 1, 3, 0, 0, false)
 
 	grid.AddItem(leftMargin, 1, 0, 1, 1, 0, 0, false)
 	grid.AddItem(main, 1, 1, 1, 1, 0, 0, true)
 	grid.AddItem(rightMargin, 1, 2, 1, 1, 0, 0, false)
 
-	sh.Grid = grid
+	sc.Grid = grid
 
-	sh.Pages.AddPage(helpPage, getHelpScreen(), true, false)
-	sh.Pages.AddPage(offlinePage, getOfflineScreen(), true, false)
+	sc.Pages.AddPage(helpPage, getHelpScreen(), true, false)
+	sc.Pages.AddPage(offlinePage, getOfflineScreen(), true, false)
 
-	startPage := getStartPage(sh.IsOffline)
-	sh.Pages.SwitchToPage(startPage)
+	startPage := getStartPage(sc.IsOffline)
+	sc.Pages.SwitchToPage(startPage)
 
-	return sh
+	return sc
 }
 
-func (sh *submissionHandler) getHeadline() string {
+func (sc *screenController) getHeadline() string {
 	base := "[black:orange:]   [Y[] Hacker News"
 	offset := -16
 	whitespace := ""
-	for i := 0; i < sh.ScreenWidth-text.Len(base)-offset; i++ {
+	for i := 0; i < sc.ScreenWidth-text.Len(base)-offset; i++ {
 		whitespace += " "
 	}
 	return base + whitespace
@@ -115,13 +115,13 @@ func getStartPage(isOffline bool) string {
 	return "0"
 }
 
-func (sh *submissionHandler) getCurrentPage() string {
-	return strconv.Itoa(sh.CurrentPage)
+func (sc *screenController) getCurrentPage() string {
+	return strconv.Itoa(sc.CurrentPage)
 }
 
-func (sh *submissionHandler) getFooterText() string {
+func (sc *screenController) getFooterText() string {
 	page := ""
-	switch sh.CurrentPage {
+	switch sc.CurrentPage {
 	case 0:
 		page = "   •◦◦"
 	case 1:
@@ -131,22 +131,22 @@ func (sh *submissionHandler) getFooterText() string {
 	default:
 		page = ""
 	}
-	return sh.rightPadWithWhitespace(page)
+	return sc.rightPadWithWhitespace(page)
 }
 
-func (sh *submissionHandler) rightPadWithWhitespace(s string) string {
+func (sc *screenController) rightPadWithWhitespace(s string) string {
 	offset := 3
 	whitespace := ""
-	for i := 0; i < sh.ScreenWidth-text.Len(s)-offset; i++ {
+	for i := 0; i < sc.ScreenWidth-text.Len(s)-offset; i++ {
 		whitespace += " "
 	}
 	return whitespace + s
 }
 
-func (sh *submissionHandler) setShortcuts() {
-	app := sh.Application
+func (sc *screenController) setShortcuts() {
+	app := sc.Application
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		currentPage, _ := sh.Pages.GetFrontPage()
+		currentPage, _ := sc.Pages.GetFrontPage()
 
 		if currentPage == offlinePage {
 			if event.Rune() == 'q' {
@@ -156,18 +156,18 @@ func (sh *submissionHandler) setShortcuts() {
 		}
 
 		if currentPage == helpPage {
-			sh.Pages.SwitchToPage(sh.getCurrentPage())
+			sc.Pages.SwitchToPage(sc.getCurrentPage())
 			return event
 		}
 
 		if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
-			sh.nextPage()
+			sc.nextPage()
 		} else if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
-			sh.previousPage()
+			sc.previousPage()
 		} else if event.Rune() == 'q' {
 			app.Stop()
 		} else if event.Rune() == 'i' || event.Rune() == '?' {
-			sh.Pages.SwitchToPage(helpPage)
+			sc.Pages.SwitchToPage(helpPage)
 		}
 		return event
 	})
@@ -180,65 +180,65 @@ func min(x, y int) int {
 	return x
 }
 
-func (sh *submissionHandler) nextPage() {
-	nextPage := sh.CurrentPage + 1
+func (sc *screenController) nextPage() {
+	nextPage := sc.CurrentPage + 1
 
-	if nextPage > sh.MaxPages {
+	if nextPage > sc.MaxPages {
 		return
 	}
 
-	_, primitive := sh.Pages.GetFrontPage()
+	_, primitive := sc.Pages.GetFrontPage()
 	list := primitive.(*cview.List)
 	currentlySelectedItem := list.GetCurrentItemIndex()
 
-	if nextPage < sh.MappedPages {
-		sh.Pages.SwitchToPage(strconv.Itoa(nextPage))
-		_, p := sh.Pages.GetFrontPage()
+	if nextPage < sc.MappedPages {
+		sc.Pages.SwitchToPage(strconv.Itoa(nextPage))
+		_, p := sc.Pages.GetFrontPage()
 		l := p.(*cview.List)
-		sh.Application.ForceDraw()
+		sc.Application.ForceDraw()
 		l.SetCurrentItem(currentlySelectedItem)
-		sh.Application.ForceDraw()
+		sc.Application.ForceDraw()
 	} else {
-		submissions, _ := sh.fetchSubmissions()
-		sh.mapSubmissions(submissions)
-		sh.Pages.SwitchToPage(strconv.Itoa(nextPage))
+		submissions, _ := sc.fetchSubmissions()
+		sc.mapSubmissions(submissions)
+		sc.Pages.SwitchToPage(strconv.Itoa(nextPage))
 
-		_, p := sh.Pages.GetFrontPage()
+		_, p := sc.Pages.GetFrontPage()
 		l := p.(*cview.List)
-		sh.Application.ForceDraw()
+		sc.Application.ForceDraw()
 		l.SetCurrentItem(currentlySelectedItem)
-		sh.Application.ForceDraw()
+		sc.Application.ForceDraw()
 	}
 
-	sh.CurrentPage++
-	sh.Footer.SetText(sh.getFooterText())
+	sc.CurrentPage++
+	sc.Footer.SetText(sc.getFooterText())
 }
 
-func (sh *submissionHandler) previousPage() {
-	previousPage := sh.CurrentPage - 1
+func (sc *screenController) previousPage() {
+	previousPage := sc.CurrentPage - 1
 
 	if previousPage < 0 {
 		return
 	}
 
-	_, primitive := sh.Pages.GetFrontPage()
+	_, primitive := sc.Pages.GetFrontPage()
 	list := primitive.(*cview.List)
 	currentlySelectedItem := list.GetCurrentItemIndex()
 
-	sh.CurrentPage--
-	sh.Pages.SwitchToPage(strconv.Itoa(sh.CurrentPage))
+	sc.CurrentPage--
+	sc.Pages.SwitchToPage(strconv.Itoa(sc.CurrentPage))
 
-	_, p := sh.Pages.GetFrontPage()
+	_, p := sc.Pages.GetFrontPage()
 	l := p.(*cview.List)
 	l.SetCurrentItem(currentlySelectedItem)
-	sh.Footer.SetText(sh.getFooterText())
+	sc.Footer.SetText(sc.getFooterText())
 }
 
-func (sh *submissionHandler) getStoriesToDisplay() int {
-	return sh.ViewableStoriesOnSinglePage
+func (sc *screenController) getStoriesToDisplay() int {
+	return sc.ViewableStoriesOnSinglePage
 }
 
-func setSelectedFunction(app *cview.Application, list *cview.List, sh *submissionHandler) {
+func setSelectedFunction(app *cview.Application, list *cview.List, sh *screenController) {
 	list.SetSelectedFunc(func(i int, _ *cview.ListItem) {
 		app.Suspend(func() {
 			for index := range sh.Submissions {
@@ -265,14 +265,14 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *submissio
 	})
 }
 
-func getSubmissionID(i int, sh *submissionHandler) string {
+func getSubmissionID(i int, sh *screenController) string {
 	storyIndex := (sh.CurrentPage)*sh.ViewableStoriesOnSinglePage + i
 	s := sh.Submissions[storyIndex]
 	return strconv.Itoa(s.ID)
 }
 
-func (sh *submissionHandler) getSubmission(i int) Submission {
-	return sh.Submissions[i]
+func (sc *screenController) getSubmission(i int) Submission {
+	return sc.Submissions[i]
 }
 
 type Submission struct {
@@ -287,33 +287,33 @@ type Submission struct {
 	Type          string `json:"type"`
 }
 
-func (sh *submissionHandler) fetchSubmissions() ([]Submission, error) {
-	sh.PageToFetchFromAPI++
-	p := strconv.Itoa(sh.PageToFetchFromAPI)
+func (sc *screenController) fetchSubmissions() ([]Submission, error) {
+	sc.PageToFetchFromAPI++
+	p := strconv.Itoa(sc.PageToFetchFromAPI)
 	return getSubmissions(p)
 }
 
-func (sh *submissionHandler) mapSubmissions(submissions []Submission) {
-	sh.Submissions = append(sh.Submissions, submissions...)
-	sh.mapSubmissionsToListItems()
+func (sc *screenController) mapSubmissions(submissions []Submission) {
+	sc.Submissions = append(sc.Submissions, submissions...)
+	sc.mapSubmissionsToListItems()
 }
 
-func (sh *submissionHandler) mapSubmissionsToListItems() {
-	for sh.hasStoriesToMap() {
-		sub := sh.Submissions[sh.MappedSubmissions : sh.MappedSubmissions+sh.ViewableStoriesOnSinglePage]
-		list := createNewList(sh)
-		addSubmissionsToList(list, sub, sh)
+func (sc *screenController) mapSubmissionsToListItems() {
+	for sc.hasStoriesToMap() {
+		sub := sc.Submissions[sc.MappedSubmissions : sc.MappedSubmissions+sc.ViewableStoriesOnSinglePage]
+		list := createNewList(sc)
+		addSubmissionsToList(list, sub, sc)
 
-		sh.Pages.AddPage(strconv.Itoa(sh.MappedPages), list, true, true)
-		sh.MappedPages++
+		sc.Pages.AddPage(strconv.Itoa(sc.MappedPages), list, true, true)
+		sc.MappedPages++
 	}
 }
 
-func (sh *submissionHandler) hasStoriesToMap() bool {
-	return len(sh.Submissions)-sh.MappedSubmissions >= sh.ViewableStoriesOnSinglePage
+func (sc *screenController) hasStoriesToMap() bool {
+	return len(sc.Submissions)-sc.MappedSubmissions >= sc.ViewableStoriesOnSinglePage
 }
 
-func createNewList(sh *submissionHandler) *cview.List {
+func createNewList(sh *screenController) *cview.List {
 	list := cview.NewList()
 	list.SetBackgroundTransparent(false)
 	list.SetBackgroundColor(tcell.ColorDefault)
@@ -325,7 +325,7 @@ func createNewList(sh *submissionHandler) *cview.List {
 	return list
 }
 
-func addSubmissionsToList(list *cview.List, submissions []Submission, sh *submissionHandler) {
+func addSubmissionsToList(list *cview.List, submissions []Submission, sh *screenController) {
 	for _, submission := range submissions {
 		item := cview.NewListItem(submission.getMainText(sh.MappedSubmissions))
 		item.SetSecondaryText(submission.getSecondaryText())
