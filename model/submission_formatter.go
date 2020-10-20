@@ -8,6 +8,7 @@ func FormatShowAndTell(title string) string {
 	title = strings.ReplaceAll(title, "Show HN:", reverse+"Show HN:"+clear)
 	title = strings.ReplaceAll(title, "Ask HN:", reverse+"Ask HN:"+clear)
 	title = strings.ReplaceAll(title, "Tell HN:", reverse+"Tell HN:"+clear)
+	title = strings.ReplaceAll(title, "Launch HN:", reverse+"Tell HN:"+clear)
 	return title
 }
 
