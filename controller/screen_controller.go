@@ -46,7 +46,7 @@ func NewScreenController() *screenController {
 	sc.MaxPages = maxPages
 	sc.ScreenHeight = model.GetTerminalHeight()
 	sc.ScreenWidth = model.GetTerminalWidth()
-	sc.ViewableStoriesOnSinglePage = min(sc.ScreenHeight/2-2, maximumStoriesToDisplay)
+	sc.ViewableStoriesOnSinglePage = model.GetViewableStoriesOnSinglePage(sc.ScreenHeight, maximumStoriesToDisplay)
 	submissions, err := sc.fetchSubmissions()
 	sc.IsOffline = getIsOfflineStatus(err)
 	sc.mapSubmissions(submissions)
@@ -171,12 +171,7 @@ func (sc *screenController) setShortcuts() {
 	})
 }
 
-func min(x, y int) int {
-	if x > y {
-		return y
-	}
-	return x
-}
+
 
 func (sc *screenController) nextPage() {
 	nextPage := sc.CurrentPage + 1
