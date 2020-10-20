@@ -170,8 +170,6 @@ func (sc *screenController) setShortcuts() {
 	})
 }
 
-
-
 func (sc *screenController) nextPage() {
 	nextPage := sc.CurrentPage + 1
 
