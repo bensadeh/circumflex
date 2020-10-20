@@ -317,7 +317,8 @@ func createNewList(sh *screenController) *cview.List {
 
 func addSubmissionsToList(list *cview.List, submissions []Submission, sh *screenController) {
 	for _, submission := range submissions {
-		item := cview.NewListItem(submission.getMainText(sh.MappedSubmissions))
+		mainText := model.GetMainText(submission.Title, submission.Domain, sh.MappedSubmissions)
+		item := cview.NewListItem(mainText)
 		item.SetSecondaryText(submission.getSecondaryText())
 
 		list.AddItem(item)
@@ -325,29 +326,9 @@ func addSubmissionsToList(list *cview.List, submissions []Submission, sh *screen
 	}
 }
 
-func (s Submission) getMainText(i int) string {
-	rank := i + 1
-	formattedTitle := formatTitle(s.Title)
-	return strconv.Itoa(rank) + "." + getRankIndentBlock(rank) + formattedTitle + s.GetDomain()
-}
-
-func formatTitle(title string) string {
-	title = model.FormatShowAndTell(title)
-	title = model.FormatYCStartups(title)
-	return title
-}
-
 func (s Submission) getSecondaryText() string {
 	return "[::d]" + "    " + s.getPoints() + " points by " + s.Author + " " +
 		s.Time + " | " + s.getComments() + " comments" + "[-:-:-]"
-}
-
-func (s Submission) GetDomain() string {
-	domain := s.Domain
-	if domain == "" {
-		return ""
-	}
-	return "[::d]" + " " + paren(domain) + "[-:-:-]"
 }
 
 func (s Submission) getComments() string {
@@ -356,17 +337,4 @@ func (s Submission) getComments() string {
 
 func (s Submission) getPoints() string {
 	return strconv.Itoa(s.Points)
-}
-
-func paren(text string) string {
-	return "(" + text + ")"
-}
-
-func getRankIndentBlock(rank int) string {
-	largeIndent := "  "
-	smallIndent := " "
-	if rank > 9 {
-		return smallIndent
-	}
-	return largeIndent
 }

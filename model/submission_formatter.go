@@ -1,8 +1,47 @@
 package model
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
-func FormatShowAndTell(title string) string {
+func GetMainText(title string, domain string, i int) string {
+	rank := i + 1
+	formattedTitle := formatTitle(title)
+	return strconv.Itoa(rank) + "." + getRankIndentBlock(rank) + formattedTitle + formatDomain(domain)
+}
+
+func formatTitle(title string) string {
+	title = formatShowAndTell(title)
+	title = formatYCStartups(title)
+	return title
+}
+
+func formatDomain(domain string) string {
+	if domain == "" {
+		return ""
+	}
+	return dim(paren(domain))
+}
+
+func dim(text string) string {
+	return "[::d]" + text + "[-:-:-]"
+}
+
+func paren(text string) string {
+	return "(" + text + ")"
+}
+
+func getRankIndentBlock(rank int) string {
+	largeIndent := "  "
+	smallIndent := " "
+	if rank > 9 {
+		return smallIndent
+	}
+	return largeIndent
+}
+
+func formatShowAndTell(title string) string {
 	title = strings.ReplaceAll(title, "Show HN:", reverse("Show HN:"))
 	title = strings.ReplaceAll(title, "Ask HN:", reverse("Ask HN:"))
 	title = strings.ReplaceAll(title, "Tell HN:", reverse("Tell HN:"))
@@ -14,7 +53,7 @@ func reverse(text string) string {
 	return "[::r]" + text + "[-:-:-]"
 }
 
-func FormatYCStartups(title string) string {
+func formatYCStartups(title string) string {
 	title = strings.ReplaceAll(title, "(YC S05)", orange("(YC S05)"))
 	title = strings.ReplaceAll(title, "(YC W05)", orange("(YC W05)"))
 	title = strings.ReplaceAll(title, "(YC S06)", orange("(YC S06)"))
@@ -53,4 +92,3 @@ func FormatYCStartups(title string) string {
 func orange(text string) string {
 	return "[orange]" + text + "[-:-:-]"
 }
-
