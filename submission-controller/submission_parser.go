@@ -63,7 +63,8 @@ func NewSubmissionHandler() *submissionHandler {
 		tv.SetDynamicColors(true)
 		return tv
 	}
-	padding := newPrimitive("")
+	leftMargin := newPrimitive("")
+	rightMargin := newPrimitive("")
 	main := sh.Pages
 
 	grid := cview.NewGrid()
@@ -75,9 +76,9 @@ func NewSubmissionHandler() *submissionHandler {
 	sh.Footer = newPrimitive(sh.getFooterText()).(*cview.TextView)
 	grid.AddItem(sh.Footer, 2, 0, 1, 3, 0, 0, false)
 
-	grid.AddItem(padding, 1, 0, 1, 1, 0, 0, false)
+	grid.AddItem(leftMargin, 1, 0, 1, 1, 0, 0, false)
 	grid.AddItem(main, 1, 1, 1, 1, 0, 0, true)
-	grid.AddItem(newPrimitive(""), 1, 2, 1, 1, 0, 0, false)
+	grid.AddItem(rightMargin, 1, 2, 1, 1, 0, 0, false)
 
 	sh.Grid = grid
 
