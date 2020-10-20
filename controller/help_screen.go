@@ -1,4 +1,4 @@
-package submission_controller
+package controller
 
 import (
 	text "github.com/MichaelMure/go-term-text"

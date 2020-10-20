@@ -1,4 +1,4 @@
-package submission_controller
+package controller
 
 import (
 	"github.com/gdamore/tcell/v2"

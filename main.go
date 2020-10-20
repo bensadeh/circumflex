@@ -3,7 +3,7 @@ package main
 import (
 	"clx/cli"
 	"clx/cmd"
-	subController "clx/submission-controller"
+	subController "clx/controller"
 )
 
 func main() {
