@@ -3,13 +3,15 @@ package model
 import "strings"
 
 func FormatShowAndTell(title string) string {
-	reverse := "[::r]"
-	clear := "[-:-:-]"
-	title = strings.ReplaceAll(title, "Show HN:", reverse+"Show HN:"+clear)
-	title = strings.ReplaceAll(title, "Ask HN:", reverse+"Ask HN:"+clear)
-	title = strings.ReplaceAll(title, "Tell HN:", reverse+"Tell HN:"+clear)
-	title = strings.ReplaceAll(title, "Launch HN:", reverse+"Tell HN:"+clear)
+	title = strings.ReplaceAll(title, "Show HN:", reverse("Show HN:"))
+	title = strings.ReplaceAll(title, "Ask HN:", reverse("Ask HN:"))
+	title = strings.ReplaceAll(title, "Tell HN:", reverse("Tell HN:"))
+	title = strings.ReplaceAll(title, "Launch HN:", reverse("Launch HN:"))
 	return title
+}
+
+func reverse(text string) string {
+	return "[::r]" + text + "[-:-:-]"
 }
 
 func FormatYCStartups(title string) string {
@@ -51,3 +53,4 @@ func FormatYCStartups(title string) string {
 func orange(text string) string {
 	return "[orange]" + text + "[-:-:-]"
 }
+
