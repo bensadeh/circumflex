@@ -1,4 +1,4 @@
-package screen_info
+package screen
 
 import (
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
