@@ -1,4 +1,4 @@
-package model
+package screen_info
 
 import (
 	terminal "github.com/wayneashleyberry/terminal-dimensions"

@@ -4,7 +4,7 @@ import (
 	"clx/browser"
 	"clx/cli"
 	commentparser "clx/comment-parser"
-	"clx/model"
+	"clx/screen_info"
 	"clx/submission-parser"
 	"encoding/json"
 	text "github.com/MichaelMure/go-term-text"
@@ -44,9 +44,9 @@ func NewScreenController() *screenController {
 	sc.setShortcuts()
 	sc.Pages = cview.NewPages()
 	sc.MaxPages = maxPages
-	sc.ScreenHeight = model.GetTerminalHeight()
-	sc.ScreenWidth = model.GetTerminalWidth()
-	sc.ViewableStoriesOnSinglePage = model.GetViewableStoriesOnSinglePage(sc.ScreenHeight, maximumStoriesToDisplay)
+	sc.ScreenHeight = screen_info.GetTerminalHeight()
+	sc.ScreenWidth = screen_info.GetTerminalWidth()
+	sc.ViewableStoriesOnSinglePage = screen_info.GetViewableStoriesOnSinglePage(sc.ScreenHeight, maximumStoriesToDisplay)
 	submissions, err := sc.fetchSubmissions()
 	sc.IsOffline = getIsOfflineStatus(err)
 	sc.mapSubmissions(submissions)
