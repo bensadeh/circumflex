@@ -5,6 +5,7 @@ import (
 	"clx/cli"
 	commentparser "clx/comment-parser"
 	"clx/model"
+	"clx/submission-parser"
 	"encoding/json"
 	text "github.com/MichaelMure/go-term-text"
 	"github.com/gdamore/tcell/v2"
@@ -317,8 +318,8 @@ func createNewList(sh *screenController) *cview.List {
 
 func addSubmissionsToList(list *cview.List, submissions []Submission, sh *screenController) {
 	for _, s := range submissions {
-		mainText := model.GetMainText(s.Title, s.Domain, sh.MappedSubmissions)
-		secondaryText := model.GetSecondaryText(s.Points, s.Author, s.Time, s.CommentsCount)
+		mainText := submission_parser.GetMainText(s.Title, s.Domain, sh.MappedSubmissions)
+		secondaryText := submission_parser.GetSecondaryText(s.Points, s.Author, s.Time, s.CommentsCount)
 
 		item := cview.NewListItem(mainText)
 		item.SetSecondaryText(secondaryText)

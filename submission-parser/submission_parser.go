@@ -1,4 +1,4 @@
-package model
+package submission_parser
 
 import (
 	"strconv"
