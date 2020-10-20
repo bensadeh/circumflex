@@ -4,10 +4,10 @@ import (
 	"clx/browser"
 	"clx/cli"
 	commentparser "clx/comment-parser"
+	"clx/model"
 	"encoding/json"
 	text "github.com/MichaelMure/go-term-text"
 	"github.com/gdamore/tcell/v2"
-	terminal "github.com/wayneashleyberry/terminal-dimensions"
 	"gitlab.com/tslocum/cview"
 	"strconv"
 	"strings"
@@ -44,10 +44,8 @@ func NewScreenController() *screenController {
 	sc.setShortcuts()
 	sc.Pages = cview.NewPages()
 	sc.MaxPages = maxPages
-	height, _ := terminal.Height()
-	width, _ := terminal.Width()
-	sc.ScreenHeight = int(height)
-	sc.ScreenWidth = int(width)
+	sc.ScreenHeight = model.GetTerminalHeight()
+	sc.ScreenWidth = model.GetTerminalWidth()
 	sc.ViewableStoriesOnSinglePage = min(sc.ScreenHeight/2-2, maximumStoriesToDisplay)
 	submissions, err := sc.fetchSubmissions()
 	sc.IsOffline = getIsOfflineStatus(err)
