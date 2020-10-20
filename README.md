@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="images/circumflex.png" width="300" alt="^"/>
+  <img src="screenshots/circumflex.png" width="300" alt="^"/>
 </p>
 
 #
 `circumflex` is Hacker&nbsp;News on the command line. It shows top submissions and lets you read comments in the pager `less`.
 
 <p align="center">
-  <img src="images/mainview.png" width="700" alt="^"/>
+  <img src="screenshots/mainview.png" width="700" alt="^"/>
 </p>
 
 ## Comment section
@@ -15,13 +15,13 @@
 Comments are formatted in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code blocks`. Replies are color-indented to distinguish them from their parents, siblings and children.
 
 <p align="center">
-  <img src="images/comments.png" width="700" alt="^"/>
+  <img src="screenshots/comments.png" width="700" alt="^"/>
 </p>
 
 To give context to posts with many replies, Original Poster (OP), Parent Poster (PP) and moderators are labelled. References (`[1], [2], [3], […] `) are color-coded for easier readability.
 
 <p align="center">
-  <img src="images/linkHighlights.png" width="700" alt="^"/>
+  <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
 </p>
 
 ### Navigation
