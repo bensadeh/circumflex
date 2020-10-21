@@ -1,4 +1,4 @@
-package controller
+package primitives
 
 import (
 	"github.com/gdamore/tcell/v2"
@@ -11,7 +11,7 @@ Offline
 `
 )
 
-func getOfflineScreen() *cview.TextView {
+func GetOfflineScreen() *cview.TextView {
 	offlineScreen := cview.NewTextView()
 	offlineScreen.SetBackgroundColor(tcell.ColorDefault)
 	offlineScreen.SetTextColor(tcell.ColorDefault)

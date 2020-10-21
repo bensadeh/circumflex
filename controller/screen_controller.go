@@ -4,6 +4,7 @@ import (
 	"clx/browser"
 	"clx/cli"
 	commentparser "clx/comment-parser"
+	"clx/primitives"
 	"clx/screen"
 	"clx/submission-parser"
 	"encoding/json"
@@ -25,7 +26,6 @@ type screenController struct {
 	MappedSubmissions           int
 	MappedPages                 int
 	StoriesListed               int
-	Pages                       *cview.Pages
 	Application                 *cview.Application
 	PageToFetchFromAPI          int
 	CurrentPage                 int
@@ -34,57 +34,24 @@ type screenController struct {
 	ViewableStoriesOnSinglePage int
 	MaxPages                    int
 	IsOffline                   bool
-	Grid                        *cview.Grid
-	Footer                      *cview.TextView
+	MainView                    *primitives.MainView
 }
 
 func NewScreenController() *screenController {
 	sc := new(screenController)
-	sc.Application = cview.NewApplication()
-	sc.setShortcuts()
-	sc.Pages = cview.NewPages()
 	sc.MaxPages = maxPages
+	sc.Application = cview.NewApplication()
 	sc.ScreenHeight = screen.GetTerminalHeight()
 	sc.ScreenWidth = screen.GetTerminalWidth()
+	sc.MainView = primitives.NewMainView(sc.ScreenWidth)
+	sc.setShortcuts()
 	sc.ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(sc.ScreenHeight, maximumStoriesToDisplay)
 	submissions, err := sc.fetchSubmissions()
 	sc.IsOffline = getIsOfflineStatus(err)
 	sc.mapSubmissions(submissions)
 
-	newPrimitive := func(text string) cview.Primitive {
-		tv := cview.NewTextView()
-		tv.SetTextAlign(cview.AlignLeft)
-		tv.SetText(text)
-		tv.SetBorder(false)
-		tv.SetBackgroundColor(tcell.ColorDefault)
-		tv.SetTextColor(tcell.ColorDefault)
-		tv.SetDynamicColors(true)
-		return tv
-	}
-	leftMargin := newPrimitive("")
-	rightMargin := newPrimitive("")
-	main := sc.Pages
-
-	grid := cview.NewGrid()
-	grid.SetBorder(false)
-	grid.SetRows(2, 0, 1)
-	grid.SetColumns(3, 0, 3)
-	grid.SetBackgroundColor(tcell.ColorDefault)
-	grid.AddItem(newPrimitive(sc.getHeadline()), 0, 0, 1, 3, 0, 0, false)
-	sc.Footer = newPrimitive(sc.getFooterText()).(*cview.TextView)
-	grid.AddItem(sc.Footer, 2, 0, 1, 3, 0, 0, false)
-
-	grid.AddItem(leftMargin, 1, 0, 1, 1, 0, 0, false)
-	grid.AddItem(main, 1, 1, 1, 1, 0, 0, true)
-	grid.AddItem(rightMargin, 1, 2, 1, 1, 0, 0, false)
-
-	sc.Grid = grid
-
-	sc.Pages.AddPage(helpPage, getHelpScreen(), true, false)
-	sc.Pages.AddPage(offlinePage, getOfflineScreen(), true, false)
-
 	startPage := getStartPage(sc.IsOffline)
-	sc.Pages.SwitchToPage(startPage)
+	sc.MainView.Pages.SwitchToPage(startPage)
 
 	return sc
 }
@@ -144,7 +111,7 @@ func (sc *screenController) rightPadWithWhitespace(s string) string {
 func (sc *screenController) setShortcuts() {
 	app := sc.Application
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		currentPage, _ := sc.Pages.GetFrontPage()
+		currentPage, _ := sc.MainView.Pages.GetFrontPage()
 
 		if currentPage == offlinePage {
 			if event.Rune() == 'q' {
@@ -154,7 +121,7 @@ func (sc *screenController) setShortcuts() {
 		}
 
 		if currentPage == helpPage {
-			sc.Pages.SwitchToPage(sc.getCurrentPage())
+			sc.MainView.Pages.SwitchToPage(sc.getCurrentPage())
 			return event
 		}
 
@@ -165,7 +132,7 @@ func (sc *screenController) setShortcuts() {
 		} else if event.Rune() == 'q' {
 			app.Stop()
 		} else if event.Rune() == 'i' || event.Rune() == '?' {
-			sc.Pages.SwitchToPage(helpPage)
+			sc.MainView.Pages.SwitchToPage(helpPage)
 		}
 		return event
 	})
@@ -178,13 +145,13 @@ func (sc *screenController) nextPage() {
 		return
 	}
 
-	_, primitive := sc.Pages.GetFrontPage()
+	_, primitive := sc.MainView.Pages.GetFrontPage()
 	list := primitive.(*cview.List)
 	currentlySelectedItem := list.GetCurrentItemIndex()
 
 	if nextPage < sc.MappedPages {
-		sc.Pages.SwitchToPage(strconv.Itoa(nextPage))
-		_, p := sc.Pages.GetFrontPage()
+		sc.MainView.Pages.SwitchToPage(strconv.Itoa(nextPage))
+		_, p := sc.MainView.Pages.GetFrontPage()
 		l := p.(*cview.List)
 		sc.Application.ForceDraw()
 		l.SetCurrentItem(currentlySelectedItem)
@@ -192,9 +159,9 @@ func (sc *screenController) nextPage() {
 	} else {
 		submissions, _ := sc.fetchSubmissions()
 		sc.mapSubmissions(submissions)
-		sc.Pages.SwitchToPage(strconv.Itoa(nextPage))
+		sc.MainView.Pages.SwitchToPage(strconv.Itoa(nextPage))
 
-		_, p := sc.Pages.GetFrontPage()
+		_, p := sc.MainView.Pages.GetFrontPage()
 		l := p.(*cview.List)
 		sc.Application.ForceDraw()
 		l.SetCurrentItem(currentlySelectedItem)
@@ -202,7 +169,7 @@ func (sc *screenController) nextPage() {
 	}
 
 	sc.CurrentPage++
-	sc.Footer.SetText(sc.getFooterText())
+	sc.MainView.Footer.SetText(sc.getFooterText())
 }
 
 func (sc *screenController) previousPage() {
@@ -212,17 +179,17 @@ func (sc *screenController) previousPage() {
 		return
 	}
 
-	_, primitive := sc.Pages.GetFrontPage()
+	_, primitive := sc.MainView.Pages.GetFrontPage()
 	list := primitive.(*cview.List)
 	currentlySelectedItem := list.GetCurrentItemIndex()
 
 	sc.CurrentPage--
-	sc.Pages.SwitchToPage(strconv.Itoa(sc.CurrentPage))
+	sc.MainView.Pages.SwitchToPage(strconv.Itoa(sc.CurrentPage))
 
-	_, p := sc.Pages.GetFrontPage()
+	_, p := sc.MainView.Pages.GetFrontPage()
 	l := p.(*cview.List)
 	l.SetCurrentItem(currentlySelectedItem)
-	sc.Footer.SetText(sc.getFooterText())
+	sc.MainView.Footer.SetText(sc.getFooterText())
 }
 
 func (sc *screenController) getStoriesToDisplay() int {
@@ -295,7 +262,7 @@ func (sc *screenController) mapSubmissionsToListItems() {
 		list := createNewList(sc)
 		addSubmissionsToList(list, sub, sc)
 
-		sc.Pages.AddPage(strconv.Itoa(sc.MappedPages), list, true, true)
+		sc.MainView.Pages.AddPage(strconv.Itoa(sc.MappedPages), list, true, true)
 		sc.MappedPages++
 	}
 }

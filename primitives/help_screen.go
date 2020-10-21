@@ -1,4 +1,4 @@
-package controller
+package primitives
 
 import (
 	text "github.com/MichaelMure/go-term-text"
@@ -22,7 +22,7 @@ q:            quit
 `
 )
 
-func getHelpScreen() *cview.TextView {
+func GetHelpScreen() *cview.TextView {
 	helpScreen := cview.NewTextView()
 	helpScreen.SetBackgroundColor(tcell.ColorDefault)
 	helpScreen.SetTextColor(tcell.ColorDefault)
