@@ -29,16 +29,9 @@ func PrintCommentTree(comments Comments, indentSize int, commentWith int) string
 	originalPoster := comments.Author
 	commentTree := ""
 	for _, reply := range comments.Replies {
-		ch := make(chan string)
-		go thread(reply, indentSize, commentWith, originalPoster, ch)
-		s := <-ch
-		commentTree = commentTree + s
+		commentTree += prettyPrintComments(*reply, 0, indentSize, commentWith, originalPoster, "")
 	}
 	return header + commentTree
-}
-
-func thread(reply *Comments, indentSize int, commentWith int , originalPoster string, fullReply chan string) {
-	fullReply <- prettyPrintComments(*reply, 0, indentSize, commentWith, originalPoster, "")
 }
 
 func getHeader(c Comments, commentWidth int) string {
