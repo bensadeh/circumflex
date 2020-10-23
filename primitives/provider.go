@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	helpPage                = "help"
-	offlinePage             = "offline"
+	helpPage    = "help"
+	offlinePage = "offline"
 )
 
 type MainView struct {
@@ -69,15 +69,20 @@ func getHeadline(screenWidth int) string {
 	return base + whitespace
 }
 
+func (m MainView) SetFooterText(currentPage int, screenWidth int) {
+	footerText := getFooterText(currentPage, screenWidth)
+	m.Footer.SetText(footerText)
+}
+
 func getFooterText(currentPage int, screenWidth int) string {
 	footerText := ""
 	switch currentPage {
 	case 0:
-		footerText = "   •◦◦"
+		footerText = "•◦◦"
 	case 1:
-		footerText = "   ◦•◦"
+		footerText = "◦•◦"
 	case 2:
-		footerText = "   ◦◦•"
+		footerText = "◦◦•"
 	default:
 		footerText = ""
 	}

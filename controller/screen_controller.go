@@ -84,29 +84,29 @@ func (sc *screenController) getCurrentPage() string {
 	return strconv.Itoa(sc.CurrentPage)
 }
 
-func (sc *screenController) getFooterText() string {
-	page := ""
-	switch sc.CurrentPage {
-	case 0:
-		page = "   •◦◦"
-	case 1:
-		page = "   ◦•◦"
-	case 2:
-		page = "   ◦◦•"
-	default:
-		page = ""
-	}
-	return sc.rightPadWithWhitespace(page)
-}
-
-func (sc *screenController) rightPadWithWhitespace(s string) string {
-	offset := 3
-	whitespace := ""
-	for i := 0; i < sc.ScreenWidth-text.Len(s)-offset; i++ {
-		whitespace += " "
-	}
-	return whitespace + s
-}
+//func (sc *screenController) getFooterText() string {
+//	page := ""
+//	switch sc.CurrentPage {
+//	case 0:
+//		page = "   •◦◦"
+//	case 1:
+//		page = "   ◦•◦"
+//	case 2:
+//		page = "   ◦◦•"
+//	default:
+//		page = ""
+//	}
+//	return sc.rightPadWithWhitespace(page)
+//}
+//
+//func (sc *screenController) rightPadWithWhitespace(s string) string {
+//	offset := 3
+//	whitespace := ""
+//	for i := 0; i < sc.ScreenWidth-text.Len(s)-offset; i++ {
+//		whitespace += " "
+//	}
+//	return whitespace + s
+//}
 
 func (sc *screenController) setShortcuts() {
 	app := sc.Application
@@ -126,7 +126,7 @@ func (sc *screenController) setShortcuts() {
 		}
 
 		if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
-			sc.nextPage()
+			sc.nextPage(sc.CurrentPage, sc.MaxPages, sc.MainView.Pages, sc.MappedPages, sc.Application)
 		} else if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
 			sc.previousPage()
 		} else if event.Rune() == 'q' {
@@ -138,38 +138,44 @@ func (sc *screenController) setShortcuts() {
 	})
 }
 
-func (sc *screenController) nextPage() {
-	nextPage := sc.CurrentPage + 1
+func (sc *screenController) nextPage(currentPage int, maxPages int, pages *cview.Pages, mappedPages int, app *cview.Application) {
+	nextPage := currentPage + 1
 
-	if nextPage > sc.MaxPages {
+	if nextPage > maxPages {
 		return
 	}
 
-	_, primitive := sc.MainView.Pages.GetFrontPage()
-	list := primitive.(*cview.List)
-	currentlySelectedItem := list.GetCurrentItemIndex()
+	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(pages)
 
-	if nextPage < sc.MappedPages {
-		sc.MainView.Pages.SwitchToPage(strconv.Itoa(nextPage))
-		_, p := sc.MainView.Pages.GetFrontPage()
-		l := p.(*cview.List)
-		sc.Application.ForceDraw()
-		l.SetCurrentItem(currentlySelectedItem)
-		sc.Application.ForceDraw()
+	if nextPage < mappedPages {
+		pages.SwitchToPage(strconv.Itoa(nextPage))
+		app.ForceDraw()
+		setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, pages)
+		app.ForceDraw()
 	} else {
 		submissions, _ := sc.fetchSubmissions()
 		sc.mapSubmissions(submissions)
-		sc.MainView.Pages.SwitchToPage(strconv.Itoa(nextPage))
+		pages.SwitchToPage(strconv.Itoa(nextPage))
 
-		_, p := sc.MainView.Pages.GetFrontPage()
-		l := p.(*cview.List)
-		sc.Application.ForceDraw()
-		l.SetCurrentItem(currentlySelectedItem)
-		sc.Application.ForceDraw()
+		app.ForceDraw()
+		setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, pages)
+		app.ForceDraw()
 	}
 
 	sc.CurrentPage++
-	sc.MainView.Footer.SetText(sc.getFooterText())
+	sc.MainView.SetFooterText(sc.CurrentPage, sc.ScreenWidth)
+}
+
+func getCurrentlySelectedItemOnFrontPage(pages *cview.Pages) int {
+	_, primitive := pages.GetFrontPage()
+	list := primitive.(*cview.List)
+	return list.GetCurrentItemIndex()
+}
+
+func setCurrentlySelectedItemOnFrontPage(item int, pages *cview.Pages) {
+	_, primitive := pages.GetFrontPage()
+	list := primitive.(*cview.List)
+	list.SetCurrentItem(item)
 }
 
 func (sc *screenController) previousPage() {
@@ -189,7 +195,7 @@ func (sc *screenController) previousPage() {
 	_, p := sc.MainView.Pages.GetFrontPage()
 	l := p.(*cview.List)
 	l.SetCurrentItem(currentlySelectedItem)
-	sc.MainView.Footer.SetText(sc.getFooterText())
+	sc.MainView.SetFooterText(sc.CurrentPage, sc.ScreenWidth)
 }
 
 func (sc *screenController) getStoriesToDisplay() int {
