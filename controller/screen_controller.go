@@ -128,7 +128,7 @@ func (sc *screenController) setShortcuts() {
 		if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
 			sc.nextPage(sc.CurrentPage, sc.MaxPages, sc.MainView.Pages, sc.MappedPages, sc.Application)
 		} else if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
-			sc.previousPage()
+			sc.previousPage(sc.CurrentPage, sc.MainView.Pages)
 		} else if event.Rune() == 'q' {
 			app.Stop()
 		} else if event.Rune() == 'i' || event.Rune() == '?' {
@@ -178,23 +178,19 @@ func setCurrentlySelectedItemOnFrontPage(item int, pages *cview.Pages) {
 	list.SetCurrentItem(item)
 }
 
-func (sc *screenController) previousPage() {
-	previousPage := sc.CurrentPage - 1
+func (sc *screenController) previousPage(currentPage int, pages *cview.Pages) {
+	previousPage := currentPage - 1
 
 	if previousPage < 0 {
 		return
 	}
 
-	_, primitive := sc.MainView.Pages.GetFrontPage()
-	list := primitive.(*cview.List)
-	currentlySelectedItem := list.GetCurrentItemIndex()
+	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(pages)
 
 	sc.CurrentPage--
-	sc.MainView.Pages.SwitchToPage(strconv.Itoa(sc.CurrentPage))
+	pages.SwitchToPage(strconv.Itoa(sc.CurrentPage))
 
-	_, p := sc.MainView.Pages.GetFrontPage()
-	l := p.(*cview.List)
-	l.SetCurrentItem(currentlySelectedItem)
+	setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, pages)
 	sc.MainView.SetFooterText(sc.CurrentPage, sc.ScreenWidth)
 }
 
