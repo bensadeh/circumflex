@@ -84,30 +84,6 @@ func (sc *screenController) getCurrentPage() string {
 	return strconv.Itoa(sc.CurrentPage)
 }
 
-//func (sc *screenController) getFooterText() string {
-//	page := ""
-//	switch sc.CurrentPage {
-//	case 0:
-//		page = "   •◦◦"
-//	case 1:
-//		page = "   ◦•◦"
-//	case 2:
-//		page = "   ◦◦•"
-//	default:
-//		page = ""
-//	}
-//	return sc.rightPadWithWhitespace(page)
-//}
-//
-//func (sc *screenController) rightPadWithWhitespace(s string) string {
-//	offset := 3
-//	whitespace := ""
-//	for i := 0; i < sc.ScreenWidth-text.Len(s)-offset; i++ {
-//		whitespace += " "
-//	}
-//	return whitespace + s
-//}
-
 func (sc *screenController) setShortcuts() {
 	app := sc.Application
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
