@@ -75,14 +75,16 @@ func (m MainView) SetFooterText(currentPage int, screenWidth int) {
 }
 
 func getFooterText(currentPage int, screenWidth int) string {
+	orangeDot := "[orange]" + "•" + "[-:-]"
 	footerText := ""
+
 	switch currentPage {
 	case 0:
-		footerText = "•◦◦"
+		footerText = "" + orangeDot + "◦◦"
 	case 1:
-		footerText = "◦•◦"
+		footerText = "◦" + orangeDot + "◦"
 	case 2:
-		footerText = "◦◦•"
+		footerText = "◦◦" + orangeDot + ""
 	default:
 		footerText = ""
 	}
@@ -90,9 +92,9 @@ func getFooterText(currentPage int, screenWidth int) string {
 }
 
 func padWithWhitespaceFromTheLeft(s string, screenWidth int) string {
-	offset := 3
+	offset := +10
 	whitespace := ""
-	for i := 0; i < screenWidth-text.Len(s)-offset; i++ {
+	for i := 0; i < screenWidth-text.Len(s)+offset; i++ {
 		whitespace += " "
 	}
 	return whitespace + s
