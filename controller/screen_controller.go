@@ -3,7 +3,7 @@ package controller
 import (
 	"clx/browser"
 	"clx/cli"
-	commentparser "clx/comment-parser"
+	parser "clx/comment-parser"
 	"clx/primitives"
 	"clx/screen"
 	"clx/submission-parser"
@@ -209,10 +209,10 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *screenCon
 				if index == i {
 					id := getSubmissionID(i, sh)
 					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + id)
-					jComments := new(commentparser.Comments)
+					jComments := new(parser.Comments)
 					_ = json.Unmarshal(JSON, jComments)
 
-					commentTree := commentparser.PrintCommentTree(*jComments, 4, 70)
+					commentTree := parser.PrintCommentTree(*jComments, 4, 70)
 					cli.Less(commentTree)
 				}
 			}
