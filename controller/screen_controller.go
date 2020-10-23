@@ -18,7 +18,7 @@ const (
 	maximumStoriesToDisplay = 30
 	helpPage                = "help"
 	offlinePage             = "offline"
-	maxPages                = 2
+	maxPages                = 3
 )
 
 type screenController struct {

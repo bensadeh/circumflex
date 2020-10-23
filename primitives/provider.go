@@ -80,11 +80,13 @@ func getFooterText(currentPage int, screenWidth int) string {
 
 	switch currentPage {
 	case 0:
-		footerText = "" + orangeDot + "◦◦"
+		footerText = "" + orangeDot + "◦◦◦"
 	case 1:
-		footerText = "◦" + orangeDot + "◦"
+		footerText = "◦" + orangeDot + "◦◦"
 	case 2:
-		footerText = "◦◦" + orangeDot + ""
+		footerText = "◦◦" + orangeDot + "◦"
+	case 3:
+		footerText = "◦◦◦" + orangeDot + ""
 	default:
 		footerText = ""
 	}
