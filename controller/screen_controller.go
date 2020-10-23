@@ -193,7 +193,7 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *screenCon
 
 	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Rune() == 'o' {
-			item := list.GetCurrentItemIndex()
+			item := list.GetCurrentItemIndex() + sh.ViewableStoriesOnSinglePage * (sh.CurrentPage)
 			url := sh.Submissions[item].URL
 			browser.Open(url)
 		}
