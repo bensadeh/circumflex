@@ -97,9 +97,10 @@ func (m MainView) HideFooterText() {
 
 func (m MainView) SetLeftMarginRanks(currentPage int, viewableStoriesOnSinglePage int) {
 	marginText := ""
+	indentationFromRight := " "
 	startingRank := viewableStoriesOnSinglePage * currentPage + 1
 	for i := startingRank; i < startingRank + viewableStoriesOnSinglePage; i++ {
-		marginText += strconv.Itoa(i) + ". " + "\n\n"
+		marginText += strconv.Itoa(i) + "." + indentationFromRight + "\n\n"
 	}
 	m.LeftMargin.SetText(marginText)
 }
