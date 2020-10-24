@@ -43,9 +43,9 @@ func NewScreenController() *screenController {
 	sc.Application = cview.NewApplication()
 	sc.ScreenHeight = screen.GetTerminalHeight()
 	sc.ScreenWidth = screen.GetTerminalWidth()
-	sc.MainView = primitives.NewMainView(sc.ScreenWidth)
-	sc.setShortcuts()
 	sc.ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(sc.ScreenHeight, maximumStoriesToDisplay)
+	sc.MainView = primitives.NewMainView(sc.ScreenWidth, sc.ViewableStoriesOnSinglePage)
+	sc.setShortcuts()
 	submissions, err := sc.fetchSubmissions()
 	sc.IsOffline = getIsOfflineStatus(err)
 	sc.mapSubmissions(submissions)
@@ -100,18 +100,22 @@ func (sc *screenController) setShortcuts() {
 			sc.MainView.SetHeaderTextToHN(sc.ScreenWidth)
 			sc.MainView.Pages.SwitchToPage(sc.getCurrentPage())
 			sc.MainView.SetFooterText(sc.CurrentPage, sc.ScreenWidth)
+			sc.MainView.SetLeftMarginRanks(sc.CurrentPage, sc.ViewableStoriesOnSinglePage)
 			return event
 		}
 
 		if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
 			sc.nextPage(sc.CurrentPage, sc.MaxPages, sc.MainView.Pages, sc.MappedPages, sc.Application)
+			sc.MainView.SetLeftMarginRanks(sc.CurrentPage, sc.ViewableStoriesOnSinglePage)
 		} else if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
 			sc.previousPage(sc.CurrentPage, sc.MainView.Pages)
+			sc.MainView.SetLeftMarginRanks(sc.CurrentPage, sc.ViewableStoriesOnSinglePage)
 		} else if event.Rune() == 'q' {
 			app.Stop()
 		} else if event.Rune() == 'i' || event.Rune() == '?' {
 			sc.MainView.SetHeaderTextToKeymaps(sc.ScreenWidth)
 			sc.MainView.HideFooterText()
+			sc.MainView.HideLeftMarginRanks()
 			sc.MainView.Pages.SwitchToPage(helpPage)
 		}
 		return event
@@ -267,7 +271,7 @@ func createNewList(sh *screenController) *cview.List {
 
 func addSubmissionsToList(list *cview.List, submissions []Submission, sh *screenController) {
 	for _, s := range submissions {
-		mainText := submission_parser.GetMainText(s.Title, s.Domain, sh.MappedSubmissions)
+		mainText := submission_parser.GetMainText(s.Title, s.Domain)
 		secondaryText := submission_parser.GetSecondaryText(s.Points, s.Author, s.Time, s.CommentsCount)
 
 		item := cview.NewListItem(mainText)

@@ -4,6 +4,7 @@ import (
 	text "github.com/MichaelMure/go-term-text"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
+	"strconv"
 )
 
 const (
@@ -20,7 +21,7 @@ type MainView struct {
 	RightMargin *cview.TextView
 }
 
-func NewMainView(screenWidth int) *MainView {
+func NewMainView(screenWidth int, viewableStoriesOnSinglePage int) *MainView {
 	footerText := getFooterText(0, screenWidth)
 	headlineText := getHeadline(screenWidth)
 
@@ -28,13 +29,15 @@ func NewMainView(screenWidth int) *MainView {
 	main.Pages = cview.NewPages()
 	main.Grid = cview.NewGrid()
 	main.LeftMargin = newTextViewPrimitive("")
+	main.LeftMargin.SetTextAlign(cview.AlignRight)
+	main.SetLeftMarginRanks(0, viewableStoriesOnSinglePage)
 	main.RightMargin = newTextViewPrimitive("")
 	main.Header = newTextViewPrimitive(headlineText)
 	main.Footer = newTextViewPrimitive(footerText)
 
 	main.Grid.SetBorder(false)
 	main.Grid.SetRows(2, 0, 1)
-	main.Grid.SetColumns(3, 0, 3)
+	main.Grid.SetColumns(7, 0, 3)
 	main.Grid.SetBackgroundColor(tcell.ColorDefault)
 	main.Grid.AddItem(main.Header, 0, 0, 1, 3, 0, 0, false)
 	main.Grid.AddItem(main.Footer, 2, 0, 1, 3, 0, 0, false)
@@ -90,6 +93,19 @@ func (m MainView) SetFooterText(currentPage int, screenWidth int) {
 
 func (m MainView) HideFooterText() {
 	m.Footer.SetText("")
+}
+
+func (m MainView) SetLeftMarginRanks(currentPage int, viewableStoriesOnSinglePage int) {
+	marginText := ""
+	startingRank := viewableStoriesOnSinglePage * currentPage + 1
+	for i := startingRank; i < startingRank + viewableStoriesOnSinglePage; i++ {
+		marginText += strconv.Itoa(i) + ". " + "\n\n"
+	}
+	m.LeftMargin.SetText(marginText)
+}
+
+func (m MainView) HideLeftMarginRanks() {
+	m.LeftMargin.SetText("")
 }
 
 func getFooterText(currentPage int, screenWidth int) string {

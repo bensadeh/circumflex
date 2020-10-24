@@ -5,10 +5,9 @@ import (
 	"strings"
 )
 
-func GetMainText(title string, domain string, i int) string {
-	rank := i + 1
+func GetMainText(title string, domain string) string {
 	formattedTitle := formatTitle(title)
-	return strconv.Itoa(rank) + "." + getRankIndentBlock(rank) + formattedTitle + formatDomain(domain)
+	return formattedTitle + formatDomain(domain)
 }
 
 func formatTitle(title string) string {
@@ -30,15 +29,6 @@ func dim(text string) string {
 
 func paren(text string) string {
 	return " (" + text + ")"
-}
-
-func getRankIndentBlock(rank int) string {
-	largeIndent := "  "
-	smallIndent := " "
-	if rank > 9 {
-		return smallIndent
-	}
-	return largeIndent
 }
 
 func formatShowAndTell(title string) string {
@@ -97,8 +87,7 @@ func GetSecondaryText(points int, author string, time string, comments int) stri
 	p := strconv.Itoa(points)
 	c := strconv.Itoa(comments)
 
-	return dim("    " +
-		p + " points " +
+	return dim(p + " points " +
 		"by " + author + " " +
 		time + " | " +
 		c + " comments")
