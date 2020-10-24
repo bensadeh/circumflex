@@ -69,9 +69,27 @@ func getHeadline(screenWidth int) string {
 	return base + whitespace
 }
 
+func (m MainView) SetHeaderTextToHN(screenWidth int) {
+	m.Header.SetText(getHeadline(screenWidth))
+}
+
+func (m MainView) SetHeaderTextToKeymaps(screenWidth int) {
+	base := "[white:rebeccapurple:]   [^] circumflex"
+	offset := -22
+	whitespace := ""
+	for i := 0; i < screenWidth-text.Len(base)-offset; i++ {
+		whitespace += " "
+	}
+	m.Header.SetText(base + whitespace)
+}
+
 func (m MainView) SetFooterText(currentPage int, screenWidth int) {
 	footerText := getFooterText(currentPage, screenWidth)
 	m.Footer.SetText(footerText)
+}
+
+func (m MainView) HideFooterText() {
+	m.Footer.SetText("")
 }
 
 func getFooterText(currentPage int, screenWidth int) string {

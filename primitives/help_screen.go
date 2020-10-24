@@ -27,13 +27,10 @@ func GetHelpScreen() *cview.TextView {
 	helpScreen.SetBackgroundColor(tcell.ColorDefault)
 	helpScreen.SetTextColor(tcell.ColorDefault)
 	helpScreen.SetTextAlign(cview.AlignCenter)
-	helpScreen.SetTitle("circumflex")
 	helpScreen.SetTitleColor(tcell.ColorDefault)
 	helpScreen.SetBorderColor(tcell.ColorDefault)
 	helpScreen.SetTextColor(tcell.ColorDefault)
 	helpScreen.Box.SetBorderPadding(10, 10, 10, 10)
-	helpScreen.Box.SetBorder(true)
-	helpScreen.Box.SetBorderAttributes(tcell.AttrDim)
 
 	helpScreen.SetText(padLines(helpScreenText))
 

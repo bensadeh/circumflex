@@ -97,7 +97,9 @@ func (sc *screenController) setShortcuts() {
 		}
 
 		if currentPage == helpPage {
+			sc.MainView.SetHeaderTextToHN(sc.ScreenWidth)
 			sc.MainView.Pages.SwitchToPage(sc.getCurrentPage())
+			sc.MainView.SetFooterText(sc.CurrentPage, sc.ScreenWidth)
 			return event
 		}
 
@@ -108,6 +110,8 @@ func (sc *screenController) setShortcuts() {
 		} else if event.Rune() == 'q' {
 			app.Stop()
 		} else if event.Rune() == 'i' || event.Rune() == '?' {
+			sc.MainView.SetHeaderTextToKeymaps(sc.ScreenWidth)
+			sc.MainView.HideFooterText()
 			sc.MainView.Pages.SwitchToPage(helpPage)
 		}
 		return event
