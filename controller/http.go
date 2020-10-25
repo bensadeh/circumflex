@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"clx/types"
 	"encoding/json"
 	"io"
 	"io/ioutil"
@@ -14,7 +15,7 @@ const (
 
 var myClient = &http.Client{Timeout: 10 * time.Second}
 
-func getSubmissions(page string) ([]Submission, error) {
+func getSubmissions(page string) ([]types.Submission, error) {
 	JSON, err := get(submissionURL + page)
 	submissions := unmarshalJSON(JSON)
 	return submissions, err
@@ -39,8 +40,8 @@ func closeStream(body io.ReadCloser) {
 	_ = body.Close()
 }
 
-func unmarshalJSON(stream []byte) []Submission {
-	var submissions []Submission
+func unmarshalJSON(stream []byte) []types.Submission {
+	var submissions []types.Submission
 	_ = json.Unmarshal(stream, &submissions)
 	return submissions
 }

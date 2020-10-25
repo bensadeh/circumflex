@@ -1,4 +1,4 @@
-package submission_parser
+package formatter
 
 import (
 	"strconv"

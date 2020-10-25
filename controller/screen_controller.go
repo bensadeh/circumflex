@@ -3,10 +3,11 @@ package controller
 import (
 	"clx/browser"
 	"clx/cli"
-	parser "clx/comment-parser"
+	cp "clx/comment-parser"
 	"clx/primitives"
 	"clx/screen"
-	"clx/submission-parser"
+	formatter2 "clx/submission/formatter"
+	"clx/types"
 	"encoding/json"
 	text "github.com/MichaelMure/go-term-text"
 	"github.com/gdamore/tcell/v2"
@@ -22,7 +23,7 @@ const (
 )
 
 type screenController struct {
-	Submissions                 []Submission
+	Submissions                 []types.Submission
 	MappedSubmissions           int
 	MappedPages                 int
 	StoriesListed               int
@@ -183,7 +184,7 @@ func (sc *screenController) getStoriesToDisplay() int {
 	return sc.ViewableStoriesOnSinglePage
 }
 
-func setSelectedFunction(app *cview.Application, list *cview.List, submissions []Submission, currentPage int, viewableStoriesOnSinglePage int) {
+func setSelectedFunction(app *cview.Application, list *cview.List, submissions []types.Submission, currentPage int, viewableStoriesOnSinglePage int) {
 	list.SetSelectedFunc(func(i int, _ *cview.ListItem) {
 		app.Suspend(func() {
 			for index := range submissions {
@@ -192,10 +193,10 @@ func setSelectedFunction(app *cview.Application, list *cview.List, submissions [
 					s := submissions[storyIndex]
 					id := strconv.Itoa(s.ID)
 					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + id)
-					jComments := new(parser.Comments)
+					jComments := new(cp.Comments)
 					_ = json.Unmarshal(JSON, jComments)
 
-					commentTree := parser.PrintCommentTree(*jComments, 4, 70)
+					commentTree := cp.PrintCommentTree(*jComments, 4, 70)
 					cli.Less(commentTree)
 				}
 			}
@@ -212,34 +213,22 @@ func setSelectedFunction(app *cview.Application, list *cview.List, submissions [
 	})
 }
 
-func (sc *screenController) getSubmission(i int) Submission {
+func (sc *screenController) getSubmission(i int) types.Submission {
 	return sc.Submissions[i]
 }
 
-type Submission struct {
-	ID            int    `json:"id"`
-	Title         string `json:"title"`
-	Points        int    `json:"points"`
-	Author        string `json:"user"`
-	Time          string `json:"time_ago"`
-	CommentsCount int    `json:"comments_count"`
-	URL           string `json:"url"`
-	Domain        string `json:"domain"`
-	Type          string `json:"type"`
-}
-
-func (sc *screenController) fetchSubmissions() ([]Submission, error) {
+func (sc *screenController) fetchSubmissions() ([]types.Submission, error) {
 	sc.PageToFetchFromAPI++
 	p := strconv.Itoa(sc.PageToFetchFromAPI)
 	return getSubmissions(p)
 }
 
-func (sc *screenController) mapSubmissions(app *cview.Application,  submissions []Submission, currentPage int, viewableStoriesOnSinglePage int) {
+func (sc *screenController) mapSubmissions(app *cview.Application,  submissions []types.Submission, currentPage int, viewableStoriesOnSinglePage int) {
 	sc.Submissions = append(sc.Submissions, submissions...)
 	sc.mapSubmissionsToListItems(app, submissions, currentPage, viewableStoriesOnSinglePage)
 }
 
-func (sc *screenController) mapSubmissionsToListItems(app *cview.Application,  submissions []Submission, currentPage int, viewableStoriesOnSinglePage int) {
+func (sc *screenController) mapSubmissionsToListItems(app *cview.Application,  submissions []types.Submission, currentPage int, viewableStoriesOnSinglePage int) {
 	for sc.hasStoriesToMap() {
 		sub := sc.Submissions[sc.MappedSubmissions : sc.MappedSubmissions+sc.ViewableStoriesOnSinglePage]
 		list := createNewList(app, submissions, currentPage, viewableStoriesOnSinglePage)
@@ -254,7 +243,7 @@ func (sc *screenController) hasStoriesToMap() bool {
 	return len(sc.Submissions)-sc.MappedSubmissions >= sc.ViewableStoriesOnSinglePage
 }
 
-func createNewList(app *cview.Application,  submissions []Submission, currentPage int, viewableStoriesOnSinglePage int) *cview.List {
+func createNewList(app *cview.Application,  submissions []types.Submission, currentPage int, viewableStoriesOnSinglePage int) *cview.List {
 	list := cview.NewList()
 	list.SetBackgroundTransparent(false)
 	list.SetBackgroundColor(tcell.ColorDefault)
@@ -266,10 +255,10 @@ func createNewList(app *cview.Application,  submissions []Submission, currentPag
 	return list
 }
 
-func addSubmissionsToList(list *cview.List, submissions []Submission, sh *screenController) {
+func addSubmissionsToList(list *cview.List, submissions []types.Submission, sh *screenController) {
 	for _, s := range submissions {
-		mainText := submission_parser.GetMainText(s.Title, s.Domain)
-		secondaryText := submission_parser.GetSecondaryText(s.Points, s.Author, s.Time, s.CommentsCount)
+		mainText := formatter2.GetMainText(s.Title, s.Domain)
+		secondaryText := formatter2.GetSecondaryText(s.Points, s.Author, s.Time, s.CommentsCount)
 
 		item := cview.NewListItem(mainText)
 		item.SetSecondaryText(secondaryText)
