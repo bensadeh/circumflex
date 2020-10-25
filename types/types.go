@@ -11,3 +11,16 @@ type Submission struct {
 	Domain        string `json:"domain"`
 	Type          string `json:"type"`
 }
+
+type ApplicationState struct {
+	MappedSubmissions           int
+	MappedPages                 int
+	StoriesListed               int
+	PageToFetchFromAPI          int
+	CurrentPage                 int
+	ScreenHeight                int
+	ScreenWidth                 int
+	ViewableStoriesOnSinglePage int
+	MaxPages                    int
+	IsOffline                   bool
+}
