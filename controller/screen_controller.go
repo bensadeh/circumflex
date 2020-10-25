@@ -4,8 +4,10 @@ import (
 	"clx/browser"
 	"clx/cli"
 	cp "clx/comment-parser"
+	"clx/http"
 	"clx/primitives"
 	"clx/screen"
+	"clx/submission/fetcher"
 	formatter2 "clx/submission/formatter"
 	"clx/types"
 	"encoding/json"
@@ -192,7 +194,7 @@ func setSelectedFunction(app *cview.Application, list *cview.List, submissions [
 					storyIndex := (currentPage)*viewableStoriesOnSinglePage + i
 					s := submissions[storyIndex]
 					id := strconv.Itoa(s.ID)
-					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + id)
+					JSON, _ := http.Get("http://node-hnapi.herokuapp.com/item/" + id)
 					jComments := new(cp.Comments)
 					_ = json.Unmarshal(JSON, jComments)
 
@@ -220,7 +222,7 @@ func (sc *screenController) getSubmission(i int) types.Submission {
 func (sc *screenController) fetchSubmissions() ([]types.Submission, error) {
 	sc.PageToFetchFromAPI++
 	p := strconv.Itoa(sc.PageToFetchFromAPI)
-	return getSubmissions(p)
+	return fetcher.FetchSubmissions(p)
 }
 
 func (sc *screenController) mapSubmissions(app *cview.Application,  submissions []types.Submission, currentPage int, viewableStoriesOnSinglePage int) {
