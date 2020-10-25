@@ -4,14 +4,16 @@ import (
 	"clx/http"
 	"clx/types"
 	"encoding/json"
+	"strconv"
 )
 
 const (
 	submissionURL = "http://node-hnapi.herokuapp.com/news?page="
 )
 
-func FetchSubmissions(page string) ([]types.Submission, error) {
-	JSON, err := http.Get(submissionURL + page)
+func FetchSubmissions(page int) ([]types.Submission, error) {
+	p := strconv.Itoa(page)
+	JSON, err := http.Get(submissionURL + p)
 	submissions := unmarshalJSON(JSON)
 	return submissions, err
 }

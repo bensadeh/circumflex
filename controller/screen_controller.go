@@ -221,8 +221,7 @@ func (sc *screenController) getSubmission(i int) types.Submission {
 
 func (sc *screenController) fetchSubmissions() ([]types.Submission, error) {
 	sc.PageToFetchFromAPI++
-	p := strconv.Itoa(sc.PageToFetchFromAPI)
-	return fetcher.FetchSubmissions(p)
+	return fetcher.FetchSubmissions(sc.PageToFetchFromAPI)
 }
 
 func (sc *screenController) mapSubmissions(app *cview.Application,  submissions []types.Submission, currentPage int, viewableStoriesOnSinglePage int) {
