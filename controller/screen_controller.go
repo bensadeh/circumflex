@@ -48,7 +48,8 @@ func NewScreenController() *screenController {
 	sc.setShortcuts()
 	submissions, err := sc.fetchSubmissions()
 	sc.IsOffline = getIsOfflineStatus(err)
-	sc.mapSubmissions(submissions)
+
+	sc.mapSubmissions(sc.Application, submissions, sc.CurrentPage, sc.ViewableStoriesOnSinglePage)
 
 	startPage := getStartPage(sc.IsOffline)
 	sc.MainView.Pages.SwitchToPage(startPage)
@@ -138,7 +139,7 @@ func (sc *screenController) nextPage(currentPage int, maxPages int, pages *cview
 		app.ForceDraw()
 	} else {
 		submissions, _ := sc.fetchSubmissions()
-		sc.mapSubmissions(submissions)
+		sc.mapSubmissions(sc.Application, submissions, sc.CurrentPage, sc.ViewableStoriesOnSinglePage)
 		pages.SwitchToPage(strconv.Itoa(nextPage))
 
 		app.ForceDraw()
@@ -182,12 +183,14 @@ func (sc *screenController) getStoriesToDisplay() int {
 	return sc.ViewableStoriesOnSinglePage
 }
 
-func setSelectedFunction(app *cview.Application, list *cview.List, sh *screenController) {
+func setSelectedFunction(app *cview.Application, list *cview.List, submissions []Submission, currentPage int, viewableStoriesOnSinglePage int) {
 	list.SetSelectedFunc(func(i int, _ *cview.ListItem) {
 		app.Suspend(func() {
-			for index := range sh.Submissions {
+			for index := range submissions {
 				if index == i {
-					id := getSubmissionID(i, sh)
+					storyIndex := (currentPage)*viewableStoriesOnSinglePage + i
+					s := submissions[storyIndex]
+					id := strconv.Itoa(s.ID)
 					JSON, _ := get("http://node-hnapi.herokuapp.com/item/" + id)
 					jComments := new(parser.Comments)
 					_ = json.Unmarshal(JSON, jComments)
@@ -201,18 +204,12 @@ func setSelectedFunction(app *cview.Application, list *cview.List, sh *screenCon
 
 	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Rune() == 'o' {
-			item := list.GetCurrentItemIndex() + sh.ViewableStoriesOnSinglePage*(sh.CurrentPage)
-			url := sh.Submissions[item].URL
+			item := list.GetCurrentItemIndex() + viewableStoriesOnSinglePage*(currentPage)
+			url := submissions[item].URL
 			browser.Open(url)
 		}
 		return event
 	})
-}
-
-func getSubmissionID(i int, sh *screenController) string {
-	storyIndex := (sh.CurrentPage)*sh.ViewableStoriesOnSinglePage + i
-	s := sh.Submissions[storyIndex]
-	return strconv.Itoa(s.ID)
 }
 
 func (sc *screenController) getSubmission(i int) Submission {
@@ -237,15 +234,15 @@ func (sc *screenController) fetchSubmissions() ([]Submission, error) {
 	return getSubmissions(p)
 }
 
-func (sc *screenController) mapSubmissions(submissions []Submission) {
+func (sc *screenController) mapSubmissions(app *cview.Application,  submissions []Submission, currentPage int, viewableStoriesOnSinglePage int) {
 	sc.Submissions = append(sc.Submissions, submissions...)
-	sc.mapSubmissionsToListItems()
+	sc.mapSubmissionsToListItems(app, submissions, currentPage, viewableStoriesOnSinglePage)
 }
 
-func (sc *screenController) mapSubmissionsToListItems() {
+func (sc *screenController) mapSubmissionsToListItems(app *cview.Application,  submissions []Submission, currentPage int, viewableStoriesOnSinglePage int) {
 	for sc.hasStoriesToMap() {
 		sub := sc.Submissions[sc.MappedSubmissions : sc.MappedSubmissions+sc.ViewableStoriesOnSinglePage]
-		list := createNewList(sc)
+		list := createNewList(app, submissions, currentPage, viewableStoriesOnSinglePage)
 		addSubmissionsToList(list, sub, sc)
 
 		sc.MainView.Pages.AddPage(strconv.Itoa(sc.MappedPages), list, true, true)
@@ -257,14 +254,14 @@ func (sc *screenController) hasStoriesToMap() bool {
 	return len(sc.Submissions)-sc.MappedSubmissions >= sc.ViewableStoriesOnSinglePage
 }
 
-func createNewList(sh *screenController) *cview.List {
+func createNewList(app *cview.Application,  submissions []Submission, currentPage int, viewableStoriesOnSinglePage int) *cview.List {
 	list := cview.NewList()
 	list.SetBackgroundTransparent(false)
 	list.SetBackgroundColor(tcell.ColorDefault)
 	list.SetMainTextColor(tcell.ColorDefault)
 	list.SetSecondaryTextColor(tcell.ColorDefault)
 	list.ShowSecondaryText(true)
-	setSelectedFunction(sh.Application, list, sh)
+	setSelectedFunction(app, list, submissions, currentPage, viewableStoriesOnSinglePage)
 
 	return list
 }
