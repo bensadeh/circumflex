@@ -24,3 +24,7 @@ type ApplicationState struct {
 	MaxPages                    int
 	IsOffline                   bool
 }
+
+type Subs struct {
+	News []*Submission
+}

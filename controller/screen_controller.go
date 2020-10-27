@@ -24,7 +24,7 @@ const (
 )
 
 type screenController struct {
-	Submissions      []*types.Submission
+	Submissions      *types.Subs
 	Application      *cview.Application
 	MainView         *primitives.MainView
 	ApplicationState *types.ApplicationState
@@ -34,6 +34,7 @@ func NewScreenController() *screenController {
 	sc := new(screenController)
 	sc.Application = cview.NewApplication()
 	sc.ApplicationState = new(types.ApplicationState)
+	sc.Submissions = new(types.Subs)
 	sc.ApplicationState.MaxPages = maxPages
 	sc.ApplicationState.ScreenWidth = screen.GetTerminalWidth()
 	sc.ApplicationState.ScreenHeight = screen.GetTerminalHeight()
@@ -83,7 +84,7 @@ func (sc *screenController) getCurrentPage() string {
 func setShortcuts(app *cview.Application,
 	state *types.ApplicationState,
 	main *primitives.MainView,
-	oldSubmissions []*types.Submission) {
+	oldSubmissions *types.Subs) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		currentPage, _ := main.Pages.GetFrontPage()
 
@@ -134,7 +135,7 @@ func setShortcuts(app *cview.Application,
 func nextPage(pages *cview.Pages,
 	state *types.ApplicationState,
 	app *cview.Application,
-	oldSubmissions []*types.Submission,
+	oldSubmissions *types.Subs,
 	main *primitives.MainView) {
 	nextPage := state.CurrentPage + 1
 
@@ -231,10 +232,6 @@ func setSelectedFunction(app *cview.Application,
 	})
 }
 
-func (sc *screenController) getSubmission(i int) *types.Submission {
-	return sc.Submissions[i]
-}
-
 func fetchSubmissions(state *types.ApplicationState) ([]*types.Submission, error) {
 	state.PageToFetchFromAPI++
 	return fetcher.FetchSubmissions(state.PageToFetchFromAPI)
@@ -242,12 +239,11 @@ func fetchSubmissions(state *types.ApplicationState) ([]*types.Submission, error
 
 func mapSubmissions(app *cview.Application,
 	state *types.ApplicationState,
-	oldSubmissions []*types.Submission,
+	oldSubmissions *types.Subs,
 	newSubmissions []*types.Submission,
 	main *primitives.MainView) {
-	oldSubmissions = append(oldSubmissions, newSubmissions...)
-	println("Appended submissions. Current total submissions: " + strconv.Itoa(len(append(oldSubmissions, newSubmissions...))))
-	mapSubmissionsToListItems(app, append(oldSubmissions, newSubmissions...), newSubmissions, state, main)
+	oldSubmissions.News = append(oldSubmissions.News, newSubmissions...)
+	mapSubmissionsToListItems(app, append(oldSubmissions.News, newSubmissions...), newSubmissions, state, main)
 }
 
 func mapSubmissionsToListItems(app *cview.Application,
@@ -255,31 +251,17 @@ func mapSubmissionsToListItems(app *cview.Application,
 	newSubmissions []*types.Submission,
 	state *types.ApplicationState,
 	main *primitives.MainView) {
-	//b := hasStoriesToMap(oldSubmissions, state)
-	//println("................................")
-	//println("MappedPages: " + strconv.Itoa(state.MappedPages))
-	//println("MappedSubmissions: " + strconv.Itoa(state.MappedSubmissions))
-	//println("ViewableStoriesOnSinglePage: " + strconv.Itoa(state.ViewableStoriesOnSinglePage))
-	//println("hasStoriesToMap: " + strconv.FormatBool(b))
-	//println("................................")
 	for hasStoriesToMap(oldSubmissions, state) {
 		sub := oldSubmissions[state.MappedSubmissions : state.MappedSubmissions+state.ViewableStoriesOnSinglePage]
 		list := createNewList(app, newSubmissions, state.CurrentPage, state.ViewableStoriesOnSinglePage)
 		addSubmissionsToList(list, sub, state)
 
-		println("Adding page: " + strconv.Itoa(state.MappedPages))
 		main.Pages.AddPage(strconv.Itoa(state.MappedPages), list, true, true)
 		state.MappedPages++
 	}
 }
 
 func hasStoriesToMap(submissions []*types.Submission, state *types.ApplicationState) bool {
-	println("=================")
-	println("len(submissions): " + strconv.Itoa(len(submissions)))
-	println("MappedSubmissions: " + strconv.Itoa(state.MappedSubmissions))
-	println("ViewableStoriesOnSinglePage: " + strconv.Itoa(state.ViewableStoriesOnSinglePage))
-	println(strconv.Itoa(len(submissions)) + " - " + strconv.Itoa(state.MappedSubmissions) + " >= " + strconv.Itoa(state.ViewableStoriesOnSinglePage) + strconv.FormatBool(len(submissions)-state.MappedSubmissions >= state.ViewableStoriesOnSinglePage))
-	println("=================")
 	return len(submissions)-state.MappedSubmissions >= state.ViewableStoriesOnSinglePage
 }
 
