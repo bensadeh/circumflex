@@ -149,7 +149,6 @@ func nextPage(pages *cview.Pages,
 		pages.SwitchToPage(strconv.Itoa(nextPage))
 		app.ForceDraw()
 		setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, pages)
-		app.ForceDraw()
 	} else {
 		newSubmissions, _ := fetchSubmissions(state)
 		mapSubmissions(app,
@@ -161,7 +160,6 @@ func nextPage(pages *cview.Pages,
 
 		app.ForceDraw()
 		setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, pages)
-		app.ForceDraw()
 	}
 
 	state.CurrentPage++
