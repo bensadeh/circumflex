@@ -201,14 +201,14 @@ func (sc *screenController) getStoriesToDisplay() int {
 
 func setSelectedFunction(app *cview.Application,
 	list *cview.List,
-	submissions []*types.Submission,
+	submissions *types.Subs,
 	state *types.ApplicationState) {
 	list.SetSelectedFunc(func(i int, _ *cview.ListItem) {
 		app.Suspend(func() {
-			for index := range submissions {
+			for index := range submissions.News {
 				if index == i {
 					storyIndex := (state.CurrentPage)*state.ViewableStoriesOnSinglePage + i
-					s := submissions[storyIndex]
+					s := submissions.News[storyIndex]
 					id := strconv.Itoa(s.ID)
 					JSON, _ := http.Get("http://node-hnapi.herokuapp.com/item/" + id)
 					jComments := new(cp.Comments)
@@ -224,7 +224,7 @@ func setSelectedFunction(app *cview.Application,
 	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Rune() == 'o' {
 			item := list.GetCurrentItemIndex() + state.ViewableStoriesOnSinglePage*(state.CurrentPage)
-			url := submissions[item].URL
+			url := submissions.News[item].URL
 			browser.Open(url)
 		}
 		return event
@@ -242,17 +242,17 @@ func mapSubmissions(app *cview.Application,
 	newSubmissions []*types.Submission,
 	main *primitives.MainView) {
 	oldSubmissions.News = append(oldSubmissions.News, newSubmissions...)
-	mapSubmissionsToListItems(app, append(oldSubmissions.News, newSubmissions...), newSubmissions, state, main)
+	mapSubmissionsToListItems(app, oldSubmissions, newSubmissions, state, main)
 }
 
 func mapSubmissionsToListItems(app *cview.Application,
-	oldSubmissions []*types.Submission,
+	oldSubmissions *types.Subs,
 	newSubmissions []*types.Submission,
 	state *types.ApplicationState,
 	main *primitives.MainView) {
-	for hasStoriesToMap(oldSubmissions, state) {
-		sub := oldSubmissions[state.MappedSubmissions : state.MappedSubmissions+state.ViewableStoriesOnSinglePage]
-		list := createNewList(app, newSubmissions, state)
+	for hasStoriesToMap(oldSubmissions.News, state) {
+		sub := oldSubmissions.News[state.MappedSubmissions : state.MappedSubmissions+state.ViewableStoriesOnSinglePage]
+		list := createNewList(app, oldSubmissions, state)
 		addSubmissionsToList(list, sub, state)
 
 		main.Pages.AddPage(strconv.Itoa(state.MappedPages), list, true, true)
@@ -265,7 +265,7 @@ func hasStoriesToMap(submissions []*types.Submission, state *types.ApplicationSt
 }
 
 func createNewList(app *cview.Application,
-	submissions []*types.Submission,
+	submissions *types.Subs,
 	state *types.ApplicationState) *cview.List {
 	list := cview.NewList()
 	list.SetBackgroundTransparent(false)
