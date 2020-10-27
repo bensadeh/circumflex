@@ -24,7 +24,7 @@ const (
 )
 
 type screenController struct {
-	Submissions      []types.Submission
+	Submissions      []*types.Submission
 	Application      *cview.Application
 	MainView         *primitives.MainView
 	ApplicationState *types.ApplicationState
@@ -45,17 +45,19 @@ func NewScreenController() *screenController {
 		sc.ApplicationState.ScreenWidth,
 		sc.ApplicationState.ViewableStoriesOnSinglePage)
 
-	submissions, err := sc.fetchSubmissions()
+	newSubmissions, err := fetchSubmissions(sc.ApplicationState)
 	sc.ApplicationState.IsOffline = getIsOfflineStatus(err)
 
-	sc.mapSubmissions(sc.Application,
-		submissions,
-		sc.ApplicationState.CurrentPage,
-		sc.ApplicationState.ViewableStoriesOnSinglePage)
+	mapSubmissions(sc.Application,
+		sc.ApplicationState,
+		sc.Submissions,
+		newSubmissions,
+		sc.MainView)
 
 	startPage := getStartPage(sc.ApplicationState.IsOffline)
 	sc.MainView.Pages.SwitchToPage(startPage)
-	sc.setShortcuts()
+
+	setShortcuts(sc.Application, sc.ApplicationState, sc.MainView, sc.Submissions)
 
 	return sc
 }
@@ -78,10 +80,12 @@ func (sc *screenController) getCurrentPage() string {
 	return strconv.Itoa(sc.ApplicationState.CurrentPage)
 }
 
-func (sc *screenController) setShortcuts() {
-	app := sc.Application
+func setShortcuts(app *cview.Application,
+	state *types.ApplicationState,
+	main *primitives.MainView,
+	oldSubmissions []*types.Submission) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		currentPage, _ := sc.MainView.Pages.GetFrontPage()
+		currentPage, _ := main.Pages.GetFrontPage()
 
 		if currentPage == offlinePage {
 			if event.Rune() == 'q' {
@@ -91,33 +95,48 @@ func (sc *screenController) setShortcuts() {
 		}
 
 		if currentPage == helpPage {
-			sc.MainView.SetHeaderTextToHN(sc.ApplicationState.ScreenWidth)
-			sc.MainView.Pages.SwitchToPage(sc.getCurrentPage())
-			sc.MainView.SetFooterText(sc.ApplicationState.CurrentPage, sc.ApplicationState.ScreenWidth)
-			sc.MainView.SetLeftMarginRanks(sc.ApplicationState.CurrentPage, sc.ApplicationState.ViewableStoriesOnSinglePage)
+			main.SetHeaderTextToHN(state.ScreenWidth)
+			p := strconv.Itoa(state.CurrentPage)
+			main.Pages.SwitchToPage(p)
+			main.SetFooterText(state.CurrentPage, state.ScreenWidth)
+			main.SetLeftMarginRanks(state.CurrentPage, state.ViewableStoriesOnSinglePage)
 			return event
 		}
 
 		if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
-			sc.nextPage(sc.ApplicationState.CurrentPage, sc.ApplicationState.MaxPages, sc.MainView.Pages, sc.ApplicationState.MappedPages, sc.Application)
-			sc.MainView.SetLeftMarginRanks(sc.ApplicationState.CurrentPage, sc.ApplicationState.ViewableStoriesOnSinglePage)
+			nextPage(main.Pages,
+				state,
+				app,
+				oldSubmissions,
+				main)
+			main.SetLeftMarginRanks(state.CurrentPage,
+				state.ViewableStoriesOnSinglePage)
+			main.SetFooterText(state.CurrentPage,
+				state.ScreenWidth)
 		} else if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
-			sc.previousPage(sc.ApplicationState.CurrentPage, sc.MainView.Pages)
-			sc.MainView.SetLeftMarginRanks(sc.ApplicationState.CurrentPage, sc.ApplicationState.ViewableStoriesOnSinglePage)
+			previousPage(state, main.Pages)
+			main.SetLeftMarginRanks(state.CurrentPage,
+				state.ViewableStoriesOnSinglePage)
+			main.SetFooterText(state.CurrentPage,
+				state.ScreenWidth)
 		} else if event.Rune() == 'q' {
 			app.Stop()
 		} else if event.Rune() == 'i' || event.Rune() == '?' {
-			sc.MainView.SetHeaderTextToKeymaps(sc.ApplicationState.ScreenWidth)
-			sc.MainView.HideFooterText()
-			sc.MainView.HideLeftMarginRanks()
-			sc.MainView.Pages.SwitchToPage(helpPage)
+			main.SetHeaderTextToKeymaps(state.ScreenWidth)
+			main.HideFooterText()
+			main.HideLeftMarginRanks()
+			main.Pages.SwitchToPage(helpPage)
 		}
 		return event
 	})
 }
 
-func (sc *screenController) nextPage(currentPage int, maxPages int, pages *cview.Pages, mappedPages int, app *cview.Application) {
-	nextPage := currentPage + 1
+func nextPage(pages *cview.Pages,
+	state *types.ApplicationState,
+	app *cview.Application,
+	oldSubmissions []*types.Submission,
+	main *primitives.MainView) {
+	nextPage := state.CurrentPage + 1
 
 	if nextPage > maxPages {
 		return
@@ -125,14 +144,18 @@ func (sc *screenController) nextPage(currentPage int, maxPages int, pages *cview
 
 	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(pages)
 
-	if nextPage < mappedPages {
+	if nextPage < state.MappedPages {
 		pages.SwitchToPage(strconv.Itoa(nextPage))
 		app.ForceDraw()
 		setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, pages)
 		app.ForceDraw()
 	} else {
-		submissions, _ := sc.fetchSubmissions()
-		sc.mapSubmissions(sc.Application, submissions, sc.ApplicationState.CurrentPage, sc.ApplicationState.ViewableStoriesOnSinglePage)
+		newSubmissions, _ := fetchSubmissions(state)
+		mapSubmissions(app,
+			state,
+			oldSubmissions,
+			newSubmissions,
+			main)
 		pages.SwitchToPage(strconv.Itoa(nextPage))
 
 		app.ForceDraw()
@@ -140,8 +163,8 @@ func (sc *screenController) nextPage(currentPage int, maxPages int, pages *cview
 		app.ForceDraw()
 	}
 
-	sc.ApplicationState.CurrentPage++
-	sc.MainView.SetFooterText(sc.ApplicationState.CurrentPage, sc.ApplicationState.ScreenWidth)
+	state.CurrentPage++
+
 }
 
 func getCurrentlySelectedItemOnFrontPage(pages *cview.Pages) int {
@@ -156,8 +179,8 @@ func setCurrentlySelectedItemOnFrontPage(item int, pages *cview.Pages) {
 	list.SetCurrentItem(item)
 }
 
-func (sc *screenController) previousPage(currentPage int, pages *cview.Pages) {
-	previousPage := currentPage - 1
+func previousPage(state *types.ApplicationState, pages *cview.Pages) {
+	previousPage := state.CurrentPage - 1
 
 	if previousPage < 0 {
 		return
@@ -165,18 +188,21 @@ func (sc *screenController) previousPage(currentPage int, pages *cview.Pages) {
 
 	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(pages)
 
-	sc.ApplicationState.CurrentPage--
-	pages.SwitchToPage(strconv.Itoa(sc.ApplicationState.CurrentPage))
+	state.CurrentPage--
+	pages.SwitchToPage(strconv.Itoa(state.CurrentPage))
 
 	setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, pages)
-	sc.MainView.SetFooterText(sc.ApplicationState.CurrentPage, sc.ApplicationState.ScreenWidth)
 }
 
 func (sc *screenController) getStoriesToDisplay() int {
 	return sc.ApplicationState.ViewableStoriesOnSinglePage
 }
 
-func setSelectedFunction(app *cview.Application, list *cview.List, submissions []types.Submission, currentPage int, viewableStoriesOnSinglePage int) {
+func setSelectedFunction(app *cview.Application,
+	list *cview.List,
+	submissions []*types.Submission,
+	currentPage int,
+	viewableStoriesOnSinglePage int) {
 	list.SetSelectedFunc(func(i int, _ *cview.ListItem) {
 		app.Suspend(func() {
 			for index := range submissions {
@@ -205,36 +231,62 @@ func setSelectedFunction(app *cview.Application, list *cview.List, submissions [
 	})
 }
 
-func (sc *screenController) getSubmission(i int) types.Submission {
+func (sc *screenController) getSubmission(i int) *types.Submission {
 	return sc.Submissions[i]
 }
 
-func (sc *screenController) fetchSubmissions() ([]types.Submission, error) {
-	sc.ApplicationState.PageToFetchFromAPI++
-	return fetcher.FetchSubmissions(sc.ApplicationState.PageToFetchFromAPI)
+func fetchSubmissions(state *types.ApplicationState) ([]*types.Submission, error) {
+	state.PageToFetchFromAPI++
+	return fetcher.FetchSubmissions(state.PageToFetchFromAPI)
 }
 
-func (sc *screenController) mapSubmissions(app *cview.Application, submissions []types.Submission, currentPage int, viewableStoriesOnSinglePage int) {
-	sc.Submissions = append(sc.Submissions, submissions...)
-	sc.mapSubmissionsToListItems(app, submissions, currentPage, viewableStoriesOnSinglePage)
+func mapSubmissions(app *cview.Application,
+	state *types.ApplicationState,
+	oldSubmissions []*types.Submission,
+	newSubmissions []*types.Submission,
+	main *primitives.MainView) {
+	oldSubmissions = append(oldSubmissions, newSubmissions...)
+	println("Appended submissions. Current total submissions: " + strconv.Itoa(len(append(oldSubmissions, newSubmissions...))))
+	mapSubmissionsToListItems(app, append(oldSubmissions, newSubmissions...), newSubmissions, state, main)
 }
 
-func (sc *screenController) mapSubmissionsToListItems(app *cview.Application, submissions []types.Submission, currentPage int, viewableStoriesOnSinglePage int) {
-	for sc.hasStoriesToMap() {
-		sub := sc.Submissions[sc.ApplicationState.MappedSubmissions : sc.ApplicationState.MappedSubmissions+sc.ApplicationState.ViewableStoriesOnSinglePage]
-		list := createNewList(app, submissions, currentPage, viewableStoriesOnSinglePage)
-		addSubmissionsToList(list, sub, sc)
+func mapSubmissionsToListItems(app *cview.Application,
+	oldSubmissions []*types.Submission,
+	newSubmissions []*types.Submission,
+	state *types.ApplicationState,
+	main *primitives.MainView) {
+	//b := hasStoriesToMap(oldSubmissions, state)
+	//println("................................")
+	//println("MappedPages: " + strconv.Itoa(state.MappedPages))
+	//println("MappedSubmissions: " + strconv.Itoa(state.MappedSubmissions))
+	//println("ViewableStoriesOnSinglePage: " + strconv.Itoa(state.ViewableStoriesOnSinglePage))
+	//println("hasStoriesToMap: " + strconv.FormatBool(b))
+	//println("................................")
+	for hasStoriesToMap(oldSubmissions, state) {
+		sub := oldSubmissions[state.MappedSubmissions : state.MappedSubmissions+state.ViewableStoriesOnSinglePage]
+		list := createNewList(app, newSubmissions, state.CurrentPage, state.ViewableStoriesOnSinglePage)
+		addSubmissionsToList(list, sub, state)
 
-		sc.MainView.Pages.AddPage(strconv.Itoa(sc.ApplicationState.MappedPages), list, true, true)
-		sc.ApplicationState.MappedPages++
+		println("Adding page: " + strconv.Itoa(state.MappedPages))
+		main.Pages.AddPage(strconv.Itoa(state.MappedPages), list, true, true)
+		state.MappedPages++
 	}
 }
 
-func (sc *screenController) hasStoriesToMap() bool {
-	return len(sc.Submissions)-sc.ApplicationState.MappedSubmissions >= sc.ApplicationState.ViewableStoriesOnSinglePage
+func hasStoriesToMap(submissions []*types.Submission, state *types.ApplicationState) bool {
+	println("=================")
+	println("len(submissions): " + strconv.Itoa(len(submissions)))
+	println("MappedSubmissions: " + strconv.Itoa(state.MappedSubmissions))
+	println("ViewableStoriesOnSinglePage: " + strconv.Itoa(state.ViewableStoriesOnSinglePage))
+	println(strconv.Itoa(len(submissions)) + " - " + strconv.Itoa(state.MappedSubmissions) + " >= " + strconv.Itoa(state.ViewableStoriesOnSinglePage) + strconv.FormatBool(len(submissions)-state.MappedSubmissions >= state.ViewableStoriesOnSinglePage))
+	println("=================")
+	return len(submissions)-state.MappedSubmissions >= state.ViewableStoriesOnSinglePage
 }
 
-func createNewList(app *cview.Application, submissions []types.Submission, currentPage int, viewableStoriesOnSinglePage int) *cview.List {
+func createNewList(app *cview.Application,
+	submissions []*types.Submission,
+	currentPage int,
+	viewableStoriesOnSinglePage int) *cview.List {
 	list := cview.NewList()
 	list.SetBackgroundTransparent(false)
 	list.SetBackgroundColor(tcell.ColorDefault)
@@ -246,7 +298,9 @@ func createNewList(app *cview.Application, submissions []types.Submission, curre
 	return list
 }
 
-func addSubmissionsToList(list *cview.List, submissions []types.Submission, sh *screenController) {
+func addSubmissionsToList(list *cview.List,
+	submissions []*types.Submission,
+	state *types.ApplicationState) {
 	for _, s := range submissions {
 		mainText := formatter2.GetMainText(s.Title, s.Domain)
 		secondaryText := formatter2.GetSecondaryText(s.Points, s.Author, s.Time, s.CommentsCount)
@@ -255,6 +309,6 @@ func addSubmissionsToList(list *cview.List, submissions []types.Submission, sh *
 		item.SetSecondaryText(secondaryText)
 
 		list.AddItem(item)
-		sh.ApplicationState.MappedSubmissions++
+		state.MappedSubmissions++
 	}
 }
