@@ -202,13 +202,12 @@ func (sc *screenController) getStoriesToDisplay() int {
 func setSelectedFunction(app *cview.Application,
 	list *cview.List,
 	submissions []*types.Submission,
-	currentPage int,
-	viewableStoriesOnSinglePage int) {
+	state *types.ApplicationState) {
 	list.SetSelectedFunc(func(i int, _ *cview.ListItem) {
 		app.Suspend(func() {
 			for index := range submissions {
 				if index == i {
-					storyIndex := (currentPage)*viewableStoriesOnSinglePage + i
+					storyIndex := (state.CurrentPage)*state.ViewableStoriesOnSinglePage + i
 					s := submissions[storyIndex]
 					id := strconv.Itoa(s.ID)
 					JSON, _ := http.Get("http://node-hnapi.herokuapp.com/item/" + id)
@@ -224,7 +223,7 @@ func setSelectedFunction(app *cview.Application,
 
 	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Rune() == 'o' {
-			item := list.GetCurrentItemIndex() + viewableStoriesOnSinglePage*(currentPage)
+			item := list.GetCurrentItemIndex() + state.ViewableStoriesOnSinglePage*(state.CurrentPage)
 			url := submissions[item].URL
 			browser.Open(url)
 		}
@@ -253,7 +252,7 @@ func mapSubmissionsToListItems(app *cview.Application,
 	main *primitives.MainView) {
 	for hasStoriesToMap(oldSubmissions, state) {
 		sub := oldSubmissions[state.MappedSubmissions : state.MappedSubmissions+state.ViewableStoriesOnSinglePage]
-		list := createNewList(app, newSubmissions, state.CurrentPage, state.ViewableStoriesOnSinglePage)
+		list := createNewList(app, newSubmissions, state)
 		addSubmissionsToList(list, sub, state)
 
 		main.Pages.AddPage(strconv.Itoa(state.MappedPages), list, true, true)
@@ -267,15 +266,14 @@ func hasStoriesToMap(submissions []*types.Submission, state *types.ApplicationSt
 
 func createNewList(app *cview.Application,
 	submissions []*types.Submission,
-	currentPage int,
-	viewableStoriesOnSinglePage int) *cview.List {
+	state *types.ApplicationState) *cview.List {
 	list := cview.NewList()
 	list.SetBackgroundTransparent(false)
 	list.SetBackgroundColor(tcell.ColorDefault)
 	list.SetMainTextColor(tcell.ColorDefault)
 	list.SetSecondaryTextColor(tcell.ColorDefault)
 	list.ShowSecondaryText(true)
-	setSelectedFunction(app, list, submissions, currentPage, viewableStoriesOnSinglePage)
+	setSelectedFunction(app, list, submissions, state)
 
 	return list
 }
