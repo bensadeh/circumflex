@@ -21,7 +21,6 @@ const (
 	helpPage                = "help"
 	offlinePage             = "offline"
 	maxPages                = 3
-	ask                     = 1
 )
 
 type screenController struct {
@@ -37,6 +36,8 @@ func NewScreenController() *screenController {
 	sc.ApplicationState = []*types.ApplicationState{}
 	sc.ApplicationState = append(sc.ApplicationState, new(types.ApplicationState))
 	sc.ApplicationState = append(sc.ApplicationState, new(types.ApplicationState))
+	sc.ApplicationState = append(sc.ApplicationState, new(types.ApplicationState))
+	sc.ApplicationState = append(sc.ApplicationState, new(types.ApplicationState))
 	sc.Category = new(types.Category)
 
 	sc.ApplicationState[types.NoCategory].MaxPages = maxPages
@@ -46,11 +47,25 @@ func NewScreenController() *screenController {
 		sc.ApplicationState[types.NoCategory].ScreenHeight,
 		maximumStoriesToDisplay)
 
-	sc.ApplicationState[ask].MaxPages = maxPages
-	sc.ApplicationState[ask].ScreenWidth = screen.GetTerminalWidth()
-	sc.ApplicationState[ask].ScreenHeight = screen.GetTerminalHeight()
-	sc.ApplicationState[ask].ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
-		sc.ApplicationState[ask].ScreenHeight,
+	sc.ApplicationState[types.New].MaxPages = maxPages
+	sc.ApplicationState[types.New].ScreenWidth = screen.GetTerminalWidth()
+	sc.ApplicationState[types.New].ScreenHeight = screen.GetTerminalHeight()
+	sc.ApplicationState[types.New].ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
+		sc.ApplicationState[types.New].ScreenHeight,
+		maximumStoriesToDisplay)
+
+	sc.ApplicationState[types.Ask].MaxPages = maxPages
+	sc.ApplicationState[types.Ask].ScreenWidth = screen.GetTerminalWidth()
+	sc.ApplicationState[types.Ask].ScreenHeight = screen.GetTerminalHeight()
+	sc.ApplicationState[types.Ask].ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
+		sc.ApplicationState[types.Ask].ScreenHeight,
+		maximumStoriesToDisplay)
+
+	sc.ApplicationState[types.Show].MaxPages = maxPages
+	sc.ApplicationState[types.Show].ScreenWidth = screen.GetTerminalWidth()
+	sc.ApplicationState[types.Show].ScreenHeight = screen.GetTerminalHeight()
+	sc.ApplicationState[types.Show].ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
+		sc.ApplicationState[types.Show].ScreenHeight,
 		maximumStoriesToDisplay)
 
 	sc.MainView = primitives.NewMainView(
