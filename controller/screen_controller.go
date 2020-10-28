@@ -20,7 +20,6 @@ const (
 	maximumStoriesToDisplay = 30
 	helpPage                = "help"
 	offlinePage             = "offline"
-	maxPages                = 3
 )
 
 type screenController struct {
@@ -40,28 +39,28 @@ func NewScreenController() *screenController {
 	sc.ApplicationState = append(sc.ApplicationState, new(types.ApplicationState))
 	sc.Category = new(types.Category)
 
-	sc.ApplicationState[types.NoCategory].MaxPages = maxPages
+	sc.ApplicationState[types.NoCategory].MaxPages = 2
 	sc.ApplicationState[types.NoCategory].ScreenWidth = screen.GetTerminalWidth()
 	sc.ApplicationState[types.NoCategory].ScreenHeight = screen.GetTerminalHeight()
 	sc.ApplicationState[types.NoCategory].ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
 		sc.ApplicationState[types.NoCategory].ScreenHeight,
 		maximumStoriesToDisplay)
 
-	sc.ApplicationState[types.New].MaxPages = maxPages
+	sc.ApplicationState[types.New].MaxPages = 2
 	sc.ApplicationState[types.New].ScreenWidth = screen.GetTerminalWidth()
 	sc.ApplicationState[types.New].ScreenHeight = screen.GetTerminalHeight()
 	sc.ApplicationState[types.New].ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
 		sc.ApplicationState[types.New].ScreenHeight,
 		maximumStoriesToDisplay)
 
-	sc.ApplicationState[types.Ask].MaxPages = maxPages
+	sc.ApplicationState[types.Ask].MaxPages = 1
 	sc.ApplicationState[types.Ask].ScreenWidth = screen.GetTerminalWidth()
 	sc.ApplicationState[types.Ask].ScreenHeight = screen.GetTerminalHeight()
 	sc.ApplicationState[types.Ask].ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
 		sc.ApplicationState[types.Ask].ScreenHeight,
 		maximumStoriesToDisplay)
 
-	sc.ApplicationState[types.Show].MaxPages = maxPages
+	sc.ApplicationState[types.Show].MaxPages = 1
 	sc.ApplicationState[types.Show].ScreenWidth = screen.GetTerminalWidth()
 	sc.ApplicationState[types.Show].ScreenHeight = screen.GetTerminalHeight()
 	sc.ApplicationState[types.Show].ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
@@ -130,7 +129,7 @@ func setShortcuts(app *cview.Application,
 			main.SetHeaderTextToHN(currentState.ScreenWidth)
 			p := strconv.Itoa(currentState.CurrentPage)
 			main.Pages.SwitchToPage(p)
-			main.SetFooterText(currentState.CurrentPage, currentState.ScreenWidth)
+			main.SetFooterText(currentState.CurrentPage, currentState.ScreenWidth, currentState.MaxPages)
 			main.SetLeftMarginRanks(currentState.CurrentPage, currentState.ViewableStoriesOnSinglePage)
 			return event
 		}
@@ -151,7 +150,7 @@ func setShortcuts(app *cview.Application,
 
 			pageToView := getPage(0, cat.CurrentCategory)
 			main.Pages.SwitchToPage(pageToView)
-			main.SetFooterText(nextState.CurrentPage, nextState.ScreenWidth)
+			main.SetFooterText(nextState.CurrentPage, nextState.ScreenWidth, nextState.MaxPages)
 			main.SetLeftMarginRanks(nextState.CurrentPage, nextState.ViewableStoriesOnSinglePage)
 			main.SetHeaderTextCategory(nextState.ScreenWidth, cat.CurrentCategory)
 			setCurrentlySelectedItemOnFrontPage(0, main.Pages)
@@ -166,16 +165,16 @@ func setShortcuts(app *cview.Application,
 				app,
 				main,
 				cat)
-			main.SetLeftMarginRanks(state[cat.CurrentCategory].CurrentPage,
-				state[cat.CurrentCategory].ViewableStoriesOnSinglePage)
-			main.SetFooterText(state[cat.CurrentCategory].CurrentPage,
-				currentState.ScreenWidth)
+			main.SetLeftMarginRanks(currentState.CurrentPage,
+				currentState.ViewableStoriesOnSinglePage)
+			main.SetFooterText(currentState.CurrentPage,
+				currentState.ScreenWidth, currentState.MaxPages)
 		} else if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
 			previousPage(currentState, main.Pages, cat)
 			main.SetLeftMarginRanks(currentState.CurrentPage,
 				currentState.ViewableStoriesOnSinglePage)
 			main.SetFooterText(currentState.CurrentPage,
-				currentState.ScreenWidth)
+				currentState.ScreenWidth, currentState.MaxPages)
 		} else if event.Rune() == 'q' {
 			app.Stop()
 		} else if event.Rune() == 'i' || event.Rune() == '?' {
@@ -213,7 +212,7 @@ func nextPage(pages *cview.Pages,
 
 	nextPage := currentState.CurrentPage + 1
 
-	if nextPage > maxPages {
+	if nextPage > currentState.MaxPages {
 		return
 	}
 

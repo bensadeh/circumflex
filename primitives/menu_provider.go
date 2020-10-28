@@ -122,9 +122,14 @@ func (m MainView) SetHeaderTextToKeymaps(screenWidth int) {
 	m.Header.SetText(base + whitespace)
 }
 
-func (m MainView) SetFooterText(currentPage int, screenWidth int) {
-	footerText := getFooterText(currentPage, screenWidth)
-	m.Footer.SetText(footerText)
+func (m MainView) SetFooterText(currentPage int, screenWidth int, maxPages int) {
+	if maxPages == 2 {
+		footerText := getFooterText(currentPage, screenWidth)
+		m.Footer.SetText(footerText)
+	} else if maxPages ==1 {
+		footerText := getFooterTextForTwoPages(currentPage, screenWidth)
+		m.Footer.SetText(footerText)
+	}
 }
 
 func (m MainView) HideFooterText() {
@@ -151,13 +156,26 @@ func getFooterText(currentPage int, screenWidth int) string {
 
 	switch currentPage {
 	case 0:
-		footerText = "" + orangeDot + "◦◦◦"
+		footerText = "" + orangeDot + "◦◦"
 	case 1:
-		footerText = "◦" + orangeDot + "◦◦"
+		footerText = "◦" + orangeDot + "◦"
 	case 2:
-		footerText = "◦◦" + orangeDot + "◦"
-	case 3:
-		footerText = "◦◦◦" + orangeDot + ""
+		footerText = "◦◦" + orangeDot + ""
+	default:
+		footerText = ""
+	}
+	return padWithWhitespaceFromTheLeft(footerText, screenWidth)
+}
+
+func getFooterTextForTwoPages(currentPage int, screenWidth int) string {
+	orangeDot := "[orange]" + "•" + "[-:-]"
+	footerText := ""
+
+	switch currentPage {
+	case 0:
+		footerText = "" + orangeDot + "◦ "
+	case 1:
+		footerText = "◦" + orangeDot + " "
 	default:
 		footerText = ""
 	}
