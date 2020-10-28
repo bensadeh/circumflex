@@ -11,8 +11,6 @@ import (
 const (
 	helpPage    = "help"
 	offlinePage = "offline"
-	noCategory  = 0
-	ask         = 1
 )
 
 type MainView struct {
