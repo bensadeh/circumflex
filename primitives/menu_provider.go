@@ -63,8 +63,8 @@ func newTextViewPrimitive(text string) *cview.TextView {
 }
 
 func getHeadline(screenWidth int) string {
-	base := "[black:orange:]   [Y[] Hacker News"
-	offset := -16
+	base := "[black:orange:]   [Y[] [::b]Hacker News"
+	offset := -21
 	whitespace := ""
 	for i := 0; i < screenWidth-text.Len(base)-offset; i++ {
 		whitespace += " "
