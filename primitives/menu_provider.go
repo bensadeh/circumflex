@@ -93,7 +93,7 @@ func (m MainView) SetHeaderTextCategory(screenWidth int, category int) {
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
 	case types.Show:
-		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  new | [white]ask[black::] | [white]show[black::]"
+		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  new | ask | [white]show[black::]"
 		offset := -42
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
