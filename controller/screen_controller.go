@@ -240,12 +240,11 @@ func mapSubmissions(app *cview.Application,
 	newSubmissions []*types.Submission,
 	main *primitives.MainView) {
 	oldSubmissions.News = append(oldSubmissions.News, newSubmissions...)
-	mapSubmissionsToListItems(app, oldSubmissions, newSubmissions, state, main)
+	mapSubmissionsToListItems(app, oldSubmissions, state, main)
 }
 
 func mapSubmissionsToListItems(app *cview.Application,
 	oldSubmissions *types.Subs,
-	newSubmissions []*types.Submission,
 	state *types.ApplicationState,
 	main *primitives.MainView) {
 	for hasStoriesToMap(oldSubmissions.News, state) {
