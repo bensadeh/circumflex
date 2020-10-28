@@ -77,8 +77,8 @@ func (m MainView) SetHeaderTextToHN(screenWidth int) {
 }
 
 func (m MainView) SetHeaderTextToKeymaps(screenWidth int) {
-	base := "[white:rebeccapurple:]   [^] circumflex"
-	offset := -22
+	base := "[white:rebeccapurple:]   [^] [::b]Keymaps"
+	offset := -27
 	whitespace := ""
 	for i := 0; i < screenWidth-text.Len(base)-offset; i++ {
 		whitespace += " "
