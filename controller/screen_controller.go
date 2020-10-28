@@ -91,10 +91,6 @@ func getStartPage(isOffline bool) string {
 	return "0-0"
 }
 
-//func (sc *screenController) getCurrentPage() string {
-//	return strconv.Itoa(sc.ApplicationState[news].CurrentPage)
-//}
-
 func getPage(currentPage int, currentCategory int) string {
 	return strconv.Itoa(currentPage) + "-" + strconv.Itoa(currentCategory)
 }
@@ -247,10 +243,6 @@ func previousPage(state *types.ApplicationState, pages *cview.Pages, cat *types.
 
 	setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, pages)
 }
-
-//func (sc *screenController) getStoriesToDisplay() int {
-//	return sc.ApplicationState[news].ViewableStoriesOnSinglePage
-//}
 
 func setSelectedFunction(app *cview.Application,
 	list *cview.List,
