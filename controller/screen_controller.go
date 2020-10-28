@@ -126,17 +126,20 @@ func setShortcuts(app *cview.Application,
 		}
 
 		if event.Key() == tcell.KeyTAB {
-			cat.CurrentCategory = ask
+			cat.CurrentCategory = getNextCategory(cat.CurrentCategory)
 
-			newSubmissions, _ := fetchSubmissions(currentState, cat)
+			if len(state[cat.CurrentCategory].Submissions) == 0 {
+				newSubmissions, _ := fetchSubmissions(currentState, cat)
+				mapSubmissions(app,
+					state,
+					newSubmissions,
+					main,
+					cat)
+			}
 
-			mapSubmissions(app,
-				state,
-				newSubmissions,
-				main,
-				cat)
-
-			main.Pages.SwitchToPage("0-1")
+			pageToView := getPage(0, cat.CurrentCategory)
+			main.Pages.SwitchToPage(pageToView)
+			setCurrentlySelectedItemOnFrontPage(0, main.Pages)
 			app.ForceDraw()
 
 			return event
@@ -168,6 +171,18 @@ func setShortcuts(app *cview.Application,
 		}
 		return event
 	})
+}
+
+func getNextCategory(currentCategory int) int {
+	switch currentCategory {
+
+	case 0:
+		return 1
+	case 1:
+		return 0
+	default:
+		return 0
+	}
 }
 
 func nextPage(pages *cview.Pages,
