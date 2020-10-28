@@ -335,7 +335,8 @@ func mapSubmissionsToListItems(app *cview.Application,
 		list := createNewList(app, state, cat)
 		addSubmissionsToList(list, sub, currentState)
 
-		main.Pages.AddPage(strconv.Itoa(currentState.MappedPages)+"-"+strconv.Itoa(cat.CurrentCategory), list, true, true)
+		pageName := getPage(currentState.MappedPages, cat.CurrentCategory)
+		main.Pages.AddPage(pageName, list, true, true)
 		currentState.MappedPages++
 	}
 }
