@@ -21,7 +21,6 @@ const (
 	helpPage                = "help"
 	offlinePage             = "offline"
 	maxPages                = 3
-	news                    = 0
 	ask                     = 1
 )
 
@@ -40,11 +39,11 @@ func NewScreenController() *screenController {
 	sc.ApplicationState = append(sc.ApplicationState, new(types.ApplicationState))
 	sc.Category = new(types.Category)
 
-	sc.ApplicationState[news].MaxPages = maxPages
-	sc.ApplicationState[news].ScreenWidth = screen.GetTerminalWidth()
-	sc.ApplicationState[news].ScreenHeight = screen.GetTerminalHeight()
-	sc.ApplicationState[news].ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
-		sc.ApplicationState[news].ScreenHeight,
+	sc.ApplicationState[types.NoCategory].MaxPages = maxPages
+	sc.ApplicationState[types.NoCategory].ScreenWidth = screen.GetTerminalWidth()
+	sc.ApplicationState[types.NoCategory].ScreenHeight = screen.GetTerminalHeight()
+	sc.ApplicationState[types.NoCategory].ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
+		sc.ApplicationState[types.NoCategory].ScreenHeight,
 		maximumStoriesToDisplay)
 
 	sc.ApplicationState[ask].MaxPages = maxPages
@@ -55,11 +54,11 @@ func NewScreenController() *screenController {
 		maximumStoriesToDisplay)
 
 	sc.MainView = primitives.NewMainView(
-		sc.ApplicationState[news].ScreenWidth,
-		sc.ApplicationState[news].ViewableStoriesOnSinglePage)
+		sc.ApplicationState[types.NoCategory].ScreenWidth,
+		sc.ApplicationState[types.NoCategory].ViewableStoriesOnSinglePage)
 
-	newSubmissions, err := fetchSubmissions(sc.ApplicationState[news], sc.Category)
-	sc.ApplicationState[news].IsOffline = getIsOfflineStatus(err)
+	newSubmissions, err := fetchSubmissions(sc.ApplicationState[types.NoCategory], sc.Category)
+	sc.ApplicationState[types.NoCategory].IsOffline = getIsOfflineStatus(err)
 
 	mapSubmissions(sc.Application,
 		sc.ApplicationState,
@@ -67,7 +66,7 @@ func NewScreenController() *screenController {
 		sc.MainView,
 		sc.Category)
 
-	startPage := getStartPage(sc.ApplicationState[news].IsOffline)
+	startPage := getStartPage(sc.ApplicationState[types.NoCategory].IsOffline)
 	sc.MainView.Pages.SwitchToPage(startPage)
 
 	setShortcuts(sc.Application,
@@ -92,9 +91,9 @@ func getStartPage(isOffline bool) string {
 	return "0-0"
 }
 
-func (sc *screenController) getCurrentPage() string {
-	return strconv.Itoa(sc.ApplicationState[news].CurrentPage)
-}
+//func (sc *screenController) getCurrentPage() string {
+//	return strconv.Itoa(sc.ApplicationState[news].CurrentPage)
+//}
 
 func getPage(currentPage int, currentCategory int) string {
 	return strconv.Itoa(currentPage) + "-" + strconv.Itoa(currentCategory)
@@ -249,9 +248,9 @@ func previousPage(state *types.ApplicationState, pages *cview.Pages, cat *types.
 	setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, pages)
 }
 
-func (sc *screenController) getStoriesToDisplay() int {
-	return sc.ApplicationState[news].ViewableStoriesOnSinglePage
-}
+//func (sc *screenController) getStoriesToDisplay() int {
+//	return sc.ApplicationState[news].ViewableStoriesOnSinglePage
+//}
 
 func setSelectedFunction(app *cview.Application,
 	list *cview.List,

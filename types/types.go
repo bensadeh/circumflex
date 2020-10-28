@@ -1,8 +1,10 @@
 package types
 
 const (
-	News = 0
-	Ask  = 1
+	NoCategory = 0
+	New        = 1
+	Ask        = 2
+	Show       = 3
 )
 
 type Submission struct {

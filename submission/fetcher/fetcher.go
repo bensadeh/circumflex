@@ -22,10 +22,14 @@ func FetchSubmissions(page int, category int) ([]*types.Submission, error) {
 
 func getUrl(category int) string {
 	switch category {
-	case types.News:
+	case types.NoCategory:
 		return baseURL + "news" + page
+	case types.New:
+		return baseURL + "newest" + page
 	case types.Ask:
 		return baseURL + "ask" + page
+	case types.Show:
+		return baseURL + "show" + page
 	default:
 		panic("Category unsupported")
 	}
