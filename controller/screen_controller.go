@@ -242,14 +242,19 @@ func nextPage(pages *cview.Pages,
 
 func getCurrentlySelectedItemOnFrontPage(pages *cview.Pages) int {
 	_, primitive := pages.GetFrontPage()
-	list := primitive.(*cview.List)
-	return list.GetCurrentItemIndex()
+	list, ok := primitive.(*cview.List)
+	if ok {
+		return list.GetCurrentItemIndex()
+	}
+	return 0
 }
 
 func setCurrentlySelectedItemOnFrontPage(item int, pages *cview.Pages) {
 	_, primitive := pages.GetFrontPage()
-	list := primitive.(*cview.List)
-	list.SetCurrentItem(item)
+	list, ok := primitive.(*cview.List)
+	if ok {
+		list.SetCurrentItem(item)
+	}
 }
 
 func previousPage(state *types.ApplicationState, pages *cview.Pages, cat *types.Category) {
