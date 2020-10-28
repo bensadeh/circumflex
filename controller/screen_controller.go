@@ -137,6 +137,8 @@ func setShortcuts(app *cview.Application,
 
 		if event.Key() == tcell.KeyTAB {
 			cat.CurrentCategory = getNextCategory(cat.CurrentCategory)
+			nextState := state[cat.CurrentCategory]
+			nextState.CurrentPage = 0
 
 			if len(state[cat.CurrentCategory].Submissions) == 0 {
 				newSubmissions, _ := fetchSubmissions(currentState, cat)
@@ -149,7 +151,9 @@ func setShortcuts(app *cview.Application,
 
 			pageToView := getPage(0, cat.CurrentCategory)
 			main.Pages.SwitchToPage(pageToView)
-			main.SetHeaderTextCategory(currentState.ScreenWidth, cat.CurrentCategory)
+			main.SetFooterText(nextState.CurrentPage, nextState.ScreenWidth)
+			main.SetLeftMarginRanks(nextState.CurrentPage, nextState.ViewableStoriesOnSinglePage)
+			main.SetHeaderTextCategory(nextState.ScreenWidth, cat.CurrentCategory)
 			setCurrentlySelectedItemOnFrontPage(0, main.Pages)
 			app.ForceDraw()
 
