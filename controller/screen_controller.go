@@ -187,10 +187,14 @@ func setShortcuts(app *cview.Application,
 func getNextCategory(currentCategory int) int {
 	switch currentCategory {
 
-	case 0:
-		return 1
-	case 1:
-		return 0
+	case types.NoCategory:
+		return types.New
+	case types.New:
+		return types.Ask
+	case types.Ask:
+		return types.Show
+	case types.Show:
+		return types.NoCategory
 	default:
 		return 0
 	}

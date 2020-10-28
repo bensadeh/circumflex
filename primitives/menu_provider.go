@@ -1,6 +1,7 @@
 package primitives
 
 import (
+	"clx/types"
 	text "github.com/MichaelMure/go-term-text"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
@@ -76,13 +77,23 @@ func getHeadline(screenWidth int) string {
 
 func (m MainView) SetHeaderTextCategory(screenWidth int, category int) {
 	switch category {
-	case noCategory:
+	case types.NoCategory:
 		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  new | ask | show"
 		offset := -26
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
-	case ask:
+	case types.New:
+		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  [white]new[black::] | ask | show"
+		offset := -42
+		header := appendWhitespace(base, offset, screenWidth)
+		m.Header.SetText(header)
+	case types.Ask:
 		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  new | [white]ask[black::] | show"
+		offset := -42
+		header := appendWhitespace(base, offset, screenWidth)
+		m.Header.SetText(header)
+	case types.Show:
+		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  new | [white]ask[black::] | [white]show[black::]"
 		offset := -42
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
