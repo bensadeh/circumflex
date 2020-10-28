@@ -1,5 +1,10 @@
 package types
 
+const (
+	News = 0
+	Ask  = 1
+)
+
 type Submission struct {
 	ID            int    `json:"id"`
 	Title         string `json:"title"`
@@ -23,8 +28,9 @@ type ApplicationState struct {
 	ViewableStoriesOnSinglePage int
 	MaxPages                    int
 	IsOffline                   bool
+	Submissions                 []*Submission
 }
 
-type Subs struct {
-	News []*Submission
+type Category struct {
+	CurrentCategory int
 }
