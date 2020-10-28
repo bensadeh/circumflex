@@ -10,6 +10,8 @@ import (
 const (
 	helpPage    = "help"
 	offlinePage = "offline"
+	noCategory  = 0
+	ask         = 1
 )
 
 type MainView struct {
@@ -63,8 +65,33 @@ func newTextViewPrimitive(text string) *cview.TextView {
 }
 
 func getHeadline(screenWidth int) string {
-	base := "[black:orange:]   [Y[] [::b]Hacker News"
-	offset := -21
+	base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  new | ask | show"
+	offset := -26
+	whitespace := ""
+	for i := 0; i < screenWidth-text.Len(base)-offset; i++ {
+		whitespace += " "
+	}
+	return base + whitespace
+}
+
+func (m MainView) SetHeaderTextCategory(screenWidth int, category int) {
+	switch category {
+	case noCategory:
+		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  new | ask | show"
+		offset := -26
+		header := appendWhitespace(base, offset, screenWidth)
+		m.Header.SetText(header)
+	case ask:
+		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  new | [white]ask[black::] | show"
+		offset := -42
+		header := appendWhitespace(base, offset, screenWidth)
+		m.Header.SetText(header)
+	default:
+		return
+	}
+}
+
+func appendWhitespace(base string, offset int, screenWidth int) string {
 	whitespace := ""
 	for i := 0; i < screenWidth-text.Len(base)-offset; i++ {
 		whitespace += " "

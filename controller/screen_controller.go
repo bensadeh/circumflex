@@ -139,6 +139,7 @@ func setShortcuts(app *cview.Application,
 
 			pageToView := getPage(0, cat.CurrentCategory)
 			main.Pages.SwitchToPage(pageToView)
+			main.SetHeaderTextCategory(currentState.ScreenWidth, cat.CurrentCategory)
 			setCurrentlySelectedItemOnFrontPage(0, main.Pages)
 			app.ForceDraw()
 
