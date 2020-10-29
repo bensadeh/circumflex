@@ -69,10 +69,7 @@ func GetSecondaryText(points int, author string, time string, comments int) stri
 	c := strconv.Itoa(comments)
 	parsedAuthor := parseAuthor(author)
 
-	return dim(p + " points " +
-		parsedAuthor +
-		time + " | " +
-		c + " comments")
+	return dim(p + " points " + parsedAuthor + time + " | " + c + " comments")
 }
 
 func parseAuthor(author string) string {
