@@ -7,8 +7,7 @@ import (
 )
 
 func GetMainText(title string, domain string) string {
-	formattedTitle := formatTitle(title)
-	return formattedTitle + formatDomain(domain)
+	return formatTitle(title) + formatDomain(domain)
 }
 
 func formatTitle(title string) string {
