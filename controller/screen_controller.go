@@ -161,11 +161,7 @@ func setShortcuts(app *cview.Application,
 		}
 
 		if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
-			nextPage(main.Pages,
-				state,
-				app,
-				main,
-				cat)
+			nextPage(app, state, main, cat)
 			main.SetLeftMarginRanks(currentState.CurrentPage,
 				currentState.ViewableStoriesOnSinglePage)
 			main.SetFooterText(currentState.CurrentPage,
@@ -222,9 +218,8 @@ func getPreviousCategory(currentCategory int) int {
 	}
 }
 
-func nextPage(pages *cview.Pages,
+func nextPage(app *cview.Application,
 	state []*types.ApplicationState,
-	app *cview.Application,
 	main *primitives.MainView,
 	cat *types.Category) {
 	currentState := state[cat.CurrentCategory]
@@ -235,12 +230,12 @@ func nextPage(pages *cview.Pages,
 		return
 	}
 
-	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(pages)
+	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(main.Pages)
 
 	if nextPage < currentState.MappedPages {
-		pages.SwitchToPage(getPage(nextPage, cat.CurrentCategory))
+		main.Pages.SwitchToPage(getPage(nextPage, cat.CurrentCategory))
 		app.ForceDraw()
-		setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, pages)
+		setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, main.Pages)
 	} else {
 		newSubmissions, _ := fetchSubmissions(currentState, cat)
 		mapSubmissions(app,
@@ -248,10 +243,10 @@ func nextPage(pages *cview.Pages,
 			newSubmissions,
 			main,
 			cat)
-		pages.SwitchToPage(getPage(nextPage, cat.CurrentCategory))
+		main.Pages.SwitchToPage(getPage(nextPage, cat.CurrentCategory))
 
 		app.ForceDraw()
-		setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, pages)
+		setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, main.Pages)
 	}
 
 	currentState.CurrentPage++
