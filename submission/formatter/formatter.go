@@ -32,8 +32,8 @@ func paren(text string) string {
 }
 
 func formatShowAndTell(title string) string {
-	title = strings.ReplaceAll(title, "Show HN:", reverse("Show HN:"))
 	title = strings.ReplaceAll(title, "Ask HN:", reverse("Ask HN:"))
+	title = strings.ReplaceAll(title, "Show HN:", reverse("Show HN:"))
 	title = strings.ReplaceAll(title, "Tell HN:", reverse("Tell HN:"))
 	title = strings.ReplaceAll(title, "Launch HN:", reverse("Launch HN:"))
 	return title
