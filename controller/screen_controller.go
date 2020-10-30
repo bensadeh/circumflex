@@ -297,6 +297,11 @@ func setSelectedFunction(app *cview.Application,
 				if index == i {
 					storyIndex := (currentState.CurrentPage)*currentState.ViewableStoriesOnSinglePage + i
 					s := currentState.Submissions[storyIndex]
+
+					if s.Author == "" {
+						return
+					}
+
 					id := strconv.Itoa(s.ID)
 					JSON, _ := http.Get("http://node-hnapi.herokuapp.com/item/" + id)
 					jComments := new(cp.Comments)
