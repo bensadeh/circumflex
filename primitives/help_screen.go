@@ -9,16 +9,25 @@ import (
 
 const (
 	helpScreenText = `
-j, ↓:          down
-h, ↑:          up
-n, →:          next page
-p, ←:          previous page
-                                  
+[-:-:b]Main Screen[-:-:-]
+
 Enter:         read comments
+o:             open submission link in browser
 Tab:           change category
-o:             open in browser
-i, ?:          bring up this screen
                                     
+i, ?:          bring up this screen
+q:             quit
+
+[-:-:b]Comment Section (less)[-:-:-]
+
+d:             down one half-window
+u:             up one half-window
+
+/ + '::':      go to next top-level comment
+n:             repeat last search
+N:             repeat last search in reverse direction
+
+h:             help screen
 q:             quit
 `
 )
@@ -31,7 +40,8 @@ func GetHelpScreen() *cview.TextView {
 	helpScreen.SetTitleColor(tcell.ColorDefault)
 	helpScreen.SetBorderColor(tcell.ColorDefault)
 	helpScreen.SetTextColor(tcell.ColorDefault)
-	helpScreen.Box.SetBorderPadding(10, 10, 10, 10)
+	helpScreen.SetDynamicColors(true)
+	helpScreen.Box.SetBorderPadding(2, 0, 0, 0)
 
 	helpScreen.SetText(padLines(helpScreenText))
 
