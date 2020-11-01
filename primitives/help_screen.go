@@ -41,7 +41,7 @@ func GetHelpScreen() *cview.TextView {
 	helpScreen.SetBorderColor(tcell.ColorDefault)
 	helpScreen.SetTextColor(tcell.ColorDefault)
 	helpScreen.SetDynamicColors(true)
-	helpScreen.Box.SetBorderPadding(2, 0, 0, 0)
+	helpScreen.Box.SetBorderPadding(2, 0, 2, 0)
 
 	helpScreen.SetText(padLines(helpScreenText))
 
