@@ -9,16 +9,16 @@ import (
 
 const (
 	helpScreenText = `
-[-:-:b]Main Screen[-:-:-]
+      [-:-:b]Main Screen[-:-:-]
 
 Enter:         read comments
 o:             open submission link in browser
 Tab:           change category
                                     
 i, ?:          bring up this screen
-q:             quit
+q:             quit to prompt
 
-[-:-:b]Comment Section (less)[-:-:-]
+      [-:-:b]Comment Section (less)[-:-:-]
 
 d:             down one half-window
 u:             up one half-window
@@ -28,7 +28,7 @@ n:             repeat last search
 N:             repeat last search in reverse direction
 
 h:             help screen
-q:             quit
+q:             quit to Main Screen
 `
 )
 
