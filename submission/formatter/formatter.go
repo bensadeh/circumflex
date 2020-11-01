@@ -65,11 +65,11 @@ func orange(text string) string {
 }
 
 func GetSecondaryText(points int, author string, time string, comments int) string {
-	p := strconv.Itoa(points)
+	parsedPoints := parsePoints(points)
 	parsedAuthor := parseAuthor(author)
 	parsedComments := parseComments(comments, author)
 
-	return dim(p + " points " + parsedAuthor + time + parsedComments)
+	return dim(parsedPoints + parsedAuthor + time + parsedComments)
 }
 
 func parseComments(comments int, author string) string {
@@ -85,4 +85,11 @@ func parseAuthor(author string) string {
 		return ""
 	}
 	return "by " + author + " "
+}
+
+func parsePoints(points int) string {
+	if points == 0 {
+		return ""
+	}
+	return strconv.Itoa(points) + " points "
 }
