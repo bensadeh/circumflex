@@ -126,7 +126,7 @@ func setShortcuts(app *cview.Application,
 		}
 
 		if currentPage == helpPage {
-			main.SetHeaderTextToHN(currentState.ScreenWidth)
+			main.SetHeaderTextCategory(currentState.ScreenWidth, cat.CurrentCategory)
 			page := getPage(currentState.CurrentPage, cat.CurrentCategory)
 			main.Pages.SwitchToPage(page)
 			main.SetFooterText(currentState.CurrentPage, currentState.ScreenWidth, currentState.MaxPages)
