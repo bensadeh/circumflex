@@ -135,8 +135,12 @@ func setShortcuts(app *cview.Application,
 		}
 
 		if event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab {
-			isMovingBackwards := event.Key() == tcell.KeyBacktab
-			cat.CurrentCategory = getNextCategory(cat.CurrentCategory, isMovingBackwards)
+			if event.Key() == tcell.KeyBacktab {
+				cat.CurrentCategory = getPreviousCategory(cat.CurrentCategory)
+			} else {
+				cat.CurrentCategory = getNextCategory(cat.CurrentCategory)
+			}
+
 			nextState := state[cat.CurrentCategory]
 			nextState.CurrentPage = 0
 
@@ -184,11 +188,7 @@ func setShortcuts(app *cview.Application,
 	})
 }
 
-func getNextCategory(currentCategory int, isMovingBackwards bool) int {
-	if isMovingBackwards {
-		return getPreviousCategory(currentCategory)
-	}
-
+func getNextCategory(currentCategory int) int {
 	switch currentCategory {
 	case types.NoCategory:
 		return types.New
