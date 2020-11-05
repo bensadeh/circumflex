@@ -172,7 +172,7 @@ func setShortcuts(app *cview.Application,
 				currentState.ViewableStoriesOnSinglePage)
 			main.SetFooterText(currentState.CurrentPage,
 				currentState.ScreenWidth, currentState.MaxPages)
-		} else if event.Rune() == 'q' {
+		} else if event.Rune() == 'q' || event.Key() == tcell.KeyEsc{
 			app.Stop()
 		} else if event.Rune() == 'i' || event.Rune() == '?' {
 			main.SetHeaderTextToKeymaps(currentState.ScreenWidth)
