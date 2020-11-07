@@ -3,7 +3,7 @@
 </p>
 
 #
-`circumflex` is Hacker&nbsp;News on the command line. It shows top submissions and lets you read comments in the pager `less`.
+`circumflex` is Hacker&nbsp;News on the command line. Browse submissions and read comments in the pager `less`.
 
 <p align="center">
   <img src="screenshots/mainview.png" width="700" alt="^"/>
