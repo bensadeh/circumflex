@@ -81,7 +81,7 @@ func NewScreenController() *screenController {
 		sc.Category)
 
 	startPage := getStartPage(sc.ApplicationState[types.NoCategory].IsOffline)
-	sc.MainView.Pages.SwitchToPage(startPage)
+	sc.MainView.Panels.SetCurrentPanel(startPage)
 
 	setShortcuts(sc.Application,
 		sc.ApplicationState,
@@ -116,19 +116,19 @@ func setShortcuts(app *cview.Application,
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		currentState := state[cat.CurrentCategory]
 
-		currentPage, _ := main.Pages.GetFrontPage()
+		frontPanel, _ := main.Panels.GetFrontPanel()
 
-		if currentPage == offlinePage {
+		if frontPanel == offlinePage {
 			if event.Rune() == 'q' {
 				app.Stop()
 			}
 			return event
 		}
 
-		if currentPage == helpPage {
+		if frontPanel == helpPage {
 			main.SetHeaderTextCategory(currentState.ScreenWidth, cat.CurrentCategory)
 			page := getPage(currentState.CurrentPage, cat.CurrentCategory)
-			main.Pages.SwitchToPage(page)
+			main.Panels.SetCurrentPanel(page)
 			main.SetFooterText(currentState.CurrentPage, currentState.ScreenWidth, currentState.MaxPages)
 			main.SetLeftMarginRanks(currentState.CurrentPage, currentState.ViewableStoriesOnSinglePage)
 			return event
@@ -154,12 +154,11 @@ func setShortcuts(app *cview.Application,
 			}
 
 			pageToView := getPage(0, cat.CurrentCategory)
-			main.Pages.SwitchToPage(pageToView)
+			main.Panels.SetCurrentPanel(pageToView)
 			main.SetFooterText(nextState.CurrentPage, nextState.ScreenWidth, nextState.MaxPages)
 			main.SetLeftMarginRanks(nextState.CurrentPage, nextState.ViewableStoriesOnSinglePage)
 			main.SetHeaderTextCategory(nextState.ScreenWidth, cat.CurrentCategory)
-			setCurrentlySelectedItemOnFrontPage(0, main.Pages)
-			app.ForceDraw()
+			setCurrentlySelectedItemOnFrontPage(0, main.Panels)
 
 			return event
 		}
@@ -171,7 +170,7 @@ func setShortcuts(app *cview.Application,
 			main.SetFooterText(currentState.CurrentPage,
 				currentState.ScreenWidth, currentState.MaxPages)
 		} else if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
-			previousPage(currentState, main.Pages, cat)
+			previousPage(currentState, main.Panels, cat)
 			main.SetLeftMarginRanks(currentState.CurrentPage,
 				currentState.ViewableStoriesOnSinglePage)
 			main.SetFooterText(currentState.CurrentPage,
@@ -182,7 +181,7 @@ func setShortcuts(app *cview.Application,
 			main.SetHeaderTextToKeymaps(currentState.ScreenWidth)
 			main.HideFooterText()
 			main.HideLeftMarginRanks()
-			main.Pages.SwitchToPage(helpPage)
+			main.Panels.SetCurrentPanel(helpPage)
 		}
 		return event
 	})
@@ -230,12 +229,11 @@ func nextPage(app *cview.Application,
 		return
 	}
 
-	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(main.Pages)
+	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(main.Panels)
 
 	if nextPage < currentState.MappedPages {
-		main.Pages.SwitchToPage(getPage(nextPage, cat.CurrentCategory))
-		app.ForceDraw()
-		setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, main.Pages)
+		main.Panels.SetCurrentPanel(getPage(nextPage, cat.CurrentCategory))
+		setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, main.Panels)
 	} else {
 		newSubmissions, _ := fetchSubmissions(currentState, cat)
 		mapSubmissions(app,
@@ -243,18 +241,16 @@ func nextPage(app *cview.Application,
 			newSubmissions,
 			main,
 			cat)
-		main.Pages.SwitchToPage(getPage(nextPage, cat.CurrentCategory))
-
-		app.ForceDraw()
-		setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, main.Pages)
+		main.Panels.SetCurrentPanel(getPage(nextPage, cat.CurrentCategory))
+		setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, main.Panels)
 	}
 
 	currentState.CurrentPage++
 
 }
 
-func getCurrentlySelectedItemOnFrontPage(pages *cview.Pages) int {
-	_, primitive := pages.GetFrontPage()
+func getCurrentlySelectedItemOnFrontPage(pages *cview.Panels) int {
+	_, primitive := pages.GetFrontPanel()
 	list, ok := primitive.(*cview.List)
 	if ok {
 		return list.GetCurrentItemIndex()
@@ -262,15 +258,15 @@ func getCurrentlySelectedItemOnFrontPage(pages *cview.Pages) int {
 	return 0
 }
 
-func setCurrentlySelectedItemOnFrontPage(item int, pages *cview.Pages) {
-	_, primitive := pages.GetFrontPage()
+func setCurrentlySelectedItemOnFrontPage(item int, pages *cview.Panels) {
+	_, primitive := pages.GetFrontPanel()
 	list, ok := primitive.(*cview.List)
 	if ok {
 		list.SetCurrentItem(item)
 	}
 }
 
-func previousPage(state *types.ApplicationState, pages *cview.Pages, cat *types.Category) {
+func previousPage(state *types.ApplicationState, pages *cview.Panels, cat *types.Category) {
 	previousPage := state.CurrentPage - 1
 
 	if previousPage < 0 {
@@ -280,7 +276,7 @@ func previousPage(state *types.ApplicationState, pages *cview.Pages, cat *types.
 	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(pages)
 
 	state.CurrentPage--
-	pages.SwitchToPage(getPage(previousPage, cat.CurrentCategory))
+	pages.SetCurrentPanel(getPage(previousPage, cat.CurrentCategory))
 
 	setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, pages)
 }
@@ -359,7 +355,7 @@ func mapSubmissionsToListItems(app *cview.Application,
 		addSubmissionsToList(list, sub, currentState)
 
 		pageName := getPage(currentState.MappedPages, cat.CurrentCategory)
-		main.Pages.AddPage(pageName, list, true, true)
+		main.Panels.AddPanel(pageName, list, true, false)
 		currentState.MappedPages++
 	}
 }

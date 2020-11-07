@@ -12,7 +12,9 @@ func main() {
 
 	sc := subController.NewScreenController()
 
-	if err := sc.Application.SetRoot(sc.MainView.Grid, true).Run(); err != nil {
+	sc.Application.SetRoot(sc.MainView.Grid, true)
+
+	if err := sc.Application.Run(); err != nil {
 		panic(err)
 	}
 

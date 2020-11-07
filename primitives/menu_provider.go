@@ -14,7 +14,7 @@ const (
 )
 
 type MainView struct {
-	Pages       *cview.Pages
+	Panels       *cview.Panels
 	Grid        *cview.Grid
 	Footer      *cview.TextView
 	Header      *cview.TextView
@@ -27,7 +27,7 @@ func NewMainView(screenWidth int, viewableStoriesOnSinglePage int) *MainView {
 	headlineText := getHeadline(screenWidth)
 
 	main := new(MainView)
-	main.Pages = cview.NewPages()
+	main.Panels = cview.NewPanels()
 	main.Grid = cview.NewGrid()
 	main.LeftMargin = newTextViewPrimitive("")
 	main.LeftMargin.SetTextAlign(cview.AlignRight)
@@ -43,11 +43,11 @@ func NewMainView(screenWidth int, viewableStoriesOnSinglePage int) *MainView {
 	main.Grid.AddItem(main.Header, 0, 0, 1, 3, 0, 0, false)
 	main.Grid.AddItem(main.Footer, 2, 0, 1, 3, 0, 0, false)
 	main.Grid.AddItem(main.LeftMargin, 1, 0, 1, 1, 0, 0, false)
-	main.Grid.AddItem(main.Pages, 1, 1, 1, 1, 0, 0, true)
+	main.Grid.AddItem(main.Panels, 1, 1, 1, 1, 0, 0, true)
 	main.Grid.AddItem(main.RightMargin, 1, 2, 1, 1, 0, 0, false)
 
-	main.Pages.AddPage(helpPage, GetHelpScreen(), true, false)
-	main.Pages.AddPage(offlinePage, GetOfflineScreen(), true, false)
+	main.Panels.AddPanel(helpPage, GetHelpScreen(), true, false)
+	main.Panels.AddPanel(offlinePage, GetOfflineScreen(), true, false)
 
 	return main
 }
