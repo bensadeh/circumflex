@@ -234,7 +234,6 @@ func nextPage(app *cview.Application,
 	main *primitives.MainView,
 	cat *types.Category) {
 	currentState := state[cat.CurrentCategory]
-
 	nextPage := currentState.CurrentPage + 1
 
 	if nextPage > currentState.MaxPages {
@@ -246,7 +245,7 @@ func nextPage(app *cview.Application,
 	_, primitive := main.Panels.GetFrontPanel()
 	list, _ := primitive.(*cview.List)
 
-	if nextPage >= currentState.MappedPages {
+	if !pageHasEnoughSubmissionsToView(nextPage, currentState.ViewableStoriesOnSinglePage, currentState.Submissions) {
 		fetchAndAppendSubmissions(currentState, cat)
 	}
 
@@ -254,6 +253,13 @@ func nextPage(app *cview.Application,
 	list.SetCurrentItem(currentlySelectedItem)
 
 	currentState.CurrentPage++
+}
+
+func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []*types.Submission) bool {
+	largestItemToDisplay := (page * visibleStories) + visibleStories
+	downloadedSubmissions := len(submissions)
+
+	return downloadedSubmissions > largestItemToDisplay
 }
 
 func getCurrentlySelectedItemOnFrontPage(pages *cview.Panels) int {
