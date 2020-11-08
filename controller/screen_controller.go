@@ -326,14 +326,6 @@ func setSelectedFunction(
 			url := submissions[item].URL
 			browser.Open(url)
 		}
-		if event.Key() == tcell.KeyTAB {
-
-			return event
-		}
-		if event.Key() == tcell.KeyTab {
-
-			return event
-		}
 		return event
 	})
 }
