@@ -75,12 +75,8 @@ func NewScreenController() *screenController {
 		sc.Category)
 
 	sc.MainView.Panels.SetCurrentPanel("0-0")
-	_, primitive := sc.MainView.Panels.GetFrontPanel()
-	list, ok := primitive.(*cview.List)
-
-	if ok {
-		setList(list, newSubmissions, 0, storiesToDisplay)
-	}
+	list := getListFromPanel(sc.MainView.Panels)
+	setList(list, newSubmissions, 0, storiesToDisplay)
 
 	setShortcuts(sc.Application,
 		sc.ApplicationState,
@@ -119,6 +115,12 @@ func fetchSubmissions(state *types.ApplicationState, cat *types.Category) ([]*ty
 
 func getPage(currentPage int, currentCategory int) string {
 	return strconv.Itoa(currentPage) + "-" + strconv.Itoa(currentCategory)
+}
+
+func getListFromPanel(pages *cview.Panels) *cview.List {
+	_, primitive := pages.GetFrontPanel()
+	list, _ := primitive.(*cview.List)
+	return list
 }
 
 func setShortcuts(app *cview.Application,
@@ -242,8 +244,7 @@ func nextPage(app *cview.Application,
 
 	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(main.Panels)
 
-	_, primitive := main.Panels.GetFrontPanel()
-	list, _ := primitive.(*cview.List)
+	list := getListFromPanel(main.Panels)
 
 	if !pageHasEnoughSubmissionsToView(nextPage, currentState.ViewableStoriesOnSinglePage, currentState.Submissions) {
 		fetchAndAppendSubmissions(currentState, cat)
@@ -287,8 +288,7 @@ func previousPage(state *types.ApplicationState, pages *cview.Panels, cat *types
 		return
 	}
 
-	_, primitive := pages.GetFrontPanel()
-	list, _ := primitive.(*cview.List)
+	list := getListFromPanel(pages)
 
 	setList(list, state.Submissions, previousPage, state.ViewableStoriesOnSinglePage)
 	list.SetCurrentItem(currentlySelectedItem)
