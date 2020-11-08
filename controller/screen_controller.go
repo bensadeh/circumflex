@@ -66,17 +66,12 @@ func NewScreenController() *screenController {
 		sc.ApplicationState[types.NoCategory].ScreenWidth,
 		sc.ApplicationState[types.NoCategory].ViewableStoriesOnSinglePage)
 
-	newSubmissions, _ := fetchSubmissions(sc.ApplicationState[types.NoCategory], sc.Category)
+	list := createNewList(sc.Application, sc.ApplicationState, sc.Category)
+	sc.MainView.Panels.AddPanel(types.NewsPanel, list, true, false)
+	sc.MainView.Panels.SetCurrentPanel(types.NewsPanel)
 
-	mapSubmissions(sc.Application,
-		sc.ApplicationState,
-		newSubmissions,
-		sc.MainView,
-		sc.Category)
-
-	sc.MainView.Panels.SetCurrentPanel("0-0")
-	list := getListFromPanel(sc.MainView.Panels)
-	setList(list, newSubmissions, 0, storiesToDisplay)
+	fetchAndAppendSubmissions(sc.ApplicationState[types.NoCategory], sc.Category)
+	setList(list, sc.ApplicationState[types.NoCategory].Submissions, 0, storiesToDisplay)
 
 	setShortcuts(sc.Application,
 		sc.ApplicationState,
