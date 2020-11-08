@@ -14,7 +14,7 @@ const (
 )
 
 type MainView struct {
-	Panels       *cview.Panels
+	Panels      *cview.Panels
 	Grid        *cview.Grid
 	Footer      *cview.TextView
 	Header      *cview.TextView
@@ -126,7 +126,7 @@ func (m MainView) SetFooterText(currentPage int, screenWidth int, maxPages int) 
 	if maxPages == 2 {
 		footerText := getFooterText(currentPage, screenWidth)
 		m.Footer.SetText(footerText)
-	} else if maxPages ==1 {
+	} else if maxPages == 1 {
 		footerText := getFooterTextForTwoPages(currentPage, screenWidth)
 		m.Footer.SetText(footerText)
 	}
