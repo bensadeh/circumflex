@@ -66,14 +66,11 @@ func NewScreenController() *screenController {
 		sc.ApplicationState[types.NoCategory].ScreenWidth,
 		sc.ApplicationState[types.NoCategory].ViewableStoriesOnSinglePage)
 
-	newsList := createNewList(sc.Application, sc.ApplicationState, sc.Category)
+	newsList := createNewList()
 	sc.MainView.Panels.AddPanel(types.NewsPanel, newsList, true, false)
-	newestList := createNewList(sc.Application, sc.ApplicationState, sc.Category)
-	sc.MainView.Panels.AddPanel(types.NewestPanel, newestList, true, false)
-	showList := createNewList(sc.Application, sc.ApplicationState, sc.Category)
-	sc.MainView.Panels.AddPanel(types.ShowPanel, showList, true, false)
-	askList := createNewList(sc.Application, sc.ApplicationState, sc.Category)
-	sc.MainView.Panels.AddPanel(types.AskPanel, askList, true, false)
+	sc.MainView.Panels.AddPanel(types.NewestPanel, createNewList(), true, false)
+	sc.MainView.Panels.AddPanel(types.ShowPanel, createNewList(), true, false)
+	sc.MainView.Panels.AddPanel(types.AskPanel, createNewList(), true, false)
 
 	sc.MainView.Panels.SetCurrentPanel(types.NewsPanel)
 
@@ -333,16 +330,13 @@ func setSelectedFunction(
 	})
 }
 
-func createNewList(app *cview.Application,
-	state []*types.ApplicationState,
-	cat *types.Category) *cview.List {
+func createNewList() *cview.List {
 	list := cview.NewList()
 	list.SetBackgroundTransparent(false)
 	list.SetBackgroundColor(tcell.ColorDefault)
 	list.SetMainTextColor(tcell.ColorDefault)
 	list.SetSecondaryTextColor(tcell.ColorDefault)
 	list.ShowSecondaryText(true)
-	//setSelectedFunction(app, list, state, cat)
 
 	return list
 }
