@@ -38,41 +38,35 @@ func NewScreenController() *screenController {
 	sc.ApplicationState = append(sc.ApplicationState, new(types.ApplicationState))
 	sc.ApplicationState = append(sc.ApplicationState, new(types.ApplicationState))
 	sc.Category = new(types.Category)
+	storiesToDisplay := screen.GetViewableStoriesOnSinglePage(
+		screen.GetTerminalHeight(),
+		maximumStoriesToDisplay)
 
 	sc.ApplicationState[types.NoCategory].MaxPages = 2
 	sc.ApplicationState[types.NoCategory].ScreenWidth = screen.GetTerminalWidth()
 	sc.ApplicationState[types.NoCategory].ScreenHeight = screen.GetTerminalHeight()
-	sc.ApplicationState[types.NoCategory].ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
-		sc.ApplicationState[types.NoCategory].ScreenHeight,
-		maximumStoriesToDisplay)
+	sc.ApplicationState[types.NoCategory].ViewableStoriesOnSinglePage = storiesToDisplay
 
 	sc.ApplicationState[types.New].MaxPages = 2
 	sc.ApplicationState[types.New].ScreenWidth = screen.GetTerminalWidth()
 	sc.ApplicationState[types.New].ScreenHeight = screen.GetTerminalHeight()
-	sc.ApplicationState[types.New].ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
-		sc.ApplicationState[types.New].ScreenHeight,
-		maximumStoriesToDisplay)
+	sc.ApplicationState[types.New].ViewableStoriesOnSinglePage = storiesToDisplay
 
 	sc.ApplicationState[types.Ask].MaxPages = 1
 	sc.ApplicationState[types.Ask].ScreenWidth = screen.GetTerminalWidth()
 	sc.ApplicationState[types.Ask].ScreenHeight = screen.GetTerminalHeight()
-	sc.ApplicationState[types.Ask].ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
-		sc.ApplicationState[types.Ask].ScreenHeight,
-		maximumStoriesToDisplay)
+	sc.ApplicationState[types.Ask].ViewableStoriesOnSinglePage = storiesToDisplay
 
 	sc.ApplicationState[types.Show].MaxPages = 1
 	sc.ApplicationState[types.Show].ScreenWidth = screen.GetTerminalWidth()
 	sc.ApplicationState[types.Show].ScreenHeight = screen.GetTerminalHeight()
-	sc.ApplicationState[types.Show].ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
-		sc.ApplicationState[types.Show].ScreenHeight,
-		maximumStoriesToDisplay)
+	sc.ApplicationState[types.Show].ViewableStoriesOnSinglePage = storiesToDisplay
 
 	sc.MainView = primitives.NewMainView(
 		sc.ApplicationState[types.NoCategory].ScreenWidth,
 		sc.ApplicationState[types.NoCategory].ViewableStoriesOnSinglePage)
 
-	newSubmissions, err := fetchSubmissions(sc.ApplicationState[types.NoCategory], sc.Category)
-	sc.ApplicationState[types.NoCategory].IsOffline = getIsOfflineStatus(err)
+	newSubmissions, _ := fetchSubmissions(sc.ApplicationState[types.NoCategory], sc.Category)
 
 	mapSubmissions(sc.Application,
 		sc.ApplicationState,
@@ -80,8 +74,13 @@ func NewScreenController() *screenController {
 		sc.MainView,
 		sc.Category)
 
-	startPage := getStartPage(sc.ApplicationState[types.NoCategory].IsOffline)
-	sc.MainView.Panels.SetCurrentPanel(startPage)
+	sc.MainView.Panels.SetCurrentPanel("0-0")
+	_, primitive := sc.MainView.Panels.GetFrontPanel()
+	list, ok := primitive.(*cview.List)
+
+	if ok {
+		setList(list, newSubmissions, 0, storiesToDisplay)
+	}
 
 	setShortcuts(sc.Application,
 		sc.ApplicationState,
@@ -91,18 +90,31 @@ func NewScreenController() *screenController {
 	return sc
 }
 
-func getIsOfflineStatus(err error) bool {
-	if err != nil {
-		return true
+func setList(list *cview.List, submissions []*types.Submission, page int, submissionsToShow int) {
+	list.Clear()
+	start := page * submissionsToShow
+	end := start + submissionsToShow
+
+	for i := start; i < end; i++ {
+		s := submissions[i]
+		mainText := formatter2.GetMainText(s.Title, s.Domain)
+		secondaryText := formatter2.GetSecondaryText(s.Points, s.Author, s.Time, s.CommentsCount)
+
+		item := cview.NewListItem(mainText + "!")
+		item.SetSecondaryText(secondaryText + "!")
+
+		list.AddItem(item)
 	}
-	return false
 }
 
-func getStartPage(isOffline bool) string {
-	if isOffline {
-		return "offline"
-	}
-	return "0-0"
+func fetchAndAppendSubmissions(state *types.ApplicationState, cat *types.Category) {
+	newSubs, _ := fetchSubmissions(state, cat)
+	state.Submissions = append(state.Submissions, newSubs...)
+}
+
+func fetchSubmissions(state *types.ApplicationState, cat *types.Category) ([]*types.Submission, error) {
+	state.PageToFetchFromAPI++
+	return fetcher.FetchSubmissions(state.PageToFetchFromAPI, cat.CurrentCategory)
 }
 
 func getPage(currentPage int, currentCategory int) string {
@@ -175,7 +187,7 @@ func setShortcuts(app *cview.Application,
 				currentState.ViewableStoriesOnSinglePage)
 			main.SetFooterText(currentState.CurrentPage,
 				currentState.ScreenWidth, currentState.MaxPages)
-		} else if event.Rune() == 'q' || event.Key() == tcell.KeyEsc{
+		} else if event.Rune() == 'q' || event.Key() == tcell.KeyEsc {
 			app.Stop()
 		} else if event.Rune() == 'i' || event.Rune() == '?' {
 			main.SetHeaderTextToKeymaps(currentState.ScreenWidth)
@@ -231,19 +243,27 @@ func nextPage(app *cview.Application,
 
 	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(main.Panels)
 
-	if nextPage < currentState.MappedPages {
-		main.Panels.SetCurrentPanel(getPage(nextPage, cat.CurrentCategory))
-		setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, main.Panels)
-	} else {
-		newSubmissions, _ := fetchSubmissions(currentState, cat)
-		mapSubmissions(app,
-			state,
-			newSubmissions,
-			main,
-			cat)
-		main.Panels.SetCurrentPanel(getPage(nextPage, cat.CurrentCategory))
-		setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, main.Panels)
-	}
+	_, primitive := main.Panels.GetFrontPanel()
+	list, _ := primitive.(*cview.List)
+
+	newSubs, _ := fetchSubmissions(currentState, cat)
+	currentState.Submissions = append(currentState.Submissions, newSubs...)
+	setList(list, currentState.Submissions, currentState.CurrentPage+1, currentState.ViewableStoriesOnSinglePage)
+	list.SetCurrentItem(currentlySelectedItem)
+
+	//if nextPage < currentState.MappedPages {
+	//	main.Panels.SetCurrentPanel(getPage(nextPage, cat.CurrentCategory))
+	//	setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, main.Panels)
+	//} else {
+	//	newSubmissions, _ := fetchSubmissions(currentState, cat)
+	//	mapSubmissions(app,
+	//		state,
+	//		newSubmissions,
+	//		main,
+	//		cat)
+	//	main.Panels.SetCurrentPanel(getPage(nextPage, cat.CurrentCategory))
+	//	setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, main.Panels)
+	//}
 
 	currentState.CurrentPage++
 
@@ -326,11 +346,6 @@ func setSelectedFunction(app *cview.Application,
 		}
 		return event
 	})
-}
-
-func fetchSubmissions(state *types.ApplicationState, cat *types.Category) ([]*types.Submission, error) {
-	state.PageToFetchFromAPI++
-	return fetcher.FetchSubmissions(state.PageToFetchFromAPI, cat.CurrentCategory)
 }
 
 func mapSubmissions(app *cview.Application,
