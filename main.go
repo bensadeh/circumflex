@@ -8,9 +8,10 @@ import (
 
 func main() {
 	cmd.Execute()
-	cli.Clear()
 
 	sc := subController.NewScreenController()
+
+	cli.Clear()
 
 	sc.Application.SetRoot(sc.MainView.Grid, true)
 

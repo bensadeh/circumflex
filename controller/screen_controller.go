@@ -13,6 +13,7 @@ import (
 	"encoding/json"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
+	"os"
 	"strconv"
 )
 
@@ -74,7 +75,15 @@ func NewScreenController() *screenController {
 
 	sc.MainView.Panels.SetCurrentPanel(types.NewsPanel)
 
-	fetchAndAppendSubmissions(sc.ApplicationState[types.NoCategory], sc.Category)
+	newSubs, err := fetchSubmissions(sc.ApplicationState[types.NoCategory], sc.Category)
+
+	if err != nil {
+		println("Error: Could not retrieve submissions")
+		os.Exit(1)
+	}
+
+	sc.ApplicationState[types.NoCategory].Submissions = append(sc.ApplicationState[types.NoCategory].Submissions, newSubs...)
+
 	setList(newsList, sc.ApplicationState[types.NoCategory].Submissions, 0, storiesToDisplay, sc.Application)
 
 	setShortcuts(sc.Application,
