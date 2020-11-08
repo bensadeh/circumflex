@@ -275,17 +275,19 @@ func setCurrentlySelectedItemOnFrontPage(item int, pages *cview.Panels) {
 
 func previousPage(state *types.ApplicationState, pages *cview.Panels, cat *types.Category) {
 	previousPage := state.CurrentPage - 1
+	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(pages)
 
 	if previousPage < 0 {
 		return
 	}
 
-	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(pages)
+	_, primitive := pages.GetFrontPanel()
+	list, _ := primitive.(*cview.List)
+
+	setList(list, state.Submissions, previousPage, state.ViewableStoriesOnSinglePage)
+	list.SetCurrentItem(currentlySelectedItem)
 
 	state.CurrentPage--
-	pages.SetCurrentPanel(getPage(previousPage, cat.CurrentCategory))
-
-	setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, pages)
 }
 
 func setSelectedFunction(app *cview.Application,
