@@ -176,13 +176,13 @@ func setShortcuts(app *cview.Application,
 		}
 
 		if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
-			nextPage(app, state, main, cat)
+			nextPage(state, main, cat)
 			main.SetLeftMarginRanks(currentState.CurrentPage,
 				currentState.ViewableStoriesOnSinglePage)
 			main.SetFooterText(currentState.CurrentPage,
 				currentState.ScreenWidth, currentState.MaxPages)
 		} else if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
-			previousPage(currentState, main.Panels, cat)
+			previousPage(currentState, main.Panels)
 			main.SetLeftMarginRanks(currentState.CurrentPage,
 				currentState.ViewableStoriesOnSinglePage)
 			main.SetFooterText(currentState.CurrentPage,
@@ -229,10 +229,7 @@ func getPreviousCategory(currentCategory int) int {
 	}
 }
 
-func nextPage(app *cview.Application,
-	state []*types.ApplicationState,
-	main *primitives.MainView,
-	cat *types.Category) {
+func nextPage(state []*types.ApplicationState, main *primitives.MainView, cat *types.Category) {
 	currentState := state[cat.CurrentCategory]
 	nextPage := currentState.CurrentPage + 1
 
@@ -270,15 +267,7 @@ func getCurrentlySelectedItemOnFrontPage(pages *cview.Panels) int {
 	return 0
 }
 
-func setCurrentlySelectedItemOnFrontPage(item int, pages *cview.Panels) {
-	_, primitive := pages.GetFrontPanel()
-	list, ok := primitive.(*cview.List)
-	if ok {
-		list.SetCurrentItem(item)
-	}
-}
-
-func previousPage(state *types.ApplicationState, pages *cview.Panels, cat *types.Category) {
+func previousPage(state *types.ApplicationState, pages *cview.Panels) {
 	previousPage := state.CurrentPage - 1
 	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(pages)
 
@@ -341,37 +330,6 @@ func setSelectedFunction(app *cview.Application,
 	})
 }
 
-func mapSubmissions(app *cview.Application,
-	state []*types.ApplicationState,
-	newSubmissions []*types.Submission,
-	main *primitives.MainView,
-	cat *types.Category) {
-	currentState := state[cat.CurrentCategory]
-	currentState.Submissions = append(currentState.Submissions, newSubmissions...)
-	mapSubmissionsToListItems(app, state, main, cat)
-}
-
-func mapSubmissionsToListItems(app *cview.Application,
-	state []*types.ApplicationState,
-	main *primitives.MainView,
-	cat *types.Category) {
-	currentState := state[cat.CurrentCategory]
-
-	for hasStoriesToMap(currentState.Submissions, currentState) {
-		sub := currentState.Submissions[currentState.MappedSubmissions : currentState.MappedSubmissions+currentState.ViewableStoriesOnSinglePage]
-		list := createNewList(app, state, cat)
-		addSubmissionsToList(list, sub, currentState)
-
-		pageName := getPage(currentState.MappedPages, cat.CurrentCategory)
-		main.Panels.AddPanel(pageName, list, true, false)
-		currentState.MappedPages++
-	}
-}
-
-func hasStoriesToMap(submissions []*types.Submission, state *types.ApplicationState) bool {
-	return len(submissions)-state.MappedSubmissions >= state.ViewableStoriesOnSinglePage
-}
-
 func createNewList(app *cview.Application,
 	state []*types.ApplicationState,
 	cat *types.Category) *cview.List {
@@ -384,19 +342,4 @@ func createNewList(app *cview.Application,
 	setSelectedFunction(app, list, state, cat)
 
 	return list
-}
-
-func addSubmissionsToList(list *cview.List,
-	submissions []*types.Submission,
-	state *types.ApplicationState) {
-	for _, s := range submissions {
-		mainText := formatter2.GetMainText(s.Title, s.Domain)
-		secondaryText := formatter2.GetSecondaryText(s.Points, s.Author, s.Time, s.CommentsCount)
-
-		item := cview.NewListItem(mainText)
-		item.SetSecondaryText(secondaryText)
-
-		list.AddItem(item)
-		state.MappedSubmissions++
-	}
 }
