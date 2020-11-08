@@ -78,7 +78,7 @@ func NewScreenController() *screenController {
 	sc.MainView.Panels.SetCurrentPanel(types.NewsPanel)
 
 	fetchAndAppendSubmissions(sc.ApplicationState[types.NoCategory], sc.Category)
-	setList(newsList, sc.ApplicationState[types.NoCategory].Submissions, 0, storiesToDisplay)
+	setList(newsList, sc.ApplicationState[types.NoCategory].Submissions, 0, storiesToDisplay, sc.Application)
 
 	setShortcuts(sc.Application,
 		sc.ApplicationState,
@@ -88,7 +88,7 @@ func NewScreenController() *screenController {
 	return sc
 }
 
-func setList(list *cview.List, submissions []*types.Submission, page int, submissionsToShow int) {
+func setList(list *cview.List, submissions []*types.Submission, page int, submissionsToShow int, app *cview.Application) {
 	list.Clear()
 	start := page * submissionsToShow
 	end := start + submissionsToShow
@@ -103,6 +103,8 @@ func setList(list *cview.List, submissions []*types.Submission, page int, submis
 
 		list.AddItem(item)
 	}
+
+	setSelectedFunction(app, list, submissions, page, submissionsToShow)
 }
 
 func fetchAndAppendSubmissions(state *types.ApplicationState, cat *types.Category) {
@@ -166,7 +168,7 @@ func setShortcuts(app *cview.Application,
 
 			main.Panels.SetCurrentPanel(strconv.Itoa(cat.CurrentCategory))
 			list := getListFromFrontPanel(main.Panels)
-			setList(list, nextState.Submissions, 0, nextState.ViewableStoriesOnSinglePage)
+			setList(list, nextState.Submissions, 0, nextState.ViewableStoriesOnSinglePage, app)
 
 			main.SetFooterText(nextState.CurrentPage, nextState.ScreenWidth, nextState.MaxPages)
 			main.SetLeftMarginRanks(nextState.CurrentPage, nextState.ViewableStoriesOnSinglePage)
@@ -176,13 +178,13 @@ func setShortcuts(app *cview.Application,
 		}
 
 		if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
-			nextPage(state, main, cat)
+			nextPage(app, state, main, cat)
 			main.SetLeftMarginRanks(currentState.CurrentPage,
 				currentState.ViewableStoriesOnSinglePage)
 			main.SetFooterText(currentState.CurrentPage,
 				currentState.ScreenWidth, currentState.MaxPages)
 		} else if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
-			previousPage(currentState, main.Panels)
+			previousPage(app, currentState, main.Panels)
 			main.SetLeftMarginRanks(currentState.CurrentPage,
 				currentState.ViewableStoriesOnSinglePage)
 			main.SetFooterText(currentState.CurrentPage,
@@ -229,7 +231,7 @@ func getPreviousCategory(currentCategory int) int {
 	}
 }
 
-func nextPage(state []*types.ApplicationState, main *primitives.MainView, cat *types.Category) {
+func nextPage(app *cview.Application, state []*types.ApplicationState, main *primitives.MainView, cat *types.Category) {
 	currentState := state[cat.CurrentCategory]
 	nextPage := currentState.CurrentPage + 1
 
@@ -245,7 +247,7 @@ func nextPage(state []*types.ApplicationState, main *primitives.MainView, cat *t
 		fetchAndAppendSubmissions(currentState, cat)
 	}
 
-	setList(list, currentState.Submissions, nextPage, currentState.ViewableStoriesOnSinglePage)
+	setList(list, currentState.Submissions, nextPage, currentState.ViewableStoriesOnSinglePage, app)
 	list.SetCurrentItem(currentlySelectedItem)
 
 	currentState.CurrentPage++
@@ -267,7 +269,7 @@ func getCurrentlySelectedItemOnFrontPage(pages *cview.Panels) int {
 	return 0
 }
 
-func previousPage(state *types.ApplicationState, pages *cview.Panels) {
+func previousPage(app *cview.Application, state *types.ApplicationState, pages *cview.Panels) {
 	previousPage := state.CurrentPage - 1
 	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(pages)
 
@@ -277,24 +279,25 @@ func previousPage(state *types.ApplicationState, pages *cview.Panels) {
 
 	list := getListFromFrontPanel(pages)
 
-	setList(list, state.Submissions, previousPage, state.ViewableStoriesOnSinglePage)
+	setList(list, state.Submissions, previousPage, state.ViewableStoriesOnSinglePage, app)
 	list.SetCurrentItem(currentlySelectedItem)
 
 	state.CurrentPage--
 }
 
-func setSelectedFunction(app *cview.Application,
+func setSelectedFunction(
+	app *cview.Application,
 	list *cview.List,
-	state []*types.ApplicationState,
-	cat *types.Category) {
-	currentState := state[cat.CurrentCategory]
+	submissions []*types.Submission,
+	currentPage int,
+	viewableStories int) {
 
 	list.SetSelectedFunc(func(i int, _ *cview.ListItem) {
 		app.Suspend(func() {
-			for index := range currentState.Submissions {
+			for index := range submissions {
 				if index == i {
-					storyIndex := (currentState.CurrentPage)*currentState.ViewableStoriesOnSinglePage + i
-					s := currentState.Submissions[storyIndex]
+					storyIndex := (currentPage)*viewableStories + i
+					s := submissions[storyIndex]
 
 					if s.Author == "" {
 						return
@@ -314,8 +317,8 @@ func setSelectedFunction(app *cview.Application,
 
 	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Rune() == 'o' {
-			item := list.GetCurrentItemIndex() + currentState.ViewableStoriesOnSinglePage*(currentState.CurrentPage)
-			url := currentState.Submissions[item].URL
+			item := list.GetCurrentItemIndex() + viewableStories*(currentPage)
+			url := submissions[item].URL
 			browser.Open(url)
 		}
 		if event.Key() == tcell.KeyTAB {
@@ -339,7 +342,7 @@ func createNewList(app *cview.Application,
 	list.SetMainTextColor(tcell.ColorDefault)
 	list.SetSecondaryTextColor(tcell.ColorDefault)
 	list.ShowSecondaryText(true)
-	setSelectedFunction(app, list, state, cat)
+	//setSelectedFunction(app, list, state, cat)
 
 	return list
 }
