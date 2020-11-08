@@ -66,12 +66,19 @@ func NewScreenController() *screenController {
 		sc.ApplicationState[types.NoCategory].ScreenWidth,
 		sc.ApplicationState[types.NoCategory].ViewableStoriesOnSinglePage)
 
-	list := createNewList(sc.Application, sc.ApplicationState, sc.Category)
-	sc.MainView.Panels.AddPanel(types.NewsPanel, list, true, false)
+	newsList := createNewList(sc.Application, sc.ApplicationState, sc.Category)
+	sc.MainView.Panels.AddPanel(types.NewsPanel, newsList, true, false)
+	newestList := createNewList(sc.Application, sc.ApplicationState, sc.Category)
+	sc.MainView.Panels.AddPanel(types.NewestPanel, newestList, true, false)
+	showList := createNewList(sc.Application, sc.ApplicationState, sc.Category)
+	sc.MainView.Panels.AddPanel(types.ShowPanel, showList, true, false)
+	askList := createNewList(sc.Application, sc.ApplicationState, sc.Category)
+	sc.MainView.Panels.AddPanel(types.AskPanel, askList, true, false)
+
 	sc.MainView.Panels.SetCurrentPanel(types.NewsPanel)
 
 	fetchAndAppendSubmissions(sc.ApplicationState[types.NoCategory], sc.Category)
-	setList(list, sc.ApplicationState[types.NoCategory].Submissions, 0, storiesToDisplay)
+	setList(newsList, sc.ApplicationState[types.NoCategory].Submissions, 0, storiesToDisplay)
 
 	setShortcuts(sc.Application,
 		sc.ApplicationState,
@@ -112,7 +119,7 @@ func getPage(currentPage int, currentCategory int) string {
 	return strconv.Itoa(currentPage) + "-" + strconv.Itoa(currentCategory)
 }
 
-func getListFromPanel(pages *cview.Panels) *cview.List {
+func getListFromFrontPanel(pages *cview.Panels) *cview.List {
 	_, primitive := pages.GetFrontPanel()
 	list, _ := primitive.(*cview.List)
 	return list
@@ -153,21 +160,17 @@ func setShortcuts(app *cview.Application,
 			nextState := state[cat.CurrentCategory]
 			nextState.CurrentPage = 0
 
-			if len(state[cat.CurrentCategory].Submissions) == 0 {
-				newSubmissions, _ := fetchSubmissions(currentState, cat)
-				mapSubmissions(app,
-					state,
-					newSubmissions,
-					main,
-					cat)
+			if !pageHasEnoughSubmissionsToView(0, nextState.ViewableStoriesOnSinglePage, nextState.Submissions) {
+				fetchAndAppendSubmissions(nextState, cat)
 			}
 
-			pageToView := getPage(0, cat.CurrentCategory)
-			main.Panels.SetCurrentPanel(pageToView)
+			main.Panels.SetCurrentPanel(strconv.Itoa(cat.CurrentCategory))
+			list := getListFromFrontPanel(main.Panels)
+			setList(list, nextState.Submissions, 0, nextState.ViewableStoriesOnSinglePage)
+
 			main.SetFooterText(nextState.CurrentPage, nextState.ScreenWidth, nextState.MaxPages)
 			main.SetLeftMarginRanks(nextState.CurrentPage, nextState.ViewableStoriesOnSinglePage)
 			main.SetHeaderTextCategory(nextState.ScreenWidth, cat.CurrentCategory)
-			setCurrentlySelectedItemOnFrontPage(0, main.Panels)
 
 			return event
 		}
@@ -239,7 +242,7 @@ func nextPage(app *cview.Application,
 
 	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(main.Panels)
 
-	list := getListFromPanel(main.Panels)
+	list := getListFromFrontPanel(main.Panels)
 
 	if !pageHasEnoughSubmissionsToView(nextPage, currentState.ViewableStoriesOnSinglePage, currentState.Submissions) {
 		fetchAndAppendSubmissions(currentState, cat)
@@ -283,7 +286,7 @@ func previousPage(state *types.ApplicationState, pages *cview.Panels, cat *types
 		return
 	}
 
-	list := getListFromPanel(pages)
+	list := getListFromFrontPanel(pages)
 
 	setList(list, state.Submissions, previousPage, state.ViewableStoriesOnSinglePage)
 	list.SetCurrentItem(currentlySelectedItem)
