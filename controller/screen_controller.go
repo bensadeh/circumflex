@@ -98,8 +98,8 @@ func setList(list *cview.List, submissions []*types.Submission, page int, submis
 		mainText := formatter2.GetMainText(s.Title, s.Domain)
 		secondaryText := formatter2.GetSecondaryText(s.Points, s.Author, s.Time, s.CommentsCount)
 
-		item := cview.NewListItem(mainText + "!")
-		item.SetSecondaryText(secondaryText + "!")
+		item := cview.NewListItem(mainText)
+		item.SetSecondaryText(secondaryText)
 
 		list.AddItem(item)
 	}
