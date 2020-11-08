@@ -246,27 +246,14 @@ func nextPage(app *cview.Application,
 	_, primitive := main.Panels.GetFrontPanel()
 	list, _ := primitive.(*cview.List)
 
-	newSubs, _ := fetchSubmissions(currentState, cat)
-	currentState.Submissions = append(currentState.Submissions, newSubs...)
-	setList(list, currentState.Submissions, currentState.CurrentPage+1, currentState.ViewableStoriesOnSinglePage)
+	if nextPage >= currentState.MappedPages {
+		fetchAndAppendSubmissions(currentState, cat)
+	}
+
+	setList(list, currentState.Submissions, nextPage, currentState.ViewableStoriesOnSinglePage)
 	list.SetCurrentItem(currentlySelectedItem)
 
-	//if nextPage < currentState.MappedPages {
-	//	main.Panels.SetCurrentPanel(getPage(nextPage, cat.CurrentCategory))
-	//	setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, main.Panels)
-	//} else {
-	//	newSubmissions, _ := fetchSubmissions(currentState, cat)
-	//	mapSubmissions(app,
-	//		state,
-	//		newSubmissions,
-	//		main,
-	//		cat)
-	//	main.Panels.SetCurrentPanel(getPage(nextPage, cat.CurrentCategory))
-	//	setCurrentlySelectedItemOnFrontPage(currentlySelectedItem, main.Panels)
-	//}
-
 	currentState.CurrentPage++
-
 }
 
 func getCurrentlySelectedItemOnFrontPage(pages *cview.Panels) int {
