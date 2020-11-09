@@ -123,10 +123,6 @@ func fetchSubmissions(state *types.ApplicationState, cat *types.Category) ([]*ty
 	return fetcher.FetchSubmissions(state.PageToFetchFromAPI, cat.CurrentCategory)
 }
 
-func getPage(currentPage int, currentCategory int) string {
-	return strconv.Itoa(currentPage) + "-" + strconv.Itoa(currentCategory)
-}
-
 func getListFromFrontPanel(pages *cview.Panels) *cview.List {
 	_, primitive := pages.GetFrontPanel()
 	list, _ := primitive.(*cview.List)
