@@ -32,7 +32,7 @@ changelog:
       - '^test:'
 brews:
   - name: circumflex
-      tap:
-        owner: bensadeh
-        name: homebrew-circumflex
-        description: "circumflex is Hacker News on the command line"
+    tap:
+      owner: bensadeh
+      name: homebrew-circumflex
+    description: "circumflex is Hacker News on the command line"
