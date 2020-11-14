@@ -3,29 +3,41 @@
 </p>
 
 #
-`circumflex` is Hacker&nbsp;News on the command line. Browse submissions and read comments in the pager `less`.
+`circumflex` is Hacker&nbsp;News on the command line. Browse submissions and read comments without leaving your terminal.
 
 <p align="center">
   <img src="screenshots/mainview.png" width="700" alt="^"/>
 </p>
 
-## Comment section
 
-### Appearance
-Comments are formatted in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code blocks`. Replies are color-indented to distinguish them from their parents, siblings and children.
+## Installation
+### Homebrew
+
+```console
+brew install bensadeh/circumflex/circumflex
+```
+
+Then run with:
+
+```console
+clx
+```
+
+## Features
+* 🚀 Fast and lightweight 
+* 💬 Read comments in the pager `less`
+* 🎨 Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code blocks`🎨
 
 <p align="center">
   <img src="screenshots/comments.png" width="700" alt="^"/>
 </p>
 
-To give context to posts with many replies, Original Poster (OP), Parent Poster (PP) and moderators are labelled. References (`[1], [2], [3], […] `) are color-coded for easier readability.
-
 <p align="center">
   <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
 </p>
 
-### Navigation
-
+## Navigation
+### less
 `circumflex` pipes comments to the pager `less`. Here is a short recap of commonly used navigation commands:
 
 <pre>
@@ -33,6 +45,7 @@ To give context to posts with many replies, Original Poster (OP), Parent Poster 
   <kbd>k</kbd>, <kbd>↑</kbd>: backward one line
   <kbd>d</kbd>: forward one half-window
   <kbd>u</kbd>: backward one half-window
+  <kbd>h</kbd>: bring up help menu
   <kbd>q</kbd>: exit
 </pre>
 
@@ -49,21 +62,8 @@ To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. T
 
 `less` remembers your search term between sessions. This means that the next time you want to jump between top-level posts, you can hit <kbd>n</kbd> to go to the next `::` directly.
 
-## Installation
-`circumflex` is written in Go. Clone the repo and type:
-
-```console
-go install
-```
-
-Then run with:
-
-```console
-clx
-```
-
 ## Known issues
-The first keystroke is lost when viewing comments in `less`, see [gdamore/tcell#194](https://github.com/gdamore/tcell/issues/194).
+The first keystroke is lost when moving from cview (submission menu) to viewing comments in `less`, see [gdamore/tcell#194](https://github.com/gdamore/tcell/issues/194).
 
 ## Under the hood
 `circumflex` uses:
