@@ -63,7 +63,7 @@ To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. T
 `less` remembers your search term between sessions. This means that the next time you want to jump between top-level posts, you can hit <kbd>n</kbd> to go to the next `::` directly.
 
 ## Known issues
-The first keystroke is lost when viewing comments in `less`, see [gdamore/tcell#194](https://github.com/gdamore/tcell/issues/194).
+The first keystroke is lost when moving from cview (submission menu) to viewing comments in `less`, see [gdamore/tcell#194](https://github.com/gdamore/tcell/issues/194).
 
 ## Under the hood
 `circumflex` uses:
