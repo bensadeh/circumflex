@@ -30,8 +30,8 @@ changelog:
       - '^docs:'
       - '^test:'
 brews:
-  - name: clx
+  - name: circumflex
     tap:
       owner: bensadeh
-      name: homebrew-clx
+      name: homebrew-circumflex
     description: "circumflex is Hacker News on the command line"
