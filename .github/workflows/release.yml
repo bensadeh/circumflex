@@ -28,6 +28,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
 brews:
+  -
     name: circumflex
     tap:
       owner: bensadeh
