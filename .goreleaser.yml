@@ -30,7 +30,7 @@ changelog:
       - '^docs:'
       - '^test:'
 brews:
-  - name: circumflex
+  - name: clx
     tap:
       owner: bensadeh
       name: homebrew-clx
