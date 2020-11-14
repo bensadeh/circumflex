@@ -4,14 +4,6 @@ on:
   pull_request:
   push:
 
-brews:
-  -
-    name: circumflex
-    tap:
-      owner: bensadeh
-      name: homebrew-circumflex
-    description: "circumflex is Hacker News on the command line"
-
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
@@ -34,3 +26,11 @@ jobs:
           args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+
+brews:
+  -
+    name: circumflex
+    tap:
+      owner: bensadeh
+      name: homebrew-circumflex
+    description: "circumflex is Hacker News on the command line"
