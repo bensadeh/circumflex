@@ -36,8 +36,8 @@ clx
   <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
 </p>
 
-### Navigation
-
+## Navigation
+### less
 `circumflex` pipes comments to the pager `less`. Here is a short recap of commonly used navigation commands:
 
 <pre>
@@ -45,6 +45,7 @@ clx
   <kbd>k</kbd>, <kbd>↑</kbd>: backward one line
   <kbd>d</kbd>: forward one half-window
   <kbd>u</kbd>: backward one half-window
+  <kbd>h</kbd>: bring up help menu
   <kbd>q</kbd>: exit
 </pre>
 
