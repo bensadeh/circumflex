@@ -33,7 +33,5 @@ brews:
   - name: circumflex
     tap:
       owner: bensadeh
-      name: homebrew-circumflex
+      name: homebrew-clx
     description: "circumflex is Hacker News on the command line"
-    install: |
-      bin.install "clx"
