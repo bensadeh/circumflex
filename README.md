@@ -25,7 +25,7 @@ clx
 
 ## Features
 * 🚀 Fast and lightweight 
-* 💬 Read the comment section in the pager `less`
+* 💬 Read comments in the pager `less`
 * 🎨 Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code blocks`🎨
 
 <p align="center">
