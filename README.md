@@ -23,6 +23,7 @@ Then run with:
 clx
 ```
 
+
 ## Features
 * 🚀 Fast and lightweight 
 * 💬 Read comments in the pager `less`
@@ -36,42 +37,6 @@ clx
   <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
 </p>
 
-## Navigation
-### Main View
-
-<pre>
-  <kbd>Enter</kbd>: Read comments
-  <kbd>Tab</kbd>: change category
-  <kbd>o</kbd>: open submission link in browser
-  <kbd>i</kbd>, <kbd>?</kbd>: bring up help menu
-  <kbd>q</kbd>: quit to prompt
-</pre>
-
-### Comment Section (less)
-#### Keymaps
-`circumflex` pipes comments to the pager `less`. Here is a short recap of commonly used navigation commands:
-
-<pre>
-  <kbd>j</kbd>, <kbd>↓</kbd>: forward one line
-  <kbd>k</kbd>, <kbd>↑</kbd>: backward one line
-  <kbd>d</kbd>: forward one half-window
-  <kbd>u</kbd>: backward one half-window
-  <kbd>h</kbd>: bring up help menu
-  <kbd>q</kbd>: exit
-</pre>
-
-#### Jumping between top-level comments
-`circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality, one can move between these posts by searching for it.
-
-To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. Then, press <kbd>n</kbd> and <kbd>N</kbd> to jump forwards and backwards, respectively.
-
-<pre>  
-  <kbd>/</kbd>: search
-  <kbd>n</kbd>: repeat search forwards
-  <kbd>N</kbd>: repeat search backward
-</pre>
-
-`less` remembers your search term between sessions. This means that the next time you want to jump between top-level posts, you can hit <kbd>n</kbd> to go directly to the next `::`.
 
 ## Known issues
 The first keystroke is lost when moving from cview (submission menu) to viewing comments in `less`, see [gdamore/tcell#194](https://github.com/gdamore/tcell/issues/194).
