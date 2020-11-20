@@ -4,10 +4,10 @@
 
 #
 <div align="center">
-  
-![Latest release](https://img.shields.io/github/v/release/bensadeh/circumflex?label=stable)
+ 
+[![Latest release](https://img.shields.io/github/v/release/bensadeh/circumflex?label=stable)](https://github.com/bensadeh/circumflex/releases)
 [![Changelog](https://img.shields.io/badge/-Changelog-blue)](https://github.com/bensadeh/circumflex/blob/master/CHANGELOG.md)
-![License](https://img.shields.io/github/license/bensadeh/circumflex)
+[![License](https://img.shields.io/github/license/bensadeh/circumflex)](https://github.com/bensadeh/circumflex/blob/master/LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/bensadeh/circumflex)](https://goreportcard.com/report/github.com/bensadeh/circumflex)
 
 </div>
