@@ -3,6 +3,8 @@
 </p>
 
 #
+[![Go Report Card](https://goreportcard.com/badge/github.com/bensadeh/circumflex)](https://goreportcard.com/report/github.com/bensadeh/circumflex)
+
 `circumflex` is Hacker&nbsp;News on the command line. Browse submissions and read comments without leaving your terminal.
 
 <p align="center">
