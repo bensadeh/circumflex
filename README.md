@@ -5,11 +5,10 @@
 #
 <div align="center">
 
-[![Latest release](https://img.shields.io/github/v/release/bensadeh/circumflex?label=stable&color=c792ea)](https://github.com/bensadeh/circumflex/releases)
+[![Latest release](https://img.shields.io/github/v/release/bensadeh/circumflex?label=stable&color=e1acff)](https://github.com/bensadeh/circumflex/releases)
 [![Changelog](https://img.shields.io/badge/docs-changelog-9cc4ff)](https://github.com/bensadeh/circumflex/blob/master/CHANGELOG.md)
 [![License](https://img.shields.io/github/license/bensadeh/circumflex?color=c3e88d)](https://github.com/bensadeh/circumflex/blob/master/LICENSE)
-[![Go Report Card](https://goreportcard.com/badge/github.com/bensadeh/circumflex)](https://goreportcard.com/report/github.com/bensadeh/circumflex)
-
+[![Go Report Card](https://img.shields.io/github/go-mod/go-version/bensadeh/circumflex?color=ffe585)](https://github.com/bensadeh/circumflex/blob/master/go.mod)
 </div>
 
 `circumflex` is Hacker&nbsp;News on the command line. Browse submissions and read comments without leaving your terminal.
