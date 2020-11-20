@@ -6,6 +6,7 @@
 <div align="center">
   
 [![Go Report Card](https://goreportcard.com/badge/github.com/bensadeh/circumflex)](https://goreportcard.com/report/github.com/bensadeh/circumflex)
+[![Changelog](https://img.shields.io/badge/-Changelog-blue)](https://github.com/bensadeh/circumflex/blob/master/CHANGELOG.md)
 
 </div>
 
