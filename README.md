@@ -5,8 +5,10 @@
 #
 <div align="center">
   
-[![Go Report Card](https://goreportcard.com/badge/github.com/bensadeh/circumflex)](https://goreportcard.com/report/github.com/bensadeh/circumflex)
+![Latest release](https://img.shields.io/github/v/release/bensadeh/circumflex?label=stable)
 [![Changelog](https://img.shields.io/badge/-Changelog-blue)](https://github.com/bensadeh/circumflex/blob/master/CHANGELOG.md)
+![License](https://img.shields.io/github/license/bensadeh/circumflex)
+[![Go Report Card](https://goreportcard.com/badge/github.com/bensadeh/circumflex)](https://goreportcard.com/report/github.com/bensadeh/circumflex)
 
 </div>
 
