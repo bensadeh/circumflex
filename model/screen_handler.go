@@ -15,7 +15,7 @@ import (
 	"strconv"
 )
 
-func NextPage(app *cview.Application, state *types.ApplicationState, main *types.MainView, cat *types.Category) {
+func NextPage(app *cview.Application, state *types.SubmissionState, main *types.MainView, cat *types.Category) {
 	nextPage := state.CurrentPage + 1
 
 	if nextPage > state.MaxPages {
@@ -61,12 +61,12 @@ func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []
 	return downloadedSubmissions > largestItemToDisplay
 }
 
-func fetchAndAppendSubmissions(state *types.ApplicationState, cat *types.Category) {
+func fetchAndAppendSubmissions(state *types.SubmissionState, cat *types.Category) {
 	newSubs, _ := FetchSubmissions(state, cat)
 	state.Submissions = append(state.Submissions, newSubs...)
 }
 
-func FetchSubmissions(state *types.ApplicationState, cat *types.Category) ([]*types.Submission, error) {
+func FetchSubmissions(state *types.SubmissionState, cat *types.Category) ([]*types.Submission, error) {
 	state.PageToFetchFromAPI++
 	return fetcher.FetchSubmissions(state.PageToFetchFromAPI, cat.CurrentCategory)
 }
@@ -135,7 +135,7 @@ func SetSelectedFunction(
 	})
 }
 
-func ChangeCategory(event *tcell.EventKey, cat *types.Category, state []*types.ApplicationState, main *types.MainView, app *cview.Application) {
+func ChangeCategory(event *tcell.EventKey, cat *types.Category, state []*types.SubmissionState, main *types.MainView, app *cview.Application) {
 	if event.Key() == tcell.KeyBacktab {
 		cat.CurrentCategory = getPreviousCategory(cat.CurrentCategory)
 	} else {
@@ -189,7 +189,7 @@ func getPreviousCategory(currentCategory int) int {
 }
 
 func PreviousPage(app *cview.Application,
-	state *types.ApplicationState,
+	state *types.SubmissionState,
 	main *types.MainView,
 	pages *cview.Panels) {
 
@@ -218,14 +218,14 @@ func ShowHelpScreen(main *types.MainView, screenWidth int) {
 	view.SetPanelToHelpScreen(main)
 }
 
-func ReturnFromHelpScreen(main *types.MainView, screenWidth int, cat *types.Category, currentPage int, currentState *types.ApplicationState, viewableStories int) {
+func ReturnFromHelpScreen(main *types.MainView, screenWidth int, cat *types.Category, currentPage int, currentState *types.SubmissionState, viewableStories int) {
 	view.SetHackerNewsHeader(main, screenWidth, cat.CurrentCategory)
 	view.SetPanelCategory(main, cat.CurrentCategory)
 	view.SetFooterText(main, currentPage, screenWidth, currentState.MaxPages)
 	view.SetLeftMarginRanks(main, currentPage, viewableStories)
 }
 
-func SelectLastElementInList(currentState *types.ApplicationState, main *types.MainView) {
+func SelectLastElementInList(currentState *types.SubmissionState, main *types.MainView) {
 	view.SelectLastElementInList(currentState, main)
 }
 

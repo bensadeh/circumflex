@@ -25,7 +25,7 @@ type Submission struct {
 	Type          string `json:"type"`
 }
 
-type ApplicationState struct {
+type SubmissionState struct {
 	MappedSubmissions           int
 	MappedPages                 int
 	StoriesListed               int

@@ -20,18 +20,18 @@ const (
 type screenController struct {
 	Application      *cview.Application
 	MainView         *types.MainView
-	ApplicationState []*types.ApplicationState
+	SubmissionStates []*types.SubmissionState
 	Category         *types.Category
 }
 
 func NewScreenController() *screenController {
 	sc := new(screenController)
 	sc.Application = cview.NewApplication()
-	sc.ApplicationState = []*types.ApplicationState{}
-	sc.ApplicationState = append(sc.ApplicationState, new(types.ApplicationState))
-	sc.ApplicationState = append(sc.ApplicationState, new(types.ApplicationState))
-	sc.ApplicationState = append(sc.ApplicationState, new(types.ApplicationState))
-	sc.ApplicationState = append(sc.ApplicationState, new(types.ApplicationState))
+	sc.SubmissionStates = []*types.SubmissionState{}
+	sc.SubmissionStates = append(sc.SubmissionStates, new(types.SubmissionState))
+	sc.SubmissionStates = append(sc.SubmissionStates, new(types.SubmissionState))
+	sc.SubmissionStates = append(sc.SubmissionStates, new(types.SubmissionState))
+	sc.SubmissionStates = append(sc.SubmissionStates, new(types.SubmissionState))
 	sc.Category = new(types.Category)
 	storiesToDisplay := screen.GetViewableStoriesOnSinglePage(
 		screen.GetTerminalHeight(),
@@ -40,25 +40,25 @@ func NewScreenController() *screenController {
 	width := screen.GetTerminalWidth()
 	height := screen.GetTerminalHeight()
 
-	sc.ApplicationState[types.NoCategory].MaxPages = 2
-	sc.ApplicationState[types.NoCategory].ScreenWidth = width
-	sc.ApplicationState[types.NoCategory].ScreenHeight = height
-	sc.ApplicationState[types.NoCategory].ViewableStoriesOnSinglePage = storiesToDisplay
+	sc.SubmissionStates[types.NoCategory].MaxPages = 2
+	sc.SubmissionStates[types.NoCategory].ScreenWidth = width
+	sc.SubmissionStates[types.NoCategory].ScreenHeight = height
+	sc.SubmissionStates[types.NoCategory].ViewableStoriesOnSinglePage = storiesToDisplay
 
-	sc.ApplicationState[types.New].MaxPages = 2
-	sc.ApplicationState[types.New].ScreenWidth = width
-	sc.ApplicationState[types.New].ScreenHeight = height
-	sc.ApplicationState[types.New].ViewableStoriesOnSinglePage = storiesToDisplay
+	sc.SubmissionStates[types.New].MaxPages = 2
+	sc.SubmissionStates[types.New].ScreenWidth = width
+	sc.SubmissionStates[types.New].ScreenHeight = height
+	sc.SubmissionStates[types.New].ViewableStoriesOnSinglePage = storiesToDisplay
 
-	sc.ApplicationState[types.Ask].MaxPages = 1
-	sc.ApplicationState[types.Ask].ScreenWidth = width
-	sc.ApplicationState[types.Ask].ScreenHeight = height
-	sc.ApplicationState[types.Ask].ViewableStoriesOnSinglePage = storiesToDisplay
+	sc.SubmissionStates[types.Ask].MaxPages = 1
+	sc.SubmissionStates[types.Ask].ScreenWidth = width
+	sc.SubmissionStates[types.Ask].ScreenHeight = height
+	sc.SubmissionStates[types.Ask].ViewableStoriesOnSinglePage = storiesToDisplay
 
-	sc.ApplicationState[types.Show].MaxPages = 1
-	sc.ApplicationState[types.Show].ScreenWidth = width
-	sc.ApplicationState[types.Show].ScreenHeight = height
-	sc.ApplicationState[types.Show].ViewableStoriesOnSinglePage = storiesToDisplay
+	sc.SubmissionStates[types.Show].MaxPages = 1
+	sc.SubmissionStates[types.Show].ScreenWidth = width
+	sc.SubmissionStates[types.Show].ScreenHeight = height
+	sc.SubmissionStates[types.Show].ViewableStoriesOnSinglePage = storiesToDisplay
 
 	sc.MainView = builder.NewMainView()
 
@@ -74,19 +74,19 @@ func NewScreenController() *screenController {
 	view.SetLeftMarginRanks(sc.MainView, 0, storiesToDisplay)
 	view.SetFooterText(sc.MainView, 0, width, 2)
 
-	newSubs, err := model.FetchSubmissions(sc.ApplicationState[types.NoCategory], sc.Category)
+	newSubs, err := model.FetchSubmissions(sc.SubmissionStates[types.NoCategory], sc.Category)
 
 	if err != nil {
 		println("Error: Could not retrieve submissions")
 		os.Exit(1)
 	}
 
-	sc.ApplicationState[types.NoCategory].Submissions = append(sc.ApplicationState[types.NoCategory].Submissions, newSubs...)
+	sc.SubmissionStates[types.NoCategory].Submissions = append(sc.SubmissionStates[types.NoCategory].Submissions, newSubs...)
 
-	model.SetList(newsList, sc.ApplicationState[types.NoCategory].Submissions, 0, storiesToDisplay, sc.Application)
+	model.SetList(newsList, sc.SubmissionStates[types.NoCategory].Submissions, 0, storiesToDisplay, sc.Application)
 
 	setShortcuts(sc.Application,
-		sc.ApplicationState,
+		sc.SubmissionStates,
 		sc.MainView,
 		sc.Category)
 
@@ -94,7 +94,7 @@ func NewScreenController() *screenController {
 }
 
 func setShortcuts(app *cview.Application,
-	state []*types.ApplicationState,
+	state []*types.SubmissionState,
 	main *types.MainView,
 	cat *types.Category) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
