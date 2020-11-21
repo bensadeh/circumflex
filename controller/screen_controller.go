@@ -33,31 +33,23 @@ func NewScreenController() *screenController {
 	sc.SubmissionStates = append(sc.SubmissionStates, new(types.SubmissionState))
 	sc.SubmissionStates = append(sc.SubmissionStates, new(types.SubmissionState))
 	sc.ApplicationState = new(types.ApplicationState)
+	sc.ApplicationState.ScreenWidth = screen.GetTerminalWidth()
+	sc.ApplicationState.ScreenHeight = screen.GetTerminalHeight()
+
 	storiesToDisplay := screen.GetViewableStoriesOnSinglePage(
 		screen.GetTerminalHeight(),
 		maximumStoriesToDisplay)
 
-	width := screen.GetTerminalWidth()
-	height := screen.GetTerminalHeight()
-
 	sc.SubmissionStates[types.NoCategory].MaxPages = 2
-	sc.SubmissionStates[types.NoCategory].ScreenWidth = width
-	sc.SubmissionStates[types.NoCategory].ScreenHeight = height
 	sc.SubmissionStates[types.NoCategory].ViewableStoriesOnSinglePage = storiesToDisplay
 
 	sc.SubmissionStates[types.New].MaxPages = 2
-	sc.SubmissionStates[types.New].ScreenWidth = width
-	sc.SubmissionStates[types.New].ScreenHeight = height
 	sc.SubmissionStates[types.New].ViewableStoriesOnSinglePage = storiesToDisplay
 
 	sc.SubmissionStates[types.Ask].MaxPages = 1
-	sc.SubmissionStates[types.Ask].ScreenWidth = width
-	sc.SubmissionStates[types.Ask].ScreenHeight = height
 	sc.SubmissionStates[types.Ask].ViewableStoriesOnSinglePage = storiesToDisplay
 
 	sc.SubmissionStates[types.Show].MaxPages = 1
-	sc.SubmissionStates[types.Show].ScreenWidth = width
-	sc.SubmissionStates[types.Show].ScreenHeight = height
 	sc.SubmissionStates[types.Show].ViewableStoriesOnSinglePage = storiesToDisplay
 
 	sc.MainView = builder.NewMainView()
@@ -70,9 +62,9 @@ func NewScreenController() *screenController {
 
 	sc.MainView.Panels.SetCurrentPanel(types.NewsPanel)
 
-	view.SetHackerNewsHeader(sc.MainView, width, types.NoCategory)
+	view.SetHackerNewsHeader(sc.MainView, sc.ApplicationState.ScreenWidth, types.NoCategory)
 	view.SetLeftMarginRanks(sc.MainView, 0, storiesToDisplay)
-	view.SetFooterText(sc.MainView, 0, width, 2)
+	view.SetFooterText(sc.MainView, 0,  sc.ApplicationState.ScreenWidth, 2)
 
 	newSubs, err := model.FetchSubmissions(sc.SubmissionStates[types.NoCategory], sc.ApplicationState)
 
@@ -94,13 +86,12 @@ func NewScreenController() *screenController {
 }
 
 func setShortcuts(app *cview.Application,
-	state []*types.SubmissionState,
+	submissionStates []*types.SubmissionState,
 	main *types.MainView,
-	cat *types.ApplicationState) {
+	appState *types.ApplicationState) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		currentState := state[cat.CurrentCategory]
+		currentState := submissionStates[appState.CurrentCategory]
 		currentPage := currentState.CurrentPage
-		screenWidth := currentState.ScreenWidth
 		viewableStories := currentState.ViewableStoriesOnSinglePage
 
 		frontPanel, _ := main.Panels.GetFrontPanel()
@@ -113,21 +104,21 @@ func setShortcuts(app *cview.Application,
 		}
 
 		if frontPanel == helpPage {
-			model.ReturnFromHelpScreen(main, screenWidth, cat, currentPage, currentState, viewableStories)
+			model.ReturnFromHelpScreen(main, appState.ScreenWidth, appState, currentPage, currentState, viewableStories)
 			return event
 		}
 
 		if event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab {
-			model.ChangeCategory(event, cat, state, main, app)
+			model.ChangeCategory(event, appState, submissionStates, main, app)
 			return event
 		} else if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
-			model.NextPage(app, currentState, main, cat)
+			model.NextPage(app, currentState, main, appState)
 		} else if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
-			model.PreviousPage(app, currentState, main, main.Panels)
+			model.PreviousPage(app, currentState, main, appState)
 		} else if event.Rune() == 'q' || event.Key() == tcell.KeyEsc {
 			app.Stop()
 		} else if event.Rune() == 'i' || event.Rune() == '?' {
-			model.ShowHelpScreen(main, screenWidth)
+			model.ShowHelpScreen(main, appState.ScreenWidth)
 		} else if event.Rune() == 'g' {
 			model.SelectFirstElementInList(main)
 		} else if event.Rune() == 'G' {

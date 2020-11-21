@@ -31,8 +31,6 @@ type SubmissionState struct {
 	StoriesListed               int
 	PageToFetchFromAPI          int
 	CurrentPage                 int
-	ScreenHeight                int
-	ScreenWidth                 int
 	ViewableStoriesOnSinglePage int
 	MaxPages                    int
 	IsOffline                   bool
@@ -41,6 +39,8 @@ type SubmissionState struct {
 
 type ApplicationState struct {
 	CurrentCategory int
+	ScreenHeight    int
+	ScreenWidth     int
 }
 
 type MainView struct {
