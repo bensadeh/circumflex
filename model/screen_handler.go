@@ -211,3 +211,17 @@ func PreviousPage(app *cview.Application,
 	view.SetLeftMarginRanks(main, state.CurrentPage, state.ViewableStoriesOnSinglePage)
 	view.SetFooterText(main, state.CurrentPage, state.ScreenWidth, state.MaxPages)
 }
+
+func ShowHelpScreen(main *primitives.MainView, screenWidth int) {
+	view.SetKeymapsHeader(main, screenWidth)
+	view.HideLeftMarginRanks(main)
+	view.HideFooterText(main)
+	view.SetPanelToHelpScreen(main)
+}
+
+func ReturnFromHelpScreen(main *primitives.MainView, screenWidth int, cat *types.Category, currentPage int, currentState *types.ApplicationState, viewableStories int) {
+	view.SetHackerNewsHeader(main, screenWidth, cat.CurrentCategory)
+	view.SetPanelCategory(main, cat.CurrentCategory)
+	view.SetFooterText(main, currentPage, screenWidth, currentState.MaxPages)
+	view.SetLeftMarginRanks(main, currentPage, viewableStories)
+}

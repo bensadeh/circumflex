@@ -119,29 +119,21 @@ func setShortcuts(app *cview.Application,
 		}
 
 		if frontPanel == helpPage {
-			view.SetHackerNewsHeader(main, screenWidth, cat.CurrentCategory)
-			view.SetPanelCategory(main, cat.CurrentCategory)
-			view.SetFooterText(main, currentPage, screenWidth, currentState.MaxPages)
-			view.SetLeftMarginRanks(main, currentPage, viewableStories)
+			model.ReturnFromHelpScreen(main, screenWidth, cat, currentPage, currentState, viewableStories)
 			return event
 		}
 
 		if event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab {
 			model.ChangeCategory(event, cat, state, main, app)
 			return event
-		}
-
-		if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
+		} else if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
 			model.NextPage(app, currentState, main, cat)
 		} else if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
 			model.PreviousPage(app, currentState, main, main.Panels)
 		} else if event.Rune() == 'q' || event.Key() == tcell.KeyEsc {
 			app.Stop()
 		} else if event.Rune() == 'i' || event.Rune() == '?' {
-			view.SetKeymapsHeader(main, screenWidth)
-			view.HideLeftMarginRanks(main)
-			view.HideFooterText(main)
-			view.SetPanelToHelpScreen(main)
+			model.ShowHelpScreen(main, screenWidth)
 		} else if event.Rune() == 'g' {
 			view.SelectFirstElementInList(main)
 		} else if event.Rune() == 'G' {
