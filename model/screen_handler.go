@@ -31,7 +31,7 @@ func NextPage(app *cview.Application, state *types.ApplicationState, main *primi
 		fetchAndAppendSubmissions(state, cat)
 	}
 
-	setList(list, state.Submissions, nextPage, state.ViewableStoriesOnSinglePage, app)
+	SetList(list, state.Submissions, nextPage, state.ViewableStoriesOnSinglePage, app)
 	list.SetCurrentItem(currentlySelectedItem)
 
 	state.CurrentPage++
@@ -72,7 +72,7 @@ func fetchSubmissions(state *types.ApplicationState, cat *types.Category) ([]*ty
 	return fetcher.FetchSubmissions(state.PageToFetchFromAPI, cat.CurrentCategory)
 }
 
-func setList(list *cview.List, submissions []*types.Submission, page int, submissionsToShow int, app *cview.Application) {
+func SetList(list *cview.List, submissions []*types.Submission, page int, submissionsToShow int, app *cview.Application) {
 	list.Clear()
 	start := page * submissionsToShow
 	end := start + submissionsToShow
@@ -152,7 +152,7 @@ func ChangeCategory(event *tcell.EventKey, cat *types.Category, state []*types.A
 
 	view.SetPanelCategory(main, cat.CurrentCategory)
 	list := getListFromFrontPanel(main.Panels)
-	setList(list, nextState.Submissions, 0, nextState.ViewableStoriesOnSinglePage, app)
+	SetList(list, nextState.Submissions, 0, nextState.ViewableStoriesOnSinglePage, app)
 
 	view.SetFooterText(main, nextState.CurrentPage, nextState.ScreenWidth, nextState.MaxPages)
 	view.SetLeftMarginRanks(main, nextState.CurrentPage, nextState.ViewableStoriesOnSinglePage)
@@ -203,7 +203,7 @@ func PreviousPage(app *cview.Application,
 
 	list := getListFromFrontPanel(pages)
 
-	setList(list, state.Submissions, previousPage, state.ViewableStoriesOnSinglePage, app)
+	SetList(list, state.Submissions, previousPage, state.ViewableStoriesOnSinglePage, app)
 	list.SetCurrentItem(currentlySelectedItem)
 
 	state.CurrentPage--

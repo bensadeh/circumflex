@@ -5,7 +5,6 @@ import (
 	"clx/primitives"
 	"clx/screen"
 	"clx/submission/fetcher"
-	formatter2 "clx/submission/formatter"
 	"clx/types"
 	"clx/view"
 	"github.com/gdamore/tcell/v2"
@@ -85,7 +84,7 @@ func NewScreenController() *screenController {
 
 	sc.ApplicationState[types.NoCategory].Submissions = append(sc.ApplicationState[types.NoCategory].Submissions, newSubs...)
 
-	setList(newsList, sc.ApplicationState[types.NoCategory].Submissions, 0, storiesToDisplay, sc.Application)
+	model.SetList(newsList, sc.ApplicationState[types.NoCategory].Submissions, 0, storiesToDisplay, sc.Application)
 
 	setShortcuts(sc.Application,
 		sc.ApplicationState,
@@ -93,25 +92,6 @@ func NewScreenController() *screenController {
 		sc.Category)
 
 	return sc
-}
-
-func setList(list *cview.List, submissions []*types.Submission, page int, submissionsToShow int, app *cview.Application) {
-	list.Clear()
-	start := page * submissionsToShow
-	end := start + submissionsToShow
-
-	for i := start; i < end; i++ {
-		s := submissions[i]
-		mainText := formatter2.GetMainText(s.Title, s.Domain)
-		secondaryText := formatter2.GetSecondaryText(s.Points, s.Author, s.Time, s.CommentsCount)
-
-		item := cview.NewListItem(mainText)
-		item.SetSecondaryText(secondaryText)
-
-		list.AddItem(item)
-	}
-
-	model.SetSelectedFunction(app, list, submissions, page, submissionsToShow)
 }
 
 func fetchSubmissions(state *types.ApplicationState, cat *types.Category) ([]*types.Submission, error) {
