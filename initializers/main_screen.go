@@ -1,6 +1,7 @@
-package primitives
+package builder
 
 import (
+	"clx/types"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 )
@@ -10,17 +11,8 @@ const (
 	offlinePage = "offline"
 )
 
-type MainView struct {
-	Panels      *cview.Panels
-	Grid        *cview.Grid
-	Footer      *cview.TextView
-	Header      *cview.TextView
-	LeftMargin  *cview.TextView
-	RightMargin *cview.TextView
-}
-
-func NewMainView() *MainView {
-	main := new(MainView)
+func NewMainView() *types.MainView {
+	main := new(types.MainView)
 	main.Panels = cview.NewPanels()
 	main.Grid = cview.NewGrid()
 	main.LeftMargin = newTextViewPrimitive("")

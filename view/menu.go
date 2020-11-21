@@ -1,14 +1,13 @@
 package view
 
 import (
-	"clx/primitives"
 	"clx/types"
 	text "github.com/MichaelMure/go-term-text"
 	"gitlab.com/tslocum/cview"
 	"strconv"
 )
 
-func SetHackerNewsHeader(m *primitives.MainView, screenWidth int, category int) {
+func SetHackerNewsHeader(m *types.MainView, screenWidth int, category int) {
 	switch category {
 	case types.NoCategory:
 		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  new | ask | show"
@@ -43,7 +42,7 @@ func appendWhitespace(base string, offset int, screenWidth int) string {
 	return base + whitespace
 }
 
-func SetKeymapsHeader(m *primitives.MainView, screenWidth int) {
+func SetKeymapsHeader(m *types.MainView, screenWidth int) {
 	base := "[white:rebeccapurple:]   [^] [::b]Keymaps"
 	offset := -27
 	whitespace := ""
@@ -53,16 +52,16 @@ func SetKeymapsHeader(m *primitives.MainView, screenWidth int) {
 	m.Header.SetText(base + whitespace)
 }
 
-func SetPanelCategory(m *primitives.MainView, category int) {
+func SetPanelCategory(m *types.MainView, category int) {
 	c := strconv.Itoa(category)
 	m.Panels.SetCurrentPanel(c)
 }
 
-func SetPanelToHelpScreen(m *primitives.MainView) {
+func SetPanelToHelpScreen(m *types.MainView) {
 	m.Panels.SetCurrentPanel("help")
 }
 
-func SetLeftMarginRanks(m *primitives.MainView, currentPage int, viewableStoriesOnSinglePage int) {
+func SetLeftMarginRanks(m *types.MainView, currentPage int, viewableStoriesOnSinglePage int) {
 	marginText := ""
 	indentationFromRight := " "
 	startingRank := viewableStoriesOnSinglePage*currentPage + 1
@@ -72,15 +71,15 @@ func SetLeftMarginRanks(m *primitives.MainView, currentPage int, viewableStories
 	m.LeftMargin.SetText(marginText)
 }
 
-func HideLeftMarginRanks(m *primitives.MainView) {
+func HideLeftMarginRanks(m *types.MainView) {
 	m.LeftMargin.SetText("")
 }
 
-func HideFooterText(m *primitives.MainView) {
+func HideFooterText(m *types.MainView) {
 	m.Footer.SetText("")
 }
 
-func SetFooterText(m *primitives.MainView, currentPage int, screenWidth int, maxPages int) {
+func SetFooterText(m *types.MainView, currentPage int, screenWidth int, maxPages int) {
 	if maxPages == 2 {
 		footerText := getFooterTextForThreePages(currentPage, screenWidth)
 		m.Footer.SetText(footerText)
@@ -131,13 +130,13 @@ func padWithWhitespaceFromTheLeft(s string, screenWidth int) string {
 	return whitespace + s
 }
 
-func SelectFirstElementInList(main *primitives.MainView) {
+func SelectFirstElementInList(main *types.MainView) {
 	list := getListFromFrontPanel(main.Panels)
 	list.SetCurrentItem(0)
 
 }
 
-func SelectLastElementInList(state *types.ApplicationState, main *primitives.MainView) {
+func SelectLastElementInList(state *types.ApplicationState, main *types.MainView) {
 	list := getListFromFrontPanel(main.Panels)
 	list.SetCurrentItem(state.ViewableStoriesOnSinglePage)
 }

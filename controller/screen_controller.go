@@ -1,8 +1,8 @@
 package controller
 
 import (
+	builder "clx/initializers"
 	"clx/model"
-	"clx/primitives"
 	"clx/screen"
 	"clx/types"
 	"clx/view"
@@ -19,7 +19,7 @@ const (
 
 type screenController struct {
 	Application      *cview.Application
-	MainView         *primitives.MainView
+	MainView         *types.MainView
 	ApplicationState []*types.ApplicationState
 	Category         *types.Category
 }
@@ -60,7 +60,7 @@ func NewScreenController() *screenController {
 	sc.ApplicationState[types.Show].ScreenHeight = height
 	sc.ApplicationState[types.Show].ViewableStoriesOnSinglePage = storiesToDisplay
 
-	sc.MainView = primitives.NewMainView()
+	sc.MainView = builder.NewMainView()
 
 	newsList := createNewList()
 	sc.MainView.Panels.AddPanel(types.NewsPanel, newsList, true, false)
@@ -95,7 +95,7 @@ func NewScreenController() *screenController {
 
 func setShortcuts(app *cview.Application,
 	state []*types.ApplicationState,
-	main *primitives.MainView,
+	main *types.MainView,
 	cat *types.Category) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		currentState := state[cat.CurrentCategory]

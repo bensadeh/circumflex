@@ -1,4 +1,4 @@
-package primitives
+package builder
 
 import (
 	text "github.com/MichaelMure/go-term-text"

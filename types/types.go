@@ -1,5 +1,7 @@
 package types
 
+import "gitlab.com/tslocum/cview"
+
 const (
 	NoCategory  = 0
 	New         = 1
@@ -39,4 +41,13 @@ type ApplicationState struct {
 
 type Category struct {
 	CurrentCategory int
+}
+
+type MainView struct {
+	Panels      *cview.Panels
+	Grid        *cview.Grid
+	Footer      *cview.TextView
+	Header      *cview.TextView
+	LeftMargin  *cview.TextView
+	RightMargin *cview.TextView
 }

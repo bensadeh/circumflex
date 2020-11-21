@@ -1,4 +1,4 @@
-package primitives
+package builder
 
 import (
 	"github.com/gdamore/tcell/v2"

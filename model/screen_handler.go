@@ -5,7 +5,6 @@ import (
 	"clx/cli"
 	cp "clx/comment-parser"
 	"clx/http"
-	"clx/primitives"
 	"clx/submission/fetcher"
 	formatter2 "clx/submission/formatter"
 	"clx/types"
@@ -16,7 +15,7 @@ import (
 	"strconv"
 )
 
-func NextPage(app *cview.Application, state *types.ApplicationState, main *primitives.MainView, cat *types.Category) {
+func NextPage(app *cview.Application, state *types.ApplicationState, main *types.MainView, cat *types.Category) {
 	nextPage := state.CurrentPage + 1
 
 	if nextPage > state.MaxPages {
@@ -136,7 +135,7 @@ func SetSelectedFunction(
 	})
 }
 
-func ChangeCategory(event *tcell.EventKey, cat *types.Category, state []*types.ApplicationState, main *primitives.MainView, app *cview.Application) {
+func ChangeCategory(event *tcell.EventKey, cat *types.Category, state []*types.ApplicationState, main *types.MainView, app *cview.Application) {
 	if event.Key() == tcell.KeyBacktab {
 		cat.CurrentCategory = getPreviousCategory(cat.CurrentCategory)
 	} else {
@@ -191,7 +190,7 @@ func getPreviousCategory(currentCategory int) int {
 
 func PreviousPage(app *cview.Application,
 	state *types.ApplicationState,
-	main *primitives.MainView,
+	main *types.MainView,
 	pages *cview.Panels) {
 
 	previousPage := state.CurrentPage - 1
@@ -212,25 +211,24 @@ func PreviousPage(app *cview.Application,
 	view.SetFooterText(main, state.CurrentPage, state.ScreenWidth, state.MaxPages)
 }
 
-func ShowHelpScreen(main *primitives.MainView, screenWidth int) {
+func ShowHelpScreen(main *types.MainView, screenWidth int) {
 	view.SetKeymapsHeader(main, screenWidth)
 	view.HideLeftMarginRanks(main)
 	view.HideFooterText(main)
 	view.SetPanelToHelpScreen(main)
 }
 
-func ReturnFromHelpScreen(main *primitives.MainView, screenWidth int, cat *types.Category, currentPage int, currentState *types.ApplicationState, viewableStories int) {
+func ReturnFromHelpScreen(main *types.MainView, screenWidth int, cat *types.Category, currentPage int, currentState *types.ApplicationState, viewableStories int) {
 	view.SetHackerNewsHeader(main, screenWidth, cat.CurrentCategory)
 	view.SetPanelCategory(main, cat.CurrentCategory)
 	view.SetFooterText(main, currentPage, screenWidth, currentState.MaxPages)
 	view.SetLeftMarginRanks(main, currentPage, viewableStories)
 }
 
-
-func SelectLastElementInList(currentState *types.ApplicationState, main *primitives.MainView) {
+func SelectLastElementInList(currentState *types.ApplicationState, main *types.MainView) {
 	view.SelectLastElementInList(currentState, main)
 }
 
-func SelectFirstElementInList(main *primitives.MainView) {
+func SelectFirstElementInList(main *types.MainView) {
 	view.SelectFirstElementInList(main)
 }
