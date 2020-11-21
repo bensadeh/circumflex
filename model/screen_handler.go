@@ -28,7 +28,7 @@ func NextPage(app *cview.Application,
 
 	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(main.Panels)
 
-	list := getListFromFrontPanel(main.Panels)
+	list := GetListFromFrontPanel(main.Panels)
 
 	if !pageHasEnoughSubmissionsToView(nextPage, subState.ViewableStoriesOnSinglePage, subState.Submissions) {
 		fetchAndAppendSubmissions(subState, appState)
@@ -52,7 +52,7 @@ func getCurrentlySelectedItemOnFrontPage(pages *cview.Panels) int {
 	return 0
 }
 
-func getListFromFrontPanel(pages *cview.Panels) *cview.List {
+func GetListFromFrontPanel(pages *cview.Panels) *cview.List {
 	_, primitive := pages.GetFrontPanel()
 	list, _ := primitive.(*cview.List)
 	return list
@@ -158,7 +158,7 @@ func ChangeCategory(event *tcell.EventKey,
 	}
 
 	view.SetPanelCategory(main, appState.CurrentCategory)
-	list := getListFromFrontPanel(main.Panels)
+	list := GetListFromFrontPanel(main.Panels)
 	SetList(list, nextState.Submissions, 0, nextState.ViewableStoriesOnSinglePage, app)
 
 	view.SetFooterText(main, nextState.CurrentPage, appState.ScreenWidth, nextState.MaxPages)
@@ -208,7 +208,7 @@ func PreviousPage(app *cview.Application,
 		return
 	}
 
-	list := getListFromFrontPanel(main.Panels)
+	list := GetListFromFrontPanel(main.Panels)
 
 	SetList(list, state.Submissions, previousPage, state.ViewableStoriesOnSinglePage, app)
 	list.SetCurrentItem(currentlySelectedItem)

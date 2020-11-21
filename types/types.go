@@ -13,6 +13,13 @@ const (
 	ShowPanel   = "3"
 )
 
+type ScreenController struct {
+	Application      *cview.Application
+	MainView         *MainView
+	SubmissionStates []*SubmissionState
+	ApplicationState *ApplicationState
+}
+
 type Submission struct {
 	ID            int    `json:"id"`
 	Title         string `json:"title"`

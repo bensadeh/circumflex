@@ -1,15 +1,70 @@
 package builder
 
 import (
+	"clx/screen"
 	"clx/types"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 )
 
 const (
-	helpPage    = "help"
-	offlinePage = "offline"
+	maximumStoriesToDisplay = 30
+	helpPage                = "help"
+	offlinePage             = "offline"
 )
+
+func NewScreenController() *types.ScreenController {
+	sc := new(types.ScreenController)
+
+	sc.Application = cview.NewApplication()
+
+	sc.SubmissionStates = []*types.SubmissionState{}
+	sc.SubmissionStates = append(sc.SubmissionStates, new(types.SubmissionState))
+	sc.SubmissionStates = append(sc.SubmissionStates, new(types.SubmissionState))
+	sc.SubmissionStates = append(sc.SubmissionStates, new(types.SubmissionState))
+	sc.SubmissionStates = append(sc.SubmissionStates, new(types.SubmissionState))
+
+	sc.ApplicationState = new(types.ApplicationState)
+	sc.ApplicationState.ScreenWidth = screen.GetTerminalWidth()
+	sc.ApplicationState.ScreenHeight = screen.GetTerminalHeight()
+
+	storiesToDisplay := screen.GetViewableStoriesOnSinglePage(sc.ApplicationState.ScreenHeight, maximumStoriesToDisplay)
+
+	sc.SubmissionStates[types.NoCategory].MaxPages = 2
+	sc.SubmissionStates[types.NoCategory].ViewableStoriesOnSinglePage = storiesToDisplay
+
+	sc.SubmissionStates[types.New].MaxPages = 2
+	sc.SubmissionStates[types.New].ViewableStoriesOnSinglePage = storiesToDisplay
+
+	sc.SubmissionStates[types.Ask].MaxPages = 1
+	sc.SubmissionStates[types.Ask].ViewableStoriesOnSinglePage = storiesToDisplay
+
+	sc.SubmissionStates[types.Show].MaxPages = 1
+	sc.SubmissionStates[types.Show].ViewableStoriesOnSinglePage = storiesToDisplay
+
+	sc.MainView = NewMainView()
+
+	newsList := NewList()
+	sc.MainView.Panels.AddPanel(types.NewsPanel, newsList, true, false)
+	sc.MainView.Panels.AddPanel(types.NewestPanel, NewList(), true, false)
+	sc.MainView.Panels.AddPanel(types.ShowPanel, NewList(), true, false)
+	sc.MainView.Panels.AddPanel(types.AskPanel, NewList(), true, false)
+
+	sc.MainView.Panels.SetCurrentPanel(types.NewsPanel)
+
+	return sc
+}
+
+func NewList() *cview.List {
+	list := cview.NewList()
+	list.SetBackgroundTransparent(false)
+	list.SetBackgroundColor(tcell.ColorDefault)
+	list.SetMainTextColor(tcell.ColorDefault)
+	list.SetSecondaryTextColor(tcell.ColorDefault)
+	list.ShowSecondaryText(true)
+
+	return list
+}
 
 func NewMainView() *types.MainView {
 	main := new(types.MainView)
