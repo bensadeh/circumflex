@@ -3,13 +3,13 @@ package main
 import (
 	"clx/cli"
 	"clx/cmd"
+	"clx/constructors"
 	"clx/controller"
-	builder "clx/initializers"
 )
 
 func main() {
 	cmd.Execute()
-	sc := builder.NewScreenController()
+	sc := constructor.NewScreenController()
 	controller.InitializeScreenController(sc)
 
 	cli.Clear()

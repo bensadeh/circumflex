@@ -1,4 +1,4 @@
-package builder
+package constructor
 
 import (
 	text "github.com/MichaelMure/go-term-text"
