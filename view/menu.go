@@ -4,6 +4,7 @@ import (
 	"clx/primitives"
 	"clx/types"
 	text "github.com/MichaelMure/go-term-text"
+	"gitlab.com/tslocum/cview"
 	"strconv"
 )
 
@@ -128,4 +129,21 @@ func padWithWhitespaceFromTheLeft(s string, screenWidth int) string {
 		whitespace += " "
 	}
 	return whitespace + s
+}
+
+func SelectFirstElementInList(main *primitives.MainView) {
+	list := getListFromFrontPanel(main.Panels)
+	list.SetCurrentItem(0)
+
+}
+
+func SelectLastElementInList(state *types.ApplicationState, main *primitives.MainView) {
+	list := getListFromFrontPanel(main.Panels)
+	list.SetCurrentItem(state.ViewableStoriesOnSinglePage)
+}
+
+func getListFromFrontPanel(pages *cview.Panels) *cview.List {
+	_, primitive := pages.GetFrontPanel()
+	list, _ := primitive.(*cview.List)
+	return list
 }
