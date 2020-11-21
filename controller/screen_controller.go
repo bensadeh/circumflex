@@ -60,7 +60,7 @@ func NewScreenController() *screenController {
 	sc.ApplicationState[types.Show].ScreenHeight = height
 	sc.ApplicationState[types.Show].ViewableStoriesOnSinglePage = storiesToDisplay
 
-	sc.MainView = primitives.NewMainView(width, storiesToDisplay)
+	sc.MainView = primitives.NewMainView()
 
 	newsList := createNewList()
 	sc.MainView.Panels.AddPanel(types.NewsPanel, newsList, true, false)
