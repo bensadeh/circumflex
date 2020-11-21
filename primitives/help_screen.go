@@ -13,6 +13,7 @@ const (
 
 Enter:         read comments
 o:             open submission link in browser
+c:             open comments in browser
 Tab:           change category
                                     
 i, ?:          bring up this screen

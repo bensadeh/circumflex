@@ -336,6 +336,11 @@ func setSelectedFunction(
 			item := list.GetCurrentItemIndex() + viewableStories*(currentPage)
 			url := submissions[item].URL
 			browser.Open(url)
+		} else if event.Rune() == 'c' {
+			item := list.GetCurrentItemIndex() + viewableStories*(currentPage)
+			id := submissions[item].ID
+			url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
+			browser.Open(url)
 		}
 		return event
 	})
