@@ -10,6 +10,7 @@ import (
 	"clx/submission/fetcher"
 	formatter2 "clx/submission/formatter"
 	"clx/types"
+	"clx/view"
 	"encoding/json"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
@@ -43,29 +44,30 @@ func NewScreenController() *screenController {
 		screen.GetTerminalHeight(),
 		maximumStoriesToDisplay)
 
+	width := screen.GetTerminalWidth()
+	height := screen.GetTerminalHeight()
+
 	sc.ApplicationState[types.NoCategory].MaxPages = 2
-	sc.ApplicationState[types.NoCategory].ScreenWidth = screen.GetTerminalWidth()
-	sc.ApplicationState[types.NoCategory].ScreenHeight = screen.GetTerminalHeight()
+	sc.ApplicationState[types.NoCategory].ScreenWidth = width
+	sc.ApplicationState[types.NoCategory].ScreenHeight = height
 	sc.ApplicationState[types.NoCategory].ViewableStoriesOnSinglePage = storiesToDisplay
 
 	sc.ApplicationState[types.New].MaxPages = 2
-	sc.ApplicationState[types.New].ScreenWidth = screen.GetTerminalWidth()
-	sc.ApplicationState[types.New].ScreenHeight = screen.GetTerminalHeight()
+	sc.ApplicationState[types.New].ScreenWidth = width
+	sc.ApplicationState[types.New].ScreenHeight = height
 	sc.ApplicationState[types.New].ViewableStoriesOnSinglePage = storiesToDisplay
 
 	sc.ApplicationState[types.Ask].MaxPages = 1
-	sc.ApplicationState[types.Ask].ScreenWidth = screen.GetTerminalWidth()
-	sc.ApplicationState[types.Ask].ScreenHeight = screen.GetTerminalHeight()
+	sc.ApplicationState[types.Ask].ScreenWidth = width
+	sc.ApplicationState[types.Ask].ScreenHeight = height
 	sc.ApplicationState[types.Ask].ViewableStoriesOnSinglePage = storiesToDisplay
 
 	sc.ApplicationState[types.Show].MaxPages = 1
-	sc.ApplicationState[types.Show].ScreenWidth = screen.GetTerminalWidth()
-	sc.ApplicationState[types.Show].ScreenHeight = screen.GetTerminalHeight()
+	sc.ApplicationState[types.Show].ScreenWidth = width
+	sc.ApplicationState[types.Show].ScreenHeight = height
 	sc.ApplicationState[types.Show].ViewableStoriesOnSinglePage = storiesToDisplay
 
-	sc.MainView = primitives.NewMainView(
-		sc.ApplicationState[types.NoCategory].ScreenWidth,
-		sc.ApplicationState[types.NoCategory].ViewableStoriesOnSinglePage)
+	sc.MainView = primitives.NewMainView(width, storiesToDisplay)
 
 	newsList := createNewList()
 	sc.MainView.Panels.AddPanel(types.NewsPanel, newsList, true, false)
@@ -74,6 +76,10 @@ func NewScreenController() *screenController {
 	sc.MainView.Panels.AddPanel(types.AskPanel, createNewList(), true, false)
 
 	sc.MainView.Panels.SetCurrentPanel(types.NewsPanel)
+
+	view.SetHackerNewsHeader(sc.MainView, width, types.NoCategory)
+	view.SetLeftMarginRanks(sc.MainView, 0, storiesToDisplay)
+	view.SetFooterText(sc.MainView, 0, width, 2)
 
 	newSubs, err := fetchSubmissions(sc.ApplicationState[types.NoCategory], sc.Category)
 
@@ -135,6 +141,9 @@ func setShortcuts(app *cview.Application,
 	cat *types.Category) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		currentState := state[cat.CurrentCategory]
+		currentPage := currentState.CurrentPage
+		screenWidth := currentState.ScreenWidth
+		viewableStories := currentState.ViewableStoriesOnSinglePage
 
 		frontPanel, _ := main.Panels.GetFrontPanel()
 
@@ -146,10 +155,10 @@ func setShortcuts(app *cview.Application,
 		}
 
 		if frontPanel == helpPage {
-			main.SetHeaderTextCategory(currentState.ScreenWidth, cat.CurrentCategory)
-			main.Panels.SetCurrentPanel(strconv.Itoa(cat.CurrentCategory))
-			main.SetFooterText(currentState.CurrentPage, currentState.ScreenWidth, currentState.MaxPages)
-			main.SetLeftMarginRanks(currentState.CurrentPage, currentState.ViewableStoriesOnSinglePage)
+			view.SetHackerNewsHeader(main, screenWidth, cat.CurrentCategory)
+			view.SetPanelCategory(main, cat.CurrentCategory)
+			view.SetFooterText(main, currentPage, screenWidth, currentState.MaxPages)
+			view.SetLeftMarginRanks(main, currentPage, viewableStories)
 			return event
 		}
 
@@ -167,36 +176,28 @@ func setShortcuts(app *cview.Application,
 				fetchAndAppendSubmissions(nextState, cat)
 			}
 
-			main.Panels.SetCurrentPanel(strconv.Itoa(cat.CurrentCategory))
+			view.SetPanelCategory(main, cat.CurrentCategory)
 			list := getListFromFrontPanel(main.Panels)
 			setList(list, nextState.Submissions, 0, nextState.ViewableStoriesOnSinglePage, app)
 
-			main.SetFooterText(nextState.CurrentPage, nextState.ScreenWidth, nextState.MaxPages)
-			main.SetLeftMarginRanks(nextState.CurrentPage, nextState.ViewableStoriesOnSinglePage)
-			main.SetHeaderTextCategory(nextState.ScreenWidth, cat.CurrentCategory)
+			view.SetFooterText(main, nextState.CurrentPage, nextState.ScreenWidth, nextState.MaxPages)
+			view.SetLeftMarginRanks(main, nextState.CurrentPage, nextState.ViewableStoriesOnSinglePage)
+			view.SetHackerNewsHeader(main, nextState.ScreenWidth, cat.CurrentCategory)
 
 			return event
 		}
 
 		if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
 			nextPage(app, currentState, main, cat)
-			main.SetLeftMarginRanks(currentState.CurrentPage,
-				currentState.ViewableStoriesOnSinglePage)
-			main.SetFooterText(currentState.CurrentPage,
-				currentState.ScreenWidth, currentState.MaxPages)
 		} else if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
-			previousPage(app, currentState, main.Panels)
-			main.SetLeftMarginRanks(currentState.CurrentPage,
-				currentState.ViewableStoriesOnSinglePage)
-			main.SetFooterText(currentState.CurrentPage,
-				currentState.ScreenWidth, currentState.MaxPages)
+			previousPage(app, currentState, main, main.Panels)
 		} else if event.Rune() == 'q' || event.Key() == tcell.KeyEsc {
 			app.Stop()
 		} else if event.Rune() == 'i' || event.Rune() == '?' {
-			main.SetHeaderTextToKeymaps(currentState.ScreenWidth)
-			main.HideFooterText()
-			main.HideLeftMarginRanks()
-			main.Panels.SetCurrentPanel(helpPage)
+			view.SetKeymapsHeader(main, screenWidth)
+			view.HideLeftMarginRanks(main)
+			view.HideFooterText(main)
+			view.SetPanelToHelpScreen(main)
 		} else if event.Rune() == 'g' {
 			selectFirstElementInList(main)
 		} else if event.Rune() == 'G' {
@@ -255,6 +256,9 @@ func nextPage(app *cview.Application, state *types.ApplicationState, main *primi
 	list.SetCurrentItem(currentlySelectedItem)
 
 	state.CurrentPage++
+
+	view.SetLeftMarginRanks(main, state.CurrentPage, state.ViewableStoriesOnSinglePage)
+	view.SetFooterText(main, state.CurrentPage, state.ScreenWidth, state.MaxPages)
 }
 
 func selectFirstElementInList(main *primitives.MainView) {
@@ -266,7 +270,6 @@ func selectFirstElementInList(main *primitives.MainView) {
 func selectLastElementInList(state *types.ApplicationState, main *primitives.MainView) {
 	list := getListFromFrontPanel(main.Panels)
 	list.SetCurrentItem(state.ViewableStoriesOnSinglePage)
-
 }
 
 func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []*types.Submission) bool {
@@ -285,7 +288,11 @@ func getCurrentlySelectedItemOnFrontPage(pages *cview.Panels) int {
 	return 0
 }
 
-func previousPage(app *cview.Application, state *types.ApplicationState, pages *cview.Panels) {
+func previousPage(app *cview.Application,
+	state *types.ApplicationState,
+	main *primitives.MainView,
+	pages *cview.Panels) {
+
 	previousPage := state.CurrentPage - 1
 	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(pages)
 
@@ -299,6 +306,9 @@ func previousPage(app *cview.Application, state *types.ApplicationState, pages *
 	list.SetCurrentItem(currentlySelectedItem)
 
 	state.CurrentPage--
+
+	view.SetLeftMarginRanks(main, state.CurrentPage, state.ViewableStoriesOnSinglePage)
+	view.SetFooterText(main, state.CurrentPage, state.ScreenWidth, state.MaxPages)
 }
 
 func setSelectedFunction(
