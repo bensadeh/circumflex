@@ -188,3 +188,26 @@ func getPreviousCategory(currentCategory int) int {
 		return 0
 	}
 }
+
+func PreviousPage(app *cview.Application,
+	state *types.ApplicationState,
+	main *primitives.MainView,
+	pages *cview.Panels) {
+
+	previousPage := state.CurrentPage - 1
+	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(pages)
+
+	if previousPage < 0 {
+		return
+	}
+
+	list := getListFromFrontPanel(pages)
+
+	setList(list, state.Submissions, previousPage, state.ViewableStoriesOnSinglePage, app)
+	list.SetCurrentItem(currentlySelectedItem)
+
+	state.CurrentPage--
+
+	view.SetLeftMarginRanks(main, state.CurrentPage, state.ViewableStoriesOnSinglePage)
+	view.SetFooterText(main, state.CurrentPage, state.ScreenWidth, state.MaxPages)
+}

@@ -114,20 +114,9 @@ func setList(list *cview.List, submissions []*types.Submission, page int, submis
 	model.SetSelectedFunction(app, list, submissions, page, submissionsToShow)
 }
 
-func fetchAndAppendSubmissions(state *types.ApplicationState, cat *types.Category) {
-	newSubs, _ := fetchSubmissions(state, cat)
-	state.Submissions = append(state.Submissions, newSubs...)
-}
-
 func fetchSubmissions(state *types.ApplicationState, cat *types.Category) ([]*types.Submission, error) {
 	state.PageToFetchFromAPI++
 	return fetcher.FetchSubmissions(state.PageToFetchFromAPI, cat.CurrentCategory)
-}
-
-func getListFromFrontPanel(pages *cview.Panels) *cview.List {
-	_, primitive := pages.GetFrontPanel()
-	list, _ := primitive.(*cview.List)
-	return list
 }
 
 func setShortcuts(app *cview.Application,
@@ -165,7 +154,7 @@ func setShortcuts(app *cview.Application,
 		if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
 			model.NextPage(app, currentState, main, cat)
 		} else if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
-			previousPage(app, currentState, main, main.Panels)
+			model.PreviousPage(app, currentState, main, main.Panels)
 		} else if event.Rune() == 'q' || event.Key() == tcell.KeyEsc {
 			app.Stop()
 		} else if event.Rune() == 'i' || event.Rune() == '?' {
@@ -180,40 +169,6 @@ func setShortcuts(app *cview.Application,
 		}
 		return event
 	})
-}
-
-
-
-func getCurrentlySelectedItemOnFrontPage(pages *cview.Panels) int {
-	_, primitive := pages.GetFrontPanel()
-	list, ok := primitive.(*cview.List)
-	if ok {
-		return list.GetCurrentItemIndex()
-	}
-	return 0
-}
-
-func previousPage(app *cview.Application,
-	state *types.ApplicationState,
-	main *primitives.MainView,
-	pages *cview.Panels) {
-
-	previousPage := state.CurrentPage - 1
-	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(pages)
-
-	if previousPage < 0 {
-		return
-	}
-
-	list := getListFromFrontPanel(pages)
-
-	setList(list, state.Submissions, previousPage, state.ViewableStoriesOnSinglePage, app)
-	list.SetCurrentItem(currentlySelectedItem)
-
-	state.CurrentPage--
-
-	view.SetLeftMarginRanks(main, state.CurrentPage, state.ViewableStoriesOnSinglePage)
-	view.SetFooterText(main, state.CurrentPage, state.ScreenWidth, state.MaxPages)
 }
 
 func createNewList() *cview.List {
