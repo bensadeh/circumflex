@@ -197,6 +197,10 @@ func setShortcuts(app *cview.Application,
 			main.HideFooterText()
 			main.HideLeftMarginRanks()
 			main.Panels.SetCurrentPanel(helpPage)
+		} else if event.Rune() == 'g' {
+			selectFirstElementInList(main)
+		} else if event.Rune() == 'G' {
+			selectLastElementInList(currentState, main)
 		}
 		return event
 	})
@@ -251,6 +255,18 @@ func nextPage(app *cview.Application, state *types.ApplicationState, main *primi
 	list.SetCurrentItem(currentlySelectedItem)
 
 	state.CurrentPage++
+}
+
+func selectFirstElementInList(main *primitives.MainView) {
+	list := getListFromFrontPanel(main.Panels)
+	list.SetCurrentItem(0)
+
+}
+
+func selectLastElementInList(state *types.ApplicationState, main *primitives.MainView) {
+	list := getListFromFrontPanel(main.Panels)
+	list.SetCurrentItem(state.ViewableStoriesOnSinglePage)
+
 }
 
 func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []*types.Submission) bool {
