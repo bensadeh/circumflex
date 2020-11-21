@@ -63,11 +63,11 @@ func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []
 }
 
 func fetchAndAppendSubmissions(state *types.ApplicationState, cat *types.Category) {
-	newSubs, _ := fetchSubmissions(state, cat)
+	newSubs, _ := FetchSubmissions(state, cat)
 	state.Submissions = append(state.Submissions, newSubs...)
 }
 
-func fetchSubmissions(state *types.ApplicationState, cat *types.Category) ([]*types.Submission, error) {
+func FetchSubmissions(state *types.ApplicationState, cat *types.Category) ([]*types.Submission, error) {
 	state.PageToFetchFromAPI++
 	return fetcher.FetchSubmissions(state.PageToFetchFromAPI, cat.CurrentCategory)
 }

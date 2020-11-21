@@ -4,7 +4,6 @@ import (
 	"clx/model"
 	"clx/primitives"
 	"clx/screen"
-	"clx/submission/fetcher"
 	"clx/types"
 	"clx/view"
 	"github.com/gdamore/tcell/v2"
@@ -75,7 +74,7 @@ func NewScreenController() *screenController {
 	view.SetLeftMarginRanks(sc.MainView, 0, storiesToDisplay)
 	view.SetFooterText(sc.MainView, 0, width, 2)
 
-	newSubs, err := fetchSubmissions(sc.ApplicationState[types.NoCategory], sc.Category)
+	newSubs, err := model.FetchSubmissions(sc.ApplicationState[types.NoCategory], sc.Category)
 
 	if err != nil {
 		println("Error: Could not retrieve submissions")
@@ -92,11 +91,6 @@ func NewScreenController() *screenController {
 		sc.Category)
 
 	return sc
-}
-
-func fetchSubmissions(state *types.ApplicationState, cat *types.Category) ([]*types.Submission, error) {
-	state.PageToFetchFromAPI++
-	return fetcher.FetchSubmissions(state.PageToFetchFromAPI, cat.CurrentCategory)
 }
 
 func setShortcuts(app *cview.Application,
