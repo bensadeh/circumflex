@@ -225,3 +225,12 @@ func ReturnFromHelpScreen(main *primitives.MainView, screenWidth int, cat *types
 	view.SetFooterText(main, currentPage, screenWidth, currentState.MaxPages)
 	view.SetLeftMarginRanks(main, currentPage, viewableStories)
 }
+
+
+func SelectLastElementInList(currentState *types.ApplicationState, main *primitives.MainView) {
+	view.SelectLastElementInList(currentState, main)
+}
+
+func SelectFirstElementInList(main *primitives.MainView) {
+	view.SelectFirstElementInList(main)
+}

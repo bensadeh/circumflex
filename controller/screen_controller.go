@@ -129,9 +129,9 @@ func setShortcuts(app *cview.Application,
 		} else if event.Rune() == 'i' || event.Rune() == '?' {
 			model.ShowHelpScreen(main, screenWidth)
 		} else if event.Rune() == 'g' {
-			view.SelectFirstElementInList(main)
+			model.SelectFirstElementInList(main)
 		} else if event.Rune() == 'G' {
-			view.SelectLastElementInList(currentState, main)
+			model.SelectLastElementInList(currentState, main)
 		}
 		return event
 	})
