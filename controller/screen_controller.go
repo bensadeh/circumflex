@@ -179,7 +179,7 @@ func setShortcuts(app *cview.Application,
 		}
 
 		if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
-			nextPage(app, state, main, cat)
+			nextPage(app, currentState, main, cat)
 			main.SetLeftMarginRanks(currentState.CurrentPage,
 				currentState.ViewableStoriesOnSinglePage)
 			main.SetFooterText(currentState.CurrentPage,
@@ -232,11 +232,10 @@ func getPreviousCategory(currentCategory int) int {
 	}
 }
 
-func nextPage(app *cview.Application, state []*types.ApplicationState, main *primitives.MainView, cat *types.Category) {
-	currentState := state[cat.CurrentCategory]
-	nextPage := currentState.CurrentPage + 1
+func nextPage(app *cview.Application, state *types.ApplicationState, main *primitives.MainView, cat *types.Category) {
+	nextPage := state.CurrentPage + 1
 
-	if nextPage > currentState.MaxPages {
+	if nextPage > state.MaxPages {
 		return
 	}
 
@@ -244,14 +243,14 @@ func nextPage(app *cview.Application, state []*types.ApplicationState, main *pri
 
 	list := getListFromFrontPanel(main.Panels)
 
-	if !pageHasEnoughSubmissionsToView(nextPage, currentState.ViewableStoriesOnSinglePage, currentState.Submissions) {
-		fetchAndAppendSubmissions(currentState, cat)
+	if !pageHasEnoughSubmissionsToView(nextPage, state.ViewableStoriesOnSinglePage, state.Submissions) {
+		fetchAndAppendSubmissions(state, cat)
 	}
 
-	setList(list, currentState.Submissions, nextPage, currentState.ViewableStoriesOnSinglePage, app)
+	setList(list, state.Submissions, nextPage, state.ViewableStoriesOnSinglePage, app)
 	list.SetCurrentItem(currentlySelectedItem)
 
-	currentState.CurrentPage++
+	state.CurrentPage++
 }
 
 func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []*types.Submission) bool {
