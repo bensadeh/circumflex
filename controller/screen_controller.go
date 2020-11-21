@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	helpPage                = "help"
-	offlinePage             = "offline"
+	helpPage    = "help"
+	offlinePage = "offline"
 )
 
 func InitializeScreenController(sc *types.ScreenController) {
