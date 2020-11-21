@@ -39,7 +39,7 @@ type SubmissionState struct {
 	Submissions                 []*Submission
 }
 
-type Category struct {
+type ApplicationState struct {
 	CurrentCategory int
 }
 

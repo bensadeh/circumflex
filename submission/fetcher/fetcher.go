@@ -31,7 +31,7 @@ func getUrl(category int) string {
 	case types.Show:
 		return baseURL + "show" + page
 	default:
-		panic("Category unsupported")
+		panic("ApplicationState unsupported")
 	}
 }
 

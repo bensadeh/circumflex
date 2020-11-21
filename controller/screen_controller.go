@@ -21,7 +21,7 @@ type screenController struct {
 	Application      *cview.Application
 	MainView         *types.MainView
 	SubmissionStates []*types.SubmissionState
-	Category         *types.Category
+	ApplicationState *types.ApplicationState
 }
 
 func NewScreenController() *screenController {
@@ -32,7 +32,7 @@ func NewScreenController() *screenController {
 	sc.SubmissionStates = append(sc.SubmissionStates, new(types.SubmissionState))
 	sc.SubmissionStates = append(sc.SubmissionStates, new(types.SubmissionState))
 	sc.SubmissionStates = append(sc.SubmissionStates, new(types.SubmissionState))
-	sc.Category = new(types.Category)
+	sc.ApplicationState = new(types.ApplicationState)
 	storiesToDisplay := screen.GetViewableStoriesOnSinglePage(
 		screen.GetTerminalHeight(),
 		maximumStoriesToDisplay)
@@ -74,7 +74,7 @@ func NewScreenController() *screenController {
 	view.SetLeftMarginRanks(sc.MainView, 0, storiesToDisplay)
 	view.SetFooterText(sc.MainView, 0, width, 2)
 
-	newSubs, err := model.FetchSubmissions(sc.SubmissionStates[types.NoCategory], sc.Category)
+	newSubs, err := model.FetchSubmissions(sc.SubmissionStates[types.NoCategory], sc.ApplicationState)
 
 	if err != nil {
 		println("Error: Could not retrieve submissions")
@@ -88,7 +88,7 @@ func NewScreenController() *screenController {
 	setShortcuts(sc.Application,
 		sc.SubmissionStates,
 		sc.MainView,
-		sc.Category)
+		sc.ApplicationState)
 
 	return sc
 }
@@ -96,7 +96,7 @@ func NewScreenController() *screenController {
 func setShortcuts(app *cview.Application,
 	state []*types.SubmissionState,
 	main *types.MainView,
-	cat *types.Category) {
+	cat *types.ApplicationState) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		currentState := state[cat.CurrentCategory]
 		currentPage := currentState.CurrentPage
