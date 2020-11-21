@@ -135,3 +135,56 @@ func SetSelectedFunction(
 		return event
 	})
 }
+
+func ChangeCategory(event *tcell.EventKey, cat *types.Category, state []*types.ApplicationState, main *primitives.MainView, app *cview.Application) {
+	if event.Key() == tcell.KeyBacktab {
+		cat.CurrentCategory = getPreviousCategory(cat.CurrentCategory)
+	} else {
+		cat.CurrentCategory = getNextCategory(cat.CurrentCategory)
+	}
+
+	nextState := state[cat.CurrentCategory]
+	nextState.CurrentPage = 0
+
+	if !pageHasEnoughSubmissionsToView(0, nextState.ViewableStoriesOnSinglePage, nextState.Submissions) {
+		fetchAndAppendSubmissions(nextState, cat)
+	}
+
+	view.SetPanelCategory(main, cat.CurrentCategory)
+	list := getListFromFrontPanel(main.Panels)
+	setList(list, nextState.Submissions, 0, nextState.ViewableStoriesOnSinglePage, app)
+
+	view.SetFooterText(main, nextState.CurrentPage, nextState.ScreenWidth, nextState.MaxPages)
+	view.SetLeftMarginRanks(main, nextState.CurrentPage, nextState.ViewableStoriesOnSinglePage)
+	view.SetHackerNewsHeader(main, nextState.ScreenWidth, cat.CurrentCategory)
+}
+
+func getNextCategory(currentCategory int) int {
+	switch currentCategory {
+	case types.NoCategory:
+		return types.New
+	case types.New:
+		return types.Ask
+	case types.Ask:
+		return types.Show
+	case types.Show:
+		return types.NoCategory
+	default:
+		return 0
+	}
+}
+
+func getPreviousCategory(currentCategory int) int {
+	switch currentCategory {
+	case types.NoCategory:
+		return types.Show
+	case types.Show:
+		return types.Ask
+	case types.Ask:
+		return types.New
+	case types.New:
+		return types.NoCategory
+	default:
+		return 0
+	}
+}

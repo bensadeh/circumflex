@@ -158,27 +158,7 @@ func setShortcuts(app *cview.Application,
 		}
 
 		if event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab {
-			if event.Key() == tcell.KeyBacktab {
-				cat.CurrentCategory = getPreviousCategory(cat.CurrentCategory)
-			} else {
-				cat.CurrentCategory = getNextCategory(cat.CurrentCategory)
-			}
-
-			nextState := state[cat.CurrentCategory]
-			nextState.CurrentPage = 0
-
-			if !pageHasEnoughSubmissionsToView(0, nextState.ViewableStoriesOnSinglePage, nextState.Submissions) {
-				fetchAndAppendSubmissions(nextState, cat)
-			}
-
-			view.SetPanelCategory(main, cat.CurrentCategory)
-			list := getListFromFrontPanel(main.Panels)
-			setList(list, nextState.Submissions, 0, nextState.ViewableStoriesOnSinglePage, app)
-
-			view.SetFooterText(main, nextState.CurrentPage, nextState.ScreenWidth, nextState.MaxPages)
-			view.SetLeftMarginRanks(main, nextState.CurrentPage, nextState.ViewableStoriesOnSinglePage)
-			view.SetHackerNewsHeader(main, nextState.ScreenWidth, cat.CurrentCategory)
-
+			model.ChangeCategory(event, cat, state, main, app)
 			return event
 		}
 
@@ -202,42 +182,7 @@ func setShortcuts(app *cview.Application,
 	})
 }
 
-func getNextCategory(currentCategory int) int {
-	switch currentCategory {
-	case types.NoCategory:
-		return types.New
-	case types.New:
-		return types.Ask
-	case types.Ask:
-		return types.Show
-	case types.Show:
-		return types.NoCategory
-	default:
-		return 0
-	}
-}
 
-func getPreviousCategory(currentCategory int) int {
-	switch currentCategory {
-	case types.NoCategory:
-		return types.Show
-	case types.Show:
-		return types.Ask
-	case types.Ask:
-		return types.New
-	case types.New:
-		return types.NoCategory
-	default:
-		return 0
-	}
-}
-
-func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []*types.Submission) bool {
-	largestItemToDisplay := (page * visibleStories) + visibleStories
-	downloadedSubmissions := len(submissions)
-
-	return downloadedSubmissions > largestItemToDisplay
-}
 
 func getCurrentlySelectedItemOnFrontPage(pages *cview.Panels) int {
 	_, primitive := pages.GetFrontPanel()
