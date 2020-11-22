@@ -2,8 +2,8 @@
 
 ## 0.2 (WIP)
 **New features:**
-- Added keybindings: 'g' / 'G' to go to first and last element
-- Added keybinding: 'c' to open submission comments in browser
+- Added keybindings: <kbd>g</kbd> / <kbd>G</kbd> to go to first and last element
+- Added keybinding: <kbd>c</kbd> to open submission comments in browser
 
 **Cosmetic:**
 - Added black background to YC startups in orange
