@@ -112,7 +112,7 @@ func SetSelectedFunction(
 					}
 
 					id := strconv.Itoa(s.ID)
-					JSON, _ := http.Get("http://node-hnapi.herokuapp.com/item/" + id)
+					JSON, _ := http.Get("http://api.hackerwebapp.com//item/" + id)
 					jComments := new(cp.Comments)
 					_ = json.Unmarshal(JSON, jComments)
 

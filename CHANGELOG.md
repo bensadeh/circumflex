@@ -11,6 +11,7 @@
 
 **Backend:**
 - Large parts of the code have been refactored and placed into an MVC pattern
+- cheeaun's [unofficial Hacker News API](https://github.com/cheeaun/node-hnapi): Changed API endpoint to use Cloudflare CDN
 
 ## 0.1 (2020-11-15)
 - First Release

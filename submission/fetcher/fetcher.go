@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	baseURL = "http://node-hnapi.herokuapp.com/"
+	baseURL = "http://api.hackerwebapp.com/"
 	page = "?page="
 )
 
