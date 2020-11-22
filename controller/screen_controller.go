@@ -15,10 +15,8 @@ const (
 )
 
 func InitializeScreenController(sc *types.ScreenController) {
-	storiesToDisplay := sc.SubmissionStates[types.NoCategory].ViewableStoriesOnSinglePage
-
 	view.SetHackerNewsHeader(sc.MainView, sc.ApplicationState.ScreenWidth, types.NoCategory)
-	view.SetLeftMarginRanks(sc.MainView, 0, storiesToDisplay)
+	view.SetLeftMarginRanks(sc.MainView, 0, sc.ApplicationState.ViewableStoriesOnSinglePage)
 	view.SetFooterText(sc.MainView, 0, sc.ApplicationState.ScreenWidth, 2)
 
 	newSubs, err := model.FetchSubmissions(sc.SubmissionStates[types.NoCategory], sc.ApplicationState)
@@ -32,7 +30,11 @@ func InitializeScreenController(sc *types.ScreenController) {
 
 	frontPanelList := model.GetListFromFrontPanel(sc.MainView.Panels)
 
-	model.SetList(frontPanelList, sc.SubmissionStates[types.NoCategory].Submissions, 0, storiesToDisplay, sc.Application)
+	model.SetList(frontPanelList,
+		sc.SubmissionStates[types.NoCategory].Submissions,
+		0,
+		sc.ApplicationState.ViewableStoriesOnSinglePage,
+		sc.Application)
 
 	setShortcuts(sc.Application,
 		sc.SubmissionStates,
@@ -46,8 +48,6 @@ func setShortcuts(app *cview.Application,
 	appState *types.ApplicationState) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		currentState := submissionStates[appState.CurrentCategory]
-		currentPage := currentState.CurrentPage
-		viewableStories := currentState.ViewableStoriesOnSinglePage
 
 		frontPanel, _ := main.Panels.GetFrontPanel()
 
@@ -59,7 +59,7 @@ func setShortcuts(app *cview.Application,
 		}
 
 		if frontPanel == helpPage {
-			model.ReturnFromHelpScreen(main, appState.ScreenWidth, appState, currentPage, currentState, viewableStories)
+			model.ReturnFromHelpScreen(main, appState, currentState)
 			return event
 		}
 
@@ -77,7 +77,7 @@ func setShortcuts(app *cview.Application,
 		} else if event.Rune() == 'g' {
 			model.SelectFirstElementInList(main)
 		} else if event.Rune() == 'G' {
-			model.SelectLastElementInList(currentState, main)
+			model.SelectLastElementInList(main, appState)
 		}
 		return event
 	})

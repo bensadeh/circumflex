@@ -20,7 +20,7 @@ func NextPage(app *cview.Application,
 	main *types.MainView,
 	appState *types.ApplicationState) {
 
-	nextPage := subState.CurrentPage + 1
+	nextPage := appState.CurrentPage + 1
 
 	if nextPage > subState.MaxPages {
 		return
@@ -30,17 +30,17 @@ func NextPage(app *cview.Application,
 
 	list := GetListFromFrontPanel(main.Panels)
 
-	if !pageHasEnoughSubmissionsToView(nextPage, subState.ViewableStoriesOnSinglePage, subState.Submissions) {
+	if !pageHasEnoughSubmissionsToView(nextPage, appState.ViewableStoriesOnSinglePage, subState.Submissions) {
 		fetchAndAppendSubmissions(subState, appState)
 	}
 
-	SetList(list, subState.Submissions, nextPage, subState.ViewableStoriesOnSinglePage, app)
+	SetList(list, subState.Submissions, nextPage, appState.ViewableStoriesOnSinglePage, app)
 	list.SetCurrentItem(currentlySelectedItem)
 
-	subState.CurrentPage++
+	appState.CurrentPage++
 
-	view.SetLeftMarginRanks(main, subState.CurrentPage, subState.ViewableStoriesOnSinglePage)
-	view.SetFooterText(main, subState.CurrentPage, appState.ScreenWidth, subState.MaxPages)
+	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
+	view.SetFooterText(main, appState.CurrentPage, appState.ScreenWidth, subState.MaxPages)
 }
 
 func getCurrentlySelectedItemOnFrontPage(pages *cview.Panels) int {
@@ -151,18 +151,18 @@ func ChangeCategory(event *tcell.EventKey,
 	}
 
 	nextState := subStates[appState.CurrentCategory]
-	nextState.CurrentPage = 0
+	appState.CurrentPage = 0
 
-	if !pageHasEnoughSubmissionsToView(0, nextState.ViewableStoriesOnSinglePage, nextState.Submissions) {
+	if !pageHasEnoughSubmissionsToView(0, appState.ViewableStoriesOnSinglePage, nextState.Submissions) {
 		fetchAndAppendSubmissions(nextState, appState)
 	}
 
 	view.SetPanelCategory(main, appState.CurrentCategory)
 	list := GetListFromFrontPanel(main.Panels)
-	SetList(list, nextState.Submissions, 0, nextState.ViewableStoriesOnSinglePage, app)
+	SetList(list, nextState.Submissions, 0, appState.ViewableStoriesOnSinglePage, app)
 
-	view.SetFooterText(main, nextState.CurrentPage, appState.ScreenWidth, nextState.MaxPages)
-	view.SetLeftMarginRanks(main, nextState.CurrentPage, nextState.ViewableStoriesOnSinglePage)
+	view.SetFooterText(main, appState.CurrentPage, appState.ScreenWidth, nextState.MaxPages)
+	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
 }
 
@@ -201,7 +201,7 @@ func PreviousPage(app *cview.Application,
 	main *types.MainView,
 	appState *types.ApplicationState) {
 
-	previousPage := state.CurrentPage - 1
+	previousPage := appState.CurrentPage - 1
 	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(main.Panels)
 
 	if previousPage < 0 {
@@ -210,13 +210,13 @@ func PreviousPage(app *cview.Application,
 
 	list := GetListFromFrontPanel(main.Panels)
 
-	SetList(list, state.Submissions, previousPage, state.ViewableStoriesOnSinglePage, app)
+	SetList(list, state.Submissions, previousPage, appState.ViewableStoriesOnSinglePage, app)
 	list.SetCurrentItem(currentlySelectedItem)
 
-	state.CurrentPage--
+	appState.CurrentPage--
 
-	view.SetLeftMarginRanks(main, state.CurrentPage, state.ViewableStoriesOnSinglePage)
-	view.SetFooterText(main, state.CurrentPage, appState.ScreenWidth, state.MaxPages)
+	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
+	view.SetFooterText(main, appState.CurrentPage, appState.ScreenWidth, state.MaxPages)
 }
 
 func ShowHelpScreen(main *types.MainView, screenWidth int) {
@@ -226,15 +226,15 @@ func ShowHelpScreen(main *types.MainView, screenWidth int) {
 	view.SetPanelToHelpScreen(main)
 }
 
-func ReturnFromHelpScreen(main *types.MainView, screenWidth int, cat *types.ApplicationState, currentPage int, currentState *types.SubmissionState, viewableStories int) {
-	view.SetHackerNewsHeader(main, screenWidth, cat.CurrentCategory)
-	view.SetPanelCategory(main, cat.CurrentCategory)
-	view.SetFooterText(main, currentPage, screenWidth, currentState.MaxPages)
-	view.SetLeftMarginRanks(main, currentPage, viewableStories)
+func ReturnFromHelpScreen(main *types.MainView, appState *types.ApplicationState, subState *types.SubmissionState) {
+	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
+	view.SetPanelCategory(main, appState.CurrentCategory)
+	view.SetFooterText(main, appState.CurrentPage, appState.ScreenWidth, subState.MaxPages)
+	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
 }
 
-func SelectLastElementInList(currentState *types.SubmissionState, main *types.MainView) {
-	view.SelectLastElementInList(currentState, main)
+func SelectLastElementInList(main *types.MainView, appState *types.ApplicationState) {
+	view.SelectLastElementInList(main, appState)
 }
 
 func SelectFirstElementInList(main *types.MainView) {

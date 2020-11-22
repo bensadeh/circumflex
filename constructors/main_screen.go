@@ -27,20 +27,14 @@ func NewScreenController() *types.ScreenController {
 	sc.ApplicationState = new(types.ApplicationState)
 	sc.ApplicationState.ScreenWidth = screen.GetTerminalWidth()
 	sc.ApplicationState.ScreenHeight = screen.GetTerminalHeight()
-
-	storiesToDisplay := screen.GetViewableStoriesOnSinglePage(sc.ApplicationState.ScreenHeight, maximumStoriesToDisplay)
+	sc.ApplicationState.ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
+		sc.ApplicationState.ScreenHeight,
+		maximumStoriesToDisplay)
 
 	sc.SubmissionStates[types.NoCategory].MaxPages = 2
-	sc.SubmissionStates[types.NoCategory].ViewableStoriesOnSinglePage = storiesToDisplay
-
 	sc.SubmissionStates[types.New].MaxPages = 2
-	sc.SubmissionStates[types.New].ViewableStoriesOnSinglePage = storiesToDisplay
-
 	sc.SubmissionStates[types.Ask].MaxPages = 1
-	sc.SubmissionStates[types.Ask].ViewableStoriesOnSinglePage = storiesToDisplay
-
 	sc.SubmissionStates[types.Show].MaxPages = 1
-	sc.SubmissionStates[types.Show].ViewableStoriesOnSinglePage = storiesToDisplay
 
 	sc.MainView = NewMainView()
 

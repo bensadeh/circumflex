@@ -33,21 +33,21 @@ type Submission struct {
 }
 
 type SubmissionState struct {
-	MappedSubmissions           int
-	MappedPages                 int
-	StoriesListed               int
-	PageToFetchFromAPI          int
-	CurrentPage                 int
-	ViewableStoriesOnSinglePage int
-	MaxPages                    int
-	IsOffline                   bool
-	Submissions                 []*Submission
+	MappedSubmissions  int
+	MappedPages        int
+	StoriesListed      int
+	PageToFetchFromAPI int
+	MaxPages           int
+	Submissions        []*Submission
 }
 
 type ApplicationState struct {
-	CurrentCategory int
-	ScreenHeight    int
-	ScreenWidth     int
+	ViewableStoriesOnSinglePage int
+	CurrentCategory             int
+	ScreenHeight                int
+	ScreenWidth                 int
+	CurrentPage                 int
+	IsOffline                   bool
 }
 
 type MainView struct {

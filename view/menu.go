@@ -136,9 +136,9 @@ func SelectFirstElementInList(main *types.MainView) {
 
 }
 
-func SelectLastElementInList(state *types.SubmissionState, main *types.MainView) {
+func SelectLastElementInList(main *types.MainView, appState *types.ApplicationState) {
 	list := getListFromFrontPanel(main.Panels)
-	list.SetCurrentItem(state.ViewableStoriesOnSinglePage)
+	list.SetCurrentItem(appState.ViewableStoriesOnSinglePage)
 }
 
 func getListFromFrontPanel(pages *cview.Panels) *cview.List {
