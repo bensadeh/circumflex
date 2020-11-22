@@ -7,7 +7,7 @@
 - Added keybinding: <kbd>c</kbd> to open submission comments in browser
 
 **Cosmetic:**
-- Added black background to YC startups in orange
+- On the submissions page, YC startup labels are now orange text on black background
 
 **Backend:**
 - Large parts of the code have been refactored and placed into an MVC pattern
