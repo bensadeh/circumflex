@@ -11,6 +11,7 @@ func main() {
 	cmd.Execute()
 	sc := constructor.NewScreenController()
 	controller.InitializeScreenController(sc)
+	controller.SetResizeFunction(sc.Application, sc.SubmissionStates, sc.MainView, sc.ApplicationState)
 
 	cli.Clear()
 

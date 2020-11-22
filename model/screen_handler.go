@@ -34,7 +34,7 @@ func NextPage(app *cview.Application,
 		fetchAndAppendSubmissions(subState, appState)
 	}
 
-	SetList(list, subState.Submissions, nextPage, appState.ViewableStoriesOnSinglePage, app)
+	SetList(list, subState.Submissions, appState, app)
 	list.SetCurrentItem(currentlySelectedItem)
 
 	appState.CurrentPage++
@@ -75,10 +75,10 @@ func FetchSubmissions(state *types.SubmissionState, cat *types.ApplicationState)
 	return fetcher.FetchSubmissions(state.PageToFetchFromAPI, cat.CurrentCategory)
 }
 
-func SetList(list *cview.List, submissions []*types.Submission, page int, submissionsToShow int, app *cview.Application) {
+func SetList(list *cview.List, submissions []*types.Submission, appState *types.ApplicationState, app *cview.Application) {
 	list.Clear()
-	start := page * submissionsToShow
-	end := start + submissionsToShow
+	start := appState.CurrentPage * appState.ViewableStoriesOnSinglePage
+	end := start + appState.ViewableStoriesOnSinglePage
 
 	for i := start; i < end; i++ {
 		s := submissions[i]
@@ -91,21 +91,20 @@ func SetList(list *cview.List, submissions []*types.Submission, page int, submis
 		list.AddItem(item)
 	}
 
-	SetSelectedFunction(app, list, submissions, page, submissionsToShow)
+	SetSelectedFunction(app, list, submissions, appState )
 }
 
 func SetSelectedFunction(
 	app *cview.Application,
 	list *cview.List,
 	submissions []*types.Submission,
-	currentPage int,
-	viewableStories int) {
+	appState *types.ApplicationState) {
 
 	list.SetSelectedFunc(func(i int, _ *cview.ListItem) {
 		app.Suspend(func() {
 			for index := range submissions {
 				if index == i {
-					storyIndex := (currentPage)*viewableStories + i
+					storyIndex := (appState.CurrentPage)*appState.ViewableStoriesOnSinglePage + i
 					s := submissions[storyIndex]
 
 					if s.Author == "" {
@@ -119,6 +118,7 @@ func SetSelectedFunction(
 
 					commentTree := cp.PrintCommentTree(*jComments, 4, 70)
 					cli.Less(commentTree)
+					appState.IsReturningFromSuspension = true
 				}
 			}
 		})
@@ -126,11 +126,11 @@ func SetSelectedFunction(
 
 	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Rune() == 'o' {
-			item := list.GetCurrentItemIndex() + viewableStories*(currentPage)
+			item := list.GetCurrentItemIndex() + appState.ViewableStoriesOnSinglePage*(appState.CurrentPage)
 			url := submissions[item].URL
 			browser.Open(url)
 		} else if event.Rune() == 'c' {
-			item := list.GetCurrentItemIndex() + viewableStories*(currentPage)
+			item := list.GetCurrentItemIndex() + appState.ViewableStoriesOnSinglePage*(appState.CurrentPage)
 			id := submissions[item].ID
 			url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
 			browser.Open(url)
@@ -159,7 +159,7 @@ func ChangeCategory(event *tcell.EventKey,
 
 	view.SetPanelCategory(main, appState.CurrentCategory)
 	list := GetListFromFrontPanel(main.Panels)
-	SetList(list, nextState.Submissions, 0, appState.ViewableStoriesOnSinglePage, app)
+	SetList(list, nextState.Submissions, appState, app)
 
 	view.SetFooterText(main, appState.CurrentPage, appState.ScreenWidth, nextState.MaxPages)
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
@@ -210,7 +210,7 @@ func PreviousPage(app *cview.Application,
 
 	list := GetListFromFrontPanel(main.Panels)
 
-	SetList(list, state.Submissions, previousPage, appState.ViewableStoriesOnSinglePage, app)
+	SetList(list, state.Submissions, appState, app)
 	list.SetCurrentItem(currentlySelectedItem)
 
 	appState.CurrentPage--

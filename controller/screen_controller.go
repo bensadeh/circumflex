@@ -2,6 +2,7 @@ package controller
 
 import (
 	"clx/model"
+	"clx/screen"
 	"clx/types"
 	"clx/view"
 	"github.com/gdamore/tcell/v2"
@@ -32,8 +33,7 @@ func InitializeScreenController(sc *types.ScreenController) {
 
 	model.SetList(frontPanelList,
 		sc.SubmissionStates[types.NoCategory].Submissions,
-		0,
-		sc.ApplicationState.ViewableStoriesOnSinglePage,
+		sc.ApplicationState,
 		sc.Application)
 
 	setShortcuts(sc.Application,
@@ -81,4 +81,60 @@ func setShortcuts(app *cview.Application,
 		}
 		return event
 	})
+}
+
+func SetResizeFunction(app *cview.Application,
+	submissionStates []*types.SubmissionState,
+	main *types.MainView,
+	appState *types.ApplicationState) {
+	app.SetAfterResizeFunc(func(width int, height int) {
+		if appState.IsReturningFromSuspension {
+			appState.IsReturningFromSuspension = false
+			return
+		}
+
+		appState.ScreenWidth = screen.GetTerminalWidth()
+		appState.ScreenHeight = screen.GetTerminalHeight()
+		appState.ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
+			appState.ScreenHeight,
+			30)
+
+		ClearSubmissionStates(submissionStates)
+
+		view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
+		view.SetLeftMarginRanks(main, 0, appState.ViewableStoriesOnSinglePage)
+		view.SetFooterText(main,
+			0,
+			appState.ScreenWidth,
+			submissionStates[appState.CurrentCategory].MaxPages)
+
+		newSubs, err := model.FetchSubmissions(submissionStates[appState.CurrentCategory], appState)
+
+		if err != nil {
+			println("Error: Could not retrieve submissions")
+			os.Exit(1)
+		}
+
+		submissionStates[appState.CurrentCategory].Submissions = append(submissionStates[appState.CurrentCategory].Submissions, newSubs...)
+
+		frontPanelList := model.GetListFromFrontPanel(main.Panels)
+
+		model.SetList(frontPanelList,
+			submissionStates[appState.CurrentCategory].Submissions,
+			appState,
+			app)
+
+		setShortcuts(app, submissionStates, main, appState)
+	})
+}
+
+func ClearSubmissionStates(submissionStates []*types.SubmissionState) {
+	numberOfCategories := 3
+
+	for i := 0; i < numberOfCategories; i++ {
+		submissionStates[i].MappedSubmissions = 0
+		submissionStates[i].PageToFetchFromAPI = 0
+		submissionStates[i].StoriesListed = 0
+		submissionStates[i].Submissions = nil
+	}
 }

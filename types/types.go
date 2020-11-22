@@ -48,6 +48,7 @@ type ApplicationState struct {
 	ScreenWidth                 int
 	CurrentPage                 int
 	IsOffline                   bool
+	IsReturningFromSuspension   bool
 }
 
 type MainView struct {
