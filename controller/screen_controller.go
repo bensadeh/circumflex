@@ -15,33 +15,6 @@ const (
 	offlinePage = "offline"
 )
 
-func InitializeScreenController(sc *types.ScreenController) {
-	view.SetHackerNewsHeader(sc.MainView, sc.ApplicationState.ScreenWidth, types.NoCategory)
-	view.SetLeftMarginRanks(sc.MainView, 0, sc.ApplicationState.ViewableStoriesOnSinglePage)
-	view.SetFooterText(sc.MainView, 0, sc.ApplicationState.ScreenWidth, 2)
-
-	newSubs, err := model.FetchSubmissions(sc.SubmissionStates[types.NoCategory], sc.ApplicationState)
-
-	if err != nil {
-		println("Error: Could not retrieve submissions")
-		os.Exit(1)
-	}
-
-	sc.SubmissionStates[types.NoCategory].Submissions = append(sc.SubmissionStates[types.NoCategory].Submissions, newSubs...)
-
-	frontPanelList := model.GetListFromFrontPanel(sc.MainView.Panels)
-
-	model.SetList(frontPanelList,
-		sc.SubmissionStates[types.NoCategory].Submissions,
-		sc.ApplicationState,
-		sc.Application)
-
-	setShortcuts(sc.Application,
-		sc.SubmissionStates,
-		sc.MainView,
-		sc.ApplicationState)
-}
-
 func setShortcuts(app *cview.Application,
 	submissionStates []*types.SubmissionState,
 	main *types.MainView,
