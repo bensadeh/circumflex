@@ -108,6 +108,7 @@ func SetSelectedFunction(
 					s := submissions[storyIndex]
 
 					if s.Author == "" {
+						appState.IsReturningFromSuspension = true
 						return
 					}
 
