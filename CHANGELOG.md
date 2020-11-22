@@ -2,7 +2,7 @@
 
 ## 0.2 (WIP)
 **New features:**
-- Added support for resizing the terminal
+- Added support for resizing the terminal while `circumflex` is running
 - Added keybindings: <kbd>g</kbd> / <kbd>G</kbd> to go to first and last element
 - Added keybinding: <kbd>c</kbd> to open submission comments in browser
 
