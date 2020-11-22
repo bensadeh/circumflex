@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2 (WIP)
+## 0.2 (2020-11-22)
 **New features:**
 - Added support for resizing the terminal while `circumflex` is running
 - Added keybindings: <kbd>g</kbd> / <kbd>G</kbd> to go to first and last element
