@@ -91,7 +91,7 @@ func SetList(list *cview.List, submissions []*types.Submission, appState *types.
 		list.AddItem(item)
 	}
 
-	SetSelectedFunction(app, list, submissions, appState )
+	SetSelectedFunction(app, list, submissions, appState)
 }
 
 func SetSelectedFunction(
