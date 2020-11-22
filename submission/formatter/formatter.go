@@ -61,7 +61,7 @@ func formatYCStartups(title string) string {
 }
 
 func orange(text string) string {
-	return "[orange]" + text + "[-:-:-]"
+	return "[orange:black]" + text + "[-:-:-]"
 }
 
 func GetSecondaryText(points int, author string, time string, comments int) string {
