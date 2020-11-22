@@ -34,10 +34,10 @@ func NextPage(app *cview.Application,
 		fetchAndAppendSubmissions(subState, appState)
 	}
 
+	appState.CurrentPage++
+
 	SetList(list, subState.Submissions, appState, app)
 	list.SetCurrentItem(currentlySelectedItem)
-
-	appState.CurrentPage++
 
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
 	view.SetFooterText(main, appState.CurrentPage, appState.ScreenWidth, subState.MaxPages)
@@ -210,10 +210,10 @@ func PreviousPage(app *cview.Application,
 
 	list := GetListFromFrontPanel(main.Panels)
 
+	appState.CurrentPage--
+
 	SetList(list, state.Submissions, appState, app)
 	list.SetCurrentItem(currentlySelectedItem)
-
-	appState.CurrentPage--
 
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
 	view.SetFooterText(main, appState.CurrentPage, appState.ScreenWidth, state.MaxPages)
