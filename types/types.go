@@ -49,6 +49,7 @@ type ApplicationState struct {
 	CurrentPage                 int
 	IsOffline                   bool
 	IsReturningFromSuspension   bool
+	IsOnHelpScreen              bool
 }
 
 type MainView struct {

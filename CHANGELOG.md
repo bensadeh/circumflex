@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1 (WIP)
+**Bugfix:**
+- Fixed a bug where `circumflex` would crash while resizing the terminal while on the help screen and on pages larger than 1
+
 ## 0.2 (2020-11-22)
 **New features:**
 - Added support for resizing the terminal while `circumflex` is running

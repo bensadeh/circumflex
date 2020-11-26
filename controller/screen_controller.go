@@ -46,7 +46,7 @@ func setShortcuts(app *cview.Application,
 		} else if event.Rune() == 'q' || event.Key() == tcell.KeyEsc {
 			app.Stop()
 		} else if event.Rune() == 'i' || event.Rune() == '?' {
-			model.ShowHelpScreen(main, appState.ScreenWidth)
+			model.ShowHelpScreen(main, appState)
 		} else if event.Rune() == 'g' {
 			model.SelectFirstElementInList(main)
 		} else if event.Rune() == 'G' {
@@ -66,6 +66,7 @@ func SetResizeFunction(app *cview.Application,
 			return
 		}
 
+		appState.CurrentPage = 0
 		appState.ScreenWidth = screen.GetTerminalWidth()
 		appState.ScreenHeight = screen.GetTerminalHeight()
 		appState.ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
@@ -74,6 +75,7 @@ func SetResizeFunction(app *cview.Application,
 
 		ClearSubmissionStates(submissionStates)
 
+		view.SetPanelCategory(main, appState.CurrentCategory)
 		view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
 		view.SetLeftMarginRanks(main, 0, appState.ViewableStoriesOnSinglePage)
 		view.SetFooterText(main,
@@ -96,6 +98,10 @@ func SetResizeFunction(app *cview.Application,
 			submissionStates[appState.CurrentCategory].Submissions,
 			appState,
 			app)
+
+		if appState.IsOnHelpScreen {
+			model.ShowHelpScreen(main, appState)
+		}
 
 		setShortcuts(app, submissionStates, main, appState)
 	})

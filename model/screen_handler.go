@@ -220,14 +220,18 @@ func PreviousPage(app *cview.Application,
 	view.SetFooterText(main, appState.CurrentPage, appState.ScreenWidth, state.MaxPages)
 }
 
-func ShowHelpScreen(main *types.MainView, screenWidth int) {
-	view.SetKeymapsHeader(main, screenWidth)
+func ShowHelpScreen(main *types.MainView, appState *types.ApplicationState) {
+	appState.IsOnHelpScreen = true
+
+	view.SetKeymapsHeader(main, appState.ScreenWidth)
 	view.HideLeftMarginRanks(main)
 	view.HideFooterText(main)
 	view.SetPanelToHelpScreen(main)
 }
 
 func ReturnFromHelpScreen(main *types.MainView, appState *types.ApplicationState, subState *types.SubmissionState) {
+	appState.IsOnHelpScreen = false
+
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
 	view.SetPanelCategory(main, appState.CurrentCategory)
 	view.SetFooterText(main, appState.CurrentPage, appState.ScreenWidth, subState.MaxPages)
