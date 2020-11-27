@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.1 (WIP)
+## 0.2.1 (2020-11-27)
 **New features:**
 - Added keybinding: Press <kbd>r</kbd> to refresh
 
