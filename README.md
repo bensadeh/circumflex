@@ -20,7 +20,7 @@
 
 ## Installation
 ### Homebrew
-The following command will add bensadeh/circumflex to your list of [taps](https://docs.brew.sh/Taps) and install `circumflex` from [this repo](https://github.com/bensadeh/homebrew-circumflex): 
+The following command adds bensadeh/circumflex to your list of [taps](https://docs.brew.sh/Taps) and installs `circumflex` from [this repo](https://github.com/bensadeh/homebrew-circumflex): 
 ```console
 brew install bensadeh/circumflex/circumflex
 ```
@@ -30,6 +30,7 @@ To run `circumflex`:
 ```console
 clx
 ```
+
 Press <kbd>i</kbd> on the submissions page for help.
 
 ## Features
