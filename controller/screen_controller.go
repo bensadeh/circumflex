@@ -51,6 +51,8 @@ func setShortcuts(app *cview.Application,
 			model.SelectFirstElementInList(main)
 		} else if event.Rune() == 'G' {
 			model.SelectLastElementInList(main, appState)
+		} else if event.Rune() == 'r' {
+			reinitializeAndFetchSubmissions(appState, submissionStates, main, app)
 		}
 		return event
 	})
@@ -61,53 +63,57 @@ func SetResizeFunction(app *cview.Application,
 	main *types.MainView,
 	appState *types.ApplicationState) {
 	app.SetAfterResizeFunc(func(width int, height int) {
-		if appState.IsReturningFromSuspension {
-			appState.IsReturningFromSuspension = false
-			return
-		}
-
-		appState.CurrentPage = 0
-		appState.ScreenWidth = screen.GetTerminalWidth()
-		appState.ScreenHeight = screen.GetTerminalHeight()
-		appState.ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
-			appState.ScreenHeight,
-			30)
-
-		ClearSubmissionStates(submissionStates)
-
-		view.SetPanelCategory(main, appState.CurrentCategory)
-		view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
-		view.SetLeftMarginRanks(main, 0, appState.ViewableStoriesOnSinglePage)
-		view.SetFooterText(main,
-			0,
-			appState.ScreenWidth,
-			submissionStates[appState.CurrentCategory].MaxPages)
-
-		newSubs, err := model.FetchSubmissions(submissionStates[appState.CurrentCategory], appState)
-
-		if err != nil {
-			println("Error: Could not retrieve submissions")
-			os.Exit(1)
-		}
-
-		submissionStates[appState.CurrentCategory].Submissions = append(submissionStates[appState.CurrentCategory].Submissions, newSubs...)
-
-		frontPanelList := model.GetListFromFrontPanel(main.Panels)
-
-		model.SetList(frontPanelList,
-			submissionStates[appState.CurrentCategory].Submissions,
-			appState,
-			app)
-
-		if appState.IsOnHelpScreen {
-			model.ShowHelpScreen(main, appState)
-		}
-
-		setShortcuts(app, submissionStates, main, appState)
+		reinitializeAndFetchSubmissions(appState, submissionStates, main, app)
 	})
 }
 
-func ClearSubmissionStates(submissionStates []*types.SubmissionState) {
+func reinitializeAndFetchSubmissions(appState *types.ApplicationState, submissionStates []*types.SubmissionState, main *types.MainView, app *cview.Application) {
+	if appState.IsReturningFromSuspension {
+		appState.IsReturningFromSuspension = false
+		return
+	}
+
+	appState.CurrentPage = 0
+	appState.ScreenWidth = screen.GetTerminalWidth()
+	appState.ScreenHeight = screen.GetTerminalHeight()
+	appState.ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
+		appState.ScreenHeight,
+		30)
+
+	clearSubmissionStates(submissionStates)
+
+	view.SetPanelCategory(main, appState.CurrentCategory)
+	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
+	view.SetLeftMarginRanks(main, 0, appState.ViewableStoriesOnSinglePage)
+	view.SetFooterText(main,
+		0,
+		appState.ScreenWidth,
+		submissionStates[appState.CurrentCategory].MaxPages)
+
+	newSubs, err := model.FetchSubmissions(submissionStates[appState.CurrentCategory], appState)
+
+	if err != nil {
+		println("Error: Could not retrieve submissions")
+		os.Exit(1)
+	}
+
+	submissionStates[appState.CurrentCategory].Submissions = append(submissionStates[appState.CurrentCategory].Submissions, newSubs...)
+
+	frontPanelList := model.GetListFromFrontPanel(main.Panels)
+
+	model.SetList(frontPanelList,
+		submissionStates[appState.CurrentCategory].Submissions,
+		appState,
+		app)
+
+	if appState.IsOnHelpScreen {
+		model.ShowHelpScreen(main, appState)
+	}
+
+	setShortcuts(app, submissionStates, main, appState)
+}
+
+func clearSubmissionStates(submissionStates []*types.SubmissionState) {
 	numberOfCategories := 3
 
 	for i := 0; i < numberOfCategories; i++ {

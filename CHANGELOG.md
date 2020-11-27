@@ -1,6 +1,9 @@
 # Changelog
 
 ## 0.2.1 (WIP)
+**New features:**
+- Added keybinding: Press <kbd>r</kbd> to refresh
+
 **Bugfix:**
 - Fixed a bug where `circumflex` would crash while resizing the terminal while on the help screen and on pages larger than 1
 

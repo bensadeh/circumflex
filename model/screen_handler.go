@@ -245,3 +245,5 @@ func SelectLastElementInList(main *types.MainView, appState *types.ApplicationSt
 func SelectFirstElementInList(main *types.MainView) {
 	view.SelectFirstElementInList(main)
 }
+
+
