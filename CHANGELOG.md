@@ -1,6 +1,9 @@
 # Changelog
 
 ## 0.3 (WIP)
+**New features:**
+- Added keybinding: Press <kbd>0</kbd>-<kbd>9</kbd> to go directly to submission
+
 **Cosmetic:**
 - Indented comment bar now also uses brighter colors
 - References now also uses brighter colors

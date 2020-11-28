@@ -8,6 +8,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 	"os"
+	"unicode"
 )
 
 const (
@@ -53,6 +54,8 @@ func setShortcuts(app *cview.Application,
 			model.SelectLastElementInList(main, appState)
 		} else if event.Rune() == 'r' {
 			reinitializeAndFetchSubmissions(appState, submissionStates, main, app)
+		} else if unicode.IsDigit(event.Rune()) {
+			model.SelectElementInList(main, event.Rune())
 		}
 		return event
 	})

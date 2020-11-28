@@ -141,6 +141,11 @@ func SelectLastElementInList(main *types.MainView, appState *types.ApplicationSt
 	list.SetCurrentItem(appState.ViewableStoriesOnSinglePage)
 }
 
+func SelectElementInList(main *types.MainView, index int) {
+	list := getListFromFrontPanel(main.Panels)
+	list.SetCurrentItem(index)
+}
+
 func getListFromFrontPanel(pages *cview.Panels) *cview.List {
 	_, primitive := pages.GetFrontPanel()
 	list, _ := primitive.(*cview.List)

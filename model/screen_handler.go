@@ -238,12 +238,17 @@ func ReturnFromHelpScreen(main *types.MainView, appState *types.ApplicationState
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
 }
 
-func SelectLastElementInList(main *types.MainView, appState *types.ApplicationState) {
-	view.SelectLastElementInList(main, appState)
-}
-
 func SelectFirstElementInList(main *types.MainView) {
 	view.SelectFirstElementInList(main)
 }
 
+func SelectLastElementInList(main *types.MainView, appState *types.ApplicationState) {
+	view.SelectLastElementInList(main, appState)
+}
 
+func SelectElementInList(main *types.MainView, element rune) {
+	i := element - '0'
+	adjustedIndex := int(i) -1
+
+	view.SelectElementInList(main, adjustedIndex)
+}
