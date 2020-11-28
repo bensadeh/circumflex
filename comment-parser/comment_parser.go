@@ -214,8 +214,6 @@ func getAuthorLabel(author, originalPoster, parentPoster string) string {
 		return ""
 	case "dang":
 		return green(" mod")
-	case "sctb":
-		return green(" mod")
 	case originalPoster:
 		return red(" OP")
 	case parentPoster:
