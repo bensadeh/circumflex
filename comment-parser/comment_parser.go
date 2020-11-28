@@ -219,7 +219,7 @@ func getAuthorLabel(author, originalPoster, parentPoster string) string {
 	case originalPoster:
 		return red(" OP")
 	case parentPoster:
-		return purple(" PP")
+		return magenta(" PP")
 	default:
 		return ""
 	}
@@ -287,8 +287,8 @@ func colorizeLinkNumbers(input string) string {
 	input = strings.ReplaceAll(input, "[2]", "["+yellow("2")+"]")
 	input = strings.ReplaceAll(input, "[3]", "["+green("3")+"]")
 	input = strings.ReplaceAll(input, "[4]", "["+blue("4")+"]")
-	input = strings.ReplaceAll(input, "[5]", "["+teal("5")+"]")
-	input = strings.ReplaceAll(input, "[6]", "["+purple("6")+"]")
+	input = strings.ReplaceAll(input, "[5]", "["+cyan("5")+"]")
+	input = strings.ReplaceAll(input, "[6]", "["+magenta("6")+"]")
 	input = strings.ReplaceAll(input, "[7]", "["+white("7")+"]")
 	input = strings.ReplaceAll(input, "[8]", "["+red("8")+"]")
 	input = strings.ReplaceAll(input, "[9]", "["+yellow("9")+"]")

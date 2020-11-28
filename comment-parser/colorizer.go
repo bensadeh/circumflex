@@ -56,11 +56,11 @@ func blue(text string) string {
 	return Blue + text + Normal
 }
 
-func teal(text string) string {
+func cyan(text string) string {
 	return Cyan + text + Normal
 }
 
-func purple(text string) string {
+func magenta(text string) string {
 	return Magenta + text + Normal
 }
 
