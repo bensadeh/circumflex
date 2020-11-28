@@ -11,14 +11,14 @@ const (
 	Green         = "\033[32m"
 	Yellow        = "\033[33m"
 	Blue          = "\033[34m"
-	Purple        = "\033[35m"
-	Teal          = "\033[36m"
+	Magenta       = "\033[35m"
+	Cyan          = "\033[36m"
 	White         = "\033[37m"
 	AltRed        = "\033[31;1m"
 	AltGreen      = "\033[32;1m"
 	AltYellow     = "\033[33;1m"
 	AltBlue       = "\033[34;1m"
-	AltPurple     = "\033[35;1m"
+	AltCyan       = "\033[35;1m"
 	AltTeal       = "\033[36;1m"
 	AltWhite      = "\033[37;1m"
 	Link1         = "\033]8;;"
@@ -57,11 +57,11 @@ func blue(text string) string {
 }
 
 func teal(text string) string {
-	return Teal + text + Normal
+	return Cyan + text + Normal
 }
 
 func purple(text string) string {
-	return Purple + text + Normal
+	return Magenta + text + Normal
 }
 
 func white(text string) string {
@@ -83,9 +83,9 @@ func getColoredIndentBlock(level int) string {
 	case 4:
 		return Blue
 	case 5:
-		return Teal
+		return Cyan
 	case 6:
-		return Purple
+		return Magenta
 	case 7:
 		return White
 	case 8:
@@ -99,7 +99,7 @@ func getColoredIndentBlock(level int) string {
 	case 12:
 		return AltTeal
 	case 13:
-		return AltPurple
+		return AltCyan
 	case 14:
 		return AltWhite
 	default:
