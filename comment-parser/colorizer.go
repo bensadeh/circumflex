@@ -14,6 +14,13 @@ const (
 	Purple        = "\033[35m"
 	Teal          = "\033[36m"
 	White         = "\033[37m"
+	AltRed        = "\033[31;1m"
+	AltGreen      = "\033[32;1m"
+	AltYellow     = "\033[33;1m"
+	AltBlue       = "\033[34;1m"
+	AltPurple     = "\033[35;1m"
+	AltTeal       = "\033[36;1m"
+	AltWhite      = "\033[37;1m"
 	Link1         = "\033]8;;"
 	Link2         = "\a"
 	Link3         = "\033]8;;\a"
@@ -82,19 +89,19 @@ func getColoredIndentBlock(level int) string {
 	case 7:
 		return White
 	case 8:
-		return Red
+		return AltRed
 	case 9:
-		return Yellow
+		return AltYellow
 	case 10:
-		return Green
+		return AltGreen
 	case 11:
-		return Blue
+		return AltBlue
 	case 12:
-		return Teal
+		return AltTeal
 	case 13:
-		return Purple
+		return AltPurple
 	case 14:
-		return White
+		return AltWhite
 	default:
 		return Normal
 	}

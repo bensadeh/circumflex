@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3 (WIP)
+**Cosmetic:**
+- Selected items now uses the terminal's default colors in order to correctly highlight the selection regardless of
+  color scheme
+
 ## 0.2.2 (2020-11-28)
 **Cosmetic:**
 - Selected items now uses the terminal's default colors in order to correctly highlight the selection regardless of 
