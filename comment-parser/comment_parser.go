@@ -289,10 +289,10 @@ func colorizeLinkNumbers(input string) string {
 	input = strings.ReplaceAll(input, "[4]", "["+blue("4")+"]")
 	input = strings.ReplaceAll(input, "[5]", "["+cyan("5")+"]")
 	input = strings.ReplaceAll(input, "[6]", "["+magenta("6")+"]")
-	input = strings.ReplaceAll(input, "[7]", "["+white("7")+"]")
-	input = strings.ReplaceAll(input, "[8]", "["+red("8")+"]")
-	input = strings.ReplaceAll(input, "[9]", "["+yellow("9")+"]")
-	input = strings.ReplaceAll(input, "[10]", "["+green("10")+"]")
+	input = strings.ReplaceAll(input, "[7]", "["+altWhite("7")+"]")
+	input = strings.ReplaceAll(input, "[8]", "["+altRed("8")+"]")
+	input = strings.ReplaceAll(input, "[9]", "["+altYellow("9")+"]")
+	input = strings.ReplaceAll(input, "[10]", "["+altGreen("10")+"]")
 	return input
 }
 

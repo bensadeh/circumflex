@@ -68,6 +68,22 @@ func white(text string) string {
 	return White + text + Normal
 }
 
+func altRed(text string) string {
+	return AltRed + text + Normal
+}
+
+func altYellow(text string) string {
+	return AltYellow + text + Normal
+}
+
+func altGreen(text string) string {
+	return AltGreen + text + Normal
+}
+
+func altWhite(text string) string {
+	return AltWhite + text + Normal
+}
+
 func paren(text string) string {
 	return "(" + text + ")"
 }
