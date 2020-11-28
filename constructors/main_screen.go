@@ -55,7 +55,9 @@ func NewList() *cview.List {
 	list.SetBackgroundColor(tcell.ColorDefault)
 	list.SetMainTextColor(tcell.ColorDefault)
 	list.SetSecondaryTextColor(tcell.ColorDefault)
-	list.ShowSecondaryText(true)
+	list.SetSelectedTextAttributes(tcell.AttrReverse)
+	list.SetSelectedTextColor(tcell.ColorDefault)
+	list.SetSelectedBackgroundColor(tcell.ColorDefault)
 
 	return list
 }

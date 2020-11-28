@@ -1,11 +1,17 @@
 # Changelog
 
+## 0.2.2 (WIP)
+**Cosmetic:**
+- Selected items now uses the terminal's default colors in order to correctly highlight the selection regardless of 
+  color scheme
+
 ## 0.2.1 (2020-11-27)
 **New features:**
 - Added keybinding: Press <kbd>r</kbd> to refresh
 
 **Bugfix:**
-- Fixed a bug where `circumflex` would crash while resizing the terminal while on the help screen and on pages larger than 1
+- Fixed a bug where `circumflex` would crash while resizing the terminal while on the help screen and on pages larger 
+  than 1
 
 ## 0.2 (2020-11-22)
 **New features:**
