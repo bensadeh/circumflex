@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3 (WIP)
+## 0.2.3 (2020-12-05)
 **New features:**
 - Added keybinding: Press <kbd>0</kbd>-<kbd>9</kbd> to go directly to submission
 
