@@ -43,8 +43,8 @@ func appendWhitespace(base string, offset int, screenWidth int) string {
 }
 
 func SetKeymapsHeader(m *types.MainView, screenWidth int) {
-	base := "[white:rebeccapurple:]   [^] [::b]Keymaps"
-	offset := -27
+	base := "[#292D3E:#82aaff:b]       Keymaps"
+	offset := -19
 	whitespace := ""
 	for i := 0; i < screenWidth-text.Len(base)-offset; i++ {
 		whitespace += " "

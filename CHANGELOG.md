@@ -7,6 +7,7 @@
 **Cosmetic:**
 - Indented comment bar now also uses brighter colors
 - References now also uses brighter colors
+- Comment section: Added a notice about entering `less` and how to exit from it
 
 ## 0.2.2 (2020-11-28)
 **Cosmetic:**
