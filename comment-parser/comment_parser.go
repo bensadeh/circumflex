@@ -40,7 +40,7 @@ func getHeader(c Comments, commentWidth int) string {
 	submissionComment := parseRootComment(c.Comment, commentWidth)
 	helpMessage := dimmed("You are now in 'less'. Press 'q' to return and 'h' for help.") + NewLine
 	separator := getSeparator(commentWidth)
-	return headline + infoLine + submissionComment + helpMessage + separator + DoubleNewLine
+	return headline + infoLine + helpMessage + submissionComment + separator + DoubleNewLine
 }
 
 func getInfoLine(points int, author string, timeAgo string, numberOfComments int) string {
