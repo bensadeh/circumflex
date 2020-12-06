@@ -2,13 +2,11 @@ package main
 
 import (
 	"clx/cli"
-	"clx/cmd"
 	"clx/constructors"
 	"clx/controller"
 )
 
 func main() {
-	cmd.Execute()
 	sc := constructor.NewScreenController()
 
 	controller.SetResizeFunction(sc.Application, sc.SubmissionStates, sc.MainView, sc.ApplicationState)
