@@ -20,7 +20,7 @@
 
 ## Installation
 ### Homebrew
-The following command adds bensadeh/circumflex to your list of [taps](https://docs.brew.sh/Taps) and installs `circumflex` from [this repo](https://github.com/bensadeh/homebrew-circumflex): 
+The following command adds bensadeh/circumflex to your list of [taps](https://docs.brew.sh/Taps) and installs `circumflex` from [this formula](https://github.com/bensadeh/homebrew-circumflex): 
 ```console
 brew install bensadeh/circumflex/circumflex
 ```
@@ -31,12 +31,24 @@ To run `circumflex`:
 clx
 ```
 
-Press <kbd>i</kbd> on the submissions page for help.
+Press <kbd>i</kbd> for help.
 
 ## Features
-* 🚀 Fast and lightweight 
+
+### Main features
+`circumflex` lets you:
+* 🗞 Browse Hacker News by category (New, Newest, Ask HN or Show HN)
 * 💬 Read comments in the pager `less`
-* 🎨 Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code`
+
+### Secondary features
+Additionally, `circumflex` supports the following nice-to-have features:
+* ⚡️ Vim keybindings
+* 🌐 UTF-8 encoding
+* 🎨 Text formatting in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code`
+* 🖍 Uses your terminal's own color scheme
+* 📐 Comments are indented and color-coded
+* 🔄 References in comments ([1],[2] etc.) are colored for easier cross-referencing
+
 
 <p align="center">
   <img src="screenshots/comments.png" width="700" alt="^"/>
