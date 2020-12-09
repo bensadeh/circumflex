@@ -79,7 +79,7 @@ func HideFooterText(m *types.MainView) {
 	m.Footer.SetText("")
 }
 
-func SetFooterText(m *types.MainView, currentPage int, screenWidth int, maxPages int) {
+func SetFooter(m *types.MainView, currentPage int, screenWidth int, maxPages int) {
 	if maxPages == 2 {
 		footerText := getFooterTextForThreePages(currentPage, screenWidth)
 		m.Footer.SetText(footerText)

@@ -88,7 +88,7 @@ func reinitializeAndFetchSubmissions(appState *types.ApplicationState, submissio
 	view.SetPanelCategory(main, appState.CurrentCategory)
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
 	view.SetLeftMarginRanks(main, 0, appState.ViewableStoriesOnSinglePage)
-	view.SetFooterText(main,
+	view.SetFooter(main,
 		0,
 		appState.ScreenWidth,
 		submissionStates[appState.CurrentCategory].MaxPages)
