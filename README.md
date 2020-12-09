@@ -37,17 +37,17 @@ Press <kbd>i</kbd> for help.
 
 ### Main features
 `circumflex` lets you:
-* 🗞 Browse Hacker News by category (New, Newest, Ask HN or Show HN)
+* 🗞 Browse Hacker News by category (News, Newest, Ask HN or Show HN)
 * 💬 Read comments in the pager `less`
 
-### Secondary features
+### You might also like
 Additionally, `circumflex` supports the following nice-to-have features:
 * ⚡️ Vim keybindings
-* 🌐 UTF-8 encoding
-* 🎨 Text formatting in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code`
 * 🖍 Uses your terminal's own color scheme
-* 📐 Comments are indented and color-coded
-* 🔄 References in comments ([1],[2] etc.) are colored for easier cross-referencing
+* 🎨 Rich text formatting in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code`
+  * 📐 Replies are indented and color-coded
+  * 🎩 Original Poster (OP), Parent Poster (PP) and moderators are labelled
+  * 🔗 References ([1],[2] etc.) are colored for easier readability
 
 
 <p align="center">
