@@ -5,6 +5,7 @@ import (
 	"clx/cli"
 	cp "clx/comment-parser"
 	"clx/http"
+	"clx/screen"
 	"clx/submission/fetcher"
 	formatter2 "clx/submission/formatter"
 	"clx/types"
@@ -13,88 +14,69 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 	"strconv"
+	"unicode"
+)
+const (
+	helpPage    = "help"
+	offlinePage = "offline"
 )
 
-func NextPage(app *cview.Application,
-	subState *types.SubmissionState,
+func SetApplicationShortcuts(app *cview.Application,
+	submissionStates []*types.SubmissionState,
 	main *types.MainView,
 	appState *types.ApplicationState) {
+	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		currentState := submissionStates[appState.CurrentCategory]
 
-	nextPage := appState.CurrentPage + 1
+		frontPanel, _ := main.Panels.GetFrontPanel()
 
-	if nextPage > subState.MaxPages {
-		return
-	}
+		if frontPanel == offlinePage {
+			if event.Rune() == 'q' {
+				app.Stop()
+			}
+			return event
+		}
 
-	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(main.Panels)
+		if frontPanel == helpPage {
+			ReturnFromHelpScreen(main, appState, currentState)
+			return event
+		}
 
-	list := GetListFromFrontPanel(main.Panels)
-
-	if !pageHasEnoughSubmissionsToView(nextPage, appState.ViewableStoriesOnSinglePage, subState.Submissions) {
-		fetchAndAppendSubmissions(subState, appState)
-	}
-
-	appState.CurrentPage++
-
-	ShowSubmissions(list, subState.Submissions, appState, app)
-	list.SetCurrentItem(currentlySelectedItem)
-
-	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
-	view.SetFooter(main, appState.CurrentPage, appState.ScreenWidth, subState.MaxPages)
+		if event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab {
+			ChangeCategory(event, appState, submissionStates, main, app)
+			return event
+		} else if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
+			NextPage(app, currentState, main, appState)
+			return event
+		} else if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
+			PreviousPage(app, currentState, main, appState)
+			return event
+		} else if event.Rune() == 'q' || event.Key() == tcell.KeyEsc {
+			app.Stop()
+		} else if event.Rune() == 'i' || event.Rune() == '?' {
+			ShowHelpScreen(main, appState)
+			return event
+		} else if event.Rune() == 'g' {
+			SelectFirstElementInList(main)
+			return event
+		} else if event.Rune() == 'G' {
+			SelectLastElementInList(main, appState)
+			return event
+		} else if event.Rune() == 'r' {
+			ResetStates(appState, submissionStates)
+			InitializeHeaderAndFooterAndLeftMarginView(appState, submissionStates, main)
+			FetchAndAppendSubmissions(submissionStates[appState.CurrentCategory], appState)
+			ShowPageAfterResize(appState, submissionStates, main, app)
+			return event
+		} else if unicode.IsDigit(event.Rune()) {
+			SelectElementInList(main, event.Rune())
+			return event
+		}
+		return event
+	})
 }
 
-func getCurrentlySelectedItemOnFrontPage(pages *cview.Panels) int {
-	_, primitive := pages.GetFrontPanel()
-	list, ok := primitive.(*cview.List)
-	if ok {
-		return list.GetCurrentItemIndex()
-	}
-	return 0
-}
-
-func GetListFromFrontPanel(pages *cview.Panels) *cview.List {
-	_, primitive := pages.GetFrontPanel()
-	list, _ := primitive.(*cview.List)
-	return list
-}
-
-func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []*types.Submission) bool {
-	largestItemToDisplay := (page * visibleStories) + visibleStories
-	downloadedSubmissions := len(submissions)
-
-	return downloadedSubmissions > largestItemToDisplay
-}
-
-func fetchAndAppendSubmissions(state *types.SubmissionState, cat *types.ApplicationState) {
-	newSubs, _ := FetchSubmissions(state, cat)
-	state.Submissions = append(state.Submissions, newSubs...)
-}
-
-func FetchSubmissions(state *types.SubmissionState, cat *types.ApplicationState) ([]*types.Submission, error) {
-	state.PageToFetchFromAPI++
-	return fetcher.FetchSubmissions(state.PageToFetchFromAPI, cat.CurrentCategory)
-}
-
-func ShowSubmissions(list *cview.List, submissions []*types.Submission, appState *types.ApplicationState, app *cview.Application) {
-	list.Clear()
-	start := appState.CurrentPage * appState.ViewableStoriesOnSinglePage
-	end := start + appState.ViewableStoriesOnSinglePage
-
-	for i := start; i < end; i++ {
-		s := submissions[i]
-		mainText := formatter2.GetMainText(s.Title, s.Domain)
-		secondaryText := formatter2.GetSecondaryText(s.Points, s.Author, s.Time, s.CommentsCount)
-
-		item := cview.NewListItem(mainText)
-		item.SetSecondaryText(secondaryText)
-
-		list.AddItem(item)
-	}
-
-	SetSelectedFunction(app, list, submissions, appState)
-}
-
-func SetSelectedFunction(
+func SetListShortcuts(
 	app *cview.Application,
 	list *cview.List,
 	submissions []*types.Submission,
@@ -140,6 +122,85 @@ func SetSelectedFunction(
 	})
 }
 
+func NextPage(app *cview.Application,
+	subState *types.SubmissionState,
+	main *types.MainView,
+	appState *types.ApplicationState) {
+
+	nextPage := appState.CurrentPage + 1
+
+	if nextPage > subState.MaxPages {
+		return
+	}
+
+	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(main.Panels)
+
+	list := GetListFromFrontPanel(main.Panels)
+
+	if !pageHasEnoughSubmissionsToView(nextPage, appState.ViewableStoriesOnSinglePage, subState.Submissions) {
+		FetchAndAppendSubmissions(subState, appState)
+	}
+
+	appState.CurrentPage++
+
+	ShowSubmissions(list, subState.Submissions, appState, app)
+	list.SetCurrentItem(currentlySelectedItem)
+
+	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
+	view.SetFooter(main, appState.CurrentPage, appState.ScreenWidth, subState.MaxPages)
+}
+
+func getCurrentlySelectedItemOnFrontPage(pages *cview.Panels) int {
+	_, primitive := pages.GetFrontPanel()
+	list, ok := primitive.(*cview.List)
+	if ok {
+		return list.GetCurrentItemIndex()
+	}
+	return 0
+}
+
+func GetListFromFrontPanel(pages *cview.Panels) *cview.List {
+	_, primitive := pages.GetFrontPanel()
+	list, _ := primitive.(*cview.List)
+	return list
+}
+
+func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []*types.Submission) bool {
+	largestItemToDisplay := (page * visibleStories) + visibleStories
+	downloadedSubmissions := len(submissions)
+
+	return downloadedSubmissions > largestItemToDisplay
+}
+
+func FetchAndAppendSubmissions(state *types.SubmissionState, cat *types.ApplicationState) {
+	newSubs, _ := FetchSubmissions(state, cat)
+	state.Submissions = append(state.Submissions, newSubs...)
+}
+
+func FetchSubmissions(state *types.SubmissionState, cat *types.ApplicationState) ([]*types.Submission, error) {
+	state.PageToFetchFromAPI++
+	return fetcher.FetchSubmissions(state.PageToFetchFromAPI, cat.CurrentCategory)
+}
+
+func ShowSubmissions(list *cview.List, submissions []*types.Submission, appState *types.ApplicationState, app *cview.Application) {
+	list.Clear()
+	start := appState.CurrentPage * appState.ViewableStoriesOnSinglePage
+	end := start + appState.ViewableStoriesOnSinglePage
+
+	for i := start; i < end; i++ {
+		s := submissions[i]
+		mainText := formatter2.GetMainText(s.Title, s.Domain)
+		secondaryText := formatter2.GetSecondaryText(s.Points, s.Author, s.Time, s.CommentsCount)
+
+		item := cview.NewListItem(mainText)
+		item.SetSecondaryText(secondaryText)
+
+		list.AddItem(item)
+	}
+
+	SetListShortcuts(app, list, submissions, appState)
+}
+
 func ChangeCategory(event *tcell.EventKey,
 	appState *types.ApplicationState,
 	subStates []*types.SubmissionState,
@@ -155,7 +216,7 @@ func ChangeCategory(event *tcell.EventKey,
 	appState.CurrentPage = 0
 
 	if !pageHasEnoughSubmissionsToView(0, appState.ViewableStoriesOnSinglePage, nextState.Submissions) {
-		fetchAndAppendSubmissions(nextState, appState)
+		FetchAndAppendSubmissions(nextState, appState)
 	}
 
 	view.SetPanelCategory(main, appState.CurrentCategory)
@@ -248,7 +309,57 @@ func SelectLastElementInList(main *types.MainView, appState *types.ApplicationSt
 
 func SelectElementInList(main *types.MainView, element rune) {
 	i := element - '0'
-	adjustedIndex := int(i) -1
+	adjustedIndex := int(i) - 1
 
 	view.SelectElementInList(main, adjustedIndex)
+}
+
+func ResetStates(appState *types.ApplicationState, submissionStates []*types.SubmissionState) {
+	resetApplicationState(appState)
+	resetSubmissionStates(submissionStates)
+}
+
+func resetApplicationState(appState *types.ApplicationState) {
+	appState.CurrentPage = 0
+	appState.ScreenWidth = screen.GetTerminalWidth()
+	appState.ScreenHeight = screen.GetTerminalHeight()
+	appState.ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
+		appState.ScreenHeight,
+		30)
+}
+
+func resetSubmissionStates(submissionStates []*types.SubmissionState) {
+	numberOfCategories := 3
+
+	for i := 0; i < numberOfCategories; i++ {
+		submissionStates[i].MappedSubmissions = 0
+		submissionStates[i].PageToFetchFromAPI = 0
+		submissionStates[i].StoriesListed = 0
+		submissionStates[i].Submissions = nil
+	}
+}
+
+func InitializeHeaderAndFooterAndLeftMarginView(appState *types.ApplicationState, submissionStates []*types.SubmissionState, main *types.MainView) {
+	view.SetPanelCategory(main, appState.CurrentCategory)
+	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
+	view.SetLeftMarginRanks(main, 0, appState.ViewableStoriesOnSinglePage)
+	view.SetFooter(main,
+		0,
+		appState.ScreenWidth,
+		submissionStates[appState.CurrentCategory].MaxPages)
+}
+
+func ShowPageAfterResize(appState *types.ApplicationState, submissionStates []*types.SubmissionState, main *types.MainView, app *cview.Application) {
+	frontPanelList := GetListFromFrontPanel(main.Panels)
+
+	ShowSubmissions(frontPanelList,
+		submissionStates[appState.CurrentCategory].Submissions,
+		appState,
+		app)
+
+	if appState.IsOnHelpScreen {
+		ShowHelpScreen(main, appState)
+	}
+
+	SetApplicationShortcuts(app, submissionStates, main, appState)
 }
