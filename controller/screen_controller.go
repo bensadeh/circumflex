@@ -66,16 +66,15 @@ func SetResizeFunction(app *cview.Application,
 	main *types.MainView,
 	appState *types.ApplicationState) {
 	app.SetAfterResizeFunc(func(width int, height int) {
+		if appState.IsReturningFromSuspension {
+			appState.IsReturningFromSuspension = false
+			return
+		}
 		reinitializeAndFetchSubmissions(appState, submissionStates, main, app)
 	})
 }
 
 func reinitializeAndFetchSubmissions(appState *types.ApplicationState, submissionStates []*types.SubmissionState, main *types.MainView, app *cview.Application) {
-	if appState.IsReturningFromSuspension {
-		appState.IsReturningFromSuspension = false
-		return
-	}
-
 	appState.CurrentPage = 0
 	appState.ScreenWidth = screen.GetTerminalWidth()
 	appState.ScreenHeight = screen.GetTerminalHeight()
