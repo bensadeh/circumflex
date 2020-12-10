@@ -5,6 +5,7 @@ import (
 	text "github.com/MichaelMure/go-term-text"
 	"gitlab.com/tslocum/cview"
 	"strconv"
+	"strings"
 )
 
 func SetHackerNewsHeader(m *types.MainView, screenWidth int, category int) {
@@ -79,17 +80,27 @@ func HideFooterText(m *types.MainView) {
 	m.Footer.SetText("")
 }
 
-func SetFooter(m *types.MainView, currentPage int, screenWidth int, maxPages int) {
+func SetFooterText(m *types.MainView, footerText string, currentPage int, screenWidth int, maxPages int) {
+	footerPageCounterText := ""
+	footer := ""
+	footer = text.LineAlignCenter(footerText, screenWidth)
+	footer = strings.TrimRight(footer, " ")
+	footerLen := text.Len(footer)
+
 	if maxPages == 2 {
-		footerText := getFooterTextForThreePages(currentPage, screenWidth)
-		m.Footer.SetText(footerText)
+		footerPageCounterText = getFooterPageCounterForThreePages(currentPage, screenWidth-footerLen)
 	} else if maxPages == 1 {
-		footerText := getFooterTextForTwoPages(currentPage, screenWidth)
-		m.Footer.SetText(footerText)
+		footerPageCounterText = getFooterPageCounterForTwoPages(currentPage, screenWidth-footerLen)
 	}
+
+	m.Footer.SetText(footer + footerPageCounterText)
 }
 
-func getFooterTextForThreePages(currentPage int, screenWidth int) string {
+func SetFooter(m *types.MainView, currentPage int, screenWidth int, maxPages int) {
+	SetFooterText(m, "", currentPage, screenWidth, maxPages)
+}
+
+func getFooterPageCounterForThreePages(currentPage int, screenWidth int) string {
 	orangeDot := "[orange]" + "•" + "[-:-]"
 	footerText := ""
 
@@ -106,7 +117,7 @@ func getFooterTextForThreePages(currentPage int, screenWidth int) string {
 	return padWithWhitespaceFromTheLeft(footerText, screenWidth)
 }
 
-func getFooterTextForTwoPages(currentPage int, screenWidth int) string {
+func getFooterPageCounterForTwoPages(currentPage int, screenWidth int) string {
 	orangeDot := "[orange]" + "•" + "[-:-]"
 	footerText := ""
 
