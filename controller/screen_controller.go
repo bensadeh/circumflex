@@ -103,7 +103,7 @@ func reinitializeAndFetchSubmissions(appState *types.ApplicationState, submissio
 
 	frontPanelList := model.GetListFromFrontPanel(main.Panels)
 
-	model.SetList(frontPanelList,
+	model.ShowSubmissions(frontPanelList,
 		submissionStates[appState.CurrentCategory].Submissions,
 		appState,
 		app)

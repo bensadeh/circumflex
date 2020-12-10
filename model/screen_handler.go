@@ -36,7 +36,7 @@ func NextPage(app *cview.Application,
 
 	appState.CurrentPage++
 
-	SetList(list, subState.Submissions, appState, app)
+	ShowSubmissions(list, subState.Submissions, appState, app)
 	list.SetCurrentItem(currentlySelectedItem)
 
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
@@ -75,7 +75,7 @@ func FetchSubmissions(state *types.SubmissionState, cat *types.ApplicationState)
 	return fetcher.FetchSubmissions(state.PageToFetchFromAPI, cat.CurrentCategory)
 }
 
-func SetList(list *cview.List, submissions []*types.Submission, appState *types.ApplicationState, app *cview.Application) {
+func ShowSubmissions(list *cview.List, submissions []*types.Submission, appState *types.ApplicationState, app *cview.Application) {
 	list.Clear()
 	start := appState.CurrentPage * appState.ViewableStoriesOnSinglePage
 	end := start + appState.ViewableStoriesOnSinglePage
@@ -160,7 +160,7 @@ func ChangeCategory(event *tcell.EventKey,
 
 	view.SetPanelCategory(main, appState.CurrentCategory)
 	list := GetListFromFrontPanel(main.Panels)
-	SetList(list, nextState.Submissions, appState, app)
+	ShowSubmissions(list, nextState.Submissions, appState, app)
 
 	view.SetFooter(main, appState.CurrentPage, appState.ScreenWidth, nextState.MaxPages)
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
@@ -213,7 +213,7 @@ func PreviousPage(app *cview.Application,
 
 	appState.CurrentPage--
 
-	SetList(list, state.Submissions, appState, app)
+	ShowSubmissions(list, state.Submissions, appState, app)
 	list.SetCurrentItem(currentlySelectedItem)
 
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
