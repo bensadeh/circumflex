@@ -53,7 +53,7 @@ func setShortcuts(app *cview.Application,
 		} else if event.Rune() == 'G' {
 			model.SelectLastElementInList(main, appState)
 		} else if event.Rune() == 'r' {
-			reinitializeAndFetchSubmissions(appState, submissionStates, main, app)
+			fetchSubmissions(appState, submissionStates, main, app)
 		} else if unicode.IsDigit(event.Rune()) {
 			model.SelectElementInList(main, event.Rune())
 		}
@@ -70,20 +70,34 @@ func SetResizeFunction(app *cview.Application,
 			appState.IsReturningFromSuspension = false
 			return
 		}
-		reinitializeAndFetchSubmissions(appState, submissionStates, main, app)
+		resetApplicationState(appState)
+		resetSubmissionStates(submissionStates)
+		setView(appState, submissionStates, main)
+		fetchSubmissions(appState, submissionStates, main, app)
 	})
 }
 
-func reinitializeAndFetchSubmissions(appState *types.ApplicationState, submissionStates []*types.SubmissionState, main *types.MainView, app *cview.Application) {
+func resetApplicationState(appState *types.ApplicationState) {
 	appState.CurrentPage = 0
 	appState.ScreenWidth = screen.GetTerminalWidth()
 	appState.ScreenHeight = screen.GetTerminalHeight()
 	appState.ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
 		appState.ScreenHeight,
 		30)
+}
 
-	clearSubmissionStates(submissionStates)
+func resetSubmissionStates(submissionStates []*types.SubmissionState) {
+	numberOfCategories := 3
 
+	for i := 0; i < numberOfCategories; i++ {
+		submissionStates[i].MappedSubmissions = 0
+		submissionStates[i].PageToFetchFromAPI = 0
+		submissionStates[i].StoriesListed = 0
+		submissionStates[i].Submissions = nil
+	}
+}
+
+func setView(appState *types.ApplicationState, submissionStates []*types.SubmissionState, main *types.MainView) {
 	view.SetPanelCategory(main, appState.CurrentCategory)
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
 	view.SetLeftMarginRanks(main, 0, appState.ViewableStoriesOnSinglePage)
@@ -91,7 +105,9 @@ func reinitializeAndFetchSubmissions(appState *types.ApplicationState, submissio
 		0,
 		appState.ScreenWidth,
 		submissionStates[appState.CurrentCategory].MaxPages)
+}
 
+func fetchSubmissions(appState *types.ApplicationState, submissionStates []*types.SubmissionState, main *types.MainView, app *cview.Application) {
 	newSubs, err := model.FetchSubmissions(submissionStates[appState.CurrentCategory], appState)
 
 	if err != nil {
@@ -113,15 +129,4 @@ func reinitializeAndFetchSubmissions(appState *types.ApplicationState, submissio
 	}
 
 	setShortcuts(app, submissionStates, main, appState)
-}
-
-func clearSubmissionStates(submissionStates []*types.SubmissionState) {
-	numberOfCategories := 3
-
-	for i := 0; i < numberOfCategories; i++ {
-		submissionStates[i].MappedSubmissions = 0
-		submissionStates[i].PageToFetchFromAPI = 0
-		submissionStates[i].StoriesListed = 0
-		submissionStates[i].Submissions = nil
-	}
 }
