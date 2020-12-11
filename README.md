@@ -39,13 +39,13 @@ Press <kbd>i</kbd> for help.
 * 🎙 Browse Hacker News by category (News, Newest, Ask HN or Show HN)
 * 💬 Read comments in the pager `less`
 
-Additionally, `circumflex` supports the following nice-to-have features:
+Additionally, `circumflex` has the following nice-to-have features:
 * ⚡️ Vim keybindings
-* 🖍 Support and respect for your terminal's own color scheme
+* 🖍 Support for your terminal's own color scheme
 
 ### Comment section
-The comment section is formatted and structured as follows:
-* 🎨 Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code`
+The comment section is formatted with readability in mind:
+* 🖋 Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code`
 * 📐 Replies are indented and color-coded
 * 🎩 Original Poster (`OP`), Parent Poster (`PP`) and moderators are labelled
 * 🔗 References (`[1]`, `[2]` etc.) are colored
