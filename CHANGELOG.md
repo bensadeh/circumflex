@@ -5,6 +5,7 @@
 
 **Bugfixes:**
 - Fixed a bug where the number of submissions to view was not calculated correctly
+- Fixed a bug where pressing <kbd>0</kbd> would go to the last element on the list instead of the 10th
 - Info line about entering less now appears right after submission info line
 
 ## 0.2.3 

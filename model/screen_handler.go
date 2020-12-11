@@ -16,6 +16,7 @@ import (
 	"strconv"
 	"unicode"
 )
+
 const (
 	helpPage    = "help"
 	offlinePage = "offline"
@@ -311,7 +312,12 @@ func SelectElementInList(main *types.MainView, element rune) {
 	i := element - '0'
 	adjustedIndex := int(i) - 1
 
-	view.SelectElementInList(main, adjustedIndex)
+	if int(i) == 0 {
+		tenthElement := 9
+		view.SelectElementInList(main, tenthElement)
+	} else {
+		view.SelectElementInList(main, adjustedIndex)
+	}
 }
 
 func ResetStates(appState *types.ApplicationState, submissionStates []*types.SubmissionState) {
