@@ -34,21 +34,21 @@ clx
 Press <kbd>i</kbd> for help.
 
 ## Features
-
 ### Main features
 `circumflex` lets you:
-* 🗞 Browse Hacker News by category (News, Newest, Ask HN or Show HN)
+* 🎙 Browse Hacker News by category (News, Newest, Ask HN or Show HN)
 * 💬 Read comments in the pager `less`
 
-### You might also like
 Additionally, `circumflex` supports the following nice-to-have features:
 * ⚡️ Vim keybindings
-* 🖍 Uses your terminal's own color scheme
-* 🎨 Rich text formatting in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code`
-  * 📐 Replies are indented and color-coded
-  * 🎩 Original Poster (OP), Parent Poster (PP) and moderators are labelled
-  * 🔗 References ([1],[2] etc.) are colored for easier readability
+* 🖍 Support and respect for your terminal's own color scheme
 
+### Comment section
+The comment section is formatted and structured as follows:
+* 🎨 Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code`
+* 📐 Replies are indented and color-coded
+* 🎩 Original Poster (`OP`), Parent Poster (`PP`) and moderators are labelled
+* 🔗 References (`[1]`, `[2]` etc.) are colored
 
 <p align="center">
   <img src="screenshots/comments.png" width="700" alt="^"/>
@@ -57,7 +57,6 @@ Additionally, `circumflex` supports the following nice-to-have features:
 <p align="center">
   <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
 </p>
-
 
 ## Known issues
 The first keystroke is lost when moving from cview (submission menu) to viewing comments in `less`, see [gdamore/tcell#194](https://github.com/gdamore/tcell/issues/194).
