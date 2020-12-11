@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3 (WIP)
+
+**Bugfixes:**
+- Fixed a bug where the number of submissions to view was not calculated correctly
+
 ## 0.2.3 (2020-12-05)
 **New features:**
 - Added keybinding: Press <kbd>0</kbd>-<kbd>9</kbd> to go directly to submission
@@ -18,7 +23,7 @@
 **New features:**
 - Added keybinding: Press <kbd>r</kbd> to refresh
 
-**Bugfix:**
+**Bugfixes:**
 - Fixed a bug where `circumflex` would crash while resizing the terminal while on the help screen and on pages larger 
   than 1
 

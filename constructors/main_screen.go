@@ -98,6 +98,6 @@ func newTextViewPrimitive(text string) *cview.TextView {
 	tv.SetTextColor(tcell.ColorDefault)
 	tv.SetDynamicColors(true)
 	tv.SetScrollBarVisibility(cview.ScrollBarNever)
-	
+
 	return tv
 }

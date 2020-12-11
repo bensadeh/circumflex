@@ -15,7 +15,11 @@ func GetTerminalWidth() int {
 }
 
 func GetViewableStoriesOnSinglePage(screenHeight int, maxStories int) int {
-	return min(screenHeight/2-2, maxStories)
+	topBarHeight := 2
+	footerHeight := 1
+	adjustedHeight := screenHeight -topBarHeight-footerHeight
+
+	return min(adjustedHeight/2, maxStories)
 }
 
 func min(x, y int) int {
