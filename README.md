@@ -45,7 +45,7 @@ Additionally, `circumflex` has the following nice-to-have features:
 
 ### Comment section
 The comment section is formatted with readability in mind:
-* 🖋 Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code`
+* 🖋 Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code` where available
 * 📐 Replies are indented and color-coded
 * 🎩 Original Poster (`OP`), Parent Poster (`PP`) and moderators are labelled
 * 🔗 References (`[1]`, `[2]` etc.) are colored
