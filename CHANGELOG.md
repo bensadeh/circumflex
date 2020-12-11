@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.2.4 
-(WIP)
+(2020-12-11)
 
 **Bugfixes:**
 - Fixed a bug where the number of submissions to view was not calculated correctly
