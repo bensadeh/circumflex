@@ -58,6 +58,7 @@ func NewList() *cview.List {
 	list.SetSelectedTextAttributes(tcell.AttrReverse)
 	list.SetSelectedTextColor(tcell.ColorDefault)
 	list.SetSelectedBackgroundColor(tcell.ColorDefault)
+	list.SetScrollBarVisibility(cview.ScrollBarNever)
 
 	return list
 }
@@ -96,5 +97,7 @@ func newTextViewPrimitive(text string) *cview.TextView {
 	tv.SetBackgroundColor(tcell.ColorDefault)
 	tv.SetTextColor(tcell.ColorDefault)
 	tv.SetDynamicColors(true)
+	tv.SetScrollBarVisibility(cview.ScrollBarNever)
+	
 	return tv
 }
