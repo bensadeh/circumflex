@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3 (WIP)
+## 0.2.4 (WIP)
 
 **Bugfixes:**
 - Fixed a bug where the number of submissions to view was not calculated correctly
