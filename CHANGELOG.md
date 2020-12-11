@@ -4,6 +4,7 @@
 
 **Bugfixes:**
 - Fixed a bug where the number of submissions to view was not calculated correctly
+- Info line about entering less now appears right after submission info line
 
 ## 0.2.3 (2020-12-05)
 **New features:**
