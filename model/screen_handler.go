@@ -5,7 +5,6 @@ import (
 	"clx/cli"
 	cp "clx/comment-parser"
 	"clx/http"
-	"clx/screen"
 	"clx/submission/fetcher"
 	formatter2 "clx/submission/formatter"
 	"clx/types"
@@ -64,10 +63,8 @@ func SetApplicationShortcuts(app *cview.Application,
 			SelectLastElementInList(main, appState)
 			return event
 		} else if event.Rune() == 'r' {
-			ResetStates(appState, submissionStates)
-			InitializeHeaderAndFooterAndLeftMarginView(appState, submissionStates, main)
-			FetchAndAppendSubmissions(submissionStates[appState.CurrentCategory], appState)
-			ShowPageAfterResize(appState, submissionStates, main, app)
+			afterResizeFunc := app.GetAfterResizeFunc()
+			afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
 			return event
 		} else if unicode.IsDigit(event.Rune()) {
 			SelectElementInList(main, event.Rune())
@@ -317,31 +314,6 @@ func SelectElementInList(main *types.MainView, element rune) {
 		view.SelectElementInList(main, tenthElement)
 	} else {
 		view.SelectElementInList(main, adjustedIndex)
-	}
-}
-
-func ResetStates(appState *types.ApplicationState, submissionStates []*types.SubmissionState) {
-	resetApplicationState(appState)
-	resetSubmissionStates(submissionStates)
-}
-
-func resetApplicationState(appState *types.ApplicationState) {
-	appState.CurrentPage = 0
-	appState.ScreenWidth = screen.GetTerminalWidth()
-	appState.ScreenHeight = screen.GetTerminalHeight()
-	appState.ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
-		appState.ScreenHeight,
-		30)
-}
-
-func resetSubmissionStates(submissionStates []*types.SubmissionState) {
-	numberOfCategories := 3
-
-	for i := 0; i < numberOfCategories; i++ {
-		submissionStates[i].MappedSubmissions = 0
-		submissionStates[i].PageToFetchFromAPI = 0
-		submissionStates[i].StoriesListed = 0
-		submissionStates[i].Submissions = nil
 	}
 }
 

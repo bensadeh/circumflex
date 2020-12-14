@@ -9,7 +9,7 @@ import (
 func main() {
 	sc := constructor.NewScreenController()
 
-	controller.SetResizeFunction(sc.Application, sc.SubmissionStates, sc.MainView, sc.ApplicationState)
+	controller.SetAfterInitializationAndAfterResizeFunctions(sc.Application, sc.SubmissionStates, sc.MainView, sc.ApplicationState)
 
 	cli.Clear()
 
