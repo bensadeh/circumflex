@@ -10,7 +10,7 @@ func main() {
 	sc := constructor.NewScreenController()
 	controller.SetAfterInitializationAndAfterResizeFunctions(
 		sc.Application,
-		sc.SubmissionStates,
+		sc.Submissions,
 		sc.MainView,
 		sc.ApplicationState)
 

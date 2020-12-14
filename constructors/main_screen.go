@@ -15,14 +15,13 @@ const (
 
 func NewScreenController() *types.ScreenController {
 	sc := new(types.ScreenController)
-
 	sc.Application = cview.NewApplication()
 
-	sc.SubmissionStates = []*types.SubmissionState{}
-	sc.SubmissionStates = append(sc.SubmissionStates, new(types.SubmissionState))
-	sc.SubmissionStates = append(sc.SubmissionStates, new(types.SubmissionState))
-	sc.SubmissionStates = append(sc.SubmissionStates, new(types.SubmissionState))
-	sc.SubmissionStates = append(sc.SubmissionStates, new(types.SubmissionState))
+	sc.Submissions = []*types.Submissions{}
+	sc.Submissions = append(sc.Submissions, new(types.Submissions))
+	sc.Submissions = append(sc.Submissions, new(types.Submissions))
+	sc.Submissions = append(sc.Submissions, new(types.Submissions))
+	sc.Submissions = append(sc.Submissions, new(types.Submissions))
 
 	sc.ApplicationState = new(types.ApplicationState)
 	sc.ApplicationState.ScreenWidth = screen.GetTerminalWidth()
@@ -31,10 +30,10 @@ func NewScreenController() *types.ScreenController {
 		sc.ApplicationState.ScreenHeight,
 		maximumStoriesToDisplay)
 
-	sc.SubmissionStates[types.NoCategory].MaxPages = 2
-	sc.SubmissionStates[types.New].MaxPages = 2
-	sc.SubmissionStates[types.Ask].MaxPages = 1
-	sc.SubmissionStates[types.Show].MaxPages = 1
+	sc.Submissions[types.NoCategory].MaxPages = 2
+	sc.Submissions[types.New].MaxPages = 2
+	sc.Submissions[types.Ask].MaxPages = 1
+	sc.Submissions[types.Show].MaxPages = 1
 
 	sc.MainView = NewMainView()
 

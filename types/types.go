@@ -16,7 +16,7 @@ const (
 type ScreenController struct {
 	Application      *cview.Application
 	MainView         *MainView
-	SubmissionStates []*SubmissionState
+	Submissions      []*Submissions
 	ApplicationState *ApplicationState
 }
 
@@ -32,13 +32,13 @@ type Submission struct {
 	Type          string `json:"type"`
 }
 
-type SubmissionState struct {
+type Submissions struct {
 	MappedSubmissions  int
 	MappedPages        int
 	StoriesListed      int
 	PageToFetchFromAPI int
 	MaxPages           int
-	Submissions        []*Submission
+	SubmissionEntries  []*Submission
 }
 
 type ApplicationState struct {
