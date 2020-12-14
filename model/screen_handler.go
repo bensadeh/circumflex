@@ -5,6 +5,7 @@ import (
 	"clx/cli"
 	cp "clx/comment-parser"
 	"clx/http"
+	"clx/screen"
 	"clx/submission/fetcher"
 	formatter2 "clx/submission/formatter"
 	"clx/types"
@@ -13,66 +14,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 	"strconv"
-	"unicode"
 )
-
-const (
-	helpPage    = "help"
-	offlinePage = "offline"
-)
-
-func SetApplicationShortcuts(app *cview.Application,
-	submissionStates []*types.SubmissionState,
-	main *types.MainView,
-	appState *types.ApplicationState) {
-	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		currentState := submissionStates[appState.CurrentCategory]
-
-		frontPanel, _ := main.Panels.GetFrontPanel()
-
-		if frontPanel == offlinePage {
-			if event.Rune() == 'q' {
-				app.Stop()
-			}
-			return event
-		}
-
-		if frontPanel == helpPage {
-			ReturnFromHelpScreen(main, appState, currentState)
-			return event
-		}
-
-		if event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab {
-			ChangeCategory(event, appState, submissionStates, main, app)
-			return event
-		} else if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
-			NextPage(app, currentState, main, appState)
-			return event
-		} else if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
-			PreviousPage(app, currentState, main, appState)
-			return event
-		} else if event.Rune() == 'q' || event.Key() == tcell.KeyEsc {
-			app.Stop()
-		} else if event.Rune() == 'i' || event.Rune() == '?' {
-			ShowHelpScreen(main, appState)
-			return event
-		} else if event.Rune() == 'g' {
-			SelectFirstElementInList(main)
-			return event
-		} else if event.Rune() == 'G' {
-			SelectLastElementInList(main, appState)
-			return event
-		} else if event.Rune() == 'r' {
-			afterResizeFunc := app.GetAfterResizeFunc()
-			afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
-			return event
-		} else if unicode.IsDigit(event.Rune()) {
-			SelectElementInList(main, event.Rune())
-			return event
-		}
-		return event
-	})
-}
 
 func SetListShortcuts(
 	app *cview.Application,
@@ -339,5 +281,30 @@ func ShowPageAfterResize(appState *types.ApplicationState, submissionStates []*t
 		ShowHelpScreen(main, appState)
 	}
 
-	SetApplicationShortcuts(app, submissionStates, main, appState)
+	//SetApplicationShortcuts(app, submissionStates, main, appState)
+}
+
+func ResetStates(appState *types.ApplicationState, submissionStates []*types.SubmissionState) {
+	resetApplicationState(appState)
+	resetSubmissionStates(submissionStates)
+}
+
+func resetApplicationState(appState *types.ApplicationState) {
+	appState.CurrentPage = 0
+	appState.ScreenWidth = screen.GetTerminalWidth()
+	appState.ScreenHeight = screen.GetTerminalHeight()
+	appState.ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
+		appState.ScreenHeight,
+		30)
+}
+
+func resetSubmissionStates(submissionStates []*types.SubmissionState) {
+	numberOfCategories := 3
+
+	for i := 0; i < numberOfCategories; i++ {
+		submissionStates[i].MappedSubmissions = 0
+		submissionStates[i].PageToFetchFromAPI = 0
+		submissionStates[i].StoriesListed = 0
+		submissionStates[i].Submissions = nil
+	}
 }
