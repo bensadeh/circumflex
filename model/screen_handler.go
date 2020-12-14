@@ -16,7 +16,7 @@ import (
 	"strconv"
 )
 
-func SetListShortcuts(
+func SetShortcutsForListItems(
 	app *cview.Application,
 	list *cview.List,
 	submissions []*types.Submission,
@@ -83,7 +83,8 @@ func NextPage(app *cview.Application,
 
 	appState.CurrentPage++
 
-	ShowSubmissions(list, subState.Submissions, appState, app)
+	SetListItemsToCurrentPage(list, subState.Submissions, appState)
+	SetShortcutsForListItems(app, list, subState.Submissions, appState)
 	list.SetCurrentItem(currentlySelectedItem)
 
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
@@ -122,7 +123,7 @@ func FetchSubmissions(state *types.SubmissionState, cat *types.ApplicationState)
 	return fetcher.FetchSubmissions(state.PageToFetchFromAPI, cat.CurrentCategory)
 }
 
-func ShowSubmissions(list *cview.List, submissions []*types.Submission, appState *types.ApplicationState, app *cview.Application) {
+func SetListItemsToCurrentPage(list *cview.List, submissions []*types.Submission, appState *types.ApplicationState) {
 	list.Clear()
 	start := appState.CurrentPage * appState.ViewableStoriesOnSinglePage
 	end := start + appState.ViewableStoriesOnSinglePage
@@ -137,8 +138,6 @@ func ShowSubmissions(list *cview.List, submissions []*types.Submission, appState
 
 		list.AddItem(item)
 	}
-
-	SetListShortcuts(app, list, submissions, appState)
 }
 
 func ChangeCategory(event *tcell.EventKey,
@@ -161,7 +160,8 @@ func ChangeCategory(event *tcell.EventKey,
 
 	view.SetPanelCategory(main, appState.CurrentCategory)
 	list := GetListFromFrontPanel(main.Panels)
-	ShowSubmissions(list, nextState.Submissions, appState, app)
+	SetListItemsToCurrentPage(list, nextState.Submissions, appState)
+	SetShortcutsForListItems(app, list, nextState.Submissions, appState)
 
 	view.SetFooter(main, appState.CurrentPage, appState.ScreenWidth, nextState.MaxPages)
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
@@ -214,7 +214,8 @@ func PreviousPage(app *cview.Application,
 
 	appState.CurrentPage--
 
-	ShowSubmissions(list, state.Submissions, appState, app)
+	SetListItemsToCurrentPage(list, state.Submissions, appState)
+	SetShortcutsForListItems(app, list, state.Submissions, appState)
 	list.SetCurrentItem(currentlySelectedItem)
 
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
@@ -271,17 +272,14 @@ func InitializeHeaderAndFooterAndLeftMarginView(appState *types.ApplicationState
 
 func ShowPageAfterResize(appState *types.ApplicationState, submissionStates []*types.SubmissionState, main *types.MainView, app *cview.Application) {
 	frontPanelList := GetListFromFrontPanel(main.Panels)
+	submissions := submissionStates[appState.CurrentCategory].Submissions
 
-	ShowSubmissions(frontPanelList,
-		submissionStates[appState.CurrentCategory].Submissions,
-		appState,
-		app)
+	SetListItemsToCurrentPage(frontPanelList, submissions, appState)
+	SetShortcutsForListItems(app, frontPanelList, submissions, appState)
 
 	if appState.IsOnHelpScreen {
 		ShowHelpScreen(main, appState)
 	}
-
-	//SetApplicationShortcuts(app, submissionStates, main, appState)
 }
 
 func ResetStates(appState *types.ApplicationState, submissionStates []*types.SubmissionState) {
