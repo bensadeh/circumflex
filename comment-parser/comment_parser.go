@@ -20,6 +20,7 @@ type Comments struct {
 	Points        int         `json:"points"`
 	URL           string      `json:"url"`
 	Domain        string      `json:"domain"`
+	Level         int         `json:"level"`
 	ID            int         `json:"id"`
 	Replies       []*Comments `json:"comments"`
 }
@@ -29,7 +30,7 @@ func PrintCommentTree(comments Comments, indentSize int, commentWith int) string
 	originalPoster := comments.Author
 	commentTree := ""
 	for _, reply := range comments.Replies {
-		commentTree += prettyPrintComments(*reply, 0, indentSize, commentWith, originalPoster, "")
+		commentTree += prettyPrintComments(*reply, indentSize, commentWith, originalPoster, "")
 	}
 	return header + commentTree
 }
@@ -95,27 +96,27 @@ func parseRootComment(c string, commentWidth int) string {
 	return NewLine + wrappedComment + NewLine
 }
 
-func prettyPrintComments(c Comments, level int, indentSize int, commentWidth int, originalPoster string, parentPoster string) string {
+func prettyPrintComments(c Comments, indentSize int, commentWidth int, originalPoster string, parentPoster string) string {
 	comment, URLs := parseComment(c.Comment)
-	adjustedCommentWidth := getAdjustedCommentWidth(level, indentSize, commentWidth)
+	adjustedCommentWidth := getAdjustedCommentWidth(c.Level, indentSize, commentWidth)
 
-	indentBlock := getIndentBlock(level, indentSize)
+	indentBlock := getIndentBlock(c.Level, indentSize)
 	paddingWithBlock := text.WrapPad(indentBlock)
 	wrappedAndPaddedComment, _ := text.Wrap(comment, adjustedCommentWidth, paddingWithBlock)
 
-	paddingWithNoBlock := text.WrapPad(getIndentBlockWithoutBar(level, indentSize))
+	paddingWithNoBlock := text.WrapPad(getIndentBlockWithoutBar(c.Level, indentSize))
 
-	author := getCommentHeading(c, level, commentWidth, originalPoster, parentPoster)
+	author := getCommentHeading(c, c.Level, commentWidth, originalPoster, parentPoster)
 	paddedAuthor, _ := text.Wrap(author, adjustedCommentWidth, paddingWithNoBlock)
 	fullComment := paddedAuthor + wrappedAndPaddedComment + DoubleNewLine
 	fullComment = applyURLs(fullComment, URLs)
 
-	if level == 0 {
+	if c.Level == 0 {
 		parentPoster = c.Author
 	}
 
 	for _, s := range c.Replies {
-		fullComment += prettyPrintComments(*s, level+1, indentSize, commentWidth, originalPoster, parentPoster)
+		fullComment += prettyPrintComments(*s, indentSize, commentWidth, originalPoster, parentPoster)
 	}
 	return fullComment
 }
