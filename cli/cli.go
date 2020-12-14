@@ -17,7 +17,7 @@ func Less(output string) {
 	}
 }
 
-func Clear() {
+func ClearScreen() {
 	c := exec.Command("clear")
 	c.Stdout = os.Stdout
 	_ = c.Run()
