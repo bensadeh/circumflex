@@ -10,7 +10,7 @@ import (
 
 func SetHackerNewsHeader(m *types.MainView, screenWidth int, category int) {
 	switch category {
-	case types.NoCategory:
+	case types.FrontPage:
 		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  new | ask | show"
 		offset := -26
 		header := appendWhitespace(base, offset, screenWidth)

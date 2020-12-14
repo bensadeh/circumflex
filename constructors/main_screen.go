@@ -30,7 +30,7 @@ func NewScreenController() *types.ScreenController {
 		sc.ApplicationState.ScreenHeight,
 		maximumStoriesToDisplay)
 
-	sc.Submissions[types.NoCategory].MaxPages = 2
+	sc.Submissions[types.FrontPage].MaxPages = 2
 	sc.Submissions[types.New].MaxPages = 2
 	sc.Submissions[types.Ask].MaxPages = 1
 	sc.Submissions[types.Show].MaxPages = 1
@@ -38,12 +38,12 @@ func NewScreenController() *types.ScreenController {
 	sc.MainView = NewMainView()
 
 	newsList := NewList()
-	sc.MainView.Panels.AddPanel(types.NewsPanel, newsList, true, false)
+	sc.MainView.Panels.AddPanel(types.FrontPagePanel, newsList, true, false)
 	sc.MainView.Panels.AddPanel(types.NewestPanel, NewList(), true, false)
 	sc.MainView.Panels.AddPanel(types.ShowPanel, NewList(), true, false)
 	sc.MainView.Panels.AddPanel(types.AskPanel, NewList(), true, false)
 
-	sc.MainView.Panels.SetCurrentPanel(types.NewsPanel)
+	sc.MainView.Panels.SetCurrentPanel(types.FrontPagePanel)
 
 	return sc
 }

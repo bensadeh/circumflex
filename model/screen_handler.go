@@ -170,14 +170,14 @@ func ChangeCategory(
 
 func getNextCategory(currentCategory int) int {
 	switch currentCategory {
-	case types.NoCategory:
+	case types.FrontPage:
 		return types.New
 	case types.New:
 		return types.Ask
 	case types.Ask:
 		return types.Show
 	case types.Show:
-		return types.NoCategory
+		return types.FrontPage
 	default:
 		return 0
 	}
@@ -185,14 +185,14 @@ func getNextCategory(currentCategory int) int {
 
 func getPreviousCategory(currentCategory int) int {
 	switch currentCategory {
-	case types.NoCategory:
+	case types.FrontPage:
 		return types.Show
 	case types.Show:
 		return types.Ask
 	case types.Ask:
 		return types.New
 	case types.New:
-		return types.NoCategory
+		return types.FrontPage
 	default:
 		return 0
 	}

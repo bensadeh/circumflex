@@ -22,7 +22,7 @@ func FetchSubmissions(page int, category int) ([]*types.Submission, error) {
 
 func getUrl(category int) string {
 	switch category {
-	case types.NoCategory:
+	case types.FrontPage:
 		return baseURL + "news" + page
 	case types.New:
 		return baseURL + "newest" + page

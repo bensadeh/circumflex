@@ -36,7 +36,7 @@ Press <kbd>i</kbd> for help.
 ## Features
 ### Main features
 `circumflex` lets you:
-* 🎙 Browse Hacker News by category (News, Newest, Ask HN or Show HN)
+* 🎙 Browse Hacker News by category (Front&nbsp;Page, Newest, Ask&nbsp;HN or Show&nbsp;HN)
 * 💬 Read comments in the pager `less`
 
 Additionally, `circumflex` has the following nice-to-have features:

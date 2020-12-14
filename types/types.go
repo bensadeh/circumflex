@@ -3,14 +3,14 @@ package types
 import "gitlab.com/tslocum/cview"
 
 const (
-	NoCategory  = 0
-	New         = 1
-	Ask         = 2
-	Show        = 3
-	NewsPanel   = "0"
-	NewestPanel = "1"
-	AskPanel    = "2"
-	ShowPanel   = "3"
+	FrontPage      = 0
+	New            = 1
+	Ask            = 2
+	Show           = 3
+	FrontPagePanel = "0"
+	NewestPanel    = "1"
+	AskPanel       = "2"
+	ShowPanel      = "3"
 )
 
 type ScreenController struct {
