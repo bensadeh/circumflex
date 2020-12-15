@@ -139,6 +139,7 @@ func ChangeCategory(
 	submissions []*types.Submissions,
 	main *types.MainView,
 	app *cview.Application) {
+	currentItem := list.GetCurrentItemIndex()
 	if event.Key() == tcell.KeyBacktab {
 		appState.CurrentCategory = getPreviousCategory(appState.CurrentCategory)
 	} else {
@@ -154,7 +155,7 @@ func ChangeCategory(
 
 	SetListItemsToCurrentPage(list, currentSubmissions.Entries, appState.CurrentPage, appState.SubmissionsToShow)
 	SetShortcutsForListItems(app, list, currentSubmissions.Entries, appState)
-	list.SetCurrentItem(0)
+	list.SetCurrentItem(currentItem)
 
 	view.SetPageCounter(main, appState.CurrentPage, currentSubmissions.MaxPages)
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
