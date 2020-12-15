@@ -68,7 +68,6 @@ func NewMainView() *types.MainView {
 	main.Grid = cview.NewGrid()
 	main.LeftMargin = newTextViewPrimitive("")
 	main.LeftMargin.SetTextAlign(cview.AlignRight)
-	main.RightMargin = newTextViewPrimitive("")
 	main.Header = newTextViewPrimitive("")
 	main.Footer = newTextViewPrimitive("")
 
@@ -77,10 +76,9 @@ func NewMainView() *types.MainView {
 	main.Grid.SetColumns(7, 0, 3)
 	main.Grid.SetBackgroundColor(tcell.ColorDefault)
 	main.Grid.AddItem(main.Header, 0, 0, 1, 3, 0, 0, false)
-	main.Grid.AddItem(main.Footer, 2, 0, 1, 3, 0, 0, false)
 	main.Grid.AddItem(main.LeftMargin, 1, 0, 1, 1, 0, 0, false)
 	main.Grid.AddItem(main.Panels, 1, 1, 1, 1, 0, 0, true)
-	main.Grid.AddItem(main.RightMargin, 1, 2, 1, 1, 0, 0, false)
+	main.Grid.AddItem(main.Footer, 2, 0, 1, 3, 0, 0, false)
 
 	main.Panels.AddPanel(helpPage, GetHelpScreen(), true, false)
 	main.Panels.AddPanel(offlinePage, GetOfflineScreen(), true, false)

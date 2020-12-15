@@ -58,5 +58,4 @@ type MainView struct {
 	Footer      *cview.TextView
 	Header      *cview.TextView
 	LeftMargin  *cview.TextView
-	RightMargin *cview.TextView
 }
