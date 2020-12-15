@@ -82,7 +82,7 @@ func NextPage(
 
 	appState.CurrentPage++
 
-	SetListItemsToCurrentPage(list, submissions.SubmissionEntries, appState)
+	SetListItemsToCurrentPage(list, submissions.SubmissionEntries, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
 	SetShortcutsForListItems(app, list, submissions.SubmissionEntries, appState)
 	list.SetCurrentItem(currentlySelectedItem)
 
@@ -118,10 +118,10 @@ func FetchAndAppendSubmissions(submissions *types.Submissions, appState *types.A
 	submissions.SubmissionEntries = append(submissions.SubmissionEntries, newSubmissions...)
 }
 
-func SetListItemsToCurrentPage(list *cview.List, submissions []*types.Submission, appState *types.ApplicationState) {
+func SetListItemsToCurrentPage(list *cview.List, submissions []*types.Submission, currentPage int, viewableStories int) {
 	list.Clear()
-	start := appState.CurrentPage * appState.ViewableStoriesOnSinglePage
-	end := start + appState.ViewableStoriesOnSinglePage
+	start := currentPage * viewableStories
+	end := start + viewableStories
 
 	for i := start; i < end; i++ {
 		s := submissions[i]
@@ -156,7 +156,7 @@ func ChangeCategory(
 
 	view.SetPanelCategory(main, appState.CurrentCategory)
 	list := GetListFromFrontPanel(main.Panels)
-	SetListItemsToCurrentPage(list, nextState.SubmissionEntries, appState)
+	SetListItemsToCurrentPage(list, nextState.SubmissionEntries, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
 	SetShortcutsForListItems(app, list, nextState.SubmissionEntries, appState)
 
 	view.SetFooter(main, appState.CurrentPage, appState.ScreenWidth, nextState.MaxPages)
@@ -208,9 +208,9 @@ func PreviousPage(
 	list := GetListFromFrontPanel(main.Panels)
 	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(main.Panels)
 
-	SetListItemsToCurrentPage(list, submissions.SubmissionEntries, appState)
+	SetListItemsToCurrentPage(list, submissions.SubmissionEntries, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
 	SetShortcutsForListItems(app, list, submissions.SubmissionEntries, appState)
-	
+
 	list.SetCurrentItem(currentlySelectedItem)
 
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
@@ -273,11 +273,11 @@ func ShowPageAfterResize(
 	submissions []*types.Submissions,
 	main *types.MainView,
 	app *cview.Application) {
-	frontPanelList := GetListFromFrontPanel(main.Panels)
+	list := GetListFromFrontPanel(main.Panels)
 	submissionEntries := submissions[appState.CurrentCategory].SubmissionEntries
 
-	SetListItemsToCurrentPage(frontPanelList, submissionEntries, appState)
-	SetShortcutsForListItems(app, frontPanelList, submissionEntries, appState)
+	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
+	SetShortcutsForListItems(app, list, submissionEntries, appState)
 
 	if appState.IsOnHelpScreen {
 		ShowHelpScreen(main, appState)
