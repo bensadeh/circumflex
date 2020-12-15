@@ -163,32 +163,24 @@ func ChangeCategory(
 }
 
 func getNextCategory(currentCategory int) int {
-	switch currentCategory {
-	case types.FrontPage:
-		return types.New
-	case types.New:
-		return types.Ask
-	case types.Ask:
-		return types.Show
-	case types.Show:
-		return types.FrontPage
-	default:
-		return 0
+	lastCategory := types.Show
+	firstCategory := types.FrontPage
+
+	if currentCategory == lastCategory {
+		return firstCategory
+	} else {
+		return currentCategory + 1
 	}
 }
 
 func getPreviousCategory(currentCategory int) int {
-	switch currentCategory {
-	case types.FrontPage:
-		return types.Show
-	case types.Show:
-		return types.Ask
-	case types.Ask:
-		return types.New
-	case types.New:
-		return types.FrontPage
-	default:
-		return 0
+	lastCategory := types.Show
+	firstCategory := types.FrontPage
+
+	if currentCategory == firstCategory {
+		return lastCategory
+	} else {
+		return currentCategory - 1
 	}
 }
 
@@ -222,7 +214,7 @@ func SelectNextElement(list *cview.List) {
 	if currentItem == itemCount {
 		return
 	} else {
-		list.SetCurrentItem(currentItem+1)
+		list.SetCurrentItem(currentItem + 1)
 	}
 }
 
@@ -232,7 +224,7 @@ func SelectPreviousElement(list *cview.List) {
 	if currentItem == 0 {
 		return
 	} else {
-		list.SetCurrentItem(currentItem-1)
+		list.SetCurrentItem(currentItem - 1)
 	}
 }
 
