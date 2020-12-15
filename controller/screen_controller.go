@@ -52,6 +52,14 @@ func setApplicationShortcuts(
 			model.PreviousPage(app, list, currentState, main, appState)
 			return event
 		}
+		if event.Rune() == 'j' || event.Key() == tcell.KeyDown {
+			model.SelectNextElement(list)
+			return event
+		}
+		if event.Rune() == 'k' || event.Key() == tcell.KeyUp {
+			model.SelectPreviousElement(list)
+			return event
+		}
 		if event.Rune() == 'q' || event.Key() == tcell.KeyEsc {
 			app.Stop()
 		}

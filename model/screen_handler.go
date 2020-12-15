@@ -214,6 +214,27 @@ func PreviousPage(
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages)
 }
 
+func SelectNextElement(list *cview.List) {
+	currentItem := list.GetCurrentItemIndex()
+	itemCount := list.GetItemCount()
+
+	if currentItem == itemCount {
+		return
+	} else {
+		list.SetCurrentItem(currentItem+1)
+	}
+}
+
+func SelectPreviousElement(list *cview.List) {
+	currentItem := list.GetCurrentItemIndex()
+
+	if currentItem == 0 {
+		return
+	} else {
+		list.SetCurrentItem(currentItem-1)
+	}
+}
+
 func ShowHelpScreen(main *types.MainView, appState *types.ApplicationState) {
 	appState.IsOnHelpScreen = true
 
