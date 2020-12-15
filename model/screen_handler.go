@@ -7,7 +7,7 @@ import (
 	"clx/http"
 	"clx/screen"
 	"clx/submission/fetcher"
-	formatter2 "clx/submission/formatter"
+	"clx/submission/formatter"
 	"clx/types"
 	"clx/view"
 	"encoding/json"
@@ -112,14 +112,10 @@ func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []
 	return downloadedSubmissions > largestItemToDisplay
 }
 
-func FetchAndAppendSubmissions(state *types.Submissions, appState *types.ApplicationState) {
-	newSubs, _ := FetchSubmissions(state, appState)
-	state.SubmissionEntries = append(state.SubmissionEntries, newSubs...)
-}
-
-func FetchSubmissions(state *types.Submissions, appState *types.ApplicationState) ([]*types.Submission, error) {
-	state.PageToFetchFromAPI++
-	return fetcher.FetchSubmissions(state.PageToFetchFromAPI, appState.CurrentCategory)
+func FetchAndAppendSubmissions(submissions *types.Submissions, appState *types.ApplicationState) {
+	submissions.PageToFetchFromAPI++
+	newSubmissions, _ := fetcher.FetchSubmissions(submissions.PageToFetchFromAPI, appState.CurrentCategory)
+	submissions.SubmissionEntries = append(submissions.SubmissionEntries, newSubmissions...)
 }
 
 func SetListItemsToCurrentPage(list *cview.List, submissions []*types.Submission, appState *types.ApplicationState) {
@@ -129,8 +125,8 @@ func SetListItemsToCurrentPage(list *cview.List, submissions []*types.Submission
 
 	for i := start; i < end; i++ {
 		s := submissions[i]
-		mainText := formatter2.GetMainText(s.Title, s.Domain)
-		secondaryText := formatter2.GetSecondaryText(s.Points, s.Author, s.Time, s.CommentsCount)
+		mainText := formatter.GetMainText(s.Title, s.Domain)
+		secondaryText := formatter.GetSecondaryText(s.Points, s.Author, s.Time, s.CommentsCount)
 
 		item := cview.NewListItem(mainText)
 		item.SetSecondaryText(secondaryText)
@@ -204,18 +200,17 @@ func PreviousPage(
 	main *types.MainView,
 	appState *types.ApplicationState) {
 	previousPage := appState.CurrentPage - 1
-	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(main.Panels)
-
 	if previousPage < 0 {
 		return
 	}
 
-	list := GetListFromFrontPanel(main.Panels)
-
 	appState.CurrentPage--
+	list := GetListFromFrontPanel(main.Panels)
+	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(main.Panels)
 
 	SetListItemsToCurrentPage(list, submissions.SubmissionEntries, appState)
 	SetShortcutsForListItems(app, list, submissions.SubmissionEntries, appState)
+	
 	list.SetCurrentItem(currentlySelectedItem)
 
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
