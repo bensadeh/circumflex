@@ -5,7 +5,6 @@ import (
 	text "github.com/MichaelMure/go-term-text"
 	"gitlab.com/tslocum/cview"
 	"strconv"
-	"strings"
 )
 
 func SetHackerNewsHeader(m *types.MainView, screenWidth int, category int) {
@@ -77,30 +76,22 @@ func HideLeftMarginRanks(m *types.MainView) {
 }
 
 func HideFooterText(m *types.MainView) {
-	m.Footer.SetText("")
+	m.PageIndicator.SetText("")
 }
 
-func SetFooterText(m *types.MainView, footerText string, currentPage int, screenWidth int, maxPages int) {
-	footerPageCounterText := ""
-	footer := ""
-	footer = text.LineAlignCenter(footerText, screenWidth)
-	footer = strings.TrimRight(footer, " ")
-	footerLen := text.Len(footer)
+func SetPageCounter(m *types.MainView, currentPage int, maxPages int) {
+	pageCounter := ""
 
 	if maxPages == 2 {
-		footerPageCounterText = getFooterPageCounterForThreePages(currentPage, screenWidth-footerLen)
+		pageCounter = getPageCounterForThreePages(currentPage)
 	} else if maxPages == 1 {
-		footerPageCounterText = getFooterPageCounterForTwoPages(currentPage, screenWidth-footerLen)
+		pageCounter = getPageCounterForTwoPages(currentPage)
 	}
 
-	m.Footer.SetText(footer + footerPageCounterText)
+	m.PageIndicator.SetText(pageCounter)
 }
 
-func SetFooter(m *types.MainView, currentPage int, screenWidth int, maxPages int) {
-	SetFooterText(m, "", currentPage, screenWidth, maxPages)
-}
-
-func getFooterPageCounterForThreePages(currentPage int, screenWidth int) string {
+func getPageCounterForThreePages(currentPage int) string {
 	orangeDot := "[orange]" + "•" + "[-:-]"
 	footerText := ""
 
@@ -114,10 +105,10 @@ func getFooterPageCounterForThreePages(currentPage int, screenWidth int) string 
 	default:
 		footerText = ""
 	}
-	return padWithWhitespaceFromTheLeft(footerText, screenWidth)
+	return footerText
 }
 
-func getFooterPageCounterForTwoPages(currentPage int, screenWidth int) string {
+func getPageCounterForTwoPages(currentPage int) string {
 	orangeDot := "[orange]" + "•" + "[-:-]"
 	footerText := ""
 
@@ -129,16 +120,7 @@ func getFooterPageCounterForTwoPages(currentPage int, screenWidth int) string {
 	default:
 		footerText = ""
 	}
-	return padWithWhitespaceFromTheLeft(footerText, screenWidth)
-}
-
-func padWithWhitespaceFromTheLeft(s string, screenWidth int) string {
-	offset := +10
-	whitespace := ""
-	for i := 0; i < screenWidth-text.Len(s)+offset; i++ {
-		whitespace += " "
-	}
-	return whitespace + s
+	return footerText
 }
 
 func SelectFirstElementInList(main *types.MainView) {

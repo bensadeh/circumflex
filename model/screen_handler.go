@@ -87,7 +87,7 @@ func NextPage(
 	list.SetCurrentItem(currentlySelectedItem)
 
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
-	view.SetFooter(main, appState.CurrentPage, appState.ScreenWidth, submissions.MaxPages)
+	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages)
 }
 
 func getCurrentlySelectedItemOnFrontPage(pages *cview.Panels) int {
@@ -155,7 +155,7 @@ func ChangeCategory(
 	}
 
 	view.SetPanelCategory(main, appState.CurrentCategory)
-	view.SetFooter(main, appState.CurrentPage, appState.ScreenWidth, currentSubmissions.MaxPages)
+	view.SetPageCounter(main, appState.CurrentPage, currentSubmissions.MaxPages)
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
 
@@ -214,7 +214,7 @@ func PreviousPage(
 	list.SetCurrentItem(currentlySelectedItem)
 
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
-	view.SetFooter(main, appState.CurrentPage, appState.ScreenWidth, submissions.MaxPages)
+	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages)
 }
 
 func ShowHelpScreen(main *types.MainView, appState *types.ApplicationState) {
@@ -231,7 +231,7 @@ func ReturnFromHelpScreen(main *types.MainView, appState *types.ApplicationState
 
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
 	view.SetPanelCategory(main, appState.CurrentCategory)
-	view.SetFooter(main, appState.CurrentPage, appState.ScreenWidth, submissions.MaxPages)
+	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages)
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
 }
 
@@ -262,10 +262,7 @@ func InitializeHeaderAndFooterAndLeftMarginView(
 	view.SetPanelCategory(main, appState.CurrentCategory)
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
 	view.SetLeftMarginRanks(main, 0, appState.SubmissionsToShow)
-	view.SetFooter(main,
-		0,
-		appState.ScreenWidth,
-		submissions[appState.CurrentCategory].MaxPages)
+	view.SetPageCounter(main, 0, submissions[appState.CurrentCategory].MaxPages)
 }
 
 func ShowPageAfterResize(
