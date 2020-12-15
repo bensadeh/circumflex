@@ -80,6 +80,18 @@ func setApplicationShortcuts(
 			afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
 			return event
 		}
+		if event.Key() == tcell.KeyEnter {
+			model.ReadSubmissionComments(app, list, currentState.Entries, appState)
+			return event
+		}
+		if event.Rune() == 'o' {
+			model.OpenLinkInBrowser(list, appState, currentState.Entries)
+			return event
+		}
+		if event.Rune() == 'c' {
+			model.OpenCommentsInBrowser(list, appState, currentState.Entries)
+			return event
+		}
 		if unicode.IsDigit(event.Rune()) {
 			model.SelectElementInList(main, event.Rune())
 			return event

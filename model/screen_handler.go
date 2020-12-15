@@ -16,62 +16,48 @@ import (
 	"strconv"
 )
 
-func SetShortcutsForListItems(
+func ReadSubmissionComments(
 	app *cview.Application,
 	list *cview.List,
 	submissions []*types.Submission,
 	appState *types.ApplicationState) {
-	list.SetSelectedFunc(func(i int, _ *cview.ListItem) {
-		app.Suspend(func() {
-			for index := range submissions {
-				if index == i {
-					storyIndex := (appState.CurrentPage)*appState.SubmissionsToShow + i
-					s := submissions[storyIndex]
+	app.Suspend(func() {
+		i := list.GetCurrentItemIndex()
 
-					if s.Author == "" {
-						appState.IsReturningFromSuspension = true
-						return
-					}
+		for index := range submissions {
+			if index == i {
+				storyIndex := (appState.CurrentPage)*appState.SubmissionsToShow + i
+				s := submissions[storyIndex]
 
-					id := strconv.Itoa(s.ID)
-					JSON, _ := http.Get("http://api.hackerwebapp.com/item/" + id)
-					jComments := new(cp.Comments)
-					_ = json.Unmarshal(JSON, jComments)
-
-					commentTree := cp.PrintCommentTree(*jComments, 4, 70)
-					cli.Less(commentTree)
+				if s.Author == "" {
 					appState.IsReturningFromSuspension = true
+					return
 				}
+
+				id := strconv.Itoa(s.ID)
+				JSON, _ := http.Get("http://api.hackerwebapp.com/item/" + id)
+				jComments := new(cp.Comments)
+				_ = json.Unmarshal(JSON, jComments)
+
+				commentTree := cp.PrintCommentTree(*jComments, 4, 70)
+				cli.Less(commentTree)
+				appState.IsReturningFromSuspension = true
 			}
-		})
+		}
 	})
+}
 
-	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		if event.Rune() == 'o' {
-			item := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
-			url := submissions[item].URL
-			browser.Open(url)
-			return event
-		}
-		if event.Rune() == 'c' {
-			item := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
-			id := submissions[item].ID
-			url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
-			browser.Open(url)
-			return event
-		}
-		if event.Key() == tcell.KeyTAB {
-			list.SetCurrentItem(list.GetCurrentItemIndex())
-			return event
-		}
-		if event.Key() == tcell.KeyBacktab {
-			list.SetCurrentItem(list.GetCurrentItemIndex())
-			return event
-		}
+func OpenCommentsInBrowser(list *cview.List, appState *types.ApplicationState, submissions []*types.Submission) {
+	item := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
+	id := submissions[item].ID
+	url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
+	browser.Open(url)
+}
 
-		return event
-	})
-
+func OpenLinkInBrowser(list *cview.List, appState *types.ApplicationState, submissions []*types.Submission) {
+	item := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
+	url := submissions[item].URL
+	browser.Open(url)
 }
 
 func NextPage(
@@ -95,7 +81,6 @@ func NextPage(
 	appState.CurrentPage++
 
 	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow)
-	SetShortcutsForListItems(app, list, submissions.Entries, appState)
 	list.SetCurrentItem(currentlySelectedItem)
 
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
@@ -154,7 +139,6 @@ func ChangeCategory(
 	}
 
 	SetListItemsToCurrentPage(list, currentSubmissions.Entries, appState.CurrentPage, appState.SubmissionsToShow)
-	SetShortcutsForListItems(app, list, currentSubmissions.Entries, appState)
 	list.SetCurrentItem(currentItem)
 
 	view.SetPageCounter(main, appState.CurrentPage, currentSubmissions.MaxPages)
@@ -199,7 +183,6 @@ func PreviousPage(
 	currentlySelectedItem := list.GetCurrentItemIndex()
 
 	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow)
-	SetShortcutsForListItems(app, list, submissions.Entries, appState)
 
 	list.SetCurrentItem(currentlySelectedItem)
 
@@ -285,7 +268,6 @@ func ShowPageAfterResize(
 	submissionEntries := submissions[appState.CurrentCategory].Entries
 
 	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.SubmissionsToShow)
-	SetShortcutsForListItems(app, list, submissionEntries, appState)
 
 	if appState.IsOnHelpScreen {
 		ShowHelpScreen(main, appState)
