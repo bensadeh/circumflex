@@ -1,10 +1,14 @@
 # Changelog
 
-## 0.x.x
+## 0.3
 (WIP)
+
+**Changes:**
+- `circumflex` no longer jumps to the first element when changing categories
 
 **Backend:**
 - Use the 'level' field directly from the API instead of calculating it
+- Large refactor of the program architecture
 
 ## 0.2.4 
 (2020-12-11)
