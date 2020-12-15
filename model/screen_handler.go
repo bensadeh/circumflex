@@ -76,14 +76,14 @@ func NextPage(
 
 	list := GetListFromFrontPanel(main.Panels)
 
-	if !pageHasEnoughSubmissionsToView(nextPage, appState.SubmissionsToShow, submissions.SubmissionEntries) {
+	if !pageHasEnoughSubmissionsToView(nextPage, appState.SubmissionsToShow, submissions.Entries) {
 		FetchAndAppendSubmissions(submissions, appState)
 	}
 
 	appState.CurrentPage++
 
-	SetListItemsToCurrentPage(list, submissions.SubmissionEntries, appState.CurrentPage, appState.SubmissionsToShow)
-	SetShortcutsForListItems(app, list, submissions.SubmissionEntries, appState)
+	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow)
+	SetShortcutsForListItems(app, list, submissions.Entries, appState)
 	list.SetCurrentItem(currentlySelectedItem)
 
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
@@ -115,7 +115,7 @@ func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []
 func FetchAndAppendSubmissions(submissions *types.Submissions, appState *types.ApplicationState) {
 	submissions.PageToFetchFromAPI++
 	newSubmissions, _ := fetcher.FetchSubmissions(submissions.PageToFetchFromAPI, appState.CurrentCategory)
-	submissions.SubmissionEntries = append(submissions.SubmissionEntries, newSubmissions...)
+	submissions.Entries = append(submissions.Entries, newSubmissions...)
 }
 
 func SetListItemsToCurrentPage(list *cview.List, submissions []*types.Submission, currentPage int, viewableStories int) {
@@ -147,21 +147,21 @@ func ChangeCategory(
 		appState.CurrentCategory = getNextCategory(appState.CurrentCategory)
 	}
 
-	nextState := submissions[appState.CurrentCategory]
+	currentSubmissions := submissions[appState.CurrentCategory]
 	appState.CurrentPage = 0
 
-	if !pageHasEnoughSubmissionsToView(0, appState.SubmissionsToShow, nextState.SubmissionEntries) {
-		FetchAndAppendSubmissions(nextState, appState)
+	if !pageHasEnoughSubmissionsToView(0, appState.SubmissionsToShow, currentSubmissions.Entries) {
+		FetchAndAppendSubmissions(currentSubmissions, appState)
 	}
 
 	view.SetPanelCategory(main, appState.CurrentCategory)
-	list := GetListFromFrontPanel(main.Panels)
-	SetListItemsToCurrentPage(list, nextState.SubmissionEntries, appState.CurrentPage, appState.SubmissionsToShow)
-	SetShortcutsForListItems(app, list, nextState.SubmissionEntries, appState)
-
-	view.SetFooter(main, appState.CurrentPage, appState.ScreenWidth, nextState.MaxPages)
+	view.SetFooter(main, appState.CurrentPage, appState.ScreenWidth, currentSubmissions.MaxPages)
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
+
+	list := GetListFromFrontPanel(main.Panels)
+	SetListItemsToCurrentPage(list, currentSubmissions.Entries, appState.CurrentPage, appState.SubmissionsToShow)
+	SetShortcutsForListItems(app, list, currentSubmissions.Entries, appState)
 }
 
 func getNextCategory(currentCategory int) int {
@@ -208,8 +208,8 @@ func PreviousPage(
 	list := GetListFromFrontPanel(main.Panels)
 	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(main.Panels)
 
-	SetListItemsToCurrentPage(list, submissions.SubmissionEntries, appState.CurrentPage, appState.SubmissionsToShow)
-	SetShortcutsForListItems(app, list, submissions.SubmissionEntries, appState)
+	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow)
+	SetShortcutsForListItems(app, list, submissions.Entries, appState)
 
 	list.SetCurrentItem(currentlySelectedItem)
 
@@ -274,7 +274,7 @@ func ShowPageAfterResize(
 	main *types.MainView,
 	app *cview.Application) {
 	list := GetListFromFrontPanel(main.Panels)
-	submissionEntries := submissions[appState.CurrentCategory].SubmissionEntries
+	submissionEntries := submissions[appState.CurrentCategory].Entries
 
 	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.SubmissionsToShow)
 	SetShortcutsForListItems(app, list, submissionEntries, appState)
@@ -303,6 +303,6 @@ func resetSubmissionStates(submissions []*types.Submissions) {
 		submissions[i].MappedSubmissions = 0
 		submissions[i].PageToFetchFromAPI = 0
 		submissions[i].StoriesListed = 0
-		submissions[i].SubmissionEntries = nil
+		submissions[i].Entries = nil
 	}
 }

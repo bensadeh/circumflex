@@ -38,7 +38,7 @@ type Submissions struct {
 	StoriesListed      int
 	PageToFetchFromAPI int
 	MaxPages           int
-	SubmissionEntries  []*Submission
+	Entries            []*Submission
 }
 
 type ApplicationState struct {
