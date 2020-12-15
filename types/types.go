@@ -42,14 +42,14 @@ type Submissions struct {
 }
 
 type ApplicationState struct {
-	ViewableStoriesOnSinglePage int
-	CurrentCategory             int
-	ScreenHeight                int
-	ScreenWidth                 int
-	CurrentPage                 int
-	IsOffline                   bool
-	IsReturningFromSuspension   bool
-	IsOnHelpScreen              bool
+	SubmissionsToShow         int
+	CurrentCategory           int
+	ScreenHeight              int
+	ScreenWidth               int
+	CurrentPage               int
+	IsOffline                 bool
+	IsReturningFromSuspension bool
+	IsOnHelpScreen            bool
 }
 
 type MainView struct {

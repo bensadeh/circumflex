@@ -25,7 +25,7 @@ func SetShortcutsForListItems(
 		app.Suspend(func() {
 			for index := range submissions {
 				if index == i {
-					storyIndex := (appState.CurrentPage)*appState.ViewableStoriesOnSinglePage + i
+					storyIndex := (appState.CurrentPage)*appState.SubmissionsToShow + i
 					s := submissions[storyIndex]
 
 					if s.Author == "" {
@@ -48,11 +48,11 @@ func SetShortcutsForListItems(
 
 	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Rune() == 'o' {
-			item := list.GetCurrentItemIndex() + appState.ViewableStoriesOnSinglePage*(appState.CurrentPage)
+			item := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
 			url := submissions[item].URL
 			browser.Open(url)
 		} else if event.Rune() == 'c' {
-			item := list.GetCurrentItemIndex() + appState.ViewableStoriesOnSinglePage*(appState.CurrentPage)
+			item := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
 			id := submissions[item].ID
 			url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
 			browser.Open(url)
@@ -76,17 +76,17 @@ func NextPage(
 
 	list := GetListFromFrontPanel(main.Panels)
 
-	if !pageHasEnoughSubmissionsToView(nextPage, appState.ViewableStoriesOnSinglePage, submissions.SubmissionEntries) {
+	if !pageHasEnoughSubmissionsToView(nextPage, appState.SubmissionsToShow, submissions.SubmissionEntries) {
 		FetchAndAppendSubmissions(submissions, appState)
 	}
 
 	appState.CurrentPage++
 
-	SetListItemsToCurrentPage(list, submissions.SubmissionEntries, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
+	SetListItemsToCurrentPage(list, submissions.SubmissionEntries, appState.CurrentPage, appState.SubmissionsToShow)
 	SetShortcutsForListItems(app, list, submissions.SubmissionEntries, appState)
 	list.SetCurrentItem(currentlySelectedItem)
 
-	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
+	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
 	view.SetFooter(main, appState.CurrentPage, appState.ScreenWidth, submissions.MaxPages)
 }
 
@@ -150,17 +150,17 @@ func ChangeCategory(
 	nextState := submissions[appState.CurrentCategory]
 	appState.CurrentPage = 0
 
-	if !pageHasEnoughSubmissionsToView(0, appState.ViewableStoriesOnSinglePage, nextState.SubmissionEntries) {
+	if !pageHasEnoughSubmissionsToView(0, appState.SubmissionsToShow, nextState.SubmissionEntries) {
 		FetchAndAppendSubmissions(nextState, appState)
 	}
 
 	view.SetPanelCategory(main, appState.CurrentCategory)
 	list := GetListFromFrontPanel(main.Panels)
-	SetListItemsToCurrentPage(list, nextState.SubmissionEntries, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
+	SetListItemsToCurrentPage(list, nextState.SubmissionEntries, appState.CurrentPage, appState.SubmissionsToShow)
 	SetShortcutsForListItems(app, list, nextState.SubmissionEntries, appState)
 
 	view.SetFooter(main, appState.CurrentPage, appState.ScreenWidth, nextState.MaxPages)
-	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
+	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
 }
 
@@ -208,12 +208,12 @@ func PreviousPage(
 	list := GetListFromFrontPanel(main.Panels)
 	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(main.Panels)
 
-	SetListItemsToCurrentPage(list, submissions.SubmissionEntries, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
+	SetListItemsToCurrentPage(list, submissions.SubmissionEntries, appState.CurrentPage, appState.SubmissionsToShow)
 	SetShortcutsForListItems(app, list, submissions.SubmissionEntries, appState)
 
 	list.SetCurrentItem(currentlySelectedItem)
 
-	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
+	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
 	view.SetFooter(main, appState.CurrentPage, appState.ScreenWidth, submissions.MaxPages)
 }
 
@@ -232,7 +232,7 @@ func ReturnFromHelpScreen(main *types.MainView, appState *types.ApplicationState
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
 	view.SetPanelCategory(main, appState.CurrentCategory)
 	view.SetFooter(main, appState.CurrentPage, appState.ScreenWidth, submissions.MaxPages)
-	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
+	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
 }
 
 func SelectFirstElementInList(main *types.MainView) {
@@ -261,7 +261,7 @@ func InitializeHeaderAndFooterAndLeftMarginView(
 	main *types.MainView) {
 	view.SetPanelCategory(main, appState.CurrentCategory)
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
-	view.SetLeftMarginRanks(main, 0, appState.ViewableStoriesOnSinglePage)
+	view.SetLeftMarginRanks(main, 0, appState.SubmissionsToShow)
 	view.SetFooter(main,
 		0,
 		appState.ScreenWidth,
@@ -276,7 +276,7 @@ func ShowPageAfterResize(
 	list := GetListFromFrontPanel(main.Panels)
 	submissionEntries := submissions[appState.CurrentCategory].SubmissionEntries
 
-	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.ViewableStoriesOnSinglePage)
+	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.SubmissionsToShow)
 	SetShortcutsForListItems(app, list, submissionEntries, appState)
 
 	if appState.IsOnHelpScreen {
@@ -293,9 +293,7 @@ func resetApplicationState(appState *types.ApplicationState) {
 	appState.CurrentPage = 0
 	appState.ScreenWidth = screen.GetTerminalWidth()
 	appState.ScreenHeight = screen.GetTerminalHeight()
-	appState.ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
-		appState.ScreenHeight,
-		30)
+	appState.SubmissionsToShow = screen.GetSubmissionsToShow(appState.ScreenHeight, 30)
 }
 
 func resetSubmissionStates(submissions []*types.Submissions) {

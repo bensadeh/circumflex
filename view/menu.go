@@ -149,7 +149,7 @@ func SelectFirstElementInList(main *types.MainView) {
 
 func SelectLastElementInList(main *types.MainView, appState *types.ApplicationState) {
 	list := getListFromFrontPanel(main.Panels)
-	list.SetCurrentItem(appState.ViewableStoriesOnSinglePage)
+	list.SetCurrentItem(appState.SubmissionsToShow)
 }
 
 func SelectElementInList(main *types.MainView, index int) {

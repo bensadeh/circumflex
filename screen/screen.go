@@ -14,7 +14,7 @@ func GetTerminalWidth() int {
 	return int(width)
 }
 
-func GetViewableStoriesOnSinglePage(screenHeight int, maxStories int) int {
+func GetSubmissionsToShow(screenHeight int, maxStories int) int {
 	topBarHeight := 2
 	footerHeight := 1
 	adjustedHeight := screenHeight -topBarHeight-footerHeight

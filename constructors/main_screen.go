@@ -26,7 +26,7 @@ func NewScreenController() *types.ScreenController {
 	sc.ApplicationState = new(types.ApplicationState)
 	sc.ApplicationState.ScreenWidth = screen.GetTerminalWidth()
 	sc.ApplicationState.ScreenHeight = screen.GetTerminalHeight()
-	sc.ApplicationState.ViewableStoriesOnSinglePage = screen.GetViewableStoriesOnSinglePage(
+	sc.ApplicationState.SubmissionsToShow = screen.GetSubmissionsToShow(
 		sc.ApplicationState.ScreenHeight,
 		maximumStoriesToDisplay)
 
