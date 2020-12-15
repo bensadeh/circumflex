@@ -22,7 +22,7 @@ func SetAfterInitializationAndAfterResizeFunctions(
 		model.ResetStates(appState, submissions)
 		model.InitializeHeaderAndFooterAndLeftMarginView(appState, submissions, main)
 		model.FetchAndAppendSubmissionEntries(submissions[appState.CurrentCategory], appState)
-		model.ShowPageAfterResize(appState, list, submissions, main, app)
+		model.ShowPageAfterResize(appState, list, submissions, main)
 		setApplicationShortcuts(app, list, submissions, main, appState)
 	})
 }
@@ -41,15 +41,15 @@ func setApplicationShortcuts(
 			return event
 		}
 		if event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab {
-			model.ChangeCategory(event, list, appState, submissions, main, app)
+			model.ChangeCategory(event, list, appState, submissions, main)
 			return event
 		}
 		if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
-			model.NextPage(app, list, currentState, main, appState)
+			model.NextPage(list, currentState, main, appState)
 			return event
 		}
 		if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
-			model.PreviousPage(app, list, currentState, main, appState)
+			model.PreviousPage(list, currentState, main, appState)
 			return event
 		}
 		if event.Rune() == 'j' || event.Key() == tcell.KeyDown {

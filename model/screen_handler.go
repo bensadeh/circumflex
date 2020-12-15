@@ -60,12 +60,7 @@ func OpenLinkInBrowser(list *cview.List, appState *types.ApplicationState, submi
 	browser.Open(url)
 }
 
-func NextPage(
-	app *cview.Application,
-	list *cview.List,
-	submissions *types.Submissions,
-	main *types.MainView,
-	appState *types.ApplicationState) {
+func NextPage(list *cview.List, submissions *types.Submissions, main *types.MainView, appState *types.ApplicationState) {
 	nextPage := appState.CurrentPage + 1
 
 	if nextPage > submissions.MaxPages {
@@ -122,8 +117,7 @@ func ChangeCategory(
 	list *cview.List,
 	appState *types.ApplicationState,
 	submissions []*types.Submissions,
-	main *types.MainView,
-	app *cview.Application) {
+	main *types.MainView) {
 	currentItem := list.GetCurrentItemIndex()
 	if event.Key() == tcell.KeyBacktab {
 		appState.CurrentCategory = getPreviousCategory(appState.CurrentCategory)
@@ -168,12 +162,7 @@ func getPreviousCategory(currentCategory int) int {
 	}
 }
 
-func PreviousPage(
-	app *cview.Application,
-	list *cview.List,
-	submissions *types.Submissions,
-	main *types.MainView,
-	appState *types.ApplicationState) {
+func PreviousPage(list *cview.List, submissions *types.Submissions, main *types.MainView, appState *types.ApplicationState) {
 	previousPage := appState.CurrentPage - 1
 	if previousPage < 0 {
 		return
@@ -263,8 +252,7 @@ func ShowPageAfterResize(
 	appState *types.ApplicationState,
 	list *cview.List,
 	submissions []*types.Submissions,
-	main *types.MainView,
-	app *cview.Application) {
+	main *types.MainView) {
 	submissionEntries := submissions[appState.CurrentCategory].Entries
 
 	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.SubmissionsToShow)
