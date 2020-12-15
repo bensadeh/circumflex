@@ -51,18 +51,32 @@ func SetShortcutsForListItems(
 			item := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
 			url := submissions[item].URL
 			browser.Open(url)
-		} else if event.Rune() == 'c' {
+			return event
+		}
+		if event.Rune() == 'c' {
 			item := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
 			id := submissions[item].ID
 			url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
 			browser.Open(url)
+			return event
 		}
+		if event.Key() == tcell.KeyTAB {
+			list.SetCurrentItem(list.GetCurrentItemIndex())
+			return event
+		}
+		if event.Key() == tcell.KeyBacktab {
+			list.SetCurrentItem(list.GetCurrentItemIndex())
+			return event
+		}
+
 		return event
 	})
+
 }
 
 func NextPage(
 	app *cview.Application,
+	list *cview.List,
 	submissions *types.Submissions,
 	main *types.MainView,
 	appState *types.ApplicationState) {
@@ -72,12 +86,10 @@ func NextPage(
 		return
 	}
 
-	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(main.Panels)
-
-	list := GetListFromFrontPanel(main.Panels)
+	currentlySelectedItem := list.GetCurrentItemIndex()
 
 	if !pageHasEnoughSubmissionsToView(nextPage, appState.SubmissionsToShow, submissions.Entries) {
-		FetchAndAppendSubmissions(submissions, appState)
+		FetchAndAppendSubmissionEntries(submissions, appState)
 	}
 
 	appState.CurrentPage++
@@ -90,21 +102,6 @@ func NextPage(
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages)
 }
 
-func getCurrentlySelectedItemOnFrontPage(pages *cview.Panels) int {
-	_, primitive := pages.GetFrontPanel()
-	list, ok := primitive.(*cview.List)
-	if ok {
-		return list.GetCurrentItemIndex()
-	}
-	return 0
-}
-
-func GetListFromFrontPanel(pages *cview.Panels) *cview.List {
-	_, primitive := pages.GetFrontPanel()
-	list, _ := primitive.(*cview.List)
-	return list
-}
-
 func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []*types.Submission) bool {
 	largestItemToDisplay := (page * visibleStories) + visibleStories
 	downloadedSubmissions := len(submissions)
@@ -112,10 +109,10 @@ func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []
 	return downloadedSubmissions > largestItemToDisplay
 }
 
-func FetchAndAppendSubmissions(submissions *types.Submissions, appState *types.ApplicationState) {
+func FetchAndAppendSubmissionEntries(submissions *types.Submissions, appState *types.ApplicationState) {
 	submissions.PageToFetchFromAPI++
-	newSubmissions, _ := fetcher.FetchSubmissions(submissions.PageToFetchFromAPI, appState.CurrentCategory)
-	submissions.Entries = append(submissions.Entries, newSubmissions...)
+	submissionEntries, _ := fetcher.FetchSubmissionEntries(submissions.PageToFetchFromAPI, appState.CurrentCategory)
+	submissions.Entries = append(submissions.Entries, submissionEntries...)
 }
 
 func SetListItemsToCurrentPage(list *cview.List, submissions []*types.Submission, currentPage int, viewableStories int) {
@@ -137,6 +134,7 @@ func SetListItemsToCurrentPage(list *cview.List, submissions []*types.Submission
 
 func ChangeCategory(
 	event *tcell.EventKey,
+	list *cview.List,
 	appState *types.ApplicationState,
 	submissions []*types.Submissions,
 	main *types.MainView,
@@ -151,17 +149,16 @@ func ChangeCategory(
 	appState.CurrentPage = 0
 
 	if !pageHasEnoughSubmissionsToView(0, appState.SubmissionsToShow, currentSubmissions.Entries) {
-		FetchAndAppendSubmissions(currentSubmissions, appState)
+		FetchAndAppendSubmissionEntries(currentSubmissions, appState)
 	}
 
-	view.SetPanelCategory(main, appState.CurrentCategory)
+	SetListItemsToCurrentPage(list, currentSubmissions.Entries, appState.CurrentPage, appState.SubmissionsToShow)
+	SetShortcutsForListItems(app, list, currentSubmissions.Entries, appState)
+	list.SetCurrentItem(0)
+
 	view.SetPageCounter(main, appState.CurrentPage, currentSubmissions.MaxPages)
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
-
-	list := GetListFromFrontPanel(main.Panels)
-	SetListItemsToCurrentPage(list, currentSubmissions.Entries, appState.CurrentPage, appState.SubmissionsToShow)
-	SetShortcutsForListItems(app, list, currentSubmissions.Entries, appState)
 }
 
 func getNextCategory(currentCategory int) int {
@@ -196,6 +193,7 @@ func getPreviousCategory(currentCategory int) int {
 
 func PreviousPage(
 	app *cview.Application,
+	list *cview.List,
 	submissions *types.Submissions,
 	main *types.MainView,
 	appState *types.ApplicationState) {
@@ -205,8 +203,7 @@ func PreviousPage(
 	}
 
 	appState.CurrentPage--
-	list := GetListFromFrontPanel(main.Panels)
-	currentlySelectedItem := getCurrentlySelectedItemOnFrontPage(main.Panels)
+	currentlySelectedItem := list.GetCurrentItemIndex()
 
 	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow)
 	SetShortcutsForListItems(app, list, submissions.Entries, appState)
@@ -230,7 +227,7 @@ func ReturnFromHelpScreen(main *types.MainView, appState *types.ApplicationState
 	appState.IsOnHelpScreen = false
 
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
-	view.SetPanelCategory(main, appState.CurrentCategory)
+	view.SetPanelToSubmissions(main)
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages)
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
 }
@@ -259,7 +256,7 @@ func InitializeHeaderAndFooterAndLeftMarginView(
 	appState *types.ApplicationState,
 	submissions []*types.Submissions,
 	main *types.MainView) {
-	view.SetPanelCategory(main, appState.CurrentCategory)
+	view.SetPanelToSubmissions(main)
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
 	view.SetLeftMarginRanks(main, 0, appState.SubmissionsToShow)
 	view.SetPageCounter(main, 0, submissions[appState.CurrentCategory].MaxPages)
@@ -267,10 +264,10 @@ func InitializeHeaderAndFooterAndLeftMarginView(
 
 func ShowPageAfterResize(
 	appState *types.ApplicationState,
+	list *cview.List,
 	submissions []*types.Submissions,
 	main *types.MainView,
 	app *cview.Application) {
-	list := GetListFromFrontPanel(main.Panels)
 	submissionEntries := submissions[appState.CurrentCategory].Entries
 
 	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.SubmissionsToShow)

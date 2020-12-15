@@ -52,13 +52,12 @@ func SetKeymapsHeader(m *types.MainView, screenWidth int) {
 	m.Header.SetText(base + whitespace)
 }
 
-func SetPanelCategory(m *types.MainView, category int) {
-	c := strconv.Itoa(category)
-	m.Panels.SetCurrentPanel(c)
+func SetPanelToSubmissions(m *types.MainView) {
+	m.Panels.SetCurrentPanel(types.SubmissionsPanel)
 }
 
 func SetPanelToHelpScreen(m *types.MainView) {
-	m.Panels.SetCurrentPanel("help")
+	m.Panels.SetCurrentPanel(types.HelpScreenPanel)
 }
 
 func SetLeftMarginRanks(m *types.MainView, currentPage int, viewableStoriesOnSinglePage int) {

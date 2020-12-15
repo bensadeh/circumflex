@@ -9,8 +9,6 @@ import (
 
 const (
 	maximumStoriesToDisplay = 30
-	helpPage                = "help"
-	offlinePage             = "offline"
 )
 
 func NewScreenController() *types.ScreenController {
@@ -35,15 +33,9 @@ func NewScreenController() *types.ScreenController {
 	sc.Submissions[types.Ask].MaxPages = 1
 	sc.Submissions[types.Show].MaxPages = 1
 
+	sc.List = NewList()
 	sc.MainView = NewMainView()
-
-	newsList := NewList()
-	sc.MainView.Panels.AddPanel(types.FrontPagePanel, newsList, true, false)
-	sc.MainView.Panels.AddPanel(types.NewestPanel, NewList(), true, false)
-	sc.MainView.Panels.AddPanel(types.ShowPanel, NewList(), true, false)
-	sc.MainView.Panels.AddPanel(types.AskPanel, NewList(), true, false)
-
-	sc.MainView.Panels.SetCurrentPanel(types.FrontPagePanel)
+	sc.MainView.Panels.AddPanel(types.SubmissionsPanel, sc.List, true, true)
 
 	return sc
 }
@@ -77,14 +69,14 @@ func NewMainView() *types.MainView {
 	main.Grid.SetRows(2, 0, 1)
 	main.Grid.SetColumns(7, 0, 4)
 	main.Grid.SetBackgroundColor(tcell.ColorDefault)
-	main.Grid.AddItem(main.Header, 0, 0, 1, 3, 0, 0, false)
+	main.Grid.AddItem(main.Header, 0, 0, 1, 3, 0, 0, true)
 	main.Grid.AddItem(main.LeftMargin, 1, 0, 1, 1, 0, 0, false)
-	main.Grid.AddItem(main.Panels, 1, 1, 1, 2, 0, 0, true)
+	main.Grid.AddItem(main.Panels, 1, 1, 1, 2, 0, 0, false)
 	main.Grid.AddItem(main.StatusBar, 2, 1, 1, 1, 0, 0, false)
 	main.Grid.AddItem(main.PageIndicator, 2, 2, 1, 1, 0, 0, false)
 
-	main.Panels.AddPanel(helpPage, GetHelpScreen(), true, false)
-	main.Panels.AddPanel(offlinePage, GetOfflineScreen(), true, false)
+	main.Panels.AddPanel(types.HelpScreenPanel, GetHelpScreen(), true, false)
+	main.Panels.AddPanel(types.ErrorScreenPanel, GetOfflineScreen(), true, false)
 
 	return main
 }

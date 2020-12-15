@@ -8,13 +8,9 @@ import (
 	"unicode"
 )
 
-const (
-	helpPage    = "help"
-	offlinePage = "offline"
-)
-
 func SetAfterInitializationAndAfterResizeFunctions(
 	app *cview.Application,
+	list *cview.List,
 	submissions []*types.Submissions,
 	main *types.MainView,
 	appState *types.ApplicationState) {
@@ -25,41 +21,35 @@ func SetAfterInitializationAndAfterResizeFunctions(
 		}
 		model.ResetStates(appState, submissions)
 		model.InitializeHeaderAndFooterAndLeftMarginView(appState, submissions, main)
-		model.FetchAndAppendSubmissions(submissions[appState.CurrentCategory], appState)
-		model.ShowPageAfterResize(appState, submissions, main, app)
-		setApplicationShortcuts(app, submissions, main, appState)
+		model.FetchAndAppendSubmissionEntries(submissions[appState.CurrentCategory], appState)
+		model.ShowPageAfterResize(appState, list, submissions, main, app)
+		setApplicationShortcuts(app, list, submissions, main, appState)
 	})
 }
 
 func setApplicationShortcuts(
 	app *cview.Application,
+	list *cview.List,
 	submissions []*types.Submissions,
 	main *types.MainView,
 	appState *types.ApplicationState) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		currentState := submissions[appState.CurrentCategory]
-		frontPanel, _ := main.Panels.GetFrontPanel()
 
-		if frontPanel == offlinePage {
-			if event.Rune() == 'q' {
-				app.Stop()
-			}
-			return event
-		}
-		if frontPanel == helpPage {
+		if appState.IsOnHelpScreen {
 			model.ReturnFromHelpScreen(main, appState, currentState)
 			return event
 		}
 		if event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab {
-			model.ChangeCategory(event, appState, submissions, main, app)
+			model.ChangeCategory(event, list, appState, submissions, main, app)
 			return event
 		}
 		if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
-			model.NextPage(app, currentState, main, appState)
+			model.NextPage(app, list, currentState, main, appState)
 			return event
 		}
 		if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
-			model.PreviousPage(app, currentState, main, appState)
+			model.PreviousPage(app, list, currentState, main, appState)
 			return event
 		}
 		if event.Rune() == 'q' || event.Key() == tcell.KeyEsc {

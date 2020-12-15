@@ -3,18 +3,18 @@ package types
 import "gitlab.com/tslocum/cview"
 
 const (
-	FrontPage      = 0
-	New            = 1
-	Ask            = 2
-	Show           = 3
-	FrontPagePanel = "0"
-	NewestPanel    = "1"
-	AskPanel       = "2"
-	ShowPanel      = "3"
+	FrontPage        = 0
+	New              = 1
+	Ask              = 2
+	Show             = 3
+	SubmissionsPanel = "0"
+	HelpScreenPanel  = "help"
+	ErrorScreenPanel = "error"
 )
 
 type ScreenController struct {
 	Application      *cview.Application
+	List             *cview.List
 	MainView         *MainView
 	Submissions      []*Submissions
 	ApplicationState *ApplicationState

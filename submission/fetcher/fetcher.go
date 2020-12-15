@@ -12,7 +12,7 @@ const (
 	page = "?page="
 )
 
-func FetchSubmissions(page int, category int) ([]*types.Submission, error) {
+func FetchSubmissionEntries(page int, category int) ([]*types.Submission, error) {
 	url := getUrl(category)
 	p := strconv.Itoa(page)
 	JSON, err := http.Get(url + p)
