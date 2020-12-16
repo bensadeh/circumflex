@@ -14,6 +14,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 	"strconv"
+	"time"
 )
 
 func ReadSubmissionComments(
@@ -271,7 +272,8 @@ func Quit(app *cview.Application) {
 func Refresh(app *cview.Application, main *types.MainView, appState *types.ApplicationState) {
 	afterResizeFunc := app.GetAfterResizeFunc()
 	afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
-	view.SetTemporaryStatusBar(app, main, "Refreshed")
+	duration := time.Millisecond * 2000
+	view.SetTemporaryStatusBar(app, main, "Refreshed", duration)
 }
 
 func ResetStates(appState *types.ApplicationState, submissions []*types.Submissions) {

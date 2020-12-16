@@ -61,13 +61,13 @@ func SetPanelToHelpScreen(m *types.MainView) {
 	m.Panels.SetCurrentPanel(types.HelpScreenPanel)
 }
 
-func SetTemporaryStatusBar(app *cview.Application, m *types.MainView, text string) {
-	go setAndClearStatusBar(app, m, text)
+func SetTemporaryStatusBar(app *cview.Application, m *types.MainView, text string, duration time.Duration) {
+	go setAndClearStatusBar(app, m, text, duration)
 }
 
-func setAndClearStatusBar(app *cview.Application, m *types.MainView, text string) {
+func setAndClearStatusBar(app *cview.Application, m *types.MainView, text string, duration time.Duration) {
 	m.StatusBar.SetText(text)
-	time.Sleep(1700 * time.Millisecond)
+	time.Sleep(duration)
 	m.StatusBar.SetText("")
 	app.Draw()
 }
