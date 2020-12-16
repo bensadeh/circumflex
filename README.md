@@ -18,37 +18,37 @@
 </p>
 
 
-## Installation
-### Homebrew
-The following command adds bensadeh/circumflex to your list of [taps](https://docs.brew.sh/Taps) and installs `circumflex` from [this formula](https://github.com/bensadeh/homebrew-circumflex): 
+## Getting started
+Install `circumflex` with Homebrew: 
 ```console
+# Add 'bensadeh/circumflex' to list of taps and install
 brew install bensadeh/circumflex/circumflex
-```
 
-To run `circumflex`:
-
-```console
+# Run circumflex
 clx
 ```
 
-Press <kbd>i</kbd> for help.
+Press <kbd>i</kbd> for a list over keybindings.
 
 ## Features
-### Main features
+### Overview
 `circumflex` lets you:
 * 🎙 Browse Hacker News by category (Front&nbsp;Page, Newest, Ask&nbsp;HN or Show&nbsp;HN)
 * 💬 Read comments in the pager `less`
 
-Additionally, `circumflex` has the following nice-to-have features:
-* ⚡️ Vim keybindings
-* 🖍 Support for your terminal's own color scheme
+### Limitations
+Note that `circumflex` does not support logging in or any other login related functionality. This includes up-/down-voting, 
+submitting articles and posting comments.
 
 ### Comment section
-The comment section is formatted with readability in mind:
-* 🖋 Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and `code` where available
-* 📐 Replies are indented and color-coded
-* 🎩 Original Poster (`OP`), Parent Poster (`PP`) and moderators are labelled
-* 🔗 References (`[1]`, `[2]` etc.) are colored
+Comments are pretty-printed and piped to the pager `less`. To present a nice and readable comment section, 
+`circumflex` features:
+* 🖋 Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and 
+  `code` where available
+* 📐 Indented and color-coded replies
+* 🔗 Colored references (`[1]`, `[2]`, `[…]`)
+* 🎩 Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
+* 🕹 Ability to jump between top-level comments by searching for `::`
 
 <p align="center">
   <img src="screenshots/comments.png" width="700" alt="^"/>
