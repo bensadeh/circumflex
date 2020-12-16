@@ -21,30 +21,32 @@ func ReadSubmissionComments(
 	list *cview.List,
 	submissions []*types.Submission,
 	appState *types.ApplicationState) {
-	app.Suspend(func() {
-		i := list.GetCurrentItemIndex()
+	i := list.GetCurrentItemIndex()
 
-		for index := range submissions {
-			if index == i {
-				storyIndex := (appState.CurrentPage)*appState.SubmissionsToShow + i
-				s := submissions[storyIndex]
+	for index := range submissions {
+		if index == i {
+			storyIndex := (appState.CurrentPage)*appState.SubmissionsToShow + i
+			s := submissions[storyIndex]
 
-				if s.Author == "" {
-					appState.IsReturningFromSuspension = true
-					return
-				}
-
-				id := strconv.Itoa(s.ID)
-				JSON, _ := http.Get("http://api.hackerwebapp.com/item/" + id)
-				jComments := new(cp.Comments)
-				_ = json.Unmarshal(JSON, jComments)
-
-				commentTree := cp.PrintCommentTree(*jComments, 4, 70)
-				cli.Less(commentTree)
+			if s.Author == "" {
 				appState.IsReturningFromSuspension = true
+				return
 			}
+
+			id := strconv.Itoa(s.ID)
+			JSON, _ := http.Get("http://api.hackerwebapp.com/item/" + id)
+			jComments := new(cp.Comments)
+			_ = json.Unmarshal(JSON, jComments)
+
+			commentTree := cp.PrintCommentTree(*jComments, 4, 70)
+
+			app.Suspend(func() {
+				cli.Less(commentTree)
+			})
+
+			appState.IsReturningFromSuspension = true
 		}
-	})
+	}
 }
 
 func OpenCommentsInBrowser(list *cview.List, appState *types.ApplicationState, submissions []*types.Submission) {

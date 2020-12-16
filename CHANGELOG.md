@@ -6,6 +6,9 @@
 **Changes:**
 - `circumflex` no longer jumps to the first element when changing categories
 
+**Bugfixes:**
+- `circumflex` will no longer suspend the application when trying to open submission of the type 'Company X (YC W20) is hiring' 
+
 **Backend:**
 - Use the 'level' field directly from the API instead of calculating it
 - Large refactor of the program architecture
