@@ -61,7 +61,7 @@ func setApplicationShortcuts(
 			return event
 		}
 		if event.Rune() == 'q' || event.Key() == tcell.KeyEsc {
-			app.Stop()
+			model.Quit(app)
 		}
 		if event.Rune() == 'i' || event.Rune() == '?' {
 			model.ShowHelpScreen(main, appState)
@@ -76,8 +76,7 @@ func setApplicationShortcuts(
 			return event
 		}
 		if event.Rune() == 'r' {
-			afterResizeFunc := app.GetAfterResizeFunc()
-			afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
+			model.Refresh(app, appState)
 			return event
 		}
 		if event.Key() == tcell.KeyEnter {

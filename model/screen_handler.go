@@ -264,6 +264,15 @@ func ShowPageAfterResize(
 	}
 }
 
+func Quit(app *cview.Application) {
+	app.Stop()
+}
+
+func Refresh(app *cview.Application, appState *types.ApplicationState) {
+	afterResizeFunc := app.GetAfterResizeFunc()
+	afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
+}
+
 func ResetStates(appState *types.ApplicationState, submissions []*types.Submissions) {
 	resetApplicationState(appState)
 	resetSubmissionStates(submissions)
