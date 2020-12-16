@@ -33,14 +33,14 @@ func ReadSubmissionComments(
 				return
 			}
 
-			id := strconv.Itoa(s.ID)
-			JSON, _ := http.Get("http://api.hackerwebapp.com/item/" + id)
-			jComments := new(cp.Comments)
-			_ = json.Unmarshal(JSON, jComments)
-
-			commentTree := cp.PrintCommentTree(*jComments, 4, 70)
-
 			app.Suspend(func() {
+				id := strconv.Itoa(s.ID)
+				JSON, _ := http.Get("http://api.hackerwebapp.com/item/" + id)
+				jComments := new(cp.Comments)
+				_ = json.Unmarshal(JSON, jComments)
+
+				commentTree := cp.PrintCommentTree(*jComments, 4, 70)
+
 				cli.Less(commentTree)
 			})
 
