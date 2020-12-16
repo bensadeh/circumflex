@@ -37,7 +37,7 @@ Press <kbd>i</kbd> for a list over keybindings.
 * 💬 Read comments in the pager `less`
 
 ### Limitations
-Note that `circumflex` does not support logging in or any other login related functionality. This includes up-/down-voting, 
+`circumflex` is read-only and does not support any login related functionality. This includes up-/down-voting, 
 submitting articles and posting comments.
 
 ### Comment section
