@@ -268,9 +268,10 @@ func Quit(app *cview.Application) {
 	app.Stop()
 }
 
-func Refresh(app *cview.Application, appState *types.ApplicationState) {
+func Refresh(app *cview.Application, main *types.MainView, appState *types.ApplicationState) {
 	afterResizeFunc := app.GetAfterResizeFunc()
 	afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
+	view.SetTemporaryStatusBar(app, main, "Refreshed")
 }
 
 func ResetStates(appState *types.ApplicationState, submissions []*types.Submissions) {

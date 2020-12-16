@@ -3,8 +3,8 @@
 ## 0.3
 (WIP)
 
-**Changes:**
-- `circumflex` no longer jumps to the first element when changing categories
+**Features:**
+- Added a status bar to show contextual information  
 
 **Bugfixes:**
 - `circumflex` will no longer suspend the application when trying to open submission of the type 'Company X (YC W20) is hiring' 

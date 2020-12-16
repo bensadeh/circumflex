@@ -76,7 +76,7 @@ func setApplicationShortcuts(
 			return event
 		}
 		if event.Rune() == 'r' {
-			model.Refresh(app, appState)
+			model.Refresh(app, main, appState)
 			return event
 		}
 		if event.Key() == tcell.KeyEnter {

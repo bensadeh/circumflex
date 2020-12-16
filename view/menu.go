@@ -5,6 +5,7 @@ import (
 	text "github.com/MichaelMure/go-term-text"
 	"gitlab.com/tslocum/cview"
 	"strconv"
+	"time"
 )
 
 func SetHackerNewsHeader(m *types.MainView, screenWidth int, category int) {
@@ -58,6 +59,17 @@ func SetPanelToSubmissions(m *types.MainView) {
 
 func SetPanelToHelpScreen(m *types.MainView) {
 	m.Panels.SetCurrentPanel(types.HelpScreenPanel)
+}
+
+func SetTemporaryStatusBar(app *cview.Application, m *types.MainView, text string) {
+	go setAndClearStatusBar(app, m, text)
+}
+
+func setAndClearStatusBar(app *cview.Application, m *types.MainView, text string) {
+	m.StatusBar.SetText(text)
+	time.Sleep(1700 * time.Millisecond)
+	m.StatusBar.SetText("")
+	app.Draw()
 }
 
 func SetLeftMarginRanks(m *types.MainView, currentPage int, viewableStoriesOnSinglePage int) {
