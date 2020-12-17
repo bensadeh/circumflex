@@ -4,11 +4,12 @@ import (
 	"clx/browser"
 	"clx/cli"
 	cp "clx/comment-parser"
+	"clx/constants"
 	"clx/http"
 	"clx/screen"
+	"clx/structs"
 	"clx/submission/fetcher"
 	"clx/submission/formatter"
-	"clx/types"
 	"clx/view"
 	"encoding/json"
 	"github.com/gdamore/tcell/v2"
@@ -17,11 +18,93 @@ import (
 	"time"
 )
 
+func SetAfterInitializationAndAfterResizeFunctions(
+	app *cview.Application,
+	list *cview.List,
+	submissions []*structs.Submissions,
+	main *structs.MainView,
+	appState *structs.ApplicationState) {
+	app.SetAfterResizeFunc(func(width int, height int) {
+		if appState.IsReturningFromSuspension {
+			appState.IsReturningFromSuspension = false
+			return
+		}
+		resetStates(appState, submissions)
+		initializeHeaderAndFooterAndLeftMarginView(appState, submissions, main)
+		err := fetchAndAppendSubmissionEntries(submissions[appState.CurrentCategory], appState)
+		if err != nil {
+			setApplicationToErrorState(appState, main, list, app)
+		} else {
+			appState.IsOffline = false
+			showPageAfterResize(appState, list, submissions, main)
+		}
+	})
+}
+
+func setApplicationToErrorState(
+	appState *structs.ApplicationState,
+	main *structs.MainView,
+	list *cview.List,
+	app *cview.Application) {
+
+	appState.IsOffline = true
+	list.Clear()
+	view.SetPermanentStatusBar(main, constants.OfflineMessage)
+	app.Draw()
+}
+
+func resetStates(appState *structs.ApplicationState, submissions []*structs.Submissions) {
+	resetApplicationState(appState)
+	resetSubmissionStates(submissions)
+}
+
+func resetApplicationState(appState *structs.ApplicationState) {
+	appState.CurrentPage = 0
+	appState.ScreenWidth = screen.GetTerminalWidth()
+	appState.ScreenHeight = screen.GetTerminalHeight()
+	appState.SubmissionsToShow = screen.GetSubmissionsToShow(appState.ScreenHeight, 30)
+}
+
+func resetSubmissionStates(submissions []*structs.Submissions) {
+	numberOfCategories := 3
+
+	for i := 0; i < numberOfCategories; i++ {
+		submissions[i].MappedSubmissions = 0
+		submissions[i].PageToFetchFromAPI = 0
+		submissions[i].StoriesListed = 0
+		submissions[i].Entries = nil
+	}
+}
+
+func initializeHeaderAndFooterAndLeftMarginView(
+	appState *structs.ApplicationState,
+	submissions []*structs.Submissions,
+	main *structs.MainView) {
+	view.SetPanelToSubmissions(main)
+	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
+	view.SetLeftMarginRanks(main, 0, appState.SubmissionsToShow)
+	view.SetPageCounter(main, 0, submissions[appState.CurrentCategory].MaxPages)
+}
+
+func showPageAfterResize(
+	appState *structs.ApplicationState,
+	list *cview.List,
+	submissions []*structs.Submissions,
+	main *structs.MainView) {
+	submissionEntries := submissions[appState.CurrentCategory].Entries
+
+	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.SubmissionsToShow)
+
+	if appState.IsOnHelpScreen {
+		ShowHelpScreen(main, appState)
+	}
+}
+
 func ReadSubmissionComments(
 	app *cview.Application,
 	list *cview.List,
-	submissions []*types.Submission,
-	appState *types.ApplicationState) {
+	submissions []*structs.Submission,
+	appState *structs.ApplicationState) {
 	i := list.GetCurrentItemIndex()
 
 	for index := range submissions {
@@ -50,20 +133,26 @@ func ReadSubmissionComments(
 	}
 }
 
-func OpenCommentsInBrowser(list *cview.List, appState *types.ApplicationState, submissions []*types.Submission) {
+func OpenCommentsInBrowser(list *cview.List, appState *structs.ApplicationState, submissions []*structs.Submission) {
 	item := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
 	id := submissions[item].ID
 	url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
 	browser.Open(url)
 }
 
-func OpenLinkInBrowser(list *cview.List, appState *types.ApplicationState, submissions []*types.Submission) {
+func OpenLinkInBrowser(list *cview.List, appState *structs.ApplicationState, submissions []*structs.Submission) {
 	item := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
 	url := submissions[item].URL
 	browser.Open(url)
 }
 
-func NextPage(list *cview.List, submissions *types.Submissions, main *types.MainView, appState *types.ApplicationState) {
+func NextPage(
+	app *cview.Application,
+	list *cview.List,
+	submissions *structs.Submissions,
+	main *structs.MainView,
+	appState *structs.ApplicationState) {
+
 	nextPage := appState.CurrentPage + 1
 
 	if nextPage > submissions.MaxPages {
@@ -73,7 +162,11 @@ func NextPage(list *cview.List, submissions *types.Submissions, main *types.Main
 	currentlySelectedItem := list.GetCurrentItemIndex()
 
 	if !pageHasEnoughSubmissionsToView(nextPage, appState.SubmissionsToShow, submissions.Entries) {
-		FetchAndAppendSubmissionEntries(submissions, appState)
+		err := fetchAndAppendSubmissionEntries(submissions, appState)
+		if err != nil {
+			setApplicationToErrorState(appState, main, list, app)
+			return
+		}
 	}
 
 	appState.CurrentPage++
@@ -85,20 +178,21 @@ func NextPage(list *cview.List, submissions *types.Submissions, main *types.Main
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages)
 }
 
-func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []*types.Submission) bool {
+func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []*structs.Submission) bool {
 	largestItemToDisplay := (page * visibleStories) + visibleStories
 	downloadedSubmissions := len(submissions)
 
 	return downloadedSubmissions > largestItemToDisplay
 }
 
-func FetchAndAppendSubmissionEntries(submissions *types.Submissions, appState *types.ApplicationState) {
+func fetchAndAppendSubmissionEntries(submissions *structs.Submissions, appState *structs.ApplicationState) error {
 	submissions.PageToFetchFromAPI++
-	submissionEntries, _ := fetcher.FetchSubmissionEntries(submissions.PageToFetchFromAPI, appState.CurrentCategory)
+	submissionEntries, err := fetcher.FetchSubmissionEntries(submissions.PageToFetchFromAPI, appState.CurrentCategory)
 	submissions.Entries = append(submissions.Entries, submissionEntries...)
+	return err
 }
 
-func SetListItemsToCurrentPage(list *cview.List, submissions []*types.Submission, currentPage int, viewableStories int) {
+func SetListItemsToCurrentPage(list *cview.List, submissions []*structs.Submission, currentPage int, viewableStories int) {
 	list.Clear()
 	start := currentPage * viewableStories
 	end := start + viewableStories
@@ -116,11 +210,12 @@ func SetListItemsToCurrentPage(list *cview.List, submissions []*types.Submission
 }
 
 func ChangeCategory(
+	app *cview.Application,
 	event *tcell.EventKey,
 	list *cview.List,
-	appState *types.ApplicationState,
-	submissions []*types.Submissions,
-	main *types.MainView) {
+	appState *structs.ApplicationState,
+	submissions []*structs.Submissions,
+	main *structs.MainView) {
 	currentItem := list.GetCurrentItemIndex()
 	if event.Key() == tcell.KeyBacktab {
 		appState.CurrentCategory = getPreviousCategory(appState.CurrentCategory)
@@ -132,7 +227,11 @@ func ChangeCategory(
 	appState.CurrentPage = 0
 
 	if !pageHasEnoughSubmissionsToView(0, appState.SubmissionsToShow, currentSubmissions.Entries) {
-		FetchAndAppendSubmissionEntries(currentSubmissions, appState)
+		err := fetchAndAppendSubmissionEntries(currentSubmissions, appState)
+		if err != nil {
+			setApplicationToErrorState(appState, main, list, app)
+			return
+		}
 	}
 
 	SetListItemsToCurrentPage(list, currentSubmissions.Entries, appState.CurrentPage, appState.SubmissionsToShow)
@@ -144,8 +243,8 @@ func ChangeCategory(
 }
 
 func getNextCategory(currentCategory int) int {
-	lastCategory := types.Show
-	firstCategory := types.FrontPage
+	lastCategory := constants.Show
+	firstCategory := constants.FrontPage
 
 	if currentCategory == lastCategory {
 		return firstCategory
@@ -155,8 +254,8 @@ func getNextCategory(currentCategory int) int {
 }
 
 func getPreviousCategory(currentCategory int) int {
-	lastCategory := types.Show
-	firstCategory := types.FrontPage
+	lastCategory := constants.Show
+	firstCategory := constants.FrontPage
 
 	if currentCategory == firstCategory {
 		return lastCategory
@@ -165,7 +264,7 @@ func getPreviousCategory(currentCategory int) int {
 	}
 }
 
-func PreviousPage(list *cview.List, submissions *types.Submissions, main *types.MainView, appState *types.ApplicationState) {
+func PreviousPage(list *cview.List, submissions *structs.Submissions, main *structs.MainView, appState *structs.ApplicationState) {
 	previousPage := appState.CurrentPage - 1
 	if previousPage < 0 {
 		return
@@ -203,7 +302,7 @@ func SelectPreviousElement(list *cview.List) {
 	}
 }
 
-func ShowHelpScreen(main *types.MainView, appState *types.ApplicationState) {
+func ShowHelpScreen(main *structs.MainView, appState *structs.ApplicationState) {
 	appState.IsOnHelpScreen = true
 
 	view.SetKeymapsHeader(main, appState.ScreenWidth)
@@ -212,7 +311,7 @@ func ShowHelpScreen(main *types.MainView, appState *types.ApplicationState) {
 	view.SetPanelToHelpScreen(main)
 }
 
-func ReturnFromHelpScreen(main *types.MainView, appState *types.ApplicationState, submissions *types.Submissions) {
+func ReturnFromHelpScreen(main *structs.MainView, appState *structs.ApplicationState, submissions *structs.Submissions) {
 	appState.IsOnHelpScreen = false
 
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
@@ -221,15 +320,15 @@ func ReturnFromHelpScreen(main *types.MainView, appState *types.ApplicationState
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
 }
 
-func SelectFirstElementInList(main *types.MainView) {
+func SelectFirstElementInList(main *structs.MainView) {
 	view.SelectFirstElementInList(main)
 }
 
-func SelectLastElementInList(main *types.MainView, appState *types.ApplicationState) {
+func SelectLastElementInList(main *structs.MainView, appState *structs.ApplicationState) {
 	view.SelectLastElementInList(main, appState)
 }
 
-func SelectElementInList(main *types.MainView, element rune) {
+func SelectElementInList(main *structs.MainView, element rune) {
 	i := element - '0'
 	adjustedIndex := int(i) - 1
 
@@ -241,60 +340,26 @@ func SelectElementInList(main *types.MainView, element rune) {
 	}
 }
 
-func InitializeHeaderAndFooterAndLeftMarginView(
-	appState *types.ApplicationState,
-	submissions []*types.Submissions,
-	main *types.MainView) {
-	view.SetPanelToSubmissions(main)
-	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
-	view.SetLeftMarginRanks(main, 0, appState.SubmissionsToShow)
-	view.SetPageCounter(main, 0, submissions[appState.CurrentCategory].MaxPages)
-}
-
-func ShowPageAfterResize(
-	appState *types.ApplicationState,
-	list *cview.List,
-	submissions []*types.Submissions,
-	main *types.MainView) {
-	submissionEntries := submissions[appState.CurrentCategory].Entries
-
-	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.SubmissionsToShow)
-
-	if appState.IsOnHelpScreen {
-		ShowHelpScreen(main, appState)
-	}
-}
-
 func Quit(app *cview.Application) {
 	app.Stop()
 }
 
-func Refresh(app *cview.Application, main *types.MainView, appState *types.ApplicationState) {
+func Refresh(app *cview.Application,
+	list *cview.List,
+	main *structs.MainView,
+	submissions []*structs.Submissions,
+	appState *structs.ApplicationState) {
 	afterResizeFunc := app.GetAfterResizeFunc()
 	afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
-	duration := time.Millisecond * 2000
-	view.SetTemporaryStatusBar(app, main, "Refreshed", duration)
-}
 
-func ResetStates(appState *types.ApplicationState, submissions []*types.Submissions) {
-	resetApplicationState(appState)
-	resetSubmissionStates(submissions)
-}
+	ReturnFromHelpScreen(main, appState, submissions[appState.CurrentCategory])
 
-func resetApplicationState(appState *types.ApplicationState) {
-	appState.CurrentPage = 0
-	appState.ScreenWidth = screen.GetTerminalWidth()
-	appState.ScreenHeight = screen.GetTerminalHeight()
-	appState.SubmissionsToShow = screen.GetSubmissionsToShow(appState.ScreenHeight, 30)
-}
-
-func resetSubmissionStates(submissions []*types.Submissions) {
-	numberOfCategories := 3
-
-	for i := 0; i < numberOfCategories; i++ {
-		submissions[i].MappedSubmissions = 0
-		submissions[i].PageToFetchFromAPI = 0
-		submissions[i].StoriesListed = 0
-		submissions[i].Entries = nil
+	if appState.IsOffline {
+		list.Clear()
+		view.SetPermanentStatusBar(main, constants.OfflineMessage)
+		app.Draw()
+	} else {
+		duration := time.Millisecond * 2000
+		view.SetTemporaryStatusBar(app, main, "Refreshed", duration)
 	}
 }

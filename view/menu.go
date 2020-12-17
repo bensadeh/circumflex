@@ -1,31 +1,32 @@
 package view
 
 import (
-	"clx/types"
+	"clx/constants"
+	"clx/structs"
 	text "github.com/MichaelMure/go-term-text"
 	"gitlab.com/tslocum/cview"
 	"strconv"
 	"time"
 )
 
-func SetHackerNewsHeader(m *types.MainView, screenWidth int, category int) {
+func SetHackerNewsHeader(m *structs.MainView, screenWidth int, category int) {
 	switch category {
-	case types.FrontPage:
+	case constants.FrontPage:
 		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  new | ask | show"
 		offset := -26
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
-	case types.New:
+	case constants.New:
 		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  [white]new[black::] | ask | show"
 		offset := -42
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
-	case types.Ask:
+	case constants.Ask:
 		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  new | [white]ask[black::] | show"
 		offset := -42
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
-	case types.Show:
+	case constants.Show:
 		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  new | ask | [white]show[black::]"
 		offset := -42
 		header := appendWhitespace(base, offset, screenWidth)
@@ -43,7 +44,7 @@ func appendWhitespace(base string, offset int, screenWidth int) string {
 	return base + whitespace
 }
 
-func SetKeymapsHeader(m *types.MainView, screenWidth int) {
+func SetKeymapsHeader(m *structs.MainView, screenWidth int) {
 	base := "[#292D3E:#82aaff:b]       Keymaps"
 	offset := -19
 	whitespace := ""
@@ -53,26 +54,30 @@ func SetKeymapsHeader(m *types.MainView, screenWidth int) {
 	m.Header.SetText(base + whitespace)
 }
 
-func SetPanelToSubmissions(m *types.MainView) {
-	m.Panels.SetCurrentPanel(types.SubmissionsPanel)
+func SetPanelToSubmissions(m *structs.MainView) {
+	m.Panels.SetCurrentPanel(constants.SubmissionsPanel)
 }
 
-func SetPanelToHelpScreen(m *types.MainView) {
-	m.Panels.SetCurrentPanel(types.HelpScreenPanel)
+func SetPanelToHelpScreen(m *structs.MainView) {
+	m.Panels.SetCurrentPanel(constants.HelpScreenPanel)
 }
 
-func SetTemporaryStatusBar(app *cview.Application, m *types.MainView, text string, duration time.Duration) {
+func SetPermanentStatusBar(m *structs.MainView, text string) {
+	m.StatusBar.SetText(text)
+}
+
+func SetTemporaryStatusBar(app *cview.Application, m *structs.MainView, text string, duration time.Duration) {
 	go setAndClearStatusBar(app, m, text, duration)
 }
 
-func setAndClearStatusBar(app *cview.Application, m *types.MainView, text string, duration time.Duration) {
+func setAndClearStatusBar(app *cview.Application, m *structs.MainView, text string, duration time.Duration) {
 	m.StatusBar.SetText(text)
 	time.Sleep(duration)
 	m.StatusBar.SetText("")
 	app.Draw()
 }
 
-func SetLeftMarginRanks(m *types.MainView, currentPage int, viewableStoriesOnSinglePage int) {
+func SetLeftMarginRanks(m *structs.MainView, currentPage int, viewableStoriesOnSinglePage int) {
 	marginText := ""
 	indentationFromRight := " "
 	startingRank := viewableStoriesOnSinglePage*currentPage + 1
@@ -82,15 +87,15 @@ func SetLeftMarginRanks(m *types.MainView, currentPage int, viewableStoriesOnSin
 	m.LeftMargin.SetText(marginText)
 }
 
-func HideLeftMarginRanks(m *types.MainView) {
+func HideLeftMarginRanks(m *structs.MainView) {
 	m.LeftMargin.SetText("")
 }
 
-func HideFooterText(m *types.MainView) {
+func HideFooterText(m *structs.MainView) {
 	m.PageIndicator.SetText("")
 }
 
-func SetPageCounter(m *types.MainView, currentPage int, maxPages int) {
+func SetPageCounter(m *structs.MainView, currentPage int, maxPages int) {
 	pageCounter := ""
 
 	if maxPages == 2 {
@@ -134,18 +139,18 @@ func getPageCounterForTwoPages(currentPage int) string {
 	return footerText
 }
 
-func SelectFirstElementInList(main *types.MainView) {
+func SelectFirstElementInList(main *structs.MainView) {
 	list := getListFromFrontPanel(main.Panels)
 	list.SetCurrentItem(0)
 
 }
 
-func SelectLastElementInList(main *types.MainView, appState *types.ApplicationState) {
+func SelectLastElementInList(main *structs.MainView, appState *structs.ApplicationState) {
 	list := getListFromFrontPanel(main.Panels)
 	list.SetCurrentItem(appState.SubmissionsToShow)
 }
 
-func SelectElementInList(main *types.MainView, index int) {
+func SelectElementInList(main *structs.MainView, index int) {
 	list := getListFromFrontPanel(main.Panels)
 	list.SetCurrentItem(index)
 }

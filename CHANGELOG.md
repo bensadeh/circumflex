@@ -5,6 +5,7 @@
 
 **Features:**
 - Added a status bar to show contextual information  
+- `circumflex` now handles connection errors gracefully
 
 **Bugfixes:**
 - `circumflex` will no longer suspend the application when trying to open submission of the type 'Company X (YC W20) is hiring' 

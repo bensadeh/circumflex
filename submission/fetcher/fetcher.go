@@ -1,8 +1,9 @@
 package fetcher
 
 import (
+	"clx/constants"
 	"clx/http"
-	"clx/types"
+	"clx/structs"
 	"encoding/json"
 	"strconv"
 )
@@ -12,7 +13,7 @@ const (
 	page = "?page="
 )
 
-func FetchSubmissionEntries(page int, category int) ([]*types.Submission, error) {
+func FetchSubmissionEntries(page int, category int) ([]*structs.Submission, error) {
 	url := getUrl(category)
 	p := strconv.Itoa(page)
 	JSON, err := http.Get(url + p)
@@ -22,21 +23,21 @@ func FetchSubmissionEntries(page int, category int) ([]*types.Submission, error)
 
 func getUrl(category int) string {
 	switch category {
-	case types.FrontPage:
+	case constants.FrontPage:
 		return baseURL + "news" + page
-	case types.New:
+	case constants.New:
 		return baseURL + "newest" + page
-	case types.Ask:
+	case constants.Ask:
 		return baseURL + "ask" + page
-	case types.Show:
+	case constants.Show:
 		return baseURL + "show" + page
 	default:
 		panic("ApplicationState unsupported")
 	}
 }
 
-func unmarshalJSON(stream []byte) []*types.Submission {
-	var submissions []*types.Submission
+func unmarshalJSON(stream []byte) []*structs.Submission {
+	var submissions []*structs.Submission
 	_ = json.Unmarshal(stream, &submissions)
 	return submissions
 }

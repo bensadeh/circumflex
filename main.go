@@ -15,6 +15,13 @@ func main() {
 		sc.MainView,
 		sc.ApplicationState)
 
+	controller.SetApplicationShortcuts(
+		sc.Application,
+		sc.List,
+		sc.Submissions,
+		sc.MainView,
+		sc.ApplicationState)
+
 	cli.ClearScreen()
 
 	sc.Application.SetRoot(sc.MainView.Grid, true)

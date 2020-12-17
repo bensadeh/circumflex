@@ -2,7 +2,7 @@ package controller
 
 import (
 	"clx/model"
-	"clx/types"
+	"clx/structs"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 	"unicode"
@@ -11,28 +11,18 @@ import (
 func SetAfterInitializationAndAfterResizeFunctions(
 	app *cview.Application,
 	list *cview.List,
-	submissions []*types.Submissions,
-	main *types.MainView,
-	appState *types.ApplicationState) {
-	app.SetAfterResizeFunc(func(width int, height int) {
-		if appState.IsReturningFromSuspension {
-			appState.IsReturningFromSuspension = false
-			return
-		}
-		model.ResetStates(appState, submissions)
-		model.InitializeHeaderAndFooterAndLeftMarginView(appState, submissions, main)
-		model.FetchAndAppendSubmissionEntries(submissions[appState.CurrentCategory], appState)
-		model.ShowPageAfterResize(appState, list, submissions, main)
-		setApplicationShortcuts(app, list, submissions, main, appState)
-	})
+	submissions []*structs.Submissions,
+	main *structs.MainView,
+	appState *structs.ApplicationState) {
+	model.SetAfterInitializationAndAfterResizeFunctions(app, list, submissions, main, appState)
 }
 
-func setApplicationShortcuts(
+func SetApplicationShortcuts(
 	app *cview.Application,
 	list *cview.List,
-	submissions []*types.Submissions,
-	main *types.MainView,
-	appState *types.ApplicationState) {
+	submissions []*structs.Submissions,
+	main *structs.MainView,
+	appState *structs.ApplicationState) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		currentState := submissions[appState.CurrentCategory]
 
@@ -40,12 +30,23 @@ func setApplicationShortcuts(
 			model.ReturnFromHelpScreen(main, appState, currentState)
 			return event
 		}
+		if appState.IsOffline && event.Rune() == 'r' {
+			model.Refresh(app, list, main, submissions, appState)
+			return event
+		}
+		if appState.IsOffline && event.Rune() == 'q' {
+			model.Quit(app)
+			return event
+		}
+		if appState.IsOffline {
+			return event
+		}
 		if event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab {
-			model.ChangeCategory(event, list, appState, submissions, main)
+			model.ChangeCategory(app, event, list, appState, submissions, main)
 			return event
 		}
 		if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
-			model.NextPage(list, currentState, main, appState)
+			model.NextPage(app, list, currentState, main, appState)
 			return event
 		}
 		if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
@@ -76,7 +77,7 @@ func setApplicationShortcuts(
 			return event
 		}
 		if event.Rune() == 'r' {
-			model.Refresh(app, main, appState)
+			model.Refresh(app, list, main, submissions, appState)
 			return event
 		}
 		if event.Key() == tcell.KeyEnter {

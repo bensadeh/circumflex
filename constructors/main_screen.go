@@ -1,8 +1,9 @@
 package constructor
 
 import (
+	"clx/constants"
 	"clx/screen"
-	"clx/types"
+	"clx/structs"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 )
@@ -11,31 +12,31 @@ const (
 	maximumStoriesToDisplay = 30
 )
 
-func NewScreenController() *types.ScreenController {
-	sc := new(types.ScreenController)
+func NewScreenController() *structs.ScreenController {
+	sc := new(structs.ScreenController)
 	sc.Application = cview.NewApplication()
 
-	sc.Submissions = []*types.Submissions{}
-	sc.Submissions = append(sc.Submissions, new(types.Submissions))
-	sc.Submissions = append(sc.Submissions, new(types.Submissions))
-	sc.Submissions = append(sc.Submissions, new(types.Submissions))
-	sc.Submissions = append(sc.Submissions, new(types.Submissions))
+	sc.Submissions = []*structs.Submissions{}
+	sc.Submissions = append(sc.Submissions, new(structs.Submissions))
+	sc.Submissions = append(sc.Submissions, new(structs.Submissions))
+	sc.Submissions = append(sc.Submissions, new(structs.Submissions))
+	sc.Submissions = append(sc.Submissions, new(structs.Submissions))
 
-	sc.ApplicationState = new(types.ApplicationState)
+	sc.ApplicationState = new(structs.ApplicationState)
 	sc.ApplicationState.ScreenWidth = screen.GetTerminalWidth()
 	sc.ApplicationState.ScreenHeight = screen.GetTerminalHeight()
 	sc.ApplicationState.SubmissionsToShow = screen.GetSubmissionsToShow(
 		sc.ApplicationState.ScreenHeight,
 		maximumStoriesToDisplay)
 
-	sc.Submissions[types.FrontPage].MaxPages = 2
-	sc.Submissions[types.New].MaxPages = 2
-	sc.Submissions[types.Ask].MaxPages = 1
-	sc.Submissions[types.Show].MaxPages = 1
+	sc.Submissions[constants.FrontPage].MaxPages = 2
+	sc.Submissions[constants.New].MaxPages = 2
+	sc.Submissions[constants.Ask].MaxPages = 1
+	sc.Submissions[constants.Show].MaxPages = 1
 
 	sc.List = NewList()
 	sc.MainView = NewMainView()
-	sc.MainView.Panels.AddPanel(types.SubmissionsPanel, sc.List, true, true)
+	sc.MainView.Panels.AddPanel(constants.SubmissionsPanel, sc.List, true, true)
 
 	return sc
 }
@@ -54,8 +55,8 @@ func NewList() *cview.List {
 	return list
 }
 
-func NewMainView() *types.MainView {
-	main := new(types.MainView)
+func NewMainView() *structs.MainView {
+	main := new(structs.MainView)
 	main.Panels = cview.NewPanels()
 	main.Grid = cview.NewGrid()
 	main.LeftMargin = newTextViewPrimitive("")
@@ -75,8 +76,7 @@ func NewMainView() *types.MainView {
 	main.Grid.AddItem(main.StatusBar, 2, 1, 1, 1, 0, 0, false)
 	main.Grid.AddItem(main.PageIndicator, 2, 2, 1, 1, 0, 0, false)
 
-	main.Panels.AddPanel(types.HelpScreenPanel, GetHelpScreen(), true, false)
-	main.Panels.AddPanel(types.ErrorScreenPanel, GetOfflineScreen(), true, false)
+	main.Panels.AddPanel(constants.HelpScreenPanel, GetHelpScreen(), true, false)
 
 	return main
 }

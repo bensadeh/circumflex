@@ -11,7 +11,7 @@
 [![Go Report Card](https://img.shields.io/github/go-mod/go-version/bensadeh/circumflex?color=ffe585&labelColor=292D3E)](https://github.com/bensadeh/circumflex/blob/master/go.mod)
 </div>
 
-`circumflex` is Hacker&nbsp;News on the command line. Browse submissions and read comments without leaving your terminal.
+`circumflex` is a text user interface (TUI) application for browsing Hacker&nbsp;News. Stay up to date on the latest stories and discussions without leaving your terminal.
 
 <p align="center">
   <img src="screenshots/mainview.png" width="700" alt="^"/>
