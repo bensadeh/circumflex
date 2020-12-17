@@ -1,11 +1,6 @@
-# This is an example goreleaser.yaml file with some sane defaults.
-# Make sure to check the documentation at http://goreleaser.com
 before:
   hooks:
-    # You may remove this if you don't use go modules.
     - go mod download
-    # you may remove this if you don't need go generate
-    - go generate ./...
 builds:
   - env:
       - CGO_ENABLED=0
@@ -30,6 +25,8 @@ brews:
     tap:
       owner: bensadeh
       name: homebrew-circumflex
-    description: "circumflex is Hacker News on the command line"
+    description: "circumflex is Hacker News in your terminal"
+    homepage: "https://github.com/bensadeh/circumflex/"
+    license: "AGPL-3.0-only"
     install: |
       bin.install "circumflex" => "clx"
