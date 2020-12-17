@@ -36,6 +36,10 @@ Press <kbd>i</kbd> for a list over keybindings.
 * 🎙 Browse Hacker News by category (Front&nbsp;Page, Newest, Ask&nbsp;HN or Show&nbsp;HN)
 * 💬 Read comments in the pager `less`
 
+<p align="center">
+  <img src="screenshots/comments.png" width="700" alt="^"/>
+</p>
+
 ### Limitations
 `circumflex` is read-only and does not support any login related functionality. This includes up-/down-voting, 
 submitting articles and posting comments.
@@ -49,10 +53,6 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 * 🔗 Colored references (`[1]`, `[2]`, `[…]`)
 * 🎩 Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
 * 🕹 Ability to jump between top-level comments by searching for `::`
-
-<p align="center">
-  <img src="screenshots/comments.png" width="700" alt="^"/>
-</p>
 
 <p align="center">
   <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
