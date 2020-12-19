@@ -27,5 +27,7 @@ brews:
     description: "circumflex is Hacker News in your terminal"
     homepage: "https://github.com/bensadeh/circumflex/"
     license: "AGPL-3.0-only"
+    dependencies:
+      - name: less
     install: |
       bin.install "circumflex" => "clx"
