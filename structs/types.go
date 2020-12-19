@@ -1,6 +1,8 @@
 package structs
 
-import "gitlab.com/tslocum/cview"
+import (
+	"gitlab.com/tslocum/cview"
+)
 
 type ScreenController struct {
 	Application      *cview.Application
@@ -33,7 +35,8 @@ type Submissions struct {
 
 type ApplicationState struct {
 	SubmissionsToShow         int
-	CurrentCategory           int
+	SubmissionsCategory       int
+	HelpScreenCategory        int
 	ScreenHeight              int
 	ScreenWidth               int
 	CurrentPage               int

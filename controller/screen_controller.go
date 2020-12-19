@@ -24,12 +24,9 @@ func SetApplicationShortcuts(
 	main *structs.MainView,
 	appState *structs.ApplicationState) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		currentState := submissions[appState.CurrentCategory]
+		currentState := submissions[appState.SubmissionsCategory]
 
-		if appState.IsOnHelpScreen {
-			model.ReturnFromHelpScreen(main, appState, currentState)
-			return event
-		}
+		//Offline events
 		if appState.IsOffline && event.Rune() == 'r' {
 			model.Refresh(app, list, main, submissions, appState)
 			return event
@@ -41,6 +38,22 @@ func SetApplicationShortcuts(
 		if appState.IsOffline {
 			return event
 		}
+
+		//Help screen events
+		if appState.IsOnHelpScreen && (event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab) {
+			model.ChangeHelpScreenCategory(event, appState, main)
+			return event
+		}
+		if appState.IsOnHelpScreen && event.Rune() == 'q' {
+			model.ExitHelpScreen(main, appState, currentState)
+			return event
+		}
+		if appState.IsOnHelpScreen {
+			model.ExitHelpScreen(main, appState, currentState)
+			return event
+		}
+
+		//Submission screen events
 		if event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab {
 			model.ChangeCategory(app, event, list, appState, submissions, main)
 			return event
@@ -65,7 +78,7 @@ func SetApplicationShortcuts(
 			model.Quit(app)
 		}
 		if event.Rune() == 'i' || event.Rune() == '?' {
-			model.ShowHelpScreen(main, appState)
+			model.EnterInfoScreen(main, appState)
 			return event
 		}
 		if event.Rune() == 'g' {

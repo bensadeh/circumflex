@@ -44,22 +44,43 @@ func appendWhitespace(base string, offset int, screenWidth int) string {
 	return base + whitespace
 }
 
-func SetKeymapsHeader(m *structs.MainView, screenWidth int) {
-	base := "[#292D3E:#82aaff:b]       Keymaps"
-	offset := -19
-	whitespace := ""
-	for i := 0; i < screenWidth-text.Len(base)-offset; i++ {
-		whitespace += " "
+func SetHelpScreenHeader(m *structs.MainView, screenWidth int, category int) {
+	switch category {
+	case constants.Info:
+		base := "[black:#82aaff:]   [^] [::b]circumflex[::-]   keymaps | settings"
+		offset := -26
+		header := appendWhitespace(base, offset, screenWidth)
+		m.Header.SetText(header)
+	case constants.Keymaps:
+		base := "[black:#82aaff:]   [^] [::b]circumflex[::-]   [white]keymaps[black::] | settings"
+		offset := -42
+		header := appendWhitespace(base, offset, screenWidth)
+		m.Header.SetText(header)
+	case constants.Environment:
+		base := "[black:#82aaff:]   [^] [::b]circumflex[::-]   keymaps | [white]settings[black::]"
+		offset := -42
+		header := appendWhitespace(base, offset, screenWidth)
+		m.Header.SetText(header)
+	default:
+		return
 	}
-	m.Header.SetText(base + whitespace)
 }
 
 func SetPanelToSubmissions(m *structs.MainView) {
 	m.Panels.SetCurrentPanel(constants.SubmissionsPanel)
 }
 
-func SetPanelToHelpScreen(m *structs.MainView) {
-	m.Panels.SetCurrentPanel(constants.HelpScreenPanel)
+func SetHelpScreenPanel(m *structs.MainView, category int) {
+	switch category {
+	case constants.Info:
+		m.Panels.SetCurrentPanel(constants.InfoPanel)
+	case constants.Keymaps:
+		m.Panels.SetCurrentPanel(constants.KeymapsPanel)
+	case constants.Environment:
+		m.Panels.SetCurrentPanel(constants.EnvironmentPanel)
+	default:
+		return
+	}
 }
 
 func SetPermanentStatusBar(m *structs.MainView, text string) {

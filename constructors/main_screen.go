@@ -76,7 +76,10 @@ func NewMainView() *structs.MainView {
 	main.Grid.AddItem(main.StatusBar, 2, 1, 1, 1, 0, 0, false)
 	main.Grid.AddItem(main.PageIndicator, 2, 2, 1, 1, 0, 0, false)
 
-	main.Panels.AddPanel(constants.HelpScreenPanel, GetHelpScreen(), true, false)
+	main.Panels.AddPanel(constants.InfoPanel, GetInfoScreen(), true, false)
+	main.Panels.AddPanel(constants.KeymapsPanel, GetHelpScreen(), true, false)
+	main.Panels.AddPanel(constants.EnvironmentPanel, GetEnvironmentScreen(), true, false)
+
 
 	return main
 }

@@ -63,7 +63,7 @@ The first keystroke is lost when moving from cview (submission menu) to viewing 
 
 ## Under the hood
 `circumflex` uses:
-* [tcell](https://github.com/gdamore/tcell) and [cview](https://gitlab.com/tslocum/cview) for the UI
+* [tcell](https://github.com/gdamore/tcell) and [cview](https://gitlab.com/tslocum/cview) for the TUI
 * [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) for fetching submissions and comments
 * [`less`](http://greenwoodsoftware.com/less/) for viewing comments
 * [go-term-text](https://github.com/MichaelMure/go-term-text) for wrapping and indenting comments

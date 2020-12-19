@@ -31,7 +31,7 @@ func SetAfterInitializationAndAfterResizeFunctions(
 		}
 		resetStates(appState, submissions)
 		initializeHeaderAndFooterAndLeftMarginView(appState, submissions, main)
-		err := fetchAndAppendSubmissionEntries(submissions[appState.CurrentCategory], appState)
+		err := fetchAndAppendSubmissionEntries(submissions[appState.SubmissionsCategory], appState)
 		if err != nil {
 			setApplicationToErrorState(appState, main, list, app)
 		} else {
@@ -81,9 +81,9 @@ func initializeHeaderAndFooterAndLeftMarginView(
 	submissions []*structs.Submissions,
 	main *structs.MainView) {
 	view.SetPanelToSubmissions(main)
-	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
+	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.SubmissionsCategory)
 	view.SetLeftMarginRanks(main, 0, appState.SubmissionsToShow)
-	view.SetPageCounter(main, 0, submissions[appState.CurrentCategory].MaxPages)
+	view.SetPageCounter(main, 0, submissions[appState.SubmissionsCategory].MaxPages)
 }
 
 func showPageAfterResize(
@@ -91,12 +91,12 @@ func showPageAfterResize(
 	list *cview.List,
 	submissions []*structs.Submissions,
 	main *structs.MainView) {
-	submissionEntries := submissions[appState.CurrentCategory].Entries
+	submissionEntries := submissions[appState.SubmissionsCategory].Entries
 
 	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.SubmissionsToShow)
 
 	if appState.IsOnHelpScreen {
-		ShowHelpScreen(main, appState)
+		showInfoCategory(main, appState)
 	}
 }
 
@@ -187,7 +187,7 @@ func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []
 
 func fetchAndAppendSubmissionEntries(submissions *structs.Submissions, appState *structs.ApplicationState) error {
 	submissions.PageToFetchFromAPI++
-	submissionEntries, err := fetcher.FetchSubmissionEntries(submissions.PageToFetchFromAPI, appState.CurrentCategory)
+	submissionEntries, err := fetcher.FetchSubmissionEntries(submissions.PageToFetchFromAPI, appState.SubmissionsCategory)
 	submissions.Entries = append(submissions.Entries, submissionEntries...)
 	return err
 }
@@ -218,12 +218,12 @@ func ChangeCategory(
 	main *structs.MainView) {
 	currentItem := list.GetCurrentItemIndex()
 	if event.Key() == tcell.KeyBacktab {
-		appState.CurrentCategory = getPreviousCategory(appState.CurrentCategory)
+		appState.SubmissionsCategory = getPreviousCategory(appState.SubmissionsCategory, 4)
 	} else {
-		appState.CurrentCategory = getNextCategory(appState.CurrentCategory)
+		appState.SubmissionsCategory = getNextCategory(appState.SubmissionsCategory, 4)
 	}
 
-	currentSubmissions := submissions[appState.CurrentCategory]
+	currentSubmissions := submissions[appState.SubmissionsCategory]
 	appState.CurrentPage = 0
 
 	if !pageHasEnoughSubmissionsToView(0, appState.SubmissionsToShow, currentSubmissions.Entries) {
@@ -239,29 +239,33 @@ func ChangeCategory(
 
 	view.SetPageCounter(main, appState.CurrentPage, currentSubmissions.MaxPages)
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
-	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
+	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.SubmissionsCategory)
 }
 
-func getNextCategory(currentCategory int) int {
-	lastCategory := constants.Show
-	firstCategory := constants.FrontPage
-
-	if currentCategory == lastCategory {
-		return firstCategory
+func getNextCategory(currentCategory int, numberOfCategories int) int {
+	if currentCategory == (numberOfCategories - 1) {
+		return 0
 	} else {
 		return currentCategory + 1
 	}
 }
 
-func getPreviousCategory(currentCategory int) int {
-	lastCategory := constants.Show
-	firstCategory := constants.FrontPage
-
-	if currentCategory == firstCategory {
-		return lastCategory
+func getPreviousCategory(currentCategory int, numberOfCategories int) int {
+	if currentCategory == 0 {
+		return numberOfCategories - 1
 	} else {
 		return currentCategory - 1
 	}
+}
+
+func ChangeHelpScreenCategory(event *tcell.EventKey, appState *structs.ApplicationState, main *structs.MainView) {
+	if event.Key() == tcell.KeyBacktab {
+		appState.HelpScreenCategory = getPreviousCategory(appState.HelpScreenCategory, 3)
+	} else {
+		appState.HelpScreenCategory = getNextCategory(appState.HelpScreenCategory, 3)
+	}
+
+	showInfoCategory(main, appState)
 }
 
 func PreviousPage(list *cview.List, submissions *structs.Submissions, main *structs.MainView, appState *structs.ApplicationState) {
@@ -302,19 +306,24 @@ func SelectPreviousElement(list *cview.List) {
 	}
 }
 
-func ShowHelpScreen(main *structs.MainView, appState *structs.ApplicationState) {
+func EnterInfoScreen(main *structs.MainView, appState *structs.ApplicationState) {
 	appState.IsOnHelpScreen = true
+	appState.HelpScreenCategory = constants.Info
 
-	view.SetKeymapsHeader(main, appState.ScreenWidth)
-	view.HideLeftMarginRanks(main)
-	view.HideFooterText(main)
-	view.SetPanelToHelpScreen(main)
+	showInfoCategory(main, appState)
 }
 
-func ReturnFromHelpScreen(main *structs.MainView, appState *structs.ApplicationState, submissions *structs.Submissions) {
+func showInfoCategory(main *structs.MainView, appState *structs.ApplicationState) {
+	view.SetHelpScreenHeader(main, appState.ScreenWidth, appState.HelpScreenCategory)
+	view.HideLeftMarginRanks(main)
+	view.HideFooterText(main)
+	view.SetHelpScreenPanel(main, appState.HelpScreenCategory)
+}
+
+func ExitHelpScreen(main *structs.MainView, appState *structs.ApplicationState, submissions *structs.Submissions) {
 	appState.IsOnHelpScreen = false
 
-	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.CurrentCategory)
+	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.SubmissionsCategory)
 	view.SetPanelToSubmissions(main)
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages)
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
@@ -352,7 +361,7 @@ func Refresh(app *cview.Application,
 	afterResizeFunc := app.GetAfterResizeFunc()
 	afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
 
-	ReturnFromHelpScreen(main, appState, submissions[appState.CurrentCategory])
+	ExitHelpScreen(main, appState, submissions[appState.SubmissionsCategory])
 
 	if appState.IsOffline {
 		list.Clear()
