@@ -62,7 +62,7 @@ func NewMainView() *structs.MainView {
 	main.LeftMargin = newTextViewPrimitive("")
 	main.LeftMargin.SetTextAlign(cview.AlignRight)
 	main.Header = newTextViewPrimitive("")
-	main.PageIndicator = newTextViewPrimitive("")
+	main.PageCounter = newTextViewPrimitive("")
 	main.StatusBar = newTextViewPrimitive("")
 	main.StatusBar.SetTextAlign(cview.AlignCenter)
 	main.StatusBar.SetPadding(0,0,-4,0)
@@ -75,7 +75,7 @@ func NewMainView() *structs.MainView {
 	main.Grid.AddItem(main.LeftMargin, 1, 0, 1, 1, 0, 0, false)
 	main.Grid.AddItem(main.Panels, 1, 1, 1, 2, 0, 0, false)
 	main.Grid.AddItem(main.StatusBar, 2, 1, 1, 1, 0, 0, false)
-	main.Grid.AddItem(main.PageIndicator, 2, 2, 1, 1, 0, 0, false)
+	main.Grid.AddItem(main.PageCounter, 2, 2, 1, 1, 0, 0, false)
 
 	main.Panels.AddPanel(constants.InfoPanel, GetInfoScreen(), true, false)
 	main.Panels.AddPanel(constants.KeymapsPanel, GetHelpScreen(), true, false)

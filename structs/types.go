@@ -46,10 +46,10 @@ type ApplicationState struct {
 }
 
 type MainView struct {
-	Grid          *cview.Grid
-	Header        *cview.TextView
-	LeftMargin    *cview.TextView
-	Panels        *cview.Panels
-	StatusBar     *cview.TextView
-	PageIndicator *cview.TextView
+	Grid        *cview.Grid
+	Header      *cview.TextView
+	LeftMargin  *cview.TextView
+	Panels      *cview.Panels
+	StatusBar   *cview.TextView
+	PageCounter *cview.TextView
 }

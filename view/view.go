@@ -117,7 +117,7 @@ func HideLeftMarginRanks(m *structs.MainView) {
 }
 
 func HidePageCounter(m *structs.MainView) {
-	m.PageIndicator.SetText("")
+	m.PageCounter.SetText("")
 }
 
 func SetPageCounter(m *structs.MainView, currentPage int, maxPages int) {
@@ -129,7 +129,7 @@ func SetPageCounter(m *structs.MainView, currentPage int, maxPages int) {
 		pageCounter = getPageCounterForTwoPages(currentPage)
 	}
 
-	m.PageIndicator.SetText(pageCounter)
+	m.PageCounter.SetText(pageCounter)
 }
 
 func getPageCounterForThreePages(currentPage int) string {
