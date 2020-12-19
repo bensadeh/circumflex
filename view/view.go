@@ -116,7 +116,7 @@ func HideLeftMarginRanks(m *structs.MainView) {
 	m.LeftMargin.SetText("")
 }
 
-func HideFooterText(m *structs.MainView) {
+func HidePageCounter(m *structs.MainView) {
 	m.PageIndicator.SetText("")
 }
 
