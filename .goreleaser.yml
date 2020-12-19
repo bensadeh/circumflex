@@ -9,11 +9,10 @@ builds:
       - darwin
 archives:
   - replacements:
-      darwin: Darwin
+      darwin: macOS
       linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
+      386: 32-bit
+      amd64: 64-bit
 checksum:
   name_template: 'checksums.txt'
 snapshot:
