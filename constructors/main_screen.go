@@ -65,6 +65,7 @@ func NewMainView() *structs.MainView {
 	main.PageIndicator = newTextViewPrimitive("")
 	main.StatusBar = newTextViewPrimitive("")
 	main.StatusBar.SetTextAlign(cview.AlignCenter)
+	main.StatusBar.SetPadding(0,0,-4,0)
 
 	main.Grid.SetBorder(false)
 	main.Grid.SetRows(2, 0, 1)
