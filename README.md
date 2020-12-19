@@ -30,29 +30,27 @@ clx
 
 Press <kbd>i</kbd> for a list over keybindings.
 
-## Features
-### Overview
-`circumflex` lets you:
-* 🎙 Browse Hacker News by category (Front&nbsp;Page, Newest, Ask&nbsp;HN or Show&nbsp;HN)
-* 💬 Read comments in the pager `less`
+## Overview
+### Features and limitations
+`circumflex` is a TUI application that lets you browse Hacker News in your terminal. It can list submissions by category 
+and show the comment section for each article. It also respects and adjusts to whatever color scheme you use.
+
+`circumflex` does not support any login related functionality. This includes up-/down-voting, flagging,
+submitting articles and posting comments.
 
 <p align="center">
   <img src="screenshots/comments.png" width="700" alt="^"/>
 </p>
 
-### Limitations
-`circumflex` is read-only and does not support any login related functionality. This includes up-/down-voting, 
-submitting articles and posting comments.
-
 ### Comment section
 Comments are pretty-printed and piped to the pager `less`. To present a nice and readable comment section, 
 `circumflex` features:
-* 🖋 Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and 
+* Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and 
   `code` where available
-* 📐 Indented and color-coded replies
-* 🔗 Colored references (`[1]`, `[2]`, `[…]`)
-* 🎩 Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
-* 🕹 Ability to jump between top-level comments by searching for `::`
+* Indented and color-coded replies
+* Colored references (`[1]`, `[2]`, `[…]`)
+* Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
+* Ability to jump between top-level comments by searching for `::`
 
 <p align="center">
   <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
