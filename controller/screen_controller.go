@@ -82,11 +82,11 @@ func SetApplicationShortcuts(
 			return event
 		}
 		if event.Rune() == 'g' {
-			model.SelectFirstElementInList(main)
+			model.SelectFirstElementInList(list)
 			return event
 		}
 		if event.Rune() == 'G' {
-			model.SelectLastElementInList(main, appState)
+			model.SelectLastElementInList(list)
 			return event
 		}
 		if event.Rune() == 'r' {
@@ -106,7 +106,7 @@ func SetApplicationShortcuts(
 			return event
 		}
 		if unicode.IsDigit(event.Rune()) {
-			model.SelectElementInList(main, event.Rune())
+			model.SelectElementInList(list, event.Rune())
 			return event
 		}
 		return event

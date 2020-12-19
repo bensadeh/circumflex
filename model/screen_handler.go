@@ -329,23 +329,23 @@ func ExitHelpScreen(main *structs.MainView, appState *structs.ApplicationState, 
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
 }
 
-func SelectFirstElementInList(main *structs.MainView) {
-	view.SelectFirstElementInList(main)
+func SelectFirstElementInList(list *cview.List) {
+	view.SelectFirstElementInList(list)
 }
 
-func SelectLastElementInList(main *structs.MainView, appState *structs.ApplicationState) {
-	view.SelectLastElementInList(main, appState)
+func SelectLastElementInList(list *cview.List) {
+	view.SelectLastElementInList(list)
 }
 
-func SelectElementInList(main *structs.MainView, element rune) {
+func SelectElementInList(list *cview.List, element rune) {
 	i := element - '0'
 	adjustedIndex := int(i) - 1
 
 	if int(i) == 0 {
 		tenthElement := 9
-		view.SelectElementInList(main, tenthElement)
+		view.SelectElementInList(list, tenthElement)
 	} else {
-		view.SelectElementInList(main, adjustedIndex)
+		view.SelectElementInList(list, adjustedIndex)
 	}
 }
 

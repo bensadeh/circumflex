@@ -160,24 +160,16 @@ func getPageCounterForTwoPages(currentPage int) string {
 	return footerText
 }
 
-func SelectFirstElementInList(main *structs.MainView) {
-	list := getListFromFrontPanel(main.Panels)
-	list.SetCurrentItem(0)
-
+func SelectFirstElementInList(list *cview.List) {
+	firstElement := 0
+	list.SetCurrentItem(firstElement)
 }
 
-func SelectLastElementInList(main *structs.MainView, appState *structs.ApplicationState) {
-	list := getListFromFrontPanel(main.Panels)
-	list.SetCurrentItem(appState.SubmissionsToShow)
+func SelectLastElementInList(list *cview.List) {
+	lastElement := -1
+	list.SetCurrentItem(lastElement)
 }
 
-func SelectElementInList(main *structs.MainView, index int) {
-	list := getListFromFrontPanel(main.Panels)
+func SelectElementInList(list *cview.List, index int) {
 	list.SetCurrentItem(index)
-}
-
-func getListFromFrontPanel(pages *cview.Panels) *cview.List {
-	_, primitive := pages.GetFrontPanel()
-	list, _ := primitive.(*cview.List)
-	return list
 }
