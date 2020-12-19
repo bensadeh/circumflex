@@ -316,7 +316,7 @@ func EnterInfoScreen(main *structs.MainView, appState *structs.ApplicationState)
 func showInfoCategory(main *structs.MainView, appState *structs.ApplicationState) {
 	view.SetHelpScreenHeader(main, appState.ScreenWidth, appState.HelpScreenCategory)
 	view.HideLeftMarginRanks(main)
-	view.HideFooterText(main)
+	view.SetPermanentStatusBar(main, constants.InfoScreenMessage)
 	view.SetHelpScreenPanel(main, appState.HelpScreenCategory)
 }
 
@@ -327,6 +327,7 @@ func ExitHelpScreen(main *structs.MainView, appState *structs.ApplicationState, 
 	view.SetPanelToSubmissions(main)
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages)
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
+	view.HideStatusBar(main)
 }
 
 func SelectFirstElementInList(list *cview.List) {

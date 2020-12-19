@@ -83,6 +83,10 @@ func SetHelpScreenPanel(m *structs.MainView, category int) {
 	}
 }
 
+func HideStatusBar(m *structs.MainView) {
+	SetPermanentStatusBar(m, "")
+}
+
 func SetPermanentStatusBar(m *structs.MainView, text string) {
 	m.StatusBar.SetText(text)
 }
