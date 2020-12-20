@@ -10,14 +10,14 @@ func main() {
 	sc := constructor.NewScreenController()
 	controller.SetAfterInitializationAndAfterResizeFunctions(
 		sc.Application,
-		sc.List,
+		sc.Articles,
 		sc.Submissions,
 		sc.MainView,
 		sc.ApplicationState)
 
 	controller.SetApplicationShortcuts(
 		sc.Application,
-		sc.List,
+		sc.Articles,
 		sc.Submissions,
 		sc.MainView,
 		sc.ApplicationState)

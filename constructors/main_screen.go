@@ -34,9 +34,9 @@ func NewScreenController() *structs.ScreenController {
 	sc.Submissions[constants.Ask].MaxPages = 1
 	sc.Submissions[constants.Show].MaxPages = 1
 
-	sc.List = NewList()
+	sc.Articles = NewList()
 	sc.MainView = NewMainView()
-	sc.MainView.Panels.AddPanel(constants.SubmissionsPanel, sc.List, true, true)
+	sc.MainView.Panels.AddPanel(constants.SubmissionsPanel, sc.Articles, true, true)
 
 	return sc
 }

@@ -6,7 +6,8 @@ import (
 
 type ScreenController struct {
 	Application      *cview.Application
-	List             *cview.List
+	Articles         *cview.List
+	Settings         *cview.List
 	MainView         *MainView
 	Submissions      []*Submissions
 	ApplicationState *ApplicationState
