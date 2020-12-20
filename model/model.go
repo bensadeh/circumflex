@@ -317,7 +317,6 @@ func showInfoCategory(main *structs.MainView, appState *structs.ApplicationState
 	view.SetHelpScreenHeader(main, appState.ScreenWidth, appState.HelpScreenCategory)
 	view.HideLeftMarginRanks(main)
 	view.HidePageCounter(main)
-	view.SetPermanentStatusBar(main, constants.InfoScreenMessage)
 	view.SetHelpScreenPanel(main, appState.HelpScreenCategory)
 }
 
