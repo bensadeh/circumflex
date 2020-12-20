@@ -8,33 +8,44 @@ func NewSettingsList() *cview.List {
 	settings := NewList()
 	settings.SetBorder(false)
 
-	settings = NewList()
-	li := cview.NewListItem("Comment Width")
-	li.SetSecondaryText("[::d]Currently set to 80")
-	settings.AddItem(li)
-
-	li = cview.NewListItem(" ")
-	li.SetSecondaryText(" ")
-	settings.AddItem(li)
-
-	li = cview.NewListItem("Indentation size")
-	li.SetSecondaryText("[::d]Currently set to 4")
+	li := cview.NewListItem("")
+	li.SetSecondaryText("Headline")
 	settings.AddItem(li)
 
 	li = cview.NewListItem("")
 	li.SetSecondaryText("")
 	settings.AddItem(li)
 
-	li = cview.NewListItem("Indentation size")
-	li.SetSecondaryText("[::d]Currently set to 4")
+	li = cview.NewListItem("[::d]Change")
+	li.SetSecondaryText("Comment width: 80")
+	settings.AddItem(li)
+
+	li = cview.NewListItem(" ")
+	li.SetSecondaryText(" ")
+	settings.AddItem(li)
+
+	li = cview.NewListItem("[::d]Change")
+	li.SetSecondaryText("Indent size: 4")
+	settings.AddItem(li)
+
+	li = cview.NewListItem("")
+	li.SetSecondaryText("Headline")
+	settings.AddItem(li)
+
+	li = cview.NewListItem("")
+	li.SetSecondaryText("")
+	settings.AddItem(li)
+
+	li = cview.NewListItem("[::d]Change")
+	li.SetSecondaryText("Show colors: [black:#82aaff:]yes")
 	settings.AddItem(li)
 
 	li = cview.NewListItem(" ")
 	li.SetSecondaryText("")
 	settings.AddItem(li)
 
-	li = cview.NewListItem("Enable colors")
-	li.SetSecondaryText("[::d]Currently set to true")
+	li = cview.NewListItem("[::d]Change")
+	li.SetSecondaryText("Show labels: [black:orange:]no")
 	settings.AddItem(li)
 
 	return settings
