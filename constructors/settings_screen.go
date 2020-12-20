@@ -9,7 +9,7 @@ func NewSettingsList() *cview.List {
 	settings.SetBorder(false)
 
 	li := cview.NewListItem("")
-	li.SetSecondaryText("Headline")
+	li.SetSecondaryText("Submissions")
 	settings.AddItem(li)
 
 	li = cview.NewListItem("")
@@ -28,8 +28,12 @@ func NewSettingsList() *cview.List {
 	li.SetSecondaryText("Indent size: 4")
 	settings.AddItem(li)
 
+	li = cview.NewListItem(" ")
+	li.SetSecondaryText(" ")
+	settings.AddItem(li)
+
 	li = cview.NewListItem("")
-	li.SetSecondaryText("Headline")
+	li.SetSecondaryText("Comment section")
 	settings.AddItem(li)
 
 	li = cview.NewListItem("")
