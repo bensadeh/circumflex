@@ -308,8 +308,7 @@ func SelectPreviousElement(list *cview.List) {
 
 func EnterInfoScreen(main *structs.MainView, appState *structs.ApplicationState) {
 	appState.IsOnHelpScreen = true
-	appState.HelpScreenCategory = constants.Info
-
+	
 	showInfoCategory(main, appState)
 }
 
