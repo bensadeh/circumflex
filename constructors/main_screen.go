@@ -35,8 +35,11 @@ func NewScreenController() *structs.ScreenController {
 	sc.Submissions[constants.Show].MaxPages = 1
 
 	sc.Articles = NewList()
+	sc.Settings = NewSettingsList()
+
 	sc.MainView = NewMainView()
 	sc.MainView.Panels.AddPanel(constants.SubmissionsPanel, sc.Articles, true, true)
+	sc.MainView.Panels.AddPanel(constants.SettingsPanel, sc.Settings, true, false)
 
 	return sc
 }
@@ -79,7 +82,6 @@ func NewMainView() *structs.MainView {
 
 	main.Panels.AddPanel(constants.InfoPanel, GetInfoScreen(), true, false)
 	main.Panels.AddPanel(constants.KeymapsPanel, GetHelpScreen(), true, false)
-	main.Panels.AddPanel(constants.EnvironmentPanel, GetEnvironmentScreen(), true, false)
 
 
 	return main

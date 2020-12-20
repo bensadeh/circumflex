@@ -15,7 +15,7 @@ const (
 	SubmissionsPanel = "submissions"
 	InfoPanel        = "info"
 	KeymapsPanel     = "keymaps"
-	EnvironmentPanel = "environment"
+	SettingsPanel    = "settings"
 
 	//Help screen categories
 	Info        = 0

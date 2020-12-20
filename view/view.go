@@ -77,7 +77,7 @@ func SetHelpScreenPanel(m *structs.MainView, category int) {
 	case constants.Keymaps:
 		m.Panels.SetCurrentPanel(constants.KeymapsPanel)
 	case constants.Environment:
-		m.Panels.SetCurrentPanel(constants.EnvironmentPanel)
+		m.Panels.SetCurrentPanel(constants.SettingsPanel)
 	default:
 		return
 	}
