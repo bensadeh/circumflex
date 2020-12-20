@@ -17,7 +17,7 @@ func NewSettingsList() *cview.List {
 	settings.AddItem(li)
 
 	li = cview.NewListItem("[::d]Change")
-	li.SetSecondaryText("Comment width: 80")
+	li.SetSecondaryText("Comment width: [::b]80")
 	settings.AddItem(li)
 
 	li = cview.NewListItem(" ")
@@ -25,7 +25,7 @@ func NewSettingsList() *cview.List {
 	settings.AddItem(li)
 
 	li = cview.NewListItem("[::d]Change")
-	li.SetSecondaryText("Indent size: 4")
+	li.SetSecondaryText("Indent size: [::b]4")
 	settings.AddItem(li)
 
 	li = cview.NewListItem(" ")
