@@ -18,7 +18,7 @@ const (
 	SettingsPanel    = "settings"
 
 	//Help screen categories
-	Info        = 0
-	Keymaps     = 1
-	Environment = 2
+	Info     = 0
+	Keymaps  = 1
+	Settings = 2
 )

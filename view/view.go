@@ -56,7 +56,7 @@ func SetHelpScreenHeader(m *structs.MainView, screenWidth int, category int) {
 		offset := -42
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
-	case constants.Environment:
+	case constants.Settings:
 		base := "[black:#82aaff:]   [^] [::b]circumflex[::-]   keymaps | [white]settings[black::]"
 		offset := -42
 		header := appendWhitespace(base, offset, screenWidth)
@@ -76,7 +76,7 @@ func SetHelpScreenPanel(m *structs.MainView, category int) {
 		m.Panels.SetCurrentPanel(constants.InfoPanel)
 	case constants.Keymaps:
 		m.Panels.SetCurrentPanel(constants.KeymapsPanel)
-	case constants.Environment:
+	case constants.Settings:
 		m.Panels.SetCurrentPanel(constants.SettingsPanel)
 	default:
 		return

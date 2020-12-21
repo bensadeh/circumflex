@@ -7,6 +7,7 @@ import (
 	"clx/constants"
 	"clx/http"
 	"clx/screen"
+	"clx/settings"
 	"clx/structs"
 	"clx/submission/fetcher"
 	"clx/submission/formatter"
@@ -285,6 +286,54 @@ func PreviousPage(list *cview.List, submissions *structs.Submissions, main *stru
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages)
 }
 
+func SelectNextSettingsElement(list *cview.List) {
+	currentItem := list.GetCurrentItemIndex()
+	itemCount := list.GetItemCount()
+	unselectableElements := settings.GetUnselectableItems()
+
+	if currentItem == itemCount {
+		return
+	}
+
+	next := currentItem + 1
+	for intInSlice(next, unselectableElements) {
+		if next == itemCount {
+			return
+		}
+		next++
+	}
+
+	list.SetCurrentItem(next)
+}
+
+func SelectPreviousSettingsElement(list *cview.List) {
+	currentItem := list.GetCurrentItemIndex()
+	unselectableElements := settings.GetUnselectableItems()
+
+	if currentItem == 0 {
+		return
+	}
+
+	prev := currentItem - 1
+	for intInSlice(prev, unselectableElements) {
+		if prev == 0 {
+			return
+		}
+		prev--
+	}
+
+	list.SetCurrentItem(prev)
+}
+
+func intInSlice(a int, list []int) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
 func SelectNextElement(list *cview.List) {
 	currentItem := list.GetCurrentItemIndex()
 	itemCount := list.GetItemCount()
@@ -308,7 +357,7 @@ func SelectPreviousElement(list *cview.List) {
 
 func EnterInfoScreen(main *structs.MainView, appState *structs.ApplicationState) {
 	appState.IsOnHelpScreen = true
-	
+
 	showInfoCategory(main, appState)
 }
 

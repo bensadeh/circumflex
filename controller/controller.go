@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"clx/constants"
 	"clx/model"
 	"clx/structs"
 	"github.com/gdamore/tcell/v2"
@@ -20,13 +21,15 @@ func SetAfterInitializationAndAfterResizeFunctions(
 func SetApplicationShortcuts(
 	app *cview.Application,
 	list *cview.List,
+	settings *cview.List,
 	submissions []*structs.Submissions,
 	main *structs.MainView,
 	appState *structs.ApplicationState) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		currentState := submissions[appState.SubmissionsCategory]
+		isOnSettingsPage := appState.IsOnHelpScreen && (appState.HelpScreenCategory == constants.Settings)
 
-		//Offline events
+		//Offline
 		if appState.IsOffline && event.Rune() == 'r' {
 			model.Refresh(app, list, main, submissions, appState)
 			return event
@@ -39,7 +42,7 @@ func SetApplicationShortcuts(
 			return event
 		}
 
-		//Help screen events
+		//Help screen
 		if appState.IsOnHelpScreen && (event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab) {
 			model.ChangeHelpScreenCategory(event, appState, main)
 			return event
@@ -48,11 +51,19 @@ func SetApplicationShortcuts(
 			model.ExitHelpScreen(main, appState, currentState)
 			return event
 		}
+		if isOnSettingsPage && (event.Rune() == 'j' || event.Key() == tcell.KeyDown) {
+			model.SelectNextSettingsElement(settings)
+			return event
+		}
+		if isOnSettingsPage && (event.Rune() == 'k' || event.Key() == tcell.KeyUp) {
+			model.SelectPreviousSettingsElement(settings)
+			return event
+		}
 		if appState.IsOnHelpScreen {
 			return event
 		}
 
-		//Submission screen events
+		//Submissions
 		if event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab {
 			model.ChangeCategory(app, event, list, appState, submissions, main)
 			return event

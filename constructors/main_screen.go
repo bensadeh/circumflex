@@ -3,6 +3,7 @@ package constructor
 import (
 	"clx/constants"
 	"clx/screen"
+	"clx/settings"
 	"clx/structs"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
@@ -35,10 +36,21 @@ func NewScreenController() *structs.ScreenController {
 	sc.Submissions[constants.Show].MaxPages = 1
 
 	sc.Articles = NewList()
-	sc.Settings = NewSettingsList()
+	sc.Settings = settings.NewSettingsList()
+	sc.Settings.SetSelectedTextAttributes(tcell.AttrUnderline)
 
 	sc.MainView = NewMainView()
 	sc.MainView.Panels.AddPanel(constants.SubmissionsPanel, sc.Articles, true, true)
+
+	settingsGrid := cview.NewGrid()
+	settingsGrid.SetBorder(false)
+	settingsGrid.SetRows(0)
+	settingsGrid.SetColumns(0, 7)
+	settingsGrid.SetBackgroundColor(tcell.ColorDefault)
+	settingsGrid.AddItem(sc.Settings,0,0,1,1,0,0,false)
+	settingsGrid.AddItem(newTextViewPrimitive(""),0,1,1,1,0,0,false)
+
+	sc.MainView.Panels.AddPanel(constants.SettingsPanel, settingsGrid, true, false)
 
 	return sc
 }
@@ -81,16 +93,6 @@ func NewMainView() *structs.MainView {
 
 	main.Panels.AddPanel(constants.InfoPanel, GetInfoScreen(), true, false)
 	main.Panels.AddPanel(constants.KeymapsPanel, GetHelpScreen(), true, false)
-
-	settingsGrid := cview.NewGrid()
-	settingsGrid.SetBorder(false)
-	settingsGrid.SetRows(0)
-	settingsGrid.SetColumns(0, 7)
-	settingsGrid.SetBackgroundColor(tcell.ColorDefault)
-	settingsGrid.AddItem(NewSettingsList(),0,0,1,1,0,0,false)
-	settingsGrid.AddItem(newTextViewPrimitive(""),0,1,1,1,0,0,false)
-
-	main.Panels.AddPanel(constants.SettingsPanel, settingsGrid, true, false)
 
 	return main
 }

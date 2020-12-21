@@ -18,6 +18,7 @@ func main() {
 	controller.SetApplicationShortcuts(
 		sc.Application,
 		sc.Articles,
+		sc.Settings,
 		sc.Submissions,
 		sc.MainView,
 		sc.ApplicationState)
