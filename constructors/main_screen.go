@@ -51,6 +51,7 @@ func NewScreenController() *structs.ScreenController {
 	settingsGrid.AddItem(newTextViewPrimitive(""),0,1,1,1,0,0,false)
 
 	sc.MainView.Panels.AddPanel(constants.SettingsPanel, settingsGrid, true, false)
+	sc.MainView.Panels.AddPanel(constants.ModalPanel, settings.NewDialogueBox(), true, false)
 
 	return sc
 }

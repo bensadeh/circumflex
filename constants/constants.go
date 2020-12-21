@@ -2,7 +2,7 @@ package constants
 
 const (
 	//Messages
-	OfflineMessage = "Error fetching submissions. Press 'r' to retry or 'q' to quit."
+	OfflineMessage    = "Error fetching submissions. Press 'r' to retry or 'q' to quit."
 	InfoScreenMessage = "Press 'Tab' to go to the next info screen or 'i' to return"
 
 	//Submission categories
@@ -16,6 +16,7 @@ const (
 	InfoPanel        = "info"
 	KeymapsPanel     = "keymaps"
 	SettingsPanel    = "settings"
+	ModalPanel       = "modal"
 
 	//Help screen categories
 	Info     = 0

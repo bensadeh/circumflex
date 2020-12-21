@@ -306,6 +306,10 @@ func SelectNextSettingsElement(list *cview.List) {
 	list.SetCurrentItem(next)
 }
 
+func ShowModal(main *structs.MainView) {
+	main.Panels.ShowPanel(constants.ModalPanel)
+}
+
 func SelectPreviousSettingsElement(list *cview.List) {
 	currentItem := list.GetCurrentItemIndex()
 	unselectableElements := settings.GetUnselectableItems()

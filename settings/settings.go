@@ -61,6 +61,17 @@ func NewSettingsList() *cview.List {
 	return settings
 }
 
+func NewDialogueBox() *cview.Modal {
+	modal := cview.NewModal()
+	modal.SetText("Do you want to quit the application? " +
+		"Do you want to quit the application? Do you want to quit the application?")
+	modal.AddButtons([]string{"Quit", "Cancel"})
+	modal.SetBackgroundColor(tcell.ColorDefault)
+	modal.SetTextColor(tcell.ColorDefault)
+	
+	return modal
+}
+
 func newList() *cview.List {
 	list := cview.NewList()
 	list.SetBackgroundTransparent(false)

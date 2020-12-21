@@ -59,6 +59,10 @@ func SetApplicationShortcuts(
 			model.SelectPreviousSettingsElement(settings)
 			return event
 		}
+		if isOnSettingsPage && event.Rune() == 't'  {
+			model.ShowModal(main)
+			return event
+		}
 		if appState.IsOnHelpScreen {
 			return event
 		}
