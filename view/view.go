@@ -121,8 +121,8 @@ func HidePageCounter(m *structs.MainView) {
 	m.PageCounter.SetText("")
 }
 
-func SetPageCounter(m *structs.MainView, currentPage int, maxPages int) {
-	pageCounter := pages.GetPageCounter(currentPage, maxPages, "orange")
+func SetPageCounter(m *structs.MainView, currentPage int, maxPages int, color string) {
+	pageCounter := pages.GetPageCounter(currentPage, maxPages, color)
 	m.PageCounter.SetText(pageCounter)
 }
 
