@@ -8,7 +8,6 @@ type ScreenController struct {
 	Application      *cview.Application
 	Articles         *cview.List
 	Settings         *Settings
-	SettingsHeader   *cview.TextView
 	MainView         *MainView
 	Submissions      []*Submissions
 	ApplicationState *ApplicationState
@@ -49,13 +48,13 @@ type ApplicationState struct {
 }
 
 type MainView struct {
-	Grid   *cview.Grid
-	Header *cview.TextView
-	//Put Settings Header here
-	LeftMargin  *cview.TextView
-	Panels      *cview.Panels
-	StatusBar   *cview.TextView
-	PageCounter *cview.TextView
+	Grid              *cview.Grid
+	Header            *cview.TextView
+	SettingsSubHeader *cview.TextView
+	LeftMargin        *cview.TextView
+	Panels            *cview.Panels
+	StatusBar         *cview.TextView
+	PageCounter       *cview.TextView
 }
 
 type Settings struct {
