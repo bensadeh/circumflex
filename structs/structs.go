@@ -58,7 +58,7 @@ type MainView struct {
 }
 
 type Settings struct {
-	List                  *cview.List
-	CurrentSettingsPage   int
-	NumberOfSettingsPages int
+	List          *cview.List
+	CurrentPage   int
+	NumberOfPages int
 }

@@ -14,6 +14,15 @@ func GetUnselectableItems() []int {
 	return []int{0, 1, 3, 5, 6, 7, 9}
 }
 
+func SetSettingsList(list *cview.List, page int){
+	if page == 0 {
+		SetToSubmissionsSettings(list)
+	}
+	if page == 1 {
+		SetToCommentSectionSettings(list)
+	}
+}
+
 func SetToSubmissionsSettings(list *cview.List) {
 	list.Clear()
 
@@ -48,6 +57,24 @@ func SetToSubmissionsSettings(list *cview.List) {
 	list.SetCurrentItem(2)
 }
 
+func SetToCommentSectionSettings(list *cview.List) {
+	list.Clear()
+
+	li := cview.NewListItem("[::d]Change")
+	li.SetSecondaryText("Comment width: [::b]80")
+	list.AddItem(li)
+
+	li = cview.NewListItem(" ")
+	li.SetSecondaryText(" ")
+	list.AddItem(li)
+
+	li = cview.NewListItem("[::d]Change")
+	li.SetSecondaryText("Indent size: [::b]4")
+	list.AddItem(li)
+
+	list.SetCurrentItem(2)
+}
+
 
 
 func NewDialogueBox() *cview.Modal {
@@ -73,4 +100,15 @@ func newList() *cview.List {
 	list.SetScrollBarVisibility(cview.ScrollBarNever)
 
 	return list
+}
+
+func GetHeader(page int) string {
+	if page == 0 {
+		return "SettingsCategory"
+	}
+	if page == 1 {
+		return "SettingsCategory"
+	}
+
+	return ""
 }

@@ -38,6 +38,7 @@ func NewScreenController() *structs.ScreenController {
 	sc.Articles = NewList()
 
 	sc.Settings = new(structs.Settings)
+	sc.Settings.NumberOfPages = 1
 	sc.Settings.List = NewList()
 	settings.SetToSubmissionsSettings(sc.Settings.List)
 

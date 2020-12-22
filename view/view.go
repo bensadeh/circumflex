@@ -3,6 +3,7 @@ package view
 import (
 	"clx/constants"
 	"clx/pages"
+	"clx/settings"
 	"clx/structs"
 	text "github.com/MichaelMure/go-term-text"
 	"gitlab.com/tslocum/cview"
@@ -124,6 +125,14 @@ func HidePageCounter(m *structs.MainView) {
 func SetPageCounter(m *structs.MainView, currentPage int, maxPages int, color string) {
 	pageCounter := pages.GetPageCounter(currentPage, maxPages, color)
 	m.PageCounter.SetText(pageCounter)
+}
+
+func SetSettingsHeader(m *structs.MainView, text string) {
+	m.SettingsSubHeader.SetText(text)
+}
+
+func SetSettingsList(list *cview.List, currentPage int) {
+	settings.SetSettingsList(list, currentPage)
 }
 
 func SelectFirstElementInList(list *cview.List) {

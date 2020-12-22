@@ -329,13 +329,36 @@ func SelectPreviousSettingsElement(list *cview.List) {
 	list.SetCurrentItem(prev)
 }
 
-func SelectNextSettingsCategory(app *cview.Application,
-	list *cview.List,
-	settings *structs.Settings,
-	submissions []*structs.Submissions,
-	main *structs.MainView,
-	appState *structs.ApplicationState) {
-	//getNextCategory()
+func SelectNextSettingsPage(main *structs.MainView,	s *structs.Settings) {
+	nextPage := s.CurrentPage + 1
+
+	if nextPage > s.NumberOfPages {
+		return
+	}
+
+	header := settings.GetHeader(nextPage)
+
+	view.SetSettingsHeader(main, header)
+	view.SetSettingsList(s.List, nextPage)
+	view.SetPageCounter(main, nextPage, s.NumberOfPages, "#82aaff")
+
+	s.CurrentPage++
+}
+
+func SelectPreviousSettingsPage(main *structs.MainView,	s *structs.Settings) {
+	prevPage := s.CurrentPage - 1
+
+	if prevPage < 0 {
+		return
+	}
+
+	header := settings.GetHeader(prevPage)
+
+	view.SetSettingsHeader(main, header)
+	view.SetSettingsList(s.List, prevPage)
+	view.SetPageCounter(main, prevPage, s.NumberOfPages, "#82aaff")
+
+	s.CurrentPage--
 }
 
 func intInSlice(a int, list []int) bool {

@@ -60,7 +60,11 @@ func SetApplicationShortcuts(
 			return event
 		}
 		if isOnSettingsPage && (event.Rune() == 'l' || event.Key() == tcell.KeyRight) {
-			model.SelectNextSettingsCategory(app, list, settings, submissions, main, appState)
+			model.SelectNextSettingsPage(main, settings)
+			return event
+		}
+		if isOnSettingsPage && (event.Rune() == 'h' || event.Key() == tcell.KeyLeft) {
+			model.SelectPreviousSettingsPage(main, settings)
 			return event
 		}
 		if isOnSettingsPage && event.Rune() == 't' {
