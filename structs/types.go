@@ -8,6 +8,7 @@ type ScreenController struct {
 	Application      *cview.Application
 	Articles         *cview.List
 	Settings         *cview.List
+	SettingsHeader   *cview.TextView
 	MainView         *MainView
 	Submissions      []*Submissions
 	ApplicationState *ApplicationState

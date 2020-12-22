@@ -37,6 +37,7 @@ func NewScreenController() *structs.ScreenController {
 
 	sc.Articles = NewList()
 	sc.Settings = settings.NewSettingsList()
+	sc.SettingsHeader = newTextViewPrimitive("Settings Header")
 	sc.Settings.SetSelectedTextAttributes(tcell.AttrUnderline)
 
 	sc.MainView = NewMainView()
@@ -47,7 +48,7 @@ func NewScreenController() *structs.ScreenController {
 	settingsGrid.SetRows(4, 0)
 	settingsGrid.SetColumns(0, 7)
 	settingsGrid.SetBackgroundColor(tcell.ColorDefault)
-	settingsGrid.AddItem(newTextViewPrimitive("ASDF ASDF ASDF"),0,0,1,1,0,0,false)
+	settingsGrid.AddItem(sc.SettingsHeader,0,0,1,1,0,0,false)
 	settingsGrid.AddItem(sc.Settings,1,0,1,1,0,0,false)
 	settingsGrid.AddItem(newTextViewPrimitive(""),0,1,2,1,0,0,false)
 
