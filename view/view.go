@@ -2,6 +2,7 @@ package view
 
 import (
 	"clx/constants"
+	"clx/pages"
 	"clx/structs"
 	text "github.com/MichaelMure/go-term-text"
 	"gitlab.com/tslocum/cview"
@@ -121,47 +122,8 @@ func HidePageCounter(m *structs.MainView) {
 }
 
 func SetPageCounter(m *structs.MainView, currentPage int, maxPages int) {
-	pageCounter := ""
-
-	if maxPages == 2 {
-		pageCounter = getPageCounterForThreePages(currentPage)
-	} else if maxPages == 1 {
-		pageCounter = getPageCounterForTwoPages(currentPage)
-	}
-
+	pageCounter := pages.GetPageCounter(currentPage, maxPages, "orange")
 	m.PageCounter.SetText(pageCounter)
-}
-
-func getPageCounterForThreePages(currentPage int) string {
-	orangeDot := "[orange]" + "•" + "[-:-]"
-	footerText := ""
-
-	switch currentPage {
-	case 0:
-		footerText = "" + orangeDot + "◦◦"
-	case 1:
-		footerText = "◦" + orangeDot + "◦"
-	case 2:
-		footerText = "◦◦" + orangeDot + ""
-	default:
-		footerText = ""
-	}
-	return footerText
-}
-
-func getPageCounterForTwoPages(currentPage int) string {
-	orangeDot := "[orange]" + "•" + "[-:-]"
-	footerText := ""
-
-	switch currentPage {
-	case 0:
-		footerText = "" + orangeDot + "◦ "
-	case 1:
-		footerText = "◦" + orangeDot + " "
-	default:
-		footerText = ""
-	}
-	return footerText
 }
 
 func SelectFirstElementInList(list *cview.List) {

@@ -44,11 +44,12 @@ func NewScreenController() *structs.ScreenController {
 
 	settingsGrid := cview.NewGrid()
 	settingsGrid.SetBorder(false)
-	settingsGrid.SetRows(0)
+	settingsGrid.SetRows(4, 0)
 	settingsGrid.SetColumns(0, 7)
 	settingsGrid.SetBackgroundColor(tcell.ColorDefault)
-	settingsGrid.AddItem(sc.Settings,0,0,1,1,0,0,false)
-	settingsGrid.AddItem(newTextViewPrimitive(""),0,1,1,1,0,0,false)
+	settingsGrid.AddItem(newTextViewPrimitive("ASDF ASDF ASDF"),0,0,1,1,0,0,false)
+	settingsGrid.AddItem(sc.Settings,1,0,1,1,0,0,false)
+	settingsGrid.AddItem(newTextViewPrimitive(""),0,1,2,1,0,0,false)
 
 	sc.MainView.Panels.AddPanel(constants.SettingsPanel, settingsGrid, true, false)
 	sc.MainView.Panels.AddPanel(constants.ModalPanel, settings.NewDialogueBox(), true, false)
