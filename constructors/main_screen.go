@@ -36,8 +36,10 @@ func NewScreenController() *structs.ScreenController {
 	sc.Submissions[constants.Show].MaxPages = 1
 
 	sc.Articles = NewList()
-	sc.Settings = settings.NewSettingsList()
-	sc.SettingsHeader = newTextViewPrimitive("Settings Header")
+	sc.Settings = NewList()
+	settings.SetToSubmissionsSettings(sc.Settings)
+	sc.SettingsHeader = newTextViewPrimitive("Settings Header" + "\n" +
+		"===============")
 	sc.Settings.SetSelectedTextAttributes(tcell.AttrUnderline)
 
 	sc.MainView = NewMainView()

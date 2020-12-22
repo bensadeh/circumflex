@@ -38,6 +38,7 @@ type Submissions struct {
 type ApplicationState struct {
 	SubmissionsToShow         int
 	SubmissionsCategory       int
+	SettingsCategory          int
 	HelpScreenCategory        int
 	ScreenHeight              int
 	ScreenWidth               int

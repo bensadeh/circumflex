@@ -5,61 +5,50 @@ import (
 	"gitlab.com/tslocum/cview"
 )
 
+const (
+	Submissions    = 0
+	CommentSection = 1
+)
+
 func GetUnselectableItems() []int {
 	return []int{0, 1, 3, 5, 6, 7, 9}
 }
-func NewSettingsList() *cview.List {
-	settings := newList()
-	settings.SetBorder(false)
 
-	li := cview.NewListItem("")
-	li.SetSecondaryText("Front Page")
-	settings.AddItem(li)
+func SetToSubmissionsSettings(list *cview.List) {
+	list.Clear()
 
-	li = cview.NewListItem("")
-	li.SetSecondaryText("")
-	settings.AddItem(li)
-
-	li = cview.NewListItem("[::d]Change")
+	li := cview.NewListItem("[::d]Change")
 	li.SetSecondaryText("Comment width: [::b]80")
-	settings.AddItem(li)
+	list.AddItem(li)
 
 	li = cview.NewListItem(" ")
 	li.SetSecondaryText(" ")
-	settings.AddItem(li)
+	list.AddItem(li)
 
 	li = cview.NewListItem("[::d]Change")
 	li.SetSecondaryText("Indent size: [::b]4")
-	settings.AddItem(li)
+	list.AddItem(li)
 
 	li = cview.NewListItem(" ")
 	li.SetSecondaryText(" ")
-	settings.AddItem(li)
-
-	li = cview.NewListItem("")
-	li.SetSecondaryText("Comment Section")
-	settings.AddItem(li)
-
-	li = cview.NewListItem("")
-	li.SetSecondaryText("")
-	settings.AddItem(li)
+	list.AddItem(li)
 
 	li = cview.NewListItem("[::d]Change")
 	li.SetSecondaryText("Show colors: [black:#82aaff:]yes")
-	settings.AddItem(li)
+	list.AddItem(li)
 
 	li = cview.NewListItem(" ")
 	li.SetSecondaryText("")
-	settings.AddItem(li)
+	list.AddItem(li)
 
 	li = cview.NewListItem("[::d]Change")
 	li.SetSecondaryText("Show labels: [black:orange:]no")
-	settings.AddItem(li)
+	list.AddItem(li)
 
-	settings.SetCurrentItem(2)
-
-	return settings
+	list.SetCurrentItem(2)
 }
+
+
 
 func NewDialogueBox() *cview.Modal {
 	modal := cview.NewModal()
