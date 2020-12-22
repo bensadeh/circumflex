@@ -17,7 +17,7 @@ func GetTerminalWidth() int {
 func GetSubmissionsToShow(screenHeight int, maxStories int) int {
 	topBarHeight := 2
 	footerHeight := 1
-	adjustedHeight := screenHeight -topBarHeight-footerHeight
+	adjustedHeight := screenHeight - topBarHeight - footerHeight
 
 	return min(adjustedHeight/2, maxStories)
 }
@@ -27,4 +27,12 @@ func min(x, y int) int {
 		return y
 	}
 	return x
+}
+
+func GetOffsetForLeftAlignedTextBlock(textWidth int) int {
+	screenWidth := GetTerminalWidth()
+	halfScreenWidth := screenWidth / 2
+	halfTextWidth := textWidth / 2
+
+	return screenWidth - halfScreenWidth - halfTextWidth
 }

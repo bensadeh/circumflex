@@ -329,7 +329,7 @@ func SelectPreviousSettingsElement(list *cview.List) {
 	list.SetCurrentItem(prev)
 }
 
-func SelectNextSettingsPage(main *structs.MainView,	s *structs.Settings) {
+func SelectNextSettingsPage(main *structs.MainView, s *structs.Settings) {
 	nextPage := s.CurrentPage + 1
 
 	if nextPage > s.NumberOfPages {
@@ -345,7 +345,7 @@ func SelectNextSettingsPage(main *structs.MainView,	s *structs.Settings) {
 	s.CurrentPage++
 }
 
-func SelectPreviousSettingsPage(main *structs.MainView,	s *structs.Settings) {
+func SelectPreviousSettingsPage(main *structs.MainView, s *structs.Settings) {
 	prevPage := s.CurrentPage - 1
 
 	if prevPage < 0 {
