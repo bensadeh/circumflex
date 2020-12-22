@@ -13,7 +13,7 @@ noun (also circumflex accent)
   a mark (^) placed over a vowel in some languages to 
   indicate contraction, length, or a particular quality.
 
-adjective [::d]Anatomy[::-]
+adjective [::di]Anatomy[::-]
   bending round something else; 
   curved: [::i]circumflex coronary arteries.[::-]
 
