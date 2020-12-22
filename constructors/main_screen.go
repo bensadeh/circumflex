@@ -36,11 +36,13 @@ func NewScreenController() *structs.ScreenController {
 	sc.Submissions[constants.Show].MaxPages = 1
 
 	sc.Articles = NewList()
-	sc.Settings = NewList()
-	settings.SetToSubmissionsSettings(sc.Settings)
-	sc.SettingsHeader = newTextViewPrimitive("Settings Header" + "\n" +
+
+	sc.Settings = new(structs.Settings)
+	sc.Settings.List = NewList()
+	settings.SetToSubmissionsSettings(sc.Settings.List)
+	sc.SettingsHeader = newTextViewPrimitive("List Header" + "\n" +
 		"===============")
-	sc.Settings.SetSelectedTextAttributes(tcell.AttrUnderline)
+	sc.Settings.List.SetSelectedTextAttributes(tcell.AttrUnderline)
 
 	sc.MainView = NewMainView()
 	sc.MainView.Panels.AddPanel(constants.SubmissionsPanel, sc.Articles, true, true)
@@ -51,7 +53,7 @@ func NewScreenController() *structs.ScreenController {
 	settingsGrid.SetColumns(0, 7)
 	settingsGrid.SetBackgroundColor(tcell.ColorDefault)
 	settingsGrid.AddItem(sc.SettingsHeader,0,0,1,1,0,0,false)
-	settingsGrid.AddItem(sc.Settings,1,0,1,1,0,0,false)
+	settingsGrid.AddItem(sc.Settings.List,1,0,1,1,0,0,false)
 	settingsGrid.AddItem(newTextViewPrimitive(""),0,1,2,1,0,0,false)
 
 	sc.MainView.Panels.AddPanel(constants.SettingsPanel, settingsGrid, true, false)

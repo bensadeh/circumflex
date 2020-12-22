@@ -329,6 +329,15 @@ func SelectPreviousSettingsElement(list *cview.List) {
 	list.SetCurrentItem(prev)
 }
 
+func SelectNextSettingsCategory(app *cview.Application,
+	list *cview.List,
+	settings *structs.Settings,
+	submissions []*structs.Submissions,
+	main *structs.MainView,
+	appState *structs.ApplicationState) {
+	//getNextCategory()
+}
+
 func intInSlice(a int, list []int) bool {
 	for _, b := range list {
 		if b == a {
