@@ -26,7 +26,10 @@ func SetSettingsList(list *cview.List, page int){
 func SetToSubmissionsSettings(list *cview.List) {
 	list.Clear()
 
-	li := cview.NewListItem("[::d]Change")
+	li := cview.NewListItem("")
+	list.AddItem(li)
+
+	li = cview.NewListItem("[::d]Change")
 	li.SetSecondaryText("Comment width: [::b]80")
 	list.AddItem(li)
 
@@ -54,13 +57,16 @@ func SetToSubmissionsSettings(list *cview.List) {
 	li.SetSecondaryText("Show labels: [black:orange:]no")
 	list.AddItem(li)
 
-	list.SetCurrentItem(2)
+	list.SetCurrentItem(1)
 }
 
 func SetToCommentSectionSettings(list *cview.List) {
 	list.Clear()
 
-	li := cview.NewListItem("[::d]Change")
+	li := cview.NewListItem("")
+	list.AddItem(li)
+
+	li = cview.NewListItem("[::d]Change")
 	li.SetSecondaryText("Comment width: [::b]80")
 	list.AddItem(li)
 
@@ -72,9 +78,8 @@ func SetToCommentSectionSettings(list *cview.List) {
 	li.SetSecondaryText("Indent size: [::b]4")
 	list.AddItem(li)
 
-	list.SetCurrentItem(2)
+	list.SetCurrentItem(1)
 }
-
 
 
 func NewDialogueBox() *cview.Modal {
@@ -88,26 +93,12 @@ func NewDialogueBox() *cview.Modal {
 	return modal
 }
 
-func newList() *cview.List {
-	list := cview.NewList()
-	list.SetBackgroundTransparent(false)
-	list.SetBackgroundColor(tcell.ColorDefault)
-	list.SetMainTextColor(tcell.ColorDefault)
-	list.SetSecondaryTextColor(tcell.ColorDefault)
-	list.SetSelectedTextAttributes(tcell.AttrReverse)
-	list.SetSelectedTextColor(tcell.ColorDefault)
-	list.SetSelectedBackgroundColor(tcell.ColorDefault)
-	list.SetScrollBarVisibility(cview.ScrollBarNever)
-
-	return list
-}
-
 func GetHeader(page int) string {
-	if page == 0 {
-		return "SettingsCategory"
+	if page == Submissions {
+		return "[::b]Submissions"
 	}
-	if page == 1 {
-		return "SettingsCategory"
+	if page == CommentSection {
+		return "[::b]Comment Section"
 	}
 
 	return ""
