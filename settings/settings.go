@@ -11,10 +11,10 @@ const (
 )
 
 func GetUnselectableItems() []int {
-	return []int{0, 2, 4, 6, 8, 10}
+	return []int{0, 1, 3, 5, 7, 9, 10, 11, 13}
 }
 
-func SetSettingsList(list *cview.List, page int){
+func SetSettingsList(list *cview.List, page int) {
 	if page == 0 {
 		SetToSubmissionsSettings(list)
 	}
@@ -25,6 +25,7 @@ func SetSettingsList(list *cview.List, page int){
 
 func SetToSubmissionsSettings(list *cview.List) {
 	list.Clear()
+	indentation := "               "
 
 	//0
 	li := cview.NewListItem("")
@@ -36,8 +37,8 @@ func SetToSubmissionsSettings(list *cview.List) {
 	list.AddItem(li)
 
 	//2
-	li = cview.NewListItem("[::d]Enter to change")
-	li.SetSecondaryText("Comment width:     65     70     75     [[::b]80[::-]]     85     90     Screen ")
+	li = cview.NewListItem("Comment Width:")
+	li.SetSecondaryText(indentation + "65     70     75     [[::b]80[::-]]     85     90     Screen ")
 	list.AddItem(li)
 
 	//3
@@ -46,8 +47,8 @@ func SetToSubmissionsSettings(list *cview.List) {
 	list.AddItem(li)
 
 	//4
-	li = cview.NewListItem("[::d]Enter to change")
-	li.SetSecondaryText("Indent size: [::b]4")
+	li = cview.NewListItem("Indent size: ")
+	li.SetSecondaryText(indentation + "1     2     3     [[::b]4[::-]]     5")
 	list.AddItem(li)
 
 	//5
@@ -56,8 +57,8 @@ func SetToSubmissionsSettings(list *cview.List) {
 	list.AddItem(li)
 
 	//6
-	li = cview.NewListItem("[::d]Enter to change")
-	li.SetSecondaryText("Show colors: [black:#82aaff:]yes")
+	li = cview.NewListItem("Show colors: ")
+	li.SetSecondaryText(indentation + "no     [[black:#82aaff:]yes[-:-:-]]")
 	list.AddItem(li)
 
 	//7
@@ -66,8 +67,8 @@ func SetToSubmissionsSettings(list *cview.List) {
 	list.AddItem(li)
 
 	//8
-	li = cview.NewListItem("[::d]Enter to change")
-	li.SetSecondaryText("Show labels: [black:orange:]no")
+	li = cview.NewListItem("Show labels: ")
+	li.SetSecondaryText(indentation + "[[black:orange:]no[-:-:-]]     yes")
 	list.AddItem(li)
 
 	//9
@@ -87,8 +88,8 @@ func SetToSubmissionsSettings(list *cview.List) {
 	list.AddItem(li)
 
 	//12
-	li = cview.NewListItem("[::d]Enter to change")
-	li.SetSecondaryText("Show colors: [black:#82aaff:]yes")
+	li = cview.NewListItem("Show colors: ")
+	li.SetSecondaryText(indentation + "[black:#82aaff:]yes")
 	list.AddItem(li)
 
 	//13
@@ -97,11 +98,11 @@ func SetToSubmissionsSettings(list *cview.List) {
 	list.AddItem(li)
 
 	//14
-	li = cview.NewListItem("[::d]Enter to change")
-	li.SetSecondaryText("Show labels: [black:orange:]no")
+	li = cview.NewListItem("Show labels: ")
+	li.SetSecondaryText(indentation + "[black:orange:]no")
 	list.AddItem(li)
 
-	list.SetCurrentItem(1)
+	list.SetCurrentItem(2)
 }
 
 func SetToCommentSectionSettings(list *cview.List) {
@@ -134,7 +135,6 @@ func SetToCommentSectionSettings(list *cview.List) {
 	list.SetCurrentItem(1)
 }
 
-
 func NewDialogueBox() *cview.Modal {
 	modal := cview.NewModal()
 	modal.SetText("Do you want to quit the application? " +
@@ -142,7 +142,7 @@ func NewDialogueBox() *cview.Modal {
 	modal.AddButtons([]string{"Quit", "Cancel"})
 	modal.SetBackgroundColor(tcell.ColorDefault)
 	modal.SetTextColor(tcell.ColorDefault)
-	
+
 	return modal
 }
 
