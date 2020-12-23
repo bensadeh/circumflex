@@ -46,17 +46,14 @@ func NewScreenController() *structs.ScreenController {
 
 	sc.MainView = NewMainView()
 	sc.MainView.Panels.AddPanel(constants.SubmissionsPanel, sc.Articles, true, true)
-	settingsHeaderText := settings.GetHeader(sc.Settings.CurrentPage)
-	sc.MainView.SettingsSubHeader = newTextViewPrimitive(settingsHeaderText)
 
 	settingsGrid := cview.NewGrid()
 	settingsGrid.SetBorder(false)
-	settingsGrid.SetRows(2, 0)
+	settingsGrid.SetRows(0)
 	settingsGrid.SetColumns(0, 7)
 	settingsGrid.SetBackgroundColor(tcell.ColorDefault)
-	settingsGrid.AddItem(sc.MainView.SettingsSubHeader,0,0,1,1,0,0,false)
-	settingsGrid.AddItem(sc.Settings.List,1,0,1,1,0,0,false)
-	settingsGrid.AddItem(newTextViewPrimitive(""),0,1,2,1,0,0,false)
+	settingsGrid.AddItem(sc.Settings.List,0,0,1,1,0,0,false)
+	settingsGrid.AddItem(newTextViewPrimitive(""),0,1,1,1,0,0,false)
 
 	sc.MainView.Panels.AddPanel(constants.SettingsPanel, settingsGrid, true, false)
 	sc.MainView.Panels.AddPanel(constants.ModalPanel, settings.NewDialogueBox(), true, false)

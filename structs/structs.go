@@ -50,7 +50,6 @@ type ApplicationState struct {
 type MainView struct {
 	Grid              *cview.Grid
 	Header            *cview.TextView
-	SettingsSubHeader *cview.TextView
 	LeftMargin        *cview.TextView
 	Panels            *cview.Panels
 	StatusBar         *cview.TextView

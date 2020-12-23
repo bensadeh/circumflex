@@ -336,9 +336,6 @@ func SelectNextSettingsPage(main *structs.MainView, s *structs.Settings) {
 		return
 	}
 
-	header := settings.GetHeader(nextPage)
-
-	view.SetSettingsHeader(main, header)
 	view.SetSettingsList(s.List, nextPage)
 	view.SetPageCounter(main, nextPage, s.NumberOfPages, "#82aaff")
 
@@ -352,9 +349,6 @@ func SelectPreviousSettingsPage(main *structs.MainView, s *structs.Settings) {
 		return
 	}
 
-	header := settings.GetHeader(prevPage)
-
-	view.SetSettingsHeader(main, header)
 	view.SetSettingsList(s.List, prevPage)
 	view.SetPageCounter(main, prevPage, s.NumberOfPages, "#82aaff")
 

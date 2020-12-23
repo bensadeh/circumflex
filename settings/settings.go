@@ -11,7 +11,7 @@ const (
 )
 
 func GetUnselectableItems() []int {
-	return []int{0, 1, 3, 5, 6, 7, 9}
+	return []int{0, 2, 4, 6, 8, 10}
 }
 
 func SetSettingsList(list *cview.List, page int){
@@ -26,34 +26,78 @@ func SetSettingsList(list *cview.List, page int){
 func SetToSubmissionsSettings(list *cview.List) {
 	list.Clear()
 
+	//0
 	li := cview.NewListItem("")
+	li.SetSecondaryText("[::b]Submissions")
 	list.AddItem(li)
 
-	li = cview.NewListItem("[::d]Change")
-	li.SetSecondaryText("Comment width: [::b]80")
+	//1
+	li = cview.NewListItem("")
 	list.AddItem(li)
 
+	//2
+	li = cview.NewListItem("[::d]Enter to change")
+	li.SetSecondaryText("Comment width:     65     70     75     [[::b]80[::-]]     85     90     Screen ")
+	list.AddItem(li)
+
+	//3
 	li = cview.NewListItem(" ")
 	li.SetSecondaryText(" ")
 	list.AddItem(li)
 
-	li = cview.NewListItem("[::d]Change")
+	//4
+	li = cview.NewListItem("[::d]Enter to change")
 	li.SetSecondaryText("Indent size: [::b]4")
 	list.AddItem(li)
 
+	//5
 	li = cview.NewListItem(" ")
 	li.SetSecondaryText(" ")
 	list.AddItem(li)
 
-	li = cview.NewListItem("[::d]Change")
+	//6
+	li = cview.NewListItem("[::d]Enter to change")
 	li.SetSecondaryText("Show colors: [black:#82aaff:]yes")
 	list.AddItem(li)
 
+	//7
 	li = cview.NewListItem(" ")
 	li.SetSecondaryText("")
 	list.AddItem(li)
 
-	li = cview.NewListItem("[::d]Change")
+	//8
+	li = cview.NewListItem("[::d]Enter to change")
+	li.SetSecondaryText("Show labels: [black:orange:]no")
+	list.AddItem(li)
+
+	//9
+	//Space
+	li = cview.NewListItem(" ")
+	li.SetSecondaryText(" ")
+	list.AddItem(li)
+
+	//10
+	li = cview.NewListItem(" ")
+	li.SetSecondaryText("[::b]Comment Section")
+	list.AddItem(li)
+
+	//11
+	//Line
+	li = cview.NewListItem("")
+	list.AddItem(li)
+
+	//12
+	li = cview.NewListItem("[::d]Enter to change")
+	li.SetSecondaryText("Show colors: [black:#82aaff:]yes")
+	list.AddItem(li)
+
+	//13
+	li = cview.NewListItem(" ")
+	li.SetSecondaryText("")
+	list.AddItem(li)
+
+	//14
+	li = cview.NewListItem("[::d]Enter to change")
 	li.SetSecondaryText("Show labels: [black:orange:]no")
 	list.AddItem(li)
 
@@ -66,7 +110,7 @@ func SetToCommentSectionSettings(list *cview.List) {
 	li := cview.NewListItem("")
 	list.AddItem(li)
 
-	li = cview.NewListItem("[::d]Change")
+	li = cview.NewListItem("[::d]Press Enter to change")
 	li.SetSecondaryText("Comment width: [::b]80")
 	list.AddItem(li)
 
@@ -74,8 +118,17 @@ func SetToCommentSectionSettings(list *cview.List) {
 	li.SetSecondaryText(" ")
 	list.AddItem(li)
 
-	li = cview.NewListItem("[::d]Change")
+	li = cview.NewListItem("[::d]Press Enter to change")
 	li.SetSecondaryText("Indent size: [::b]4")
+	list.AddItem(li)
+
+	li = cview.NewListItem("")
+	li.SetSecondaryText("Comment Section")
+
+	//Line
+	li = cview.NewListItem("")
+	list.AddItem(li)
+
 	list.AddItem(li)
 
 	list.SetCurrentItem(1)

@@ -127,10 +127,6 @@ func SetPageCounter(m *structs.MainView, currentPage int, maxPages int, color st
 	m.PageCounter.SetText(pageCounter)
 }
 
-func SetSettingsHeader(m *structs.MainView, text string) {
-	m.SettingsSubHeader.SetText(text)
-}
-
 func SetSettingsList(list *cview.List, currentPage int) {
 	settings.SetSettingsList(list, currentPage)
 }
