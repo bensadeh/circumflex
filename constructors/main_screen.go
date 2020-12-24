@@ -1,6 +1,7 @@
 package constructor
 
 import (
+	"clx/constants/margins"
 	"clx/constants/panels"
 	"clx/constants/submissions"
 	"clx/screen"
@@ -51,7 +52,7 @@ func NewScreenController() *structs.ScreenController {
 	settingsGrid := cview.NewGrid()
 	settingsGrid.SetBorder(false)
 	settingsGrid.SetRows(0)
-	settingsGrid.SetColumns(0, 7)
+	settingsGrid.SetColumns(0, margins.LeftMargin)
 	settingsGrid.SetBackgroundColor(tcell.ColorDefault)
 	settingsGrid.AddItem(sc.Settings.List,0,0,1,1,0,0,false)
 	settingsGrid.AddItem(newTextViewPrimitive(""),0,1,1,1,0,0,false)
@@ -90,7 +91,7 @@ func NewMainView() *structs.MainView {
 
 	main.Grid.SetBorder(false)
 	main.Grid.SetRows(2, 0, 1)
-	main.Grid.SetColumns(7, 0, 4)
+	main.Grid.SetColumns(margins.LeftMargin, 0, margins.RightMarginPageCounter)
 	main.Grid.SetBackgroundColor(tcell.ColorDefault)
 	main.Grid.AddItem(main.Header, 0, 0, 1, 3, 0, 0, true)
 	main.Grid.AddItem(main.LeftMargin, 1, 0, 1, 1, 0, 0, false)

@@ -1,6 +1,7 @@
 package constructor
 
 import (
+	"clx/constants/margins"
 	text "github.com/MichaelMure/go-term-text"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
@@ -43,7 +44,7 @@ func GetHelpScreen() *cview.TextView {
 	helpScreen.SetBorderColor(tcell.ColorDefault)
 	helpScreen.SetTextColor(tcell.ColorDefault)
 	helpScreen.SetDynamicColors(true)
-	helpScreen.SetPadding(0, 0, -7, 0)
+	helpScreen.SetPadding(0, 0, -margins.LeftMargin, 0)
 
 	helpScreen.SetText(padLines(helpScreenText))
 

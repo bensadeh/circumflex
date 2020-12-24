@@ -1,6 +1,7 @@
 package constructor
 
 import (
+	"clx/constants/margins"
 	"clx/screen"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
@@ -36,7 +37,7 @@ func GetInfoScreen() *cview.TextView {
 	helpScreen.SetDynamicColors(true)
 
 	offset := screen.GetOffsetForLeftAlignedTextBlock(56)
-	helpScreen.SetPadding(7, 0, offset-7, 0)
+	helpScreen.SetPadding(margins.LeftMargin, 0, offset-margins.LeftMargin, 0)
 
 	helpScreen.SetText(infoScreenText)
 
