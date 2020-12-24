@@ -36,3 +36,11 @@ func GetOffsetForLeftAlignedTextBlock(textWidth int) int {
 
 	return screenWidth - halfScreenWidth - halfTextWidth
 }
+
+func GetOffsetToCenterText(textHeight int) int {
+	screenHeight := GetTerminalHeight()
+	halfScreenHeight := screenHeight / 2
+	halfTextHeight := textHeight / 2
+
+	return screenHeight - halfScreenHeight - halfTextHeight
+}

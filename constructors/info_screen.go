@@ -9,7 +9,7 @@ import (
 
 const (
 	infoScreenText = `
-circumflex  [::d]| ˈsəːkəmflɛks |[::-]
+circumflex  [::d]|ˈsəːkəmflɛks|[::-]
 
 noun (also circumflex accent)
   a mark (^) placed over a vowel in some languages to 
@@ -36,8 +36,13 @@ func GetInfoScreen() *cview.TextView {
 	helpScreen.SetTextColor(tcell.ColorDefault)
 	helpScreen.SetDynamicColors(true)
 
-	offset := screen.GetOffsetForLeftAlignedTextBlock(56)
-	helpScreen.SetPadding(margins.LeftMargin, 0, offset-margins.LeftMargin, 0)
+	longestLineLength := 56
+	lineHeight := 14
+
+	leftOffset := screen.GetOffsetForLeftAlignedTextBlock(longestLineLength)
+	topOffset := screen.GetOffsetToCenterText(lineHeight)
+
+	helpScreen.SetPadding(topOffset-4, 0, leftOffset-margins.LeftMargin, 0)
 
 	helpScreen.SetText(infoScreenText)
 
