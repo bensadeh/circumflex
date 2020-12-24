@@ -1,7 +1,8 @@
 package constructor
 
 import (
-	"clx/constants"
+	"clx/constants/panels"
+	"clx/constants/submissions"
 	"clx/screen"
 	"clx/settings"
 	"clx/structs"
@@ -30,10 +31,10 @@ func NewScreenController() *structs.ScreenController {
 		sc.ApplicationState.ScreenHeight,
 		maximumStoriesToDisplay)
 
-	sc.Submissions[constants.FrontPage].MaxPages = 2
-	sc.Submissions[constants.New].MaxPages = 2
-	sc.Submissions[constants.Ask].MaxPages = 1
-	sc.Submissions[constants.Show].MaxPages = 1
+	sc.Submissions[submissions.FrontPage].MaxPages = 2
+	sc.Submissions[submissions.New].MaxPages = 2
+	sc.Submissions[submissions.Ask].MaxPages = 1
+	sc.Submissions[submissions.Show].MaxPages = 1
 
 	sc.Articles = NewList()
 
@@ -45,7 +46,7 @@ func NewScreenController() *structs.ScreenController {
 	sc.Settings.List.SetSelectedTextAttributes(tcell.AttrUnderline)
 
 	sc.MainView = NewMainView()
-	sc.MainView.Panels.AddPanel(constants.SubmissionsPanel, sc.Articles, true, true)
+	sc.MainView.Panels.AddPanel(panels.SubmissionsPanel, sc.Articles, true, true)
 
 	settingsGrid := cview.NewGrid()
 	settingsGrid.SetBorder(false)
@@ -55,8 +56,8 @@ func NewScreenController() *structs.ScreenController {
 	settingsGrid.AddItem(sc.Settings.List,0,0,1,1,0,0,false)
 	settingsGrid.AddItem(newTextViewPrimitive(""),0,1,1,1,0,0,false)
 
-	sc.MainView.Panels.AddPanel(constants.SettingsPanel, settingsGrid, true, false)
-	sc.MainView.Panels.AddPanel(constants.ModalPanel, settings.NewDialogueBox(), true, false)
+	sc.MainView.Panels.AddPanel(panels.SettingsPanel, settingsGrid, true, false)
+	sc.MainView.Panels.AddPanel(panels.ModalPanel, settings.NewDialogueBox(), true, false)
 
 	return sc
 }
@@ -97,8 +98,8 @@ func NewMainView() *structs.MainView {
 	main.Grid.AddItem(main.StatusBar, 2, 1, 1, 1, 0, 0, false)
 	main.Grid.AddItem(main.PageCounter, 2, 2, 1, 1, 0, 0, false)
 
-	main.Panels.AddPanel(constants.InfoPanel, GetInfoScreen(), true, false)
-	main.Panels.AddPanel(constants.KeymapsPanel, GetHelpScreen(), true, false)
+	main.Panels.AddPanel(panels.InfoPanel, GetInfoScreen(), true, false)
+	main.Panels.AddPanel(panels.KeymapsPanel, GetHelpScreen(), true, false)
 
 	return main
 }

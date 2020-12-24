@@ -4,7 +4,9 @@ import (
 	"clx/browser"
 	"clx/cli"
 	cp "clx/comment-parser"
-	"clx/constants"
+	"clx/constants/help"
+	"clx/constants/messages"
+	"clx/constants/panels"
 	"clx/http"
 	"clx/screen"
 	"clx/settings"
@@ -50,7 +52,7 @@ func setApplicationToErrorState(
 
 	appState.IsOffline = true
 	list.Clear()
-	view.SetPermanentStatusBar(main, constants.OfflineMessage)
+	view.SetPermanentStatusBar(main, messages.OfflineMessage)
 	app.Draw()
 }
 
@@ -307,7 +309,7 @@ func SelectNextSettingsElement(list *cview.List) {
 }
 
 func ShowModal(main *structs.MainView) {
-	main.Panels.ShowPanel(constants.ModalPanel)
+	main.Panels.ShowPanel(panels.ModalPanel)
 }
 
 func SelectPreviousSettingsElement(list *cview.List) {
@@ -392,7 +394,7 @@ func EnterInfoScreen(main *structs.MainView, appState *structs.ApplicationState)
 }
 
 func showInfoCategory(main *structs.MainView, appState *structs.ApplicationState) {
-	if appState.HelpScreenCategory == constants.Settings {
+	if appState.HelpScreenCategory == help.Settings {
 		view.SetPageCounter(main, 0, 1, "#82aaff")
 	} else {
 		view.HidePageCounter(main)
@@ -449,7 +451,7 @@ func Refresh(app *cview.Application,
 
 	if appState.IsOffline {
 		list.Clear()
-		view.SetPermanentStatusBar(main, constants.OfflineMessage)
+		view.SetPermanentStatusBar(main, messages.OfflineMessage)
 		app.Draw()
 	} else {
 		duration := time.Millisecond * 2000

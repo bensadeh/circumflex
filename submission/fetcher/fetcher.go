@@ -1,7 +1,7 @@
 package fetcher
 
 import (
-	"clx/constants"
+	"clx/constants/submissions"
 	"clx/http"
 	"clx/structs"
 	"encoding/json"
@@ -10,26 +10,26 @@ import (
 
 const (
 	baseURL = "http://api.hackerwebapp.com/"
-	page = "?page="
+	page    = "?page="
 )
 
 func FetchSubmissionEntries(page int, category int) ([]*structs.Submission, error) {
 	url := getUrl(category)
 	p := strconv.Itoa(page)
 	JSON, err := http.Get(url + p)
-	submissions := unmarshalJSON(JSON)
-	return submissions, err
+	subs := unmarshalJSON(JSON)
+	return subs, err
 }
 
 func getUrl(category int) string {
 	switch category {
-	case constants.FrontPage:
+	case submissions.FrontPage:
 		return baseURL + "news" + page
-	case constants.New:
+	case submissions.New:
 		return baseURL + "newest" + page
-	case constants.Ask:
+	case submissions.Ask:
 		return baseURL + "ask" + page
-	case constants.Show:
+	case submissions.Show:
 		return baseURL + "show" + page
 	default:
 		panic("ApplicationState unsupported")
@@ -37,7 +37,7 @@ func getUrl(category int) string {
 }
 
 func unmarshalJSON(stream []byte) []*structs.Submission {
-	var submissions []*structs.Submission
-	_ = json.Unmarshal(stream, &submissions)
-	return submissions
+	var subs []*structs.Submission
+	_ = json.Unmarshal(stream, &subs)
+	return subs
 }

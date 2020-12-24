@@ -1,7 +1,9 @@
 package view
 
 import (
-	"clx/constants"
+	"clx/constants/help"
+	"clx/constants/panels"
+	"clx/constants/submissions"
 	"clx/pages"
 	"clx/settings"
 	"clx/structs"
@@ -13,22 +15,22 @@ import (
 
 func SetHackerNewsHeader(m *structs.MainView, screenWidth int, category int) {
 	switch category {
-	case constants.FrontPage:
+	case submissions.FrontPage:
 		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  new | ask | show"
 		offset := -26
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
-	case constants.New:
+	case submissions.New:
 		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  [white]new[black::] | ask | show"
 		offset := -42
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
-	case constants.Ask:
+	case submissions.Ask:
 		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  new | [white]ask[black::] | show"
 		offset := -42
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
-	case constants.Show:
+	case submissions.Show:
 		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  new | ask | [white]show[black::]"
 		offset := -42
 		header := appendWhitespace(base, offset, screenWidth)
@@ -48,17 +50,17 @@ func appendWhitespace(base string, offset int, screenWidth int) string {
 
 func SetHelpScreenHeader(m *structs.MainView, screenWidth int, category int) {
 	switch category {
-	case constants.Info:
+	case help.Info:
 		base := "[black:#82aaff:]   [^] [::b]circumflex[::-]   keymaps | settings"
 		offset := -26
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
-	case constants.Keymaps:
+	case help.Keymaps:
 		base := "[black:#82aaff:]   [^] [::b]circumflex[::-]   [white]keymaps[black::] | settings"
 		offset := -42
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
-	case constants.Settings:
+	case help.Settings:
 		base := "[black:#82aaff:]   [^] [::b]circumflex[::-]   keymaps | [white]settings[black::]"
 		offset := -42
 		header := appendWhitespace(base, offset, screenWidth)
@@ -69,17 +71,17 @@ func SetHelpScreenHeader(m *structs.MainView, screenWidth int, category int) {
 }
 
 func SetPanelToSubmissions(m *structs.MainView) {
-	m.Panels.SetCurrentPanel(constants.SubmissionsPanel)
+	m.Panels.SetCurrentPanel(panels.SubmissionsPanel)
 }
 
 func SetHelpScreenPanel(m *structs.MainView, category int) {
 	switch category {
-	case constants.Info:
-		m.Panels.SetCurrentPanel(constants.InfoPanel)
-	case constants.Keymaps:
-		m.Panels.SetCurrentPanel(constants.KeymapsPanel)
-	case constants.Settings:
-		m.Panels.SetCurrentPanel(constants.SettingsPanel)
+	case help.Info:
+		m.Panels.SetCurrentPanel(panels.InfoPanel)
+	case help.Keymaps:
+		m.Panels.SetCurrentPanel(panels.KeymapsPanel)
+	case help.Settings:
+		m.Panels.SetCurrentPanel(panels.SettingsPanel)
 	default:
 		return
 	}

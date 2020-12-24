@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"clx/constants"
+	"clx/constants/help"
 	"clx/model"
 	"clx/structs"
 	"github.com/gdamore/tcell/v2"
@@ -27,7 +27,7 @@ func SetApplicationShortcuts(
 	appState *structs.ApplicationState) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		currentState := submissions[appState.SubmissionsCategory]
-		isOnSettingsPage := appState.IsOnHelpScreen && (appState.HelpScreenCategory == constants.Settings)
+		isOnSettingsPage := appState.IsOnHelpScreen && (appState.HelpScreenCategory == help.Settings)
 
 		//Offline
 		if appState.IsOffline && event.Rune() == 'r' {
