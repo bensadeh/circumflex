@@ -9,7 +9,6 @@ import (
 	"clx/constants/panels"
 	"clx/http"
 	"clx/screen"
-	"clx/settings"
 	"clx/structs"
 	"clx/submission/fetcher"
 	"clx/submission/formatter"
@@ -289,82 +288,8 @@ func PreviousPage(list *cview.List, submissions *structs.Submissions, main *stru
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
 }
 
-func SelectNextSettingsElement(list *cview.List) {
-	currentItem := list.GetCurrentItemIndex()
-	itemCount := list.GetItemCount()
-	unselectableElements := settings.GetUnselectableItems()
-
-	if currentItem == itemCount {
-		return
-	}
-
-	next := currentItem + 1
-	for intInSlice(next, unselectableElements) {
-		if next == itemCount {
-			return
-		}
-		next++
-	}
-
-	list.SetCurrentItem(next)
-}
-
 func ShowModal(main *structs.MainView) {
 	main.Panels.ShowPanel(panels.ModalPanel)
-}
-
-func SelectPreviousSettingsElement(list *cview.List) {
-	currentItem := list.GetCurrentItemIndex()
-	unselectableElements := settings.GetUnselectableItems()
-
-	if currentItem == 0 {
-		return
-	}
-
-	prev := currentItem - 1
-	for intInSlice(prev, unselectableElements) {
-		if prev == 0 {
-			return
-		}
-		prev--
-	}
-
-	list.SetCurrentItem(prev)
-}
-
-func SelectNextSettingsPage(main *structs.MainView, s *structs.Settings) {
-	nextPage := s.CurrentPage + 1
-
-	if nextPage > s.NumberOfPages {
-		return
-	}
-
-	view.SetSettingsList(s.List, nextPage)
-	view.SetPageCounter(main, nextPage, s.NumberOfPages, "#82aaff")
-
-	s.CurrentPage++
-}
-
-func SelectPreviousSettingsPage(main *structs.MainView, s *structs.Settings) {
-	prevPage := s.CurrentPage - 1
-
-	if prevPage < 0 {
-		return
-	}
-
-	view.SetSettingsList(s.List, prevPage)
-	view.SetPageCounter(main, prevPage, s.NumberOfPages, "#82aaff")
-
-	s.CurrentPage--
-}
-
-func intInSlice(a int, list []int) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
-	}
-	return false
 }
 
 func SelectNextElement(list *cview.List) {

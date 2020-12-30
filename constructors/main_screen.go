@@ -5,7 +5,6 @@ import (
 	"clx/constants/panels"
 	"clx/constants/submissions"
 	"clx/screen"
-	"clx/settings"
 	"clx/structs"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
@@ -39,12 +38,8 @@ func NewScreenController() *structs.ScreenController {
 
 	sc.Articles = NewList()
 
-	sc.Settings = new(structs.Settings)
-	sc.Settings.NumberOfPages = 1
-	sc.Settings.List = NewList()
-	settings.SetToSubmissionsSettings(sc.Settings.List)
-
-	sc.Settings.List.SetSelectedTextAttributes(tcell.AttrUnderline)
+	sc.SettingsText = newTextViewPrimitive("Settings text goes here")
+	sc.SettingsModal = NewDialogueBox()
 
 	sc.MainView = NewMainView()
 	sc.MainView.Panels.AddPanel(panels.SubmissionsPanel, sc.Articles, true, true)
@@ -54,11 +49,11 @@ func NewScreenController() *structs.ScreenController {
 	settingsGrid.SetRows(0)
 	settingsGrid.SetColumns(0, margins.LeftMargin)
 	settingsGrid.SetBackgroundColor(tcell.ColorDefault)
-	settingsGrid.AddItem(sc.Settings.List,0,0,1,1,0,0,false)
-	settingsGrid.AddItem(newTextViewPrimitive(""),0,1,1,1,0,0,false)
+	settingsGrid.AddItem(sc.SettingsText, 0, 0, 1, 1, 0, 0, false)
+	settingsGrid.AddItem(newTextViewPrimitive(""), 0, 1, 1, 1, 0, 0, false)
 
 	sc.MainView.Panels.AddPanel(panels.SettingsPanel, settingsGrid, true, false)
-	sc.MainView.Panels.AddPanel(panels.ModalPanel, settings.NewDialogueBox(), true, false)
+	sc.MainView.Panels.AddPanel(panels.ModalPanel, sc.SettingsModal, true, false)
 
 	return sc
 }
@@ -87,7 +82,7 @@ func NewMainView() *structs.MainView {
 	main.PageCounter = newTextViewPrimitive("")
 	main.StatusBar = newTextViewPrimitive("")
 	main.StatusBar.SetTextAlign(cview.AlignCenter)
-	main.StatusBar.SetPadding(0,0,-4,0)
+	main.StatusBar.SetPadding(0, 0, -4, 0)
 
 	main.Grid.SetBorder(false)
 	main.Grid.SetRows(2, 0, 1)
@@ -116,4 +111,15 @@ func newTextViewPrimitive(text string) *cview.TextView {
 	tv.SetScrollBarVisibility(cview.ScrollBarNever)
 
 	return tv
+}
+
+func NewDialogueBox() *cview.Modal {
+	modal := cview.NewModal()
+	modal.SetText("Do you want to quit the application? " +
+		"Do you want to quit the application? Do you want to quit the application?")
+	modal.AddButtons([]string{"Quit", "Cancel"})
+	modal.SetBackgroundColor(tcell.ColorDefault)
+	modal.SetTextColor(tcell.ColorDefault)
+
+	return modal
 }

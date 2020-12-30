@@ -21,7 +21,8 @@ func SetAfterInitializationAndAfterResizeFunctions(
 func SetApplicationShortcuts(
 	app *cview.Application,
 	list *cview.List,
-	settings *structs.Settings,
+	settingsText *cview.TextView,
+	settingsModal *cview.Modal,
 	submissions []*structs.Submissions,
 	main *structs.MainView,
 	appState *structs.ApplicationState,
@@ -50,22 +51,6 @@ func SetApplicationShortcuts(
 		}
 		if appState.IsOnHelpScreen && (event.Rune() == 'i' || event.Rune() == 'q') {
 			model.ExitHelpScreen(main, appState, currentState)
-			return event
-		}
-		if isOnSettingsPage && (event.Rune() == 'j' || event.Key() == tcell.KeyDown) {
-			model.SelectNextSettingsElement(settings.List)
-			return event
-		}
-		if isOnSettingsPage && (event.Rune() == 'k' || event.Key() == tcell.KeyUp) {
-			model.SelectPreviousSettingsElement(settings.List)
-			return event
-		}
-		if isOnSettingsPage && (event.Rune() == 'l' || event.Key() == tcell.KeyRight) {
-			model.SelectNextSettingsPage(main, settings)
-			return event
-		}
-		if isOnSettingsPage && (event.Rune() == 'h' || event.Key() == tcell.KeyLeft) {
-			model.SelectPreviousSettingsPage(main, settings)
 			return event
 		}
 		if isOnSettingsPage && event.Rune() == 't' {

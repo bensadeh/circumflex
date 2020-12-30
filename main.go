@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	config := config.GetConfig()
+	configuration := config.GetConfig()
 
 	sc := constructor.NewScreenController()
 	controller.SetAfterInitializationAndAfterResizeFunctions(
@@ -21,11 +21,12 @@ func main() {
 	controller.SetApplicationShortcuts(
 		sc.Application,
 		sc.Articles,
-		sc.Settings,
+		sc.SettingsText,
+		sc.SettingsModal,
 		sc.Submissions,
 		sc.MainView,
 		sc.ApplicationState,
-		config)
+		configuration)
 
 	cli.ClearScreen()
 

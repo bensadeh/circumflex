@@ -7,7 +7,8 @@ import (
 type ScreenController struct {
 	Application      *cview.Application
 	Articles         *cview.List
-	Settings         *Settings
+	SettingsText     *cview.TextView
+	SettingsModal    *cview.Modal
 	MainView         *MainView
 	Submissions      []*Submissions
 	ApplicationState *ApplicationState
@@ -48,18 +49,12 @@ type ApplicationState struct {
 }
 
 type MainView struct {
-	Grid              *cview.Grid
-	Header            *cview.TextView
-	LeftMargin        *cview.TextView
-	Panels            *cview.Panels
-	StatusBar         *cview.TextView
-	PageCounter       *cview.TextView
-}
-
-type Settings struct {
-	List          *cview.List
-	CurrentPage   int
-	NumberOfPages int
+	Grid        *cview.Grid
+	Header      *cview.TextView
+	LeftMargin  *cview.TextView
+	Panels      *cview.Panels
+	StatusBar   *cview.TextView
+	PageCounter *cview.TextView
 }
 
 type Config struct {
