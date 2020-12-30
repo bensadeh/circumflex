@@ -2,11 +2,14 @@ package main
 
 import (
 	"clx/cli"
-	"clx/constructors"
+	"clx/config"
+	constructor "clx/constructors"
 	"clx/controller"
 )
 
 func main() {
+	_ = config.GetConfig()
+
 	sc := constructor.NewScreenController()
 	controller.SetAfterInitializationAndAfterResizeFunctions(
 		sc.Application,
