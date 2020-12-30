@@ -44,8 +44,8 @@ func setDefaultValues() {
 
 func getConfigPath() string {
 	homeDir, _ := os.UserHomeDir()
-	config := ".config"
-	clx := "circumflex"
+	configDir := ".config"
+	clxDir := "circumflex"
 
-	return path.Join(homeDir, config, clx)
+	return path.Join(homeDir, configDir, clxDir)
 }
