@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/viper"
 	"os"
 	"path"
-	"runtime"
 )
 
 type Config struct {
@@ -48,18 +47,9 @@ func setDefaultValues() {
 }
 
 func getConfigPath() string {
+	homeDir, _ := os.UserHomeDir()
+	config := ".config"
 	clx := "circumflex"
 
-	if runtime.GOOS == "linux" {
-		config := os.Getenv("XDG_CONFIG_HOME")
-		return path.Join(config, clx)
-	}
-	if runtime.GOOS == "darwin" {
-		home := os.Getenv("HOME")
-		config := ".config"
-
-		return path.Join(home, config, clx)
-	}
-
-	return ""
+	return path.Join(homeDir, config, clx)
 }
