@@ -24,7 +24,8 @@ func SetApplicationShortcuts(
 	settings *structs.Settings,
 	submissions []*structs.Submissions,
 	main *structs.MainView,
-	appState *structs.ApplicationState) {
+	appState *structs.ApplicationState,
+	config *structs.Config) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		currentState := submissions[appState.SubmissionsCategory]
 		isOnSettingsPage := appState.IsOnHelpScreen && (appState.HelpScreenCategory == help.Settings)
@@ -116,7 +117,7 @@ func SetApplicationShortcuts(
 			return event
 		}
 		if event.Key() == tcell.KeyEnter {
-			model.ReadSubmissionComments(app, list, currentState.Entries, appState)
+			model.ReadSubmissionComments(app, list, currentState.Entries, appState, config)
 			return event
 		}
 		if event.Rune() == 'o' {

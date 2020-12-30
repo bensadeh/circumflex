@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	_ = config.GetConfig()
+	config := config.GetConfig()
 
 	sc := constructor.NewScreenController()
 	controller.SetAfterInitializationAndAfterResizeFunctions(
@@ -24,7 +24,8 @@ func main() {
 		sc.Settings,
 		sc.Submissions,
 		sc.MainView,
-		sc.ApplicationState)
+		sc.ApplicationState,
+		config)
 
 	cli.ClearScreen()
 

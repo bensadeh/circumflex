@@ -2,18 +2,14 @@ package config
 
 import (
 	"clx/constants/settings"
+	"clx/structs"
 	"fmt"
 	"github.com/spf13/viper"
 	"os"
 	"path"
 )
 
-type Config struct {
-	CommentWidth int `mapstructure:"CLX_COMMENT_WIDTH"`
-	IndentSize   int `mapstructure:"CLX_INDENT_SIZE"`
-}
-
-func GetConfig() *Config {
+func GetConfig() *structs.Config {
 	// Set the file name of the configurations file
 	viper.SetConfigName(settings.ConfigName)
 
@@ -25,7 +21,7 @@ func GetConfig() *Config {
 
 	viper.SetConfigType("env")
 
-	configuration := new(Config)
+	configuration := new(structs.Config)
 
 	if err := viper.ReadInConfig(); err != nil {
 		fmt.Printf("Error reading config file, %s", err)
@@ -42,7 +38,7 @@ func GetConfig() *Config {
 }
 
 func setDefaultValues() {
-	viper.SetDefault("CLX_COMMENT_WIDTH", "67")
+	viper.SetDefault("CLX_COMMENT_WIDTH", "70")
 	viper.SetDefault("CLX_INDENT_SIZE", "4")
 }
 

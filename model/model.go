@@ -107,7 +107,8 @@ func ReadSubmissionComments(
 	app *cview.Application,
 	list *cview.List,
 	submissions []*structs.Submission,
-	appState *structs.ApplicationState) {
+	appState *structs.ApplicationState,
+	config *structs.Config) {
 	i := list.GetCurrentItemIndex()
 
 	for index := range submissions {
@@ -126,7 +127,7 @@ func ReadSubmissionComments(
 				jComments := new(cp.Comments)
 				_ = json.Unmarshal(JSON, jComments)
 
-				commentTree := cp.PrintCommentTree(*jComments, 4, 70)
+				commentTree := cp.PrintCommentTree(*jComments, config.IndentSize, config.CommentWidth)
 
 				cli.Less(commentTree)
 			})
