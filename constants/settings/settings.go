@@ -1,5 +1,8 @@
 package settings
 
 const (
-	ConfigName = "config"
+	ConfigFileNameAbbreviated = "config"
+	ConfigFileNameFull        = "config.env"
+	CommentWidth              = "CLX_COMMENT_WIDTH"
+	IndentSize                = "CLX_INDENT_SIZE"
 )

@@ -38,7 +38,8 @@ func NewScreenController() *structs.ScreenController {
 
 	sc.Articles = NewList()
 
-	sc.SettingsText = newTextViewPrimitive("Settings text goes here")
+	sc.SettingsText = newTextViewPrimitive(getSettingsText())
+	sc.SettingsText.SetWordWrap(true)
 	sc.SettingsModal = NewDialogueBox()
 
 	sc.MainView = NewMainView()
