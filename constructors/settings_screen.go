@@ -79,10 +79,10 @@ func getSettingsText() string {
 }
 
 func NewDialogueBox() *cview.Modal {
+
 	modal := cview.NewModal()
-	modal.SetText("Do you want to quit the application? " +
-		"Do you want to quit the application? Do you want to quit the application?")
-	modal.AddButtons([]string{"Quit", "Cancel"})
+	modal.SetText("Would you like to create a config file at " + file.PathToConfigFile() +
+		"? \n  \n   \n Press Y to confirm or N to cancel.")
 	modal.SetBackgroundColor(tcell.ColorDefault)
 	modal.SetTextColor(tcell.ColorDefault)
 
