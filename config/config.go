@@ -38,8 +38,8 @@ func GetConfig() *structs.Config {
 }
 
 func setDefaultValues() {
-	viper.SetDefault(settings.CommentWidth, "70")
-	viper.SetDefault(settings.IndentSize, "4")
+	viper.SetDefault(settings.CommentWidthKey, settings.CommentWidthDefault)
+	viper.SetDefault(settings.IndentSizeKey, settings.IndentSizeDefault)
 }
 
 func GetConfigPath() string {
