@@ -1,12 +1,13 @@
 package constructor
 
 import (
-	"clx/config"
 	"clx/constants/settings"
+	"clx/file"
 	text "github.com/MichaelMure/go-term-text"
+	"github.com/gdamore/tcell/v2"
 	"github.com/spf13/viper"
+	"gitlab.com/tslocum/cview"
 	"os"
-	"path"
 	"strconv"
 )
 
@@ -58,14 +59,14 @@ func (o option) print(textWidth int) string {
 
 func getSettingsText() string {
 	message := ""
-	configPath := config.GetConfigPath()
-	pathToConfigFile := path.Join(configPath, settings.ConfigFileNameFull)
+	pathToConfigDirectory := file.PathToConfigDirectory()
+	pathToConfigFile := file.PathToConfigFile()
 	settingsScreenText := "Configure circumflex by editing [::b]config.env[::-] or by exporting environment variables. "
 
 	if fileExists(pathToConfigFile) {
 		message += "Config file found at " + pathToConfigFile
 	} else {
-		message += "Press T to create a [::b]config.env[::-] in " + configPath
+		message += "Press T to create a [::b]config.env[::-] in " + pathToConfigDirectory
 	}
 
 	commentWidth := strconv.Itoa(viper.GetInt(settings.CommentWidthKey))
@@ -76,6 +77,17 @@ func getSettingsText() string {
 	options.addOption(settings.IndentSizeName, settings.IndentSizeKey, indentSize, settings.IndentSizeDescription)
 
 	return settingsScreenText + newParagraph + message + newParagraph + options.printAll(70)
+}
+
+func NewDialogueBox() *cview.Modal {
+	modal := cview.NewModal()
+	modal.SetText("Do you want to quit the application? " +
+		"Do you want to quit the application? Do you want to quit the application?")
+	modal.AddButtons([]string{"Quit", "Cancel"})
+	modal.SetBackgroundColor(tcell.ColorDefault)
+	modal.SetTextColor(tcell.ColorDefault)
+
+	return modal
 }
 
 func fileExists(pathToFile string) bool {

@@ -2,18 +2,17 @@ package config
 
 import (
 	"clx/constants/settings"
+	"clx/file"
 	"clx/structs"
 	"fmt"
 	"github.com/spf13/viper"
-	"os"
-	"path"
 )
 
 func GetConfig() *structs.Config {
 	// Set the file name of the configurations file
 	viper.SetConfigName(settings.ConfigFileNameAbbreviated)
 
-	cp := GetConfigPath()
+	cp := file.PathToConfigDirectory()
 	viper.AddConfigPath(cp)
 
 	//Check for environment variables
@@ -40,12 +39,4 @@ func GetConfig() *structs.Config {
 func setDefaultValues() {
 	viper.SetDefault(settings.CommentWidthKey, settings.CommentWidthDefault)
 	viper.SetDefault(settings.IndentSizeKey, settings.IndentSizeDefault)
-}
-
-func GetConfigPath() string {
-	homeDir, _ := os.UserHomeDir()
-	configDir := ".config"
-	clxDir := "circumflex"
-
-	return path.Join(homeDir, configDir, clxDir)
 }
