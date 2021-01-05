@@ -7,7 +7,6 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/spf13/viper"
 	"gitlab.com/tslocum/cview"
-	"os"
 	"strconv"
 )
 
@@ -63,7 +62,7 @@ func getSettingsText() string {
 	pathToConfigFile := file.PathToConfigFile()
 	settingsScreenText := "Configure circumflex by editing [::b]config.env[::-] or by exporting environment variables. "
 
-	if fileExists(pathToConfigFile) {
+	if file.Exists(pathToConfigFile) {
 		message += "Config file found at " + pathToConfigFile
 	} else {
 		message += "Press T to create a [::b]config.env[::-] in " + pathToConfigDirectory
@@ -88,14 +87,6 @@ func NewDialogueBox() *cview.Modal {
 	modal.SetTextColor(tcell.ColorDefault)
 
 	return modal
-}
-
-func fileExists(pathToFile string) bool {
-	if _, err := os.Stat(pathToFile); os.IsNotExist(err) {
-		return false
-	} else {
-		return true
-	}
 }
 
 func underline(text string) string {

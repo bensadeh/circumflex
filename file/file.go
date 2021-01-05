@@ -17,3 +17,11 @@ func PathToConfigDirectory() string {
 func PathToConfigFile() string {
 	return path.Join(PathToConfigDirectory(), settings.ConfigFileNameFull)
 }
+
+func Exists(pathToFile string) bool {
+	if _, err := os.Stat(pathToFile); os.IsNotExist(err) {
+		return false
+	} else {
+		return true
+	}
+}
