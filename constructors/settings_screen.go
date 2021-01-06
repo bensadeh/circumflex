@@ -64,7 +64,8 @@ func getSettingsText() string {
 	if file.Exists(pathToConfigFile) {
 		message += "Using config file at " + pathToConfigFile
 	} else {
-		message += "Configure circumflex by editing [::b]config.env[::-] or by exporting environment variables. Press T to create a [::b]config.env[::-] in " + pathToConfigDirectory
+		message += "Configure circumflex by editing [::b]config.env[::-] or by exporting environment variables. " +
+			"Press T to create a [::b]config.env[::-] in " + pathToConfigDirectory
 	}
 
 	currentCommentWidth := strconv.Itoa(viper.GetInt(settings.CommentWidthKey))
