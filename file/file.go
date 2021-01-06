@@ -25,3 +25,21 @@ func Exists(pathToFile string) bool {
 		return true
 	}
 }
+
+func WriteToConfigFile(content string) {
+	if Exists(PathToConfigFile()) {
+		return
+	}
+
+	_ = os.MkdirAll(PathToConfigDirectory(), 0700)
+
+	f, createFileErr := os.Create(PathToConfigFile())
+	if createFileErr != nil {
+		panic(createFileErr)
+	}
+
+	_, writeFileErr := f.WriteString(content)
+	if writeFileErr != nil {
+		panic(writeFileErr)
+	}
+}

@@ -38,6 +38,15 @@ func (o options) printAll(textWidth int) string {
 	return output
 }
 
+func (o options) getConfigFileTemplate() string {
+	output := ""
+	for i := 0; i < len(o.options); i++ {
+		output += o.options[i].printConfig() + newParagraph
+	}
+
+	return output
+}
+
 type option struct {
 	name        string
 	key         string
@@ -54,6 +63,12 @@ func (o option) print(textWidth int) string {
 	output += "Current value: " + invert(o.value)
 
 	return output
+}
+
+func (o option) printConfig() string {
+	description, _ := text.WrapWithPad(o.description, 80, "# ")
+
+	return description + newLine + "#" + o.key + "=" + o.value
 }
 
 func getSettingsText() string {
