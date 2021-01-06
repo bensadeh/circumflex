@@ -30,7 +30,7 @@ func (o *options) addOption(name string, key string, value string, description s
 }
 
 func (o options) printAll(textWidth int) string {
-	output := "Options length: " + strconv.Itoa(len(o.options)) + newParagraph
+	output := ""
 	for i := 0; i < len(o.options); i++ {
 		output += o.options[i].print(textWidth) + newParagraph
 	}
@@ -60,22 +60,21 @@ func getSettingsText() string {
 	message := ""
 	pathToConfigDirectory := file.PathToConfigDirectory()
 	pathToConfigFile := file.PathToConfigFile()
-	settingsScreenText := "Configure circumflex by editing [::b]config.env[::-] or by exporting environment variables. "
 
 	if file.Exists(pathToConfigFile) {
-		message += "Config file found at " + pathToConfigFile
+		message += "Using config file at " + pathToConfigFile
 	} else {
-		message += "Press T to create a [::b]config.env[::-] in " + pathToConfigDirectory
+		message += "Configure circumflex by editing [::b]config.env[::-] or by exporting environment variables. Press T to create a [::b]config.env[::-] in " + pathToConfigDirectory
 	}
 
-	commentWidth := strconv.Itoa(viper.GetInt(settings.CommentWidthKey))
-	indentSize := strconv.Itoa(viper.GetInt(settings.IndentSizeKey))
+	currentCommentWidth := strconv.Itoa(viper.GetInt(settings.CommentWidthKey))
+	currentIndentSize := strconv.Itoa(viper.GetInt(settings.IndentSizeKey))
 
 	options := new(options)
-	options.addOption(settings.CommentWidthName, settings.CommentWidthKey, commentWidth, settings.CommentWidthDescription)
-	options.addOption(settings.IndentSizeName, settings.IndentSizeKey, indentSize, settings.IndentSizeDescription)
+	options.addOption(settings.CommentWidthName, settings.CommentWidthKey, currentCommentWidth, settings.CommentWidthDescription)
+	options.addOption(settings.IndentSizeName, settings.IndentSizeKey, currentIndentSize, settings.IndentSizeDescription)
 
-	return settingsScreenText + newParagraph + message + newParagraph + options.printAll(70)
+	return message + newParagraph + options.printAll(70)
 }
 
 func NewDialogueBox() *cview.Modal {
