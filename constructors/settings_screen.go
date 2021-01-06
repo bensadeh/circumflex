@@ -77,10 +77,10 @@ func getSettingsText() string {
 	pathToConfigFile := file.PathToConfigFile()
 
 	if file.Exists(pathToConfigFile) {
-		message += "Using config file at " + pathToConfigFile
+		message += dim("Using config file at " + pathToConfigFile)
 	} else {
-		message += "Configure circumflex by editing [::b]config.env[::-] or by exporting environment variables. " +
-			"Press T to create a [::b]config.env[::-] in " + pathToConfigDirectory
+		message += dim("Configure circumflex by editing config.env or by exporting environment variables. " + newLine +
+			"Press T to create config.env in " + pathToConfigDirectory)
 	}
 
 	currentCommentWidth := strconv.Itoa(viper.GetInt(settings.CommentWidthKey))
@@ -90,14 +90,14 @@ func getSettingsText() string {
 	options.addOption(settings.CommentWidthName, settings.CommentWidthKey, currentCommentWidth, settings.CommentWidthDescription)
 	options.addOption(settings.IndentSizeName, settings.IndentSizeKey, currentIndentSize, settings.IndentSizeDescription)
 
-	return message + newParagraph + options.printAll(70)
+	return message + newParagraph + options.printAll(viper.GetInt(settings.CommentWidthKey))
 }
 
 func NewDialogueBox() *cview.Modal {
 
 	modal := cview.NewModal()
 	modal.SetText("Would you like to create a config file at " + file.PathToConfigFile() +
-		"? \n  \n   \n Press Y to confirm or N to cancel.")
+		"? \n Press Y to confirm or N to cancel.")
 	modal.SetBackgroundColor(tcell.ColorDefault)
 	modal.SetTextColor(tcell.ColorDefault)
 
