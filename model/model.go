@@ -4,9 +4,9 @@ import (
 	"clx/browser"
 	"clx/cli"
 	cp "clx/comment-parser"
-	"clx/constants/help"
 	"clx/constants/messages"
-	"clx/constants/panels"
+	constructor "clx/constructors"
+	"clx/file"
 	"clx/http"
 	"clx/screen"
 	"clx/structs"
@@ -288,8 +288,25 @@ func PreviousPage(list *cview.List, submissions *structs.Submissions, main *stru
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
 }
 
-func ShowModal(main *structs.MainView) {
-	main.Panels.ShowPanel(panels.ModalPanel)
+func ShowCreateConfigConfirmationMessage(main *structs.MainView, appState *structs.ApplicationState) {
+	if file.ConfigFileExists() {
+		return
+	}
+	view.SetPermanentStatusBar(main, "Config file will be created, Press Y to Confirm")
+	appState.IsOnConfigCreationConfirmationMessage = true
+}
+
+func CancelCreateConfigConfirmationMessage(appState *structs.ApplicationState, main *structs.MainView) {
+	view.SetPermanentStatusBar(main, "")
+	appState.IsOnConfigCreationConfirmationMessage = false
+}
+
+func CreateConfig(appState *structs.ApplicationState, main *structs.MainView) {
+	file.WriteToConfigFile(constructor.GetConfigFileContents())
+
+	view.UpdateSettingsScreen(main)
+	view.SetPermanentStatusBar(main, "Config created at [::b]" + file.PathToConfigFile())
+	appState.IsOnConfigCreationConfirmationMessage = false
 }
 
 func SelectNextElement(list *cview.List) {
@@ -320,12 +337,7 @@ func EnterInfoScreen(main *structs.MainView, appState *structs.ApplicationState)
 }
 
 func showInfoCategory(main *structs.MainView, appState *structs.ApplicationState) {
-	if appState.HelpScreenCategory == help.Settings {
-		view.SetPageCounter(main, 0, 1, "#82aaff")
-	} else {
-		view.HidePageCounter(main)
-	}
-
+	view.HidePageCounter(main)
 	view.SetHelpScreenHeader(main, appState.ScreenWidth, appState.HelpScreenCategory)
 	view.HideLeftMarginRanks(main)
 	view.SetHelpScreenPanel(main, appState.HelpScreenCategory)

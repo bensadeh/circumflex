@@ -71,7 +71,7 @@ func (o option) printConfig() string {
 	return description + newLine + "#" + o.key + "=" + o.value
 }
 
-func getSettingsText() string {
+func GetSettingsText() string {
 	message := ""
 	pathToConfigDirectory := file.PathToConfigDirectory()
 	pathToConfigFile := file.PathToConfigFile()
@@ -79,18 +79,27 @@ func getSettingsText() string {
 	if file.Exists(pathToConfigFile) {
 		message += dim("Using config file at " + pathToConfigFile)
 	} else {
-		message += dim("Configure circumflex by editing config.env or by exporting environment variables. " + newLine +
-			"Press T to create config.env in " + pathToConfigDirectory)
+		message += dim("Press T to create config.env in " + pathToConfigDirectory)
 	}
 
+	options := initializeOptions()
+
+	return message + newParagraph + options.printAll(viper.GetInt(settings.CommentWidthKey))
+}
+
+func GetConfigFileContents() string {
+	options := initializeOptions()
+	return options.getConfigFileTemplate()
+}
+
+func initializeOptions() *options {
 	currentCommentWidth := strconv.Itoa(viper.GetInt(settings.CommentWidthKey))
 	currentIndentSize := strconv.Itoa(viper.GetInt(settings.IndentSizeKey))
 
 	options := new(options)
 	options.addOption(settings.CommentWidthName, settings.CommentWidthKey, currentCommentWidth, settings.CommentWidthDescription)
 	options.addOption(settings.IndentSizeName, settings.IndentSizeKey, currentIndentSize, settings.IndentSizeDescription)
-
-	return message + newParagraph + options.printAll(viper.GetInt(settings.CommentWidthKey))
+	return options
 }
 
 func NewDialogueBox() *cview.Modal {

@@ -38,10 +38,6 @@ func NewScreenController() *structs.ScreenController {
 
 	sc.Articles = NewList()
 
-	sc.SettingsText = newTextViewPrimitive(getSettingsText())
-	sc.SettingsText.SetWordWrap(true)
-	sc.SettingsModal = NewDialogueBox()
-
 	sc.MainView = NewMainView()
 	sc.MainView.Panels.AddPanel(panels.SubmissionsPanel, sc.Articles, true, true)
 
@@ -50,11 +46,10 @@ func NewScreenController() *structs.ScreenController {
 	settingsGrid.SetRows(0)
 	settingsGrid.SetColumns(0, margins.LeftMargin)
 	settingsGrid.SetBackgroundColor(tcell.ColorDefault)
-	settingsGrid.AddItem(sc.SettingsText, 0, 0, 1, 1, 0, 0, false)
+	settingsGrid.AddItem(sc.MainView.Settings, 0, 0, 1, 1, 0, 0, false)
 	settingsGrid.AddItem(newTextViewPrimitive(""), 0, 1, 1, 1, 0, 0, false)
 
 	sc.MainView.Panels.AddPanel(panels.SettingsPanel, settingsGrid, true, false)
-	sc.MainView.Panels.AddPanel(panels.ModalPanel, sc.SettingsModal, true, false)
 
 	return sc
 }
@@ -84,6 +79,8 @@ func NewMainView() *structs.MainView {
 	main.StatusBar = newTextViewPrimitive("")
 	main.StatusBar.SetTextAlign(cview.AlignCenter)
 	main.StatusBar.SetPadding(0, 0, -4, 0)
+	main.Settings = newTextViewPrimitive(GetSettingsText())
+	main.Settings.SetWordWrap(true)
 
 	main.Grid.SetBorder(false)
 	main.Grid.SetRows(2, 0, 1)

@@ -4,6 +4,7 @@ import (
 	"clx/constants/help"
 	"clx/constants/panels"
 	"clx/constants/submissions"
+	constructor "clx/constructors"
 	"clx/pages"
 	"clx/structs"
 	text "github.com/MichaelMure/go-term-text"
@@ -88,6 +89,10 @@ func SetHelpScreenPanel(m *structs.MainView, category int) {
 
 func HideStatusBar(m *structs.MainView) {
 	SetPermanentStatusBar(m, "")
+}
+
+func UpdateSettingsScreen(m *structs.MainView) {
+	m.Settings.SetText(constructor.GetSettingsText())
 }
 
 func SetPermanentStatusBar(m *structs.MainView, text string) {

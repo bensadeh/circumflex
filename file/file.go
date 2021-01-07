@@ -26,6 +26,10 @@ func Exists(pathToFile string) bool {
 	}
 }
 
+func ConfigFileExists() bool {
+	return Exists(PathToConfigFile())
+}
+
 func WriteToConfigFile(content string) {
 	if Exists(PathToConfigFile()) {
 		return

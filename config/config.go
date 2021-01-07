@@ -4,33 +4,23 @@ import (
 	"clx/constants/settings"
 	"clx/file"
 	"clx/structs"
-	"fmt"
 	"github.com/spf13/viper"
 )
 
 func GetConfig() *structs.Config {
-	// Set the file name of the configurations file
 	viper.SetConfigName(settings.ConfigFileNameAbbreviated)
-
-	cp := file.PathToConfigDirectory()
-	viper.AddConfigPath(cp)
-
-	//Check for environment variables
+	viper.AddConfigPath(file.PathToConfigDirectory())
 	viper.AutomaticEnv()
-
 	viper.SetConfigType("env")
 
 	configuration := new(structs.Config)
-
-	if err := viper.ReadInConfig(); err != nil {
-		fmt.Printf("Error reading config file, %s", err)
-	}
+	_ = viper.ReadInConfig()
 
 	setDefaultValues()
 
 	err := viper.Unmarshal(&configuration)
 	if err != nil {
-		fmt.Printf("Unable to decode into struct, %v", err)
+		panic(err)
 	}
 
 	return configuration

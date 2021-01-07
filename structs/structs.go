@@ -7,8 +7,6 @@ import (
 type ScreenController struct {
 	Application      *cview.Application
 	Articles         *cview.List
-	SettingsText     *cview.TextView
-	SettingsModal    *cview.Modal
 	MainView         *MainView
 	Submissions      []*Submissions
 	ApplicationState *ApplicationState
@@ -36,16 +34,17 @@ type Submissions struct {
 }
 
 type ApplicationState struct {
-	SubmissionsToShow         int
-	SubmissionsCategory       int
-	SettingsCategory          int
-	HelpScreenCategory        int
-	ScreenHeight              int
-	ScreenWidth               int
-	CurrentPage               int
-	IsOffline                 bool
-	IsReturningFromSuspension bool
-	IsOnHelpScreen            bool
+	SubmissionsToShow                     int
+	SubmissionsCategory                   int
+	SettingsCategory                      int
+	HelpScreenCategory                    int
+	ScreenHeight                          int
+	ScreenWidth                           int
+	CurrentPage                           int
+	IsOffline                             bool
+	IsReturningFromSuspension             bool
+	IsOnHelpScreen                        bool
+	IsOnConfigCreationConfirmationMessage bool
 }
 
 type MainView struct {
@@ -55,6 +54,7 @@ type MainView struct {
 	Panels      *cview.Panels
 	StatusBar   *cview.TextView
 	PageCounter *cview.TextView
+	Settings    *cview.TextView
 }
 
 type Config struct {
