@@ -126,7 +126,7 @@ func ReadSubmissionComments(
 				jComments := new(cp.Comments)
 				_ = json.Unmarshal(JSON, jComments)
 
-				commentTree := cp.PrintCommentTree(*jComments, config.IndentSize, config.CommentWidth)
+				commentTree := cp.PrintCommentTree(*jComments, config.IndentSize, config.CommentWidth, config.PreserveRightMargin)
 
 				cli.Less(commentTree)
 			})

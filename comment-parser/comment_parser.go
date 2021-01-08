@@ -1,12 +1,12 @@
 package comment_parser
 
 import (
+	"clx/screen"
 	"regexp"
 	"strconv"
 	"strings"
 
 	text "github.com/MichaelMure/go-term-text"
-	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
 
 // Comments represent the JSON structure as
@@ -25,12 +25,12 @@ type Comments struct {
 	Replies       []*Comments `json:"comments"`
 }
 
-func PrintCommentTree(comments Comments, indentSize int, commentWith int) string {
+func PrintCommentTree(comments Comments, indentSize int, commentWith int, preserveRightMargin bool) string {
 	header := getHeader(comments, commentWith)
 	originalPoster := comments.Author
 	commentTree := ""
 	for _, reply := range comments.Replies {
-		commentTree += prettyPrintComments(*reply, indentSize, commentWith, originalPoster, "")
+		commentTree += prettyPrintComments(*reply, indentSize, commentWith, originalPoster, "", preserveRightMargin)
 	}
 	return header + commentTree
 }
@@ -96,9 +96,9 @@ func parseRootComment(c string, commentWidth int) string {
 	return NewLine + wrappedComment + NewLine
 }
 
-func prettyPrintComments(c Comments, indentSize int, commentWidth int, originalPoster string, parentPoster string) string {
+func prettyPrintComments(c Comments, indentSize int, commentWidth int, originalPoster string, parentPoster string, preserveRightMargin bool) string {
 	comment, URLs := parseComment(c.Comment)
-	adjustedCommentWidth := getAdjustedCommentWidth(c.Level, indentSize, commentWidth)
+	adjustedCommentWidth := getCommentWidthForLevel(c.Level, indentSize, commentWidth, preserveRightMargin)
 
 	indentBlock := getIndentBlock(c.Level, indentSize)
 	paddingWithBlock := text.WrapPad(indentBlock)
@@ -116,7 +116,7 @@ func prettyPrintComments(c Comments, indentSize int, commentWidth int, originalP
 	}
 
 	for _, s := range c.Replies {
-		fullComment += prettyPrintComments(*s, indentSize, commentWidth, originalPoster, parentPoster)
+		fullComment += prettyPrintComments(*s, indentSize, commentWidth, originalPoster, parentPoster, preserveRightMargin)
 	}
 	return fullComment
 }
@@ -195,21 +195,21 @@ func truncateURL(URL string) string {
 
 // Adjusted comment width shortens the commentWidth if the available screen size
 // is smaller than the size of the commentWidth
-func getAdjustedCommentWidth(level int, indentSize int, commentWidth int) int {
+func getCommentWidthForLevel(level int, indentSize int, commentWidth int, preserveRightMargin bool) int {
 	currentIndentSize := indentSize * level
-	usableScreenSize := getScreenWidth() - currentIndentSize
+	usableScreenSize := screen.GetTerminalWidth() - currentIndentSize
 
 	if usableScreenSize < commentWidth {
 		return usableScreenSize + currentIndentSize
 	}
 
-	return commentWidth + indentSize*level
+	if preserveRightMargin {
+		return commentWidth
+	} else {
+		return commentWidth + indentSize*level
+	}
 }
 
-func getScreenWidth() int {
-	x, _ := terminal.Width()
-	return int(x)
-}
 func getAuthorLabel(author, originalPoster, parentPoster string) string {
 	switch author {
 	case "":

@@ -2,8 +2,8 @@ package config
 
 import (
 	"clx/constants/settings"
-	"clx/file"
 	"clx/core"
+	"clx/file"
 	"github.com/spf13/viper"
 )
 
@@ -29,4 +29,5 @@ func GetConfig() *core.Config {
 func setDefaultValues() {
 	viper.SetDefault(settings.CommentWidthKey, settings.CommentWidthDefault)
 	viper.SetDefault(settings.IndentSizeKey, settings.IndentSizeDefault)
+	viper.SetDefault(settings.PreserveRightMarginKey, settings.PreserveRightMarginDefault)
 }

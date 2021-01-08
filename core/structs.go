@@ -58,6 +58,7 @@ type MainView struct {
 }
 
 type Config struct {
-	CommentWidth int `mapstructure:"CLX_COMMENT_WIDTH"`
-	IndentSize   int `mapstructure:"CLX_INDENT_SIZE"`
+	CommentWidth        int  `mapstructure:"CLX_COMMENT_WIDTH"`
+	IndentSize          int  `mapstructure:"CLX_INDENT_SIZE"`
+	PreserveRightMargin bool `mapstructure:"CLX_PRESERVE_RIGHT_MARGIN"`
 }

@@ -93,10 +93,12 @@ func GetConfigFileContents() string {
 func initializeOptions() *options {
 	currentCommentWidth := strconv.Itoa(viper.GetInt(settings.CommentWidthKey))
 	currentIndentSize := strconv.Itoa(viper.GetInt(settings.IndentSizeKey))
+	currentPreserveRightMargin := strconv.FormatBool(viper.GetBool(settings.PreserveRightMarginKey))
 
 	options := new(options)
 	options.addOption(settings.CommentWidthName, settings.CommentWidthKey, currentCommentWidth, settings.CommentWidthDescription)
 	options.addOption(settings.IndentSizeName, settings.IndentSizeKey, currentIndentSize, settings.IndentSizeDescription)
+	options.addOption(settings.PreserveRightMarginName, settings.PreserveRightMarginKey, currentPreserveRightMargin, settings.PreserveRightMarginDescription)
 	return options
 }
 
