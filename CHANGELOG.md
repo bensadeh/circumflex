@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.x
+_WIP_
+
+**New features:**
+- Added option to preserve right margin in comment section
+
+**Bugfixes:**
+- Fixed a bug where setting comment width to 0 did not use the whole screen
+
 ## 0.4
 _2021-01-08_
 

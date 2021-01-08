@@ -25,17 +25,21 @@ type Comments struct {
 	Replies       []*Comments `json:"comments"`
 }
 
-func PrintCommentTree(comments Comments, indentSize int, commentWith int, preserveRightMargin bool) string {
-	header := getHeader(comments, commentWith)
+func PrintCommentTree(comments Comments, indentSize int, commentWidth int, preserveRightMargin bool) string {
+	header := getHeader(comments, commentWidth)
 	originalPoster := comments.Author
 	commentTree := ""
 	for _, reply := range comments.Replies {
-		commentTree += prettyPrintComments(*reply, indentSize, commentWith, originalPoster, "", preserveRightMargin)
+		commentTree += prettyPrintComments(*reply, indentSize, commentWidth, originalPoster, "", preserveRightMargin)
 	}
 	return header + commentTree
 }
 
 func getHeader(c Comments, commentWidth int) string {
+	if commentWidth == 0 {
+		commentWidth = screen.GetTerminalWidth()
+	}
+
 	headline := getHeadline(c.Title, c.Domain, c.URL, c.ID, commentWidth)
 	infoLine := getInfoLine(c.Points, c.Author, c.Time, c.CommentsCount)
 	submissionComment := parseRootComment(c.Comment, commentWidth)
@@ -199,7 +203,7 @@ func getCommentWidthForLevel(level int, indentSize int, commentWidth int, preser
 	currentIndentSize := indentSize * level
 	usableScreenSize := screen.GetTerminalWidth() - currentIndentSize
 
-	if usableScreenSize < commentWidth {
+	if usableScreenSize < commentWidth || commentWidth == 0 {
 		return usableScreenSize + currentIndentSize
 	}
 

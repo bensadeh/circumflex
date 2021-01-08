@@ -1,8 +1,10 @@
 package constructor
 
 import (
+	"clx/constants/margins"
 	"clx/constants/settings"
 	"clx/file"
+	"clx/screen"
 	text "github.com/MichaelMure/go-term-text"
 	"github.com/spf13/viper"
 	"strconv"
@@ -73,6 +75,7 @@ func GetSettingsText() string {
 	message := ""
 	pathToConfigDirectory := file.PathToConfigDirectory()
 	pathToConfigFile := file.PathToConfigFile()
+	commentWidth := getCommentWidth()
 
 	if file.Exists(pathToConfigFile) {
 		message += dim("Using config file at " + pathToConfigFile)
@@ -82,7 +85,17 @@ func GetSettingsText() string {
 
 	options := initializeOptions()
 
-	return message + newParagraph + options.printAll(viper.GetInt(settings.CommentWidthKey))
+	return message + newParagraph + options.printAll(commentWidth)
+}
+
+func getCommentWidth() int {
+	commentWidthFromSettings := viper.GetInt(settings.CommentWidthKey)
+
+	if commentWidthFromSettings == 0 {
+		return screen.GetTerminalWidth() - margins.LeftMargin
+	} else {
+		return commentWidthFromSettings
+	}
 }
 
 func GetConfigFileContents() string {
