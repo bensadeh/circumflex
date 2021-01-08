@@ -63,11 +63,6 @@ can create one for you by pressing <kbd>t</kbd> on the settings screen. Alternat
 values found in `config.env` as environmental variables in your 
 [shell](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables).
 
-
-## Known issues
-The first keystroke is lost when moving from cview (submission menu) to viewing comments in `less`, see 
-[gdamore/tcell#194](https://github.com/gdamore/tcell/issues/194).
-
 ## Under the hood
 `circumflex` uses:
 * [tcell](https://github.com/gdamore/tcell) and [cview](https://gitlab.com/tslocum/cview) for the TUI
