@@ -58,7 +58,7 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 </p>
 
 ## Configuration
-Configure `circumflex` by editing `config.env` in `~/.config/circumflex`. If `config.env` doesn't exist, `circumflex`
+Customize `circumflex` by editing `config.env` in `~/.config/circumflex`. If `config.env` doesn't exist, `circumflex`
 can create one for you by pressing <kbd>t</kbd> on the settings screen. Alternatively, you can export the same keys and 
 values found in `config.env` as environmental variables in your 
 [shell](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables).
