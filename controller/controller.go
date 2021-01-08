@@ -55,6 +55,30 @@ func SetApplicationShortcuts(
 			model.ShowCreateConfigConfirmationMessage(main, appState)
 			return event
 		}
+		if isOnSettingsPage && (event.Rune() == 'j' || event.Key() == tcell.KeyDown) {
+			model.ScrollSettingsOneLineDown(main)
+			return event
+		}
+		if isOnSettingsPage && (event.Rune() == 'k' || event.Key() == tcell.KeyUp) {
+			model.ScrollSettingsOneLineUp(main)
+			return event
+		}
+		if isOnSettingsPage && event.Rune() == 'd' {
+			model.ScrollSettingsOneHalfPageDown(main)
+			return event
+		}
+		if isOnSettingsPage && event.Rune() == 'u' {
+			model.ScrollSettingsOneHalfPageUp(main)
+			return event
+		}
+		if isOnSettingsPage && event.Rune() == 'g' {
+			model.ScrollSettingsToBeginning(main)
+			return event
+		}
+		if isOnSettingsPage && event.Rune() == 'G' {
+			model.ScrollSettingsToEnd(main)
+			return event
+		}
 		if appState.IsOnHelpScreen && (event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab) {
 			model.ChangeHelpScreenCategory(event, appState, main)
 			return event

@@ -32,7 +32,7 @@ func SetAfterInitializationAndAfterResizeFunctions(
 			return
 		}
 		resetStates(appState, submissions)
-		initializeHeaderAndFooterAndLeftMarginView(appState, submissions, main)
+		initializeView(appState, submissions, main)
 		err := fetchAndAppendSubmissionEntries(submissions[appState.SubmissionsCategory], appState)
 		if err != nil {
 			setApplicationToErrorState(appState, main, list, app)
@@ -78,7 +78,7 @@ func resetSubmissionStates(submissions []*structs.Submissions) {
 	}
 }
 
-func initializeHeaderAndFooterAndLeftMarginView(
+func initializeView(
 	appState *structs.ApplicationState,
 	submissions []*structs.Submissions,
 	main *structs.MainView) {
@@ -292,8 +292,35 @@ func ShowCreateConfigConfirmationMessage(main *structs.MainView, appState *struc
 	if file.ConfigFileExists() {
 		return
 	}
-	view.SetPermanentStatusBar(main, "Config file will be created, Press Y to Confirm")
+	view.SetPermanentStatusBar(main,
+		"[::b]config.env[::-] will be created in [::r]~/.config/circumflex[::-], press Y to Confirm")
 	appState.IsOnConfigCreationConfirmationMessage = true
+}
+
+func ScrollSettingsOneLineUp(main *structs.MainView) {
+	view.ScrollSettingsOneLineUp(main)
+}
+
+func ScrollSettingsOneLineDown(main *structs.MainView) {
+	view.ScrollSettingsOneLineDown(main)
+}
+
+func ScrollSettingsOneHalfPageUp(main *structs.MainView) {
+	halfPage := screen.GetTerminalHeight() / 2
+	view.ScrollSettingsByAmount(main, -halfPage)
+}
+
+func ScrollSettingsOneHalfPageDown(main *structs.MainView) {
+	halfPage := screen.GetTerminalHeight() / 2
+	view.ScrollSettingsByAmount(main, halfPage)
+}
+
+func ScrollSettingsToBeginning(main *structs.MainView) {
+	view.ScrollSettingsToBeginning(main)
+}
+
+func ScrollSettingsToEnd(main *structs.MainView) {
+	view.ScrollSettingsToEnd(main)
 }
 
 func CancelCreateConfigConfirmationMessage(appState *structs.ApplicationState, main *structs.MainView) {

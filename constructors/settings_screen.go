@@ -4,9 +4,7 @@ import (
 	"clx/constants/settings"
 	"clx/file"
 	text "github.com/MichaelMure/go-term-text"
-	"github.com/gdamore/tcell/v2"
 	"github.com/spf13/viper"
-	"gitlab.com/tslocum/cview"
 	"strconv"
 )
 
@@ -60,7 +58,7 @@ func (o option) print(textWidth int) string {
 
 	output += underline(o.name) + " " + dim(o.key) + newLine
 	output += wrappedDescription + newParagraph
-	output += "Current value: " + invert(o.value)
+	output += "Current value: " + dim(o.value)
 
 	return output
 }
@@ -100,17 +98,6 @@ func initializeOptions() *options {
 	options.addOption(settings.CommentWidthName, settings.CommentWidthKey, currentCommentWidth, settings.CommentWidthDescription)
 	options.addOption(settings.IndentSizeName, settings.IndentSizeKey, currentIndentSize, settings.IndentSizeDescription)
 	return options
-}
-
-func NewDialogueBox() *cview.Modal {
-
-	modal := cview.NewModal()
-	modal.SetText("Would you like to create a config file at " + file.PathToConfigFile() +
-		"? \n Press Y to confirm or N to cancel.")
-	modal.SetBackgroundColor(tcell.ColorDefault)
-	modal.SetTextColor(tcell.ColorDefault)
-
-	return modal
 }
 
 func underline(text string) string {

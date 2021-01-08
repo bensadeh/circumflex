@@ -128,6 +128,29 @@ func HidePageCounter(m *structs.MainView) {
 	m.PageCounter.SetText("")
 }
 
+func ScrollSettingsOneLineUp(m *structs.MainView) {
+	row, col := m.Settings.GetScrollOffset()
+	m.Settings.ScrollTo(row-1, col)
+}
+
+func ScrollSettingsOneLineDown(m *structs.MainView) {
+	row, col := m.Settings.GetScrollOffset()
+	m.Settings.ScrollTo(row+1, col)
+}
+
+func ScrollSettingsByAmount(m *structs.MainView, amount int) {
+	row, col := m.Settings.GetScrollOffset()
+	m.Settings.ScrollTo(row+amount, col)
+}
+
+func ScrollSettingsToBeginning(m *structs.MainView) {
+	m.Settings.ScrollToBeginning()
+}
+
+func ScrollSettingsToEnd(m *structs.MainView) {
+	m.Settings.ScrollToEnd()
+}
+
 func SetPageCounter(m *structs.MainView, currentPage int, maxPages int, color string) {
 	pageCounter := pages.GetPageCounter(currentPage, maxPages, color)
 	m.PageCounter.SetText(pageCounter)
