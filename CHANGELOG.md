@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.4
-_WIP_
+_2021-01-08_
 
 **New features:**
 - Added functionality to customize `circumflex` by editing `config.env` or exporting environmental variables
