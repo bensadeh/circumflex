@@ -3,15 +3,22 @@
 ## 0.4
 _WIP_
 
+**New features:**
+- Added functionality to customize `circumflex` by editing `config.env` or exporting environmental variables
+
+**Cosmetic:**
+- Information page now has three screens: Information Home Screen, Keymaps and Settings 
+
 ## 0.3
 _2020-12-17_
 
-**Features:**
+**New features:**
 - Added a status bar to show contextual information  
 - `circumflex` now handles connection errors gracefully
 
 **Bugfixes:**
-- `circumflex` will no longer suspend the application when trying to open submission of the type 'Company X (YC W20) is hiring' 
+- `circumflex` will no longer suspend the application when trying to open submission of the type 'Company X (YC W20) is 
+  hiring' 
 
 **Backend:**
 - Use the 'level' field directly from the API instead of calculating it
@@ -66,7 +73,8 @@ _2020-11-22_
 
 **Backend:**
 - Large parts of the code have been refactored and placed into an MVC pattern
-- cheeaun's [unofficial Hacker News API](https://github.com/cheeaun/node-hnapi): Changed API endpoint to use Cloudflare CDN
+- cheeaun's [unofficial Hacker News API](https://github.com/cheeaun/node-hnapi): Changed API endpoint to use Cloudflare 
+  CDN
 
 ## 0.1 
 _2020-11-15_

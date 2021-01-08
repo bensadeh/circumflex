@@ -11,7 +11,8 @@
 [![Go Report Card](https://img.shields.io/github/go-mod/go-version/bensadeh/circumflex?color=ffe585&labelColor=292D3E)](https://github.com/bensadeh/circumflex/blob/master/go.mod)
 </div>
 
-`circumflex` is a text user interface (TUI) application for browsing Hacker&nbsp;News. Stay up to date on the latest stories and discussions without leaving your terminal.
+`circumflex` is a text-based user interface (TUI) application for browsing Hacker&nbsp;News. Stay up to date on the 
+latest stories and discussions right in your terminal.
 
 <p align="center">
   <img src="screenshots/mainview.png" width="700" alt="^"/>
@@ -28,7 +29,7 @@ brew install bensadeh/circumflex/circumflex
 clx
 ```
 
-Press <kbd>i</kbd> for a list over keybindings.
+Press <kbd>i</kbd> to show available keymaps and settings. 
 
 ## Overview
 ### Features and limitations
@@ -36,7 +37,7 @@ Press <kbd>i</kbd> for a list over keybindings.
 and show the comment section for each article. It also respects and adjusts to whatever color scheme you use.
 
 `circumflex` does not support any login related functionality. This includes up-/down-voting, flagging,
-submitting articles and posting comments.
+submitting articles and commenting.
 
 <p align="center">
   <img src="screenshots/comments.png" width="700" alt="^"/>
@@ -56,8 +57,16 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
   <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
 </p>
 
+## Configuration
+Configure `circumflex` by editing `config.env` in `~/.config/circumflex`. If `config.env` doesn't exist, `circumflex`
+can create one for you by pressing <kbd>t</kbd> on the settings screen. Alternatively, you can export the same keys and 
+values found in `config.env` as environmental variables in your 
+[shell](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables).
+
+
 ## Known issues
-The first keystroke is lost when moving from cview (submission menu) to viewing comments in `less`, see [gdamore/tcell#194](https://github.com/gdamore/tcell/issues/194).
+The first keystroke is lost when moving from cview (submission menu) to viewing comments in `less`, see 
+[gdamore/tcell#194](https://github.com/gdamore/tcell/issues/194).
 
 ## Under the hood
 `circumflex` uses:
