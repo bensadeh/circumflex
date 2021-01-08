@@ -83,8 +83,12 @@ func SetApplicationShortcuts(
 			model.ChangeHelpScreenCategory(event, appState, main)
 			return event
 		}
-		if appState.IsOnHelpScreen && (event.Rune() == 'i' || event.Rune() == 'q') {
+		if appState.IsOnHelpScreen && (event.Rune() == 'i') {
 			model.ExitHelpScreen(main, appState, currentState)
+			return event
+		}
+		if appState.IsOnHelpScreen && (event.Rune() == 'q') {
+			model.Quit(app)
 			return event
 		}
 		if appState.IsOnHelpScreen {
