@@ -3,7 +3,7 @@ package fetcher
 import (
 	"clx/constants/submissions"
 	"clx/http"
-	"clx/structs"
+	"clx/core"
 	"encoding/json"
 	"strconv"
 )
@@ -13,7 +13,7 @@ const (
 	page    = "?page="
 )
 
-func FetchSubmissionEntries(page int, category int) ([]*structs.Submission, error) {
+func FetchSubmissionEntries(page int, category int) ([]*core.Submission, error) {
 	url := getUrl(category)
 	p := strconv.Itoa(page)
 	JSON, err := http.Get(url + p)
@@ -36,8 +36,8 @@ func getUrl(category int) string {
 	}
 }
 
-func unmarshalJSON(stream []byte) []*structs.Submission {
-	var subs []*structs.Submission
+func unmarshalJSON(stream []byte) []*core.Submission {
+	var subs []*core.Submission
 	_ = json.Unmarshal(stream, &subs)
 	return subs
 }

@@ -9,7 +9,7 @@ import (
 	"clx/file"
 	"clx/http"
 	"clx/screen"
-	"clx/structs"
+	"clx/core"
 	"clx/submission/fetcher"
 	"clx/submission/formatter"
 	"clx/view"
@@ -23,9 +23,9 @@ import (
 func SetAfterInitializationAndAfterResizeFunctions(
 	app *cview.Application,
 	list *cview.List,
-	submissions []*structs.Submissions,
-	main *structs.MainView,
-	appState *structs.ApplicationState) {
+	submissions []*core.Submissions,
+	main *core.MainView,
+	appState *core.ApplicationState) {
 	app.SetAfterResizeFunc(func(width int, height int) {
 		if appState.IsReturningFromSuspension {
 			appState.IsReturningFromSuspension = false
@@ -44,8 +44,8 @@ func SetAfterInitializationAndAfterResizeFunctions(
 }
 
 func setApplicationToErrorState(
-	appState *structs.ApplicationState,
-	main *structs.MainView,
+	appState *core.ApplicationState,
+	main *core.MainView,
 	list *cview.List,
 	app *cview.Application) {
 
@@ -55,19 +55,19 @@ func setApplicationToErrorState(
 	app.Draw()
 }
 
-func resetStates(appState *structs.ApplicationState, submissions []*structs.Submissions) {
+func resetStates(appState *core.ApplicationState, submissions []*core.Submissions) {
 	resetApplicationState(appState)
 	resetSubmissionStates(submissions)
 }
 
-func resetApplicationState(appState *structs.ApplicationState) {
+func resetApplicationState(appState *core.ApplicationState) {
 	appState.CurrentPage = 0
 	appState.ScreenWidth = screen.GetTerminalWidth()
 	appState.ScreenHeight = screen.GetTerminalHeight()
 	appState.SubmissionsToShow = screen.GetSubmissionsToShow(appState.ScreenHeight, 30)
 }
 
-func resetSubmissionStates(submissions []*structs.Submissions) {
+func resetSubmissionStates(submissions []*core.Submissions) {
 	numberOfCategories := 3
 
 	for i := 0; i < numberOfCategories; i++ {
@@ -79,9 +79,9 @@ func resetSubmissionStates(submissions []*structs.Submissions) {
 }
 
 func initializeView(
-	appState *structs.ApplicationState,
-	submissions []*structs.Submissions,
-	main *structs.MainView) {
+	appState *core.ApplicationState,
+	submissions []*core.Submissions,
+	main *core.MainView) {
 	view.SetPanelToSubmissions(main)
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.SubmissionsCategory)
 	view.SetLeftMarginRanks(main, 0, appState.SubmissionsToShow)
@@ -89,10 +89,10 @@ func initializeView(
 }
 
 func showPageAfterResize(
-	appState *structs.ApplicationState,
+	appState *core.ApplicationState,
 	list *cview.List,
-	submissions []*structs.Submissions,
-	main *structs.MainView) {
+	submissions []*core.Submissions,
+	main *core.MainView) {
 	submissionEntries := submissions[appState.SubmissionsCategory].Entries
 
 	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.SubmissionsToShow)
@@ -105,9 +105,9 @@ func showPageAfterResize(
 func ReadSubmissionComments(
 	app *cview.Application,
 	list *cview.List,
-	submissions []*structs.Submission,
-	appState *structs.ApplicationState,
-	config *structs.Config) {
+	submissions []*core.Submission,
+	appState *core.ApplicationState,
+	config *core.Config) {
 	i := list.GetCurrentItemIndex()
 
 	for index := range submissions {
@@ -136,14 +136,14 @@ func ReadSubmissionComments(
 	}
 }
 
-func OpenCommentsInBrowser(list *cview.List, appState *structs.ApplicationState, submissions []*structs.Submission) {
+func OpenCommentsInBrowser(list *cview.List, appState *core.ApplicationState, submissions []*core.Submission) {
 	item := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
 	id := submissions[item].ID
 	url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
 	browser.Open(url)
 }
 
-func OpenLinkInBrowser(list *cview.List, appState *structs.ApplicationState, submissions []*structs.Submission) {
+func OpenLinkInBrowser(list *cview.List, appState *core.ApplicationState, submissions []*core.Submission) {
 	item := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
 	url := submissions[item].URL
 	browser.Open(url)
@@ -152,9 +152,9 @@ func OpenLinkInBrowser(list *cview.List, appState *structs.ApplicationState, sub
 func NextPage(
 	app *cview.Application,
 	list *cview.List,
-	submissions *structs.Submissions,
-	main *structs.MainView,
-	appState *structs.ApplicationState) {
+	submissions *core.Submissions,
+	main *core.MainView,
+	appState *core.ApplicationState) {
 
 	nextPage := appState.CurrentPage + 1
 
@@ -181,21 +181,21 @@ func NextPage(
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
 }
 
-func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []*structs.Submission) bool {
+func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []*core.Submission) bool {
 	largestItemToDisplay := (page * visibleStories) + visibleStories
 	downloadedSubmissions := len(submissions)
 
 	return downloadedSubmissions > largestItemToDisplay
 }
 
-func fetchAndAppendSubmissionEntries(submissions *structs.Submissions, appState *structs.ApplicationState) error {
+func fetchAndAppendSubmissionEntries(submissions *core.Submissions, appState *core.ApplicationState) error {
 	submissions.PageToFetchFromAPI++
 	submissionEntries, err := fetcher.FetchSubmissionEntries(submissions.PageToFetchFromAPI, appState.SubmissionsCategory)
 	submissions.Entries = append(submissions.Entries, submissionEntries...)
 	return err
 }
 
-func SetListItemsToCurrentPage(list *cview.List, submissions []*structs.Submission, currentPage int, viewableStories int) {
+func SetListItemsToCurrentPage(list *cview.List, submissions []*core.Submission, currentPage int, viewableStories int) {
 	list.Clear()
 	start := currentPage * viewableStories
 	end := start + viewableStories
@@ -216,9 +216,9 @@ func ChangeCategory(
 	app *cview.Application,
 	event *tcell.EventKey,
 	list *cview.List,
-	appState *structs.ApplicationState,
-	submissions []*structs.Submissions,
-	main *structs.MainView) {
+	appState *core.ApplicationState,
+	submissions []*core.Submissions,
+	main *core.MainView) {
 	currentItem := list.GetCurrentItemIndex()
 	if event.Key() == tcell.KeyBacktab {
 		appState.SubmissionsCategory = getPreviousCategory(appState.SubmissionsCategory, 4)
@@ -261,7 +261,7 @@ func getPreviousCategory(currentCategory int, numberOfCategories int) int {
 	}
 }
 
-func ChangeHelpScreenCategory(event *tcell.EventKey, appState *structs.ApplicationState, main *structs.MainView) {
+func ChangeHelpScreenCategory(event *tcell.EventKey, appState *core.ApplicationState, main *core.MainView) {
 	if event.Key() == tcell.KeyBacktab {
 		appState.HelpScreenCategory = getPreviousCategory(appState.HelpScreenCategory, 3)
 	} else {
@@ -271,7 +271,7 @@ func ChangeHelpScreenCategory(event *tcell.EventKey, appState *structs.Applicati
 	showInfoCategory(main, appState)
 }
 
-func PreviousPage(list *cview.List, submissions *structs.Submissions, main *structs.MainView, appState *structs.ApplicationState) {
+func PreviousPage(list *cview.List, submissions *core.Submissions, main *core.MainView, appState *core.ApplicationState) {
 	previousPage := appState.CurrentPage - 1
 	if previousPage < 0 {
 		return
@@ -288,7 +288,7 @@ func PreviousPage(list *cview.List, submissions *structs.Submissions, main *stru
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
 }
 
-func ShowCreateConfigConfirmationMessage(main *structs.MainView, appState *structs.ApplicationState) {
+func ShowCreateConfigConfirmationMessage(main *core.MainView, appState *core.ApplicationState) {
 	if file.ConfigFileExists() {
 		return
 	}
@@ -297,38 +297,38 @@ func ShowCreateConfigConfirmationMessage(main *structs.MainView, appState *struc
 	appState.IsOnConfigCreationConfirmationMessage = true
 }
 
-func ScrollSettingsOneLineUp(main *structs.MainView) {
+func ScrollSettingsOneLineUp(main *core.MainView) {
 	view.ScrollSettingsOneLineUp(main)
 }
 
-func ScrollSettingsOneLineDown(main *structs.MainView) {
+func ScrollSettingsOneLineDown(main *core.MainView) {
 	view.ScrollSettingsOneLineDown(main)
 }
 
-func ScrollSettingsOneHalfPageUp(main *structs.MainView) {
+func ScrollSettingsOneHalfPageUp(main *core.MainView) {
 	halfPage := screen.GetTerminalHeight() / 2
 	view.ScrollSettingsByAmount(main, -halfPage)
 }
 
-func ScrollSettingsOneHalfPageDown(main *structs.MainView) {
+func ScrollSettingsOneHalfPageDown(main *core.MainView) {
 	halfPage := screen.GetTerminalHeight() / 2
 	view.ScrollSettingsByAmount(main, halfPage)
 }
 
-func ScrollSettingsToBeginning(main *structs.MainView) {
+func ScrollSettingsToBeginning(main *core.MainView) {
 	view.ScrollSettingsToBeginning(main)
 }
 
-func ScrollSettingsToEnd(main *structs.MainView) {
+func ScrollSettingsToEnd(main *core.MainView) {
 	view.ScrollSettingsToEnd(main)
 }
 
-func CancelCreateConfigConfirmationMessage(appState *structs.ApplicationState, main *structs.MainView) {
+func CancelCreateConfigConfirmationMessage(appState *core.ApplicationState, main *core.MainView) {
 	view.SetPermanentStatusBar(main, "")
 	appState.IsOnConfigCreationConfirmationMessage = false
 }
 
-func CreateConfig(appState *structs.ApplicationState, main *structs.MainView) {
+func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
 	file.WriteToConfigFile(constructor.GetConfigFileContents())
 
 	view.UpdateSettingsScreen(main)
@@ -357,20 +357,20 @@ func SelectPreviousElement(list *cview.List) {
 	}
 }
 
-func EnterInfoScreen(main *structs.MainView, appState *structs.ApplicationState) {
+func EnterInfoScreen(main *core.MainView, appState *core.ApplicationState) {
 	appState.IsOnHelpScreen = true
 
 	showInfoCategory(main, appState)
 }
 
-func showInfoCategory(main *structs.MainView, appState *structs.ApplicationState) {
+func showInfoCategory(main *core.MainView, appState *core.ApplicationState) {
 	view.HidePageCounter(main)
 	view.SetHelpScreenHeader(main, appState.ScreenWidth, appState.HelpScreenCategory)
 	view.HideLeftMarginRanks(main)
 	view.SetHelpScreenPanel(main, appState.HelpScreenCategory)
 }
 
-func ExitHelpScreen(main *structs.MainView, appState *structs.ApplicationState, submissions *structs.Submissions) {
+func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, submissions *core.Submissions) {
 	appState.IsOnHelpScreen = false
 
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.SubmissionsCategory)
@@ -406,9 +406,9 @@ func Quit(app *cview.Application) {
 
 func Refresh(app *cview.Application,
 	list *cview.List,
-	main *structs.MainView,
-	submissions []*structs.Submissions,
-	appState *structs.ApplicationState) {
+	main *core.MainView,
+	submissions []*core.Submissions,
+	appState *core.ApplicationState) {
 	afterResizeFunc := app.GetAfterResizeFunc()
 	afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
 

@@ -5,7 +5,7 @@ import (
 	"clx/constants/panels"
 	"clx/constants/submissions"
 	"clx/screen"
-	"clx/structs"
+	"clx/core"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 )
@@ -14,17 +14,17 @@ const (
 	maximumStoriesToDisplay = 30
 )
 
-func NewScreenController() *structs.ScreenController {
-	sc := new(structs.ScreenController)
+func NewScreenController() *core.ScreenController {
+	sc := new(core.ScreenController)
 	sc.Application = cview.NewApplication()
 
-	sc.Submissions = []*structs.Submissions{}
-	sc.Submissions = append(sc.Submissions, new(structs.Submissions))
-	sc.Submissions = append(sc.Submissions, new(structs.Submissions))
-	sc.Submissions = append(sc.Submissions, new(structs.Submissions))
-	sc.Submissions = append(sc.Submissions, new(structs.Submissions))
+	sc.Submissions = []*core.Submissions{}
+	sc.Submissions = append(sc.Submissions, new(core.Submissions))
+	sc.Submissions = append(sc.Submissions, new(core.Submissions))
+	sc.Submissions = append(sc.Submissions, new(core.Submissions))
+	sc.Submissions = append(sc.Submissions, new(core.Submissions))
 
-	sc.ApplicationState = new(structs.ApplicationState)
+	sc.ApplicationState = new(core.ApplicationState)
 	sc.ApplicationState.ScreenWidth = screen.GetTerminalWidth()
 	sc.ApplicationState.ScreenHeight = screen.GetTerminalHeight()
 	sc.ApplicationState.SubmissionsToShow = screen.GetSubmissionsToShow(
@@ -68,8 +68,8 @@ func NewList() *cview.List {
 	return list
 }
 
-func NewMainView() *structs.MainView {
-	main := new(structs.MainView)
+func NewMainView() *core.MainView {
+	main := new(core.MainView)
 	main.Panels = cview.NewPanels()
 	main.Grid = cview.NewGrid()
 	main.LeftMargin = newTextViewPrimitive("")

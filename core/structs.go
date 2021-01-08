@@ -1,4 +1,4 @@
-package structs
+package core
 
 import (
 	"gitlab.com/tslocum/cview"

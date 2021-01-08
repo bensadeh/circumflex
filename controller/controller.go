@@ -3,7 +3,7 @@ package controller
 import (
 	"clx/constants/help"
 	"clx/model"
-	"clx/structs"
+	"clx/core"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 	"unicode"
@@ -12,19 +12,19 @@ import (
 func SetAfterInitializationAndAfterResizeFunctions(
 	app *cview.Application,
 	list *cview.List,
-	submissions []*structs.Submissions,
-	main *structs.MainView,
-	appState *structs.ApplicationState) {
+	submissions []*core.Submissions,
+	main *core.MainView,
+	appState *core.ApplicationState) {
 	model.SetAfterInitializationAndAfterResizeFunctions(app, list, submissions, main, appState)
 }
 
 func SetApplicationShortcuts(
 	app *cview.Application,
 	list *cview.List,
-	submissions []*structs.Submissions,
-	main *structs.MainView,
-	appState *structs.ApplicationState,
-	config *structs.Config) {
+	submissions []*core.Submissions,
+	main *core.MainView,
+	appState *core.ApplicationState,
+	config *core.Config) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		currentState := submissions[appState.SubmissionsCategory]
 		isOnSettingsPage := appState.IsOnHelpScreen && (appState.HelpScreenCategory == help.Settings)

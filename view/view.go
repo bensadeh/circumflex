@@ -6,14 +6,14 @@ import (
 	"clx/constants/submissions"
 	constructor "clx/constructors"
 	"clx/pages"
-	"clx/structs"
+	"clx/core"
 	text "github.com/MichaelMure/go-term-text"
 	"gitlab.com/tslocum/cview"
 	"strconv"
 	"time"
 )
 
-func SetHackerNewsHeader(m *structs.MainView, screenWidth int, category int) {
+func SetHackerNewsHeader(m *core.MainView, screenWidth int, category int) {
 	switch category {
 	case submissions.FrontPage:
 		base := "[black:orange:]   [Y[] [::b]Hacker News[::-]  new | ask | show"
@@ -48,7 +48,7 @@ func appendWhitespace(base string, offset int, screenWidth int) string {
 	return base + whitespace
 }
 
-func SetHelpScreenHeader(m *structs.MainView, screenWidth int, category int) {
+func SetHelpScreenHeader(m *core.MainView, screenWidth int, category int) {
 	switch category {
 	case help.Info:
 		base := "[black:#82aaff:]   [^] [::b]circumflex[::-]   keymaps | settings"
@@ -70,11 +70,11 @@ func SetHelpScreenHeader(m *structs.MainView, screenWidth int, category int) {
 	}
 }
 
-func SetPanelToSubmissions(m *structs.MainView) {
+func SetPanelToSubmissions(m *core.MainView) {
 	m.Panels.SetCurrentPanel(panels.SubmissionsPanel)
 }
 
-func SetHelpScreenPanel(m *structs.MainView, category int) {
+func SetHelpScreenPanel(m *core.MainView, category int) {
 	switch category {
 	case help.Info:
 		m.Panels.SetCurrentPanel(panels.InfoPanel)
@@ -87,30 +87,30 @@ func SetHelpScreenPanel(m *structs.MainView, category int) {
 	}
 }
 
-func HideStatusBar(m *structs.MainView) {
+func HideStatusBar(m *core.MainView) {
 	SetPermanentStatusBar(m, "")
 }
 
-func UpdateSettingsScreen(m *structs.MainView) {
+func UpdateSettingsScreen(m *core.MainView) {
 	m.Settings.SetText(constructor.GetSettingsText())
 }
 
-func SetPermanentStatusBar(m *structs.MainView, text string) {
+func SetPermanentStatusBar(m *core.MainView, text string) {
 	m.StatusBar.SetText(text)
 }
 
-func SetTemporaryStatusBar(app *cview.Application, m *structs.MainView, text string, duration time.Duration) {
+func SetTemporaryStatusBar(app *cview.Application, m *core.MainView, text string, duration time.Duration) {
 	go setAndClearStatusBar(app, m, text, duration)
 }
 
-func setAndClearStatusBar(app *cview.Application, m *structs.MainView, text string, duration time.Duration) {
+func setAndClearStatusBar(app *cview.Application, m *core.MainView, text string, duration time.Duration) {
 	m.StatusBar.SetText(text)
 	time.Sleep(duration)
 	m.StatusBar.SetText("")
 	app.Draw()
 }
 
-func SetLeftMarginRanks(m *structs.MainView, currentPage int, viewableStoriesOnSinglePage int) {
+func SetLeftMarginRanks(m *core.MainView, currentPage int, viewableStoriesOnSinglePage int) {
 	marginText := ""
 	indentationFromRight := " "
 	startingRank := viewableStoriesOnSinglePage*currentPage + 1
@@ -120,38 +120,38 @@ func SetLeftMarginRanks(m *structs.MainView, currentPage int, viewableStoriesOnS
 	m.LeftMargin.SetText(marginText)
 }
 
-func HideLeftMarginRanks(m *structs.MainView) {
+func HideLeftMarginRanks(m *core.MainView) {
 	m.LeftMargin.SetText("")
 }
 
-func HidePageCounter(m *structs.MainView) {
+func HidePageCounter(m *core.MainView) {
 	m.PageCounter.SetText("")
 }
 
-func ScrollSettingsOneLineUp(m *structs.MainView) {
+func ScrollSettingsOneLineUp(m *core.MainView) {
 	row, col := m.Settings.GetScrollOffset()
 	m.Settings.ScrollTo(row-1, col)
 }
 
-func ScrollSettingsOneLineDown(m *structs.MainView) {
+func ScrollSettingsOneLineDown(m *core.MainView) {
 	row, col := m.Settings.GetScrollOffset()
 	m.Settings.ScrollTo(row+1, col)
 }
 
-func ScrollSettingsByAmount(m *structs.MainView, amount int) {
+func ScrollSettingsByAmount(m *core.MainView, amount int) {
 	row, col := m.Settings.GetScrollOffset()
 	m.Settings.ScrollTo(row+amount, col)
 }
 
-func ScrollSettingsToBeginning(m *structs.MainView) {
+func ScrollSettingsToBeginning(m *core.MainView) {
 	m.Settings.ScrollToBeginning()
 }
 
-func ScrollSettingsToEnd(m *structs.MainView) {
+func ScrollSettingsToEnd(m *core.MainView) {
 	m.Settings.ScrollToEnd()
 }
 
-func SetPageCounter(m *structs.MainView, currentPage int, maxPages int, color string) {
+func SetPageCounter(m *core.MainView, currentPage int, maxPages int, color string) {
 	pageCounter := pages.GetPageCounter(currentPage, maxPages, color)
 	m.PageCounter.SetText(pageCounter)
 }

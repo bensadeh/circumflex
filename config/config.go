@@ -3,17 +3,17 @@ package config
 import (
 	"clx/constants/settings"
 	"clx/file"
-	"clx/structs"
+	"clx/core"
 	"github.com/spf13/viper"
 )
 
-func GetConfig() *structs.Config {
+func GetConfig() *core.Config {
 	viper.SetConfigName(settings.ConfigFileNameAbbreviated)
 	viper.AddConfigPath(file.PathToConfigDirectory())
 	viper.AutomaticEnv()
 	viper.SetConfigType("env")
 
-	configuration := new(structs.Config)
+	configuration := new(core.Config)
 	_ = viper.ReadInConfig()
 
 	setDefaultValues()
