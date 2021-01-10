@@ -1,18 +1,23 @@
 package constructor
 
 import (
+	"clx/column"
 	"clx/constants/margins"
 	"clx/constants/settings"
 	"clx/file"
 	"clx/screen"
 	text "github.com/MichaelMure/go-term-text"
 	"github.com/spf13/viper"
+	"gitlab.com/tslocum/cview"
 	"strconv"
 )
 
 const (
 	newLine      = "\n"
 	newParagraph = "\n\n"
+	underlined     = "\033[4m"
+	dimmed        = "\033[2m"
+	normal        = "\033[0m"
 )
 
 type options struct {
@@ -30,9 +35,35 @@ func (o *options) addOption(name string, key string, value string, description s
 }
 
 func (o options) printAll(textWidth int) string {
+	spaceBetweenDescriptions := 7
+	usableScreenWidth := screen.GetTerminalWidth() - margins.LeftMargin
+
+	if usableScreenWidth > (textWidth*2 + spaceBetweenDescriptions) {
+		return printOptionsInTwoColumns(o, textWidth, spaceBetweenDescriptions)
+	} else {
+		return printOptionsInOneColumn(o, textWidth)
+	}
+
+}
+
+func printOptionsInOneColumn(o options, textWidth int) string {
 	output := ""
 	for i := 0; i < len(o.options); i++ {
 		output += o.options[i].print(textWidth) + newParagraph
+	}
+	return output
+}
+
+func printOptionsInTwoColumns(o options, textWidth int, space int) string {
+	output := ""
+	for i := 0; i < len(o.options); i += 2 {
+		if i+2 <= len(o.options) {
+			left := o.options[i].printNoWrap()
+			right := o.options[i+1].printNoWrap()
+			output += column.PutInColumns(left, right, textWidth, space) + newParagraph
+		} else {
+			output += o.options[i].print(textWidth) + newParagraph
+		}
 	}
 
 	return output
@@ -65,6 +96,16 @@ func (o option) print(textWidth int) string {
 	return output
 }
 
+func (o option) printNoWrap() string {
+	output := ""
+
+	output += underline(o.name) + " " + dim(o.key) + newLine
+	output += o.description + newParagraph
+	output += "Current value: " + dim(o.value)
+
+	return output
+}
+
 func (o option) printConfig() string {
 	description, _ := text.WrapWithPad(o.description, 80, "# ")
 
@@ -85,7 +126,7 @@ func GetSettingsText() string {
 
 	options := initializeOptions()
 
-	return message + newParagraph + options.printAll(commentWidth)
+	return cview.TranslateANSI(message + newParagraph + options.printAll(commentWidth))
 }
 
 func getCommentWidth() int {
@@ -118,13 +159,9 @@ func initializeOptions() *options {
 }
 
 func underline(text string) string {
-	return "[::u]" + text + "[::-]"
+	return underlined + text + normal
 }
 
 func dim(text string) string {
-	return "[::d]" + text + "[::-]"
-}
-
-func invert(text string) string {
-	return "[::r]" + text + "[::-]"
+	return dimmed + text + normal
 }

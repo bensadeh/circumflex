@@ -22,7 +22,7 @@ const (
 	HighlightHeadlinesName        = "Highlight Headlines"
 	HighlightHeadlinesKey         = "CLX_HIGHLIGHT_HEADLINES"
 	HighlightHeadlinesDefault     = 1
-	HighlightHeadlinesDescription = "Highlights headlines containing the text Show HN, Ask HN, Tell HN and " +
+	HighlightHeadlinesDescription = "Highlights headlines containing the text Show HN, Ask HN, Tell HN or " +
 		"Launch HN. Can be set to 0 (No highlighting), 1 (inverse highlighting) and 2 (colored highlighting). Y " +
 		"Combinator Startup labels are colorized in both option 1 and 2."
 )
