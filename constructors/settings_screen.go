@@ -58,9 +58,10 @@ func printOptionsInTwoColumns(o options, textWidth int, space int) string {
 	output := ""
 	for i := 0; i < len(o.options); i += 2 {
 		if i+2 <= len(o.options) {
-			left := o.options[i].printNoWrap()
-			right := o.options[i+1].printNoWrap()
-			output += column.PutInColumns(left, right, textWidth, space) + newParagraph
+			leftDesc, leftValue := o.options[i].printNoWrap()
+			rightDesc, rightValue := o.options[i+1].printNoWrap()
+			output += column.PutInColumns(leftDesc, rightDesc, textWidth, space) + newLine
+			output += column.PutInColumns(leftValue, rightValue, textWidth, space) + newLine
 		} else {
 			output += o.options[i].print(textWidth) + newParagraph
 		}
@@ -96,14 +97,13 @@ func (o option) print(textWidth int) string {
 	return output
 }
 
-func (o option) printNoWrap() string {
-	output := ""
+func (o option) printNoWrap() (string, string) {
+	description := ""
 
-	output += underline(o.name) + " " + dim(o.key) + newLine
-	output += o.description + newParagraph
-	output += "Current value: " + dim(o.value)
+	description += underline(o.name) + " " + dim(o.key) + newLine
+	description += o.description
 
-	return output
+	return description, "Current value: " + dim(o.value)
 }
 
 func (o option) printConfig() string {
@@ -151,10 +151,10 @@ func initializeOptions() *options {
 	currentHighlightHeadlines := strconv.Itoa(viper.GetInt(settings.HighlightHeadlinesKey))
 
 	options := new(options)
+	options.addOption(settings.HighlightHeadlinesName, settings.HighlightHeadlinesKey, currentHighlightHeadlines, settings.HighlightHeadlinesDescription)
 	options.addOption(settings.CommentWidthName, settings.CommentWidthKey, currentCommentWidth, settings.CommentWidthDescription)
 	options.addOption(settings.IndentSizeName, settings.IndentSizeKey, currentIndentSize, settings.IndentSizeDescription)
 	options.addOption(settings.PreserveRightMarginName, settings.PreserveRightMarginKey, currentPreserveRightMargin, settings.PreserveRightMarginDescription)
-	options.addOption(settings.HighlightHeadlinesName, settings.HighlightHeadlinesKey, currentHighlightHeadlines, settings.HighlightHeadlinesDescription)
 	return options
 }
 
