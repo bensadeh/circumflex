@@ -15,9 +15,9 @@ import (
 const (
 	newLine      = "\n"
 	newParagraph = "\n\n"
-	underlined     = "\033[4m"
-	dimmed        = "\033[2m"
-	normal        = "\033[0m"
+	bold         = "\033[1m"
+	dimmed       = "\033[2m"
+	normal       = "\033[0m"
 )
 
 type options struct {
@@ -90,7 +90,7 @@ func (o option) print(textWidth int) string {
 	wrappedDescription, _ := text.Wrap(o.description, textWidth)
 	output := ""
 
-	output += underline(o.name) + " " + dim(o.key) + newLine
+	output += b(o.name) + " " + dim(o.key) + newLine
 	output += wrappedDescription + newParagraph
 	output += "Current value: " + dim(o.value)
 
@@ -116,7 +116,7 @@ func makeHeadline(name string, key string, textWidth int) string {
 		whiteSpace += " "
 	}
 
-	return underline(name) + whiteSpace + dim(key)
+	return b(name) + whiteSpace + dim(key)
 }
 
 func (o option) printConfig() string {
@@ -171,8 +171,8 @@ func initializeOptions() *options {
 	return options
 }
 
-func underline(text string) string {
-	return underlined + text + normal
+func b(text string) string {
+	return bold + text + normal
 }
 
 func dim(text string) string {
