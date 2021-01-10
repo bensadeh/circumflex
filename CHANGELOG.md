@@ -7,6 +7,9 @@ _WIP_
 - Added option to preserve right margin in comment section
 - Added option to customize and colorize submission headlines
 
+**Cosmetic:**
+- Settings will show in two columns if there is enough screen space
+
 **Bugfixes:**
 - Fixed a bug where setting comment width to 0 did not use the whole screen
 
