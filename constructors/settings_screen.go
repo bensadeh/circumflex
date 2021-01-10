@@ -58,8 +58,8 @@ func printOptionsInTwoColumns(o options, textWidth int, space int) string {
 	output := ""
 	for i := 0; i < len(o.options); i += 2 {
 		if i+2 <= len(o.options) {
-			leftDesc, leftValue := o.options[i].printNoWrap()
-			rightDesc, rightValue := o.options[i+1].printNoWrap()
+			leftDesc, leftValue := o.options[i].printNoWrap(textWidth)
+			rightDesc, rightValue := o.options[i+1].printNoWrap(textWidth)
 			output += column.PutInColumns(leftDesc, rightDesc, textWidth, space) + newLine
 			output += column.PutInColumns(leftValue, rightValue, textWidth, space) + newLine
 		} else {
@@ -97,13 +97,26 @@ func (o option) print(textWidth int) string {
 	return output
 }
 
-func (o option) printNoWrap() (string, string) {
+func (o option) printNoWrap(textWidth int) (string, string) {
 	description := ""
 
-	description += underline(o.name) + " " + dim(o.key) + newLine
+	description += makeHeadline(o.name, o.key, textWidth) + newLine
 	description += o.description
 
 	return description, "Current value: " + dim(o.value)
+}
+
+func makeHeadline(name string, key string, textWidth int) string {
+	nameLength := text.Len(name)
+	keyLength := text.Len(key)
+	spaceBetweenNameAndKey := textWidth - nameLength - keyLength
+
+	whiteSpace := ""
+	for i := 0; i < spaceBetweenNameAndKey; i++ {
+		whiteSpace += " "
+	}
+
+	return underline(name) + whiteSpace + dim(key)
 }
 
 func (o option) printConfig() string {
