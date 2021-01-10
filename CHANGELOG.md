@@ -1,14 +1,14 @@
 # Changelog
 
-## 0.x
-_WIP_
+## 0.5
+_2021-01-10_
 
 **New features:**
 - Added option to preserve right margin in comment section
 - Added option to customize and colorize submission headlines
 
 **Cosmetic:**
-- Settings will show in two columns if there is enough screen space
+- Settings will be shown in two columns if there is enough screen space
 
 **Bugfixes:**
 - Fixed a bug where setting comment width to 0 did not use the whole screen
