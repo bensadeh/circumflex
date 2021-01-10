@@ -4,10 +4,10 @@ const (
 	ConfigFileNameAbbreviated = "config"
 	ConfigFileNameFull        = "config.env"
 
-	CommentWidthName          = "Comment Width"
-	CommentWidthKey           = "CLX_COMMENT_WIDTH"
-	CommentWidthDefault       = 70
-	CommentWidthDescription   = "Sets the maximum number of characters on each line for comments, " +
+	CommentWidthName        = "Comment Width"
+	CommentWidthKey         = "CLX_COMMENT_WIDTH"
+	CommentWidthDefault     = 70
+	CommentWidthDescription = "Sets the maximum number of characters on each line for comments, " +
 		"replies, root submission comments and descriptions in settings. Set to 0 to use the whole screen."
 	IndentSizeName        = "Indent Size"
 	IndentSizeKey         = "CLX_INDENT_SIZE"
@@ -22,7 +22,7 @@ const (
 	HighlightHeadlinesName        = "Highlight Headlines"
 	HighlightHeadlinesKey         = "CLX_HIGHLIGHT_HEADLINES"
 	HighlightHeadlinesDefault     = 1
-	HighlightHeadlinesDescription = "Highlights headlines containing the text Show HN, Ask HN, Tell HN or " +
-		"Launch HN. Can be set to 0 (No highlighting), 1 (inverse highlighting) and 2 (colored highlighting). Y " +
-		"Combinator Startup labels are colorized in both option 1 and 2."
+	HighlightHeadlinesDescription = "Highlights headlines containing the text \033[31mShow HN\033[0m, \033[35mAsk HN" +
+		"\033[0m, \033[34mTell HN\033[0m or \033[32mLaunch HN\033[0m. Can be set to 0 (No highlighting), 1 (inverse " +
+		"highlighting) and 2 (colored highlighting). Y Combinator Startup labels are colorized in both option 1 and 2."
 )
