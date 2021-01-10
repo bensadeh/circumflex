@@ -6,10 +6,10 @@ import (
 	cp "clx/comment-parser"
 	"clx/constants/messages"
 	constructor "clx/constructors"
+	"clx/core"
 	"clx/file"
 	"clx/http"
 	"clx/screen"
-	"clx/core"
 	"clx/submission/fetcher"
 	"clx/submission/formatter"
 	"clx/view"
@@ -25,7 +25,8 @@ func SetAfterInitializationAndAfterResizeFunctions(
 	list *cview.List,
 	submissions []*core.Submissions,
 	main *core.MainView,
-	appState *core.ApplicationState) {
+	appState *core.ApplicationState,
+	config *core.Config) {
 	app.SetAfterResizeFunc(func(width int, height int) {
 		if appState.IsReturningFromSuspension {
 			appState.IsReturningFromSuspension = false
@@ -38,7 +39,7 @@ func SetAfterInitializationAndAfterResizeFunctions(
 			setApplicationToErrorState(appState, main, list, app)
 		} else {
 			appState.IsOffline = false
-			showPageAfterResize(appState, list, submissions, main)
+			showPageAfterResize(appState, list, submissions, main, config)
 		}
 	})
 }
@@ -92,10 +93,11 @@ func showPageAfterResize(
 	appState *core.ApplicationState,
 	list *cview.List,
 	submissions []*core.Submissions,
-	main *core.MainView) {
+	main *core.MainView,
+	config *core.Config) {
 	submissionEntries := submissions[appState.SubmissionsCategory].Entries
 
-	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.SubmissionsToShow)
+	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.SubmissionsToShow, config)
 
 	if appState.IsOnHelpScreen {
 		showInfoCategory(main, appState)
@@ -154,7 +156,8 @@ func NextPage(
 	list *cview.List,
 	submissions *core.Submissions,
 	main *core.MainView,
-	appState *core.ApplicationState) {
+	appState *core.ApplicationState,
+	config *core.Config) {
 
 	nextPage := appState.CurrentPage + 1
 
@@ -174,7 +177,7 @@ func NextPage(
 
 	appState.CurrentPage++
 
-	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow)
+	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow, config)
 	list.SetCurrentItem(currentlySelectedItem)
 
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
@@ -195,14 +198,14 @@ func fetchAndAppendSubmissionEntries(submissions *core.Submissions, appState *co
 	return err
 }
 
-func SetListItemsToCurrentPage(list *cview.List, submissions []*core.Submission, currentPage int, viewableStories int) {
+func SetListItemsToCurrentPage(list *cview.List, submissions []*core.Submission, currentPage int, viewableStories int, config *core.Config) {
 	list.Clear()
 	start := currentPage * viewableStories
 	end := start + viewableStories
 
 	for i := start; i < end; i++ {
 		s := submissions[i]
-		mainText := formatter.GetMainText(s.Title, s.Domain)
+		mainText := formatter.GetMainText(s.Title, s.Domain, config.HighlightHeadlines)
 		secondaryText := formatter.GetSecondaryText(s.Points, s.Author, s.Time, s.CommentsCount)
 
 		item := cview.NewListItem(mainText)
@@ -218,7 +221,8 @@ func ChangeCategory(
 	list *cview.List,
 	appState *core.ApplicationState,
 	submissions []*core.Submissions,
-	main *core.MainView) {
+	main *core.MainView,
+	config *core.Config) {
 	currentItem := list.GetCurrentItemIndex()
 	if event.Key() == tcell.KeyBacktab {
 		appState.SubmissionsCategory = getPreviousCategory(appState.SubmissionsCategory, 4)
@@ -237,7 +241,7 @@ func ChangeCategory(
 		}
 	}
 
-	SetListItemsToCurrentPage(list, currentSubmissions.Entries, appState.CurrentPage, appState.SubmissionsToShow)
+	SetListItemsToCurrentPage(list, currentSubmissions.Entries, appState.CurrentPage, appState.SubmissionsToShow, config)
 	list.SetCurrentItem(currentItem)
 
 	view.SetPageCounter(main, appState.CurrentPage, currentSubmissions.MaxPages, "orange")
@@ -271,7 +275,11 @@ func ChangeHelpScreenCategory(event *tcell.EventKey, appState *core.ApplicationS
 	showInfoCategory(main, appState)
 }
 
-func PreviousPage(list *cview.List, submissions *core.Submissions, main *core.MainView, appState *core.ApplicationState) {
+func PreviousPage(list *cview.List,
+	submissions *core.Submissions,
+	main *core.MainView,
+	appState *core.ApplicationState,
+	config *core.Config) {
 	previousPage := appState.CurrentPage - 1
 	if previousPage < 0 {
 		return
@@ -280,7 +288,7 @@ func PreviousPage(list *cview.List, submissions *core.Submissions, main *core.Ma
 	appState.CurrentPage--
 	currentlySelectedItem := list.GetCurrentItemIndex()
 
-	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow)
+	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow, config)
 
 	list.SetCurrentItem(currentlySelectedItem)
 
@@ -332,7 +340,7 @@ func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
 	file.WriteToConfigFile(constructor.GetConfigFileContents())
 
 	view.UpdateSettingsScreen(main)
-	view.SetPermanentStatusBar(main, "Config created at [::b]" + file.PathToConfigFile())
+	view.SetPermanentStatusBar(main, "Config created at [::b]"+file.PathToConfigFile())
 	appState.IsOnConfigCreationConfirmationMessage = false
 }
 

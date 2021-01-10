@@ -5,6 +5,7 @@ _WIP_
 
 **New features:**
 - Added option to preserve right margin in comment section
+- Added option to customize and colorize submission headlines
 
 **Bugfixes:**
 - Fixed a bug where setting comment width to 0 did not use the whole screen

@@ -61,4 +61,5 @@ type Config struct {
 	CommentWidth        int  `mapstructure:"CLX_COMMENT_WIDTH"`
 	IndentSize          int  `mapstructure:"CLX_INDENT_SIZE"`
 	PreserveRightMargin bool `mapstructure:"CLX_PRESERVE_RIGHT_MARGIN"`
+	HighlightHeadlines  int  `mapstructure:"CLX_HIGHLIGHT_HEADLINES"`
 }

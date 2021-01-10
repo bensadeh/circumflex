@@ -14,8 +14,9 @@ func SetAfterInitializationAndAfterResizeFunctions(
 	list *cview.List,
 	submissions []*core.Submissions,
 	main *core.MainView,
-	appState *core.ApplicationState) {
-	model.SetAfterInitializationAndAfterResizeFunctions(app, list, submissions, main, appState)
+	appState *core.ApplicationState,
+	config *core.Config) {
+	model.SetAfterInitializationAndAfterResizeFunctions(app, list, submissions, main, appState, config)
 }
 
 func SetApplicationShortcuts(
@@ -97,15 +98,15 @@ func SetApplicationShortcuts(
 
 		//Submissions
 		if event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab {
-			model.ChangeCategory(app, event, list, appState, submissions, main)
+			model.ChangeCategory(app, event, list, appState, submissions, main, config)
 			return event
 		}
 		if event.Rune() == 'l' || event.Key() == tcell.KeyRight {
-			model.NextPage(app, list, currentState, main, appState)
+			model.NextPage(app, list, currentState, main, appState, config)
 			return event
 		}
 		if event.Rune() == 'h' || event.Key() == tcell.KeyLeft {
-			model.PreviousPage(list, currentState, main, appState)
+			model.PreviousPage(list, currentState, main, appState, config)
 			return event
 		}
 		if event.Rune() == 'j' || event.Key() == tcell.KeyDown {

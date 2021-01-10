@@ -5,9 +5,12 @@ import (
 	"clx/config"
 	constructor "clx/constructors"
 	"clx/controller"
+	"os"
 )
 
 func main() {
+	_ = os.Setenv("TCELL_TRUECOLOR", "disable")
+
 	configuration := config.GetConfig()
 
 	sc := constructor.NewScreenController()
@@ -16,7 +19,8 @@ func main() {
 		sc.Articles,
 		sc.Submissions,
 		sc.MainView,
-		sc.ApplicationState)
+		sc.ApplicationState,
+		configuration)
 
 	controller.SetApplicationShortcuts(
 		sc.Application,
