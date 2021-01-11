@@ -52,7 +52,7 @@ func setApplicationToErrorState(
 
 	appState.IsOffline = true
 	list.Clear()
-	view.SetPermanentStatusBar(main, messages.OfflineMessage)
+	view.SetPermanentStatusBar(main, messages.OfflineMessage, cview.AlignCenter)
 	app.Draw()
 }
 
@@ -302,7 +302,7 @@ func ShowCreateConfigConfirmationMessage(main *core.MainView, appState *core.App
 		return
 	}
 	view.SetPermanentStatusBar(main,
-		"[::b]config.env[::-] will be created in [::r]~/.config/circumflex[::-], press Y to Confirm")
+		"[::b]config.env[::-] will be created in [::r]~/.config/circumflex[::-], press Y to Confirm", cview.AlignCenter)
 	appState.IsOnConfigCreationConfirmationMessage = true
 }
 
@@ -333,7 +333,7 @@ func ScrollSettingsToEnd(main *core.MainView) {
 }
 
 func CancelCreateConfigConfirmationMessage(appState *core.ApplicationState, main *core.MainView) {
-	view.SetPermanentStatusBar(main, "")
+	view.SetPermanentStatusBar(main, "", cview.AlignCenter)
 	appState.IsOnConfigCreationConfirmationMessage = false
 }
 
@@ -341,7 +341,7 @@ func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
 	file.WriteToConfigFile(constructor.GetConfigFileContents())
 
 	view.UpdateSettingsScreen(main)
-	view.SetPermanentStatusBar(main, "Config created at [::b]"+file.PathToConfigFile())
+	view.SetPermanentStatusBar(main, "Config created at [::b]"+file.PathToConfigFile(), cview.AlignCenter)
 	appState.IsOnConfigCreationConfirmationMessage = false
 }
 
@@ -425,7 +425,7 @@ func Refresh(app *cview.Application,
 
 	if appState.IsOffline {
 		list.Clear()
-		view.SetPermanentStatusBar(main, messages.OfflineMessage)
+		view.SetPermanentStatusBar(main, messages.OfflineMessage, cview.AlignCenter)
 		app.Draw()
 	} else {
 		duration := time.Millisecond * 2000
