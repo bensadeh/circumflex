@@ -63,6 +63,10 @@ can create one for you by pressing <kbd>t</kbd> on the settings screen. Alternat
 values found in `config.env` as environmental variables in your 
 [shell](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables).
 
+<p align="center">
+  <img src="screenshots/settings.png" width="700" alt="^"/>
+</p>
+
 ## Under the hood
 `circumflex` uses:
 * [tcell](https://github.com/gdamore/tcell) and [cview](https://gitlab.com/tslocum/cview) for the TUI
