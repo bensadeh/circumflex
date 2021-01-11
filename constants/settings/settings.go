@@ -12,13 +12,13 @@ const (
 	IndentSizeName        = "Indent Size"
 	IndentSizeKey         = "CLX_INDENT_SIZE"
 	IndentSizeDefault     = 4
-	IndentSizeDescription = "The number of whitespaces prepended to each reply, not included the " +
-		"color bar to the left of each reply."
+	IndentSizeDescription = "The number of whitespaces prepended to each reply, " +
+		"not including the color bar."
 	PreserveRightMarginName        = "Preserve Right Margin"
 	PreserveRightMarginKey         = "CLX_PRESERVE_RIGHT_MARGIN"
 	PreserveRightMarginDefault     = false
 	PreserveRightMarginDescription = "Shortens replies so that the total length, including indentation, is the same " +
-		"as the comment width. "
+		"as the comment width. Best used when Indent Size is small to avoid deep replies being too short."
 	HighlightHeadlinesName        = "Highlight Headlines"
 	HighlightHeadlinesKey         = "CLX_HIGHLIGHT_HEADLINES"
 	HighlightHeadlinesDefault     = 1

@@ -83,6 +83,7 @@ func initializeView(
 	appState *core.ApplicationState,
 	submissions []*core.Submissions,
 	main *core.MainView) {
+	view.UpdateSettingsScreen(main)
 	view.SetPanelToSubmissions(main)
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.SubmissionsCategory)
 	view.SetLeftMarginRanks(main, 0, appState.SubmissionsToShow)

@@ -4,8 +4,8 @@ import (
 	"clx/constants/margins"
 	"clx/constants/panels"
 	"clx/constants/submissions"
-	"clx/screen"
 	"clx/core"
+	"clx/screen"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 )
@@ -41,15 +41,8 @@ func NewScreenController() *core.ScreenController {
 	sc.MainView = NewMainView()
 	sc.MainView.Panels.AddPanel(panels.SubmissionsPanel, sc.Articles, true, true)
 
-	settingsGrid := cview.NewGrid()
-	settingsGrid.SetBorder(false)
-	settingsGrid.SetRows(0)
-	settingsGrid.SetColumns(0, margins.LeftMargin)
-	settingsGrid.SetBackgroundColor(tcell.ColorDefault)
-	settingsGrid.AddItem(sc.MainView.Settings, 0, 0, 1, 1, 0, 0, false)
-	settingsGrid.AddItem(newTextViewPrimitive(""), 0, 1, 1, 1, 0, 0, false)
 
-	sc.MainView.Panels.AddPanel(panels.SettingsPanel, settingsGrid, true, false)
+
 
 	return sc
 }
@@ -80,7 +73,6 @@ func NewMainView() *core.MainView {
 	main.StatusBar.SetTextAlign(cview.AlignCenter)
 	main.StatusBar.SetPadding(0, 0, -4, 0)
 	main.Settings = newTextViewPrimitive(GetSettingsText())
-	main.Settings.SetWordWrap(true)
 
 	main.Grid.SetBorder(false)
 	main.Grid.SetRows(2, 0, 1)
@@ -94,6 +86,7 @@ func NewMainView() *core.MainView {
 
 	main.Panels.AddPanel(panels.InfoPanel, GetInfoScreen(), true, false)
 	main.Panels.AddPanel(panels.KeymapsPanel, GetHelpScreen(), true, false)
+	main.Panels.AddPanel(panels.SettingsPanel, main.Settings, true, false)
 
 	return main
 }

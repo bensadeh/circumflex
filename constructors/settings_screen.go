@@ -36,7 +36,8 @@ func (o *options) addOption(name string, key string, value string, description s
 
 func (o options) printAll(textWidth int) string {
 	spaceBetweenDescriptions := 7
-	usableScreenWidth := screen.GetTerminalWidth() - margins.LeftMargin
+	rightMargin := 1
+	usableScreenWidth := screen.GetTerminalWidth() - margins.LeftMargin - rightMargin
 
 	if usableScreenWidth > (textWidth*2 + spaceBetweenDescriptions) {
 		return printOptionsInTwoColumns(o, textWidth, spaceBetweenDescriptions)
@@ -166,8 +167,8 @@ func initializeOptions() *options {
 	options := new(options)
 	options.addOption(settings.HighlightHeadlinesName, settings.HighlightHeadlinesKey, currentHighlightHeadlines, settings.HighlightHeadlinesDescription)
 	options.addOption(settings.CommentWidthName, settings.CommentWidthKey, currentCommentWidth, settings.CommentWidthDescription)
-	options.addOption(settings.IndentSizeName, settings.IndentSizeKey, currentIndentSize, settings.IndentSizeDescription)
 	options.addOption(settings.PreserveRightMarginName, settings.PreserveRightMarginKey, currentPreserveRightMargin, settings.PreserveRightMarginDescription)
+	options.addOption(settings.IndentSizeName, settings.IndentSizeKey, currentIndentSize, settings.IndentSizeDescription)
 	return options
 }
 
