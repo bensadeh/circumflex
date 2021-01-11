@@ -2,8 +2,8 @@ package controller
 
 import (
 	"clx/constants/help"
-	"clx/model"
 	"clx/core"
+	"clx/model"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 	"unicode"
@@ -110,11 +110,11 @@ func SetApplicationShortcuts(
 			return event
 		}
 		if event.Rune() == 'j' || event.Key() == tcell.KeyDown {
-			model.SelectNextElement(list)
+			model.SelectNextElement(main, list, appState)
 			return event
 		}
 		if event.Rune() == 'k' || event.Key() == tcell.KeyUp {
-			model.SelectPreviousElement(list)
+			model.SelectPreviousElement(main, list, appState)
 			return event
 		}
 		if event.Rune() == 'q' || event.Key() == tcell.KeyEsc {
@@ -149,7 +149,7 @@ func SetApplicationShortcuts(
 			return event
 		}
 		if unicode.IsDigit(event.Rune()) {
-			model.SelectElementInList(list, event.Rune())
+			model.SelectElementInList(main, event.Rune(), appState)
 			return event
 		}
 		return event

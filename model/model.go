@@ -18,6 +18,7 @@ import (
 	"gitlab.com/tslocum/cview"
 	"strconv"
 	"time"
+	"unicode/utf8"
 )
 
 func SetAfterInitializationAndAfterResizeFunctions(
@@ -345,25 +346,50 @@ func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
 	appState.IsOnConfigCreationConfirmationMessage = false
 }
 
-func SelectNextElement(list *cview.List) {
+func SelectNextElement(main *core.MainView, list *cview.List, appState *core.ApplicationState) {
 	currentItem := list.GetCurrentItemIndex()
 	itemCount := list.GetItemCount()
+	register, _ := strconv.Atoi(appState.VimNumberRegister)
+	noNumbersInRegister := appState.VimNumberRegister == ""
 
-	if currentItem == itemCount {
+	if noNumbersInRegister {
+		if currentItem != itemCount {
+			list.SetCurrentItem(currentItem + 1)
+		}
 		return
-	} else {
-		list.SetCurrentItem(currentItem + 1)
 	}
+
+	if register > itemCount {
+		list.SetCurrentItem(itemCount)
+	} else {
+		list.SetCurrentItem(currentItem + register)
+	}
+
+	appState.VimNumberRegister = ""
+	view.ClearStatusBar(main)
 }
 
-func SelectPreviousElement(list *cview.List) {
+func SelectPreviousElement(main *core.MainView, list *cview.List, appState *core.ApplicationState) {
 	currentItem := list.GetCurrentItemIndex()
+	itemCount := list.GetItemCount()
+	register, _ := strconv.Atoi(appState.VimNumberRegister)
+	noNumbersInRegister := appState.VimNumberRegister == ""
 
-	if currentItem == 0 {
+	if noNumbersInRegister {
+		if currentItem != 0 {
+			list.SetCurrentItem(currentItem - 1)
+		}
 		return
-	} else {
-		list.SetCurrentItem(currentItem - 1)
 	}
+
+	if register > itemCount {
+		list.SetCurrentItem(itemCount)
+	} else {
+		list.SetCurrentItem(currentItem - register)
+	}
+
+	appState.VimNumberRegister = ""
+	view.ClearStatusBar(main)
 }
 
 func EnterInfoScreen(main *core.MainView, appState *core.ApplicationState) {
@@ -386,7 +412,7 @@ func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, submis
 	view.SetPanelToSubmissions(main)
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
 	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
-	view.HideStatusBar(main)
+	view.ClearStatusBar(main)
 }
 
 func SelectFirstElementInList(list *cview.List) {
@@ -397,16 +423,20 @@ func SelectLastElementInList(list *cview.List) {
 	view.SelectLastElementInList(list)
 }
 
-func SelectElementInList(list *cview.List, element rune) {
-	i := element - '0'
-	adjustedIndex := int(i) - 1
-
-	if int(i) == 0 {
-		tenthElement := 9
-		view.SelectElementInList(list, tenthElement)
-	} else {
-		view.SelectElementInList(list, adjustedIndex)
+func SelectElementInList(main *core.MainView, element rune, appState *core.ApplicationState) {
+	if len(appState.VimNumberRegister) > 5 {
+		appState.VimNumberRegister = trimFirstRune(appState.VimNumberRegister)
 	}
+
+	appState.VimNumberRegister += string(element)
+	spaceBetweenNumberAndPageCounter := "    "
+
+	view.SetPermanentStatusBar(main, appState.VimNumberRegister+spaceBetweenNumberAndPageCounter, cview.AlignRight)
+}
+
+func trimFirstRune(s string) string {
+	_, i := utf8.DecodeRuneInString(s)
+	return s[i:]
 }
 
 func Quit(app *cview.Application) {

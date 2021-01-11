@@ -41,6 +41,7 @@ type ApplicationState struct {
 	ScreenHeight                          int
 	ScreenWidth                           int
 	CurrentPage                           int
+	VimNumberRegister                     string
 	IsOffline                             bool
 	IsReturningFromSuspension             bool
 	IsOnHelpScreen                        bool

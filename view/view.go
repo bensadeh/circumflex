@@ -91,7 +91,7 @@ func SetHelpScreenPanel(m *core.MainView, category int) {
 	}
 }
 
-func HideStatusBar(m *core.MainView) {
+func ClearStatusBar(m *core.MainView) {
 	SetPermanentStatusBar(m, "", cview.AlignCenter)
 }
 

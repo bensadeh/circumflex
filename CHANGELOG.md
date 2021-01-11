@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6
+_WIP_
+
+**New features:**
+- Numbers now behave the same as in vim Normal mode
+
+
 ## 0.5
 _2021-01-10_
 
