@@ -433,7 +433,7 @@ func SelectFirstElementInList(main *core.MainView, appState *core.ApplicationSta
 func SelectLastElementInList(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config) {
 	view.SelectLastElementInList(list)
 	ClearVimRegister(main, appState)
-	
+
 	if config.RelativeNumbering {
 		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, list.GetCurrentItemIndex())
 	}
@@ -443,8 +443,9 @@ func PutDigitInRegister(main *core.MainView, element rune, appState *core.Applic
 	if len(appState.VimNumberRegister) == 0 && string(element) == "0" {
 		return
 	}
+	registerIsMoreThanTwoDigits := len(appState.VimNumberRegister) > 1
 
-	if len(appState.VimNumberRegister) > 5 {
+	if registerIsMoreThanTwoDigits {
 		appState.VimNumberRegister = trimFirstRune(appState.VimNumberRegister)
 	}
 
