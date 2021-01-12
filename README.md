@@ -58,14 +58,30 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 </p>
 
 ## Configuration
+### How to change settings
 Customize `circumflex` by editing `config.env` in `~/.config/circumflex`. If `config.env` doesn't exist, `circumflex`
-can create one for you by pressing <kbd>t</kbd> on the settings screen. Alternatively, you can export the same keys and 
-values found in `config.env` as environmental variables in your 
-[shell](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables).
+can create it for you fully populated with the available options. You can also export the keys and values from `config.env` as 
+[environmental variables](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables)
+in your shell.
 
 <p align="center">
   <img src="screenshots/settings.png" width="700" alt="^"/>
 </p>
+
+### Available options
+#### Comment Width
+Sets the maximum number of characters on each line for comments, replies, root submission comments and descriptions in 
+settings. Set to 0 to use the whole screen.
+
+#### Indent Size
+The number of whitespaces prepended to each reply, not including the color bar.
+
+#### Highlight Headlines
+Highlights headlines containing the text Show HN, Ask HN, Tell HN or Launch HN. Can be set to 0 (No highlighting), 1 
+(inverse highlighting) and 2 (colored highlighting). Y Combinator Startup labels are colorized in both option 1 and 2.
+
+#### Use Relative Numbering
+Shows each line with a number relative to the currently selected element. Similar to Vim's hybrid line number mode.
 
 ## Under the hood
 `circumflex` uses:
