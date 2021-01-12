@@ -441,7 +441,11 @@ func SelectLastElementInList(main *core.MainView, appState *core.ApplicationStat
 	}
 }
 
-func SelectElementInList(main *core.MainView, element rune, appState *core.ApplicationState) {
+func PutDigitInRegister(main *core.MainView, element rune, appState *core.ApplicationState) {
+	if len(appState.VimNumberRegister) == 0 && string(element) == "0" {
+		return
+	}
+
 	if len(appState.VimNumberRegister) > 5 {
 		appState.VimNumberRegister = trimFirstRune(appState.VimNumberRegister)
 	}
