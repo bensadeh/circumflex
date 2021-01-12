@@ -21,13 +21,7 @@ import (
 	"unicode/utf8"
 )
 
-func SetAfterInitializationAndAfterResizeFunctions(
-	app *cview.Application,
-	list *cview.List,
-	submissions []*core.Submissions,
-	main *core.MainView,
-	appState *core.ApplicationState,
-	config *core.Config) {
+func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list *cview.List, submissions []*core.Submissions, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
 	app.SetAfterResizeFunc(func(width int, height int) {
 		if appState.IsReturningFromSuspension {
 			appState.IsReturningFromSuspension = false
@@ -45,12 +39,7 @@ func SetAfterInitializationAndAfterResizeFunctions(
 	})
 }
 
-func setApplicationToErrorState(
-	appState *core.ApplicationState,
-	main *core.MainView,
-	list *cview.List,
-	app *cview.Application) {
-
+func setApplicationToErrorState(appState *core.ApplicationState, main *core.MainView, list *cview.List, app *cview.Application) {
 	appState.IsOffline = true
 	list.Clear()
 	view.SetPermanentStatusBar(main, messages.OfflineMessage, cview.AlignCenter)
@@ -80,8 +69,7 @@ func resetSubmissionStates(submissions []*core.Submissions) {
 	}
 }
 
-func initializeView(appState *core.ApplicationState, submissions []*core.Submissions, main *core.MainView,
-	config *core.Config) {
+func initializeView(appState *core.ApplicationState, submissions []*core.Submissions, main *core.MainView, config *core.Config) {
 	setMarginRanks(config.RelativeNumbering, main, appState, 0)
 	view.UpdateSettingsScreen(main)
 	view.SetPanelToSubmissions(main)
@@ -89,12 +77,7 @@ func initializeView(appState *core.ApplicationState, submissions []*core.Submiss
 	view.SetPageCounter(main, appState.CurrentPage, submissions[appState.SubmissionsCategory].MaxPages, "orange")
 }
 
-func showPageAfterResize(
-	appState *core.ApplicationState,
-	list *cview.List,
-	submissions []*core.Submissions,
-	main *core.MainView,
-	config *core.Config) {
+func showPageAfterResize(appState *core.ApplicationState, list *cview.List, submissions []*core.Submissions, main *core.MainView, config *core.Config) {
 	submissionEntries := submissions[appState.SubmissionsCategory].Entries
 
 	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.SubmissionsToShow, config)
@@ -104,12 +87,7 @@ func showPageAfterResize(
 	}
 }
 
-func ReadSubmissionComments(
-	app *cview.Application,
-	list *cview.List,
-	submissions []*core.Submission,
-	appState *core.ApplicationState,
-	config *core.Config) {
+func ReadSubmissionComments(app *cview.Application, list *cview.List, submissions []*core.Submission, appState *core.ApplicationState, config *core.Config) {
 	i := list.GetCurrentItemIndex()
 
 	for index := range submissions {
@@ -151,16 +129,8 @@ func OpenLinkInBrowser(list *cview.List, appState *core.ApplicationState, submis
 	browser.Open(url)
 }
 
-func NextPage(
-	app *cview.Application,
-	list *cview.List,
-	submissions *core.Submissions,
-	main *core.MainView,
-	appState *core.ApplicationState,
-	config *core.Config) {
-
+func NextPage(app *cview.Application, list *cview.List, submissions *core.Submissions, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
 	nextPage := appState.CurrentPage + 1
-
 	if nextPage > submissions.MaxPages {
 		return
 	}
@@ -225,14 +195,7 @@ func SetListItemsToCurrentPage(list *cview.List, submissions []*core.Submission,
 	}
 }
 
-func ChangeCategory(
-	app *cview.Application,
-	event *tcell.EventKey,
-	list *cview.List,
-	appState *core.ApplicationState,
-	submissions []*core.Submissions,
-	main *core.MainView,
-	config *core.Config) {
+func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.List, appState *core.ApplicationState, submissions []*core.Submissions, main *core.MainView, config *core.Config) {
 	currentItem := list.GetCurrentItemIndex()
 	if event.Key() == tcell.KeyBacktab {
 		appState.SubmissionsCategory = getPreviousCategory(appState.SubmissionsCategory, 4)
@@ -285,11 +248,7 @@ func ChangeHelpScreenCategory(event *tcell.EventKey, appState *core.ApplicationS
 	showInfoCategory(main, appState)
 }
 
-func PreviousPage(list *cview.List,
-	submissions *core.Submissions,
-	main *core.MainView,
-	appState *core.ApplicationState,
-	config *core.Config) {
+func PreviousPage(list *cview.List, submissions *core.Submissions, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
 	previousPage := appState.CurrentPage - 1
 	if previousPage < 0 {
 		return
@@ -410,8 +369,7 @@ func showInfoCategory(main *core.MainView, appState *core.ApplicationState) {
 	view.SetHelpScreenPanel(main, appState.HelpScreenCategory)
 }
 
-func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, submissions *core.Submissions,
-	config *core.Config, list *cview.List) {
+func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, submissions *core.Submissions, config *core.Config, list *cview.List) {
 	appState.IsOnHelpScreen = false
 
 	setMarginRanks(config.RelativeNumbering, main, appState, list.GetCurrentItemIndex())
@@ -469,12 +427,7 @@ func ClearVimRegister(main *core.MainView, appState *core.ApplicationState) {
 	view.ClearStatusBar(main)
 }
 
-func Refresh(app *cview.Application,
-	list *cview.List,
-	main *core.MainView,
-	submissions []*core.Submissions,
-	appState *core.ApplicationState,
-	config *core.Config) {
+func Refresh(app *cview.Application, list *cview.List, main *core.MainView, submissions []*core.Submissions, appState *core.ApplicationState, config *core.Config) {
 	afterResizeFunc := app.GetAfterResizeFunc()
 	afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
 
