@@ -130,14 +130,14 @@ func OpenLinkInBrowser(list *cview.List, appState *core.ApplicationState, submis
 }
 
 func NextPage(app *cview.Application, list *cview.List, submissions *core.Submissions, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
-	nextPage := appState.CurrentPage + 1
-	if nextPage > submissions.MaxPages {
+	isOnLastPage := appState.CurrentPage + 1 > submissions.MaxPages
+	if isOnLastPage {
 		return
 	}
 
 	currentlySelectedItem := list.GetCurrentItemIndex()
 
-	if !pageHasEnoughSubmissionsToView(nextPage, appState.SubmissionsToShow, submissions.Entries) {
+	if !pageHasEnoughSubmissionsToView(appState.CurrentPage + 1, appState.SubmissionsToShow, submissions.Entries) {
 		err := fetchAndAppendSubmissionEntries(submissions, appState)
 		if err != nil {
 			setApplicationToErrorState(appState, main, list, app)
