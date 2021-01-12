@@ -180,6 +180,7 @@ func NextPage(
 	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow, config)
 	list.SetCurrentItem(currentlySelectedItem)
 
+	ClearVimRegister(main, appState)
 	setMarginRanks(config.RelativeNumbering, main, appState, currentlySelectedItem)
 
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
@@ -252,7 +253,7 @@ func ChangeCategory(
 
 	SetListItemsToCurrentPage(list, currentSubmissions.Entries, appState.CurrentPage, appState.SubmissionsToShow, config)
 	list.SetCurrentItem(currentItem)
-
+	ClearVimRegister(main, appState)
 	setMarginRanks(config.RelativeNumbering, main, appState, currentItem)
 	view.SetPageCounter(main, appState.CurrentPage, currentSubmissions.MaxPages, "orange")
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.SubmissionsCategory)
@@ -300,7 +301,7 @@ func PreviousPage(list *cview.List,
 	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow, config)
 
 	list.SetCurrentItem(currentlySelectedItem)
-
+	ClearVimRegister(main, appState)
 	setMarginRanks(config.RelativeNumbering, main, appState, currentlySelectedItem)
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
 }
@@ -370,7 +371,7 @@ func SelectNextElement(main *core.MainView, list *cview.List, appState *core.App
 		list.SetCurrentItem(currentItem + register)
 	}
 
-	appState.VimNumberRegister = ""
+	ClearVimRegister(main, appState)
 	setMarginRanks(config.RelativeNumbering, main, appState, list.GetCurrentItemIndex())
 	view.ClearStatusBar(main)
 }
@@ -422,6 +423,7 @@ func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, submis
 
 func SelectFirstElementInList(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config) {
 	view.SelectFirstElementInList(list)
+	ClearVimRegister(main, appState)
 
 	if config.RelativeNumbering {
 		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, list.GetCurrentItemIndex())
@@ -430,7 +432,8 @@ func SelectFirstElementInList(main *core.MainView, appState *core.ApplicationSta
 
 func SelectLastElementInList(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config) {
 	view.SelectLastElementInList(list)
-
+	ClearVimRegister(main, appState)
+	
 	if config.RelativeNumbering {
 		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, list.GetCurrentItemIndex())
 	}
