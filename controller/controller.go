@@ -117,8 +117,11 @@ func SetApplicationShortcuts(
 			model.SelectPreviousElement(main, list, appState, config)
 			return event
 		}
-		if event.Rune() == 'q' || event.Key() == tcell.KeyEsc {
+		if event.Rune() == 'q' {
 			model.Quit(app)
+		}
+		if event.Key() == tcell.KeyEsc {
+			model.ClearVimRegister(main, appState)
 		}
 		if event.Rune() == 'i' || event.Rune() == '?' {
 			model.EnterInfoScreen(main, appState)

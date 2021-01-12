@@ -391,8 +391,7 @@ func SelectPreviousElement(main *core.MainView, list *cview.List, appState *core
 		list.SetCurrentItem(currentItem - register)
 	}
 
-	appState.VimNumberRegister = ""
-
+	ClearVimRegister(main, appState)
 	setMarginRanks(config.RelativeNumbering, main, appState, list.GetCurrentItemIndex())
 	view.ClearStatusBar(main)
 }
@@ -459,6 +458,11 @@ func trimFirstRune(s string) string {
 
 func Quit(app *cview.Application) {
 	app.Stop()
+}
+
+func ClearVimRegister(main *core.MainView, appState *core.ApplicationState) {
+	appState.VimNumberRegister = ""
+	view.ClearStatusBar(main)
 }
 
 func Refresh(app *cview.Application,
