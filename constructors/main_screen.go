@@ -33,8 +33,8 @@ func NewScreenController() *core.ScreenController {
 
 	sc.Submissions[submissions.FrontPage].MaxPages = 2
 	sc.Submissions[submissions.New].MaxPages = 2
-	sc.Submissions[submissions.Ask].MaxPages = 1
-	sc.Submissions[submissions.Show].MaxPages = 1
+	sc.Submissions[submissions.Ask].MaxPages = 0
+	sc.Submissions[submissions.Show].MaxPages = 0
 
 	sc.Articles = NewList()
 
