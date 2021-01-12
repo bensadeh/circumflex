@@ -82,12 +82,7 @@ func resetSubmissionStates(submissions []*core.Submissions) {
 
 func initializeView(appState *core.ApplicationState, submissions []*core.Submissions, main *core.MainView,
 	config *core.Config) {
-	if config.RelativeNumbering {
-		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, 0)
-	} else {
-		view.SetAbsoluteLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
-	}
-
+	setMarginRanks(config.RelativeNumbering, main, appState, 0)
 	view.UpdateSettingsScreen(main)
 	view.SetPanelToSubmissions(main)
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.SubmissionsCategory)
@@ -185,13 +180,17 @@ func NextPage(
 	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow, config)
 	list.SetCurrentItem(currentlySelectedItem)
 
-	if config.RelativeNumbering {
+	setMarginRanks(config.RelativeNumbering, main, appState, currentlySelectedItem)
+
+	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
+}
+
+func setMarginRanks(useRelativeNumbering bool, main *core.MainView, appState *core.ApplicationState, currentlySelectedItem int) {
+	if useRelativeNumbering {
 		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, currentlySelectedItem)
 	} else {
 		view.SetAbsoluteLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
 	}
-
-	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
 }
 
 func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []*core.Submission) bool {
@@ -254,12 +253,7 @@ func ChangeCategory(
 	SetListItemsToCurrentPage(list, currentSubmissions.Entries, appState.CurrentPage, appState.SubmissionsToShow, config)
 	list.SetCurrentItem(currentItem)
 
-	if config.RelativeNumbering {
-		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, currentItem)
-	} else {
-		view.SetAbsoluteLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
-	}
-
+	setMarginRanks(config.RelativeNumbering, main, appState, currentItem)
 	view.SetPageCounter(main, appState.CurrentPage, currentSubmissions.MaxPages, "orange")
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.SubmissionsCategory)
 }
@@ -307,12 +301,7 @@ func PreviousPage(list *cview.List,
 
 	list.SetCurrentItem(currentlySelectedItem)
 
-	if config.RelativeNumbering {
-		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, currentlySelectedItem)
-	} else {
-		view.SetAbsoluteLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
-	}
-
+	setMarginRanks(config.RelativeNumbering, main, appState, currentlySelectedItem)
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
 }
 
@@ -382,11 +371,7 @@ func SelectNextElement(main *core.MainView, list *cview.List, appState *core.App
 	}
 
 	appState.VimNumberRegister = ""
-	if config.RelativeNumbering {
-		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, list.GetCurrentItemIndex())
-	} else {
-		view.SetAbsoluteLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
-	}
+	setMarginRanks(config.RelativeNumbering, main, appState, list.GetCurrentItemIndex())
 	view.ClearStatusBar(main)
 }
 
@@ -433,12 +418,7 @@ func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, submis
 	config *core.Config, list *cview.List) {
 	appState.IsOnHelpScreen = false
 
-	if config.RelativeNumbering {
-		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, list.GetCurrentItemIndex())
-	} else {
-		view.SetAbsoluteLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
-	}
-
+	setMarginRanks(config.RelativeNumbering, main, appState, list.GetCurrentItemIndex())
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.SubmissionsCategory)
 	view.SetPanelToSubmissions(main)
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")

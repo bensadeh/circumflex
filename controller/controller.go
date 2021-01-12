@@ -149,7 +149,7 @@ func SetApplicationShortcuts(
 			return event
 		}
 		if unicode.IsDigit(event.Rune()) {
-			model.SelectElementInList(main, event.Rune(), appState)
+			model.PutDigitInRegister(main, event.Rune(), appState)
 			return event
 		}
 		return event
