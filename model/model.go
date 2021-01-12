@@ -377,27 +377,23 @@ func SelectNextElement(main *core.MainView, list *cview.List, appState *core.App
 
 func SelectPreviousElement(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config) {
 	currentItem := list.GetCurrentItemIndex()
-	itemCount := list.GetItemCount()
 	register, _ := strconv.Atoi(appState.VimNumberRegister)
+	numberOfArticlesAbove := currentItem
 	noNumbersInRegister := appState.VimNumberRegister == ""
 
 	if noNumbersInRegister {
 		if currentItem != 0 {
 			list.SetCurrentItem(currentItem - 1)
 		}
-	} else if register > itemCount {
-		list.SetCurrentItem(itemCount)
+	} else if register >= numberOfArticlesAbove {
+		list.SetCurrentItem(0)
 	} else {
 		list.SetCurrentItem(currentItem - register)
 	}
 
 	appState.VimNumberRegister = ""
 
-	if config.RelativeNumbering {
-		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, list.GetCurrentItemIndex())
-	} else {
-		view.SetAbsoluteLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
-	}
+	setMarginRanks(config.RelativeNumbering, main, appState, list.GetCurrentItemIndex())
 	view.ClearStatusBar(main)
 }
 
