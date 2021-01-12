@@ -26,4 +26,9 @@ const (
 		"\033[0m, \033[34mTell HN\033[0m or \033[32mLaunch HN\033[0m. Can be set to \033[31m0\033[0m (No " +
 		"highlighting), \u001B[31m1\u001B[0m (inverse highlighting) and \u001B[31m2\u001B[0m (colored highlighting). " +
 		"Y Combinator Startup labels are colorized in both option \u001B[31m1\u001B[0m and \u001B[31m2\u001B[0m."
+	RelativeNumberingName        = "Use Relative Numbering"
+	RelativeNumberingKey         = "CLX_RELATIVE_NUMBERING"
+	RelativeNumberingDefault     = false
+	RelativeNumberingDescription = "Shows each line with a number relative to the currently selected element. " +
+		"Similar to Vim's hybrid line number mode."
 )

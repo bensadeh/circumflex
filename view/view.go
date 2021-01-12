@@ -115,13 +115,36 @@ func setAndClearStatusBar(app *cview.Application, m *core.MainView, text string,
 	app.Draw()
 }
 
-func SetLeftMarginRanks(m *core.MainView, currentPage int, viewableStoriesOnSinglePage int) {
+func SetAbsoluteLeftMarginRanks(m *core.MainView, currentPage int, viewableStoriesOnSinglePage int) {
 	marginText := ""
 	indentationFromRight := " "
 	startingRank := viewableStoriesOnSinglePage*currentPage + 1
 	for i := startingRank; i < startingRank+viewableStoriesOnSinglePage; i++ {
 		marginText += strconv.Itoa(i) + "." + indentationFromRight + "\n\n"
 	}
+	m.LeftMargin.SetText(marginText)
+}
+
+func SetRelativeLeftMarginRanks(m *core.MainView, currentPage int, viewableStoriesOnSinglePage int, currentPosition int) {
+	marginText := ""
+	indentationFromRight := " "
+
+	endNumber := viewableStoriesOnSinglePage - currentPosition
+	startNumber := currentPosition
+
+	for startNumber != 0 {
+		marginText += "[::d]" + strconv.Itoa(startNumber) + "[::-]" + indentationFromRight + "\n\n"
+		startNumber--
+	}
+
+	marginText += strconv.Itoa(viewableStoriesOnSinglePage*currentPage+currentPosition+1) + "." + indentationFromRight + "\n\n"
+	startNumber++
+
+	for startNumber < endNumber {
+		marginText += "[::d]" + strconv.Itoa(startNumber) + "[::-]" + indentationFromRight + "\n\n"
+		startNumber++
+	}
+
 	m.LeftMargin.SetText(marginText)
 }
 

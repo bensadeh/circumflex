@@ -41,9 +41,6 @@ func NewScreenController() *core.ScreenController {
 	sc.MainView = NewMainView()
 	sc.MainView.Panels.AddPanel(panels.SubmissionsPanel, sc.Articles, true, true)
 
-
-
-
 	return sc
 }
 

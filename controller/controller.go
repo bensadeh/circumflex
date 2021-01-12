@@ -32,7 +32,7 @@ func SetApplicationShortcuts(
 
 		//Offline
 		if appState.IsOffline && event.Rune() == 'r' {
-			model.Refresh(app, list, main, submissions, appState)
+			model.Refresh(app, list, main, submissions, appState, config)
 			return event
 		}
 		if appState.IsOffline && event.Rune() == 'q' {
@@ -85,7 +85,7 @@ func SetApplicationShortcuts(
 			return event
 		}
 		if appState.IsOnHelpScreen && (event.Rune() == 'i') {
-			model.ExitHelpScreen(main, appState, currentState)
+			model.ExitHelpScreen(main, appState, currentState, config, list)
 			return event
 		}
 		if appState.IsOnHelpScreen && (event.Rune() == 'q') {
@@ -110,11 +110,11 @@ func SetApplicationShortcuts(
 			return event
 		}
 		if event.Rune() == 'j' || event.Key() == tcell.KeyDown {
-			model.SelectNextElement(main, list, appState)
+			model.SelectNextElement(main, list, appState, config)
 			return event
 		}
 		if event.Rune() == 'k' || event.Key() == tcell.KeyUp {
-			model.SelectPreviousElement(main, list, appState)
+			model.SelectPreviousElement(main, list, appState, config)
 			return event
 		}
 		if event.Rune() == 'q' || event.Key() == tcell.KeyEsc {
@@ -125,15 +125,15 @@ func SetApplicationShortcuts(
 			return event
 		}
 		if event.Rune() == 'g' {
-			model.SelectFirstElementInList(list)
+			model.SelectFirstElementInList(main, appState, list, config)
 			return event
 		}
 		if event.Rune() == 'G' {
-			model.SelectLastElementInList(list)
+			model.SelectLastElementInList(main, appState, list, config)
 			return event
 		}
 		if event.Rune() == 'r' {
-			model.Refresh(app, list, main, submissions, appState)
+			model.Refresh(app, list, main, submissions, appState, config)
 			return event
 		}
 		if event.Key() == tcell.KeyEnter {

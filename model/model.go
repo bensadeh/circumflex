@@ -34,7 +34,7 @@ func SetAfterInitializationAndAfterResizeFunctions(
 			return
 		}
 		resetStates(appState, submissions)
-		initializeView(appState, submissions, main)
+		initializeView(appState, submissions, main, config)
 		err := fetchAndAppendSubmissionEntries(submissions[appState.SubmissionsCategory], appState)
 		if err != nil {
 			setApplicationToErrorState(appState, main, list, app)
@@ -80,15 +80,18 @@ func resetSubmissionStates(submissions []*core.Submissions) {
 	}
 }
 
-func initializeView(
-	appState *core.ApplicationState,
-	submissions []*core.Submissions,
-	main *core.MainView) {
+func initializeView(appState *core.ApplicationState, submissions []*core.Submissions, main *core.MainView,
+	config *core.Config) {
+	if config.RelativeNumbering {
+		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, 0)
+	} else {
+		view.SetAbsoluteLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
+	}
+
 	view.UpdateSettingsScreen(main)
 	view.SetPanelToSubmissions(main)
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.SubmissionsCategory)
-	view.SetLeftMarginRanks(main, 0, appState.SubmissionsToShow)
-	view.SetPageCounter(main, 0, submissions[appState.SubmissionsCategory].MaxPages, "orange")
+	view.SetPageCounter(main, appState.CurrentPage, submissions[appState.SubmissionsCategory].MaxPages, "orange")
 }
 
 func showPageAfterResize(
@@ -182,7 +185,12 @@ func NextPage(
 	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow, config)
 	list.SetCurrentItem(currentlySelectedItem)
 
-	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
+	if config.RelativeNumbering {
+		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, currentlySelectedItem)
+	} else {
+		view.SetAbsoluteLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
+	}
+
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
 }
 
@@ -246,8 +254,13 @@ func ChangeCategory(
 	SetListItemsToCurrentPage(list, currentSubmissions.Entries, appState.CurrentPage, appState.SubmissionsToShow, config)
 	list.SetCurrentItem(currentItem)
 
+	if config.RelativeNumbering {
+		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, currentItem)
+	} else {
+		view.SetAbsoluteLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
+	}
+
 	view.SetPageCounter(main, appState.CurrentPage, currentSubmissions.MaxPages, "orange")
-	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.SubmissionsCategory)
 }
 
@@ -294,7 +307,12 @@ func PreviousPage(list *cview.List,
 
 	list.SetCurrentItem(currentlySelectedItem)
 
-	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
+	if config.RelativeNumbering {
+		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, currentlySelectedItem)
+	} else {
+		view.SetAbsoluteLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
+	}
+
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
 }
 
@@ -346,7 +364,7 @@ func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
 	appState.IsOnConfigCreationConfirmationMessage = false
 }
 
-func SelectNextElement(main *core.MainView, list *cview.List, appState *core.ApplicationState) {
+func SelectNextElement(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config) {
 	currentItem := list.GetCurrentItemIndex()
 	itemCount := list.GetItemCount()
 	register, _ := strconv.Atoi(appState.VimNumberRegister)
@@ -356,20 +374,23 @@ func SelectNextElement(main *core.MainView, list *cview.List, appState *core.App
 		if currentItem != itemCount {
 			list.SetCurrentItem(currentItem + 1)
 		}
-		return
-	}
 
-	if register > itemCount {
+	} else if register > itemCount {
 		list.SetCurrentItem(itemCount)
 	} else {
 		list.SetCurrentItem(currentItem + register)
 	}
 
 	appState.VimNumberRegister = ""
+	if config.RelativeNumbering {
+		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, list.GetCurrentItemIndex())
+	} else {
+		view.SetAbsoluteLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
+	}
 	view.ClearStatusBar(main)
 }
 
-func SelectPreviousElement(main *core.MainView, list *cview.List, appState *core.ApplicationState) {
+func SelectPreviousElement(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config) {
 	currentItem := list.GetCurrentItemIndex()
 	itemCount := list.GetItemCount()
 	register, _ := strconv.Atoi(appState.VimNumberRegister)
@@ -379,16 +400,19 @@ func SelectPreviousElement(main *core.MainView, list *cview.List, appState *core
 		if currentItem != 0 {
 			list.SetCurrentItem(currentItem - 1)
 		}
-		return
-	}
-
-	if register > itemCount {
+	} else if register > itemCount {
 		list.SetCurrentItem(itemCount)
 	} else {
 		list.SetCurrentItem(currentItem - register)
 	}
 
 	appState.VimNumberRegister = ""
+
+	if config.RelativeNumbering {
+		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, list.GetCurrentItemIndex())
+	} else {
+		view.SetAbsoluteLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
+	}
 	view.ClearStatusBar(main)
 }
 
@@ -405,22 +429,36 @@ func showInfoCategory(main *core.MainView, appState *core.ApplicationState) {
 	view.SetHelpScreenPanel(main, appState.HelpScreenCategory)
 }
 
-func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, submissions *core.Submissions) {
+func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, submissions *core.Submissions,
+	config *core.Config, list *cview.List) {
 	appState.IsOnHelpScreen = false
+
+	if config.RelativeNumbering {
+		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, list.GetCurrentItemIndex())
+	} else {
+		view.SetAbsoluteLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
+	}
 
 	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.SubmissionsCategory)
 	view.SetPanelToSubmissions(main)
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
-	view.SetLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow)
 	view.ClearStatusBar(main)
 }
 
-func SelectFirstElementInList(list *cview.List) {
+func SelectFirstElementInList(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config) {
 	view.SelectFirstElementInList(list)
+
+	if config.RelativeNumbering {
+		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, list.GetCurrentItemIndex())
+	}
 }
 
-func SelectLastElementInList(list *cview.List) {
+func SelectLastElementInList(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config) {
 	view.SelectLastElementInList(list)
+
+	if config.RelativeNumbering {
+		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, list.GetCurrentItemIndex())
+	}
 }
 
 func SelectElementInList(main *core.MainView, element rune, appState *core.ApplicationState) {
@@ -447,11 +485,12 @@ func Refresh(app *cview.Application,
 	list *cview.List,
 	main *core.MainView,
 	submissions []*core.Submissions,
-	appState *core.ApplicationState) {
+	appState *core.ApplicationState,
+	config *core.Config) {
 	afterResizeFunc := app.GetAfterResizeFunc()
 	afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
 
-	ExitHelpScreen(main, appState, submissions[appState.SubmissionsCategory])
+	ExitHelpScreen(main, appState, submissions[appState.SubmissionsCategory], config, list)
 
 	if appState.IsOffline {
 		list.Clear()

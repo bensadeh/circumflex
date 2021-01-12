@@ -4,8 +4,9 @@
 _WIP_
 
 **New features:**
-- Numbers now behave the same as in vim Normal mode
-
+- Numerical input on the home screen now repeats the next action N number of times (same as in Vim's Normal mode)
+- Added option 'Use Relative Numbering': Relative numbering marks each line with a number relative to the distance from 
+  the currently selected element (similar to Vim's hybrid line number mode) 
 
 ## 0.5
 _2021-01-10_

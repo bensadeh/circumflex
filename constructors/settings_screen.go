@@ -91,7 +91,7 @@ func (o option) print(textWidth int) string {
 	wrappedDescription, _ := text.Wrap(o.description, textWidth)
 	output := ""
 
-	output += b(o.name) + " " + dim(o.key) + newLine
+	output += makeHeadline(o.name, o.key, textWidth) + newLine
 	output += wrappedDescription + newParagraph
 	output += "Current value: " + dim(o.value)
 
@@ -163,12 +163,14 @@ func initializeOptions() *options {
 	currentIndentSize := strconv.Itoa(viper.GetInt(settings.IndentSizeKey))
 	currentPreserveRightMargin := strconv.FormatBool(viper.GetBool(settings.PreserveRightMarginKey))
 	currentHighlightHeadlines := strconv.Itoa(viper.GetInt(settings.HighlightHeadlinesKey))
+	currentRelativeNumbering := strconv.FormatBool(viper.GetBool(settings.RelativeNumberingKey))
 
 	options := new(options)
 	options.addOption(settings.HighlightHeadlinesName, settings.HighlightHeadlinesKey, currentHighlightHeadlines, settings.HighlightHeadlinesDescription)
 	options.addOption(settings.CommentWidthName, settings.CommentWidthKey, currentCommentWidth, settings.CommentWidthDescription)
 	options.addOption(settings.PreserveRightMarginName, settings.PreserveRightMarginKey, currentPreserveRightMargin, settings.PreserveRightMarginDescription)
 	options.addOption(settings.IndentSizeName, settings.IndentSizeKey, currentIndentSize, settings.IndentSizeDescription)
+	options.addOption(settings.RelativeNumberingName, settings.RelativeNumberingKey, currentRelativeNumbering, settings.RelativeNumberingDescription)
 	return options
 }
 

@@ -63,4 +63,5 @@ type Config struct {
 	IndentSize          int  `mapstructure:"CLX_INDENT_SIZE"`
 	PreserveRightMargin bool `mapstructure:"CLX_PRESERVE_RIGHT_MARGIN"`
 	HighlightHeadlines  int  `mapstructure:"CLX_HIGHLIGHT_HEADLINES"`
+	RelativeNumbering   bool `mapstructure:"CLX_RELATIVE_NUMBERING"`
 }
