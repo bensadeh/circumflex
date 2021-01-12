@@ -60,7 +60,7 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 ## Configuration
 ### How to change settings
 Customize `circumflex` by editing `config.env` in `~/.config/circumflex`. If `config.env` doesn't exist, `circumflex`
-can create it for you fully populated with the available options. You can also export the keys and values from `config.env` as 
+can create one and populated it with the available options and their descriptions. You can also export the keys and values from `config.env` as 
 [environmental variables](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables)
 in your shell.
 
