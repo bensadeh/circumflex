@@ -398,7 +398,7 @@ func SelectPreviousElement(main *core.MainView, list *cview.List, appState *core
 
 func EnterInfoScreen(main *core.MainView, appState *core.ApplicationState) {
 	appState.IsOnHelpScreen = true
-
+	ClearVimRegister(main, appState)
 	showInfoCategory(main, appState)
 }
 
