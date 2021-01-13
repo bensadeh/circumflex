@@ -1,13 +1,13 @@
 package constructor
 
 import (
+	"strconv"
+
 	"clx/column"
 	"clx/constants/margins"
 	"clx/constants/settings"
 	"clx/file"
 	"clx/screen"
-	"strconv"
-
 	text "github.com/MichaelMure/go-term-text"
 	"github.com/spf13/viper"
 	"gitlab.com/tslocum/cview"

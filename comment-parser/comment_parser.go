@@ -1,11 +1,11 @@
 package comment_parser
 
 import (
-	"clx/screen"
 	"regexp"
 	"strconv"
 	"strings"
 
+	"clx/screen"
 	text "github.com/MichaelMure/go-term-text"
 )
 

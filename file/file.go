@@ -1,9 +1,10 @@
 package file
 
 import (
-	"clx/constants/settings"
 	"os"
 	"path"
+
+	"clx/constants/settings"
 )
 
 func PathToConfigDirectory() string {

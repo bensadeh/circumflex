@@ -3,7 +3,6 @@ package constructor
 import (
 	"clx/constants/margins"
 	"clx/screen"
-
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 )

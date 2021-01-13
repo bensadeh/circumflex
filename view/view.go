@@ -1,6 +1,8 @@
 package view
 
 import (
+	"time"
+
 	"clx/constants/help"
 	"clx/constants/panels"
 	"clx/constants/submissions"
@@ -8,8 +10,6 @@ import (
 	"clx/core"
 	"clx/pages"
 	"clx/submission/ranking"
-	"time"
-
 	text "github.com/MichaelMure/go-term-text"
 	"gitlab.com/tslocum/cview"
 )

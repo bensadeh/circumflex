@@ -3,9 +3,10 @@ package main
 import (
 	"clx/cli"
 	"clx/config"
-	constructor "clx/constructors"
 	"clx/controller"
 	"os"
+
+	constructor "clx/constructors"
 )
 
 func main() {
@@ -33,6 +34,7 @@ func main() {
 	cli.ClearScreen()
 
 	sc.Application.SetRoot(sc.MainView.Grid, true)
+
 	if err := sc.Application.Run(); err != nil {
 		panic(err)
 	}
