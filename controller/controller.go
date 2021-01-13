@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"unicode"
-
 	"clx/constants/help"
 	"clx/core"
 	"clx/model"
+	"unicode"
+
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 )

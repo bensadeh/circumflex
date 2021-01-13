@@ -1,9 +1,9 @@
 package constructor
 
 import (
+	"clx/constants/margins"
 	"strings"
 
-	"clx/constants/margins"
 	text "github.com/MichaelMure/go-term-text"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"

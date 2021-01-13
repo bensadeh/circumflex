@@ -1,15 +1,16 @@
 package view
 
 import (
-	"time"
-
 	"clx/constants/help"
 	"clx/constants/panels"
 	"clx/constants/submissions"
-	constructor "clx/constructors"
 	"clx/core"
 	"clx/pages"
 	"clx/submission/ranking"
+	"time"
+
+	constructor "clx/constructors"
+
 	text "github.com/MichaelMure/go-term-text"
 	"gitlab.com/tslocum/cview"
 )

@@ -1,16 +1,9 @@
 package model
 
 import (
-	"encoding/json"
-	"strconv"
-	"time"
-	"unicode/utf8"
-
 	"clx/browser"
 	"clx/cli"
-	cp "clx/comment-parser"
 	"clx/constants/messages"
-	constructor "clx/constructors"
 	"clx/core"
 	"clx/file"
 	"clx/http"
@@ -18,6 +11,15 @@ import (
 	"clx/submission/fetcher"
 	"clx/submission/formatter"
 	"clx/view"
+	"encoding/json"
+	"strconv"
+	"time"
+	"unicode/utf8"
+
+	cp "clx/comment-parser"
+
+	constructor "clx/constructors"
+
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 )
