@@ -6,6 +6,7 @@ import (
 	"clx/constants/submissions"
 	"clx/core"
 	"clx/screen"
+
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 )

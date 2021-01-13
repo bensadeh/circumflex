@@ -4,9 +4,10 @@ import (
 	"clx/constants/help"
 	"clx/core"
 	"clx/model"
+	"unicode"
+
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
-	"unicode"
 )
 
 func SetAfterInitializationAndAfterResizeFunctions(
@@ -30,7 +31,7 @@ func SetApplicationShortcuts(
 		currentState := submissions[appState.SubmissionsCategory]
 		isOnSettingsPage := appState.IsOnHelpScreen && (appState.HelpScreenCategory == help.Settings)
 
-		//Offline
+		// Offline
 		if appState.IsOffline && event.Rune() == 'r' {
 			model.Refresh(app, list, main, submissions, appState, config)
 			return event
@@ -43,7 +44,7 @@ func SetApplicationShortcuts(
 			return event
 		}
 
-		//Help screen
+		// Help screen
 		if appState.IsOnConfigCreationConfirmationMessage && event.Rune() == 'y' {
 			model.CreateConfig(appState, main)
 			return event
@@ -96,7 +97,7 @@ func SetApplicationShortcuts(
 			return event
 		}
 
-		//Submissions
+		// Submissions
 		if event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab {
 			model.ChangeCategory(app, event, list, appState, submissions, main, config)
 			return event

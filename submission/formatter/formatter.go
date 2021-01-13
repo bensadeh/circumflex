@@ -65,7 +65,7 @@ func reverse(text string) string {
 }
 
 func labelYCStartups(title string) string {
-	startYear := 05
+	startYear := 0o5
 	endYear := 22
 
 	for i := startYear; i <= endYear; i++ {

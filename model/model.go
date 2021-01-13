@@ -14,11 +14,12 @@ import (
 	"clx/submission/formatter"
 	"clx/view"
 	"encoding/json"
-	"github.com/gdamore/tcell/v2"
-	"gitlab.com/tslocum/cview"
 	"strconv"
 	"time"
 	"unicode/utf8"
+
+	"github.com/gdamore/tcell/v2"
+	"gitlab.com/tslocum/cview"
 )
 
 func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list *cview.List, submissions []*core.Submissions, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
@@ -130,14 +131,14 @@ func OpenLinkInBrowser(list *cview.List, appState *core.ApplicationState, submis
 }
 
 func NextPage(app *cview.Application, list *cview.List, submissions *core.Submissions, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
-	isOnLastPage := appState.CurrentPage + 1 > submissions.MaxPages
+	isOnLastPage := appState.CurrentPage+1 > submissions.MaxPages
 	if isOnLastPage {
 		return
 	}
 
 	currentlySelectedItem := list.GetCurrentItemIndex()
 
-	if !pageHasEnoughSubmissionsToView(appState.CurrentPage + 1, appState.SubmissionsToShow, submissions.Entries) {
+	if !pageHasEnoughSubmissionsToView(appState.CurrentPage+1, appState.SubmissionsToShow, submissions.Entries) {
 		err := fetchAndAppendSubmissionEntries(submissions, appState)
 		if err != nil {
 			setApplicationToErrorState(appState, main, list, app)
@@ -323,7 +324,6 @@ func SelectNextElement(main *core.MainView, list *cview.List, appState *core.App
 		if currentItem != itemCount {
 			list.SetCurrentItem(currentItem + 1)
 		}
-
 	} else if register > itemCount {
 		list.SetCurrentItem(itemCount)
 	} else {

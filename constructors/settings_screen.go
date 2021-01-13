@@ -6,10 +6,11 @@ import (
 	"clx/constants/settings"
 	"clx/file"
 	"clx/screen"
+	"strconv"
+
 	text "github.com/MichaelMure/go-term-text"
 	"github.com/spf13/viper"
 	"gitlab.com/tslocum/cview"
-	"strconv"
 )
 
 const (
@@ -44,7 +45,6 @@ func (o options) printAll(textWidth int) string {
 	} else {
 		return printOptionsInOneColumn(o, textWidth)
 	}
-
 }
 
 func printOptionsInOneColumn(o options, textWidth int) string {

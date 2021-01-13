@@ -35,7 +35,7 @@ func WriteToConfigFile(content string) {
 		return
 	}
 
-	_ = os.MkdirAll(PathToConfigDirectory(), 0700)
+	_ = os.MkdirAll(PathToConfigDirectory(), 0o700)
 
 	f, createFileErr := os.Create(PathToConfigFile())
 	if createFileErr != nil {

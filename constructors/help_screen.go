@@ -2,10 +2,11 @@ package constructor
 
 import (
 	"clx/constants/margins"
+	"strings"
+
 	text "github.com/MichaelMure/go-term-text"
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
-	"strings"
 )
 
 const (

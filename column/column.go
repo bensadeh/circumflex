@@ -1,8 +1,9 @@
 package column
 
 import (
-	text "github.com/MichaelMure/go-term-text"
 	"strings"
+
+	text "github.com/MichaelMure/go-term-text"
 )
 
 const (
@@ -31,7 +32,6 @@ func PutInColumns(leftCol string, rightCol string, colWidth int, spaceWidth int)
 			output += text.LeftPadMaxLine(linesA[i], colWidth, 0) + space +
 				text.LeftPadMaxLine(linesB[i], colWidth, 0) + newLine
 		}
-
 	}
 
 	return output

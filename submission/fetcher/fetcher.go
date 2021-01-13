@@ -2,8 +2,8 @@ package fetcher
 
 import (
 	"clx/constants/submissions"
-	"clx/http"
 	"clx/core"
+	"clx/http"
 	"encoding/json"
 	"strconv"
 )
