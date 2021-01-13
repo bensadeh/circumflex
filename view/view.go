@@ -6,7 +6,6 @@ import (
 	"clx/constants/submissions"
 	"clx/core"
 	"clx/pages"
-	"clx/submission/ranking"
 	"time"
 
 	constructor "clx/constructors"
@@ -51,6 +50,7 @@ func appendWhitespace(base string, offset int, screenWidth int) string {
 	for i := 0; i < screenWidth-text.Len(base)-offset; i++ {
 		whitespace += " "
 	}
+
 	return base + whitespace
 }
 
@@ -117,14 +117,8 @@ func setAndClearStatusBar(app *cview.Application, m *core.MainView, text string,
 	app.Draw()
 }
 
-func SetAbsoluteLeftMarginRanks(m *core.MainView, currentPage int, viewableStoriesOnSinglePage int) {
-	marginText := ranking.AbsoluteRankings(viewableStoriesOnSinglePage, currentPage)
-	m.LeftMargin.SetText(marginText)
-}
-
-func SetRelativeLeftMarginRanks(m *core.MainView, currentPage int, viewableStoriesOnSinglePage int, currentPosition int) {
-	marginText := ranking.RelativeRankings(viewableStoriesOnSinglePage, currentPosition, currentPage)
-	m.LeftMargin.SetText(marginText)
+func SetLeftMarginText(m *core.MainView, text string) {
+	m.LeftMargin.SetText(text)
 }
 
 func HideLeftMarginRanks(m *core.MainView) {
