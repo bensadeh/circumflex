@@ -24,10 +24,12 @@ import (
 	"gitlab.com/tslocum/cview"
 )
 
-func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list *cview.List, submissions []*core.Submissions, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
+func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list *cview.List,
+	submissions []*core.Submissions, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
 	app.SetAfterResizeFunc(func(width int, height int) {
 		if appState.IsReturningFromSuspension {
 			appState.IsReturningFromSuspension = false
+
 			return
 		}
 		resetStates(appState, submissions)
@@ -42,8 +44,10 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 	})
 }
 
-func setApplicationToErrorState(appState *core.ApplicationState, main *core.MainView, list *cview.List, app *cview.Application) {
+func setApplicationToErrorState(appState *core.ApplicationState, main *core.MainView, list *cview.List,
+	app *cview.Application) {
 	appState.IsOffline = true
+
 	list.Clear()
 	view.SetPermanentStatusBar(main, messages.OfflineMessage, cview.AlignCenter)
 	app.Draw()
@@ -72,7 +76,8 @@ func resetSubmissionStates(submissions []*core.Submissions) {
 	}
 }
 
-func initializeView(appState *core.ApplicationState, submissions []*core.Submissions, main *core.MainView, config *core.Config) {
+func initializeView(appState *core.ApplicationState, submissions []*core.Submissions, main *core.MainView,
+	config *core.Config) {
 	setMarginRanks(config.RelativeNumbering, main, appState, 0)
 	view.UpdateSettingsScreen(main)
 	view.SetPanelToSubmissions(main)
@@ -80,7 +85,8 @@ func initializeView(appState *core.ApplicationState, submissions []*core.Submiss
 	view.SetPageCounter(main, appState.CurrentPage, submissions[appState.SubmissionsCategory].MaxPages, "orange")
 }
 
-func showPageAfterResize(appState *core.ApplicationState, list *cview.List, submissions []*core.Submissions, main *core.MainView, config *core.Config) {
+func showPageAfterResize(appState *core.ApplicationState, list *cview.List, submissions []*core.Submissions,
+	main *core.MainView, config *core.Config) {
 	submissionEntries := submissions[appState.SubmissionsCategory].Entries
 
 	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.SubmissionsToShow, config)
@@ -90,7 +96,8 @@ func showPageAfterResize(appState *core.ApplicationState, list *cview.List, subm
 	}
 }
 
-func ReadSubmissionComments(app *cview.Application, list *cview.List, submissions []*core.Submission, appState *core.ApplicationState, config *core.Config) {
+func ReadSubmissionComments(app *cview.Application, list *cview.List, submissions []*core.Submission,
+	appState *core.ApplicationState, config *core.Config) {
 	i := list.GetCurrentItemIndex()
 
 	for index := range submissions {
@@ -100,6 +107,7 @@ func ReadSubmissionComments(app *cview.Application, list *cview.List, submission
 
 			if s.Author == "" {
 				appState.IsReturningFromSuspension = true
+
 				return
 			}
 
@@ -109,7 +117,8 @@ func ReadSubmissionComments(app *cview.Application, list *cview.List, submission
 				jComments := new(cp.Comments)
 				_ = json.Unmarshal(JSON, jComments)
 
-				commentTree := cp.PrintCommentTree(*jComments, config.IndentSize, config.CommentWidth, config.PreserveRightMargin)
+				commentTree := cp.PrintCommentTree(*jComments,
+					config.IndentSize, config.CommentWidth, config.PreserveRightMargin)
 
 				cli.Less(commentTree)
 			})
@@ -132,7 +141,8 @@ func OpenLinkInBrowser(list *cview.List, appState *core.ApplicationState, submis
 	browser.Open(url)
 }
 
-func NextPage(app *cview.Application, list *cview.List, submissions *core.Submissions, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
+func NextPage(app *cview.Application, list *cview.List, submissions *core.Submissions, main *core.MainView,
+	appState *core.ApplicationState, config *core.Config) {
 	isOnLastPage := appState.CurrentPage+1 > submissions.MaxPages
 	if isOnLastPage {
 		return
@@ -159,7 +169,8 @@ func NextPage(app *cview.Application, list *cview.List, submissions *core.Submis
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
 }
 
-func setMarginRanks(useRelativeNumbering bool, main *core.MainView, appState *core.ApplicationState, currentlySelectedItem int) {
+func setMarginRanks(useRelativeNumbering bool, main *core.MainView, appState *core.ApplicationState,
+	currentlySelectedItem int) {
 	if useRelativeNumbering {
 		view.SetRelativeLeftMarginRanks(main, appState.CurrentPage, appState.SubmissionsToShow, currentlySelectedItem)
 	} else {
@@ -181,8 +192,10 @@ func fetchAndAppendSubmissionEntries(submissions *core.Submissions, appState *co
 	return err
 }
 
-func SetListItemsToCurrentPage(list *cview.List, submissions []*core.Submission, currentPage int, viewableStories int, config *core.Config) {
+func SetListItemsToCurrentPage(list *cview.List, submissions []*core.Submission, currentPage int, viewableStories int,
+	config *core.Config) {
 	list.Clear()
+
 	start := currentPage * viewableStories
 	end := start + viewableStories
 
@@ -198,8 +211,10 @@ func SetListItemsToCurrentPage(list *cview.List, submissions []*core.Submission,
 	}
 }
 
-func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.List, appState *core.ApplicationState, submissions []*core.Submissions, main *core.MainView, config *core.Config) {
+func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.List, appState *core.ApplicationState,
+	submissions []*core.Submissions, main *core.MainView, config *core.Config) {
 	currentItem := list.GetCurrentItemIndex()
+
 	if event.Key() == tcell.KeyBacktab {
 		appState.SubmissionsCategory = getPreviousCategory(appState.SubmissionsCategory, 4)
 	} else {
@@ -213,6 +228,7 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 		err := fetchAndAppendSubmissionEntries(currentSubmissions, appState)
 		if err != nil {
 			setApplicationToErrorState(appState, main, list, app)
+
 			return
 		}
 	}
@@ -251,13 +267,15 @@ func ChangeHelpScreenCategory(event *tcell.EventKey, appState *core.ApplicationS
 	showInfoCategory(main, appState)
 }
 
-func PreviousPage(list *cview.List, submissions *core.Submissions, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
+func PreviousPage(list *cview.List, submissions *core.Submissions, main *core.MainView, appState *core.ApplicationState,
+	config *core.Config) {
 	previousPage := appState.CurrentPage - 1
 	if previousPage < 0 {
 		return
 	}
 
 	appState.CurrentPage--
+
 	currentlySelectedItem := list.GetCurrentItemIndex()
 
 	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow, config)
@@ -272,9 +290,11 @@ func ShowCreateConfigConfirmationMessage(main *core.MainView, appState *core.App
 	if file.ConfigFileExists() {
 		return
 	}
+
+	appState.IsOnConfigCreationConfirmationMessage = true
+
 	view.SetPermanentStatusBar(main,
 		"[::b]config.env[::-] will be created in [::r]~/.config/circumflex[::-], press Y to Confirm", cview.AlignCenter)
-	appState.IsOnConfigCreationConfirmationMessage = true
 }
 
 func ScrollSettingsOneLineUp(main *core.MainView) {
@@ -304,16 +324,18 @@ func ScrollSettingsToEnd(main *core.MainView) {
 }
 
 func CancelCreateConfigConfirmationMessage(appState *core.ApplicationState, main *core.MainView) {
-	view.SetPermanentStatusBar(main, "", cview.AlignCenter)
 	appState.IsOnConfigCreationConfirmationMessage = false
+
+	view.SetPermanentStatusBar(main, "", cview.AlignCenter)
 }
 
 func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
+	appState.IsOnConfigCreationConfirmationMessage = false
+
 	file.WriteToConfigFile(constructor.GetConfigFileContents())
 
 	view.UpdateSettingsScreen(main)
 	view.SetPermanentStatusBar(main, "Config created at [::b]"+file.PathToConfigFile(), cview.AlignCenter)
-	appState.IsOnConfigCreationConfirmationMessage = false
 }
 
 func SelectNextElement(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config) {
@@ -337,7 +359,8 @@ func SelectNextElement(main *core.MainView, list *cview.List, appState *core.App
 	view.ClearStatusBar(main)
 }
 
-func SelectPreviousElement(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config) {
+func SelectPreviousElement(main *core.MainView, list *cview.List, appState *core.ApplicationState,
+	config *core.Config) {
 	currentItem := list.GetCurrentItemIndex()
 	register, _ := strconv.Atoi(appState.VimNumberRegister)
 	numberOfArticlesAbove := currentItem
@@ -371,7 +394,8 @@ func showInfoCategory(main *core.MainView, appState *core.ApplicationState) {
 	view.SetHelpScreenPanel(main, appState.HelpScreenCategory)
 }
 
-func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, submissions *core.Submissions, config *core.Config, list *cview.List) {
+func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, submissions *core.Submissions,
+	config *core.Config, list *cview.List) {
 	appState.IsOnHelpScreen = false
 
 	setMarginRanks(config.RelativeNumbering, main, appState, list.GetCurrentItemIndex())
@@ -381,7 +405,8 @@ func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, submis
 	view.ClearStatusBar(main)
 }
 
-func SelectFirstElementInList(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config) {
+func SelectFirstElementInList(main *core.MainView, appState *core.ApplicationState, list *cview.List,
+	config *core.Config) {
 	view.SelectFirstElementInList(list)
 	ClearVimRegister(main, appState)
 
@@ -390,7 +415,8 @@ func SelectFirstElementInList(main *core.MainView, appState *core.ApplicationSta
 	}
 }
 
-func SelectLastElementInList(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config) {
+func SelectLastElementInList(main *core.MainView, appState *core.ApplicationState, list *cview.List,
+	config *core.Config) {
 	view.SelectLastElementInList(list)
 	ClearVimRegister(main, appState)
 
@@ -403,6 +429,7 @@ func PutDigitInRegister(main *core.MainView, element rune, appState *core.Applic
 	if len(appState.VimNumberRegister) == 0 && string(element) == "0" {
 		return
 	}
+
 	registerIsMoreThanTwoDigits := len(appState.VimNumberRegister) > 1
 
 	if registerIsMoreThanTwoDigits {
@@ -417,6 +444,7 @@ func PutDigitInRegister(main *core.MainView, element rune, appState *core.Applic
 
 func trimFirstRune(s string) string {
 	_, i := utf8.DecodeRuneInString(s)
+
 	return s[i:]
 }
 
@@ -426,10 +454,12 @@ func Quit(app *cview.Application) {
 
 func ClearVimRegister(main *core.MainView, appState *core.ApplicationState) {
 	appState.VimNumberRegister = ""
+
 	view.ClearStatusBar(main)
 }
 
-func Refresh(app *cview.Application, list *cview.List, main *core.MainView, submissions []*core.Submissions, appState *core.ApplicationState, config *core.Config) {
+func Refresh(app *cview.Application, list *cview.List, main *core.MainView, submissions []*core.Submissions,
+	appState *core.ApplicationState, config *core.Config) {
 	afterResizeFunc := app.GetAfterResizeFunc()
 	afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
 
