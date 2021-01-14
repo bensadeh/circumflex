@@ -352,21 +352,25 @@ func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
 func SelectNextElement(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config) {
 	currentItem := list.GetCurrentItemIndex()
 	itemCount := list.GetItemCount()
+	isAtTheBottomOfTheList := currentItem+1 == itemCount
 	register, _ := strconv.Atoi(appState.VimNumberRegister)
-	noNumbersInRegister := appState.VimNumberRegister == ""
+	isNumbersInRegister := appState.VimNumberRegister != ""
+	availableItemsDown := itemCount - currentItem
 
 	switch {
-	case noNumbersInRegister:
-		if currentItem+1 != itemCount {
-			currentItem++
-			list.SetCurrentItem(currentItem)
-		}
-	case register > itemCount:
-		currentItem = itemCount
+	case isAtTheBottomOfTheList:
+		break
+	case !isNumbersInRegister:
+		currentItem++
 		list.SetCurrentItem(currentItem)
-	default:
+	case register >= availableItemsDown:
+		currentItem = itemCount - 1
+		list.SetCurrentItem(currentItem)
+	case register < availableItemsDown:
 		currentItem += register
 		list.SetCurrentItem(currentItem)
+	default:
+		break
 	}
 
 	ClearVimRegister(main, appState)
