@@ -357,13 +357,16 @@ func SelectNextElement(main *core.MainView, list *cview.List, appState *core.App
 
 	switch {
 	case noNumbersInRegister:
-		if currentItem != itemCount {
-			list.SetCurrentItem(currentItem + 1)
+		if currentItem+1 != itemCount {
+			currentItem++
+			list.SetCurrentItem(currentItem)
 		}
 	case register > itemCount:
-		list.SetCurrentItem(itemCount)
+		currentItem = itemCount
+		list.SetCurrentItem(currentItem)
 	default:
-		list.SetCurrentItem(currentItem + register)
+		currentItem += register
+		list.SetCurrentItem(currentItem)
 	}
 
 	ClearVimRegister(main, appState)
@@ -382,12 +385,15 @@ func SelectPreviousElement(main *core.MainView, list *cview.List, appState *core
 	switch {
 	case noNumbersInRegister:
 		if currentItem != 0 {
-			list.SetCurrentItem(currentItem - 1)
+			currentItem--
+			list.SetCurrentItem(currentItem)
 		}
 	case register >= numberOfArticlesAbove:
-		list.SetCurrentItem(0)
+		currentItem = 0
+		list.SetCurrentItem(currentItem)
 	default:
-		list.SetCurrentItem(currentItem - register)
+		currentItem -= register
+		list.SetCurrentItem(currentItem)
 	}
 
 	ClearVimRegister(main, appState)
@@ -424,22 +430,22 @@ func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, submis
 
 func SelectFirstElementInList(main *core.MainView, appState *core.ApplicationState, list *cview.List,
 	config *core.Config) {
+	view.SelectFirstElementInList(list)
 	ClearVimRegister(main, appState)
 
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, list.GetCurrentItemIndex(),
 		appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
-	view.SelectFirstElementInList(list)
 }
 
 func SelectLastElementInList(main *core.MainView, appState *core.ApplicationState, list *cview.List,
 	config *core.Config) {
+	view.SelectLastElementInList(list)
 	ClearVimRegister(main, appState)
 
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, list.GetCurrentItemIndex(),
 		appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
-	view.SelectLastElementInList(list)
 }
 
 func PutDigitInRegister(main *core.MainView, element rune, appState *core.ApplicationState) {
