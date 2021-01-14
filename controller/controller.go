@@ -111,11 +111,11 @@ func SetApplicationShortcuts(
 			return event
 		}
 		if event.Rune() == 'j' || event.Key() == tcell.KeyDown {
-			model.SelectNextElement(main, list, appState, config)
+			model.SelectItemDown(main, list, appState, config)
 			return event
 		}
 		if event.Rune() == 'k' || event.Key() == tcell.KeyUp {
-			model.SelectPreviousElement(main, list, appState, config)
+			model.SelectItemUp(main, list, appState, config)
 			return event
 		}
 		if event.Rune() == 'q' {

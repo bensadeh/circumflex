@@ -349,7 +349,7 @@ func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
 	view.SetPermanentStatusBar(main, "Config created at [::b]"+file.PathToConfigFile(), cview.AlignCenter)
 }
 
-func SelectNextElement(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config) {
+func SelectItemDown(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config) {
 	currentItem := list.GetCurrentItemIndex()
 	itemCount := list.GetItemCount()
 	isAtTheBottomOfTheList := currentItem+1 == itemCount
@@ -357,29 +357,41 @@ func SelectNextElement(main *core.MainView, list *cview.List, appState *core.App
 	isNumbersInRegister := appState.VimNumberRegister != ""
 	availableItemsDown := itemCount - currentItem
 
-	switch {
-	case isAtTheBottomOfTheList:
-		break
-	case !isNumbersInRegister:
-		currentItem++
-		list.SetCurrentItem(currentItem)
-	case register >= availableItemsDown:
-		currentItem = itemCount - 1
-		list.SetCurrentItem(currentItem)
-	case register < availableItemsDown:
-		currentItem += register
-		list.SetCurrentItem(currentItem)
-	default:
-		break
-	}
+	nextItem := calculateNextDownItem(isAtTheBottomOfTheList,
+		isNumbersInRegister,
+		currentItem,
+		register,
+		availableItemsDown,
+		itemCount)
+	list.SetCurrentItem(nextItem)
 
 	ClearVimRegister(main, appState)
-	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, currentItem, appState.CurrentPage)
+	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, nextItem, appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
 	view.ClearStatusBar(main)
 }
 
-func SelectPreviousElement(main *core.MainView, list *cview.List, appState *core.ApplicationState,
+func calculateNextDownItem(isAtTheBottomOfTheList bool, isNumbersInRegister bool, currentItem int, register int,
+	availableItemsDown int, itemCount int) int {
+	var nextElement int
+
+	switch {
+	case isAtTheBottomOfTheList:
+		nextElement = currentItem
+	case !isNumbersInRegister:
+		nextElement = currentItem + 1
+	case register >= availableItemsDown:
+		nextElement = itemCount - 1
+	case register < availableItemsDown:
+		nextElement += currentItem + register
+	default:
+		break
+	}
+
+	return nextElement
+}
+
+func SelectItemUp(main *core.MainView, list *cview.List, appState *core.ApplicationState,
 	config *core.Config) {
 	currentItem := list.GetCurrentItemIndex()
 	register, _ := strconv.Atoi(appState.VimNumberRegister)
