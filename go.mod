@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/MichaelMure/go-term-text v0.2.9
+	github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d
 	github.com/gdamore/tcell/v2 v2.1.0
 	github.com/spf13/viper v1.7.1
 	github.com/wayneashleyberry/terminal-dimensions v1.0.0

@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	text "github.com/MichaelMure/go-term-text"
+	"github.com/acarl005/stripansi"
 	"github.com/spf13/viper"
 	"gitlab.com/tslocum/cview"
 )
@@ -42,9 +43,9 @@ func (o options) printAll(textWidth int) string {
 
 	if usableScreenWidth > (textWidth*2 + spaceBetweenDescriptions) {
 		return printOptionsInTwoColumns(o, textWidth, spaceBetweenDescriptions)
-	} else {
-		return printOptionsInOneColumn(o, textWidth)
 	}
+
+	return printOptionsInOneColumn(o, textWidth)
 }
 
 func printOptionsInOneColumn(o options, textWidth int) string {
@@ -52,11 +53,13 @@ func printOptionsInOneColumn(o options, textWidth int) string {
 	for i := 0; i < len(o.options); i++ {
 		output += o.options[i].print(textWidth) + newParagraph
 	}
+
 	return output
 }
 
 func printOptionsInTwoColumns(o options, textWidth int, space int) string {
 	output := ""
+
 	for i := 0; i < len(o.options); i += 2 {
 		if i+2 <= len(o.options) {
 			leftDesc, leftValue := o.options[i].printNoWrap(textWidth)
@@ -121,7 +124,8 @@ func makeHeadline(name string, key string, textWidth int) string {
 }
 
 func (o option) printConfig() string {
-	description, _ := text.WrapWithPad(o.description, 80, "# ")
+	cleanDesc := stripansi.Strip(o.description)
+	description, _ := text.WrapWithPad(cleanDesc, 80, "# ")
 
 	return description + newLine + "#" + o.key + "=" + o.value
 }
@@ -155,6 +159,7 @@ func getCommentWidth() int {
 
 func GetConfigFileContents() string {
 	options := initializeOptions()
+
 	return options.getConfigFileTemplate()
 }
 
@@ -166,11 +171,17 @@ func initializeOptions() *options {
 	currentRelativeNumbering := strconv.FormatBool(viper.GetBool(settings.RelativeNumberingKey))
 
 	options := new(options)
-	options.addOption(settings.HighlightHeadlinesName, settings.HighlightHeadlinesKey, currentHighlightHeadlines, settings.HighlightHeadlinesDescription)
-	options.addOption(settings.CommentWidthName, settings.CommentWidthKey, currentCommentWidth, settings.CommentWidthDescription)
-	options.addOption(settings.PreserveRightMarginName, settings.PreserveRightMarginKey, currentPreserveRightMargin, settings.PreserveRightMarginDescription)
-	options.addOption(settings.IndentSizeName, settings.IndentSizeKey, currentIndentSize, settings.IndentSizeDescription)
-	options.addOption(settings.RelativeNumberingName, settings.RelativeNumberingKey, currentRelativeNumbering, settings.RelativeNumberingDescription)
+	options.addOption(settings.HighlightHeadlinesName, settings.HighlightHeadlinesKey,
+		currentHighlightHeadlines, settings.HighlightHeadlinesDescription)
+	options.addOption(settings.CommentWidthName, settings.CommentWidthKey,
+		currentCommentWidth, settings.CommentWidthDescription)
+	options.addOption(settings.PreserveRightMarginName, settings.PreserveRightMarginKey,
+		currentPreserveRightMargin, settings.PreserveRightMarginDescription)
+	options.addOption(settings.IndentSizeName, settings.IndentSizeKey,
+		currentIndentSize, settings.IndentSizeDescription)
+	options.addOption(settings.RelativeNumberingName, settings.RelativeNumberingKey,
+		currentRelativeNumbering, settings.RelativeNumberingDescription)
+
 	return options
 }
 
