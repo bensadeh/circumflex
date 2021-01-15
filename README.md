@@ -58,11 +58,14 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 </p>
 
 ## Configuration
-### How to change settings
-Customize `circumflex` by editing `config.env` in `~/.config/circumflex`. If `config.env` doesn't exist, `circumflex`
+### How to configure
+Customize the front page and comment section by editing `config.env` in `~/.config/circumflex`. If `config.env` doesn't exist, `circumflex`
 can create one and populated it with the available options and their descriptions. You can also export the keys and values from `config.env` as 
 [environmental variables](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables)
 in your shell.
+
+If the same key is simultaneously set in `config.env` and exported in your environment, the environment value will take 
+precedence.
 
 <p align="center">
   <img src="screenshots/settings.png" width="700" alt="^"/>
@@ -78,7 +81,7 @@ The number of whitespaces prepended to each reply, not including the color bar.
 
 #### Highlight Headlines
 Highlights headlines containing the text Show HN, Ask HN, Tell HN or Launch HN. Can be set to 0 (No highlighting), 1 
-(inverse highlighting) and 2 (colored highlighting). Y Combinator Startup labels are colorized in both option 1 and 2.
+(inverse highlighting) or 2 (colored highlighting). Y Combinator Startup labels are colorized in both option 1 and 2.
 
 #### Use Relative Numbering
 Shows each line with a number relative to the currently selected element. Similar to Vim's hybrid line number mode.
