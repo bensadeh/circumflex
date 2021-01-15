@@ -8,6 +8,9 @@ _WIP_
 - Added option 'Use Relative Numbering': Relative numbering marks each line with a number relative to the distance from 
   the currently selected element (similar to Vim's hybrid line number mode) 
 
+**Bugfixes:**
+- Fixed a bug where the descriptions in `config.env` contained raw ANSI escape codes
+
 ## 0.5
 _2021-01-10_
 
