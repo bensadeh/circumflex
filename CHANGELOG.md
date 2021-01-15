@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.6
-_WIP_
+_2021-01-15_
 
 **New features:**
 - Numerical input on the home screen now repeats the next action N number of times (same as in Vim's Normal mode)
