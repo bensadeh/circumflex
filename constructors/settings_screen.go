@@ -6,10 +6,10 @@ import (
 	"clx/constants/settings"
 	"clx/file"
 	"clx/screen"
+	ansi "clx/utils/strip-ansi"
 	"strconv"
 
 	text "github.com/MichaelMure/go-term-text"
-	"github.com/acarl005/stripansi"
 	"github.com/spf13/viper"
 	"gitlab.com/tslocum/cview"
 )
@@ -124,7 +124,7 @@ func makeHeadline(name string, key string, textWidth int) string {
 }
 
 func (o option) printConfig() string {
-	cleanDesc := stripansi.Strip(o.description)
+	cleanDesc := ansi.Strip(o.description)
 	description, _ := text.WrapWithPad(cleanDesc, 80, "# ")
 
 	return description + newLine + "#" + o.key + "=" + o.value
@@ -152,9 +152,9 @@ func getCommentWidth() int {
 
 	if commentWidthFromSettings == 0 {
 		return screen.GetTerminalWidth() - margins.LeftMargin
-	} else {
-		return commentWidthFromSettings
 	}
+
+	return commentWidthFromSettings
 }
 
 func GetConfigFileContents() string {
