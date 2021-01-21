@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7
+_WIP_
+
+**Bugfixes:**
+- Fixed a bug where JSON errors were not handled properly
+
 ## 0.6
 _2021-01-15_
 

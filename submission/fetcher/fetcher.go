@@ -16,9 +16,15 @@ const (
 func FetchSubmissionEntries(page int, category int) ([]*core.Submission, error) {
 	url := getUrl(category)
 	p := strconv.Itoa(page)
-	JSON, err := http.Get(url + p)
-	subs := unmarshalJSON(JSON)
-	return subs, err
+	JSON, httpErr := http.Get(url + p)
+	if httpErr != nil {
+		return nil, httpErr
+	}
+	subs, jsonErr := unmarshalJSON(JSON)
+	if jsonErr != nil {
+		return nil, jsonErr
+	}
+	return subs, nil
 }
 
 func getUrl(category int) string {
@@ -36,8 +42,8 @@ func getUrl(category int) string {
 	}
 }
 
-func unmarshalJSON(stream []byte) []*core.Submission {
+func unmarshalJSON(stream []byte) ([]*core.Submission, error) {
 	var subs []*core.Submission
-	_ = json.Unmarshal(stream, &subs)
-	return subs
+	err := json.Unmarshal(stream, &subs)
+	return subs, err
 }
