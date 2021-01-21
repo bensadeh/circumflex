@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.7
-_WIP_
+_2021-01-21_
 
 **Cosmetic:**
 - Changed `[Y]` to `🆈`
