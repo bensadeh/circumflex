@@ -50,7 +50,8 @@ func setApplicationToErrorState(appState *core.ApplicationState, main *core.Main
 	appState.IsOffline = true
 
 	list.Clear()
-	view.SetPermanentStatusBar(main, messages.OfflineMessage, cview.AlignCenter)
+	err := "[black:red] ERROR [red:-] "
+	view.SetPermanentStatusBar(main, err+messages.OfflineMessage, cview.AlignCenter)
 	app.Draw()
 }
 
@@ -345,8 +346,10 @@ func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
 
 	file.WriteToConfigFile(constructor.GetConfigFileContents())
 
+	success := "[black:green] SUCCESS [-:-:-] "
+
 	view.UpdateSettingsScreen(main)
-	view.SetPermanentStatusBar(main, "Config created at [::b]"+file.PathToConfigFile(), cview.AlignCenter)
+	view.SetPermanentStatusBar(main, success+"Config created at [::b]"+file.PathToConfigFile(), cview.AlignCenter)
 }
 
 func SelectItemDown(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config) {

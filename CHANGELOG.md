@@ -3,6 +3,9 @@
 ## 0.7
 _WIP_
 
+**Cosmetic:**
+- Add `ERROR` and `SUCCESS` labels to some messages
+
 **Bugfixes:**
 - Fixed a bug where JSON errors were not handled properly
 
