@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.1
+_WIP_
+
+**Backend:**
+- Added User-Agent ID
+
 ## 0.7
 _2021-01-21_
 

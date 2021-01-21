@@ -7,18 +7,25 @@ import (
 	"time"
 )
 
-var myClient = &http.Client{Timeout: 2 * time.Second}
-
 func Get(url string) ([]byte, error) {
-	r, err := myClient.Get(url)
+	client := &http.Client{Timeout: 2 * time.Second}
+
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
-	defer closeStream(r.Body)
 
-	body, readError := ioutil.ReadAll(r.Body)
-	if readError != nil {
-		return nil, readError
+	req.Header.Set("User-Agent", "circumflex")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer closeStream(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
 	}
 
 	return body, nil
