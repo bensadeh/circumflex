@@ -74,15 +74,15 @@ func labelYCStartups(title string) string {
 		summer := "(YC S" + year + ")"
 		winter := "(YC W" + year + ")"
 
-		title = strings.ReplaceAll(title, summer, orange("YC S"+year))
-		title = strings.ReplaceAll(title, winter, orange("YC W"+year))
+		title = strings.ReplaceAll(title, summer, orange(" YC S"+year+" "))
+		title = strings.ReplaceAll(title, winter, orange(" YC W"+year+" "))
 	}
 
 	return title
 }
 
 func orange(text string) string {
-	return "[orange:" + black + "]" + text + "[-:-:-]"
+	return "[" + black + ":orange]" + text + "[-:-:-]"
 }
 
 func GetSecondaryText(points int, author string, time string, comments int) string {
