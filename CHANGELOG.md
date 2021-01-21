@@ -4,6 +4,7 @@
 _WIP_
 
 **Cosmetic:**
+- `circumflex` now turn off all submission text highlighting by default
 - Add `ERROR` and `SUCCESS` labels to some messages
 
 **Bugfixes:**

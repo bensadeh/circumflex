@@ -21,7 +21,7 @@ const (
 		"as the comment width. Best used when Indent Size is small to avoid deep replies being too short."
 	HighlightHeadlinesName        = "Highlight Headlines"
 	HighlightHeadlinesKey         = "CLX_HIGHLIGHT_HEADLINES"
-	HighlightHeadlinesDefault     = 1
+	HighlightHeadlinesDefault     = 0
 	HighlightHeadlinesDescription = "Highlights text containing \033[31mShow HN\033[0m, \033[35mAsk HN\033[0m, " +
 		"\033[34mTell HN\033[0m or \033[32mLaunch HN\033[0m. Can be set to \033[31m0\033[0m (No highlighting), " +
 		"\u001B[31m1\u001B[0m (inverse highlighting) or \u001B[31m2\u001B[0m (colored highlighting). Y Combinator " +
