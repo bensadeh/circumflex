@@ -21,23 +21,23 @@ const (
 func SetHackerNewsHeader(m *core.MainView, screenWidth int, category int) {
 	switch category {
 	case submissions.FrontPage:
-		base := "[" + black + ":orange:]   [Y[] [::b]Hacker News[::-]  new | ask | show"
-		offset := -28
+		base := "[" + black + ":orange:b]    🆈  [::]Hacker News[::-]  new | ask | show"
+		offset := -27
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
 	case submissions.New:
-		base := "[" + black + ":orange:]   [Y[] [::b]Hacker News[::-]  [white]new[" + black + "::] | ask | show"
-		offset := -46
+		base := "[" + black + ":orange:b]    🆈  [::]Hacker News[::-]  [white]new[" + black + "::] | ask | show"
+		offset := -45
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
 	case submissions.Ask:
-		base := "[" + black + ":orange:]   [Y[] [::b]Hacker News[::-]  new | [white]ask[" + black + "::] | show"
-		offset := -46
+		base := "[" + black + ":orange:b]    🆈  [::]Hacker News[::-]  new | [white]ask[" + black + "::] | show"
+		offset := -45
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
 	case submissions.Show:
-		base := "[" + black + ":orange:]   [Y[] [::b]Hacker News[::-]  new | ask | [white]show[" + black + "::]"
-		offset := -46
+		base := "[" + black + ":orange:b]    🆈  [::]Hacker News[::-]  new | ask | [white]show[" + black + "::]"
+		offset := -45
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
 	default:
@@ -57,17 +57,17 @@ func appendWhitespace(base string, offset int, screenWidth int) string {
 func SetHelpScreenHeader(m *core.MainView, screenWidth int, category int) {
 	switch category {
 	case help.Info:
-		base := "[" + black + ":#82aaff:]   [^] [::b]circumflex[::-]   keymaps | settings"
+		base := "[" + black + ":#82aaff:b]    🅲  [::]circumflex[::-]   keymaps | settings"
 		offset := -28
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
 	case help.Keymaps:
-		base := "[" + black + ":#82aaff:]   [^] [::b]circumflex[::-]   [white]keymaps[" + black + "::] | settings"
+		base := "[" + black + ":#82aaff:b]    🅲  [::]circumflex[::-]   [white]keymaps[" + black + "::] | settings"
 		offset := -46
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)
 	case help.Settings:
-		base := "[" + black + ":#82aaff:]   [^] [::b]circumflex[::-]   keymaps | [white]settings[" + black + "::]"
+		base := "[" + black + ":#82aaff:b]    🅲  [::]circumflex[::-]   keymaps | [white]settings[" + black + "::]"
 		offset := -46
 		header := appendWhitespace(base, offset, screenWidth)
 		m.Header.SetText(header)

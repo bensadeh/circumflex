@@ -4,9 +4,10 @@
 _WIP_
 
 **Cosmetic:**
-- `circumflex` now turn off all submission text highlighting by default
-- Add `ERROR` and `SUCCESS` labels to some messages
-- Change `YC S/WXX` labels
+- Changed `[Y]` to `🆈`
+- `circumflex` now turns off all submission text highlighting by default
+- Added `ERROR` and `SUCCESS` labels to some messages
+- Changed `YC S/WXX` labels
 
 **Bugfixes:**
 - Fixed a bug where JSON errors were not handled properly
