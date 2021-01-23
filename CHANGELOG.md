@@ -11,7 +11,7 @@ _2021-01-21_
 
 **Cosmetic:**
 - Changed `[Y]` to `🆈`
-- `circumflex` now turns off all submission text highlighting by default
+- Submission text highlighting now turned off by default
 - Added `ERROR` and `SUCCESS` labels to some messages
 - Changed `YC S/WXX` labels
 
