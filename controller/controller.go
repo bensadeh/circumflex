@@ -123,6 +123,7 @@ func SetApplicationShortcuts(
 		}
 		if event.Key() == tcell.KeyEsc {
 			model.ClearVimRegister(main, appState)
+			return event
 		}
 		if event.Rune() == 'i' || event.Rune() == '?' {
 			model.EnterInfoScreen(main, appState)
