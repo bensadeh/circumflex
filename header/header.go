@@ -30,8 +30,10 @@ func header(symbol string, title string, subHeaders []string, selectedSubHeader 
 }
 
 func getWhitespaceFiller(base string, screenWidth int) string {
+	availableScreenSpace := screenWidth - format.Len(base)
 	whitespace := ""
-	for i := 0; i < screenWidth-format.Len(base); i++ {
+
+	for i := 0; i < availableScreenSpace; i++ {
 		whitespace += " "
 	}
 
