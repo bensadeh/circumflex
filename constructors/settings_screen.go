@@ -6,6 +6,7 @@ import (
 	"clx/constants/settings"
 	"clx/file"
 	"clx/screen"
+	"clx/utils/format"
 	ansi "clx/utils/strip-ansi"
 	"strconv"
 
@@ -17,9 +18,6 @@ import (
 const (
 	newLine      = "\n"
 	newParagraph = "\n\n"
-	bold         = "\033[1m"
-	dimmed       = "\033[2m"
-	normal       = "\033[0m"
 )
 
 type options struct {
@@ -96,7 +94,7 @@ func (o option) print(textWidth int) string {
 
 	output += makeHeadline(o.name, o.key, textWidth) + newLine
 	output += wrappedDescription + newParagraph
-	output += "Current value: " + dim(o.value)
+	output += "Current value: " + format.Dim(o.value)
 
 	return output
 }
@@ -107,7 +105,7 @@ func (o option) printNoWrap(textWidth int) (string, string) {
 	description += makeHeadline(o.name, o.key, textWidth) + newLine
 	description += o.description
 
-	return description, "Current value: " + dim(o.value)
+	return description, "Current value: " + format.Dim(o.value)
 }
 
 func makeHeadline(name string, key string, textWidth int) string {
@@ -120,7 +118,7 @@ func makeHeadline(name string, key string, textWidth int) string {
 		whiteSpace += " "
 	}
 
-	return b(name) + whiteSpace + dim(key)
+	return format.Bold(name) + whiteSpace + format.Dim(key)
 }
 
 func (o option) printConfig() string {
@@ -137,14 +135,14 @@ func GetSettingsText() string {
 	commentWidth := getCommentWidth()
 
 	if file.Exists(pathToConfigFile) {
-		message += dim("Using config file at " + pathToConfigFile)
+		message += format.Dim("Using config file at " + pathToConfigFile)
 	} else {
-		message += dim("Press T to create config.env in " + pathToConfigDirectory)
+		message += format.Dim("Press T to create config.env in " + pathToConfigDirectory)
 	}
 
-	options := initializeOptions()
+	o := initializeOptions()
 
-	return cview.TranslateANSI(message + newParagraph + options.printAll(commentWidth))
+	return cview.TranslateANSI(message + newParagraph + o.printAll(commentWidth))
 }
 
 func getCommentWidth() int {
@@ -158,9 +156,9 @@ func getCommentWidth() int {
 }
 
 func GetConfigFileContents() string {
-	options := initializeOptions()
+	o := initializeOptions()
 
-	return options.getConfigFileTemplate()
+	return o.getConfigFileTemplate()
 }
 
 func initializeOptions() *options {
@@ -170,25 +168,17 @@ func initializeOptions() *options {
 	currentHighlightHeadlines := strconv.Itoa(viper.GetInt(settings.HighlightHeadlinesKey))
 	currentRelativeNumbering := strconv.FormatBool(viper.GetBool(settings.RelativeNumberingKey))
 
-	options := new(options)
-	options.addOption(settings.HighlightHeadlinesName, settings.HighlightHeadlinesKey,
+	o := new(options)
+	o.addOption(settings.HighlightHeadlinesName, settings.HighlightHeadlinesKey,
 		currentHighlightHeadlines, settings.HighlightHeadlinesDescription)
-	options.addOption(settings.CommentWidthName, settings.CommentWidthKey,
+	o.addOption(settings.CommentWidthName, settings.CommentWidthKey,
 		currentCommentWidth, settings.CommentWidthDescription)
-	options.addOption(settings.PreserveRightMarginName, settings.PreserveRightMarginKey,
+	o.addOption(settings.PreserveRightMarginName, settings.PreserveRightMarginKey,
 		currentPreserveRightMargin, settings.PreserveRightMarginDescription)
-	options.addOption(settings.IndentSizeName, settings.IndentSizeKey,
+	o.addOption(settings.IndentSizeName, settings.IndentSizeKey,
 		currentIndentSize, settings.IndentSizeDescription)
-	options.addOption(settings.RelativeNumberingName, settings.RelativeNumberingKey,
+	o.addOption(settings.RelativeNumberingName, settings.RelativeNumberingKey,
 		currentRelativeNumbering, settings.RelativeNumberingDescription)
 
-	return options
-}
-
-func b(text string) string {
-	return bold + text + normal
-}
-
-func dim(text string) string {
-	return dimmed + text + normal
+	return o
 }
