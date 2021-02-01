@@ -84,7 +84,7 @@ func initializeView(appState *core.ApplicationState, submissions []*core.Submiss
 	view.SetLeftMarginText(main, marginText)
 	view.UpdateSettingsScreen(main)
 	view.SetPanelToSubmissions(main)
-	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.SubmissionsCategory)
+	view.SetHackerNewsHeader(main, appState.SubmissionsCategory)
 	view.SetPageCounter(main, appState.CurrentPage, submissions[appState.SubmissionsCategory].MaxPages, "orange")
 }
 
@@ -248,7 +248,7 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	view.SetLeftMarginText(main, marginText)
 
 	view.SetPageCounter(main, appState.CurrentPage, currentSubmissions.MaxPages, "orange")
-	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.SubmissionsCategory)
+	view.SetHackerNewsHeader(main, appState.SubmissionsCategory)
 }
 
 func getNextCategory(currentCategory int, numberOfCategories int) int {
@@ -429,7 +429,7 @@ func EnterInfoScreen(main *core.MainView, appState *core.ApplicationState) {
 
 func showInfoCategory(main *core.MainView, appState *core.ApplicationState) {
 	view.HidePageCounter(main)
-	view.SetHelpScreenHeader(main, appState.ScreenWidth, appState.HelpScreenCategory)
+	view.SetHelpScreenHeader(main, appState.HelpScreenCategory)
 	view.HideLeftMarginRanks(main)
 	view.SetHelpScreenPanel(main, appState.HelpScreenCategory)
 }
@@ -441,7 +441,7 @@ func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, submis
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, list.GetCurrentItemIndex(),
 		appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
-	view.SetHackerNewsHeader(main, appState.ScreenWidth, appState.SubmissionsCategory)
+	view.SetHackerNewsHeader(main, appState.SubmissionsCategory)
 	view.SetPanelToSubmissions(main)
 	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
 	view.ClearStatusBar(main)

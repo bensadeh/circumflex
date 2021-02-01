@@ -3,77 +3,24 @@ package view
 import (
 	"clx/constants/help"
 	"clx/constants/panels"
-	"clx/constants/submissions"
 	"clx/core"
+	"clx/header"
 	"clx/pages"
 	"time"
 
 	constructor "clx/constructors"
 
-	text "github.com/MichaelMure/go-term-text"
 	"gitlab.com/tslocum/cview"
 )
 
-const (
-	black = "#0c0c0c"
-)
-
-func SetHackerNewsHeader(m *core.MainView, screenWidth int, category int) {
-	switch category {
-	case submissions.FrontPage:
-		base := "[" + black + ":orange:b]    🆈  [::]Hacker News[::-]  new | ask | show"
-		offset := -27
-		header := appendWhitespace(base, offset, screenWidth)
-		m.Header.SetText(header)
-	case submissions.New:
-		base := "[" + black + ":orange:b]    🆈  [::]Hacker News[::-]  [white]new[" + black + "::] | ask | show"
-		offset := -45
-		header := appendWhitespace(base, offset, screenWidth)
-		m.Header.SetText(header)
-	case submissions.Ask:
-		base := "[" + black + ":orange:b]    🆈  [::]Hacker News[::-]  new | [white]ask[" + black + "::] | show"
-		offset := -45
-		header := appendWhitespace(base, offset, screenWidth)
-		m.Header.SetText(header)
-	case submissions.Show:
-		base := "[" + black + ":orange:b]    🆈  [::]Hacker News[::-]  new | ask | [white]show[" + black + "::]"
-		offset := -45
-		header := appendWhitespace(base, offset, screenWidth)
-		m.Header.SetText(header)
-	default:
-		return
-	}
+func SetHackerNewsHeader(m *core.MainView, category int) {
+	h := header.GetHackerNewsHeader(category)
+	m.Header.SetText(h)
 }
 
-func appendWhitespace(base string, offset int, screenWidth int) string {
-	whitespace := ""
-	for i := 0; i < screenWidth-text.Len(base)-offset; i++ {
-		whitespace += " "
-	}
-
-	return base + whitespace
-}
-
-func SetHelpScreenHeader(m *core.MainView, screenWidth int, category int) {
-	switch category {
-	case help.Info:
-		base := "[" + black + ":#82aaff:b]    🅲  [::]circumflex[::-]   keymaps | settings"
-		offset := -28
-		header := appendWhitespace(base, offset, screenWidth)
-		m.Header.SetText(header)
-	case help.Keymaps:
-		base := "[" + black + ":#82aaff:b]    🅲  [::]circumflex[::-]   [white]keymaps[" + black + "::] | settings"
-		offset := -46
-		header := appendWhitespace(base, offset, screenWidth)
-		m.Header.SetText(header)
-	case help.Settings:
-		base := "[" + black + ":#82aaff:b]    🅲  [::]circumflex[::-]   keymaps | [white]settings[" + black + "::]"
-		offset := -46
-		header := appendWhitespace(base, offset, screenWidth)
-		m.Header.SetText(header)
-	default:
-		return
-	}
+func SetHelpScreenHeader(m *core.MainView, category int) {
+	h := header.GetCircumflexHeader(category)
+	m.Header.SetText(h)
 }
 
 func SetPanelToSubmissions(m *core.MainView) {
