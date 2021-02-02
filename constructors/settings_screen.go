@@ -18,6 +18,9 @@ import (
 const (
 	newLine      = "\n"
 	newParagraph = "\n\n"
+	textBold     = "\033[1m"
+	textDimmed   = "\033[2m"
+	textNormal   = "\033[0m"
 )
 
 type options struct {
@@ -94,7 +97,7 @@ func (o option) print(textWidth int) string {
 
 	output += makeHeadline(o.name, o.key, textWidth) + newLine
 	output += wrappedDescription + newParagraph
-	output += "Current value: " + format.Dim(o.value)
+	output += "Current value: " + dim(o.value)
 
 	return output
 }
@@ -105,7 +108,7 @@ func (o option) printNoWrap(textWidth int) (string, string) {
 	description += makeHeadline(o.name, o.key, textWidth) + newLine
 	description += o.description
 
-	return description, "Current value: " + format.Dim(o.value)
+	return description, "Current value: " + dim(o.value)
 }
 
 func makeHeadline(name string, key string, textWidth int) string {
@@ -118,7 +121,7 @@ func makeHeadline(name string, key string, textWidth int) string {
 		whiteSpace += " "
 	}
 
-	return format.Bold(name) + whiteSpace + format.Dim(key)
+	return bold(name) + whiteSpace + dim(key)
 }
 
 func (o option) printConfig() string {
@@ -181,4 +184,12 @@ func initializeOptions() *options {
 		currentRelativeNumbering, settings.RelativeNumberingDescription)
 
 	return o
+}
+
+func bold(text string) string {
+	return textBold + text + textNormal
+}
+
+func dim(text string) string {
+	return textDimmed + text + textNormal
 }
