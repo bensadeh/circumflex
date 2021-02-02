@@ -11,6 +11,7 @@ import (
 	"clx/submission/fetcher"
 	"clx/submission/formatter"
 	"clx/submission/ranking"
+	"clx/utils/vim"
 	"clx/view"
 	"encoding/json"
 	"strconv"
@@ -355,17 +356,8 @@ func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
 func SelectItemDown(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config) {
 	currentItem := list.GetCurrentItemIndex()
 	itemCount := list.GetItemCount()
-	isAtTheBottomOfTheList := currentItem+1 == itemCount
-	register, _ := strconv.Atoi(appState.VimNumberRegister)
-	isNumbersInRegister := appState.VimNumberRegister != ""
-	availableItemsDown := itemCount - currentItem
+	nextItem := vim.GetItemDown(appState.VimNumberRegister, currentItem, itemCount)
 
-	nextItem := calculateNextDownItem(isAtTheBottomOfTheList,
-		isNumbersInRegister,
-		currentItem,
-		register,
-		availableItemsDown,
-		itemCount)
 	list.SetCurrentItem(nextItem)
 
 	ClearVimRegister(main, appState)
@@ -374,49 +366,14 @@ func SelectItemDown(main *core.MainView, list *cview.List, appState *core.Applic
 	view.ClearStatusBar(main)
 }
 
-func calculateNextDownItem(isAtTheBottomOfTheList bool, isNumbersInRegister bool, currentItem int, register int,
-	availableItemsDown int, itemCount int) int {
-	var nextElement int
-
-	switch {
-	case isAtTheBottomOfTheList:
-		nextElement = currentItem
-	case !isNumbersInRegister:
-		nextElement = currentItem + 1
-	case register >= availableItemsDown:
-		nextElement = itemCount - 1
-	case register < availableItemsDown:
-		nextElement += currentItem + register
-	default:
-		break
-	}
-
-	return nextElement
-}
-
-func SelectItemUp(main *core.MainView, list *cview.List, appState *core.ApplicationState,
-	config *core.Config) {
+func SelectItemUp(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config) {
 	currentItem := list.GetCurrentItemIndex()
-	register, _ := strconv.Atoi(appState.VimNumberRegister)
-	numberOfArticlesAbove := currentItem
-	noNumbersInRegister := appState.VimNumberRegister == ""
+	nextItem := vim.GetItemUp(appState.VimNumberRegister, currentItem)
 
-	switch {
-	case noNumbersInRegister:
-		if currentItem != 0 {
-			currentItem--
-			list.SetCurrentItem(currentItem)
-		}
-	case register >= numberOfArticlesAbove:
-		currentItem = 0
-		list.SetCurrentItem(currentItem)
-	default:
-		currentItem -= register
-		list.SetCurrentItem(currentItem)
-	}
+	list.SetCurrentItem(nextItem)
 
 	ClearVimRegister(main, appState)
-	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, currentItem, appState.CurrentPage)
+	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, nextItem, appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
 	view.ClearStatusBar(main)
 }
