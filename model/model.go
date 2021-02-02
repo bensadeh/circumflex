@@ -465,9 +465,10 @@ func Refresh(app *cview.Application, list *cview.List, main *core.MainView, subm
 	ExitHelpScreen(main, appState, submissions[appState.SubmissionsCategory], config, list)
 
 	if appState.IsOffline {
-		list.Clear()
 		errorMessage := message.Error(messages.OfflineMessage)
+
 		view.SetPermanentStatusBar(main, errorMessage, cview.AlignCenter)
+		list.Clear()
 		app.Draw()
 	} else {
 		duration := time.Millisecond * 2000
