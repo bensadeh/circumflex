@@ -51,6 +51,10 @@ func BlackOnOrange(text string) string {
 	return "[#0c0c0c:orange]" + text + resetForegroundAndBackground
 }
 
+func BlackOnRed(text string) string {
+	return "[#0c0c0c:red]" + text + resetForegroundAndBackground
+}
+
 func ResetStyle() string {
 	return resetStyle
 }

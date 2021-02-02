@@ -11,6 +11,7 @@ import (
 	"clx/submission/fetcher"
 	"clx/submission/formatter"
 	"clx/submission/ranking"
+	"clx/utils/message"
 	"clx/utils/vim"
 	"clx/view"
 	"encoding/json"
@@ -38,7 +39,7 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 		initializeView(appState, submissions, main, config)
 		err := fetchAndAppendSubmissionEntries(submissions[appState.SubmissionsCategory], appState)
 		if err != nil {
-			setApplicationToErrorState(appState, main, list, app)
+			setToErrorState(appState, main, list, app)
 		} else {
 			appState.IsOffline = false
 			showPageAfterResize(appState, list, submissions, main, config)
@@ -46,13 +47,12 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 	})
 }
 
-func setApplicationToErrorState(appState *core.ApplicationState, main *core.MainView, list *cview.List,
-	app *cview.Application) {
+func setToErrorState(appState *core.ApplicationState, main *core.MainView, list *cview.List, app *cview.Application) {
+	errorMessage := message.Error(messages.OfflineMessage)
 	appState.IsOffline = true
 
+	view.SetPermanentStatusBar(main, errorMessage, cview.AlignCenter)
 	list.Clear()
-	err := "[black:red] ERROR [red:-] "
-	view.SetPermanentStatusBar(main, err+messages.OfflineMessage, cview.AlignCenter)
 	app.Draw()
 }
 
@@ -157,7 +157,7 @@ func NextPage(app *cview.Application, list *cview.List, submissions *core.Submis
 	if !pageHasEnoughSubmissionsToView(appState.CurrentPage+1, appState.SubmissionsToShow, submissions.Entries) {
 		err := fetchAndAppendSubmissionEntries(submissions, appState)
 		if err != nil {
-			setApplicationToErrorState(appState, main, list, app)
+			setToErrorState(appState, main, list, app)
 
 			return
 		}
@@ -235,7 +235,7 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	if !pageHasEnoughSubmissionsToView(0, appState.SubmissionsToShow, currentSubmissions.Entries) {
 		err := fetchAndAppendSubmissionEntries(currentSubmissions, appState)
 		if err != nil {
-			setApplicationToErrorState(appState, main, list, app)
+			setToErrorState(appState, main, list, app)
 
 			return
 		}
@@ -466,7 +466,8 @@ func Refresh(app *cview.Application, list *cview.List, main *core.MainView, subm
 
 	if appState.IsOffline {
 		list.Clear()
-		view.SetPermanentStatusBar(main, messages.OfflineMessage, cview.AlignCenter)
+		errorMessage := message.Error(messages.OfflineMessage)
+		view.SetPermanentStatusBar(main, errorMessage, cview.AlignCenter)
 		app.Draw()
 	} else {
 		duration := time.Millisecond * 2000
