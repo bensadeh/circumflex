@@ -3,6 +3,7 @@ package model
 import (
 	"clx/browser"
 	"clx/cli"
+	"clx/constants/help"
 	"clx/constants/messages"
 	"clx/core"
 	"clx/file"
@@ -92,11 +93,12 @@ func initializeView(appState *core.ApplicationState, submissions []*core.Submiss
 func showPageAfterResize(appState *core.ApplicationState, list *cview.List, submissions []*core.Submissions,
 	main *core.MainView, config *core.Config) {
 	submissionEntries := submissions[appState.SubmissionsCategory].Entries
+	statusBarText := getStatusBarText(appState.HelpScreenCategory)
 
 	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.SubmissionsToShow, config)
 
 	if appState.IsOnHelpScreen {
-		showInfoCategory(main, appState)
+		showInfoCategory(main, appState.HelpScreenCategory, statusBarText)
 	}
 }
 
@@ -275,7 +277,9 @@ func ChangeHelpScreenCategory(event *tcell.EventKey, appState *core.ApplicationS
 		appState.HelpScreenCategory = getNextCategory(appState.HelpScreenCategory, 3)
 	}
 
-	showInfoCategory(main, appState)
+	statusBarText := getStatusBarText(appState.HelpScreenCategory)
+
+	showInfoCategory(main, appState.HelpScreenCategory, statusBarText)
 }
 
 func PreviousPage(list *cview.List, submissions *core.Submissions, main *core.MainView, appState *core.ApplicationState,
@@ -380,15 +384,26 @@ func SelectItemUp(main *core.MainView, list *cview.List, appState *core.Applicat
 
 func EnterInfoScreen(main *core.MainView, appState *core.ApplicationState) {
 	appState.IsOnHelpScreen = true
+	statusBarText := getStatusBarText(appState.HelpScreenCategory)
+
 	ClearVimRegister(main, appState)
-	showInfoCategory(main, appState)
+	showInfoCategory(main, appState.HelpScreenCategory, statusBarText)
 }
 
-func showInfoCategory(main *core.MainView, appState *core.ApplicationState) {
+func getStatusBarText(category int) string {
+	if category == help.Info {
+		return "[::d]github.com/bensadeh/circumflex, version 0.7[::-]"
+	}
+
+	return ""
+}
+
+func showInfoCategory(main *core.MainView, helpScreenCategory int, statusBarText string) {
+	view.SetPermanentStatusBar(main, statusBarText, cview.AlignCenter)
 	view.HidePageCounter(main)
-	view.SetHelpScreenHeader(main, appState.HelpScreenCategory)
+	view.SetHelpScreenHeader(main, helpScreenCategory)
 	view.HideLeftMarginRanks(main)
-	view.SetHelpScreenPanel(main, appState.HelpScreenCategory)
+	view.SetHelpScreenPanel(main, helpScreenCategory)
 }
 
 func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, submissions *core.Submissions,
