@@ -3,6 +3,7 @@ package model
 import (
 	"clx/browser"
 	"clx/cli"
+	"clx/constants/clx"
 	"clx/constants/help"
 	"clx/constants/messages"
 	"clx/core"
@@ -93,12 +94,12 @@ func initializeView(appState *core.ApplicationState, submissions []*core.Submiss
 func showPageAfterResize(appState *core.ApplicationState, list *cview.List, submissions []*core.Submissions,
 	main *core.MainView, config *core.Config) {
 	submissionEntries := submissions[appState.SubmissionsCategory].Entries
-	statusBarText := getStatusBarText(appState.HelpScreenCategory)
+	statusBarText := getInfoScreenStatusBarText(appState.HelpScreenCategory)
 
 	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.SubmissionsToShow, config)
 
 	if appState.IsOnHelpScreen {
-		showInfoCategory(main, appState.HelpScreenCategory, statusBarText)
+		updateInfoScreenView(main, appState.HelpScreenCategory, statusBarText)
 	}
 }
 
@@ -277,9 +278,9 @@ func ChangeHelpScreenCategory(event *tcell.EventKey, appState *core.ApplicationS
 		appState.HelpScreenCategory = getNextCategory(appState.HelpScreenCategory, 3)
 	}
 
-	statusBarText := getStatusBarText(appState.HelpScreenCategory)
+	statusBarText := getInfoScreenStatusBarText(appState.HelpScreenCategory)
 
-	showInfoCategory(main, appState.HelpScreenCategory, statusBarText)
+	updateInfoScreenView(main, appState.HelpScreenCategory, statusBarText)
 }
 
 func PreviousPage(list *cview.List, submissions *core.Submissions, main *core.MainView, appState *core.ApplicationState,
@@ -383,22 +384,22 @@ func SelectItemUp(main *core.MainView, list *cview.List, appState *core.Applicat
 }
 
 func EnterInfoScreen(main *core.MainView, appState *core.ApplicationState) {
+	statusBarText := getInfoScreenStatusBarText(appState.HelpScreenCategory)
 	appState.IsOnHelpScreen = true
-	statusBarText := getStatusBarText(appState.HelpScreenCategory)
 
 	ClearVimRegister(main, appState)
-	showInfoCategory(main, appState.HelpScreenCategory, statusBarText)
+	updateInfoScreenView(main, appState.HelpScreenCategory, statusBarText)
 }
 
-func getStatusBarText(category int) string {
+func getInfoScreenStatusBarText(category int) string {
 	if category == help.Info {
-		return "[::d]github.com/bensadeh/circumflex, version 0.7[::-]"
+		return "[::d]github.com/bensadeh/circumflex • version " + clx.Version
 	}
 
 	return ""
 }
 
-func showInfoCategory(main *core.MainView, helpScreenCategory int, statusBarText string) {
+func updateInfoScreenView(main *core.MainView, helpScreenCategory int, statusBarText string) {
 	view.SetPermanentStatusBar(main, statusBarText, cview.AlignCenter)
 	view.HidePageCounter(main)
 	view.SetHelpScreenHeader(main, helpScreenCategory)
