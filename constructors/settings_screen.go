@@ -16,11 +16,15 @@ import (
 )
 
 const (
-	newLine      = "\n"
-	newParagraph = "\n\n"
-	textBold     = "\033[1m"
-	textDimmed   = "\033[2m"
-	textNormal   = "\033[0m"
+	newLine         = "\n"
+	newParagraph    = "\n\n"
+	textBold        = "\033[1m"
+	textDimmed      = "\033[2m"
+	textNormal      = "\033[0m"
+	textRed         = "\033[31m"
+	textBlack       = "\u001b[30m"
+	backgroundRed   = "\u001b[41m"
+	backgroundGreen = "\u001b[42m"
 )
 
 type options struct {
@@ -99,9 +103,25 @@ func (o option) print(textWidth int) string {
 
 	output += makeHeadline(o.name, o.key, textWidth) + newLine
 	output += wrappedDescription + newParagraph
-	output += "Current value: " + dim(o.value)
+	output += "Current value: " + highlight(o.value)
 
 	return output
+}
+
+func highlight(value string) string {
+	if _, err := strconv.Atoi(value); err == nil {
+		return textBold + value + textNormal
+	}
+
+	if value == "true" {
+		return textBlack + textBold + backgroundGreen + " " + value + " " + textNormal
+	}
+
+	if value == "false" {
+		return textBlack + textBold + backgroundRed + " " + value + " " + textNormal
+	}
+
+	return value
 }
 
 func (o option) printNoWrap(textWidth int) (string, string) {
@@ -110,7 +130,7 @@ func (o option) printNoWrap(textWidth int) (string, string) {
 	description += makeHeadline(o.name, o.key, textWidth) + newLine
 	description += o.description
 
-	return description, "Current value: " + dim(o.value) + newLine
+	return description, "Current value: " + highlight(o.value) + newLine
 }
 
 func makeHeadline(name string, key string, textWidth int) string {

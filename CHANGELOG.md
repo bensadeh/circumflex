@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9
+_WIP_
+
+**Cosmetic:**
+- Settings screen now highlights booleans and integers
+
 ## 0.8
 _2021-02-07_
 
