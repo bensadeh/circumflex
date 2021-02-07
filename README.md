@@ -81,7 +81,7 @@ The number of whitespaces prepended to each reply, not including the color bar.
 
 #### Highlight Headlines
 Highlights text containing `Show HN`, `Ask HN`, `Tell HN` or `Launch HN`. Can be set to 0 (No highlighting), 1 (inverse 
-highlighting) or 2 (colored highlighting). Y Combinator Startup labels are colorized in both option 1 and 2.
+highlighting) or 2 (colored highlighting). YC-funded startups are colorized in both option 1 and 2.
 
 #### Use Relative Numbering
 Shows each line with a number relative to the currently selected element. Similar to Vim's hybrid line number mode.
