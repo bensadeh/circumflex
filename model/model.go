@@ -200,12 +200,13 @@ func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []
 func fetchAndAppendSubmissionEntries(submissions *core.Submissions, appState *core.ApplicationState) error {
 	submissions.PageToFetchFromAPI++
 
-	submissionEntries, err := sub.FetchSubmissions(submissions.PageToFetchFromAPI, appState.SubmissionsCategory)
+	newSubmissions, err := sub.FetchSubmissions(submissions.PageToFetchFromAPI, appState.SubmissionsCategory)
 	if err != nil {
 		return fmt.Errorf("could not fetch submissions: %w", err)
 	}
 
-	submissions.Entries = append(submissions.Entries, submissionEntries...)
+	filteredSubmissions := sub.Filter(newSubmissions, false)
+	submissions.Entries = append(submissions.Entries, filteredSubmissions...)
 
 	return nil
 }
