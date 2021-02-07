@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.8
-_WIP_
+_2021-02-07_
 
 **New features:**
 - Posts of the type '`YC startup` is hiring' are now hidden by default and can be enabled in the settings
