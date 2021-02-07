@@ -14,6 +14,7 @@ import (
 	"clx/utils/message"
 	"clx/utils/vim"
 	"clx/view"
+	"fmt"
 	"strconv"
 	"time"
 	"unicode/utf8"
@@ -198,11 +199,15 @@ func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []
 
 func fetchAndAppendSubmissionEntries(submissions *core.Submissions, appState *core.ApplicationState) error {
 	submissions.PageToFetchFromAPI++
+
 	submissionEntries, err := sub.FetchSubmissions(submissions.PageToFetchFromAPI, appState.SubmissionsCategory)
+	if err != nil {
+		return fmt.Errorf("could not fetch submissions: %w", err)
+	}
 
 	submissions.Entries = append(submissions.Entries, submissionEntries...)
 
-	return err
+	return nil
 }
 
 func SetListItemsToCurrentPage(list *cview.List, submissions []*core.Submission, currentPage int, viewableStories int,
