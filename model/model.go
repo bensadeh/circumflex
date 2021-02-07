@@ -99,8 +99,8 @@ func showPageAfterResize(appState *core.ApplicationState, list *cview.List, subm
 	}
 }
 
-func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *cview.List, submissions []*core.Submission,
-	appState *core.ApplicationState, config *core.Config) {
+func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *cview.List,
+	submissions []*core.Submission, appState *core.ApplicationState, config *core.Config) {
 	i := list.GetCurrentItemIndex()
 
 	for index := range submissions {
@@ -126,10 +126,6 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 
 					cli.Less(commentTree)
 				}
-				//JSON, _ := http.Get("http://api.hackerwebapp.com/item/" + id)
-				//jComments := new(cp.Comments)
-				//_ = json.Unmarshal(JSON, jComments)
-				//
 			})
 
 			appState.IsReturningFromSuspension = true
@@ -197,7 +193,8 @@ func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []
 	return downloadedSubmissions > largestItemToDisplay
 }
 
-func fetchAndAppendSubmissionEntries(submissions *core.Submissions, appState *core.ApplicationState, hideYCJobs bool) error {
+func fetchAndAppendSubmissionEntries(submissions *core.Submissions, appState *core.ApplicationState,
+	hideYCJobs bool) error {
 	submissions.PageToFetchFromAPI++
 
 	newSubmissions, err := sub.FetchSubmissions(submissions.PageToFetchFromAPI, appState.SubmissionsCategory)
