@@ -39,10 +39,6 @@ func Dim(text string) string {
 	return "[::d]" + text + resetStyle
 }
 
-func Bold(text string) string {
-	return "[::b]" + text + resetStyle
-}
-
 func Reverse(text string) string {
 	return "[::r]" + text + resetStyle
 }

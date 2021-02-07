@@ -9,6 +9,7 @@ import (
 	"clx/utils/format"
 	ansi "clx/utils/strip-ansi"
 	"strconv"
+	"strings"
 
 	text "github.com/MichaelMure/go-term-text"
 	"github.com/spf13/viper"
@@ -21,10 +22,10 @@ const (
 	textBold        = "\033[1m"
 	textDimmed      = "\033[2m"
 	textNormal      = "\033[0m"
-	textRed         = "\033[31m"
 	textBlack       = "\u001b[30m"
 	backgroundRed   = "\u001b[41m"
 	backgroundGreen = "\u001b[42m"
+	backgroundBlue  = "\u001b[44m"
 )
 
 type options struct {
@@ -110,7 +111,7 @@ func (o option) print(textWidth int) string {
 
 func highlight(value string) string {
 	if _, err := strconv.Atoi(value); err == nil {
-		return textBold + value + textNormal
+		return textBlack + textBold + backgroundBlue + " " + value + " " + textNormal
 	}
 
 	if value == "true" {
@@ -167,7 +168,11 @@ func GetSettingsText() string {
 
 	o := initializeOptions()
 
-	return cview.TranslateANSI(message + newParagraph + o.printAll(commentWidth))
+	s := cview.TranslateANSI(message + newParagraph + o.printAll(commentWidth))
+	s = fixBlackValues(s)
+	// panic(s)
+
+	return s
 }
 
 func getCommentWidth() int {
@@ -217,4 +222,10 @@ func bold(text string) string {
 
 func dim(text string) string {
 	return textDimmed + text + textNormal
+}
+
+// Hack: a bug in cview.TranslateANSI() causes black to be translated to the bright version.
+// This function injects black text tags as a workaround.
+func fixBlackValues(text string) string {
+	return strings.ReplaceAll(text, "black", "#0c0c0c")
 }

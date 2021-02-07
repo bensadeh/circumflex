@@ -22,13 +22,14 @@ func PutInColumns(leftCol string, rightCol string, colWidth int, spaceWidth int)
 
 	output := ""
 	for i := 0; i < length; i++ {
-		if i >= len(linesA) {
+		switch {
+		case i >= len(linesA):
 			output += text.LeftPadMaxLine("", colWidth, 0) + space +
 				text.LeftPadMaxLine(linesB[i], colWidth, 0) + newLine
-		} else if i >= len(linesB) {
+		case i >= len(linesB):
 			output += text.LeftPadMaxLine(linesA[i], colWidth, 0) + space +
 				text.LeftPadMaxLine("", colWidth, 0) + newLine
-		} else {
+		default:
 			output += text.LeftPadMaxLine(linesA[i], colWidth, 0) + space +
 				text.LeftPadMaxLine(linesB[i], colWidth, 0) + newLine
 		}
