@@ -3,25 +3,22 @@ package model
 import (
 	"clx/browser"
 	"clx/cli"
+	"clx/comment"
 	"clx/constants/clx"
 	"clx/constants/help"
 	"clx/constants/messages"
 	"clx/core"
 	"clx/file"
-	"clx/http"
 	"clx/screen"
-	"clx/submission/fetcher"
+	"clx/submission"
 	"clx/submission/formatter"
 	"clx/submission/ranking"
 	"clx/utils/message"
 	"clx/utils/vim"
 	"clx/view"
-	"encoding/json"
 	"strconv"
 	"time"
 	"unicode/utf8"
-
-	cp "clx/comment-parser"
 
 	constructor "clx/constructors"
 
@@ -103,7 +100,7 @@ func showPageAfterResize(appState *core.ApplicationState, list *cview.List, subm
 	}
 }
 
-func ReadSubmissionComments(app *cview.Application, list *cview.List, submissions []*core.Submission,
+func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *cview.List, submissions []*core.Submission,
 	appState *core.ApplicationState, config *core.Config) {
 	i := list.GetCurrentItemIndex()
 
@@ -120,14 +117,20 @@ func ReadSubmissionComments(app *cview.Application, list *cview.List, submission
 
 			app.Suspend(func() {
 				id := strconv.Itoa(s.ID)
-				JSON, _ := http.Get("http://api.hackerwebapp.com/item/" + id)
-				jComments := new(cp.Comments)
-				_ = json.Unmarshal(JSON, jComments)
+				comments, err := comment.FetchComments(id)
+				if err != nil {
+					errorMessage := message.Error("Could not fetch comments")
+					view.SetTemporaryStatusBar(app, main, errorMessage, 4*time.Second)
+				} else {
+					commentTree := comment.PrintCommentTree(*comments,
+						config.IndentSize, config.CommentWidth, config.PreserveRightMargin)
 
-				commentTree := cp.PrintCommentTree(*jComments,
-					config.IndentSize, config.CommentWidth, config.PreserveRightMargin)
-
-				cli.Less(commentTree)
+					cli.Less(commentTree)
+				}
+				//JSON, _ := http.Get("http://api.hackerwebapp.com/item/" + id)
+				//jComments := new(cp.Comments)
+				//_ = json.Unmarshal(JSON, jComments)
+				//
 			})
 
 			appState.IsReturningFromSuspension = true
@@ -197,7 +200,8 @@ func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []
 
 func fetchAndAppendSubmissionEntries(submissions *core.Submissions, appState *core.ApplicationState) error {
 	submissions.PageToFetchFromAPI++
-	submissionEntries, err := fetcher.FetchSubmissionEntries(submissions.PageToFetchFromAPI, appState.SubmissionsCategory)
+	submissionEntries, err := submission.FetchSubmissions(submissions.PageToFetchFromAPI, appState.SubmissionsCategory)
+
 	submissions.Entries = append(submissions.Entries, submissionEntries...)
 
 	return err

@@ -1,4 +1,4 @@
-package comment_parser
+package comment
 
 import (
 	"clx/screen"
@@ -8,22 +8,6 @@ import (
 
 	text "github.com/MichaelMure/go-term-text"
 )
-
-// Comments represent the JSON structure as
-// retrieved from cheeaun's unofficial HN API
-type Comments struct {
-	Author        string      `json:"user"`
-	Title         string      `json:"title"`
-	Comment       string      `json:"content"`
-	CommentsCount int         `json:"comments_count"`
-	Time          string      `json:"time_ago"`
-	Points        int         `json:"points"`
-	URL           string      `json:"url"`
-	Domain        string      `json:"domain"`
-	Level         int         `json:"level"`
-	ID            int         `json:"id"`
-	Replies       []*Comments `json:"comments"`
-}
 
 func PrintCommentTree(comments Comments, indentSize int, commentWidth int, preserveRightMargin bool) string {
 	header := getHeader(comments, commentWidth)

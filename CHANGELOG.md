@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8
+_WIP_
+
+**Cosmetic:**
+- Info screen now shows version number
+
+**Backend:**
+- Added version number to User-Agent ID string
+- Replaced stock http with [resty](https://github.com/go-resty/resty)
+
 ## 0.7.1
 _2021-01-21_
 

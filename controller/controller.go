@@ -142,7 +142,7 @@ func SetApplicationShortcuts(
 			return event
 		}
 		if event.Key() == tcell.KeyEnter {
-			model.ReadSubmissionComments(app, list, currentState.Entries, appState, config)
+			model.ReadSubmissionComments(app, main, list, currentState.Entries, appState, config)
 			return event
 		}
 		if event.Rune() == 'o' {
