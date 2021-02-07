@@ -8,6 +8,7 @@ _WIP_
 
 **Cosmetic:**
 - Info screen now shows version number
+- Increased spacing between the descriptions on the settings page for easier readability
 
 **Backend:**
 - Added version number to User-Agent ID string

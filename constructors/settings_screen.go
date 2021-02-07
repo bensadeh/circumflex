@@ -52,7 +52,7 @@ func (o options) printAll(textWidth int) string {
 func printOptionsInOneColumn(o options, textWidth int) string {
 	output := ""
 	for i := 0; i < len(o.options); i++ {
-		output += o.options[i].print(textWidth) + newParagraph
+		output += o.options[i].print(textWidth) + newLine + newParagraph
 	}
 
 	return output
@@ -62,7 +62,9 @@ func printOptionsInTwoColumns(o options, textWidth int, space int) string {
 	output := ""
 
 	for i := 0; i < len(o.options); i += 2 {
-		if i+2 <= len(o.options) {
+		isAtLeastTwoOptionsLeft := i+2 <= len(o.options)
+
+		if isAtLeastTwoOptionsLeft {
 			leftDesc, leftValue := o.options[i].printNoWrap(textWidth)
 			rightDesc, rightValue := o.options[i+1].printNoWrap(textWidth)
 			output += column.PutInColumns(leftDesc, rightDesc, textWidth, space) + newLine
@@ -108,7 +110,7 @@ func (o option) printNoWrap(textWidth int) (string, string) {
 	description += makeHeadline(o.name, o.key, textWidth) + newLine
 	description += o.description
 
-	return description, "Current value: " + dim(o.value)
+	return description, "Current value: " + dim(o.value) + newLine
 }
 
 func makeHeadline(name string, key string, textWidth int) string {
