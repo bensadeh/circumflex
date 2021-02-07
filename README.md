@@ -73,8 +73,8 @@ precedence.
 
 ### Available options
 #### Comment Width
-Sets the maximum number of characters on each line for comments, replies, root submission comments and descriptions in 
-settings. Set to 0 to use the whole screen.
+Sets the maximum number of characters on each line for comments, replies and descriptions in settings. Set to 0 to use 
+the whole screen.
 
 #### Indent Size
 The number of whitespaces prepended to each reply, not including the color bar.
@@ -87,8 +87,7 @@ highlighting) or 2 (colored highlighting). YC-funded startups are colorized in b
 Shows each line with a number relative to the currently selected element. Similar to Vim's hybrid line number mode.
 
 #### Hide YC hiring posts
-Hides 'X is hiring' posts from YC-funded startups. Does not affect the monthly 'Who is " +
-"Hiring?' posts.
+Hides 'X is hiring' posts from YC-funded startups. Does not affect the monthly 'Who is Hiring?' posts.
 
 ## Under the hood
 `circumflex` uses:
