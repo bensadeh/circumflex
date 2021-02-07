@@ -27,8 +27,6 @@ func FetchSubmissions(page int, category int) ([]*core.Submission, error) {
 
 	_, err := client.R().
 		SetHeader("User-Agent", clx.Name+"/"+clx.Version).
-		SetHeader("Content-Type", "application/json").
-		SetHeader("Accept", "application/json").
 		SetResult(&s).
 		Get(url + p)
 	if err != nil {
