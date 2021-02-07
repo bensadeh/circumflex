@@ -1,4 +1,4 @@
-package submission
+package sub
 
 import (
 	"clx/constants/clx"

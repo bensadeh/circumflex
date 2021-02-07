@@ -10,8 +10,8 @@ import (
 	"clx/core"
 	"clx/file"
 	"clx/screen"
-	"clx/submission"
-	"clx/submission/ranking"
+	"clx/sub"
+	"clx/sub/ranking"
 	"clx/utils/message"
 	"clx/utils/vim"
 	"clx/view"
@@ -199,7 +199,7 @@ func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []
 
 func fetchAndAppendSubmissionEntries(submissions *core.Submissions, appState *core.ApplicationState) error {
 	submissions.PageToFetchFromAPI++
-	submissionEntries, err := submission.FetchSubmissions(submissions.PageToFetchFromAPI, appState.SubmissionsCategory)
+	submissionEntries, err := sub.FetchSubmissions(submissions.PageToFetchFromAPI, appState.SubmissionsCategory)
 
 	submissions.Entries = append(submissions.Entries, submissionEntries...)
 
@@ -215,8 +215,8 @@ func SetListItemsToCurrentPage(list *cview.List, submissions []*core.Submission,
 
 	for i := start; i < end; i++ {
 		s := submissions[i]
-		mainText := submission.FormatSubMain(s.Title, s.Domain, config.HighlightHeadlines)
-		secondaryText := submission.FormatSubSecondary(s.Points, s.Author, s.Time, s.CommentsCount)
+		mainText := sub.FormatSubMain(s.Title, s.Domain, config.HighlightHeadlines)
+		secondaryText := sub.FormatSubSecondary(s.Points, s.Author, s.Time, s.CommentsCount)
 
 		item := cview.NewListItem(mainText)
 		item.SetSecondaryText(secondaryText)
