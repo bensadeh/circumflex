@@ -9,5 +9,6 @@ const ansi = "[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)
 
 func Strip(text string) string {
 	expression := regexp.MustCompile(ansi)
+
 	return expression.ReplaceAllString(text, "")
 }
