@@ -3,6 +3,9 @@
 ## 0.8
 _WIP_
 
+**New features:**
+- Posts of the type '`YC startup` is hiring' are now hidden by default and can be enabled in the settings
+
 **Cosmetic:**
 - Info screen now shows version number
 

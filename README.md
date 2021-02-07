@@ -86,6 +86,10 @@ highlighting) or 2 (colored highlighting). Y Combinator Startup labels are color
 #### Use Relative Numbering
 Shows each line with a number relative to the currently selected element. Similar to Vim's hybrid line number mode.
 
+#### Hide YC hiring posts
+Hides 'X is hiring' posts from YC-funded startups. Does not affect the monthly 'Who is " +
+"Hiring?' posts.
+
 ## Under the hood
 `circumflex` uses:
 * [tcell](https://github.com/gdamore/tcell) and [cview](https://gitlab.com/tslocum/cview) for the TUI

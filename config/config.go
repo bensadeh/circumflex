@@ -33,4 +33,5 @@ func setDefaultValues() {
 	viper.SetDefault(settings.PreserveRightMarginKey, settings.PreserveRightMarginDefault)
 	viper.SetDefault(settings.HighlightHeadlinesKey, settings.HighlightHeadlinesDefault)
 	viper.SetDefault(settings.RelativeNumberingKey, settings.RelativeNumberingDefault)
+	viper.SetDefault(settings.HideYCJobsKey, settings.HideYCJobsDefault)
 }

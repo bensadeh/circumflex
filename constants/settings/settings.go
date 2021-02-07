@@ -31,4 +31,9 @@ const (
 	RelativeNumberingDefault     = false
 	RelativeNumberingDescription = "Shows each line with a number relative to the currently selected element. " +
 		"Similar to Vim's hybrid line number mode."
+	HideYCJobsName        = "Hide YC hiring posts"
+	HideYCJobsKey         = "CLX_YC_HIRING"
+	HideYCJobsDefault     = true
+	HideYCJobsDescription = "Hides 'X is hiring' posts from YC-funded startups. Does not affect the monthly 'Who is " +
+		"Hiring?' posts."
 )

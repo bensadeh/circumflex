@@ -170,6 +170,7 @@ func initializeOptions() *options {
 	currentPreserveRightMargin := strconv.FormatBool(viper.GetBool(settings.PreserveRightMarginKey))
 	currentHighlightHeadlines := strconv.Itoa(viper.GetInt(settings.HighlightHeadlinesKey))
 	currentRelativeNumbering := strconv.FormatBool(viper.GetBool(settings.RelativeNumberingKey))
+	currentHideYCJobs := strconv.FormatBool(viper.GetBool(settings.HideYCJobsKey))
 
 	o := new(options)
 	o.addOption(settings.HighlightHeadlinesName, settings.HighlightHeadlinesKey,
@@ -182,6 +183,8 @@ func initializeOptions() *options {
 		currentIndentSize, settings.IndentSizeDescription)
 	o.addOption(settings.RelativeNumberingName, settings.RelativeNumberingKey,
 		currentRelativeNumbering, settings.RelativeNumberingDescription)
+	o.addOption(settings.HideYCJobsName, settings.HideYCJobsKey,
+		currentHideYCJobs, settings.HideYCJobsDescription)
 
 	return o
 }
