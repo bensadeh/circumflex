@@ -35,7 +35,7 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 		}
 		resetStates(appState, submissions)
 		initializeView(appState, submissions, main, config)
-		err := fetchAndAppendSubmissionEntries(submissions[appState.SubmissionsCategory], appState)
+		err := fetchAndAppendSubmissionEntries(submissions[appState.SubmissionsCategory], appState, config.HideYCJobs)
 		if err != nil {
 			setToErrorState(appState, main, list, app)
 		} else {
@@ -160,7 +160,7 @@ func NextPage(app *cview.Application, list *cview.List, submissions *core.Submis
 	currentlySelectedItem := list.GetCurrentItemIndex()
 
 	if !pageHasEnoughSubmissionsToView(appState.CurrentPage+1, appState.SubmissionsToShow, submissions.Entries) {
-		err := fetchAndAppendSubmissionEntries(submissions, appState)
+		err := fetchAndAppendSubmissionEntries(submissions, appState, config.HideYCJobs)
 		if err != nil {
 			setToErrorState(appState, main, list, app)
 
@@ -197,7 +197,7 @@ func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []
 	return downloadedSubmissions > largestItemToDisplay
 }
 
-func fetchAndAppendSubmissionEntries(submissions *core.Submissions, appState *core.ApplicationState) error {
+func fetchAndAppendSubmissionEntries(submissions *core.Submissions, appState *core.ApplicationState, hideYCJobs bool) error {
 	submissions.PageToFetchFromAPI++
 
 	newSubmissions, err := sub.FetchSubmissions(submissions.PageToFetchFromAPI, appState.SubmissionsCategory)
@@ -205,7 +205,7 @@ func fetchAndAppendSubmissionEntries(submissions *core.Submissions, appState *co
 		return fmt.Errorf("could not fetch submissions: %w", err)
 	}
 
-	filteredSubmissions := sub.Filter(newSubmissions, false)
+	filteredSubmissions := sub.Filter(newSubmissions, hideYCJobs)
 	submissions.Entries = append(submissions.Entries, filteredSubmissions...)
 
 	return nil
@@ -244,7 +244,7 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	appState.CurrentPage = 0
 
 	if !pageHasEnoughSubmissionsToView(0, appState.SubmissionsToShow, currentSubmissions.Entries) {
-		err := fetchAndAppendSubmissionEntries(currentSubmissions, appState)
+		err := fetchAndAppendSubmissionEntries(currentSubmissions, appState, config.HideYCJobs)
 		if err != nil {
 			setToErrorState(appState, main, list, app)
 

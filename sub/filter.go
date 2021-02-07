@@ -2,8 +2,8 @@ package sub
 
 import "clx/core"
 
-func Filter(submissions []*core.Submission, showIsHiring bool) []*core.Submission {
-	if showIsHiring {
+func Filter(submissions []*core.Submission, hideYCJobs bool) []*core.Submission {
+	if !hideYCJobs {
 		return submissions
 	}
 
