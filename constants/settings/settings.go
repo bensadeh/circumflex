@@ -8,7 +8,7 @@ const (
 	CommentWidthKey         = "CLX_COMMENT_WIDTH"
 	CommentWidthDefault     = 70
 	CommentWidthDescription = "Sets the maximum number of characters on each line for comments, replies and " +
-		"descriptions in settings. Set to \u001B[31m0\u001B[0m to use the whole screen."
+		"descriptions in settings. Set to \u001B[1m0\u001B[0m to use the whole screen."
 	IndentSizeName        = "Indent Size"
 	IndentSizeKey         = "CLX_INDENT_SIZE"
 	IndentSizeDefault     = 4
