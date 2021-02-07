@@ -170,7 +170,6 @@ func GetSettingsText() string {
 
 	s := cview.TranslateANSI(message + newParagraph + o.printAll(commentWidth))
 	s = fixBlackValues(s)
-	// panic(s)
 
 	return s
 }
