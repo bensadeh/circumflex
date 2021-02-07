@@ -61,8 +61,8 @@ type MainView struct {
 type Config struct {
 	CommentWidth        int  `mapstructure:"CLX_COMMENT_WIDTH"`
 	IndentSize          int  `mapstructure:"CLX_INDENT_SIZE"`
-	PreserveRightMargin bool `mapstructure:"CLX_PRESERVE_RIGHT_MARGIN"`
 	HighlightHeadlines  int  `mapstructure:"CLX_HIGHLIGHT_HEADLINES"`
+	PreserveRightMargin bool `mapstructure:"CLX_PRESERVE_RIGHT_MARGIN"`
 	RelativeNumbering   bool `mapstructure:"CLX_RELATIVE_NUMBERING"`
 	HideYCJobs          bool `mapstructure:"CLX_HIDE_YC_JOBS"`
 }
