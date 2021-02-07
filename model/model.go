@@ -11,7 +11,6 @@ import (
 	"clx/file"
 	"clx/screen"
 	"clx/sub"
-	"clx/sub/ranking"
 	"clx/utils/message"
 	"clx/utils/vim"
 	"clx/view"
@@ -184,10 +183,10 @@ func NextPage(app *cview.Application, list *cview.List, submissions *core.Submis
 func getMarginText(useRelativeNumbering bool, viewableStoriesOnSinglePage int, currentPosition int,
 	currentPage int) string {
 	if useRelativeNumbering {
-		return ranking.RelativeRankings(viewableStoriesOnSinglePage, currentPosition, currentPage)
+		return vim.RelativeRankings(viewableStoriesOnSinglePage, currentPosition, currentPage)
 	}
 
-	return ranking.AbsoluteRankings(viewableStoriesOnSinglePage, currentPage)
+	return vim.AbsoluteRankings(viewableStoriesOnSinglePage, currentPage)
 }
 
 func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []*core.Submission) bool {

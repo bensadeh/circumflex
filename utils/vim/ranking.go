@@ -1,6 +1,9 @@
-package ranking
+package vim
 
-import "strconv"
+import (
+	"clx/utils/format"
+	"strconv"
+)
 
 const (
 	newParagraph         = "\n\n"
@@ -25,7 +28,7 @@ func RelativeRankings(viewableStoriesOnSinglePage int, currentPosition int, curr
 
 	for iterator != 0 {
 		number := strconv.Itoa(iterator)
-		rankings += dim(number) + indentationFromRight + newParagraph
+		rankings += format.Dim(number) + indentationFromRight + newParagraph
 		iterator--
 	}
 
@@ -35,13 +38,9 @@ func RelativeRankings(viewableStoriesOnSinglePage int, currentPosition int, curr
 
 	for iterator < end {
 		number := strconv.Itoa(iterator)
-		rankings += dim(number) + indentationFromRight + newParagraph
+		rankings += format.Dim(number) + indentationFromRight + newParagraph
 		iterator++
 	}
 
 	return rankings
-}
-
-func dim(text string) string {
-	return "[::d]" + text + "[::-]"
 }
