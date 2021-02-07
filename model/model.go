@@ -11,7 +11,6 @@ import (
 	"clx/file"
 	"clx/screen"
 	"clx/submission"
-	"clx/submission/formatter"
 	"clx/submission/ranking"
 	"clx/utils/message"
 	"clx/utils/vim"
@@ -216,8 +215,8 @@ func SetListItemsToCurrentPage(list *cview.List, submissions []*core.Submission,
 
 	for i := start; i < end; i++ {
 		s := submissions[i]
-		mainText := formatter.GetMainText(s.Title, s.Domain, config.HighlightHeadlines)
-		secondaryText := formatter.GetSecondaryText(s.Points, s.Author, s.Time, s.CommentsCount)
+		mainText := submission.FormatSubMain(s.Title, s.Domain, config.HighlightHeadlines)
+		secondaryText := submission.FormatSubSecondary(s.Points, s.Author, s.Time, s.CommentsCount)
 
 		item := cview.NewListItem(mainText)
 		item.SetSecondaryText(secondaryText)

@@ -1,4 +1,4 @@
-package formatter
+package submission
 
 import (
 	"clx/utils/format"
@@ -14,7 +14,7 @@ const (
 	launchHN = "Launch HN:"
 )
 
-func GetMainText(title string, domain string, mode int) string {
+func FormatSubMain(title string, domain string, mode int) string {
 	return formatTitle(title, mode) + formatDomain(domain)
 }
 
@@ -80,7 +80,7 @@ func formatDomain(domain string) string {
 	return domainInParenthesisAndDimmed
 }
 
-func GetSecondaryText(points int, author string, time string, comments int) string {
+func FormatSubSecondary(points int, author string, time string, comments int) string {
 	parsedPoints := parsePoints(points)
 	parsedAuthor := parseAuthor(author)
 	parsedComments := parseComments(comments, author)
