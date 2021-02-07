@@ -6,6 +6,9 @@ _WIP_
 **Cosmetic:**
 - Settings screen now highlights booleans and integers
 
+**Bugfixes:**
+- Fixed a bug where jumping multiple lines would lead to an infinite loop   
+
 ## 0.8
 _2021-02-07_
 

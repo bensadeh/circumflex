@@ -5,7 +5,7 @@ import "strconv"
 func GetItemDown(vimNumberRegister string, currentItem int, itemCount int) int {
 	register, _ := strconv.Atoi(vimNumberRegister)
 	availableItemsDown := itemCount - currentItem
-	isNumbersInRegister := vimNumberRegister != ""
+	isVimRegisterEmpty := vimNumberRegister == ""
 	isAtTheBottomOfTheList := currentItem+1 == itemCount
 
 	var selectedItem int
@@ -13,7 +13,7 @@ func GetItemDown(vimNumberRegister string, currentItem int, itemCount int) int {
 	switch {
 	case isAtTheBottomOfTheList:
 		selectedItem = currentItem
-	case !isNumbersInRegister:
+	case isVimRegisterEmpty:
 		selectedItem = currentItem + 1
 	case register >= availableItemsDown:
 		selectedItem = itemCount - 1
@@ -29,7 +29,7 @@ func GetItemDown(vimNumberRegister string, currentItem int, itemCount int) int {
 func GetItemUp(vimNumberRegister string, currentItem int) int {
 	register, _ := strconv.Atoi(vimNumberRegister)
 	availableItemsUp := currentItem
-	isNumbersInRegister := vimNumberRegister != ""
+	isVimRegisterEmpty := vimNumberRegister == ""
 	isAtTheTopOfTheList := currentItem == 0
 
 	var selectedItem int
@@ -37,12 +37,12 @@ func GetItemUp(vimNumberRegister string, currentItem int) int {
 	switch {
 	case isAtTheTopOfTheList:
 		selectedItem = currentItem
-	case !isNumbersInRegister:
+	case isVimRegisterEmpty:
 		selectedItem = currentItem - 1
 	case register >= availableItemsUp:
 		selectedItem = 0
 	case register < availableItemsUp:
-		selectedItem -= currentItem + register
+		selectedItem += currentItem - register
 	default:
 		break
 	}
