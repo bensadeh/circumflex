@@ -19,8 +19,6 @@ func GetItemDown(vimNumberRegister string, currentItem int, itemCount int) int {
 		selectedItem = itemCount - 1
 	case register < availableItemsDown:
 		selectedItem += currentItem + register
-	default:
-		break
 	}
 
 	return selectedItem
@@ -43,8 +41,6 @@ func GetItemUp(vimNumberRegister string, currentItem int) int {
 		selectedItem = 0
 	case register < availableItemsUp:
 		selectedItem += currentItem - register
-	default:
-		break
 	}
 
 	return selectedItem
