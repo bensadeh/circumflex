@@ -57,10 +57,10 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
   <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
 </p>
 
-## Configuration
+## Settings
 ### How to configure
 Customize the front page and comment section by editing `config.env` in `~/.config/circumflex`. If `config.env` doesn't exist, `circumflex`
-can create one and populated it with the available options and their descriptions. You can also export the keys and values from `config.env` as 
+can create one and populated it with the available options along with their default values and descriptions. You can also export the keys and values from `config.env` as 
 [environmental variables](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables)
 in your shell.
 
@@ -87,14 +87,15 @@ highlighting) or 2 (colored highlighting). YC-funded startups are colorized in b
 Shows each line with a number relative to the currently selected element. Similar to Vim's hybrid line number mode.
 
 #### Hide YC hiring posts
-Hides 'X is hiring' posts from YC-funded startups. Does not affect the monthly 'Who is Hiring?' posts.
+Hides `X is hiring` posts from YC-funded startups. Does not affect the monthly `Who is Hiring?` posts.
 
 ## Under the hood
 `circumflex` uses:
 * [tcell](https://github.com/gdamore/tcell) and [cview](https://gitlab.com/tslocum/cview) for the TUI
-* [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) for fetching submissions and comments
+* [viper](https://github.com/spf13/viper) for reading and setting configurations
+* [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) for providing submissions and comments
 * [`less`](http://greenwoodsoftware.com/less/) for viewing comments
-* [go-term-text](https://github.com/MichaelMure/go-term-text) for wrapping and indenting comments
+* [go-term-text](https://github.com/MichaelMure/go-term-text) for text formatting
 
 Screenshots use:
 * [iTerm2](https://iterm2.com/) for the terminal
