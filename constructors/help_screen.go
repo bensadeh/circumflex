@@ -13,26 +13,26 @@ const (
 	helpScreenText = `
       [-:-:b]Main Screen[-:-:-]
 
-Enter:         read comments
-Tab:           change category
-o:             open submission link in browser
-c:             open comments in browser
-r:             refresh
+Read comments ............................... Enter         
+Change category ............................. Tab
+Open submission link in browser ............. o
+Open comments in browser .................... c
+Refresh ..................................... r
                                     
-i, ?:          bring up this screen
-q:             quit to prompt
+Bring up this screen ........................ i, ?
+Quit to prompt .............................. q             
 
       [-:-:b]Comment Section (less)[-:-:-]
 
-d:             down one half-window
-u:             up one half-window
+Down one half-window ........................ d
+Up one half-window .......................... u
 
-/ + '::':      go to next top-level comment
-n:             repeat last search
-N:             repeat last search in reverse direction
+Go to next top-level comment ................ / + '::'
+Repeat last search .......................... n
+Repeat last search in reverse direction ..... N
 
-h:             help screen
-q:             quit to Main Screen
+Help screen ................................. h             
+Quit to Main Screen ......................... q             
 `
 )
 

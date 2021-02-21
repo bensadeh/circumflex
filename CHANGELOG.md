@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10
+_WIP_
+
+**Cosmetic:**
+- Cleaned up the keymap screen
+
 ## 0.9
 _2021-02-08_
 
