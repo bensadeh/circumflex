@@ -35,10 +35,7 @@ clx
 ### Features
 
 `circumflex` is a TUI application that lets you browse Hacker News in your terminal. It can list submissions by category
-and show the comment section.
-
-`circumflex` is made to look clean and unobtrusive across different color schemes out of the box. Headline highlighting
-marks idiomatic Hacker News posts (`Show HN:` etc.) and can be enabled in the settings.
+and show the comment section. It is made to look clean and unobtrusive across different color schemes.
 
 `circumflex` does not support any login related functionality.
 
