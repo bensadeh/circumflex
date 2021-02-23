@@ -11,8 +11,7 @@
 [![Go Report Card](https://img.shields.io/github/go-mod/go-version/bensadeh/circumflex?color=ffe585&labelColor=292D3E)](https://github.com/bensadeh/circumflex/blob/master/go.mod)
 </div>
 
-`circumflex` is a text-based user interface (TUI) application for browsing Hacker&nbsp;News. Stay up to date on the 
-latest stories and discussions right in your terminal.
+`circumflex` is a text-based user interface (TUI) application for browsing Hacker&nbsp;News.
 
 <p align="center">
   <img src="screenshots/mainview.png" width="700" alt="^"/>
