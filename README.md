@@ -30,13 +30,6 @@ brew install bensadeh/circumflex/circumflex
 clx
 ```
 
-### From Source
-
-```console
-# Build and run circumflex
-go run main.go
-```
-
 ## Overview
 
 ### Features
