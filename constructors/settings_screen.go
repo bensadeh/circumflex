@@ -32,11 +32,12 @@ type options struct {
 	options []*option
 }
 
-func (o *options) addOption(name string, key string, value string, description string) {
+func (o *options) addOption(name, key, value, defaultValue, description string) {
 	newOption := new(option)
 	newOption.name = name
 	newOption.key = key
 	newOption.value = value
+	newOption.defaultValue = defaultValue
 	newOption.description = description
 
 	o.options = append(o.options, newOption)
@@ -92,10 +93,11 @@ func (o options) getConfigFileTemplate() string {
 }
 
 type option struct {
-	name        string
-	key         string
-	value       string
-	description string
+	name         string
+	key          string
+	value        string
+	defaultValue string
+	description  string
 }
 
 func (o option) print(textWidth int) string {
@@ -151,7 +153,7 @@ func (o option) printConfig() string {
 	cleanDesc := ansi.Strip(o.description)
 	description, _ := text.WrapWithPad(cleanDesc, 80, "# ")
 
-	return description + newLine + "#" + o.key + "=" + o.value
+	return description + newLine + "# " + o.key + "=" + o.defaultValue
 }
 
 func GetSettingsText() string {
@@ -199,18 +201,18 @@ func initializeOptions() *options {
 	currentHideYCJobs := strconv.FormatBool(viper.GetBool(settings.HideYCJobsKey))
 
 	o := new(options)
-	o.addOption(settings.HighlightHeadlinesName, settings.HighlightHeadlinesKey,
-		currentHighlightHeadlines, settings.HighlightHeadlinesDescription)
-	o.addOption(settings.CommentWidthName, settings.CommentWidthKey,
-		currentCommentWidth, settings.CommentWidthDescription)
-	o.addOption(settings.PreserveRightMarginName, settings.PreserveRightMarginKey,
-		currentPreserveRightMargin, settings.PreserveRightMarginDescription)
-	o.addOption(settings.IndentSizeName, settings.IndentSizeKey,
-		currentIndentSize, settings.IndentSizeDescription)
-	o.addOption(settings.RelativeNumberingName, settings.RelativeNumberingKey,
-		currentRelativeNumbering, settings.RelativeNumberingDescription)
-	o.addOption(settings.HideYCJobsName, settings.HideYCJobsKey,
-		currentHideYCJobs, settings.HideYCJobsDescription)
+	o.addOption(settings.HighlightHeadlinesName, settings.HighlightHeadlinesKey, currentHighlightHeadlines,
+		strconv.Itoa(settings.HighlightHeadlinesDefault), settings.HighlightHeadlinesDescription)
+	o.addOption(settings.CommentWidthName, settings.CommentWidthKey, currentCommentWidth,
+		strconv.Itoa(settings.CommentWidthDefault), settings.CommentWidthDescription)
+	o.addOption(settings.PreserveRightMarginName, settings.PreserveRightMarginKey, currentPreserveRightMargin,
+		strconv.FormatBool(settings.PreserveRightMarginDefault), settings.PreserveRightMarginDescription)
+	o.addOption(settings.IndentSizeName, settings.IndentSizeKey, currentIndentSize,
+		strconv.Itoa(settings.IndentSizeDefault), settings.IndentSizeDescription)
+	o.addOption(settings.RelativeNumberingName, settings.RelativeNumberingKey, currentRelativeNumbering,
+		strconv.FormatBool(settings.RelativeNumberingDefault), settings.RelativeNumberingDescription)
+	o.addOption(settings.HideYCJobsName, settings.HideYCJobsKey, currentHideYCJobs,
+		strconv.FormatBool(settings.HideYCJobsDefault), settings.HideYCJobsDescription)
 
 	return o
 }

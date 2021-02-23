@@ -6,6 +6,9 @@ _WIP_
 **Cosmetic:**
 - Cleaned up the keymap screen
 
+**Bugfixes:**
+- Fixed a bug where the `config.env` template wasn't created with default values
+
 ## 0.9
 _2021-02-08_
 
