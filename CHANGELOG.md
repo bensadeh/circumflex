@@ -11,6 +11,9 @@ _WIP_
 **Bugfixes:**
 - Fixed a bug where the `config.env` template wasn't created with default values
 
+**Backend:**
+- Bump to Go 1.16
+
 ## 0.9
 _2021-02-08_
 

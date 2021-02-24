@@ -1,6 +1,6 @@
 module clx
 
-go 1.15
+go 1.16
 
 require (
 	github.com/MichaelMure/go-term-text v0.2.9
