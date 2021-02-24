@@ -8,10 +8,13 @@ import (
 )
 
 const (
-	askHN    = "Ask HN:"
-	showHN   = "Show HN:"
-	tellHN   = "Tell HN:"
-	launchHN = "Launch HN:"
+	noHighlighting        = 0
+	reverseHighlighting   = 1
+	colorizedHighlighting = 2
+	askHN                 = "Ask HN:"
+	showHN                = "Show HN:"
+	tellHN                = "Tell HN:"
+	launchHN              = "Launch HN:"
 )
 
 func FormatSubMain(title string, domain string, mode int) string {
@@ -19,41 +22,39 @@ func FormatSubMain(title string, domain string, mode int) string {
 }
 
 func formatTitle(title string, mode int) string {
-	switch mode {
-	case 1:
-		title = reverseShowAndTell(title)
-		title = labelYCStartups(title)
+	title = highlightShowAndTell(title, mode)
+	title = highlightYCStartups(title, mode)
 
-		return title
-	case 2:
-		title = colorizeShowAndTell(title)
-		title = labelYCStartups(title)
+	return title
+}
 
-		return title
-	default:
+func highlightShowAndTell(title string, mode int) string {
+	if mode == reverseHighlighting {
+		title = strings.ReplaceAll(title, askHN, format.Reverse(askHN))
+		title = strings.ReplaceAll(title, showHN, format.Reverse(showHN))
+		title = strings.ReplaceAll(title, tellHN, format.Reverse(tellHN))
+		title = strings.ReplaceAll(title, launchHN, format.Reverse(launchHN))
+
 		return title
 	}
-}
 
-func reverseShowAndTell(title string) string {
-	title = strings.ReplaceAll(title, askHN, format.Reverse(askHN))
-	title = strings.ReplaceAll(title, showHN, format.Reverse(showHN))
-	title = strings.ReplaceAll(title, tellHN, format.Reverse(tellHN))
-	title = strings.ReplaceAll(title, launchHN, format.Reverse(launchHN))
+	if mode == colorizedHighlighting {
+		title = strings.ReplaceAll(title, askHN, format.Magenta(askHN))
+		title = strings.ReplaceAll(title, showHN, format.Red(showHN))
+		title = strings.ReplaceAll(title, tellHN, format.Blue(tellHN))
+		title = strings.ReplaceAll(title, launchHN, format.Green(launchHN))
 
-	return title
-}
-
-func colorizeShowAndTell(title string) string {
-	title = strings.ReplaceAll(title, askHN, format.Magenta(askHN))
-	title = strings.ReplaceAll(title, showHN, format.Red(showHN))
-	title = strings.ReplaceAll(title, tellHN, format.Blue(tellHN))
-	title = strings.ReplaceAll(title, launchHN, format.Green(launchHN))
+		return title
+	}
 
 	return title
 }
 
-func labelYCStartups(title string) string {
+func highlightYCStartups(title string, mode int) string {
+	if mode == noHighlighting {
+		return title
+	}
+
 	startYear, endYear := 0o5, 22
 
 	for i := startYear; i <= endYear; i++ {
@@ -62,10 +63,21 @@ func labelYCStartups(title string) string {
 		summer := "(YC S" + year + ")"
 		winter := "(YC W" + year + ")"
 
+		title = formatStartup(title, mode, summer, year, winter)
+	}
+
+	return title
+}
+
+func formatStartup(title string, mode int, summer string, year string, winter string) string {
+	if mode == reverseHighlighting {
+		title = strings.ReplaceAll(title, summer, format.Reverse(" YC S"+year+" "))
+		title = strings.ReplaceAll(title, winter, format.Reverse(" YC W"+year+" "))
+	}
+	if mode == colorizedHighlighting {
 		title = strings.ReplaceAll(title, summer, format.BlackOnOrange(" YC S"+year+" "))
 		title = strings.ReplaceAll(title, winter, format.BlackOnOrange(" YC W"+year+" "))
 	}
-
 	return title
 }
 

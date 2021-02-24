@@ -5,6 +5,8 @@ _WIP_
 
 **Cosmetic:**
 - Cleaned up the keymap screen
+- `Highlight Headlines` now either reverse highlights all headlines or color highlights all headlines (YC-funded 
+  startups were previously colorized in option 1)
 
 **Bugfixes:**
 - Fixed a bug where the `config.env` template wasn't created with default values

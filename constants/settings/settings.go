@@ -22,10 +22,9 @@ const (
 	HighlightHeadlinesName        = "Highlight Headlines"
 	HighlightHeadlinesKey         = "CLX_HIGHLIGHT_HEADLINES"
 	HighlightHeadlinesDefault     = 0
-	HighlightHeadlinesDescription = "Highlights text containing \033[31mShow HN\033[0m, \033[35mAsk HN\033[0m, " +
-		"\033[34mTell HN\033[0m or \033[32mLaunch HN\033[0m. Can be set to \033[1m0\033[0m (No highlighting), " +
-		"\u001B[1m1\u001B[0m (inverse highlighting) or \u001B[1m2\u001B[0m (colored highlighting). YC-funded " +
-		"startups are colorized in both option \u001B[1m1\u001B[0m and \u001B[1m2\u001B[0m."
+	HighlightHeadlinesDescription = "Highlights YC-funded startups and text containing \033[31mShow HN\033[0m, " +
+		"\033[35mAsk HN\033[0m, \033[34mTell HN\033[0m and \033[32mLaunch HN\033[0m. Can be set to \033[1m0\033[0m " +
+		"(No highlighting), \u001B[1m1\u001B[0m (inverse highlighting) or \u001B[1m2\u001B[0m (colored highlighting)."
 	RelativeNumberingName        = "Use Relative Numbering"
 	RelativeNumberingKey         = "CLX_RELATIVE_NUMBERING"
 	RelativeNumberingDefault     = false
