@@ -12,15 +12,15 @@
 [![Go Report Card](https://img.shields.io/github/go-mod/go-version/bensadeh/circumflex?color=ffe585&labelColor=292D3E)](https://github.com/bensadeh/circumflex/blob/master/go.mod)
 </div>
 
-`circumflex` is a text-based user interface (TUI) application for browsing Hacker&nbsp;News.
+`circumflex` is Hacker&nbsp;News in your terminal.
 
 <p align="center">
   <img src="screenshots/mainview.png" width="700" alt="^"/>
 </p>
 
-## Installing
+## Getting started
 
-### Homebrew
+Install `circumflex` with Homebrew:
 
 ```console
 # Add 'bensadeh/circumflex' to list of taps and install
@@ -30,12 +30,14 @@ brew install bensadeh/circumflex/circumflex
 clx
 ```
 
+Press <kbd>i</kbd> to show available keymaps and settings.
+
 ## Overview
 
 ### Features
 
-`circumflex` is a TUI application that lets you browse Hacker News in your terminal. It can list submissions by category
-and show the comment section. It is made to look clean and unobtrusive across different color schemes.
+`circumflex` is a text-based user interface (TUI) application that lets you browse Hacker News in your terminal. It can
+list submissions by category and show the comment section. It is made to look good across different color schemes.
 
 `circumflex` does not support any login related functionality.
 
@@ -56,7 +58,6 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 * Colored references (`[1]`, `[2]`, `[…]`)
 * Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
 * Ability to jump between top-level comments by searching for `::`
-* Adjustable margins and indentations
 
 <p align="center">
   <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
@@ -66,15 +67,12 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 
 ### How to configure
 
-Customize the front page and comment section by editing `config.env` in `~/.config/circumflex`. If `config.env` doesn't
-exist, `circumflex`
-can create one and populated it with the available options along with their default values and descriptions. You can
-also export the keys and values from `config.env` as
-[environmental variables](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables)
-in your shell.
+Customize the front page and comment section by editing `config.env` in `~/.config/circumflex`. In the settings menu
+`circumflex` can create a template `config.env` with the available options.
 
-If the same key is simultaneously set in `config.env` and exported in your environment, the environment value will take
-precedence.
+Alternatively, you can configure `circumflex` by setting
+[environment variables](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables)
+in your shell.
 
 <p align="center">
   <img src="screenshots/settings.png" width="700" alt="^"/>
@@ -93,7 +91,7 @@ The number of whitespaces prepended to each reply, not including the color bar.
 
 #### Highlight Headlines
 
-Highlights YC-funded startups and text containing `Show HN`, `Ask HN`, `Tell HN` and `Launch HN`. Can be set to 0 (No 
+Highlights YC-funded startups and text containing `Show HN`, `Ask HN`, `Tell HN` and `Launch HN`. Can be set to 0 (No
 highlighting), 1 (inverse highlighting) or 2 (colored highlighting).
 
 #### Use Relative Numbering
