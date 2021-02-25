@@ -41,8 +41,6 @@ list submissions by category and show the comment section. It is made to look go
 
 `circumflex` does not support any login related functionality.
 
-Press <kbd>i</kbd> to show available keymaps and settings.
-
 <p align="center">
   <img src="screenshots/comments.png" width="700" alt="^"/>
 </p>
