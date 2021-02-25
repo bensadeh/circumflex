@@ -3,6 +3,9 @@
 ## 0.10
 _WIP_
 
+**New features:**
+- Moving between submissions using `g` and `G` now functions identical to vim
+
 **Cosmetic:**
 - Cleaned up the keymap screen
 - `Highlight Headlines` now either reverse highlights all headlines or color highlights all headlines (YC-funded 

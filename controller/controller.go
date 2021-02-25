@@ -130,11 +130,11 @@ func SetApplicationShortcuts(
 			return event
 		}
 		if event.Rune() == 'g' {
-			model.SelectFirstElementInList(main, appState, list, config)
+			model.GoToLowerCaseG(main, appState, list, config)
 			return event
 		}
 		if event.Rune() == 'G' {
-			model.SelectLastElementInList(main, appState, list, config)
+			model.GoToUpperCaseG(main, appState, list, config)
 			return event
 		}
 		if event.Rune() == 'r' {

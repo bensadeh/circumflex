@@ -16,6 +16,7 @@ import (
 	"clx/view"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 	"unicode/utf8"
 
@@ -435,14 +436,86 @@ func SelectFirstElementInList(main *core.MainView, appState *core.ApplicationSta
 	view.SetLeftMarginText(main, marginText)
 }
 
-func SelectLastElementInList(main *core.MainView, appState *core.ApplicationState, list *cview.List,
-	config *core.Config) {
-	view.SelectLastElementInList(list)
-	ClearVimRegister(main, appState)
+func GoToLowerCaseG(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config) {
+	switch {
+	case appState.VimNumberRegister == "g":
+		SelectFirstElementInList(main, appState, list, config)
 
-	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, list.GetCurrentItemIndex(),
-		appState.CurrentPage)
-	view.SetLeftMarginText(main, marginText)
+		marginText := getMarginText(config.RelativeNumbering,
+			appState.SubmissionsToShow,
+			list.GetCurrentItemIndex(),
+			appState.CurrentPage)
+
+		view.SetLeftMarginText(main, marginText)
+		view.ClearStatusBar(main)
+
+	case vim.ContainsOnlyNumbers(appState.VimNumberRegister):
+		appState.VimNumberRegister += "g"
+
+		view.SetPermanentStatusBar(main, vim.FormatRegisterOutput(appState.VimNumberRegister), cview.AlignRight)
+
+	case vim.IsNumberWithGAppended(appState.VimNumberRegister):
+		register := strings.TrimSuffix(appState.VimNumberRegister, "g")
+
+		itemToJumpTo := vim.GetItemToJumpTo(register,
+			list.GetCurrentItemIndex(),
+			appState.SubmissionsToShow,
+			appState.CurrentPage)
+
+		ClearVimRegister(main, appState)
+		list.SetCurrentItem(itemToJumpTo)
+		view.ClearStatusBar(main)
+
+		marginText := getMarginText(config.RelativeNumbering,
+			appState.SubmissionsToShow,
+			list.GetCurrentItemIndex(),
+			appState.CurrentPage)
+		view.SetLeftMarginText(main, marginText)
+
+	case appState.VimNumberRegister == "":
+		appState.VimNumberRegister += "g"
+
+		view.SetPermanentStatusBar(main, vim.FormatRegisterOutput(appState.VimNumberRegister), cview.AlignRight)
+	}
+}
+
+func GoToUpperCaseG(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config) {
+	switch {
+	case appState.VimNumberRegister == "":
+		view.SelectLastElementInList(list)
+		ClearVimRegister(main, appState)
+
+		marginText := getMarginText(config.RelativeNumbering,
+			appState.SubmissionsToShow,
+			list.GetCurrentItemIndex(),
+			appState.CurrentPage)
+		view.SetLeftMarginText(main, marginText)
+
+	case vim.ContainsOnlyNumbers(appState.VimNumberRegister):
+		register := strings.TrimSuffix(appState.VimNumberRegister, "g")
+
+		itemToJumpTo := vim.GetItemToJumpTo(register,
+			list.GetCurrentItemIndex(),
+			appState.SubmissionsToShow,
+			appState.CurrentPage)
+
+		ClearVimRegister(main, appState)
+		list.SetCurrentItem(itemToJumpTo)
+		view.ClearStatusBar(main)
+
+		marginText := getMarginText(config.RelativeNumbering,
+			appState.SubmissionsToShow,
+			list.GetCurrentItemIndex(),
+			appState.CurrentPage)
+		view.SetLeftMarginText(main, marginText)
+	case vim.IsNumberWithGAppended(appState.VimNumberRegister):
+		ClearVimRegister(main, appState)
+		view.ClearStatusBar(main)
+
+	case appState.VimNumberRegister == "g":
+		ClearVimRegister(main, appState)
+		view.ClearStatusBar(main)
+	}
 }
 
 func PutDigitInRegister(main *core.MainView, element rune, appState *core.ApplicationState) {
@@ -450,16 +523,19 @@ func PutDigitInRegister(main *core.MainView, element rune, appState *core.Applic
 		return
 	}
 
-	registerIsMoreThanTwoDigits := len(appState.VimNumberRegister) > 1
+	if appState.VimNumberRegister == "g" {
+		ClearVimRegister(main, appState)
+	}
 
-	if registerIsMoreThanTwoDigits {
+	registerIsMoreThanThreeDigits := len(appState.VimNumberRegister) > 2
+
+	if registerIsMoreThanThreeDigits {
 		appState.VimNumberRegister = trimFirstRune(appState.VimNumberRegister)
 	}
 
 	appState.VimNumberRegister += string(element)
-	spaceBetweenNumberAndPageCounter := "    "
 
-	view.SetPermanentStatusBar(main, appState.VimNumberRegister+spaceBetweenNumberAndPageCounter, cview.AlignRight)
+	view.SetPermanentStatusBar(main, vim.FormatRegisterOutput(appState.VimNumberRegister), cview.AlignRight)
 }
 
 func trimFirstRune(s string) string {
