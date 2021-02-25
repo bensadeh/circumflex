@@ -16,7 +16,7 @@ func GetTerminalWidth() int {
 
 func GetSubmissionsToShow(screenHeight int, maxStories int) int {
 	topBarHeight := 2
-	footerHeight := 1
+	footerHeight := 2
 	adjustedHeight := screenHeight - topBarHeight - footerHeight
 
 	return min(adjustedHeight/2, maxStories)
@@ -26,6 +26,7 @@ func min(x, y int) int {
 	if x > y {
 		return y
 	}
+
 	return x
 }
 
