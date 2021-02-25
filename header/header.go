@@ -11,11 +11,11 @@ const (
 )
 
 func GetHackerNewsHeader(selectedSubHeader int) string {
-	return header("🆈", "Hacker News  ", []string{"new", "ask", "show"}, selectedSubHeader, "orange")
+	return header("🆈", "Hacker News   ", []string{"new", "ask", "show"}, selectedSubHeader, "orange")
 }
 
 func GetCircumflexHeader(selectedSubHeader int) string {
-	return header("🅲", "circumflex   ", []string{"keymaps", "settings"}, selectedSubHeader, "#82aaff")
+	return header("🅲", "circumflex    ", []string{"keymaps", "settings"}, selectedSubHeader, "#82aaff")
 }
 
 func header(symbol string, title string, subHeaders []string, selectedSubHeader int, bgColor string) string {
