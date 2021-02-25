@@ -1,10 +1,10 @@
 # Changelog
 
 ## 0.10
-_WIP_
+_2021-02-25_
 
 **New features:**
-- Moving between submissions using `g` and `G` now functions identical to vim
+- `g` and `G` works the same way as it does in Vim
 
 **Cosmetic:**
 - Cleaned up the keymap screen
