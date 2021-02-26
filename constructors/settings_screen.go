@@ -102,7 +102,7 @@ type option struct {
 
 func (o option) print(textWidth int) string {
 	output := ""
-	currentValue := highlight(o.value)
+	currentValue := highlight(o.value, o.defaultValue)
 	wrappedDescription, _ := text.Wrap(o.description, textWidth)
 
 	output += makeHeadline(o.name, currentValue, textWidth) + newLine
@@ -111,20 +111,28 @@ func (o option) print(textWidth int) string {
 	return output + newLine
 }
 
-func highlight(value string) string {
-	if _, err := strconv.Atoi(value); err == nil {
-		return textBlack + textBold + backgroundBlue + " " + value + " " + textNormal
+func highlight(currentValue string, defaultValue string) string {
+	overridden := ""
+	_, err := strconv.Atoi(currentValue)
+	currentValueIsANumber := err == nil
+
+	if currentValue != defaultValue {
+		overridden = "*"
 	}
 
-	if value == "true" {
-		return textBlack + textBold + backgroundGreen + " " + value + " " + textNormal
-	}
+	switch {
+	case currentValueIsANumber:
+		return textBlack + backgroundBlue + " " + overridden + currentValue + overridden + " " + textNormal
 
-	if value == "false" {
-		return textBlack + textBold + backgroundRed + " " + value + " " + textNormal
-	}
+	case currentValue == "true":
+		return textBlack + backgroundGreen + " " + overridden + currentValue + overridden + " " + textNormal
 
-	return value
+	case currentValue == "false":
+		return textBlack + backgroundRed + " " + overridden + currentValue + overridden + " " + textNormal
+
+	default:
+		return currentValue
+	}
 }
 
 func makeHeadline(name string, key string, textWidth int) string {
