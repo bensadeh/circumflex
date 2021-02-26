@@ -29,7 +29,7 @@ func getHeader(c Comments, commentWidth int) string {
 	submissionComment := parseRootComment(c.Comment, commentWidth)
 	helpMessage := dimmed("You are now in 'less'. Press 'q' to return and 'h' for help.") + NewLine
 	separator := getSeparator(commentWidth)
-	return headline + infoLine + helpMessage + submissionComment + separator + DoubleNewLine
+	return headline + infoLine + helpMessage + submissionComment + separator + NewParagraph
 }
 
 func getInfoLine(points int, author string, timeAgo string, numberOfComments int) string {
@@ -96,7 +96,7 @@ func prettyPrintComments(c Comments, indentSize int, commentWidth int, originalP
 
 	author := getCommentHeading(c, c.Level, commentWidth, originalPoster, parentPoster)
 	paddedAuthor, _ := text.Wrap(author, adjustedCommentWidth, paddingWithNoBlock)
-	fullComment := paddedAuthor + wrappedAndPaddedComment + DoubleNewLine
+	fullComment := paddedAuthor + wrappedAndPaddedComment + NewParagraph
 	fullComment = applyURLs(fullComment, URLs)
 
 	if c.Level == 0 {
@@ -260,7 +260,7 @@ func replaceCharacters(input string) string {
 func replaceHTML(input string) string {
 	input = strings.Replace(input, "<p>", "", 1)
 
-	input = strings.ReplaceAll(input, "<p>", DoubleNewLine)
+	input = strings.ReplaceAll(input, "<p>", NewParagraph)
 	input = strings.ReplaceAll(input, "<i>", Italic)
 	input = strings.ReplaceAll(input, "</i>", Normal)
 	input = strings.ReplaceAll(input, "</a>", "")
