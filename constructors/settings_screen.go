@@ -145,7 +145,7 @@ func makeHeadline(name string, key string, textWidth int) string {
 		whiteSpace += " "
 	}
 
-	return bold(name) + underlined(whiteSpace) + dim(key)
+	return bold(underlined(name)) + whiteSpace + dim(key)
 }
 
 func (o option) printConfig() string {
