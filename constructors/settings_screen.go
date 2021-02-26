@@ -21,6 +21,7 @@ const (
 	newParagraph    = "\n\n"
 	textBold        = "\033[1m"
 	textDimmed      = "\033[2m"
+	textUnderline   = "\033[4m"
 	textNormal      = "\033[0m"
 	textBlack       = "\u001b[30m"
 	backgroundRed   = "\u001b[41m"
@@ -58,7 +59,7 @@ func (o options) printAll(textWidth int) string {
 func printOptionsInOneColumn(o options, textWidth int) string {
 	output := ""
 	for i := 0; i < len(o.options); i++ {
-		output += o.options[i].print(textWidth) + newLine + newParagraph
+		output += o.options[i].print(textWidth) + newParagraph
 	}
 
 	return output
@@ -71,10 +72,9 @@ func printOptionsInTwoColumns(o options, textWidth int, space int) string {
 		isAtLeastTwoOptionsLeft := i+2 <= len(o.options)
 
 		if isAtLeastTwoOptionsLeft {
-			leftDesc, leftValue := o.options[i].printNoWrap(textWidth)
-			rightDesc, rightValue := o.options[i+1].printNoWrap(textWidth)
+			leftDesc := o.options[i].print(textWidth)
+			rightDesc := o.options[i+1].print(textWidth)
 			output += column.PutInColumns(leftDesc, rightDesc, textWidth, space) + newLine
-			output += column.PutInColumns(leftValue, rightValue, textWidth, space) + newLine
 		} else {
 			output += o.options[i].print(textWidth) + newParagraph
 		}
@@ -101,14 +101,14 @@ type option struct {
 }
 
 func (o option) print(textWidth int) string {
-	wrappedDescription, _ := text.Wrap(o.description, textWidth)
 	output := ""
+	currentValue := highlight(o.value)
+	wrappedDescription, _ := text.Wrap(o.description, textWidth)
 
-	output += makeHeadline(o.name, o.key, textWidth) + newLine
-	output += wrappedDescription + newParagraph
-	output += "Current value: " + highlight(o.value)
+	output += makeHeadline(o.name, currentValue, textWidth) + newLine
+	output += wrappedDescription
 
-	return output
+	return output + newLine
 }
 
 func highlight(value string) string {
@@ -127,15 +127,6 @@ func highlight(value string) string {
 	return value
 }
 
-func (o option) printNoWrap(textWidth int) (string, string) {
-	description := ""
-
-	description += makeHeadline(o.name, o.key, textWidth) + newLine
-	description += o.description
-
-	return description, "Current value: " + highlight(o.value) + newLine
-}
-
 func makeHeadline(name string, key string, textWidth int) string {
 	nameLength := text.Len(name)
 	keyLength := text.Len(key)
@@ -146,7 +137,7 @@ func makeHeadline(name string, key string, textWidth int) string {
 		whiteSpace += " "
 	}
 
-	return bold(name) + whiteSpace + dim(key)
+	return bold(name) + underlined(whiteSpace) + dim(key)
 }
 
 func (o option) printConfig() string {
@@ -223,6 +214,10 @@ func bold(text string) string {
 
 func dim(text string) string {
 	return textDimmed + text + textNormal
+}
+
+func underlined(text string) string {
+	return textUnderline + text + textNormal
 }
 
 // Hack: a bug in cview.TranslateANSI() causes black to be translated to the bright version.

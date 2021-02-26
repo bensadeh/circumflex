@@ -1,4 +1,9 @@
 # Changelog
+## 0.11
+_WIP_
+
+**Cosmetic**
+- Overhauled the Settings screen
 
 ## 0.10
 _2021-02-25_
