@@ -139,11 +139,7 @@ func makeHeadline(name string, key string, textWidth int) string {
 	nameLength := text.Len(name)
 	keyLength := text.Len(key)
 	spaceBetweenNameAndKey := textWidth - nameLength - keyLength
-
-	whiteSpace := ""
-	for i := 0; i < spaceBetweenNameAndKey; i++ {
-		whiteSpace += " "
-	}
+	whiteSpace := strings.Repeat(" ", spaceBetweenNameAndKey)
 
 	return bold(underlined(name)) + whiteSpace + dim(key)
 }
