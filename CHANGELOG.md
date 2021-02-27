@@ -5,6 +5,9 @@ _WIP_
 **Cosmetic**
 - Overhauled the Settings screen
 
+**Bugfixes**
+- Fixed a bug where references (`[1]`, `[2]`, `[…]`) would highlight inside code blocks
+
 ## 0.10
 _2021-02-25_
 

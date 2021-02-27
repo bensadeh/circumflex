@@ -25,3 +25,15 @@ func unmarshal(data []byte) *comment.Comments {
 
 	return root
 }
+
+func TestParsing(t *testing.T) {
+	input := "<p>Not a code Block: " +
+		"<p><pre><code>  CODE BLOCK CODE BLOCK \n" +
+		"CODE BLOCK CODE BLOCK</code></pre>"
+
+	expected := "Not a code Block: \n\n\x1b[2m  CODE BLOCK CODE BLOCK \nCODE BLOCK CODE BLOCK\x1b[0m"
+
+	actual, _ := comment.ParseComment(input)
+
+	assert.Equal(t, expected, actual)
+}

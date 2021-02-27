@@ -1,7 +1,6 @@
 package comment
 
 import (
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -75,7 +74,7 @@ func parseRootComment(c string, commentWidth int) string {
 		return ""
 	}
 
-	comment, URLs := parseComment(c)
+	comment, URLs := ParseComment(c)
 	wrappedComment, _ := text.Wrap(comment, commentWidth)
 	wrappedComment = applyURLs(wrappedComment, URLs)
 
@@ -84,7 +83,7 @@ func parseRootComment(c string, commentWidth int) string {
 
 func printReplies(c Comments, indentSize int, commentWidth int, screenWidth int, originalPoster string,
 	parentPoster string, preserveRightMargin bool) string {
-	comment, URLs := parseComment(c.Content)
+	comment, URLs := ParseComment(c.Content)
 	adjustedCommentWidth := getCommentWidthForLevel(c.Level, indentSize, commentWidth, screenWidth, preserveRightMargin)
 
 	indentBlock := getIndentBlock(c.Level, indentSize)
@@ -230,75 +229,4 @@ func getIndentBlock(level int, indentSize int) string {
 	whitespace := strings.Repeat(" ", indentSize*level)
 
 	return whitespace + indentation
-}
-
-func parseComment(comment string) (string, []string) {
-	comment = replaceCharacters(comment)
-	comment = replaceHTML(comment)
-	comment = colorizeLinkNumbers(comment)
-	URLs := extractURLs(comment)
-	comment = trimURLs(comment)
-
-	return comment, URLs
-}
-
-func replaceCharacters(input string) string {
-	input = strings.ReplaceAll(input, "&#x27;", "'")
-	input = strings.ReplaceAll(input, "&gt;", ">")
-	input = strings.ReplaceAll(input, "&lt;", "<")
-	input = strings.ReplaceAll(input, "&#x2F;", "/")
-	input = strings.ReplaceAll(input, "&quot;", `"`)
-	input = strings.ReplaceAll(input, "&amp;", "&")
-	input = strings.ReplaceAll(input, ".  ", ". ")
-	input = strings.ReplaceAll(input, "!  ", "! ")
-	input = strings.ReplaceAll(input, "?  ", "? ")
-
-	return input
-}
-
-func replaceHTML(input string) string {
-	input = strings.Replace(input, "<p>", "", 1)
-
-	input = strings.ReplaceAll(input, "<p>", NewParagraph)
-	input = strings.ReplaceAll(input, "<i>", Italic)
-	input = strings.ReplaceAll(input, "</i>", Normal)
-	input = strings.ReplaceAll(input, "</a>", "")
-	input = strings.ReplaceAll(input, "<pre><code>", Dimmed)
-	input = strings.ReplaceAll(input, "</code></pre>", Normal)
-
-	return input
-}
-
-func colorizeLinkNumbers(input string) string {
-	input = strings.ReplaceAll(input, "[0]", "["+white("0")+"]")
-	input = strings.ReplaceAll(input, "[1]", "["+red("1")+"]")
-	input = strings.ReplaceAll(input, "[2]", "["+yellow("2")+"]")
-	input = strings.ReplaceAll(input, "[3]", "["+green("3")+"]")
-	input = strings.ReplaceAll(input, "[4]", "["+blue("4")+"]")
-	input = strings.ReplaceAll(input, "[5]", "["+cyan("5")+"]")
-	input = strings.ReplaceAll(input, "[6]", "["+magenta("6")+"]")
-	input = strings.ReplaceAll(input, "[7]", "["+altWhite("7")+"]")
-	input = strings.ReplaceAll(input, "[8]", "["+altRed("8")+"]")
-	input = strings.ReplaceAll(input, "[9]", "["+altYellow("9")+"]")
-	input = strings.ReplaceAll(input, "[10]", "["+altGreen("10")+"]")
-
-	return input
-}
-
-func extractURLs(input string) []string {
-	expForFirstTag := regexp.MustCompile(`<a href=".*?" rel="nofollow">`)
-	URLs := expForFirstTag.FindAllString(input, 10)
-
-	for i := range URLs {
-		URLs[i] = strings.ReplaceAll(URLs[i], `<a href="`, "")
-		URLs[i] = strings.ReplaceAll(URLs[i], `" rel="nofollow">`, "")
-	}
-
-	return URLs
-}
-
-func trimURLs(comment string) string {
-	expression := regexp.MustCompile(`<a href=".*?" rel="nofollow">`)
-
-	return expression.ReplaceAllString(comment, "")
 }
