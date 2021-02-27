@@ -22,11 +22,11 @@ func header(symbol string, title string, subHeaders []string, selectedSubHeader 
 	background := getBackground(bgColor)
 	screenWidth := screen.GetTerminalWidth()
 
-	mainHeader := background + blackInBold() + leftPadding + symbol + symbolHeaderSpacing + title + format.ResetStyle()
-	subHeader := getSubHeader(subHeaders, selectedSubHeader)
-	whitespaceFiller := getWhitespaceFiller(mainHeader+subHeader, screenWidth)
+	titleHeader := background + blackInBold() + leftPadding + symbol + symbolHeaderSpacing + title + format.ResetStyle()
+	categoryHeader := getCategoryHeader(subHeaders, selectedSubHeader)
+	whitespaceFiller := getWhitespaceFiller(titleHeader+categoryHeader, screenWidth)
 
-	return mainHeader + subHeader + whitespaceFiller
+	return titleHeader + categoryHeader + whitespaceFiller
 }
 
 func getWhitespaceFiller(base string, screenWidth int) string {
@@ -40,8 +40,8 @@ func getWhitespaceFiller(base string, screenWidth int) string {
 	return whitespace
 }
 
-func getSubHeader(subHeaders []string, selectedSubHeader int) string {
-	formattedSubHeader := ""
+func getCategoryHeader(subHeaders []string, selectedSubHeader int) string {
+	formattedCategory := ""
 	itemsTotal := len(subHeaders)
 
 	for i, subHeader := range subHeaders {
@@ -49,13 +49,13 @@ func getSubHeader(subHeaders []string, selectedSubHeader int) string {
 		separator := getSeparator(isOnLastItem)
 
 		if i+1 == selectedSubHeader {
-			formattedSubHeader += format.White(subHeader) + format.BlackNoReset("") + separator
+			formattedCategory += format.White(subHeader) + format.BlackNoReset("") + separator
 		} else {
-			formattedSubHeader += subHeader + separator
+			formattedCategory += subHeader + separator
 		}
 	}
 
-	return formattedSubHeader
+	return formattedCategory
 }
 
 func getSeparator(isOnLastItem bool) string {
