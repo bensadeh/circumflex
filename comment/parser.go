@@ -32,7 +32,7 @@ func getHeader(c Comments, commentWidth int) string {
 	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount)
 	submissionComment := parseRootComment(c.Content, commentWidth)
 	helpMessage := dimmed("You are now in 'less'. Press 'q' to return and 'h' for help.") + NewLine
-	separator := getSeparator(commentWidth)
+	separator := strings.Repeat("-", commentWidth)
 
 	return headline + infoLine + helpMessage + submissionComment + separator + NewParagraph
 }
@@ -44,24 +44,14 @@ func getInfoLine(points int, author string, timeAgo string, numberOfComments int
 	return dimmed(p+" points by "+author+" "+timeAgo+" • "+c+" comments") + NewLine
 }
 
-func getSeparator(commentWidth int) string {
-	separator := ""
-
-	for i := 0; i < commentWidth; i++ {
-		separator += "-"
-	}
-
-	return separator
-}
-
-func getHeadline(title, domain, URL string, id, commentWidth int) string {
+func getHeadline(title, domain, url string, id, commentWidth int) string {
 	if domain == "" {
 		domain = "item?id=" + strconv.Itoa(id)
 	}
 
 	headline := title + " " + paren(domain) + NewLine
 	wrappedHeadline, _ := text.Wrap(headline, commentWidth)
-	hyperlink := getHyperlink(domain, URL, id)
+	hyperlink := getHyperlink(domain, url, id)
 
 	wrappedHeadline = strings.ReplaceAll(wrappedHeadline, domain, hyperlink)
 
@@ -79,8 +69,8 @@ func getHyperlink(domain string, URL string, id int) string {
 	return getHyperlinkText(linkToComments, linkText)
 }
 
-func getHyperlinkText(URL string, text string) string {
-	return Link1 + URL + Link2 + text + Link3
+func getHyperlinkText(url string, text string) string {
+	return Link1 + url + Link2 + text + Link3
 }
 
 func parseRootComment(c string, commentWidth int) string {
@@ -115,8 +105,8 @@ func prettyPrintComments(c Comments, indentSize int, commentWidth int, screenWid
 		parentPoster = c.User
 	}
 
-	for _, s := range c.Comments {
-		fullComment += prettyPrintComments(s, indentSize, commentWidth, screenWidth,
+	for _, reply := range c.Comments {
+		fullComment += prettyPrintComments(reply, indentSize, commentWidth, screenWidth,
 			originalPoster, parentPoster, preserveRightMargin)
 	}
 
@@ -131,7 +121,8 @@ func getCommentHeading(c Comments, level int, commentWidth int, originalPoster s
 	if level == 0 {
 		replies := getRepliesTag(getReplyCount(c))
 		anchor := " ::"
-		headerLine := getWhitespaceFiller(author+label+anchor+timeAgo+replies, commentWidth)
+		lengthOfUnderline := commentWidth - text.Len(author+label+anchor+timeAgo+replies)
+		headerLine := strings.Repeat(" ", lengthOfUnderline)
 
 		return author + label + dimmedAndUnderlined(timeAgo+headerLine+replies+anchor) + NewLine
 	}
@@ -147,52 +138,44 @@ func getRepliesTag(numberOfReplies int) string {
 	return strconv.Itoa(numberOfReplies) + " ⤶"
 }
 
-func getWhitespaceFiller(heading string, commentWidth int) string {
-	lengthOfUnderline := commentWidth - text.Len(heading)
-	headerLine := ""
-
-	for i := 0; i < lengthOfUnderline; i++ {
-		headerLine += " "
-	}
-
-	return headerLine
-}
-
 func getReplyCount(comments Comments) int {
 	numberOfReplies := 0
 
-	return calculateReplies(comments, &numberOfReplies)
+	return incrementReplyCount(comments, &numberOfReplies)
 }
 
-func calculateReplies(comments Comments, repliesSoFar *int) int {
+func incrementReplyCount(comments Comments, repliesSoFar *int) int {
 	for _, reply := range comments.Comments {
 		*repliesSoFar++
-		calculateReplies(reply, repliesSoFar)
+		incrementReplyCount(reply, repliesSoFar)
 	}
 
 	return *repliesSoFar
 }
 
-func applyURLs(comment string, URLs []string) string {
-	for _, URL := range URLs {
-		truncatedURL := truncateURL(URL)
-		URLWithHyperlinkCode := getHyperlinkText(URL, truncatedURL)
+func applyURLs(comment string, urls []string) string {
+	for _, url := range urls {
+		truncatedURL := truncateURL(url)
+		URLWithHyperlinkCode := getHyperlinkText(url, truncatedURL)
 		comment = strings.ReplaceAll(comment, truncatedURL, URLWithHyperlinkCode)
 	}
 
 	return comment
 }
 
-func truncateURL(URL string) string {
-	if len(URL) < 60 {
-		return URL
+func truncateURL(url string) string {
+	const hackerNewsMaxURLLength = 60
+
+	if len(url) < hackerNewsMaxURLLength {
+		return url
 	}
 
 	truncatedURL := ""
 
-	for i, c := range URL {
-		if i == 60 {
+	for i, c := range url {
+		if i == hackerNewsMaxURLLength {
 			truncatedURL += "..."
+
 			break
 		}
 
@@ -204,7 +187,8 @@ func truncateURL(URL string) string {
 
 // Adjusted comment width shortens the commentWidth if the available screen size
 // is smaller than the size of the commentWidth
-func getCommentWidthForLevel(level int, indentSize int, commentWidth int, screenWidth int, preserveRightMargin bool) int {
+func getCommentWidthForLevel(level int, indentSize int, commentWidth int, screenWidth int,
+	preserveRightMargin bool) int {
 	currentIndentSize := indentSize * level
 	usableScreenSize := screenWidth - currentIndentSize
 
