@@ -205,8 +205,6 @@ func getCommentWidthForLevel(level int, indentSize int, commentWidth int, screen
 
 func getAuthorLabel(author, originalPoster, parentPoster string) string {
 	switch author {
-	case "":
-		return ""
 	case "dang":
 		return green(" mod")
 	case originalPoster:
