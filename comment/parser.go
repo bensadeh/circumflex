@@ -5,11 +5,11 @@ import (
 	"strings"
 )
 
-type comment struct {
-	Sections []section
+type Comment struct {
+	Sections []Section
 }
 
-type section struct {
+type Section struct {
 	IsCodeBlock bool
 	Text        string
 }
@@ -19,10 +19,10 @@ func ParseComment(text string) (string, []string) {
 
 	text = strings.Replace(text, "<p>", "", 1)
 	paragraphs := strings.Split(text, "<p>")
-	c := new(comment)
+	c := new(Comment)
 
 	for _, paragraph := range paragraphs {
-		section := new(section)
+		section := new(Section)
 		section.Text = paragraph
 
 		if strings.Contains(paragraph, "<pre><code>") {
