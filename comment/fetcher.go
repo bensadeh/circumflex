@@ -9,21 +9,23 @@ import (
 )
 
 type Comments struct {
-	Author        string      `json:"user"`
-	Title         string      `json:"title"`
-	Comment       string      `json:"content"`
-	CommentsCount int         `json:"comments_count"`
-	Time          string      `json:"time_ago"`
-	Points        int         `json:"points"`
-	URL           string      `json:"url"`
-	Domain        string      `json:"domain"`
-	Level         int         `json:"level"`
-	ID            int         `json:"id"`
-	Replies       []*Comments `json:"comments"`
+	ID            int        `json:"id"`
+	Title         string     `json:"title"`
+	Points        int        `json:"points"`
+	User          string     `json:"user"`
+	Time          int        `json:"time"`
+	TimeAgo       string     `json:"time_ago"`
+	Type          string     `json:"type"`
+	URL           string     `json:"url"`
+	Level         int        `json:"level"`
+	Domain        string     `json:"domain"`
+	Comments      []Comments `json:"comments"`
+	Content       string     `json:"content"`
+	CommentsCount int        `json:"comments_count"`
 }
 
 func FetchComments(id string) (*Comments, error) {
-	stations := new(Comments)
+	comments := new(Comments)
 
 	client := resty.New()
 	client.SetTimeout(5 * time.Second)
@@ -31,11 +33,11 @@ func FetchComments(id string) (*Comments, error) {
 
 	_, err := client.R().
 		SetHeader("User-Agent", clx.Name+"/"+clx.Version).
-		SetResult(stations).
+		SetResult(comments).
 		Get(id)
 	if err != nil {
 		return nil, fmt.Errorf("could not fetch comments: %w", err)
 	}
 
-	return stations, nil
+	return comments, nil
 }

@@ -1,0 +1,207 @@
+{
+  "id": 1,
+  "title": "Y Combinator",
+  "points": 100,
+  "user": "pg",
+  "time": 1160418111,
+  "time_ago": "14 years ago",
+  "type": "link",
+  "url": "http://ycombinator.com",
+  "domain": "ycombinator.com",
+  "comments": [
+    {
+      "id": 15,
+      "level": 0,
+      "user": "sama",
+      "time": 1160423461,
+      "time_ago": "14 years ago",
+      "content": "<p>&#34;the rising star of venture capital&#34; -unknown VC eating lunch on SHR",
+      "comments": [
+        {
+          "id": 17,
+          "level": 1,
+          "user": "pg",
+          "time": 1160423565,
+          "time_ago": "14 years ago",
+          "content": "<p>Is there anywhere to eat on Sandhill Road?",
+          "comments": [
+            {
+              "id": 1079,
+              "level": 2,
+              "user": "dmon",
+              "time": 1172441903,
+              "time_ago": "14 years ago",
+              "content": "<p>sure",
+              "comments": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 234509,
+      "level": 0,
+      "user": "kleevr",
+      "time": 1215030588,
+      "time_ago": "13 years ago",
+      "content": "<p>sequential numbering\n  I must be bored",
+      "comments": [
+        {
+          "id": 234621,
+          "level": 1,
+          "user": "kleevr",
+          "time": 1215036658,
+          "time_ago": "13 years ago",
+          "content": "<p>I guess that news.yc is 1-indexed :)<p><a href=\"http://news.ycombinator.com/item?id=0\" rel=\"nofollow\">http://news.ycombinator.com/item?id=0</a> , DNE",
+          "comments": []
+        },
+        {
+          "id": 234560,
+          "level": 1,
+          "user": "sebg",
+          "time": 1215033636,
+          "time_ago": "13 years ago",
+          "content": "<p>Interesting - post 1 has comments.  no more comments until post 15.  which then has the same conversation between pg and dnom as the first post.  To top it off, post 17 is the conversation in posts 1 and 15.",
+          "comments": [
+            {
+              "id": 234593,
+              "level": 2,
+              "user": "kleevr",
+              "time": 1215035238,
+              "time_ago": "13 years ago",
+              "content": "<p>I'm sure the first fifteen were used primarily to populate the burgeoning news.yc",
+              "comments": []
+            },
+            {
+              "id": 234568,
+              "level": 2,
+              "user": "byrneseyeview",
+              "time": 1215033867,
+              "time_ago": "13 years ago",
+              "content": "<p>I think those 'items' are comments, not posts.",
+              "comments": [
+                {
+                  "id": 234633,
+                  "level": 3,
+                  "user": "kleevr",
+                  "time": 1215037329,
+                  "time_ago": "13 years ago",
+                  "content": "<p>items: comments || posts... \nthey're also arranged in a hierarchy...",
+                  "comments": []
+                },
+                {
+                  "id": 234591,
+                  "level": 3,
+                  "time": 1215035155,
+                  "time_ago": "13 years ago",
+                  "content": "[deleted]",
+                  "deleted": true,
+                  "comments": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 234548,
+          "level": 1,
+          "user": "byrneseyeview",
+          "time": 1215032978,
+          "time_ago": "13 years ago",
+          "content": "<p>I think I agree?",
+          "comments": [
+            {
+              "id": 234549,
+              "level": 2,
+              "user": "rms",
+              "time": 1215033062,
+              "time_ago": "13 years ago",
+              "content": "<p>i hear that there is an awesome easter egg in the -100s somewhere",
+              "comments": [
+                {
+                  "id": 234551,
+                  "level": 3,
+                  "user": "byrneseyeview",
+                  "time": 1215033217,
+                  "time_ago": "13 years ago",
+                  "content": "<p>How many people are lurking on this thread?",
+                  "comments": [
+                    {
+                      "id": 234567,
+                      "level": 4,
+                      "user": "rms",
+                      "time": 1215033863,
+                      "time_ago": "13 years ago",
+                      "content": "<p>it's the new comments page for me...",
+                      "comments": [
+                        {
+                          "id": 234580,
+                          "level": 5,
+                          "user": "sebg",
+                          "time": 1215034508,
+                          "time_ago": "13 years ago",
+                          "content": "<p>ditto.  (thanks for pointing out posts vs. items.)",
+                          "comments": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 487171,
+      "level": 0,
+      "user": "jacquesm",
+      "time": 1235046083,
+      "time_ago": "12 years ago",
+      "content": "<p>So, just to see how hard it is to make the longest span between article and comment :)<p>Congratulations on your second birthday YC, and thanks to Paul Graham for writing this forum. I had a really good look at the good a few days ago and I was quite impressed with how elegant the whole thing is put together.<p>Lisp would not be my language of choice for a website like this, and yet, after seeing how concise it was I'm tempted to play around with lisp in a web environment.",
+      "comments": []
+    },
+    {
+      "id": 454426,
+      "level": 0,
+      "user": "Arrington",
+      "time": 1233174747,
+      "time_ago": "12 years ago",
+      "content": "<p>This is why we can't have nice things.",
+      "dead": true,
+      "comments": []
+    },
+    {
+      "id": 454424,
+      "level": 0,
+      "user": "Arrington",
+      "time": 1233174741,
+      "time_ago": "12 years ago",
+      "content": "<p>This is why we can't have nice things.",
+      "dead": true,
+      "comments": []
+    },
+    {
+      "id": 454410,
+      "level": 0,
+      "user": "Arrington",
+      "time": 1233174694,
+      "time_ago": "12 years ago",
+      "content": "<p>This is why we can't have nice things.",
+      "dead": true,
+      "comments": []
+    },
+    {
+      "id": 82729,
+      "level": 0,
+      "user": "vice",
+      "time": 1195735854,
+      "time_ago": "13 years ago",
+      "content": "<p>I'm nX 1 too<p>;)\n",
+      "dead": true,
+      "comments": []
+    }
+  ],
+  "comments_count": 20
+}

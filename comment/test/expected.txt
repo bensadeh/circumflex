@@ -1,0 +1,84 @@
+Y Combinator (]8;;http://ycombinator.comycombinator.com]8;;)
+[2m100 points by pg 14 years ago • 20 comments[0m
+[2mYou are now in 'less'. Press 'q' to return and 'h' for help.[0m
+--------------------------------------------------------------------------------
+
+[1msama[0m [2m[4m14 years ago                                                         2 ⤶ ::[0m
+&#34;the rising star of venture capital&#34; -unknown VC eating lunch on SHR
+
+     [1mpg[0m[31m OP[0m [2m14 years ago[0m
+    [0m[31m▎[0mIs there anywhere to eat on Sandhill Road?
+
+         [1mdmon[0m [2m14 years ago[0m
+        [0m[33m▎[0msure
+
+[1mkleevr[0m [2m[4m13 years ago                                                      11 ⤶ ::[0m
+sequential numbering
+  I must be bored
+
+     [1mkleevr[0m[35m PP[0m [2m13 years ago[0m
+    [0m[31m▎[0mI guess that news.yc is 1-indexed :)
+    [0m[31m▎[0m
+    [0m[31m▎[0m]8;;http://news.ycombinator.com/item?id=0http://news.ycombinator.com/item?id=0]8;; , DNE
+
+     [1msebg[0m [2m13 years ago[0m
+    [0m[31m▎[0mInteresting - post 1 has comments. no more comments until post 15. which then
+    [0m[31m▎[0mhas the same conversation between pg and dnom as the first post. To top it off,
+    [0m[31m▎[0mpost 17 is the conversation in posts 1 and 15.
+
+         [1mkleevr[0m[35m PP[0m [2m13 years ago[0m
+        [0m[33m▎[0mI'm sure the first fifteen were used primarily to populate the burgeoning
+        [0m[33m▎[0mnews.yc
+
+         [1mbyrneseyeview[0m [2m13 years ago[0m
+        [0m[33m▎[0mI think those 'items' are comments, not posts.
+
+             [1mkleevr[0m[35m PP[0m [2m13 years ago[0m
+            [0m[32m▎[0mitems: comments || posts...
+            [0m[32m▎[0mthey're also arranged in a hierarchy...
+
+             [1m[0m [2m13 years ago[0m
+            [0m[32m▎[0m[deleted]
+
+     [1mbyrneseyeview[0m [2m13 years ago[0m
+    [0m[31m▎[0mI think I agree?
+
+         [1mrms[0m [2m13 years ago[0m
+        [0m[33m▎[0mi hear that there is an awesome easter egg in the -100s somewhere
+
+             [1mbyrneseyeview[0m [2m13 years ago[0m
+            [0m[32m▎[0mHow many people are lurking on this thread?
+
+                 [1mrms[0m [2m13 years ago[0m
+                [0m[34m▎[0mit's the new comments page for me...
+
+                     [1msebg[0m [2m13 years ago[0m
+                    [0m[36m▎[0mditto. (thanks for pointing out posts vs. items.)
+
+[1mjacquesm[0m [2m[4m12 years ago                                                         ::[0m
+So, just to see how hard it is to make the longest span between article and
+comment :)
+
+Congratulations on your second birthday YC, and thanks to Paul Graham for
+writing this forum. I had a really good look at the good a few days ago and I
+was quite impressed with how elegant the whole thing is put together.
+
+Lisp would not be my language of choice for a website like this, and yet, after
+seeing how concise it was I'm tempted to play around with lisp in a web
+environment.
+
+[1mArrington[0m [2m[4m12 years ago                                                        ::[0m
+This is why we can't have nice things.
+
+[1mArrington[0m [2m[4m12 years ago                                                        ::[0m
+This is why we can't have nice things.
+
+[1mArrington[0m [2m[4m12 years ago                                                        ::[0m
+This is why we can't have nice things.
+
+[1mvice[0m [2m[4m13 years ago                                                             ::[0m
+I'm nX 1 too
+
+;)
+
+

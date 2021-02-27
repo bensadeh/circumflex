@@ -9,13 +9,17 @@ import (
 	text "github.com/MichaelMure/go-term-text"
 )
 
-func PrintCommentTree(comments Comments, indentSize int, commentWidth int, preserveRightMargin bool) string {
+func PrintCommentTree(comments Comments, indentSize int, commentWidth int, screenWidth int,
+	preserveRightMargin bool) string {
 	header := getHeader(comments, commentWidth)
-	originalPoster := comments.Author
+	originalPoster := comments.User
 	commentTree := ""
-	for _, reply := range comments.Replies {
-		commentTree += prettyPrintComments(*reply, indentSize, commentWidth, originalPoster, "", preserveRightMargin)
+
+	for _, reply := range comments.Comments {
+		commentTree += prettyPrintComments(reply, indentSize, commentWidth, screenWidth,
+			originalPoster, "", preserveRightMargin)
 	}
+
 	return header + commentTree
 }
 
@@ -25,24 +29,28 @@ func getHeader(c Comments, commentWidth int) string {
 	}
 
 	headline := getHeadline(c.Title, c.Domain, c.URL, c.ID, commentWidth)
-	infoLine := getInfoLine(c.Points, c.Author, c.Time, c.CommentsCount)
-	submissionComment := parseRootComment(c.Comment, commentWidth)
+	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount)
+	submissionComment := parseRootComment(c.Content, commentWidth)
 	helpMessage := dimmed("You are now in 'less'. Press 'q' to return and 'h' for help.") + NewLine
 	separator := getSeparator(commentWidth)
+
 	return headline + infoLine + helpMessage + submissionComment + separator + NewParagraph
 }
 
 func getInfoLine(points int, author string, timeAgo string, numberOfComments int) string {
 	p := strconv.Itoa(points)
 	c := strconv.Itoa(numberOfComments)
+
 	return dimmed(p+" points by "+author+" "+timeAgo+" • "+c+" comments") + NewLine
 }
 
 func getSeparator(commentWidth int) string {
 	separator := ""
+
 	for i := 0; i < commentWidth; i++ {
 		separator += "-"
 	}
+
 	return separator
 }
 
@@ -50,6 +58,7 @@ func getHeadline(title, domain, URL string, id, commentWidth int) string {
 	if domain == "" {
 		domain = "item?id=" + strconv.Itoa(id)
 	}
+
 	headline := title + " " + paren(domain) + NewLine
 	wrappedHeadline, _ := text.Wrap(headline, commentWidth)
 	hyperlink := getHyperlink(domain, URL, id)
@@ -63,8 +72,10 @@ func getHyperlink(domain string, URL string, id int) string {
 	if domain != "" {
 		return getHyperlinkText(URL, domain)
 	}
+
 	linkToComments := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
 	linkText := "item?id=" + strconv.Itoa(id)
+
 	return getHyperlinkText(linkToComments, linkText)
 }
 
@@ -84,9 +95,10 @@ func parseRootComment(c string, commentWidth int) string {
 	return NewLine + wrappedComment + NewLine
 }
 
-func prettyPrintComments(c Comments, indentSize int, commentWidth int, originalPoster string, parentPoster string, preserveRightMargin bool) string {
-	comment, URLs := parseComment(c.Comment)
-	adjustedCommentWidth := getCommentWidthForLevel(c.Level, indentSize, commentWidth, preserveRightMargin)
+func prettyPrintComments(c Comments, indentSize int, commentWidth int, screenWidth int, originalPoster string,
+	parentPoster string, preserveRightMargin bool) string {
+	comment, URLs := parseComment(c.Content)
+	adjustedCommentWidth := getCommentWidthForLevel(c.Level, indentSize, commentWidth, screenWidth, preserveRightMargin)
 
 	indentBlock := getIndentBlock(c.Level, indentSize)
 	paddingWithBlock := text.WrapPad(indentBlock)
@@ -100,24 +112,27 @@ func prettyPrintComments(c Comments, indentSize int, commentWidth int, originalP
 	fullComment = applyURLs(fullComment, URLs)
 
 	if c.Level == 0 {
-		parentPoster = c.Author
+		parentPoster = c.User
 	}
 
-	for _, s := range c.Replies {
-		fullComment += prettyPrintComments(*s, indentSize, commentWidth, originalPoster, parentPoster, preserveRightMargin)
+	for _, s := range c.Comments {
+		fullComment += prettyPrintComments(s, indentSize, commentWidth, screenWidth,
+			originalPoster, parentPoster, preserveRightMargin)
 	}
+
 	return fullComment
 }
 
 func getCommentHeading(c Comments, level int, commentWidth int, originalPoster string, parentPoster string) string {
-	timeAgo := c.Time
-	author := bold(c.Author)
-	label := getAuthorLabel(c.Author, originalPoster, parentPoster) + " "
+	timeAgo := c.TimeAgo
+	author := bold(c.User)
+	label := getAuthorLabel(c.User, originalPoster, parentPoster) + " "
 
 	if level == 0 {
 		replies := getRepliesTag(getReplyCount(c))
 		anchor := " ::"
 		headerLine := getWhitespaceFiller(author+label+anchor+timeAgo+replies, commentWidth)
+
 		return author + label + dimmedAndUnderlined(timeAgo+headerLine+replies+anchor) + NewLine
 	}
 
@@ -145,14 +160,16 @@ func getWhitespaceFiller(heading string, commentWidth int) string {
 
 func getReplyCount(comments Comments) int {
 	numberOfReplies := 0
+
 	return calculateReplies(comments, &numberOfReplies)
 }
 
 func calculateReplies(comments Comments, repliesSoFar *int) int {
-	for _, reply := range comments.Replies {
+	for _, reply := range comments.Comments {
 		*repliesSoFar++
-		calculateReplies(*reply, repliesSoFar)
+		calculateReplies(reply, repliesSoFar)
 	}
+
 	return *repliesSoFar
 }
 
@@ -162,6 +179,7 @@ func applyURLs(comment string, URLs []string) string {
 		URLWithHyperlinkCode := getHyperlinkText(URL, truncatedURL)
 		comment = strings.ReplaceAll(comment, truncatedURL, URLWithHyperlinkCode)
 	}
+
 	return comment
 }
 
@@ -171,21 +189,24 @@ func truncateURL(URL string) string {
 	}
 
 	truncatedURL := ""
+
 	for i, c := range URL {
 		if i == 60 {
 			truncatedURL += "..."
 			break
 		}
+
 		truncatedURL += string(c)
 	}
+
 	return truncatedURL
 }
 
 // Adjusted comment width shortens the commentWidth if the available screen size
 // is smaller than the size of the commentWidth
-func getCommentWidthForLevel(level int, indentSize int, commentWidth int, preserveRightMargin bool) int {
+func getCommentWidthForLevel(level int, indentSize int, commentWidth int, screenWidth int, preserveRightMargin bool) int {
 	currentIndentSize := indentSize * level
-	usableScreenSize := screen.GetTerminalWidth() - currentIndentSize
+	usableScreenSize := screenWidth - currentIndentSize
 
 	if usableScreenSize < commentWidth || commentWidth == 0 {
 		return usableScreenSize + currentIndentSize
@@ -193,9 +214,9 @@ func getCommentWidthForLevel(level int, indentSize int, commentWidth int, preser
 
 	if preserveRightMargin {
 		return commentWidth
-	} else {
-		return commentWidth + indentSize*level
 	}
+
+	return commentWidth + indentSize*level
 }
 
 func getAuthorLabel(author, originalPoster, parentPoster string) string {
@@ -217,10 +238,13 @@ func getIndentBlockWithoutBar(level int, indentSize int) string {
 	if level == 0 {
 		return ""
 	}
+
 	indentation := " "
+
 	for i := 0; i < indentSize*level; i++ {
 		indentation += " "
 	}
+
 	return indentation
 }
 
@@ -228,10 +252,13 @@ func getIndentBlock(level int, indentSize int) string {
 	if level == 0 {
 		return ""
 	}
+
 	indentation := Normal + getColoredIndentBlock(level) + "▎" + Normal
+
 	for i := 0; i < indentSize*level; i++ {
 		indentation = " " + indentation
 	}
+
 	return indentation
 }
 
@@ -241,6 +268,7 @@ func parseComment(comment string) (string, []string) {
 	comment = colorizeLinkNumbers(comment)
 	URLs := extractURLs(comment)
 	comment = trimURLs(comment)
+
 	return comment, URLs
 }
 
@@ -254,6 +282,7 @@ func replaceCharacters(input string) string {
 	input = strings.ReplaceAll(input, ".  ", ". ")
 	input = strings.ReplaceAll(input, "!  ", "! ")
 	input = strings.ReplaceAll(input, "?  ", "? ")
+
 	return input
 }
 
@@ -266,6 +295,7 @@ func replaceHTML(input string) string {
 	input = strings.ReplaceAll(input, "</a>", "")
 	input = strings.ReplaceAll(input, "<pre><code>", Dimmed)
 	input = strings.ReplaceAll(input, "</code></pre>", Normal)
+
 	return input
 }
 
@@ -281,6 +311,7 @@ func colorizeLinkNumbers(input string) string {
 	input = strings.ReplaceAll(input, "[8]", "["+altRed("8")+"]")
 	input = strings.ReplaceAll(input, "[9]", "["+altYellow("9")+"]")
 	input = strings.ReplaceAll(input, "[10]", "["+altGreen("10")+"]")
+
 	return input
 }
 
@@ -298,5 +329,6 @@ func extractURLs(input string) []string {
 
 func trimURLs(comment string) string {
 	expression := regexp.MustCompile(`<a href=".*?" rel="nofollow">`)
+
 	return expression.ReplaceAllString(comment, "")
 }
