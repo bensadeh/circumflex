@@ -58,9 +58,9 @@ func getHeadline(title, domain, url string, id, commentWidth int) string {
 	return wrappedHeadline
 }
 
-func getHyperlink(domain string, URL string, id int) string {
+func getHyperlink(domain string, url string, id int) string {
 	if domain != "" {
-		return getHyperlinkText(URL, domain)
+		return getHyperlinkText(url, domain)
 	}
 
 	linkToComments := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
@@ -186,7 +186,7 @@ func truncateURL(url string) string {
 }
 
 // Adjusted comment width shortens the commentWidth if the available screen size
-// is smaller than the size of the commentWidth
+// is smaller than the size of the commentWidth.
 func getCommentWidthForLevel(level int, indentSize int, commentWidth int, screenWidth int,
 	preserveRightMargin bool) int {
 	currentIndentSize := indentSize * level
@@ -223,13 +223,7 @@ func getIndentBlockWithoutBar(level int, indentSize int) string {
 		return ""
 	}
 
-	indentation := " "
-
-	for i := 0; i < indentSize*level; i++ {
-		indentation += " "
-	}
-
-	return indentation
+	return strings.Repeat(" ", indentSize*level+1)
 }
 
 func getIndentBlock(level int, indentSize int) string {
