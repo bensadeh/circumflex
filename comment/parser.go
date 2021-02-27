@@ -1,7 +1,6 @@
 package comment
 
 import (
-	"clx/screen"
 	"regexp"
 	"strconv"
 	"strings"
@@ -9,39 +8,30 @@ import (
 	text "github.com/MichaelMure/go-term-text"
 )
 
-func PrintCommentTree(comments Comments, indentSize int, commentWidth int, screenWidth int,
-	preserveRightMargin bool) string {
-	header := getHeader(comments, commentWidth)
-	originalPoster := comments.User
-	commentTree := ""
+func ToString(comments Comments, indentSize int, commentWidth int, screenWidth int, preserveRightMargin bool) string {
+	header := getHeader(comments, commentWidth, screenWidth)
+	replies := ""
 
 	for _, reply := range comments.Comments {
-		commentTree += prettyPrintComments(reply, indentSize, commentWidth, screenWidth,
-			originalPoster, "", preserveRightMargin)
+		replies += printReplies(reply, indentSize, commentWidth, screenWidth, comments.User, "",
+			preserveRightMargin)
 	}
 
-	return header + commentTree
+	return header + replies
 }
 
-func getHeader(c Comments, commentWidth int) string {
+func getHeader(c Comments, commentWidth int, screenWidth int) string {
 	if commentWidth == 0 {
-		commentWidth = screen.GetTerminalWidth()
+		commentWidth = screenWidth
 	}
 
-	headline := getHeadline(c.Title, c.Domain, c.URL, c.ID, commentWidth)
-	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount)
-	submissionComment := parseRootComment(c.Content, commentWidth)
+	headline := getHeadline(c.Title, c.Domain, c.URL, c.ID, commentWidth) + NewLine
+	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount) + NewLine
+	rootComment := parseRootComment(c.Content, commentWidth)
 	helpMessage := dimmed("You are now in 'less'. Press 'q' to return and 'h' for help.") + NewLine
 	separator := strings.Repeat("-", commentWidth)
 
-	return headline + infoLine + helpMessage + submissionComment + separator + NewParagraph
-}
-
-func getInfoLine(points int, author string, timeAgo string, numberOfComments int) string {
-	p := strconv.Itoa(points)
-	c := strconv.Itoa(numberOfComments)
-
-	return dimmed(p+" points by "+author+" "+timeAgo+" • "+c+" comments") + NewLine
+	return headline + infoLine + helpMessage + rootComment + separator + NewParagraph
 }
 
 func getHeadline(title, domain, url string, id, commentWidth int) string {
@@ -49,7 +39,7 @@ func getHeadline(title, domain, url string, id, commentWidth int) string {
 		domain = "item?id=" + strconv.Itoa(id)
 	}
 
-	headline := title + " " + paren(domain) + NewLine
+	headline := title + " " + paren(domain)
 	wrappedHeadline, _ := text.Wrap(headline, commentWidth)
 	hyperlink := getHyperlink(domain, url, id)
 
@@ -69,6 +59,13 @@ func getHyperlink(domain string, url string, id int) string {
 	return getHyperlinkText(linkToComments, linkText)
 }
 
+func getInfoLine(points int, user string, timeAgo string, numberOfComments int) string {
+	p := strconv.Itoa(points)
+	c := strconv.Itoa(numberOfComments)
+
+	return dimmed(p + " points by " + user + " " + timeAgo + " • " + c + " comments")
+}
+
 func getHyperlinkText(url string, text string) string {
 	return Link1 + url + Link2 + text + Link3
 }
@@ -82,10 +79,10 @@ func parseRootComment(c string, commentWidth int) string {
 	wrappedComment, _ := text.Wrap(comment, commentWidth)
 	wrappedComment = applyURLs(wrappedComment, URLs)
 
-	return NewLine + wrappedComment + NewLine
+	return NewLine + wrappedComment
 }
 
-func prettyPrintComments(c Comments, indentSize int, commentWidth int, screenWidth int, originalPoster string,
+func printReplies(c Comments, indentSize int, commentWidth int, screenWidth int, originalPoster string,
 	parentPoster string, preserveRightMargin bool) string {
 	comment, URLs := parseComment(c.Content)
 	adjustedCommentWidth := getCommentWidthForLevel(c.Level, indentSize, commentWidth, screenWidth, preserveRightMargin)
@@ -106,7 +103,7 @@ func prettyPrintComments(c Comments, indentSize int, commentWidth int, screenWid
 	}
 
 	for _, reply := range c.Comments {
-		fullComment += prettyPrintComments(reply, indentSize, commentWidth, screenWidth,
+		fullComment += printReplies(reply, indentSize, commentWidth, screenWidth,
 			originalPoster, parentPoster, preserveRightMargin)
 	}
 

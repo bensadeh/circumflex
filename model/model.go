@@ -124,7 +124,7 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 					errorMessage := message.Error("Could not fetch comments")
 					view.SetTemporaryStatusBar(app, main, errorMessage, 4*time.Second)
 				} else {
-					commentTree := comment.PrintCommentTree(*comments,
+					commentTree := comment.ToString(*comments,
 						config.IndentSize, config.CommentWidth, screenWidth, config.PreserveRightMargin)
 
 					cli.Less(commentTree)
