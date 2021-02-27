@@ -238,12 +238,9 @@ func getIndentBlock(level int, indentSize int) string {
 	}
 
 	indentation := Normal + getColoredIndentBlock(level) + "▎" + Normal
+	whitespace := strings.Repeat(" ", indentSize*level)
 
-	for i := 0; i < indentSize*level; i++ {
-		indentation = " " + indentation
-	}
-
-	return indentation
+	return whitespace + indentation
 }
 
 func parseComment(comment string) (string, []string) {
