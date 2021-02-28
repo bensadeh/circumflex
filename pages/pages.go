@@ -2,8 +2,8 @@ package pages
 
 import "strings"
 
-func GetPageCounter(currentPage int, maxPages int, color string) string {
-	coloredDot := "[" + color + "]•[-::]"
+func GetPageCounter(currentPage int, maxPages int) string {
+	coloredDot := "[::]•[-::]"
 	uncoloredDot := "◦"
 
 	dotsOnTheLeft := strings.Repeat(uncoloredDot, currentPage)

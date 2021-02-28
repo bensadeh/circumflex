@@ -85,7 +85,7 @@ func initializeView(appState *core.ApplicationState, submissions []*core.Submiss
 	view.UpdateSettingsScreen(main)
 	view.SetPanelToSubmissions(main)
 	view.SetHackerNewsHeader(main, appState.SubmissionsCategory)
-	view.SetPageCounter(main, appState.CurrentPage, submissions[appState.SubmissionsCategory].MaxPages, "orange")
+	view.SetPageCounter(main, appState.CurrentPage, submissions[appState.SubmissionsCategory].MaxPages)
 }
 
 func showPageAfterResize(appState *core.ApplicationState, list *cview.List, submissions []*core.Submissions,
@@ -177,7 +177,7 @@ func NextPage(app *cview.Application, list *cview.List, submissions *core.Submis
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, currentlySelectedItem,
 		appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
-	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
+	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages)
 }
 
 func getMarginText(useRelativeNumbering bool, viewableStoriesOnSinglePage int, currentPosition int,
@@ -259,7 +259,7 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, currentItem, appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
 
-	view.SetPageCounter(main, appState.CurrentPage, currentSubmissions.MaxPages, "orange")
+	view.SetPageCounter(main, appState.CurrentPage, currentSubmissions.MaxPages)
 	view.SetHackerNewsHeader(main, appState.SubmissionsCategory)
 }
 
@@ -309,7 +309,7 @@ func PreviousPage(list *cview.List, submissions *core.Submissions, main *core.Ma
 
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, currentItem, appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
-	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
+	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages)
 }
 
 func ShowCreateConfigConfirmationMessage(main *core.MainView, appState *core.ApplicationState) {
@@ -424,7 +424,7 @@ func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, submis
 	view.SetLeftMarginText(main, marginText)
 	view.SetHackerNewsHeader(main, appState.SubmissionsCategory)
 	view.SetPanelToSubmissions(main)
-	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages, "orange")
+	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages)
 	view.ClearStatusBar(main)
 }
 

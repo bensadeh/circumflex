@@ -99,8 +99,8 @@ func ScrollSettingsToEnd(m *core.MainView) {
 	m.Settings.ScrollToEnd()
 }
 
-func SetPageCounter(m *core.MainView, currentPage int, maxPages int, color string) {
-	pageCounter := pages.GetPageCounter(currentPage, maxPages, color)
+func SetPageCounter(m *core.MainView, currentPage int, maxPages int) {
+	pageCounter := pages.GetPageCounter(currentPage, maxPages)
 	m.PageCounter.SetText(pageCounter)
 }
 
