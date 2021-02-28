@@ -3,6 +3,7 @@
 _WIP_
 
 **Cosmetic**
+- The top bar is now transparent instead of orange
 - Overhauled the Settings screen
 
 **Bugfixes**

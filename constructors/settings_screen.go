@@ -208,10 +208,6 @@ func initializeOptions() *options {
 	return o
 }
 
-func bold(text string) string {
-	return textBold + text + textNormal
-}
-
 func dim(text string) string {
 	return textDimmed + text + textNormal
 }
