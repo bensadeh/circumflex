@@ -45,12 +45,11 @@ func (o *options) addOption(name, key, value, defaultValue, description string) 
 }
 
 func (o options) printAll(textWidth int) string {
-	spaceBetweenDescriptions := 7
-	rightMargin := 1
-	usableScreenWidth := screen.GetTerminalWidth() - margins.LeftMargin - rightMargin
+	usableScreenWidth := screen.GetTerminalWidth() - margins.LeftMargin - margins.RightMargin
+	hasEnoughScreenSpace := usableScreenWidth > (textWidth*2 + margins.SpaceBetweenDescriptions)
 
-	if usableScreenWidth > (textWidth*2 + spaceBetweenDescriptions) {
-		return printOptionsInTwoColumns(o, textWidth, spaceBetweenDescriptions)
+	if hasEnoughScreenSpace {
+		return printOptionsInTwoColumns(o, textWidth, margins.SpaceBetweenDescriptions)
 	}
 
 	return printOptionsInOneColumn(o, textWidth)

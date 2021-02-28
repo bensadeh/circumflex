@@ -1,6 +1,8 @@
 package margins
 
 const (
-	LeftMargin             = 7
-	RightMarginPageCounter = 4
+	RightMargin              = 1
+	LeftMargin               = 7
+	RightMarginPageCounter   = 4
+	SpaceBetweenDescriptions = 7
 )
