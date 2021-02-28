@@ -1,10 +1,10 @@
 # Changelog
 ## 0.11
-_WIP_
+_2021-02-28_
 
 **Cosmetic**
 - The top bar is now transparent instead of orange
-- Overhauled the Settings screen
+- Settings screen has been redesigned
 
 **Bugfixes**
 - Fixed a bug where references (`[1]`, `[2]`, `[…]`) would highlight inside code blocks
