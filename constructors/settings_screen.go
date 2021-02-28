@@ -100,14 +100,11 @@ type option struct {
 }
 
 func (o option) print(textWidth int) string {
-	output := ""
 	currentValue := highlight(o.value, o.defaultValue)
+	headline := makeHeadline(o.name, currentValue, textWidth) + newLine
 	wrappedDescription, _ := text.Wrap(o.description, textWidth)
 
-	output += makeHeadline(o.name, currentValue, textWidth) + newLine
-	output += wrappedDescription
-
-	return output + newLine
+	return headline + wrappedDescription + newLine
 }
 
 func highlight(currentValue string, defaultValue string) string {
@@ -140,7 +137,7 @@ func makeHeadline(name string, key string, textWidth int) string {
 	spaceBetweenNameAndKey := textWidth - nameLength - keyLength
 	whiteSpace := strings.Repeat(" ", spaceBetweenNameAndKey)
 
-	return bold(underlined(name)) + whiteSpace + dim(key)
+	return underlined(name) + underlined(whiteSpace) + dim(key)
 }
 
 func (o option) printConfig() string {
