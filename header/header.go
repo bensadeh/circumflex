@@ -82,7 +82,7 @@ func getSelectedMarkerClosed(color string, isTransparentTopBar bool) string {
 
 func getSelectedMarkerOpen(color string, isTransparentTopBar bool) string {
 	if isTransparentTopBar {
-		return "[::rbu]"
+		return "[::rb]"
 	}
 
 	return "[" + color + "::]"
