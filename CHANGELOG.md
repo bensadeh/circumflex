@@ -3,7 +3,7 @@
 _2021-03-01_
 
 **Bugfixes**
-- Fixed a bug where the separator between a submissions's root comment and the comment section was not properly 
+- Fixed a bug where the separator between the submissions's root comment and the comment section was not properly 
   formatted
 
 ## 0.11
