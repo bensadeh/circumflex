@@ -1,4 +1,10 @@
 # Changelog
+## 0.12
+_WIP_
+
+**Cosmetic**
+- Changed appearance of error and success notifications
+
 ## 0.11.1
 _2021-03-01_
 

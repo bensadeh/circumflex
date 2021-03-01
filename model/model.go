@@ -4,7 +4,6 @@ import (
 	"clx/browser"
 	"clx/cli"
 	"clx/comment"
-	"clx/constants/clx"
 	"clx/constants/help"
 	"clx/constants/messages"
 	"clx/core"
@@ -121,7 +120,7 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 				screenWidth := screen.GetTerminalWidth()
 
 				if err != nil {
-					errorMessage := message.Error("Could not fetch comments")
+					errorMessage := message.Error(messages.CommentsNotFetched)
 					view.SetTemporaryStatusBar(app, main, errorMessage, 4*time.Second)
 				} else {
 					commentTree := comment.ToString(*comments,
@@ -356,14 +355,18 @@ func CancelCreateConfigConfirmationMessage(appState *core.ApplicationState, main
 }
 
 func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
+	statusBarMessage := ""
 	appState.IsOnConfigCreationConfirmationMessage = false
 
-	file.WriteToConfigFile(constructor.GetConfigFileContents())
-
-	success := "[black:green] SUCCESS [-:-:-] "
+	err := file.WriteToConfigFile(constructor.GetConfigFileContents())
+	if err != nil {
+		statusBarMessage = message.Error(messages.ConfigNotCreated)
+	} else {
+		statusBarMessage = message.Success(messages.ConfigCreatedAt)
+	}
 
 	view.UpdateSettingsScreen(main)
-	view.SetPermanentStatusBar(main, success+"Config created at [::b]"+file.PathToConfigFile(), cview.AlignCenter)
+	view.SetPermanentStatusBar(main, statusBarMessage, cview.AlignCenter)
 }
 
 func SelectItemDown(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config) {
@@ -401,7 +404,7 @@ func EnterInfoScreen(main *core.MainView, appState *core.ApplicationState) {
 
 func getInfoScreenStatusBarText(category int) string {
 	if category == help.Info {
-		return "[::d]github.com/bensadeh/circumflex • version " + clx.Version
+		return messages.GetCircumflexStatusMessage()
 	}
 
 	return ""

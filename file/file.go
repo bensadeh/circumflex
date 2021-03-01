@@ -2,6 +2,7 @@ package file
 
 import (
 	"clx/constants/settings"
+	"fmt"
 	"os"
 	"path"
 )
@@ -21,29 +22,34 @@ func PathToConfigFile() string {
 func Exists(pathToFile string) bool {
 	if _, err := os.Stat(pathToFile); os.IsNotExist(err) {
 		return false
-	} else {
-		return true
 	}
+
+	return true
 }
 
 func ConfigFileExists() bool {
 	return Exists(PathToConfigFile())
 }
 
-func WriteToConfigFile(content string) {
+func WriteToConfigFile(content string) error {
 	if Exists(PathToConfigFile()) {
-		return
+		return nil
 	}
 
-	_ = os.MkdirAll(PathToConfigDirectory(), 0o700)
+	mkdirErr := os.MkdirAll(PathToConfigDirectory(), 0o700)
+	if mkdirErr != nil {
+		return fmt.Errorf("could not create path to config dir: %w", mkdirErr)
+	}
 
 	f, createFileErr := os.Create(PathToConfigFile())
 	if createFileErr != nil {
-		panic(createFileErr)
+		return fmt.Errorf("could not create config file: %w", createFileErr)
 	}
 
 	_, writeFileErr := f.WriteString(content)
 	if writeFileErr != nil {
-		panic(writeFileErr)
+		return fmt.Errorf("could not write to file: %w", writeFileErr)
 	}
+
+	return nil
 }
