@@ -10,6 +10,8 @@ import (
 )
 
 func TestIntegration(t *testing.T) {
+	t.Parallel()
+
 	commentJSON, _ := ioutil.ReadFile("test/comments.json")
 	expected, _ := ioutil.ReadFile("test/expected.txt")
 
@@ -20,6 +22,8 @@ func TestIntegration(t *testing.T) {
 }
 
 func TestRootComment(t *testing.T) {
+	t.Parallel()
+
 	commentJSON, _ := ioutil.ReadFile("test/root_comment.json")
 	expected, _ := ioutil.ReadFile("test/root_comment_expected.txt")
 
@@ -37,6 +41,8 @@ func unmarshal(data []byte) *comment.Comments {
 }
 
 func TestParsing(t *testing.T) {
+	t.Parallel()
+
 	input := "<p>Not a code Block: " +
 		"<p><pre><code>  CODE BLOCK CODE BLOCK \n" +
 		"CODE BLOCK CODE BLOCK</code></pre>"
