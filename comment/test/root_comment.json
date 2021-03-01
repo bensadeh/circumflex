@@ -1,0 +1,13 @@
+{
+  "id": 26298314,
+  "title": "Ask HN: Is there an IDE for computer vision?",
+  "points": 2,
+  "user": "awinter-py",
+  "time": 1614556974,
+  "time_ago": "6 hours ago",
+  "type": "link",
+  "content": "<p>How are people running their detection pipelines on video and overlaying the results? Is every project writing its own scaffolding for this? Is it mostly &#x27;run command, generate new video&#x27;? Or is there a GUI &#x2F; toolkit that&#x27;s standard?",
+  "url": "item?id=26298314",
+  "comments": [],
+  "comments_count": 0
+}

@@ -19,6 +19,16 @@ func TestIntegration(t *testing.T) {
 	assert.Equal(t, string(expected), actual)
 }
 
+func TestRootComment(t *testing.T) {
+	commentJSON, _ := ioutil.ReadFile("test/root_comment.json")
+	expected, _ := ioutil.ReadFile("test/root_comment_expected.txt")
+
+	comments := unmarshal(commentJSON)
+	actual := comment.ToString(*comments, 4, 80, 200, false)
+
+	assert.Equal(t, string(expected), actual)
+}
+
 func unmarshal(data []byte) *comment.Comments {
 	root := new(comment.Comments)
 	_ = json.Unmarshal(data, &root)

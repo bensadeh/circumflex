@@ -24,8 +24,8 @@ func getHeader(c Comments, commentWidth int, screenWidth int) string {
 		commentWidth = screenWidth
 	}
 
-	headline := getHeadline(c.Title, c.Domain, c.URL, c.ID, commentWidth) + NewLine
-	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount) + NewLine
+	headline := getHeadline(c.Title, c.Domain, c.URL, c.ID, commentWidth)
+	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount)
 	rootComment := parseRootComment(c.Content, commentWidth)
 	helpMessage := dimmed("You are now in 'less'. Press 'q' to return and 'h' for help.") + NewLine
 	separator := strings.Repeat("-", commentWidth)
@@ -44,7 +44,7 @@ func getHeadline(title, domain, url string, id, commentWidth int) string {
 
 	wrappedHeadline = strings.ReplaceAll(wrappedHeadline, domain, hyperlink)
 
-	return wrappedHeadline
+	return wrappedHeadline + NewLine
 }
 
 func getHyperlink(domain string, url string, id int) string {
@@ -62,7 +62,7 @@ func getInfoLine(points int, user string, timeAgo string, numberOfComments int) 
 	p := strconv.Itoa(points)
 	c := strconv.Itoa(numberOfComments)
 
-	return dimmed(p + " points by " + user + " " + timeAgo + " • " + c + " comments")
+	return dimmed(p+" points by "+user+" "+timeAgo+" • "+c+" comments") + NewLine
 }
 
 func getHyperlinkText(url string, text string) string {
@@ -78,7 +78,7 @@ func parseRootComment(c string, commentWidth int) string {
 	wrappedComment, _ := text.Wrap(comment, commentWidth)
 	wrappedComment = applyURLs(wrappedComment, URLs)
 
-	return NewLine + wrappedComment
+	return NewLine + wrappedComment + NewLine
 }
 
 func printReplies(c Comments, indentSize int, commentWidth int, screenWidth int, originalPoster string,

@@ -52,7 +52,6 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 
 * Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and
   `code` where available
-* Indented and color-coded replies
 * Colored references (`[1]`, `[2]`, `[…]`)
 * Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
 * Ability to jump between top-level comments by searching for `::`

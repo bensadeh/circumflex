@@ -1,4 +1,11 @@
 # Changelog
+## 0.11.1
+_2021-03-01_
+
+**Bugfixes**
+- Fixed a bug where the separator between a submissions's root comment and the comment section was not properly 
+  formatted
+
 ## 0.11
 _2021-02-28_
 
