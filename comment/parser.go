@@ -14,6 +14,11 @@ type Section struct {
 	Text        string
 }
 
+const (
+	doubleSpace = "  "
+	singleSpace = " "
+)
+
 func ParseComment(text string) (string, []string) {
 	var URLs []string
 
@@ -37,6 +42,7 @@ func ParseComment(text string) (string, []string) {
 	for i, section := range c.Sections {
 		if !section.IsCodeBlock {
 			section.Text = highlightReferences(section.Text)
+			section.Text = strings.ReplaceAll(section.Text, doubleSpace, singleSpace)
 		}
 
 		separator := getSeparator(i, len(c.Sections))
@@ -68,9 +74,6 @@ func replaceCharacters(input string) string {
 	input = strings.ReplaceAll(input, "&#x2F;", "/")
 	input = strings.ReplaceAll(input, "&quot;", `"`)
 	input = strings.ReplaceAll(input, "&amp;", "&")
-	input = strings.ReplaceAll(input, ".  ", ". ")
-	input = strings.ReplaceAll(input, "!  ", "! ")
-	input = strings.ReplaceAll(input, "?  ", "? ")
 
 	return input
 }

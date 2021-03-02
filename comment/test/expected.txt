@@ -14,7 +14,7 @@ Y Combinator (]8;;http://ycombinator.comycombinator.com]8;;)
 
 [1mkleevr[0m [2m[4m13 years ago                                                      11 ⤶ ::[0m
 sequential numbering
-  I must be bored
+ I must be bored
 
      [1mkleevr[0m[35m PP[0m [2m13 years ago[0m
     [0m[31m▎[0mI guess that news.yc is 1-indexed :)
