@@ -9,40 +9,25 @@ import (
 const (
 	leftPadding         = "    "
 	symbolHeaderSpacing = "  "
-	palenightBlue       = "#82aaff"
-	black               = "#0c0c0c"
 )
 
 func GetHackerNewsHeader(selectedSubHeader int) string {
-	return header("🆈", "Hacker News   ", []string{"new", "ask", "show"},
-		selectedSubHeader, "", "-", true)
+	return header("🆈", "Hacker News   ", []string{"new", "ask", "show"}, selectedSubHeader)
 }
 
 func GetCircumflexHeader(selectedSubHeader int) string {
-	return header("🅲", "circumflex    ", []string{"keymaps", "settings"},
-		selectedSubHeader, palenightBlue, black, false)
+	return header("🅲", "circumflex    ", []string{"keymaps", "settings"}, selectedSubHeader)
 }
 
-func header(symbol string, title string, subHeaders []string, selectedSubHeader int,
-	bgColor, fgColor string, isTransparentHeader bool) string {
-	background := getBackground(bgColor, isTransparentHeader)
+func header(symbol string, title string, subHeaders []string, selectedSubHeader int) string {
+	background := "[-::bu]"
 	screenWidth := screen.GetTerminalWidth()
 
-	titleHeader := background + fgColorAndBold(fgColor, isTransparentHeader) + leftPadding + symbol + symbolHeaderSpacing +
-		title + getTitleHeaderSeparator(isTransparentHeader)
-	categoryHeader := getCategoryHeader(subHeaders, selectedSubHeader, fgColor, "white",
-		isTransparentHeader)
+	titleHeader := background + leftPadding + symbol + symbolHeaderSpacing + title
+	categoryHeader := getCategoryHeader(subHeaders, selectedSubHeader)
 	whitespaceFiller := getWhitespaceFiller(titleHeader+categoryHeader, screenWidth)
 
 	return titleHeader + categoryHeader + whitespaceFiller
-}
-
-func getTitleHeaderSeparator(isTransparentHeader bool) string {
-	if isTransparentHeader {
-		return ""
-	}
-
-	return format.ResetStyle()
 }
 
 func getWhitespaceFiller(base string, screenWidth int) string {
@@ -51,12 +36,11 @@ func getWhitespaceFiller(base string, screenWidth int) string {
 	return strings.Repeat(" ", availableScreenSpace)
 }
 
-func getCategoryHeader(subHeaders []string, selectedSubHeader int, fgColor, selectedColor string,
-	isTransparentTopBar bool) string {
+func getCategoryHeader(subHeaders []string, selectedSubHeader int) string {
 	formattedCategory := ""
 	itemsTotal := len(subHeaders)
-	selectedOpen := getSelectedMarkerOpen(selectedColor, isTransparentTopBar)
-	selectedClose := getSelectedMarkerClosed(fgColor, isTransparentTopBar)
+	selectedOpen := "[::rb]"
+	selectedClose := "[::bu]"
 
 	for i, subHeader := range subHeaders {
 		isOnLastItem := i == itemsTotal-1
@@ -72,42 +56,10 @@ func getCategoryHeader(subHeaders []string, selectedSubHeader int, fgColor, sele
 	return formattedCategory
 }
 
-func getSelectedMarkerClosed(color string, isTransparentTopBar bool) string {
-	if isTransparentTopBar {
-		return "[" + color + "::bu]"
-	}
-
-	return "[" + color + "::-]"
-}
-
-func getSelectedMarkerOpen(color string, isTransparentTopBar bool) string {
-	if isTransparentTopBar {
-		return "[::rb]"
-	}
-
-	return "[" + color + "::]"
-}
-
 func getSeparator(isOnLastItem bool) string {
 	if isOnLastItem {
 		return ""
 	}
 
 	return " | "
-}
-
-func fgColorAndBold(fgColor string, isTransparentHeader bool) string {
-	if isTransparentHeader {
-		return "[" + fgColor + "::bu]"
-	}
-
-	return "[" + fgColor + "::b]"
-}
-
-func getBackground(color string, isTransparentHeader bool) string {
-	if isTransparentHeader {
-		return "[::u]"
-	}
-
-	return "[:" + color + ":]"
 }
