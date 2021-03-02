@@ -15,6 +15,8 @@ const (
 	showHN                = "Show HN:"
 	tellHN                = "Tell HN:"
 	launchHN              = "Launch HN:"
+	doubleSpace           = "  "
+	singleSpace           = " "
 )
 
 func FormatSubMain(title string, domain string, mode int) string {
@@ -22,6 +24,8 @@ func FormatSubMain(title string, domain string, mode int) string {
 }
 
 func formatTitle(title string, mode int) string {
+	title = strings.ReplaceAll(title, doubleSpace, singleSpace)
+
 	title = highlightShowAndTell(title, mode)
 	title = highlightYCStartups(title, mode)
 
@@ -29,25 +33,25 @@ func formatTitle(title string, mode int) string {
 }
 
 func highlightShowAndTell(title string, mode int) string {
-	if mode == reverseHighlighting {
+	switch mode {
+	case reverseHighlighting:
 		title = strings.ReplaceAll(title, askHN, format.Reverse(askHN))
 		title = strings.ReplaceAll(title, showHN, format.Reverse(showHN))
 		title = strings.ReplaceAll(title, tellHN, format.Reverse(tellHN))
 		title = strings.ReplaceAll(title, launchHN, format.Reverse(launchHN))
 
 		return title
-	}
-
-	if mode == colorizedHighlighting {
+	case colorizedHighlighting:
 		title = strings.ReplaceAll(title, askHN, format.Magenta(askHN))
 		title = strings.ReplaceAll(title, showHN, format.Red(showHN))
 		title = strings.ReplaceAll(title, tellHN, format.Blue(tellHN))
 		title = strings.ReplaceAll(title, launchHN, format.Green(launchHN))
 
 		return title
-	}
 
-	return title
+	default:
+		return title
+	}
 }
 
 func highlightYCStartups(title string, mode int) string {
@@ -74,10 +78,12 @@ func formatStartup(title string, mode int, summer string, year string, winter st
 		title = strings.ReplaceAll(title, summer, format.Reverse(" YC S"+year+" "))
 		title = strings.ReplaceAll(title, winter, format.Reverse(" YC W"+year+" "))
 	}
+
 	if mode == colorizedHighlighting {
 		title = strings.ReplaceAll(title, summer, format.BlackOnOrange(" YC S"+year+" "))
 		title = strings.ReplaceAll(title, winter, format.BlackOnOrange(" YC W"+year+" "))
 	}
+
 	return title
 }
 
