@@ -17,16 +17,11 @@ import (
 )
 
 const (
-	newLine         = "\n"
-	newParagraph    = "\n\n"
-	textBold        = "\033[1m"
-	textDimmed      = "\033[2m"
-	textUnderline   = "\033[4m"
-	textNormal      = "\033[0m"
-	textBlack       = "\u001b[30m"
-	backgroundRed   = "\u001b[41m"
-	backgroundGreen = "\u001b[42m"
-	backgroundBlue  = "\u001b[44m"
+	newLine       = "\n"
+	newParagraph  = "\n\n"
+	textDimmed    = "\033[2m"
+	textUnderline = "\033[4m"
+	textNormal    = "\033[0m"
 )
 
 type options struct {
@@ -109,26 +104,12 @@ func (o option) print(textWidth int) string {
 
 func highlight(currentValue string, defaultValue string) string {
 	overridden := ""
-	_, err := strconv.Atoi(currentValue)
-	currentValueIsANumber := err == nil
 
 	if currentValue != defaultValue {
 		overridden = "*"
 	}
 
-	switch {
-	case currentValueIsANumber:
-		return textBlack + backgroundBlue + " " + overridden + currentValue + overridden + " " + textNormal
-
-	case currentValue == "true":
-		return textBlack + backgroundGreen + " " + overridden + currentValue + overridden + " " + textNormal
-
-	case currentValue == "false":
-		return textBlack + backgroundRed + " " + overridden + currentValue + overridden + " " + textNormal
-
-	default:
-		return currentValue
-	}
+	return textUnderline + overridden + currentValue + overridden + textNormal
 }
 
 func makeHeadline(name string, key string, textWidth int) string {
@@ -137,7 +118,7 @@ func makeHeadline(name string, key string, textWidth int) string {
 	spaceBetweenNameAndKey := textWidth - nameLength - keyLength
 	whiteSpace := strings.Repeat(" ", spaceBetweenNameAndKey)
 
-	return underlined(name) + underlined(whiteSpace) + dim(key)
+	return underlined(name + whiteSpace + key)
 }
 
 func (o option) printConfig() string {
@@ -149,20 +130,17 @@ func (o option) printConfig() string {
 
 func GetSettingsText() string {
 	message := ""
-	pathToConfigDirectory := file.PathToConfigDirectory()
 	pathToConfigFile := file.PathToConfigFile()
 	commentWidth := getCommentWidth()
 
 	if file.Exists(pathToConfigFile) {
-		message += format.Dim("Using config file at " + pathToConfigFile)
+		message += format.Dim("Using config file at " + settings.ConfigFilePath)
 	} else {
-		message += format.Dim("Press T to create config.env in " + pathToConfigDirectory)
+		message += format.Dim("Press T to create config.env in " + settings.ConfigDirPath)
 	}
 
 	o := initializeOptions()
-
 	s := cview.TranslateANSI(message + newParagraph + o.printAll(commentWidth))
-	s = fixBlackValues(s)
 
 	return s
 }
@@ -214,10 +192,4 @@ func dim(text string) string {
 
 func underlined(text string) string {
 	return textUnderline + text + textNormal
-}
-
-// Hack: a bug in cview.TranslateANSI() causes black to be translated to the bright version.
-// This function injects black text tags as a workaround.
-func fixBlackValues(text string) string {
-	return strings.ReplaceAll(text, "black", "#0c0c0c")
 }

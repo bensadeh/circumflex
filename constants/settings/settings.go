@@ -3,6 +3,8 @@ package settings
 const (
 	ConfigFileNameAbbreviated = "config"
 	ConfigFileNameFull        = "config.env"
+	ConfigFilePath            = "~/.config/circumflex/config.env"
+	ConfigDirPath             = "~/.config/circumflex/"
 
 	CommentWidthName        = "Comment Width"
 	CommentWidthKey         = "CLX_COMMENT_WIDTH"

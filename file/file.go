@@ -41,12 +41,12 @@ func WriteToConfigFile(content string) error {
 		return fmt.Errorf("could not create path to config dir: %w", mkdirErr)
 	}
 
-	f, createFileErr := os.Create(PathToConfigFile())
+	file, createFileErr := os.Create(PathToConfigFile())
 	if createFileErr != nil {
 		return fmt.Errorf("could not create config file: %w", createFileErr)
 	}
 
-	_, writeFileErr := f.WriteString(content)
+	_, writeFileErr := file.WriteString(content)
 	if writeFileErr != nil {
 		return fmt.Errorf("could not write to file: %w", writeFileErr)
 	}
