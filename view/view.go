@@ -113,3 +113,7 @@ func SelectLastElementInList(list *cview.List) {
 	lastElement := -1
 	list.SetCurrentItem(lastElement)
 }
+
+func ClearList(list *cview.List) {
+	list.Clear()
+}

@@ -50,7 +50,7 @@ func setToErrorState(appState *core.ApplicationState, main *core.MainView, list 
 	appState.IsOffline = true
 
 	view.SetPermanentStatusBar(main, errorMessage, cview.AlignCenter)
-	list.Clear()
+	view.ClearList(list)
 	app.Draw()
 }
 
@@ -212,7 +212,7 @@ func fetchAndAppendSubmissionEntries(submissions *core.Submissions, appState *co
 
 func SetListItemsToCurrentPage(list *cview.List, submissions []*core.Submission, currentPage int, viewableStories int,
 	config *core.Config) {
-	list.Clear()
+	view.ClearList(list)
 
 	start := currentPage * viewableStories
 	end := start + viewableStories
@@ -570,7 +570,7 @@ func Refresh(app *cview.Application, list *cview.List, main *core.MainView, subm
 		errorMessage := message.Error(messages.OfflineMessage)
 
 		view.SetPermanentStatusBar(main, errorMessage, cview.AlignCenter)
-		list.Clear()
+		view.ClearList(list)
 		app.Draw()
 	} else {
 		duration := time.Millisecond * 2000
