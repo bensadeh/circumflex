@@ -169,7 +169,7 @@ func NextPage(app *cview.Application, list *cview.List, submissions *core.Submis
 	appState.CurrentPage++
 
 	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow, config)
-	list.SetCurrentItem(currentlySelectedItem)
+	view.SelectItem(list, currentlySelectedItem)
 
 	ClearVimRegister(main, appState)
 
@@ -252,7 +252,7 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	}
 
 	SetListItemsToCurrentPage(list, currentSubmissions.Entries, appState.CurrentPage, appState.SubmissionsToShow, config)
-	list.SetCurrentItem(currentItem)
+	view.SelectItem(list, currentItem)
 	ClearVimRegister(main, appState)
 
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, currentItem, appState.CurrentPage)
@@ -302,8 +302,7 @@ func PreviousPage(list *cview.List, submissions *core.Submissions, main *core.Ma
 	currentItem := list.GetCurrentItemIndex()
 
 	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow, config)
-
-	list.SetCurrentItem(currentItem)
+	view.SelectItem(list, currentItem)
 	ClearVimRegister(main, appState)
 
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, currentItem, appState.CurrentPage)
@@ -374,7 +373,7 @@ func SelectItemDown(main *core.MainView, list *cview.List, appState *core.Applic
 	itemCount := list.GetItemCount()
 	nextItem := vim.GetItemDown(appState.VimNumberRegister, currentItem, itemCount)
 
-	list.SetCurrentItem(nextItem)
+	view.SelectItem(list, nextItem)
 
 	ClearVimRegister(main, appState)
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, nextItem, appState.CurrentPage)
@@ -386,7 +385,7 @@ func SelectItemUp(main *core.MainView, list *cview.List, appState *core.Applicat
 	currentItem := list.GetCurrentItemIndex()
 	nextItem := vim.GetItemUp(appState.VimNumberRegister, currentItem)
 
-	list.SetCurrentItem(nextItem)
+	view.SelectItem(list, nextItem)
 
 	ClearVimRegister(main, appState)
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, nextItem, appState.CurrentPage)
@@ -468,7 +467,7 @@ func GoToLowerCaseG(main *core.MainView, appState *core.ApplicationState, list *
 			appState.CurrentPage)
 
 		ClearVimRegister(main, appState)
-		list.SetCurrentItem(itemToJumpTo)
+		view.SelectItem(list, itemToJumpTo)
 		view.ClearStatusBar(main)
 
 		marginText := getMarginText(config.RelativeNumbering,
@@ -505,7 +504,7 @@ func GoToUpperCaseG(main *core.MainView, appState *core.ApplicationState, list *
 			appState.CurrentPage)
 
 		ClearVimRegister(main, appState)
-		list.SetCurrentItem(itemToJumpTo)
+		view.SelectItem(list, itemToJumpTo)
 		view.ClearStatusBar(main)
 
 		marginText := getMarginText(config.RelativeNumbering,
