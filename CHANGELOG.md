@@ -2,8 +2,14 @@
 ## 0.12
 _WIP_
 
+**New features:**
+- Quotes are now dimmed and italicized 
+
 **Cosmetic**
 - Changed appearance of error and success notifications
+
+**Bugfixes**
+- Fixed a bug where brackets in titles would not appear
 
 ## 0.11.1
 _2021-03-01_

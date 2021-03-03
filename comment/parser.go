@@ -11,6 +11,7 @@ type Comment struct {
 
 type Section struct {
 	IsCodeBlock bool
+	IsQuote     bool
 	Text        string
 }
 
@@ -28,10 +29,14 @@ func ParseComment(text string) (string, []string) {
 
 	for _, paragraph := range paragraphs {
 		section := new(Section)
-		section.Text = paragraph
+		section.Text = replaceCharacters(paragraph)
 
-		if strings.Contains(paragraph, "<pre><code>") {
+		if strings.Contains(section.Text, "<pre><code>") {
 			section.IsCodeBlock = true
+		}
+
+		if isQuote(section.Text) {
+			section.IsQuote = true
 		}
 
 		c.Sections = append(c.Sections, *section)
@@ -40,27 +45,65 @@ func ParseComment(text string) (string, []string) {
 	output := ""
 
 	for i, section := range c.Sections {
-		if !section.IsCodeBlock {
-			section.Text = highlightReferences(section.Text)
+		switch {
+		case section.IsQuote:
+			section.Text = strings.ReplaceAll(section.Text, "<i>", "")
+			section.Text = strings.ReplaceAll(section.Text, "</i>", "")
 			section.Text = strings.ReplaceAll(section.Text, doubleSpace, singleSpace)
+			section.Text = strings.ReplaceAll(section.Text, ">", "")
+			section.Text = strings.ReplaceAll(section.Text, ">>", "")
+			section.Text = strings.TrimLeft(section.Text, " ")
+
+			section.Text = Italic + Dimmed + section.Text + Normal
+
+		case section.IsCodeBlock:
+			section.Text = replaceHTML(section.Text)
+
+		default:
+			section.Text = strings.ReplaceAll(section.Text, doubleSpace, singleSpace)
+			section.Text = highlightReferences(section.Text)
+			section.Text = replaceHTML(section.Text)
+			URLs = append(URLs, extractURLs(section.Text)...)
+			section.Text = trimURLs(section.Text)
 		}
 
 		separator := getSeparator(i, len(c.Sections))
-
-		section.Text = replaceCharacters(section.Text)
-		section.Text = replaceCharacters(section.Text)
-		section.Text = replaceHTML(section.Text)
-		URLs = append(URLs, extractURLs(section.Text)...)
-		section.Text = trimURLs(section.Text)
-
 		output += section.Text + separator
+
+		//if section.IsQuote {
+		//
+		//}
+		//
+		//if !section.IsCodeBlock {
+		//	section.Text = highlightReferences(section.Text)
+		//	section.Text = strings.ReplaceAll(section.Text, doubleSpace, singleSpace)
+		//}
+		//
+		//separator := getSeparator(i, len(c.Sections))
+		//
+		//section.Text = replaceHTML(section.Text)
+		//URLs = append(URLs, extractURLs(section.Text)...)
+		//section.Text = trimURLs(section.Text)
+		//
+		//output += section.Text + separator
 	}
 
 	return output, URLs
 }
 
+func isQuote(text string) bool {
+	quoteMark := ">"
+
+	return strings.HasPrefix(text, ""+quoteMark) ||
+		strings.HasPrefix(text, " "+quoteMark) ||
+		strings.HasPrefix(text, "<i>"+quoteMark) ||
+		strings.HasPrefix(text, "<i> "+quoteMark)
+}
+
 func getSeparator(index int, sliceLength int) string {
-	if index == sliceLength-1 {
+	isAtLastParagraph := index == sliceLength-1
+
+	if isAtLastParagraph {
 		return ""
 	}
 
