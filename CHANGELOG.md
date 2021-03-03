@@ -1,6 +1,6 @@
 # Changelog
 ## 0.12
-_WIP_
+_2021-03-03_
 
 **New features:**
 - Quotes are now dimmed and italicized 
