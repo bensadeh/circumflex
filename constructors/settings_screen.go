@@ -103,13 +103,11 @@ func (o option) print(textWidth int) string {
 }
 
 func highlight(currentValue string, defaultValue string) string {
-	overridden := ""
-
 	if currentValue != defaultValue {
-		overridden = "*"
+		return textUnderline + "*" + currentValue + "*" + textNormal
 	}
 
-	return textUnderline + overridden + currentValue + overridden + textNormal
+	return textUnderline + currentValue + textNormal
 }
 
 func makeHeadline(name string, key string, textWidth int) string {
@@ -118,7 +116,7 @@ func makeHeadline(name string, key string, textWidth int) string {
 	spaceBetweenNameAndKey := textWidth - nameLength - keyLength
 	whiteSpace := strings.Repeat(" ", spaceBetweenNameAndKey)
 
-	return underlined(name + whiteSpace + key)
+	return dim(underlined(name + whiteSpace + key))
 }
 
 func (o option) printConfig() string {
