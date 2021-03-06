@@ -27,8 +27,8 @@ func FormatSubMain(title string, domain string, mode int) string {
 func formatTitle(title string, mode int) string {
 	title = strings.ReplaceAll(title, tripleSpace, singleSpace)
 	title = strings.ReplaceAll(title, doubleSpace, singleSpace)
+	title = strings.ReplaceAll(title, "]", "[]")
 
-	title = highlightBrackets(title)
 	title = highlightShowAndTell(title, mode)
 	title = highlightYCStartups(title, mode)
 
@@ -55,13 +55,6 @@ func highlightShowAndTell(title string, mode int) string {
 	default:
 		return title
 	}
-}
-
-func highlightBrackets(title string) string {
-	title = strings.ReplaceAll(title, "]", "[::-][]")
-	title = strings.Replace(title, "[", "[[::d]", 1)
-
-	return title
 }
 
 func highlightYCStartups(title string, mode int) string {
