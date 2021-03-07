@@ -64,12 +64,15 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 
 ### How to configure
 
-Customize the front page and comment section by editing `config.env` in `~/.config/circumflex`. In the settings menu
-`circumflex` can create a template `config.env` with the available options.
-
-Alternatively, you can configure `circumflex` by setting
+There are two ways to configure `circumflex`:
+1. Edit `config.env` in `~/.config/circumflex`, or
+3. Set
 [environment variables](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables)
-in your shell.
+in your shell
+
+To access the settings menu, press <kbd>i</kbd> on the main screen and then <kbd>Tab</kbd> to get to the settings section. This view shows the available options along with the current values. Overridden values are marked with `*`.
+
+`circumflex` can create `config.env` in `~/.config/circumflex` by pressing <kbd>t</kbd> on the settings menu. This file will contain the available options, their descriptions and default values.
 
 <p align="center">
   <img src="screenshots/settings.png" width="700" alt="^"/>
