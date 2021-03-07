@@ -77,27 +77,14 @@ in your shell.
 
 ### Available options
 
-#### Comment Width
-
-Sets the maximum number of characters on each line for comments, replies and descriptions in settings. Set to 0 to use
-the whole screen.
-
-#### Indent Size
-
-The number of whitespaces prepended to each reply, not including the color bar.
-
-#### Highlight Headlines
-
-Highlights YC-funded startups and text containing `Show HN`, `Ask HN`, `Tell HN` and `Launch HN`. Can be set to 0 (No
-highlighting), 1 (inverse highlighting) or 2 (colored highlighting).
-
-#### Use Relative Numbering
-
-Shows each line with a number relative to the currently selected element. Similar to Vim's hybrid line number mode.
-
-#### Hide YC hiring posts
-
-Hides `X is hiring` posts from YC-funded startups. Does not affect the monthly `Who is Hiring?` posts.
+| Key      | Default Value | Description |
+| ----------- | :-------: |---|
+| `CLX_COMMENT_WIDTH`      | `70` | Sets the maximum number of characters on each line for comments, replies and descriptions in settings. Set to 0 to use the whole screen.       |
+| `CLX_INDENT_SIZE`   | `4` | The number of whitespaces prepended to each reply, not including the color bar.        |
+| `CLX_HIGHLIGHT_HEADLINES`   | `0` | Highlights YC-funded startups and text containing `Show HN`, `Ask HN`, `Tell HN` and `Launch HN`. Can be set to 0 (No highlighting), 1 (inverse highlighting) or 2 (colored highlighting).        |
+| `CLX_RELATIVE_NUMBERING`   | `false` | Shows each line with a number relative to the currently selected element. Similar to Vim's hybrid line number mode.        |
+| `CLX_HIDE_YC_JOBS`   | `true` | Hides `X is hiring` posts from YC-funded startups. Does not affect the monthly `Who is Hiring?` posts.        |
+| `CLX_PRESERVE_RIGHT_MARGIN`   | `false` | Shortens replies so that the total length, including indentation, is the same as the comment width. Best used when Indent Size is small to avoid deep replies being too short.   |
 
 ## Under the hood
 
