@@ -86,7 +86,7 @@ file will contain the available options, their descriptions and default values.
 The following table shows the ways `circumflex` can be configured.
 
 | Key      | Default Value | Description |
-| ----------- | :-------: |---|
+| :-----------: | :-------: |---|
 | `CLX_COMMENT_WIDTH`      | `70` | Sets the maximum number of characters on each line for comments, replies and descriptions in settings. Set to 0 to use the whole screen.       |
 | `CLX_INDENT_SIZE`   | `4` | The number of whitespaces prepended to each reply, not including the color bar.        |
 | `CLX_HIGHLIGHT_HEADLINES`   | `0` | Highlights YC-funded startups and text containing `Show HN`, `Ask HN`, `Tell HN` and `Launch HN`. Can be set to 0 (No highlighting), 1 (inverse highlighting) or 2 (colored highlighting).        |
