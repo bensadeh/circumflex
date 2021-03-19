@@ -23,10 +23,10 @@
 Install `circumflex` with Homebrew:
 
 ```console
-# Add 'bensadeh/circumflex' to list of taps and install
+# Install
 brew install bensadeh/circumflex/circumflex
 
-# Run circumflex
+# Run
 clx
 ```
 
@@ -63,21 +63,21 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 ## Settings
 
 ### How to configure
+You can show the available options along with their current values in the Settings View. Press <kbd>i</kbd> on the main
+view and then <kbd>Tab</kbd> to change the category. Overridden values are marked with `*`.
 
 There are two ways to configure `circumflex`:
 
 1. Edit `config.env` in `~/.config/circumflex`, or
 3. Set environment variables in your shell
 
-#### Using `config.env`
-To access the settings menu, press <kbd>i</kbd> on the main screen and then <kbd>Tab</kbd> to get to the settings
-section. This view shows the available options along with the current values. Overridden values are marked with `*`.
-
-`circumflex` can create a `config.env` in `~/.config/circumflex` by pressing <kbd>t</kbd> on the settings menu. This
+#### Change settings with `config.env`
+`circumflex` can create a `config.env` in `~/.config/circumflex` by pressing <kbd>t</kbd> in the Settings View. This
 file will contain the available options, their descriptions and default values.
 
-#### Using environment variables
-Depending on your workflow, it might be more convenient for you to configure `circumflex` by setting [environment variables](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables).
+#### Change settings with environment variables
+Depending on your preference, it might be more convenient for you to configure `circumflex` by setting 
+[environment variables](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables).
 
 Bash and zsh:
 ```bash
