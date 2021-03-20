@@ -52,7 +52,6 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 
 * Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and
   `code` where available
-* Colored references (`[1]`, `[2]`, `[…]`)
 * Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
 * Ability to jump between top-level comments by searching for `::`
 
@@ -67,7 +66,7 @@ for the sake of legibility. See the Settings section on how to disable some of t
 
 In the comment section, quotes are separated by a paragraph and open with `>` like so:
 ```
-> This is a quote 
+>This is a quote 
 
 This is not a quote
 ```
@@ -85,7 +84,7 @@ colorizes these parts of the headlines.
 
 #### YC-funded startups
 [Twice a year](https://www.ycombinator.com/companies/), Y Combinator funds start-ups through its accelerator program. 
-YC-funded startups are written in the following format:
+YC-funded startups are referred to in the following format:
 
 ```
 [Startup name] (YC [(W)inter or (S)ummer batch][Year of funding])
@@ -98,7 +97,7 @@ Airbnb (YC W09)
 `circumflex` highlights YC-funded startups in orange to signalize their affiliation with YC. 
 
 <p align="center">
-  <img src="screenshots/yc.png" width="700" alt="^"/>
+  <img src="screenshots/yc.png" width="400" alt="^"/>
 </p>
 
 #### References
@@ -113,12 +112,13 @@ inside the references for easier cross-referencing.
 
 ### How to configure
 The available options and their current values are displayed in the Settings View. Overridden values are marked with
-`*`. To enter Settings View, press <kbd>i</kbd> on the Main View and then <kbd>Tab</kbd> to change the category. 
+`*`. To enter Settings View, press <kbd>i</kbd> on the Main View and then <kbd>Tab</kbd> to change the category. Note 
+that the settings cannot be changed from the Settings View.
 
-There are two ways to configure `circumflex`:
+To change the settings, you can:
 
 1. Edit `config.env` in `~/.config/circumflex`, or
-3. Set environment variables in your shell
+2. Set environment variables in your shell
 
 #### Changing settings with `config.env`
 `circumflex` can create a `config.env` in `~/.config/circumflex` by pressing <kbd>t</kbd> in the Settings View. This
