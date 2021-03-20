@@ -39,7 +39,7 @@ Press <kbd>i</kbd> to show available keymaps and settings.
 `circumflex` is a text-based user interface (TUI) application that lets you browse Hacker News in your terminal. It can
 list submissions by category and show the comment section. It is made to look good across different color schemes.
 
-`circumflex` does not support any login related functionality.
+`circumflex` does not support any login-related functionality.
 
 <p align="center">
   <img src="screenshots/comments.png" width="700" alt="^"/>
@@ -56,6 +56,55 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 * Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
 * Ability to jump between top-level comments by searching for `::`
 
+
+### Syntax highlighting
+#### Hacker News Idiosyncrasies 
+For the most part, `circumflex` aims to present Hacker News as close as possible to how it appears on the website. 
+However, just like in code, there are certain idiosyncratic parts of Hacker News which make sense to handle differently
+for the sake of legibility. See the Settings section on how to disable some of these features.
+
+#### Quotes
+
+In the comment section, quotes are separated by a paragraph and open with `>` like so:
+```
+> This is a quote 
+
+This is not a quote
+```
+
+To improve legibility, `circumflex` italicises and dims the actual quote. Since the formatting now identifies the block
+as a quote, the symbol `>` is omitted, but the context is preserved. 
+
+<p align="center">
+  <img src="screenshots/quotes.png" width="700" alt="^"/>
+</p>
+
+#### Headlines
+Certain submissions on the front page are also in their own 'category', such as `Show HN` and `Ask HN`. `circumflex` 
+colorizes these parts of the headlines.
+
+#### YC-funded startups
+[Twice a year](https://www.ycombinator.com/companies/), Y Combinator funds start-ups through its accelerator program. 
+YC-funded startups are written in the following format:
+
+```
+[Startup name] (YC [(W)inter or (S)ummer batch][Year of funding])
+
+For example:
+Dropbox (YC S07)
+Airbnb (YC W09)
+```
+
+`circumflex` highlights YC-funded startups in orange to signalize their affiliation with YC. 
+
+<p align="center">
+  <img src="screenshots/yc.png" width="700" alt="^"/>
+</p>
+
+#### References
+References are most often listed in the following format: `[1]`, `[2]`, `[…]`. `circumflex` highlights the numbers 
+inside the references for easier cross-referencing.
+
 <p align="center">
   <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
 </p>
@@ -63,19 +112,19 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 ## Settings
 
 ### How to configure
-You can show the available options along with their current values in the Settings View. Press <kbd>i</kbd> on the main
-view and then <kbd>Tab</kbd> to change the category. Overridden values are marked with `*`.
+The available options and their current values are displayed in the Settings View. Overridden values are marked with
+`*`. To enter Settings View, press <kbd>i</kbd> on the Main View and then <kbd>Tab</kbd> to change the category. 
 
 There are two ways to configure `circumflex`:
 
 1. Edit `config.env` in `~/.config/circumflex`, or
 3. Set environment variables in your shell
 
-#### Change settings with `config.env`
+#### Changing settings with `config.env`
 `circumflex` can create a `config.env` in `~/.config/circumflex` by pressing <kbd>t</kbd> in the Settings View. This
 file will contain the available options, their descriptions and default values.
 
-#### Change settings with environment variables
+#### Changing settings with environment variables
 Depending on your preference, it might be more convenient for you to configure `circumflex` by setting 
 [environment variables](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables).
 
@@ -97,14 +146,14 @@ set -x CLX_COMMENT_WIDTH "65"
 
 The following table shows the ways `circumflex` can be configured.
 
-| Key      | Default Value | Description |
-| :-----------: | :-------: |---|
-| `CLX_COMMENT_WIDTH`      | `70` | Sets the maximum number of characters on each line for comments, replies and descriptions in settings. Set to 0 to use the whole screen.       |
-| `CLX_INDENT_SIZE`   | `4` | The number of whitespaces prepended to each reply, not including the color bar.        |
+| Key                         | Default Value | Description |
+| :-------------------------: | :-------: |---|
+| `CLX_COMMENT_WIDTH`         | `70` | Sets the maximum number of characters on each line for comments, replies and descriptions in settings. Set to 0 to use the whole screen.       |
+| `CLX_INDENT_SIZE`           | `4` | The number of whitespaces prepended to each reply, not including the color bar.        |
 | `CLX_HIGHLIGHT_HEADLINES`   | `2` | Highlights YC-funded startups and text containing `Show HN`, `Ask HN`, `Tell HN` and `Launch HN`. Can be set to 0 (No highlighting), 1 (inverse highlighting) or 2 (colored highlighting).        |
-| `CLX_RELATIVE_NUMBERING`   | `false` | Shows each line with a number relative to the currently selected element. Similar to Vim's hybrid line number mode.        |
-| `CLX_HIDE_YC_JOBS`   | `true` | Hides `X is hiring` posts from YC-funded startups. Does not affect the monthly `Who is Hiring?` posts.        |
-| `CLX_PRESERVE_RIGHT_MARGIN`   | `false` | Shortens replies so that the total length, including indentation, is the same as the comment width. Best used when Indent Size is small to avoid deep replies being too short.   |
+| `CLX_RELATIVE_NUMBERING`    | `false` | Shows each line with a number relative to the currently selected element. Similar to Vim's hybrid line number mode.        |
+| `CLX_HIDE_YC_JOBS`          | `true` | Hides `X is hiring` posts from YC-funded startups. Does not affect the monthly `Who is Hiring?` posts.        |
+| `CLX_PRESERVE_RIGHT_MARGIN` | `false` | Shortens replies so that the total length, including indentation, is the same as the comment width. Best used when Indent Size is small to avoid deep replies being too short.   |
 
 ## Under the hood
 
