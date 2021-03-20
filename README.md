@@ -59,7 +59,7 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 ### Syntax highlighting
 #### Hacker News Idiosyncrasies 
 For the most part, `circumflex` aims to present Hacker News as close as possible to how it appears on the website. 
-However, just like in code, there are certain idiosyncratic parts of Hacker News which make sense to handle differently
+However, just like in code, there are certain idiosyncratic parts of Hacker News which make sense to format differently
 for the sake of legibility. See the Settings section on how to disable some of these features.
 
 #### Quotes
