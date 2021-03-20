@@ -82,6 +82,10 @@ as a quote, the symbol `>` is omitted, but the context is preserved.
 Certain submissions on the front page are also in their own 'category', such as `Show HN` and `Ask HN`. `circumflex` 
 colorizes these parts of the headlines.
 
+<p align="center">
+  <img src="screenshots/showtell.png" width="700" alt="^"/>
+</p>
+
 #### YC-funded startups
 [Twice a year](https://www.ycombinator.com/companies/), Y Combinator funds start-ups through its accelerator program. 
 YC-funded startups are referred to in the following format:
