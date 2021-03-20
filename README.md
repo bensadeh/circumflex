@@ -83,7 +83,7 @@ Certain submissions on the front page are also in their own 'category', such as 
 colorizes these parts of the headlines.
 
 <p align="center">
-  <img src="screenshots/showtell.png" width="700" alt="^"/>
+  <img src="screenshots/showtell.png" width="300" alt="^"/>
 </p>
 
 #### YC-funded startups
