@@ -83,22 +83,12 @@ Certain submissions on the front page are also in their own 'category', such as 
 colorizes these parts of the headlines.
 
 <p align="center">
-  <img src="screenshots/showtell.png" width="300" alt="^"/>
+  <img src="screenshots/showtell.png" width="270" alt="^"/>
 </p>
 
 #### YC-funded startups
 [Twice a year](https://www.ycombinator.com/companies/), Y Combinator funds start-ups through its accelerator program. 
-YC-funded startups are referred to in the following format:
-
-```
-[Startup name] (YC [(W)inter or (S)ummer batch][Year of funding])
-
-For example:
-Dropbox (YC S07)
-Airbnb (YC W09)
-```
-
-`circumflex` highlights YC-funded startups in orange to signalize their affiliation with YC. 
+YC-funded startups are highlighted in orange to signalize their affiliation with YC. 
 
 <p align="center">
   <img src="screenshots/yc.png" width="400" alt="^"/>
@@ -119,12 +109,16 @@ The available options and their current values are displayed in the Settings Vie
 `*`. To enter Settings View, press <kbd>i</kbd> on the Main View and then <kbd>Tab</kbd> to change the category. Note 
 that the settings cannot be changed from the Settings View.
 
-To change the settings, you can:
+<p align="center">
+  <img src="screenshots/settings.png" width="700" alt="^"/>
+</p>
 
-1. Edit `config.env` in `~/.config/circumflex`, or
-2. Set environment variables in your shell
+To change the settings, you can either:
 
-#### Changing settings with `config.env`
+1. edit `config.env` in `~/.config/circumflex`, or
+2. set environment variables in your shell
+
+#### Changing settings through `config.env`
 `circumflex` can create a `config.env` in `~/.config/circumflex` by pressing <kbd>t</kbd> in the Settings View. This
 file will contain the available options, their descriptions and default values.
 
@@ -141,10 +135,6 @@ Fish:
 ```fish
 set -x CLX_COMMENT_WIDTH "65"
 ```
-
-<p align="center">
-  <img src="screenshots/settings.png" width="700" alt="^"/>
-</p>
 
 ### Available options
 
