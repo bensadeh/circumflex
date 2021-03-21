@@ -57,14 +57,9 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 
 
 ### Syntax highlighting
-#### Hacker News Idiosyncrasies 
-For the most part, `circumflex` aims to present Hacker News as close as possible to how it appears on the website. 
-However, just like in code, there are certain idiosyncratic parts of Hacker News which make sense to format differently
-for the sake of legibility. See the Settings section on how to disable some of these features.
-
 #### Quotes
 
-In the comment section, quotes are separated by a paragraph and open with `>` like so:
+In the comment section, quotes are separated by a paragraph and open with a `>` like so:
 ```
 >This is a quote 
 
@@ -83,19 +78,19 @@ Certain submissions on the front page are also in their own 'category', such as 
 colorizes these parts of the headlines.
 
 <p align="center">
-  <img src="screenshots/showtell.png" width="270" alt="^"/>
+  <img src="screenshots/showtell.png" width="250" alt="^"/>
 </p>
 
 #### YC-funded startups
 [Twice a year](https://www.ycombinator.com/companies/), Y Combinator funds start-ups through its accelerator program. 
-YC-funded startups are highlighted in orange to signalize their affiliation with YC. 
+`circumflex` highlights YC-funded startups to signalize their affiliation with YC. 
 
 <p align="center">
   <img src="screenshots/yc.png" width="400" alt="^"/>
 </p>
 
 #### References
-References are most often listed in the following format: `[1]`, `[2]`, `[…]`. `circumflex` highlights the numbers 
+References are listed in the following format: `[1]`, `[2]`, `[…]`. `circumflex` highlights the numbers 
 inside the references for easier cross-referencing.
 
 <p align="center">
