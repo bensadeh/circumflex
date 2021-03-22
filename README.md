@@ -32,18 +32,22 @@ clx
 
 Press <kbd>i</kbd> to show available keymaps and settings.
 
-## Overview
+## Features
 
-### Features
+### Overview
 
 `circumflex` is a text-based user interface (TUI) application that lets you browse Hacker News in your terminal. It can
-list submissions by category and show the comment section. It is made to look good across different color schemes.
+list submissions by category and show the comment section. `circumflex` supports Vim keybindings for navigating between 
+submissions, including <kbd>h</kbd>, <kbd>j</kbd>, <kbd>k</kbd> and <kbd>l</kbd> for movement and <kbd>g</kbd>/<kbd>G</kbd> 
+for jumping. It is made to look good across different color schemes.
 
 `circumflex` does not support any login-related functionality.
 
 <p align="center">
   <img src="screenshots/comments.png" width="700" alt="^"/>
 </p>
+
+
 
 ### Comment section
 
@@ -54,7 +58,6 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
   `code` where available
 * Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
 * Ability to jump between top-level comments by searching for `::`
-
 
 ### Syntax highlighting
 #### Quotes
@@ -83,15 +86,15 @@ colorizes these parts of the headlines.
 
 #### YC-funded startups
 [Twice a year](https://www.ycombinator.com/companies/), Y Combinator funds start-ups through its accelerator program. 
-`circumflex` highlights YC-funded startups to signalize their affiliation with YC. 
+`circumflex` highlights these startups to signalize their affiliation with YC. 
 
 <p align="center">
-  <img src="screenshots/yc.png" width="400" alt="^"/>
+  <img src="screenshots/yc.png" width="350" alt="^"/>
 </p>
 
 #### References
 References are listed in the following format: `[1]`, `[2]`, `[…]`. `circumflex` highlights the numbers 
-inside the references for easier cross-referencing.
+inside the brackets for easier cross-referencing.
 
 <p align="center">
   <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
