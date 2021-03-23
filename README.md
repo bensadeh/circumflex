@@ -37,11 +37,13 @@ Press <kbd>i</kbd> to show available keymaps and settings.
 ### Overview
 
 `circumflex` is a text-based user interface (TUI) application that lets you browse Hacker News in your terminal. It can
-list submissions by category and show the comment section. `circumflex` supports Vim keybindings for navigating between 
-submissions, including <kbd>h</kbd>, <kbd>j</kbd>, <kbd>k</kbd> and <kbd>l</kbd> for movement and <kbd>g</kbd>/<kbd>G</kbd> 
-for jumping. It is made to look good across different color schemes.
+list submissions by category and show the comment section. 
 
-`circumflex` does not support any login-related functionality.
+On the Main View, `circumflex` supports Vim keybindings for navigating between submissions, including <kbd>h</kbd>, 
+<kbd>j</kbd>, <kbd>k</kbd> and <kbd>l</kbd>, digits and <kbd>g</kbd>/<kbd>G</kbd>.
+
+`circumflex` is made to look well across different configurations by adhering to your terminal's native color scheme. 
+
 
 <p align="center">
   <img src="screenshots/comments.png" width="700" alt="^"/>
@@ -62,9 +64,9 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 ### Syntax highlighting
 #### Quotes
 
-In the comment section, quotes are separated by a paragraph and open with a `>` like so:
+In the comment section, quotes are separated by a paragraph and open with a `>`:
 ```
->This is a quote 
+> This is a quote 
 
 This is not a quote
 ```
@@ -78,7 +80,8 @@ as a quote, the symbol `>` is omitted, but the context is preserved.
 
 #### Headlines
 Certain submissions on the front page are also in their own 'category', such as `Show HN` and `Ask HN`. `circumflex` 
-colorizes these parts of the headlines.
+colorizes these parts of the headlines to make it easier to distinguish them from each other. On by default, but can be 
+disabled.
 
 <p align="center">
   <img src="screenshots/showtell.png" width="250" alt="^"/>
@@ -86,7 +89,7 @@ colorizes these parts of the headlines.
 
 #### YC-funded startups
 [Twice a year](https://www.ycombinator.com/companies/), Y Combinator funds start-ups through its accelerator program. 
-`circumflex` highlights these startups to signalize their affiliation with YC. 
+`circumflex` highlights these startups to signalize their affiliation with YC. On by default, but can be disabled.
 
 <p align="center">
   <img src="screenshots/yc.png" width="350" alt="^"/>
@@ -105,7 +108,7 @@ inside the brackets for easier cross-referencing.
 ### How to configure
 The available options and their current values are displayed in the Settings View. Overridden values are marked with
 `*`. To enter Settings View, press <kbd>i</kbd> on the Main View and then <kbd>Tab</kbd> to change the category. Note 
-that the settings cannot be changed from the Settings View.
+that the settings cannot be changed from within the Settings View.
 
 <p align="center">
   <img src="screenshots/settings.png" width="700" alt="^"/>
@@ -123,6 +126,9 @@ file will contain the available options, their descriptions and default values.
 #### Changing settings with environment variables
 Depending on your preference, it might be more convenient for you to configure `circumflex` by setting 
 [environment variables](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables).
+Below are a couple of examples on how to set the variables in different shells. Run the commands directly from your 
+shell to set the value for the current session. Put the commands in somewhere in your 
+[dotfiles](https://dotfiles.github.io/) to make the settings permanent.
 
 Bash and zsh:
 ```bash
@@ -136,7 +142,7 @@ set -x CLX_COMMENT_WIDTH "65"
 
 ### Available options
 
-The following table shows the ways `circumflex` can be configured.
+The following table shows the ways `circumflex` can be configured:
 
 | Key                         | Default Value | Description |
 | :-------------------------: | :-------: |---|
