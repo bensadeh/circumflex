@@ -232,13 +232,15 @@ func SetListItemsToCurrentPage(list *cview.List, submissions []*core.Submission,
 func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.List, appState *core.ApplicationState,
 	submissions []*core.Submissions, main *core.MainView, config *core.Config) {
 	currentItem := list.GetCurrentItemIndex()
+	nextCategory := 0
 
 	if event.Key() == tcell.KeyBacktab {
-		appState.SubmissionsCategory = getPreviousCategory(appState.SubmissionsCategory, 4)
+		nextCategory = getPreviousCategory(appState.SubmissionsCategory, 5)
 	} else {
-		appState.SubmissionsCategory = getNextCategory(appState.SubmissionsCategory, 4)
+		nextCategory = getNextCategory(appState.SubmissionsCategory, 5)
 	}
 
+	appState.SubmissionsCategory = nextCategory
 	currentSubmissions := submissions[appState.SubmissionsCategory]
 	appState.CurrentPage = 0
 
@@ -357,7 +359,7 @@ func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
 	statusBarMessage := ""
 	appState.IsOnConfigCreationConfirmationMessage = false
 
-	err := file.WriteToConfigFile(constructor.GetConfigFileContents())
+	err := file.WriteToFile(file.PathToConfigFile(), constructor.GetConfigFileContents())
 	if err != nil {
 		statusBarMessage = message.Error(messages.ConfigNotCreated)
 	} else {

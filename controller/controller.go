@@ -3,6 +3,7 @@ package controller
 import (
 	"clx/constants/help"
 	"clx/core"
+	"clx/favorites"
 	"clx/model"
 	"unicode"
 
@@ -10,12 +11,12 @@ import (
 	"gitlab.com/tslocum/cview"
 )
 
-func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list *cview.List,
+func SetAfterInitializationAndAfterResizeFunctions(fav *favorites.Favorites, app *cview.Application, list *cview.List,
 	submissions []*core.Submissions, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
 	model.SetAfterInitializationAndAfterResizeFunctions(app, list, submissions, main, appState, config)
 }
 
-func SetApplicationShortcuts(app *cview.Application, list *cview.List, submissions []*core.Submissions,
+func SetApplicationShortcuts(fav *favorites.Favorites, app *cview.Application, list *cview.List, submissions []*core.Submissions,
 	main *core.MainView, appState *core.ApplicationState, config *core.Config) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		currentState := submissions[appState.SubmissionsCategory]

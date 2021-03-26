@@ -4,6 +4,7 @@ const (
 	ConfigFileNameAbbreviated = "config"
 	ConfigFileNameFull        = "config.env"
 	ConfigFilePath            = "~/.config/circumflex/config.env"
+	FavoritesFilePath         = "~/.config/circumflex/favorites.json"
 	ConfigDirPath             = "~/.config/circumflex/"
 
 	CommentWidthName        = "Comment Width"

@@ -4,18 +4,23 @@ import (
 	"clx/cli"
 	"clx/config"
 	"clx/controller"
+	"clx/favorites"
 	"os"
 
 	constructor "clx/constructors"
 )
 
 func main() {
+	// Use the terminal's native color scheme
 	_ = os.Setenv("TCELL_TRUECOLOR", "disable")
 
 	configuration := config.GetConfig()
 
+	fav := favorites.Initialize()
+
 	sc := constructor.NewScreenController()
 	controller.SetAfterInitializationAndAfterResizeFunctions(
+		fav,
 		sc.Application,
 		sc.Articles,
 		sc.Submissions,
@@ -24,6 +29,7 @@ func main() {
 		configuration)
 
 	controller.SetApplicationShortcuts(
+		fav,
 		sc.Application,
 		sc.Articles,
 		sc.Submissions,

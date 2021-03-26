@@ -12,7 +12,7 @@ const (
 )
 
 func GetHackerNewsHeader(selectedSubHeader int) string {
-	return header("🆈", "Hacker News   ", []string{"new", "ask", "show"}, selectedSubHeader)
+	return header("🆈", "Hacker News   ", []string{"new", "ask", "show", "favorites"}, selectedSubHeader)
 }
 
 func GetCircumflexHeader(selectedSubHeader int) string {

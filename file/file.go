@@ -31,8 +31,8 @@ func ConfigFileExists() bool {
 	return Exists(PathToConfigFile())
 }
 
-func WriteToConfigFile(content string) error {
-	if Exists(PathToConfigFile()) {
+func WriteToFile(path string, content string) error {
+	if Exists(path) {
 		return nil
 	}
 
