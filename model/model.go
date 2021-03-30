@@ -10,7 +10,6 @@ import (
 	"clx/file"
 	"clx/retriever"
 	"clx/screen"
-	"clx/sub"
 	"clx/utils/message"
 	"clx/utils/vim"
 	"clx/view"
@@ -138,8 +137,23 @@ func NextPage(app *cview.Application, list *cview.List, main *core.MainView, app
 		return
 	}
 
+	changePage(app, list, main, appState, config, ret, 1)
+}
+
+func PreviousPage(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
+	config *core.Config, ret *retriever.Retriever) {
+	previousPage := appState.CurrentPage - 1
+	if previousPage < 0 {
+		return
+	}
+
+	changePage(app, list, main, appState, config, ret, -1)
+}
+
+func changePage(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
+	config *core.Config, ret *retriever.Retriever, delta int) {
 	currentlySelectedItem := list.GetCurrentItemIndex()
-	appState.CurrentPage++
+	appState.CurrentPage += delta
 
 	listItems, err := ret.GetSubmissions(appState.CurrentCategory, appState.CurrentPage,
 		appState.SubmissionsToShow, config.HighlightHeadlines, config.HideYCJobs)
@@ -167,25 +181,6 @@ func getMarginText(useRelativeNumbering bool, viewableStoriesOnSinglePage int, c
 	}
 
 	return vim.AbsoluteRankings(viewableStoriesOnSinglePage, currentPage)
-}
-
-func SetListItemsToCurrentPage(list *cview.List, submissions []*core.Submission, currentPage int, viewableStories int,
-	config *core.Config) {
-	view.ClearList(list)
-
-	start := currentPage * viewableStories
-	end := start + viewableStories
-
-	for i := start; i < end; i++ {
-		s := submissions[i]
-		mainText := sub.FormatSubMain(s.Title, s.Domain, config.HighlightHeadlines)
-		secondaryText := sub.FormatSubSecondary(s.Points, s.Author, s.Time, s.CommentsCount)
-
-		item := cview.NewListItem(mainText)
-		item.SetSecondaryText(secondaryText)
-
-		list.AddItem(item)
-	}
 }
 
 func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.List, appState *core.ApplicationState,
@@ -247,29 +242,6 @@ func ChangeHelpScreenCategory(event *tcell.EventKey, appState *core.ApplicationS
 	statusBarText := getInfoScreenStatusBarText(appState.CurrentHelpScreenCategory)
 
 	updateInfoScreenView(main, appState.CurrentHelpScreenCategory, statusBarText)
-}
-
-func PreviousPage(list *cview.List, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config, ret *retriever.Retriever) {
-	previousPage := appState.CurrentPage - 1
-	if previousPage < 0 {
-		return
-	}
-
-	appState.CurrentPage--
-
-	currentItem := list.GetCurrentItemIndex()
-
-	listItems, _ := ret.GetSubmissions(appState.CurrentCategory, appState.CurrentPage,
-		appState.SubmissionsToShow, config.HighlightHeadlines, config.HideYCJobs)
-
-	view.ShowItems(list, listItems)
-	view.SelectItem(list, currentItem)
-	ClearVimRegister(main, appState)
-
-	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, currentItem, appState.CurrentPage)
-	view.SetLeftMarginText(main, marginText)
-	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory))
 }
 
 func ShowCreateConfigConfirmationMessage(main *core.MainView, appState *core.ApplicationState) {

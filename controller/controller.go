@@ -81,7 +81,7 @@ func SetApplicationShortcuts(fav *favorites.Favorites, ret *retriever.Retriever,
 			model.NextPage(app, list, main, appState, config, ret)
 
 		case event.Rune() == 'h' || event.Key() == tcell.KeyLeft:
-			model.PreviousPage(list, main, appState, config, ret)
+			model.PreviousPage(app, list, main, appState, config, ret)
 
 		case event.Rune() == 'j' || event.Key() == tcell.KeyDown:
 			model.SelectItemDown(main, list, appState, config)
