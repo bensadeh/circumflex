@@ -47,12 +47,12 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 		}
 
 		appState.IsOffline = false
-		statusBarText := getInfoScreenStatusBarText(appState.HelpScreenCategory)
+		statusBarText := getInfoScreenStatusBarText(appState.CurrentHelpScreenCategory)
 
 		view.ShowItems(list, listItems)
 
 		if appState.IsOnHelpScreen {
-			updateInfoScreenView(main, appState.HelpScreenCategory, statusBarText)
+			updateInfoScreenView(main, appState.CurrentHelpScreenCategory, statusBarText)
 		}
 	})
 }
@@ -239,14 +239,14 @@ func getPreviousCategory(currentCategory int, numberOfCategories int) int {
 
 func ChangeHelpScreenCategory(event *tcell.EventKey, appState *core.ApplicationState, main *core.MainView) {
 	if event.Key() == tcell.KeyBacktab {
-		appState.HelpScreenCategory = getPreviousCategory(appState.HelpScreenCategory, 3)
+		appState.CurrentHelpScreenCategory = getPreviousCategory(appState.CurrentHelpScreenCategory, 3)
 	} else {
-		appState.HelpScreenCategory = getNextCategory(appState.HelpScreenCategory, 3)
+		appState.CurrentHelpScreenCategory = getNextCategory(appState.CurrentHelpScreenCategory, 3)
 	}
 
-	statusBarText := getInfoScreenStatusBarText(appState.HelpScreenCategory)
+	statusBarText := getInfoScreenStatusBarText(appState.CurrentHelpScreenCategory)
 
-	updateInfoScreenView(main, appState.HelpScreenCategory, statusBarText)
+	updateInfoScreenView(main, appState.CurrentHelpScreenCategory, statusBarText)
 }
 
 func PreviousPage(list *cview.List, main *core.MainView, appState *core.ApplicationState,
@@ -356,11 +356,11 @@ func SelectItemUp(main *core.MainView, list *cview.List, appState *core.Applicat
 }
 
 func EnterInfoScreen(main *core.MainView, appState *core.ApplicationState) {
-	statusBarText := getInfoScreenStatusBarText(appState.HelpScreenCategory)
+	statusBarText := getInfoScreenStatusBarText(appState.CurrentHelpScreenCategory)
 	appState.IsOnHelpScreen = true
 
 	ClearVimRegister(main, appState)
-	updateInfoScreenView(main, appState.HelpScreenCategory, statusBarText)
+	updateInfoScreenView(main, appState.CurrentHelpScreenCategory, statusBarText)
 }
 
 func getInfoScreenStatusBarText(category int) string {

@@ -26,8 +26,7 @@ type Submission struct {
 type ApplicationState struct {
 	SubmissionsToShow                     int
 	CurrentCategory                       int
-	SettingsCategory                      int
-	HelpScreenCategory                    int
+	CurrentHelpScreenCategory             int
 	ScreenHeight                          int
 	ScreenWidth                           int
 	CurrentPage                           int

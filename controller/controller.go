@@ -21,7 +21,7 @@ func SetApplicationShortcuts(fav *favorites.Favorites, ret *retriever.Retriever,
 	main *core.MainView, appState *core.ApplicationState, config *core.Config) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		isOnHelpScreen := appState.IsOnHelpScreen
-		isOnSettingsPage := isOnHelpScreen && (appState.HelpScreenCategory == help.Settings)
+		isOnSettingsPage := isOnHelpScreen && (appState.CurrentHelpScreenCategory == help.Settings)
 
 		switch {
 		// Offline
