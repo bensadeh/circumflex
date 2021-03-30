@@ -26,7 +26,6 @@ func main() {
 		ret,
 		sc.Application,
 		sc.Articles,
-		sc.Submissions,
 		sc.MainView,
 		sc.ApplicationState,
 		configuration)
@@ -36,7 +35,6 @@ func main() {
 		ret,
 		sc.Application,
 		sc.Articles,
-		sc.Submissions,
 		sc.MainView,
 		sc.ApplicationState,
 		configuration)

@@ -11,6 +11,7 @@ type Retriever struct {
 }
 
 type Submissions struct {
+	MaxPages           int
 	PageToFetchFromAPI int
 	Entries            []*core.Submission
 }
@@ -48,10 +49,10 @@ func (r *Retriever) GetSubmissions(category int, page int, visibleStories int, h
 func (r *Retriever) Init() {
 	var subs []*Submissions
 
-	subs = append(subs, new(Submissions))
-	subs = append(subs, new(Submissions))
-	subs = append(subs, new(Submissions))
-	subs = append(subs, new(Submissions))
+	subs = append(subs, &Submissions{MaxPages: 2}) // Front Page
+	subs = append(subs, &Submissions{MaxPages: 2}) // new
+	subs = append(subs, &Submissions{MaxPages: 0}) // Ask HN
+	subs = append(subs, &Submissions{MaxPages: 0}) // Show HN
 
 	r.Submissions = subs
 }
@@ -72,4 +73,8 @@ func convert(subs []*core.Submission, highlightHeadlines int) []*core.ListItem {
 
 func (r *Retriever) GetStory(category int, index int) *core.Submission {
 	return r.Submissions[category].Entries[index]
+}
+
+func (r *Retriever) GetMaxPages(category int) int {
+	return r.Submissions[category].MaxPages
 }

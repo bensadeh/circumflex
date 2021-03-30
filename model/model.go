@@ -26,7 +26,7 @@ import (
 )
 
 func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list *cview.List,
-	submissions []*core.Submissions, main *core.MainView, appState *core.ApplicationState, config *core.Config,
+	main *core.MainView, appState *core.ApplicationState, config *core.Config,
 	ret *retriever.Retriever) {
 	app.SetAfterResizeFunc(func(width int, height int) {
 		if appState.IsReturningFromSuspension {
@@ -35,10 +35,10 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 			return
 		}
 
-		resetStates(appState, submissions, ret)
-		initializeView(appState, submissions, main, config)
+		resetStates(appState, ret)
+		initializeView(appState, main, config, ret)
 
-		listItems, err := ret.GetSubmissions(appState.SubmissionsCategory, appState.CurrentPage,
+		listItems, err := ret.GetSubmissions(appState.CurrentCategory, appState.CurrentPage,
 			appState.SubmissionsToShow, config.HighlightHeadlines, config.HideYCJobs)
 		if err != nil {
 			setToErrorState(appState, main, list, app)
@@ -66,9 +66,8 @@ func setToErrorState(appState *core.ApplicationState, main *core.MainView, list 
 	app.Draw()
 }
 
-func resetStates(appState *core.ApplicationState, submissions []*core.Submissions, ret *retriever.Retriever) {
+func resetStates(appState *core.ApplicationState, ret *retriever.Retriever) {
 	resetApplicationState(appState)
-	resetSubmissionStates(submissions)
 	ret.Init()
 }
 
@@ -79,43 +78,20 @@ func resetApplicationState(appState *core.ApplicationState) {
 	appState.SubmissionsToShow = screen.GetSubmissionsToShow(appState.ScreenHeight, 30)
 }
 
-func resetSubmissionStates(submissions []*core.Submissions) {
-	numberOfCategories := 3
-
-	for i := 0; i < numberOfCategories; i++ {
-		submissions[i].MappedSubmissions = 0
-		submissions[i].PageToFetchFromAPI = 0
-		submissions[i].StoriesListed = 0
-		submissions[i].Entries = nil
-	}
-}
-
-func initializeView(appState *core.ApplicationState, submissions []*core.Submissions, main *core.MainView,
-	config *core.Config) {
+func initializeView(appState *core.ApplicationState, main *core.MainView,
+	config *core.Config, ret *retriever.Retriever) {
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, 0, 0)
 	view.SetLeftMarginText(main, marginText)
 	view.UpdateSettingsScreen(main)
 	view.SetPanelToSubmissions(main)
-	view.SetHackerNewsHeader(main, appState.SubmissionsCategory)
-	view.SetPageCounter(main, appState.CurrentPage, submissions[appState.SubmissionsCategory].MaxPages)
-}
-
-func showPageAfterResize(appState *core.ApplicationState, list *cview.List, submissions []*core.Submissions,
-	main *core.MainView, config *core.Config) {
-	submissionEntries := submissions[appState.SubmissionsCategory].Entries
-	statusBarText := getInfoScreenStatusBarText(appState.HelpScreenCategory)
-
-	SetListItemsToCurrentPage(list, submissionEntries, appState.CurrentPage, appState.SubmissionsToShow, config)
-
-	if appState.IsOnHelpScreen {
-		updateInfoScreenView(main, appState.HelpScreenCategory, statusBarText)
-	}
+	view.SetHackerNewsHeader(main, appState.CurrentCategory)
+	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory))
 }
 
 func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *cview.List,
-	submissions []*core.Submission, appState *core.ApplicationState, config *core.Config, r *retriever.Retriever) {
+	appState *core.ApplicationState, config *core.Config, r *retriever.Retriever) {
 	storyIndex := (appState.CurrentPage)*appState.SubmissionsToShow + list.GetCurrentItemIndex()
-	s := r.GetStory(appState.SubmissionsCategory, storyIndex)
+	s := r.GetStory(appState.CurrentCategory, storyIndex)
 
 	if s.Author == "" {
 		appState.IsReturningFromSuspension = true
@@ -144,20 +120,20 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 
 func OpenCommentsInBrowser(list *cview.List, appState *core.ApplicationState, r *retriever.Retriever) {
 	i := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
-	story := r.GetStory(appState.SubmissionsCategory, i)
+	story := r.GetStory(appState.CurrentCategory, i)
 	url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(story.ID)
 	browser.Open(url)
 }
 
 func OpenLinkInBrowser(list *cview.List, appState *core.ApplicationState, r *retriever.Retriever) {
 	i := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
-	story := r.GetStory(appState.SubmissionsCategory, i)
+	story := r.GetStory(appState.CurrentCategory, i)
 	browser.Open(story.URL)
 }
 
-func NextPage(app *cview.Application, list *cview.List, submissions *core.Submissions, main *core.MainView,
-	appState *core.ApplicationState, config *core.Config, ret *retriever.Retriever) {
-	isOnLastPage := appState.CurrentPage+1 > submissions.MaxPages
+func NextPage(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
+	config *core.Config, ret *retriever.Retriever) {
+	isOnLastPage := appState.CurrentPage+1 > ret.GetMaxPages(appState.CurrentCategory)
 	if isOnLastPage {
 		return
 	}
@@ -165,7 +141,7 @@ func NextPage(app *cview.Application, list *cview.List, submissions *core.Submis
 	currentlySelectedItem := list.GetCurrentItemIndex()
 	appState.CurrentPage++
 
-	listItems, err := ret.GetSubmissions(appState.SubmissionsCategory, appState.CurrentPage,
+	listItems, err := ret.GetSubmissions(appState.CurrentCategory, appState.CurrentPage,
 		appState.SubmissionsToShow, config.HighlightHeadlines, config.HideYCJobs)
 	if err != nil {
 		setToErrorState(appState, main, list, app)
@@ -181,7 +157,7 @@ func NextPage(app *cview.Application, list *cview.List, submissions *core.Submis
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, currentlySelectedItem,
 		appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
-	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages)
+	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory))
 }
 
 func getMarginText(useRelativeNumbering bool, viewableStoriesOnSinglePage int, currentPosition int,
@@ -213,21 +189,20 @@ func SetListItemsToCurrentPage(list *cview.List, submissions []*core.Submission,
 }
 
 func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.List, appState *core.ApplicationState,
-	submissions []*core.Submissions, main *core.MainView, config *core.Config, ret *retriever.Retriever) {
+	main *core.MainView, config *core.Config, ret *retriever.Retriever) {
 	currentItem := list.GetCurrentItemIndex()
 	nextCategory := 0
 
 	if event.Key() == tcell.KeyBacktab {
-		nextCategory = getPreviousCategory(appState.SubmissionsCategory, 5)
+		nextCategory = getPreviousCategory(appState.CurrentCategory, 5)
 	} else {
-		nextCategory = getNextCategory(appState.SubmissionsCategory, 5)
+		nextCategory = getNextCategory(appState.CurrentCategory, 5)
 	}
 
-	appState.SubmissionsCategory = nextCategory
-	currentSubmissions := submissions[appState.SubmissionsCategory]
+	appState.CurrentCategory = nextCategory
 	appState.CurrentPage = 0
 
-	listItems, err := ret.GetSubmissions(appState.SubmissionsCategory, appState.CurrentPage,
+	listItems, err := ret.GetSubmissions(appState.CurrentCategory, appState.CurrentPage,
 		appState.SubmissionsToShow, config.HighlightHeadlines, config.HideYCJobs)
 	if err != nil {
 		setToErrorState(appState, main, list, app)
@@ -242,8 +217,8 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, currentItem, appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
 
-	view.SetPageCounter(main, appState.CurrentPage, currentSubmissions.MaxPages)
-	view.SetHackerNewsHeader(main, appState.SubmissionsCategory)
+	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory))
+	view.SetHackerNewsHeader(main, appState.CurrentCategory)
 }
 
 func getNextCategory(currentCategory int, numberOfCategories int) int {
@@ -274,7 +249,7 @@ func ChangeHelpScreenCategory(event *tcell.EventKey, appState *core.ApplicationS
 	updateInfoScreenView(main, appState.HelpScreenCategory, statusBarText)
 }
 
-func PreviousPage(list *cview.List, submissions *core.Submissions, main *core.MainView, appState *core.ApplicationState,
+func PreviousPage(list *cview.List, main *core.MainView, appState *core.ApplicationState,
 	config *core.Config, ret *retriever.Retriever) {
 	previousPage := appState.CurrentPage - 1
 	if previousPage < 0 {
@@ -285,7 +260,7 @@ func PreviousPage(list *cview.List, submissions *core.Submissions, main *core.Ma
 
 	currentItem := list.GetCurrentItemIndex()
 
-	listItems, _ := ret.GetSubmissions(appState.SubmissionsCategory, appState.CurrentPage,
+	listItems, _ := ret.GetSubmissions(appState.CurrentCategory, appState.CurrentPage,
 		appState.SubmissionsToShow, config.HighlightHeadlines, config.HideYCJobs)
 
 	view.ShowItems(list, listItems)
@@ -294,7 +269,7 @@ func PreviousPage(list *cview.List, submissions *core.Submissions, main *core.Ma
 
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, currentItem, appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
-	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages)
+	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory))
 }
 
 func ShowCreateConfigConfirmationMessage(main *core.MainView, appState *core.ApplicationState) {
@@ -404,16 +379,16 @@ func updateInfoScreenView(main *core.MainView, helpScreenCategory int, statusBar
 	view.SetHelpScreenPanel(main, helpScreenCategory)
 }
 
-func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, submissions *core.Submissions,
-	config *core.Config, list *cview.List) {
+func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, config *core.Config, list *cview.List,
+	ret *retriever.Retriever) {
 	appState.IsOnHelpScreen = false
 
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, list.GetCurrentItemIndex(),
 		appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
-	view.SetHackerNewsHeader(main, appState.SubmissionsCategory)
+	view.SetHackerNewsHeader(main, appState.CurrentCategory)
 	view.SetPanelToSubmissions(main)
-	view.SetPageCounter(main, appState.CurrentPage, submissions.MaxPages)
+	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory))
 	view.ClearStatusBar(main)
 }
 
@@ -545,12 +520,12 @@ func ClearVimRegister(main *core.MainView, appState *core.ApplicationState) {
 	view.ClearStatusBar(main)
 }
 
-func Refresh(app *cview.Application, list *cview.List, main *core.MainView, submissions []*core.Submissions,
-	appState *core.ApplicationState, config *core.Config) {
+func Refresh(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
+	config *core.Config, ret *retriever.Retriever) {
 	afterResizeFunc := app.GetAfterResizeFunc()
 	afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
 
-	ExitHelpScreen(main, appState, submissions[appState.SubmissionsCategory], config, list)
+	ExitHelpScreen(main, appState, config, list, ret)
 
 	if appState.IsOffline {
 		errorMessage := message.Error(messages.OfflineMessage)

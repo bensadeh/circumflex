@@ -3,7 +3,6 @@ package constructor
 import (
 	"clx/constants/margins"
 	"clx/constants/panels"
-	"clx/constants/submissions"
 	"clx/core"
 	"clx/screen"
 
@@ -19,23 +18,12 @@ func NewScreenController() *core.ScreenController {
 	sc := new(core.ScreenController)
 	sc.Application = cview.NewApplication()
 
-	sc.Submissions = []*core.Submissions{}
-	sc.Submissions = append(sc.Submissions, new(core.Submissions))
-	sc.Submissions = append(sc.Submissions, new(core.Submissions))
-	sc.Submissions = append(sc.Submissions, new(core.Submissions))
-	sc.Submissions = append(sc.Submissions, new(core.Submissions))
-
 	sc.ApplicationState = new(core.ApplicationState)
 	sc.ApplicationState.ScreenWidth = screen.GetTerminalWidth()
 	sc.ApplicationState.ScreenHeight = screen.GetTerminalHeight()
 	sc.ApplicationState.SubmissionsToShow = screen.GetSubmissionsToShow(
 		sc.ApplicationState.ScreenHeight,
 		maximumStoriesToDisplay)
-
-	sc.Submissions[submissions.FrontPage].MaxPages = 2
-	sc.Submissions[submissions.New].MaxPages = 2
-	sc.Submissions[submissions.Ask].MaxPages = 0
-	sc.Submissions[submissions.Show].MaxPages = 0
 
 	sc.Articles = NewList()
 

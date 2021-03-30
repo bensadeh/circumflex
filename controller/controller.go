@@ -12,22 +12,21 @@ import (
 	"gitlab.com/tslocum/cview"
 )
 
-func SetAfterInitializationAndAfterResizeFunctions(fav *favorites.Favorites, ret *retriever.Retriever, app *cview.Application, list *cview.List,
-	submissions []*core.Submissions, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
-	model.SetAfterInitializationAndAfterResizeFunctions(app, list, submissions, main, appState, config, ret)
+func SetAfterInitializationAndAfterResizeFunctions(fav *favorites.Favorites, ret *retriever.Retriever,
+	app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
+	model.SetAfterInitializationAndAfterResizeFunctions(app, list, main, appState, config, ret)
 }
 
-func SetApplicationShortcuts(fav *favorites.Favorites, ret *retriever.Retriever, app *cview.Application, list *cview.List, submissions []*core.Submissions,
+func SetApplicationShortcuts(fav *favorites.Favorites, ret *retriever.Retriever, app *cview.Application, list *cview.List,
 	main *core.MainView, appState *core.ApplicationState, config *core.Config) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		currentState := submissions[appState.SubmissionsCategory]
 		isOnHelpScreen := appState.IsOnHelpScreen
 		isOnSettingsPage := isOnHelpScreen && (appState.HelpScreenCategory == help.Settings)
 
 		switch {
 		// Offline
 		case appState.IsOffline && event.Rune() == 'r':
-			model.Refresh(app, list, main, submissions, appState, config)
+			model.Refresh(app, list, main, appState, config, ret)
 
 		case appState.IsOffline && event.Rune() == 'q':
 			model.Quit(app)
@@ -66,7 +65,7 @@ func SetApplicationShortcuts(fav *favorites.Favorites, ret *retriever.Retriever,
 			model.ChangeHelpScreenCategory(event, appState, main)
 
 		case isOnHelpScreen && (event.Rune() == 'i'):
-			model.ExitHelpScreen(main, appState, currentState, config, list)
+			model.ExitHelpScreen(main, appState, config, list, ret)
 
 		case isOnHelpScreen && (event.Rune() == 'q'):
 			model.Quit(app)
@@ -76,13 +75,13 @@ func SetApplicationShortcuts(fav *favorites.Favorites, ret *retriever.Retriever,
 
 		// Main View
 		case event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab:
-			model.ChangeCategory(app, event, list, appState, submissions, main, config, ret)
+			model.ChangeCategory(app, event, list, appState, main, config, ret)
 
 		case event.Rune() == 'l' || event.Key() == tcell.KeyRight:
-			model.NextPage(app, list, currentState, main, appState, config, ret)
+			model.NextPage(app, list, main, appState, config, ret)
 
 		case event.Rune() == 'h' || event.Key() == tcell.KeyLeft:
-			model.PreviousPage(list, currentState, main, appState, config, ret)
+			model.PreviousPage(list, main, appState, config, ret)
 
 		case event.Rune() == 'j' || event.Key() == tcell.KeyDown:
 			model.SelectItemDown(main, list, appState, config)
@@ -106,10 +105,10 @@ func SetApplicationShortcuts(fav *favorites.Favorites, ret *retriever.Retriever,
 			model.GoToUpperCaseG(main, appState, list, config)
 
 		case event.Rune() == 'r':
-			model.Refresh(app, list, main, submissions, appState, config)
+			model.Refresh(app, list, main, appState, config, ret)
 
 		case event.Key() == tcell.KeyEnter:
-			model.ReadSubmissionComments(app, main, list, currentState.Entries, appState, config, ret)
+			model.ReadSubmissionComments(app, main, list, appState, config, ret)
 
 		case event.Rune() == 'o':
 			model.OpenLinkInBrowser(list, appState, ret)

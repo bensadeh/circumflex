@@ -8,7 +8,6 @@ type ScreenController struct {
 	Application      *cview.Application
 	Articles         *cview.List
 	MainView         *MainView
-	Submissions      []*Submissions
 	ApplicationState *ApplicationState
 }
 
@@ -24,18 +23,9 @@ type Submission struct {
 	Type          string `json:"type"`
 }
 
-type Submissions struct {
-	MappedSubmissions  int
-	MappedPages        int
-	StoriesListed      int
-	PageToFetchFromAPI int
-	MaxPages           int
-	Entries            []*Submission
-}
-
 type ApplicationState struct {
 	SubmissionsToShow                     int
-	SubmissionsCategory                   int
+	CurrentCategory                       int
 	SettingsCategory                      int
 	HelpScreenCategory                    int
 	ScreenHeight                          int
