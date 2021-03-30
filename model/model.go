@@ -8,12 +8,12 @@ import (
 	"clx/constants/messages"
 	"clx/core"
 	"clx/file"
+	"clx/retriever"
 	"clx/screen"
 	"clx/sub"
 	"clx/utils/message"
 	"clx/utils/vim"
 	"clx/view"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -26,21 +26,33 @@ import (
 )
 
 func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list *cview.List,
-	submissions []*core.Submissions, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
+	submissions []*core.Submissions, main *core.MainView, appState *core.ApplicationState, config *core.Config,
+	ret *retriever.Retriever) {
 	app.SetAfterResizeFunc(func(width int, height int) {
 		if appState.IsReturningFromSuspension {
 			appState.IsReturningFromSuspension = false
 
 			return
 		}
-		resetStates(appState, submissions)
+
+		resetStates(appState, submissions, ret)
 		initializeView(appState, submissions, main, config)
-		err := fetchAndAppendSubmissionEntries(submissions[appState.SubmissionsCategory], appState, config.HideYCJobs)
+
+		listItems, err := ret.GetSubmissions(appState.SubmissionsCategory, appState.CurrentPage,
+			appState.SubmissionsToShow, config.HighlightHeadlines, config.HideYCJobs)
 		if err != nil {
 			setToErrorState(appState, main, list, app)
-		} else {
-			appState.IsOffline = false
-			showPageAfterResize(appState, list, submissions, main, config)
+
+			return
+		}
+
+		appState.IsOffline = false
+		statusBarText := getInfoScreenStatusBarText(appState.HelpScreenCategory)
+
+		view.ShowItems(list, listItems)
+
+		if appState.IsOnHelpScreen {
+			updateInfoScreenView(main, appState.HelpScreenCategory, statusBarText)
 		}
 	})
 }
@@ -54,9 +66,10 @@ func setToErrorState(appState *core.ApplicationState, main *core.MainView, list 
 	app.Draw()
 }
 
-func resetStates(appState *core.ApplicationState, submissions []*core.Submissions) {
+func resetStates(appState *core.ApplicationState, submissions []*core.Submissions, ret *retriever.Retriever) {
 	resetApplicationState(appState)
 	resetSubmissionStates(submissions)
+	ret.Init()
 }
 
 func resetApplicationState(appState *core.ApplicationState) {
@@ -100,75 +113,67 @@ func showPageAfterResize(appState *core.ApplicationState, list *cview.List, subm
 }
 
 func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *cview.List,
-	submissions []*core.Submission, appState *core.ApplicationState, config *core.Config) {
-	i := list.GetCurrentItemIndex()
+	submissions []*core.Submission, appState *core.ApplicationState, config *core.Config, r *retriever.Retriever) {
+	storyIndex := (appState.CurrentPage)*appState.SubmissionsToShow + list.GetCurrentItemIndex()
+	s := r.GetStory(appState.SubmissionsCategory, storyIndex)
 
-	for index := range submissions {
-		if index == i {
-			storyIndex := (appState.CurrentPage)*appState.SubmissionsToShow + i
-			s := submissions[storyIndex]
+	if s.Author == "" {
+		appState.IsReturningFromSuspension = true
 
-			if s.Author == "" {
-				appState.IsReturningFromSuspension = true
-
-				return
-			}
-
-			app.Suspend(func() {
-				id := strconv.Itoa(s.ID)
-				comments, err := comment.FetchComments(id)
-				screenWidth := screen.GetTerminalWidth()
-
-				if err != nil {
-					errorMessage := message.Error(messages.CommentsNotFetched)
-					view.SetTemporaryStatusBar(app, main, errorMessage, 4*time.Second)
-				} else {
-					commentTree := comment.ToString(*comments,
-						config.IndentSize, config.CommentWidth, screenWidth, config.PreserveRightMargin)
-
-					cli.Less(commentTree)
-				}
-			})
-
-			appState.IsReturningFromSuspension = true
-		}
+		return
 	}
+
+	app.Suspend(func() {
+		id := strconv.Itoa(s.ID)
+		comments, err := comment.FetchComments(id)
+		screenWidth := screen.GetTerminalWidth()
+
+		if err != nil {
+			errorMessage := message.Error(messages.CommentsNotFetched)
+			view.SetTemporaryStatusBar(app, main, errorMessage, 4*time.Second)
+		} else {
+			commentTree := comment.ToString(*comments,
+				config.IndentSize, config.CommentWidth, screenWidth, config.PreserveRightMargin)
+
+			cli.Less(commentTree)
+		}
+	})
+
+	appState.IsReturningFromSuspension = true
 }
 
-func OpenCommentsInBrowser(list *cview.List, appState *core.ApplicationState, submissions []*core.Submission) {
-	item := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
-	id := submissions[item].ID
-	url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
+func OpenCommentsInBrowser(list *cview.List, appState *core.ApplicationState, r *retriever.Retriever) {
+	i := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
+	story := r.GetStory(appState.SubmissionsCategory, i)
+	url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(story.ID)
 	browser.Open(url)
 }
 
-func OpenLinkInBrowser(list *cview.List, appState *core.ApplicationState, submissions []*core.Submission) {
-	item := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
-	url := submissions[item].URL
-	browser.Open(url)
+func OpenLinkInBrowser(list *cview.List, appState *core.ApplicationState, r *retriever.Retriever) {
+	i := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
+	story := r.GetStory(appState.SubmissionsCategory, i)
+	browser.Open(story.URL)
 }
 
 func NextPage(app *cview.Application, list *cview.List, submissions *core.Submissions, main *core.MainView,
-	appState *core.ApplicationState, config *core.Config) {
+	appState *core.ApplicationState, config *core.Config, ret *retriever.Retriever) {
 	isOnLastPage := appState.CurrentPage+1 > submissions.MaxPages
 	if isOnLastPage {
 		return
 	}
 
 	currentlySelectedItem := list.GetCurrentItemIndex()
-
-	if !pageHasEnoughSubmissionsToView(appState.CurrentPage+1, appState.SubmissionsToShow, submissions.Entries) {
-		err := fetchAndAppendSubmissionEntries(submissions, appState, config.HideYCJobs)
-		if err != nil {
-			setToErrorState(appState, main, list, app)
-
-			return
-		}
-	}
-
 	appState.CurrentPage++
 
-	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow, config)
+	listItems, err := ret.GetSubmissions(appState.SubmissionsCategory, appState.CurrentPage,
+		appState.SubmissionsToShow, config.HighlightHeadlines, config.HideYCJobs)
+	if err != nil {
+		setToErrorState(appState, main, list, app)
+
+		return
+	}
+
+	view.ShowItems(list, listItems)
 	view.SelectItem(list, currentlySelectedItem)
 
 	ClearVimRegister(main, appState)
@@ -186,28 +191,6 @@ func getMarginText(useRelativeNumbering bool, viewableStoriesOnSinglePage int, c
 	}
 
 	return vim.AbsoluteRankings(viewableStoriesOnSinglePage, currentPage)
-}
-
-func pageHasEnoughSubmissionsToView(page int, visibleStories int, submissions []*core.Submission) bool {
-	largestItemToDisplay := (page * visibleStories) + visibleStories
-	downloadedSubmissions := len(submissions)
-
-	return downloadedSubmissions > largestItemToDisplay
-}
-
-func fetchAndAppendSubmissionEntries(submissions *core.Submissions, appState *core.ApplicationState,
-	hideYCJobs bool) error {
-	submissions.PageToFetchFromAPI++
-
-	newSubmissions, err := sub.FetchSubmissions(submissions.PageToFetchFromAPI, appState.SubmissionsCategory)
-	if err != nil {
-		return fmt.Errorf("could not fetch submissions: %w", err)
-	}
-
-	filteredSubmissions := sub.Filter(newSubmissions, hideYCJobs)
-	submissions.Entries = append(submissions.Entries, filteredSubmissions...)
-
-	return nil
 }
 
 func SetListItemsToCurrentPage(list *cview.List, submissions []*core.Submission, currentPage int, viewableStories int,
@@ -230,7 +213,7 @@ func SetListItemsToCurrentPage(list *cview.List, submissions []*core.Submission,
 }
 
 func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.List, appState *core.ApplicationState,
-	submissions []*core.Submissions, main *core.MainView, config *core.Config) {
+	submissions []*core.Submissions, main *core.MainView, config *core.Config, ret *retriever.Retriever) {
 	currentItem := list.GetCurrentItemIndex()
 	nextCategory := 0
 
@@ -244,16 +227,15 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	currentSubmissions := submissions[appState.SubmissionsCategory]
 	appState.CurrentPage = 0
 
-	if !pageHasEnoughSubmissionsToView(0, appState.SubmissionsToShow, currentSubmissions.Entries) {
-		err := fetchAndAppendSubmissionEntries(currentSubmissions, appState, config.HideYCJobs)
-		if err != nil {
-			setToErrorState(appState, main, list, app)
+	listItems, err := ret.GetSubmissions(appState.SubmissionsCategory, appState.CurrentPage,
+		appState.SubmissionsToShow, config.HighlightHeadlines, config.HideYCJobs)
+	if err != nil {
+		setToErrorState(appState, main, list, app)
 
-			return
-		}
+		return
 	}
 
-	SetListItemsToCurrentPage(list, currentSubmissions.Entries, appState.CurrentPage, appState.SubmissionsToShow, config)
+	view.ShowItems(list, listItems)
 	view.SelectItem(list, currentItem)
 	ClearVimRegister(main, appState)
 
@@ -293,7 +275,7 @@ func ChangeHelpScreenCategory(event *tcell.EventKey, appState *core.ApplicationS
 }
 
 func PreviousPage(list *cview.List, submissions *core.Submissions, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config) {
+	config *core.Config, ret *retriever.Retriever) {
 	previousPage := appState.CurrentPage - 1
 	if previousPage < 0 {
 		return
@@ -303,7 +285,10 @@ func PreviousPage(list *cview.List, submissions *core.Submissions, main *core.Ma
 
 	currentItem := list.GetCurrentItemIndex()
 
-	SetListItemsToCurrentPage(list, submissions.Entries, appState.CurrentPage, appState.SubmissionsToShow, config)
+	listItems, _ := ret.GetSubmissions(appState.SubmissionsCategory, appState.CurrentPage,
+		appState.SubmissionsToShow, config.HighlightHeadlines, config.HideYCJobs)
+
+	view.ShowItems(list, listItems)
 	view.SelectItem(list, currentItem)
 	ClearVimRegister(main, appState)
 

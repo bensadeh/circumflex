@@ -5,6 +5,7 @@ import (
 	"clx/config"
 	"clx/controller"
 	"clx/favorites"
+	"clx/retriever"
 	"os"
 
 	constructor "clx/constructors"
@@ -17,10 +18,12 @@ func main() {
 	configuration := config.GetConfig()
 
 	fav := favorites.Initialize()
+	ret := new(retriever.Retriever)
 
 	sc := constructor.NewScreenController()
 	controller.SetAfterInitializationAndAfterResizeFunctions(
 		fav,
+		ret,
 		sc.Application,
 		sc.Articles,
 		sc.Submissions,
@@ -30,6 +33,7 @@ func main() {
 
 	controller.SetApplicationShortcuts(
 		fav,
+		ret,
 		sc.Application,
 		sc.Articles,
 		sc.Submissions,

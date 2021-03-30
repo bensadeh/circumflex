@@ -1,4 +1,11 @@
 # Changelog
+
+## 0.13
+_WIP_
+
+**Backend:**
+- Extracted logic for handling submissions out of the model
+
 ## 0.12
 _2021-03-03_
 

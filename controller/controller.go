@@ -5,18 +5,19 @@ import (
 	"clx/core"
 	"clx/favorites"
 	"clx/model"
+	"clx/retriever"
 	"unicode"
 
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
 )
 
-func SetAfterInitializationAndAfterResizeFunctions(fav *favorites.Favorites, app *cview.Application, list *cview.List,
+func SetAfterInitializationAndAfterResizeFunctions(fav *favorites.Favorites, ret *retriever.Retriever, app *cview.Application, list *cview.List,
 	submissions []*core.Submissions, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
-	model.SetAfterInitializationAndAfterResizeFunctions(app, list, submissions, main, appState, config)
+	model.SetAfterInitializationAndAfterResizeFunctions(app, list, submissions, main, appState, config, ret)
 }
 
-func SetApplicationShortcuts(fav *favorites.Favorites, app *cview.Application, list *cview.List, submissions []*core.Submissions,
+func SetApplicationShortcuts(fav *favorites.Favorites, ret *retriever.Retriever, app *cview.Application, list *cview.List, submissions []*core.Submissions,
 	main *core.MainView, appState *core.ApplicationState, config *core.Config) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		currentState := submissions[appState.SubmissionsCategory]
@@ -33,7 +34,7 @@ func SetApplicationShortcuts(fav *favorites.Favorites, app *cview.Application, l
 		case appState.IsOffline:
 			return event
 
-		// Help screen
+		// Help View
 		case appState.IsOnConfigCreationConfirmationMessage && event.Rune() == 'y':
 			model.CreateConfig(appState, main)
 
@@ -73,15 +74,15 @@ func SetApplicationShortcuts(fav *favorites.Favorites, app *cview.Application, l
 		case isOnHelpScreen:
 			return event
 
-		// Submissions
+		// Main View
 		case event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab:
-			model.ChangeCategory(app, event, list, appState, submissions, main, config)
+			model.ChangeCategory(app, event, list, appState, submissions, main, config, ret)
 
 		case event.Rune() == 'l' || event.Key() == tcell.KeyRight:
-			model.NextPage(app, list, currentState, main, appState, config)
+			model.NextPage(app, list, currentState, main, appState, config, ret)
 
 		case event.Rune() == 'h' || event.Key() == tcell.KeyLeft:
-			model.PreviousPage(list, currentState, main, appState, config)
+			model.PreviousPage(list, currentState, main, appState, config, ret)
 
 		case event.Rune() == 'j' || event.Key() == tcell.KeyDown:
 			model.SelectItemDown(main, list, appState, config)
@@ -108,13 +109,13 @@ func SetApplicationShortcuts(fav *favorites.Favorites, app *cview.Application, l
 			model.Refresh(app, list, main, submissions, appState, config)
 
 		case event.Key() == tcell.KeyEnter:
-			model.ReadSubmissionComments(app, main, list, currentState.Entries, appState, config)
+			model.ReadSubmissionComments(app, main, list, currentState.Entries, appState, config, ret)
 
 		case event.Rune() == 'o':
-			model.OpenLinkInBrowser(list, appState, currentState.Entries)
+			model.OpenLinkInBrowser(list, appState, ret)
 
 		case event.Rune() == 'c':
-			model.OpenCommentsInBrowser(list, appState, currentState.Entries)
+			model.OpenCommentsInBrowser(list, appState, ret)
 
 		case unicode.IsDigit(event.Rune()):
 			model.PutDigitInRegister(main, event.Rune(), appState)

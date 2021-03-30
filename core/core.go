@@ -66,3 +66,8 @@ type Config struct {
 	RelativeNumbering   bool `mapstructure:"CLX_RELATIVE_NUMBERING"`
 	HideYCJobs          bool `mapstructure:"CLX_HIDE_YC_JOBS"`
 }
+
+type ListItem struct {
+	Main      string
+	Secondary string
+}
