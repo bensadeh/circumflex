@@ -1,6 +1,7 @@
 package retriever
 
 import (
+	"clx/constants/submissions"
 	"clx/core"
 	"clx/sub"
 	"fmt"
@@ -49,10 +50,15 @@ func (r *Retriever) GetSubmissions(category int, page int, visibleStories int, h
 func (r *Retriever) Init() {
 	var subs []*Submissions
 
-	subs = append(subs, &Submissions{MaxPages: 2}) // Front Page
-	subs = append(subs, &Submissions{MaxPages: 2}) // new
-	subs = append(subs, &Submissions{MaxPages: 0}) // Ask HN
-	subs = append(subs, &Submissions{MaxPages: 0}) // Show HN
+	subs = append(subs, new(Submissions))
+	subs = append(subs, new(Submissions))
+	subs = append(subs, new(Submissions))
+	subs = append(subs, new(Submissions))
+
+	subs[submissions.FrontPage].MaxPages = submissions.FrontPageMaxPages
+	subs[submissions.New].MaxPages = submissions.NewMaxPages
+	subs[submissions.Ask].MaxPages = submissions.AskMaxPages
+	subs[submissions.Show].MaxPages = submissions.ShowMaxPages
 
 	r.Submissions = subs
 }
