@@ -106,6 +106,7 @@ inside the brackets for easier cross-referencing.
 ## Settings
 
 ### How to configure
+#### Overview
 The available options and their current values are displayed in the Settings View. Overridden values are marked with
 `*`. To enter Settings View, press <kbd>i</kbd> on the Main View and then <kbd>Tab</kbd> to change the category. Note 
 that the settings cannot be changed from within the Settings View.
