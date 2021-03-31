@@ -6,7 +6,7 @@ import (
 )
 
 type Comment struct {
-	Sections []Section
+	Sections []*Section
 }
 
 type Section struct {
@@ -16,18 +16,19 @@ type Section struct {
 }
 
 const (
-	doubleSpace = "  "
 	singleSpace = " "
+	doubleSpace = "  "
+	tripleSpace = "   "
 )
 
 func ParseComment(text string) (string, []string) {
-	var URLs []string
-
 	text = strings.Replace(text, "<p>", "", 1)
 	paragraphs := strings.Split(text, "<p>")
-	c := new(Comment)
 
-	for _, paragraph := range paragraphs {
+	comment := new(Comment)
+	comment.Sections = make([]*Section, len(paragraphs))
+
+	for i, paragraph := range paragraphs {
 		section := new(Section)
 		section.Text = replaceCharacters(paragraph)
 
@@ -39,19 +40,22 @@ func ParseComment(text string) (string, []string) {
 			section.IsQuote = true
 		}
 
-		c.Sections = append(c.Sections, *section)
+		comment.Sections[i] = section
 	}
 
 	output := ""
 
-	for i, section := range c.Sections {
+	var URLs []string
+
+	for i, section := range comment.Sections {
 		switch {
 		case section.IsQuote:
 			section.Text = strings.ReplaceAll(section.Text, "<i>", "")
 			section.Text = strings.ReplaceAll(section.Text, "</i>", "")
 			section.Text = strings.ReplaceAll(section.Text, doubleSpace, singleSpace)
-			section.Text = strings.ReplaceAll(section.Text, ">", "")
-			section.Text = strings.ReplaceAll(section.Text, ">>", "")
+			section.Text = strings.ReplaceAll(section.Text, tripleSpace, singleSpace)
+			section.Text = strings.Replace(section.Text, ">>", "", 1)
+			section.Text = strings.Replace(section.Text, ">", "", 1)
 			section.Text = strings.TrimLeft(section.Text, " ")
 
 			section.Text = Italic + Dimmed + section.Text + Normal
@@ -61,31 +65,15 @@ func ParseComment(text string) (string, []string) {
 
 		default:
 			section.Text = strings.ReplaceAll(section.Text, doubleSpace, singleSpace)
+			section.Text = strings.ReplaceAll(section.Text, tripleSpace, singleSpace)
 			section.Text = highlightReferences(section.Text)
 			section.Text = replaceHTML(section.Text)
 			URLs = append(URLs, extractURLs(section.Text)...)
 			section.Text = trimURLs(section.Text)
 		}
 
-		separator := getSeparator(i, len(c.Sections))
+		separator := getSeparator(i, len(comment.Sections))
 		output += section.Text + separator
-
-		//if section.IsQuote {
-		//
-		//}
-		//
-		//if !section.IsCodeBlock {
-		//	section.Text = highlightReferences(section.Text)
-		//	section.Text = strings.ReplaceAll(section.Text, doubleSpace, singleSpace)
-		//}
-		//
-		//separator := getSeparator(i, len(c.Sections))
-		//
-		//section.Text = replaceHTML(section.Text)
-		//URLs = append(URLs, extractURLs(section.Text)...)
-		//section.Text = trimURLs(section.Text)
-		//
-		//output += section.Text + separator
 	}
 
 	return output, URLs
@@ -94,7 +82,7 @@ func ParseComment(text string) (string, []string) {
 func isQuote(text string) bool {
 	quoteMark := ">"
 
-	return strings.HasPrefix(text, ""+quoteMark) ||
+	return strings.HasPrefix(text, quoteMark) ||
 		strings.HasPrefix(text, " "+quoteMark) ||
 		strings.HasPrefix(text, "<i>"+quoteMark) ||
 		strings.HasPrefix(text, "<i> "+quoteMark)
