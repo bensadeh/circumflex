@@ -3,6 +3,9 @@
 ## 0.13
 _WIP_
 
+**Cosmetic**
+- Headlines are now fully highlighted by default
+
 **Backend:**
 - Extracted logic for handling submissions out of the model
 
@@ -10,7 +13,7 @@ _WIP_
 _2021-03-03_
 
 **New features:**
-- Quotes are now dimmed and italicized 
+- Quotes are now dimmed and italicized
 
 **Cosmetic**
 - Changed appearance of error and success notifications
@@ -22,7 +25,7 @@ _2021-03-03_
 _2021-03-01_
 
 **Bugfixes**
-- Fixed a bug where the separator between the submissions's root comment and the comment section was not properly 
+- Fixed a bug where the separator between the submissions's root comment and the comment section was not properly
   formatted
 
 ## 0.11
@@ -43,7 +46,7 @@ _2021-02-25_
 
 **Cosmetic:**
 - Cleaned up the keymap screen
-- `Highlight Headlines` now either reverse highlights all headlines or color highlights all headlines (YC-funded 
+- `Highlight Headlines` now either reverse highlights all headlines or color highlights all headlines (YC-funded
   startups were previously colorized in option 1)
 
 **Bugfixes:**
@@ -59,7 +62,7 @@ _2021-02-08_
 - Settings screen now highlights booleans and integers
 
 **Bugfixes:**
-- Fixed a bug where jumping multiple lines would lead to an infinite loop   
+- Fixed a bug where jumping multiple lines would lead to an infinite loop
 
 ## 0.8
 _2021-02-07_
@@ -98,8 +101,8 @@ _2021-01-15_
 
 **New features:**
 - Numerical input on the home screen now repeats the next action N number of times (same as in Vim's Normal mode)
-- Added option 'Use Relative Numbering': Relative numbering marks each line with a number relative to the distance from 
-  the currently selected element (similar to Vim's hybrid line number mode) 
+- Added option 'Use Relative Numbering': Relative numbering marks each line with a number relative to the distance from
+  the currently selected element (similar to Vim's hybrid line number mode)
 
 **Bugfixes:**
 - Fixed a bug where the descriptions in `config.env` contained raw ANSI escape codes
@@ -124,24 +127,24 @@ _2021-01-08_
 - Added functionality to customize `circumflex` by editing `config.env` or exporting environmental variables
 
 **Cosmetic:**
-- Information page now has three screens: Information Home Screen, Keymaps and Settings 
+- Information page now has three screens: Information Home Screen, Keymaps and Settings
 
 ## 0.3
 _2020-12-17_
 
 **New features:**
-- Added a status bar to show contextual information  
+- Added a status bar to show contextual information
 - `circumflex` now handles connection errors gracefully
 
 **Bugfixes:**
-- `circumflex` will no longer suspend the application when trying to open submission of the type 'Company X (YC W20) is 
-  hiring' 
+- `circumflex` will no longer suspend the application when trying to open submission of the type 'Company X (YC W20) is
+  hiring'
 
 **Backend:**
 - Use the 'level' field directly from the API instead of calculating it
 - Large refactor of the program architecture
 
-## 0.2.4 
+## 0.2.4
 _2020-12-11_
 
 **Bugfixes:**
@@ -149,7 +152,7 @@ _2020-12-11_
 - Fixed a bug where pressing <kbd>0</kbd> would go to the last element on the list instead of the 10th
 - Info line about entering less now appears right after submission info line
 
-## 0.2.3 
+## 0.2.3
 _2020-12-05_
 
 **New features:**
@@ -160,24 +163,24 @@ _2020-12-05_
 - References now also uses brighter colors
 - Comment section: Added a notice about entering `less` and how to exit from it
 
-## 0.2.2 
+## 0.2.2
 _2020-11-28_
 
 **Cosmetic:**
-- Selected items now uses the terminal's default colors in order to correctly highlight the selection regardless of 
+- Selected items now uses the terminal's default colors in order to correctly highlight the selection regardless of
   color scheme
 
-## 0.2.1 
+## 0.2.1
 _2020-11-27_
 
 **New features:**
 - Added keybinding: Press <kbd>r</kbd> to refresh
 
 **Bugfixes:**
-- Fixed a bug where `circumflex` would crash while resizing the terminal while on the help screen and on pages larger 
+- Fixed a bug where `circumflex` would crash while resizing the terminal while on the help screen and on pages larger
   than 1
 
-## 0.2 
+## 0.2
 _2020-11-22_
 
 **New features:**
@@ -190,10 +193,10 @@ _2020-11-22_
 
 **Backend:**
 - Large parts of the code have been refactored and placed into an MVC pattern
-- cheeaun's [unofficial Hacker News API](https://github.com/cheeaun/node-hnapi): Changed API endpoint to use Cloudflare 
+- cheeaun's [unofficial Hacker News API](https://github.com/cheeaun/node-hnapi): Changed API endpoint to use Cloudflare
   CDN
 
-## 0.1 
+## 0.1
 _2020-11-15_
 
 - First Release
