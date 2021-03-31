@@ -106,12 +106,14 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 		if err != nil {
 			errorMessage := message.Error(messages.CommentsNotFetched)
 			view.SetTemporaryStatusBar(app, main, errorMessage, 4*time.Second)
-		} else {
-			commentTree := comment.ToString(*comments,
-				config.IndentSize, config.CommentWidth, screenWidth, config.PreserveRightMargin)
 
-			cli.Less(commentTree)
+			return
 		}
+
+		commentTree := comment.ToString(*comments, config.IndentSize, config.CommentWidth, screenWidth,
+			config.PreserveRightMargin)
+
+		cli.Less(commentTree)
 	})
 
 	appState.IsReturningFromSuspension = true
