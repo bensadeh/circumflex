@@ -142,8 +142,8 @@ func NextPage(app *cview.Application, list *cview.List, main *core.MainView, app
 
 func PreviousPage(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
 	config *core.Config, ret *retriever.Retriever) {
-	previousPage := appState.CurrentPage - 1
-	if previousPage < 0 {
+	isOnFirstPage := appState.CurrentPage-1 < 0
+	if isOnFirstPage {
 		return
 	}
 
