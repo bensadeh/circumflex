@@ -122,13 +122,10 @@ func SelectItem(list *cview.List, index int) {
 	list.SetCurrentItem(index)
 }
 
-func ShowItems(list *cview.List, listItems []*core.ListItem) {
+func ShowItems(list *cview.List, listItems []*cview.ListItem) {
 	list.Clear()
 
-	for _, listItem := range listItems {
-		item := cview.NewListItem(listItem.Main)
-		item.SetSecondaryText(listItem.Secondary)
-
+	for _, item := range listItems {
 		list.AddItem(item)
 	}
 }

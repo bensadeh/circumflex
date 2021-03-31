@@ -5,6 +5,8 @@ import (
 	"clx/core"
 	"clx/sub"
 	"fmt"
+
+	"gitlab.com/tslocum/cview"
 )
 
 type Retriever struct {
@@ -18,7 +20,7 @@ type Submissions struct {
 }
 
 func (r *Retriever) GetSubmissions(category int, page int, visibleStories int, highlightHeadlines int,
-	hideYCJobs bool) ([]*core.ListItem, error) {
+	hideYCJobs bool) ([]*cview.ListItem, error) {
 	largestItemToDisplay := (page * visibleStories) + visibleStories
 	smallestItemToDisplay := page * visibleStories
 
@@ -61,13 +63,15 @@ func (r *Retriever) Init() {
 	r.Submissions[submissions.Show].MaxPages = submissions.ShowMaxPages
 }
 
-func convert(subs []*core.Submission, highlightHeadlines int) []*core.ListItem {
-	listItems := make([]*core.ListItem, len(subs))
+func convert(subs []*core.Submission, highlightHeadlines int) []*cview.ListItem {
+	listItems := make([]*cview.ListItem, len(subs))
 
 	for i, s := range subs {
-		item := new(core.ListItem)
-		item.Main = sub.FormatSubMain(s.Title, s.Domain, highlightHeadlines)
-		item.Secondary = sub.FormatSubSecondary(s.Points, s.Author, s.Time, s.CommentsCount)
+		main := sub.FormatSubMain(s.Title, s.Domain, highlightHeadlines)
+		secondary := sub.FormatSubSecondary(s.Points, s.Author, s.Time, s.CommentsCount)
+
+		item := cview.NewListItem(main)
+		item.SetSecondaryText(secondary)
 
 		listItems[i] = item
 	}
