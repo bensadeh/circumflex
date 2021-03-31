@@ -5,6 +5,7 @@ _WIP_
 
 **Cosmetic**
 - Headlines are now fully highlighted by default
+- Definition on info screen now realigns after resizing the terminal
 
 **Backend:**
 - Extracted logic for handling submissions out of the model

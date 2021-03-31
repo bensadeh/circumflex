@@ -1,16 +1,15 @@
 package constructor
 
 import (
-	"clx/constants/margins"
 	"clx/screen"
+	"strings"
 
-	"github.com/gdamore/tcell/v2"
-	"gitlab.com/tslocum/cview"
+	text "github.com/MichaelMure/go-term-text"
 )
 
 const (
 	infoScreenText = `
-circumflex  [::d]|ˈsəːkəmflɛks|[::-]
+[navy]circumflex[-::]  [::d]|ˈsəːkəmflɛks|[::-]
 
 noun (also circumflex accent)
   a mark (^) placed over a vowel in some languages to 
@@ -27,25 +26,17 @@ adjective [::di]Anatomy[::-]
 `
 )
 
-func GetInfoScreen() *cview.TextView {
-	helpScreen := cview.NewTextView()
-	helpScreen.SetBackgroundColor(tcell.ColorDefault)
-	helpScreen.SetTextColor(tcell.ColorDefault)
-	helpScreen.SetTextAlign(cview.AlignLeft)
-	helpScreen.SetTitleColor(tcell.ColorDefault)
-	helpScreen.SetBorderColor(tcell.ColorDefault)
-	helpScreen.SetTextColor(tcell.ColorDefault)
-	helpScreen.SetDynamicColors(true)
+func GetInfoText() string {
+	longestLineLength := text.MaxLineLen(infoScreenText)
+	lineHeight := strings.Count(infoScreenText, "\n")
 
-	longestLineLength := 56
-	lineHeight := 14
+	leftOffset := screen.GetOffsetForLeftAlignedTextBlock(longestLineLength) + 5
+	topOffset := screen.GetOffsetToCenterText(lineHeight) - 4
 
-	leftOffset := screen.GetOffsetForLeftAlignedTextBlock(longestLineLength)
-	topOffset := screen.GetOffsetToCenterText(lineHeight)
+	leftIndentation := strings.Repeat(" ", leftOffset)
+	topIndentation := strings.Repeat("\n", topOffset)
 
-	helpScreen.SetPadding(topOffset-4, 0, leftOffset-margins.LeftMargin, 0)
+	formattedText, _ := text.WrapWithPad(topIndentation+infoScreenText, screen.GetTerminalWidth(), leftIndentation)
 
-	helpScreen.SetText(infoScreenText)
-
-	return helpScreen
+	return formattedText
 }

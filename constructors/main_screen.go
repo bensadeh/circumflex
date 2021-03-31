@@ -59,6 +59,7 @@ func NewMainView() *core.MainView {
 	main.StatusBar.SetTextAlign(cview.AlignCenter)
 	main.StatusBar.SetPadding(0, 0, -4, 0)
 	main.Settings = newTextViewPrimitive(GetSettingsText())
+	main.InfoScreen = newTextViewPrimitive(GetInfoText())
 
 	main.Grid.SetBorder(false)
 	main.Grid.SetRows(2, 0, 1)
@@ -70,7 +71,7 @@ func NewMainView() *core.MainView {
 	main.Grid.AddItem(main.StatusBar, 2, 1, 1, 1, 0, 0, false)
 	main.Grid.AddItem(main.PageCounter, 2, 2, 1, 1, 0, 0, false)
 
-	main.Panels.AddPanel(panels.InfoPanel, GetInfoScreen(), true, false)
+	main.Panels.AddPanel(panels.InfoPanel, main.InfoScreen, true, false)
 	main.Panels.AddPanel(panels.KeymapsPanel, GetHelpScreen(), true, false)
 	main.Panels.AddPanel(panels.SettingsPanel, main.Settings, true, false)
 

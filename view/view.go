@@ -48,6 +48,10 @@ func UpdateSettingsScreen(m *core.MainView) {
 	m.Settings.SetText(constructor.GetSettingsText())
 }
 
+func UpdateInfoScreen(m *core.MainView) {
+	m.InfoScreen.SetText(constructor.GetInfoText())
+}
+
 func SetPermanentStatusBar(m *core.MainView, text string, align int) {
 	m.StatusBar.SetTextAlign(align)
 	m.StatusBar.SetText(text)

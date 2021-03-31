@@ -82,6 +82,7 @@ func initializeView(appState *core.ApplicationState, main *core.MainView,
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, 0, 0)
 	view.SetLeftMarginText(main, marginText)
 	view.UpdateSettingsScreen(main)
+	view.UpdateInfoScreen(main)
 	view.SetPanelToSubmissions(main)
 	view.SetHackerNewsHeader(main, appState.CurrentCategory)
 	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory))
