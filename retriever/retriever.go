@@ -64,14 +64,14 @@ func (r *Retriever) Init() {
 }
 
 func convert(subs []*core.Submission, highlightHeadlines int) []*core.ListItem {
-	var listItems []*core.ListItem
+	listItems := make([]*core.ListItem, len(subs))
 
-	for _, s := range subs {
+	for i, s := range subs {
 		item := new(core.ListItem)
 		item.Main = sub.FormatSubMain(s.Title, s.Domain, highlightHeadlines)
 		item.Secondary = sub.FormatSubSecondary(s.Points, s.Author, s.Time, s.CommentsCount)
 
-		listItems = append(listItems, item)
+		listItems[i] = item
 	}
 
 	return listItems
