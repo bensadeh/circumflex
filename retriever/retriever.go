@@ -48,19 +48,17 @@ func (r *Retriever) GetSubmissions(category int, page int, visibleStories int, h
 }
 
 func (r *Retriever) Init() {
-	var subs []*Submissions
+	r.Submissions = make([]*Submissions, submissions.TotalNumberOfCategories)
 
-	subs = append(subs, new(Submissions))
-	subs = append(subs, new(Submissions))
-	subs = append(subs, new(Submissions))
-	subs = append(subs, new(Submissions))
+	r.Submissions[submissions.FrontPage] = new(Submissions)
+	r.Submissions[submissions.New] = new(Submissions)
+	r.Submissions[submissions.Ask] = new(Submissions)
+	r.Submissions[submissions.Show] = new(Submissions)
 
-	subs[submissions.FrontPage].MaxPages = submissions.FrontPageMaxPages
-	subs[submissions.New].MaxPages = submissions.NewMaxPages
-	subs[submissions.Ask].MaxPages = submissions.AskMaxPages
-	subs[submissions.Show].MaxPages = submissions.ShowMaxPages
-
-	r.Submissions = subs
+	r.Submissions[submissions.FrontPage].MaxPages = submissions.FrontPageMaxPages
+	r.Submissions[submissions.New].MaxPages = submissions.NewMaxPages
+	r.Submissions[submissions.Ask].MaxPages = submissions.AskMaxPages
+	r.Submissions[submissions.Show].MaxPages = submissions.ShowMaxPages
 }
 
 func convert(subs []*core.Submission, highlightHeadlines int) []*core.ListItem {
