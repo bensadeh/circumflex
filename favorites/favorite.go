@@ -1,7 +1,6 @@
 package favorites
 
 import (
-	"clx/constants/settings"
 	"clx/core"
 	"clx/file"
 	"encoding/json"
@@ -13,30 +12,30 @@ type Favorites struct {
 }
 
 func Initialize() *Favorites {
-	if !file.Exists(settings.FavoritesFilePath) {
+	favoritesPath := file.PathToFavoritesFile()
+
+	if file.Exists(favoritesPath) {
+		favoritesJSON, _ := ioutil.ReadFile(favoritesPath)
+		subs := unmarshal(favoritesJSON)
+
 		f := new(Favorites)
-		f.Items = append(f.Items, &core.Submission{ID: 1, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
-		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
-		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
-		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = subs
 
 		return f
 	}
 
-	favoritesJSON, _ := ioutil.ReadFile(settings.FavoritesFilePath)
+	f := new(Favorites)
 
-	favorites := unmarshal(favoritesJSON)
-
-	return favorites
+	return f
 }
 
-func unmarshal(data []byte) *Favorites {
-	favorites := new(Favorites)
+func unmarshal(data []byte) []*core.Submission {
+	var subs []*core.Submission
 
-	err := json.Unmarshal(data, &favorites)
+	err := json.Unmarshal(data, &subs)
 	if err != nil {
 		panic(err)
 	}
 
-	return favorites
+	return subs
 }
