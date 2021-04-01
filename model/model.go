@@ -286,10 +286,13 @@ func ScrollSettingsToEnd(main *core.MainView) {
 	view.ScrollSettingsToEnd(main)
 }
 
-func CancelCreateConfigConfirmationMessage(appState *core.ApplicationState, main *core.MainView) {
+func CancelConfirmation(app *cview.Application, appState *core.ApplicationState, main *core.MainView) {
+	appState.IsOnAddFavoriteConfirmationMessage = false
+	appState.IsOnDeleteFavoriteConfirmationMessage = false
 	appState.IsOnConfigCreationConfirmationMessage = false
 
-	view.SetPermanentStatusBar(main, "", cview.AlignCenter)
+	duration := time.Millisecond * 2000
+	view.SetTemporaryStatusBar(app, main, "Cancelled", duration)
 }
 
 func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
@@ -511,15 +514,23 @@ func Refresh(app *cview.Application, list *cview.List, main *core.MainView, appS
 }
 
 func AddToFavoritesConfirmationDialogue(main *core.MainView, appState *core.ApplicationState) {
-	appState.IsOnFavoritesConfirmationMessage = true
+	appState.IsOnAddFavoriteConfirmationMessage = true
 
 	view.SetPermanentStatusBar(main,
 		"Highlighted item will be added to Favorites, press Y to Confirm", cview.AlignCenter)
 }
 
-func AddToFavorites(list *cview.List, main *core.MainView, appState *core.ApplicationState, ret *retriever.Retriever) {
+func DeleteFavoriteConfirmationDialogue(main *core.MainView, appState *core.ApplicationState) {
+	appState.IsOnDeleteFavoriteConfirmationMessage = true
+
+	view.SetPermanentStatusBar(main,
+		"Highlighted item will be deleted from Favorites, press Y to Confirm", cview.AlignCenter)
+}
+
+func AddToFavorites(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
+	config *core.Config, ret *retriever.Retriever) {
 	statusBarMessage := ""
-	appState.IsOnFavoritesConfirmationMessage = false
+	appState.IsOnAddFavoriteConfirmationMessage = false
 
 	story := ret.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
 		appState.CurrentPage)
@@ -534,5 +545,17 @@ func AddToFavorites(list *cview.List, main *core.MainView, appState *core.Applic
 		statusBarMessage = message.Success("Item added to favorites")
 	}
 
+	changePage(app, list, main, appState, config, ret, 0)
 	view.SetPermanentStatusBar(main, statusBarMessage, cview.AlignCenter)
+}
+
+func DeleteItem(app *cview.Application, event *tcell.EventKey, list *cview.List, appState *core.ApplicationState,
+	main *core.MainView, config *core.Config, ret *retriever.Retriever) {
+	appState.IsOnDeleteFavoriteConfirmationMessage = false
+	ret.DeleteStoryAndWriteToDisk(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
+		appState.CurrentPage)
+
+	changePage(app, list, main, appState, config, ret, 0)
+
+	view.SetTemporaryStatusBar(app, main, "Item deleted", 2*time.Second)
 }

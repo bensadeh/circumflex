@@ -128,9 +128,23 @@ func convert(subs []*core.Submission, highlightHeadlines int) []*cview.ListItem 
 }
 
 func (r *Retriever) GetStory(category, currentItemIndex, submissionsToShow, currentPage int) *core.Submission {
-	index := currentItemIndex + submissionsToShow*(currentPage)
+	index := getIndex(currentItemIndex, submissionsToShow, currentPage)
 
 	return r.Submissions[category].Entries[index]
+}
+
+func (r *Retriever) DeleteStoryAndWriteToDisk(category, currentItemIndex, submissionsToShow, currentPage int) {
+	index := getIndex(currentItemIndex, submissionsToShow, currentPage)
+	r.Submissions[category].Entries = removeIndex(r.Submissions[category].Entries, index)
+	write(r)
+}
+
+func getIndex(currentItemIndex, submissionsToShow, currentPage int) int {
+	return currentItemIndex + submissionsToShow*(currentPage)
+}
+
+func removeIndex(s []*core.Submission, index int) []*core.Submission {
+	return append(s[:index], s[index+1:]...)
 }
 
 func (r *Retriever) GetMaxPages(category int, submissionsToShow int) int {
@@ -172,14 +186,18 @@ func (r *Retriever) UpdateFavoriteStoryAndWriteToDisk(updatedStory *comment.Comm
 				r.Submissions[categories.Favorites].Entries[i].URL = updatedStory.URL
 				r.Submissions[categories.Favorites].Entries[i].Domain = updatedStory.Domain
 
-				bytes, _ := r.GetFavoritesJSON()
-
-				err := file.WriteToFile(file.PathToFavoritesFile(), string(bytes))
-				if err != nil {
-					panic(err)
-				}
+				write(r)
 			}
 		}
+	}
+}
+
+func write(r *Retriever) {
+	bytes, _ := r.GetFavoritesJSON()
+
+	err := file.WriteToFile(file.PathToFavoritesFile(), string(bytes))
+	if err != nil {
+		panic(err)
 	}
 }
 

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"clx/constants/categories"
 	"clx/constants/help"
 	"clx/core"
 	"clx/model"
@@ -37,7 +38,7 @@ func SetApplicationShortcuts(ret *retriever.Retriever, app *cview.Application, l
 			model.CreateConfig(appState, main)
 
 		case appState.IsOnConfigCreationConfirmationMessage:
-			model.CancelCreateConfigConfirmationMessage(appState, main)
+			model.CancelConfirmation(app, appState, main)
 
 		case isOnSettingsPage && event.Rune() == 't':
 			model.ShowCreateConfigConfirmationMessage(main, appState)
@@ -73,11 +74,20 @@ func SetApplicationShortcuts(ret *retriever.Retriever, app *cview.Application, l
 			return event
 
 		// Main View
-		case appState.IsOnFavoritesConfirmationMessage && event.Rune() == 'y':
-			model.AddToFavorites(list, main, appState, ret)
+		case appState.IsOnAddFavoriteConfirmationMessage && event.Rune() == 'y':
+			model.AddToFavorites(app, list, main, appState, config, ret)
+
+		case appState.IsOnDeleteFavoriteConfirmationMessage && event.Rune() == 'y':
+			model.DeleteItem(app, event, list, appState, main, config, ret)
+
+		case appState.IsOnAddFavoriteConfirmationMessage || appState.IsOnDeleteFavoriteConfirmationMessage:
+			model.CancelConfirmation(app, appState, main)
 
 		case event.Rune() == 'f':
 			model.AddToFavoritesConfirmationDialogue(main, appState)
+
+		case event.Rune() == 'x' && appState.CurrentCategory == categories.Favorites:
+			model.DeleteFavoriteConfirmationDialogue(main, appState)
 
 		case event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab:
 			model.ChangeCategory(app, event, list, appState, main, config, ret)
