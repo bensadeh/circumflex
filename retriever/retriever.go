@@ -115,12 +115,9 @@ func convert(subs []*core.Submission, highlightHeadlines int) []*cview.ListItem 
 	return listItems
 }
 
-//func (r *Retriever) GetStory(category int, index int) *core.Submission {
-//	return r.Submissions[category].Entries[index]
-//}
-
 func (r *Retriever) GetStory(category, currentItemIndex, submissionsToShow, currentPage int) *core.Submission {
 	index := currentItemIndex + submissionsToShow*(currentPage)
+
 	return r.Submissions[category].Entries[index]
 }
 
