@@ -47,7 +47,7 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 
 		appState.IsOffline = false
 		statusBarText := getInfoScreenStatusBarText(appState.CurrentHelpScreenCategory)
-		marginText := getMarginText(config.RelativeNumbering, len(listItems), 0, 0)
+		marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, len(listItems), 0, 0)
 
 		view.ShowItems(list, listItems)
 		view.SetLeftMarginText(main, marginText)
@@ -172,20 +172,19 @@ func changePage(app *cview.Application, list *cview.List, main *core.MainView, a
 
 	ClearVimRegister(main, appState)
 
-	marginText := getMarginText(config.RelativeNumbering, len(listItems), currentlySelectedItem,
+	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, len(listItems), currentlySelectedItem,
 		appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
 	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory,
 		appState.SubmissionsToShow))
 }
 
-func getMarginText(useRelativeNumbering bool, maxItems int, currentPosition int,
-	currentPage int) string {
+func getMarginText(useRelativeNumbering bool, viewableStories, maxItems, currentPosition, currentPage int) string {
 	if useRelativeNumbering {
 		return vim.RelativeRankings(maxItems, currentPosition, currentPage)
 	}
 
-	return vim.AbsoluteRankings(maxItems, currentPage)
+	return vim.AbsoluteRankings(viewableStories, maxItems, currentPage)
 }
 
 func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.List, appState *core.ApplicationState,
@@ -214,7 +213,8 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	view.SelectItem(list, currentItem)
 	ClearVimRegister(main, appState)
 
-	marginText := getMarginText(config.RelativeNumbering, len(listItems), currentItem, appState.CurrentPage)
+	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, len(listItems), currentItem,
+		appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
 
 	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory, appState.SubmissionsToShow))
@@ -315,7 +315,8 @@ func SelectItemDown(main *core.MainView, list *cview.List, appState *core.Applic
 	view.SelectItem(list, nextItem)
 
 	ClearVimRegister(main, appState)
-	marginText := getMarginText(config.RelativeNumbering, list.GetItemCount(), nextItem, appState.CurrentPage)
+	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(), nextItem,
+		appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
 	view.ClearStatusBar(main)
 }
@@ -327,7 +328,8 @@ func SelectItemUp(main *core.MainView, list *cview.List, appState *core.Applicat
 	view.SelectItem(list, nextItem)
 
 	ClearVimRegister(main, appState)
-	marginText := getMarginText(config.RelativeNumbering, list.GetItemCount(), nextItem, appState.CurrentPage)
+	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(), nextItem,
+		appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
 	view.ClearStatusBar(main)
 }
@@ -360,8 +362,8 @@ func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, config
 	ret *retriever.Retriever) {
 	appState.IsOnHelpScreen = false
 
-	marginText := getMarginText(config.RelativeNumbering, list.GetItemCount(), list.GetCurrentItemIndex(),
-		appState.CurrentPage)
+	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
+		list.GetCurrentItemIndex(), appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
 	view.SetHackerNewsHeader(main, appState.CurrentCategory)
 	view.SetPanelToSubmissions(main)
@@ -375,8 +377,8 @@ func SelectFirstElementInList(main *core.MainView, appState *core.ApplicationSta
 	view.SelectFirstElementInList(list)
 	ClearVimRegister(main, appState)
 
-	marginText := getMarginText(config.RelativeNumbering, list.GetItemCount(), list.GetCurrentItemIndex(),
-		appState.CurrentPage)
+	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
+		list.GetCurrentItemIndex(), appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
 }
 
@@ -385,7 +387,8 @@ func GoToLowerCaseG(main *core.MainView, appState *core.ApplicationState, list *
 	case appState.VimNumberRegister == "g":
 		SelectFirstElementInList(main, appState, list, config)
 
-		marginText := getMarginText(config.RelativeNumbering, list.GetItemCount(), list.GetCurrentItemIndex(),
+		marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
+			list.GetCurrentItemIndex(),
 			appState.CurrentPage)
 
 		view.SetLeftMarginText(main, marginText)
@@ -408,8 +411,8 @@ func GoToLowerCaseG(main *core.MainView, appState *core.ApplicationState, list *
 		view.SelectItem(list, itemToJumpTo)
 		view.ClearStatusBar(main)
 
-		marginText := getMarginText(config.RelativeNumbering, list.GetItemCount(), list.GetCurrentItemIndex(),
-			appState.CurrentPage)
+		marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
+			list.GetCurrentItemIndex(), appState.CurrentPage)
 		view.SetLeftMarginText(main, marginText)
 
 	case appState.VimNumberRegister == "":
@@ -425,8 +428,8 @@ func GoToUpperCaseG(main *core.MainView, appState *core.ApplicationState, list *
 		view.SelectLastElementInList(list)
 		ClearVimRegister(main, appState)
 
-		marginText := getMarginText(config.RelativeNumbering, list.GetItemCount(), list.GetCurrentItemIndex(),
-			appState.CurrentPage)
+		marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
+			list.GetCurrentItemIndex(), appState.CurrentPage)
 		view.SetLeftMarginText(main, marginText)
 
 	case vim.ContainsOnlyNumbers(appState.VimNumberRegister):
@@ -439,8 +442,8 @@ func GoToUpperCaseG(main *core.MainView, appState *core.ApplicationState, list *
 		view.SelectItem(list, itemToJumpTo)
 		view.ClearStatusBar(main)
 
-		marginText := getMarginText(config.RelativeNumbering, list.GetItemCount(), list.GetCurrentItemIndex(),
-			appState.CurrentPage)
+		marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
+			list.GetCurrentItemIndex(), appState.CurrentPage)
 		view.SetLeftMarginText(main, marginText)
 	case vim.IsNumberWithGAppended(appState.VimNumberRegister):
 		ClearVimRegister(main, appState)

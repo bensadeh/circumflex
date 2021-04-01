@@ -10,10 +10,10 @@ const (
 	indentationFromRight = " "
 )
 
-func AbsoluteRankings(maxItems int, currentPage int) string {
+func AbsoluteRankings(viewableStories int, maxItems int, currentPage int) string {
 	rankings := ""
 
-	startingRank := maxItems*currentPage + 1
+	startingRank := viewableStories*currentPage + 1
 	for i := startingRank; i < startingRank+maxItems; i++ {
 		rankings += strconv.Itoa(i) + "." + indentationFromRight + newParagraph
 	}
