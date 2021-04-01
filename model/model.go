@@ -100,9 +100,9 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 
 	app.Suspend(func() {
 		id := strconv.Itoa(story.ID)
-		comments, err := comment.FetchComments(id)
 		screenWidth := screen.GetTerminalWidth()
 
+		comments, err := comment.FetchComments(id)
 		if err != nil {
 			errorMessage := message.Error(messages.CommentsNotFetched)
 			view.SetTemporaryStatusBar(app, main, errorMessage, 4*time.Second)
@@ -110,6 +110,7 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 			return
 		}
 
+		r.UpdateFavoriteStoryAndWriteToDisk(comments)
 		commentTree := comment.ToString(*comments, config.IndentSize, config.CommentWidth, screenWidth,
 			config.PreserveRightMargin)
 

@@ -1,9 +1,11 @@
 package retriever
 
 import (
+	"clx/comment"
 	"clx/constants/submissions"
 	"clx/core"
 	"clx/favorites"
+	"clx/file"
 	"clx/sub"
 	"encoding/json"
 	"fmt"
@@ -136,6 +138,31 @@ func (r *Retriever) GetFavoritesJSON() ([]byte, error) {
 	}
 
 	return b, nil
+}
+
+func (r *Retriever) UpdateFavoriteStoryAndWriteToDisk(updatedStory *comment.Comments) {
+	for i, s := range r.Submissions[submissions.Favorites].Entries {
+		if s.ID == updatedStory.ID {
+			isFieldsUpdated := s.Title != updatedStory.Title || s.Points != updatedStory.Points ||
+				s.CommentsCount != updatedStory.CommentsCount || s.URL != updatedStory.URL ||
+				s.Domain != updatedStory.Domain
+
+			if isFieldsUpdated {
+				r.Submissions[submissions.Favorites].Entries[i].Title = updatedStory.Title
+				r.Submissions[submissions.Favorites].Entries[i].Points = updatedStory.Points
+				r.Submissions[submissions.Favorites].Entries[i].CommentsCount = updatedStory.CommentsCount
+				r.Submissions[submissions.Favorites].Entries[i].URL = updatedStory.URL
+				r.Submissions[submissions.Favorites].Entries[i].Domain = updatedStory.Domain
+
+				bytes, _ := r.GetFavoritesJSON()
+
+				err := file.WriteToFile(file.PathToFavoritesFile(), string(bytes))
+				if err != nil {
+					panic(err)
+				}
+			}
+		}
+	}
 }
 
 func min(a, b int) int {
