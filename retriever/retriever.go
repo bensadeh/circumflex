@@ -5,6 +5,7 @@ import (
 	"clx/core"
 	"clx/favorites"
 	"clx/sub"
+	"encoding/json"
 	"fmt"
 
 	"gitlab.com/tslocum/cview"
@@ -114,7 +115,12 @@ func convert(subs []*core.Submission, highlightHeadlines int) []*cview.ListItem 
 	return listItems
 }
 
-func (r *Retriever) GetStory(category int, index int) *core.Submission {
+//func (r *Retriever) GetStory(category int, index int) *core.Submission {
+//	return r.Submissions[category].Entries[index]
+//}
+
+func (r *Retriever) GetStory(category, currentItemIndex, submissionsToShow, currentPage int) *core.Submission {
+	index := currentItemIndex + submissionsToShow*(currentPage)
 	return r.Submissions[category].Entries[index]
 }
 
@@ -122,9 +128,23 @@ func (r *Retriever) GetMaxPages(category int) int {
 	return r.Submissions[category].MaxPages
 }
 
+func (r *Retriever) AddItemToFavorites(story *core.Submission) {
+	r.Submissions[submissions.Favorites].Entries = append(r.Submissions[submissions.Favorites].Entries, story)
+}
+
+func (r *Retriever) GetFavoritesJSON() ([]byte, error) {
+	b, err := json.MarshalIndent(r.Submissions[submissions.Favorites].Entries, "", "    ")
+	if err != nil {
+		return nil, fmt.Errorf("could not serialize favorites struct: %w", err)
+	}
+
+	return b, nil
+}
+
 func min(a, b int) int {
 	if a < b {
 		return a
 	}
+
 	return b
 }

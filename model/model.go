@@ -89,17 +89,17 @@ func initializeView(appState *core.ApplicationState, main *core.MainView, ret *r
 
 func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *cview.List,
 	appState *core.ApplicationState, config *core.Config, r *retriever.Retriever) {
-	storyIndex := (appState.CurrentPage)*appState.SubmissionsToShow + list.GetCurrentItemIndex()
-	s := r.GetStory(appState.CurrentCategory, storyIndex)
+	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
+		appState.CurrentPage)
 
-	if s.Author == "" {
+	if story.Author == "" {
 		appState.IsReturningFromSuspension = true
 
 		return
 	}
 
 	app.Suspend(func() {
-		id := strconv.Itoa(s.ID)
+		id := strconv.Itoa(story.ID)
 		comments, err := comment.FetchComments(id)
 		screenWidth := screen.GetTerminalWidth()
 
@@ -120,15 +120,15 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 }
 
 func OpenCommentsInBrowser(list *cview.List, appState *core.ApplicationState, r *retriever.Retriever) {
-	i := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
-	story := r.GetStory(appState.CurrentCategory, i)
+	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
+		appState.CurrentPage)
 	url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(story.ID)
 	browser.Open(url)
 }
 
 func OpenLinkInBrowser(list *cview.List, appState *core.ApplicationState, r *retriever.Retriever) {
-	i := list.GetCurrentItemIndex() + appState.SubmissionsToShow*(appState.CurrentPage)
-	story := r.GetStory(appState.CurrentCategory, i)
+	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
+		appState.CurrentPage)
 	browser.Open(story.URL)
 }
 
@@ -501,4 +501,34 @@ func Refresh(app *cview.Application, list *cview.List, main *core.MainView, appS
 		duration := time.Millisecond * 2000
 		view.SetTemporaryStatusBar(app, main, "Refreshed", duration)
 	}
+}
+
+func AddToFavoritesConfirmationDialogue(app *cview.Application, list *cview.List, main *core.MainView,
+	appState *core.ApplicationState, config *core.Config, ret *retriever.Retriever) {
+	appState.IsOnFavoritesConfirmationMessage = true
+
+	view.SetPermanentStatusBar(main,
+		"Highlighted item will be added to Favorites, press Y to Confirm", cview.AlignCenter)
+}
+
+func AddToFavorites(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
+	config *core.Config, ret *retriever.Retriever) {
+	statusBarMessage := ""
+	appState.IsOnFavoritesConfirmationMessage = false
+
+	story := ret.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
+		appState.CurrentPage)
+	ret.AddItemToFavorites(story)
+	bytes, _ := ret.GetFavoritesJSON()
+	filePath := file.PathToFavoritesFile()
+
+	err := file.WriteToFile(filePath, string(bytes))
+	if err != nil {
+		statusBarMessage = message.Error("Could not add to favorites")
+	} else {
+		statusBarMessage = message.Success("Item added to favorites")
+	}
+
+	view.UpdateSettingsScreen(main)
+	view.SetPermanentStatusBar(main, statusBarMessage, cview.AlignCenter)
 }

@@ -73,6 +73,12 @@ func SetApplicationShortcuts(ret *retriever.Retriever, app *cview.Application, l
 			return event
 
 		// Main View
+		case appState.IsOnFavoritesConfirmationMessage && event.Rune() == 'y':
+			model.AddToFavorites(app, list, main, appState, config, ret)
+
+		case event.Rune() == 'f':
+			model.AddToFavoritesConfirmationDialogue(app, list, main, appState, config, ret)
+
 		case event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab:
 			model.ChangeCategory(app, event, list, appState, main, config, ret)
 

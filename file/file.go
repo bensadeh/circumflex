@@ -19,6 +19,10 @@ func PathToConfigFile() string {
 	return path.Join(PathToConfigDirectory(), settings.ConfigFileNameFull)
 }
 
+func PathToFavoritesFile() string {
+	return path.Join(PathToConfigDirectory(), settings.FavoritesFileNameFull)
+}
+
 func Exists(pathToFile string) bool {
 	if _, err := os.Stat(pathToFile); os.IsNotExist(err) {
 		return false
@@ -41,7 +45,7 @@ func WriteToFile(path string, content string) error {
 		return fmt.Errorf("could not create path to config dir: %w", mkdirErr)
 	}
 
-	file, createFileErr := os.Create(PathToConfigFile())
+	file, createFileErr := os.Create(path)
 	if createFileErr != nil {
 		return fmt.Errorf("could not create config file: %w", createFileErr)
 	}

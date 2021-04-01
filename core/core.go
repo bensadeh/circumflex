@@ -35,6 +35,7 @@ type ApplicationState struct {
 	IsReturningFromSuspension             bool
 	IsOnHelpScreen                        bool
 	IsOnConfigCreationConfirmationMessage bool
+	IsOnFavoritesConfirmationMessage      bool
 }
 
 type MainView struct {
