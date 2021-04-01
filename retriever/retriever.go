@@ -3,6 +3,7 @@ package retriever
 import (
 	"clx/constants/submissions"
 	"clx/core"
+	"clx/favorites"
 	"clx/sub"
 	"fmt"
 
@@ -49,18 +50,33 @@ func (r *Retriever) GetSubmissions(category int, page int, visibleStories int, h
 	return listItems, nil
 }
 
-func (r *Retriever) Init() {
+func (r *Retriever) Init(fav *favorites.Favorites) {
 	r.Submissions = make([]*Submissions, submissions.TotalNumberOfCategories)
 
 	r.Submissions[submissions.FrontPage] = new(Submissions)
 	r.Submissions[submissions.New] = new(Submissions)
 	r.Submissions[submissions.Ask] = new(Submissions)
 	r.Submissions[submissions.Show] = new(Submissions)
+	r.Submissions[submissions.Favorites] = new(Submissions)
 
 	r.Submissions[submissions.FrontPage].MaxPages = submissions.FrontPageMaxPages
 	r.Submissions[submissions.New].MaxPages = submissions.NewMaxPages
 	r.Submissions[submissions.Ask].MaxPages = submissions.AskMaxPages
 	r.Submissions[submissions.Show].MaxPages = submissions.ShowMaxPages
+
+	r.Submissions[submissions.Favorites].Entries = fav.Items
+}
+
+func (r *Retriever) Reset() {
+	r.Submissions[submissions.FrontPage].PageToFetchFromAPI = 0
+	r.Submissions[submissions.New].PageToFetchFromAPI = 0
+	r.Submissions[submissions.Ask].PageToFetchFromAPI = 0
+	r.Submissions[submissions.Show].PageToFetchFromAPI = 0
+
+	r.Submissions[submissions.FrontPage].Entries = nil
+	r.Submissions[submissions.New].Entries = nil
+	r.Submissions[submissions.Ask].Entries = nil
+	r.Submissions[submissions.Show].Entries = nil
 }
 
 func convert(subs []*core.Submission, highlightHeadlines int) []*cview.ListItem {

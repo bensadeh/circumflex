@@ -67,7 +67,7 @@ func setToErrorState(appState *core.ApplicationState, main *core.MainView, list 
 
 func resetStates(appState *core.ApplicationState, ret *retriever.Retriever) {
 	resetApplicationState(appState)
-	ret.Init()
+	ret.Reset()
 }
 
 func resetApplicationState(appState *core.ApplicationState) {

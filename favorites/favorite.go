@@ -2,31 +2,57 @@ package favorites
 
 import (
 	"clx/constants/settings"
+	"clx/core"
 	"clx/file"
 	"encoding/json"
 	"io/ioutil"
 )
 
 type Favorites struct {
-	Items []Item
-}
-
-type Item struct {
-	ID   int `json:"id"`
-	Time int `json:"time"`
+	Items []*core.Submission
 }
 
 func Initialize() *Favorites {
 	if !file.Exists(settings.FavoritesFilePath) {
-		favs := new(Favorites)
-		favs.Items = append(favs.Items, Item{1, 123456789})
-		favs.Items = append(favs.Items, Item{2, 123456789})
+		f := new(Favorites)
+		f.Items = append(f.Items, &core.Submission{ID: 1, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "Title", Points: 2, Author: "author", Time: "1 second", CommentsCount: 2, URL: "google.com", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "", Points: 2, Author: "", Time: "", CommentsCount: 2, URL: "", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "", Points: 2, Author: "", Time: "", CommentsCount: 2, URL: "", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "", Points: 2, Author: "", Time: "", CommentsCount: 2, URL: "", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "", Points: 2, Author: "", Time: "", CommentsCount: 2, URL: "", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "", Points: 2, Author: "", Time: "", CommentsCount: 2, URL: "", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "", Points: 2, Author: "", Time: "", CommentsCount: 2, URL: "", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "", Points: 2, Author: "", Time: "", CommentsCount: 2, URL: "", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "", Points: 2, Author: "", Time: "", CommentsCount: 2, URL: "", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "", Points: 2, Author: "", Time: "", CommentsCount: 2, URL: "", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "", Points: 2, Author: "", Time: "", CommentsCount: 2, URL: "", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "", Points: 2, Author: "", Time: "", CommentsCount: 2, URL: "", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "", Points: 2, Author: "", Time: "", CommentsCount: 2, URL: "", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "", Points: 2, Author: "", Time: "", CommentsCount: 2, URL: "", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "", Points: 2, Author: "", Time: "", CommentsCount: 2, URL: "", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "", Points: 2, Author: "", Time: "", CommentsCount: 2, URL: "", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "", Points: 2, Author: "", Time: "", CommentsCount: 2, URL: "", Domain: "", Type: ""})
+		f.Items = append(f.Items, &core.Submission{ID: 2, Title: "", Points: 2, Author: "", Time: "", CommentsCount: 2, URL: "", Domain: "", Type: ""})
 
-		bytes, _ := json.Marshal(favs)
-
-		_ = file.WriteToFile(settings.FavoritesFilePath, string(bytes))
-
-		return favs
+		return f
 	}
 
 	favoritesJSON, _ := ioutil.ReadFile(settings.FavoritesFilePath)

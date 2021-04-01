@@ -19,6 +19,7 @@ func main() {
 
 	fav := favorites.Initialize()
 	ret := new(retriever.Retriever)
+	ret.Init(fav)
 
 	sc := constructor.NewScreenController()
 	controller.SetAfterInitializationAndAfterResizeFunctions(
