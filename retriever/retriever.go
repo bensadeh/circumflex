@@ -104,7 +104,7 @@ func convert(subs []*core.Submission, highlightHeadlines int) []*cview.ListItem 
 
 	for i, s := range subs {
 		main := sub.FormatSubMain(s.Title, s.Domain, highlightHeadlines)
-		secondary := sub.FormatSubSecondary(s.Points, s.Author, s.TimeAgo, s.CommentsCount)
+		secondary := sub.FormatSubSecondary(s.Points, s.Author, s.Time, s.CommentsCount)
 
 		item := cview.NewListItem(main)
 		item.SetSecondaryText(secondary)

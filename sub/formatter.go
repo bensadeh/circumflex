@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/nleeper/goment"
 )
 
 const (
@@ -101,22 +103,21 @@ func formatDomain(domain string) string {
 	return domainInParenthesisAndDimmed
 }
 
-func FormatSubSecondary(points int, author string, time string, comments int) string {
+func FormatSubSecondary(points int, author string, unixTime int64, comments int) string {
 	parsedPoints := parsePoints(points)
 	parsedAuthor := parseAuthor(author)
+	parsedTime := parseTime(unixTime)
 	parsedComments := parseComments(comments, author)
 
-	return format.Dim(parsedPoints + parsedAuthor + time + parsedComments)
+	return format.Dim(parsedPoints + parsedAuthor + parsedTime + parsedComments)
 }
 
-func parseComments(comments int, author string) string {
-	if author == "" {
+func parsePoints(points int) string {
+	if points == 0 {
 		return ""
 	}
 
-	c := strconv.Itoa(comments)
-
-	return " | " + c + " comments"
+	return strconv.Itoa(points) + " points "
 }
 
 func parseAuthor(author string) string {
@@ -127,10 +128,19 @@ func parseAuthor(author string) string {
 	return "by " + author + " "
 }
 
-func parsePoints(points int) string {
-	if points == 0 {
+func parseTime(unixTime int64) string {
+	moment, _ := goment.Unix(unixTime)
+	now, _ := goment.New()
+
+	return moment.From(now)
+}
+
+func parseComments(comments int, author string) string {
+	if author == "" {
 		return ""
 	}
 
-	return strconv.Itoa(points) + " points "
+	c := strconv.Itoa(comments)
+
+	return " | " + c + " comments"
 }

@@ -16,8 +16,7 @@ type Submission struct {
 	Title         string `json:"title"`
 	Points        int    `json:"points"`
 	Author        string `json:"user"`
-	Time          int    `json:"time"`
-	TimeAgo       string `json:"time_ago"`
+	Time          int64  `json:"time"`
 	CommentsCount int    `json:"comments_count"`
 	URL           string `json:"url"`
 	Domain        string `json:"domain"`
