@@ -23,7 +23,6 @@ func main() {
 
 	sc := constructor.NewScreenController()
 	controller.SetAfterInitializationAndAfterResizeFunctions(
-		fav,
 		ret,
 		sc.Application,
 		sc.Articles,
@@ -32,7 +31,6 @@ func main() {
 		configuration)
 
 	controller.SetApplicationShortcuts(
-		fav,
 		ret,
 		sc.Application,
 		sc.Articles,

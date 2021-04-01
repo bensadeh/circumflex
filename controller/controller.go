@@ -3,7 +3,6 @@ package controller
 import (
 	"clx/constants/help"
 	"clx/core"
-	"clx/favorites"
 	"clx/model"
 	"clx/retriever"
 	"unicode"
@@ -12,12 +11,12 @@ import (
 	"gitlab.com/tslocum/cview"
 )
 
-func SetAfterInitializationAndAfterResizeFunctions(fav *favorites.Favorites, ret *retriever.Retriever,
+func SetAfterInitializationAndAfterResizeFunctions(ret *retriever.Retriever,
 	app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
 	model.SetAfterInitializationAndAfterResizeFunctions(app, list, main, appState, config, ret)
 }
 
-func SetApplicationShortcuts(fav *favorites.Favorites, ret *retriever.Retriever, app *cview.Application, list *cview.List,
+func SetApplicationShortcuts(ret *retriever.Retriever, app *cview.Application, list *cview.List,
 	main *core.MainView, appState *core.ApplicationState, config *core.Config) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		isOnHelpScreen := appState.IsOnHelpScreen
