@@ -2,7 +2,7 @@ package retriever
 
 import (
 	"clx/comment"
-	"clx/constants/submissions"
+	"clx/constants/categories"
 	"clx/core"
 	"clx/favorites"
 	"clx/file"
@@ -11,6 +11,14 @@ import (
 	"fmt"
 
 	"gitlab.com/tslocum/cview"
+)
+
+const (
+	totalNumberOfCategories = 5
+	frontPageMaxPages       = 2
+	newMaxPages             = 2
+	askMaxPages             = 0
+	showMaxPages            = 0
 )
 
 type Retriever struct {
@@ -25,7 +33,7 @@ type Submissions struct {
 
 func (r *Retriever) GetSubmissions(category int, page int, visibleStories int, highlightHeadlines int,
 	hideYCJobs bool) ([]*cview.ListItem, error) {
-	if category == submissions.Favorites {
+	if category == categories.Favorites {
 		return getOfflineSubmissions(page, visibleStories, highlightHeadlines, r.Submissions[category])
 	}
 
@@ -73,32 +81,32 @@ func getOnlineSubmissions(category int, page int, visibleStories int, highlightH
 }
 
 func (r *Retriever) Init(fav *favorites.Favorites) {
-	r.Submissions = make([]*Submissions, submissions.TotalNumberOfCategories)
+	r.Submissions = make([]*Submissions, totalNumberOfCategories)
 
-	r.Submissions[submissions.FrontPage] = new(Submissions)
-	r.Submissions[submissions.New] = new(Submissions)
-	r.Submissions[submissions.Ask] = new(Submissions)
-	r.Submissions[submissions.Show] = new(Submissions)
-	r.Submissions[submissions.Favorites] = new(Submissions)
+	r.Submissions[categories.FrontPage] = new(Submissions)
+	r.Submissions[categories.New] = new(Submissions)
+	r.Submissions[categories.Ask] = new(Submissions)
+	r.Submissions[categories.Show] = new(Submissions)
+	r.Submissions[categories.Favorites] = new(Submissions)
 
-	r.Submissions[submissions.FrontPage].MaxPages = submissions.FrontPageMaxPages
-	r.Submissions[submissions.New].MaxPages = submissions.NewMaxPages
-	r.Submissions[submissions.Ask].MaxPages = submissions.AskMaxPages
-	r.Submissions[submissions.Show].MaxPages = submissions.ShowMaxPages
+	r.Submissions[categories.FrontPage].MaxPages = frontPageMaxPages
+	r.Submissions[categories.New].MaxPages = newMaxPages
+	r.Submissions[categories.Ask].MaxPages = askMaxPages
+	r.Submissions[categories.Show].MaxPages = showMaxPages
 
-	r.Submissions[submissions.Favorites].Entries = fav.Items
+	r.Submissions[categories.Favorites].Entries = fav.Items
 }
 
 func (r *Retriever) Reset() {
-	r.Submissions[submissions.FrontPage].PageToFetchFromAPI = 0
-	r.Submissions[submissions.New].PageToFetchFromAPI = 0
-	r.Submissions[submissions.Ask].PageToFetchFromAPI = 0
-	r.Submissions[submissions.Show].PageToFetchFromAPI = 0
+	r.Submissions[categories.FrontPage].PageToFetchFromAPI = 0
+	r.Submissions[categories.New].PageToFetchFromAPI = 0
+	r.Submissions[categories.Ask].PageToFetchFromAPI = 0
+	r.Submissions[categories.Show].PageToFetchFromAPI = 0
 
-	r.Submissions[submissions.FrontPage].Entries = nil
-	r.Submissions[submissions.New].Entries = nil
-	r.Submissions[submissions.Ask].Entries = nil
-	r.Submissions[submissions.Show].Entries = nil
+	r.Submissions[categories.FrontPage].Entries = nil
+	r.Submissions[categories.New].Entries = nil
+	r.Submissions[categories.Ask].Entries = nil
+	r.Submissions[categories.Show].Entries = nil
 }
 
 func convert(subs []*core.Submission, highlightHeadlines int) []*cview.ListItem {
@@ -128,11 +136,11 @@ func (r *Retriever) GetMaxPages(category int) int {
 }
 
 func (r *Retriever) AddItemToFavorites(story *core.Submission) {
-	r.Submissions[submissions.Favorites].Entries = append(r.Submissions[submissions.Favorites].Entries, story)
+	r.Submissions[categories.Favorites].Entries = append(r.Submissions[categories.Favorites].Entries, story)
 }
 
 func (r *Retriever) GetFavoritesJSON() ([]byte, error) {
-	b, err := json.MarshalIndent(r.Submissions[submissions.Favorites].Entries, "", "    ")
+	b, err := json.MarshalIndent(r.Submissions[categories.Favorites].Entries, "", "    ")
 	if err != nil {
 		return nil, fmt.Errorf("could not serialize favorites struct: %w", err)
 	}
@@ -141,18 +149,18 @@ func (r *Retriever) GetFavoritesJSON() ([]byte, error) {
 }
 
 func (r *Retriever) UpdateFavoriteStoryAndWriteToDisk(updatedStory *comment.Comments) {
-	for i, s := range r.Submissions[submissions.Favorites].Entries {
+	for i, s := range r.Submissions[categories.Favorites].Entries {
 		if s.ID == updatedStory.ID {
 			isFieldsUpdated := s.Title != updatedStory.Title || s.Points != updatedStory.Points ||
 				s.CommentsCount != updatedStory.CommentsCount || s.URL != updatedStory.URL ||
 				s.Domain != updatedStory.Domain
 
 			if isFieldsUpdated {
-				r.Submissions[submissions.Favorites].Entries[i].Title = updatedStory.Title
-				r.Submissions[submissions.Favorites].Entries[i].Points = updatedStory.Points
-				r.Submissions[submissions.Favorites].Entries[i].CommentsCount = updatedStory.CommentsCount
-				r.Submissions[submissions.Favorites].Entries[i].URL = updatedStory.URL
-				r.Submissions[submissions.Favorites].Entries[i].Domain = updatedStory.Domain
+				r.Submissions[categories.Favorites].Entries[i].Title = updatedStory.Title
+				r.Submissions[categories.Favorites].Entries[i].Points = updatedStory.Points
+				r.Submissions[categories.Favorites].Entries[i].CommentsCount = updatedStory.CommentsCount
+				r.Submissions[categories.Favorites].Entries[i].URL = updatedStory.URL
+				r.Submissions[categories.Favorites].Entries[i].Domain = updatedStory.Domain
 
 				bytes, _ := r.GetFavoritesJSON()
 

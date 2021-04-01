@@ -1,8 +1,8 @@
 package sub
 
 import (
+	"clx/constants/categories"
 	"clx/constants/clx"
-	"clx/constants/submissions"
 	"clx/core"
 	"fmt"
 	"strconv"
@@ -38,13 +38,13 @@ func FetchSubmissions(page int, category int) ([]*core.Submission, error) {
 
 func getURL(category int) string {
 	switch category {
-	case submissions.FrontPage:
+	case categories.FrontPage:
 		return baseURL + "news" + page
-	case submissions.New:
+	case categories.New:
 		return baseURL + "newest" + page
-	case submissions.Ask:
+	case categories.Ask:
 		return baseURL + "ask" + page
-	case submissions.Show:
+	case categories.Show:
 		return baseURL + "show" + page
 	}
 
