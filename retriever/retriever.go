@@ -19,6 +19,7 @@ const (
 	newMaxPages             = 2
 	askMaxPages             = 0
 	showMaxPages            = 0
+	favoritesMaxPages       = 2
 )
 
 type Retriever struct {
@@ -93,6 +94,7 @@ func (r *Retriever) Init(fav *favorites.Favorites) {
 	r.Submissions[categories.New].MaxPages = newMaxPages
 	r.Submissions[categories.Ask].MaxPages = askMaxPages
 	r.Submissions[categories.Show].MaxPages = showMaxPages
+	r.Submissions[categories.Favorites].MaxPages = favoritesMaxPages
 
 	r.Submissions[categories.Favorites].Entries = fav.Items
 }
@@ -131,7 +133,15 @@ func (r *Retriever) GetStory(category, currentItemIndex, submissionsToShow, curr
 	return r.Submissions[category].Entries[index]
 }
 
-func (r *Retriever) GetMaxPages(category int) int {
+func (r *Retriever) GetMaxPages(category int, submissionsToShow int) int {
+	if category == categories.Favorites {
+		fav := r.Submissions[categories.Favorites].Entries
+		favItems := len(fav)
+		availablePages := favItems / submissionsToShow
+
+		return min(availablePages, favoritesMaxPages)
+	}
+
 	return r.Submissions[category].MaxPages
 }
 
