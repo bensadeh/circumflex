@@ -22,10 +22,29 @@ type Submissions struct {
 
 func (r *Retriever) GetSubmissions(category int, page int, visibleStories int, highlightHeadlines int,
 	hideYCJobs bool) ([]*cview.ListItem, error) {
-	largestItemToDisplay := (page * visibleStories) + visibleStories
-	smallestItemToDisplay := page * visibleStories
+	if category == submissions.Favorites {
+		return getOfflineSubmissions(page, visibleStories, highlightHeadlines, r.Submissions[category])
+	}
 
-	subs := r.Submissions[category]
+	return getOnlineSubmissions(category, page, visibleStories, highlightHeadlines, hideYCJobs, r.Submissions[category])
+}
+
+func getOfflineSubmissions(page int, visibleStories int, highlightHeadlines int,
+	subs *Submissions) ([]*cview.ListItem, error) {
+	storiesToShow := min(visibleStories, len(subs.Entries))
+	smallestItemToDisplay := page * storiesToShow
+	largestItemToDisplay := (page * storiesToShow) + storiesToShow
+
+	listItems := convert(subs.Entries[smallestItemToDisplay:largestItemToDisplay], highlightHeadlines)
+
+	return listItems, nil
+}
+
+func getOnlineSubmissions(category int, page int, visibleStories int, highlightHeadlines int, hideYCJobs bool,
+	subs *Submissions) ([]*cview.ListItem, error) {
+	smallestItemToDisplay := page * visibleStories
+	largestItemToDisplay := (page * visibleStories) + visibleStories
+
 	downloadedSubmissions := len(subs.Entries)
 	pageHasEnoughSubmissionsToView := downloadedSubmissions > largestItemToDisplay
 
@@ -101,4 +120,11 @@ func (r *Retriever) GetStory(category int, index int) *core.Submission {
 
 func (r *Retriever) GetMaxPages(category int) int {
 	return r.Submissions[category].MaxPages
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }

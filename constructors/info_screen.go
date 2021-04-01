@@ -28,13 +28,10 @@ adjective [::di]Anatomy[::-]
 
 func GetInfoText() string {
 	longestLineLength := text.MaxLineLen(infoScreenText)
-	lineHeight := strings.Count(infoScreenText, "\n")
-
 	leftOffset := screen.GetOffsetForLeftAlignedTextBlock(longestLineLength) + 5
-	topOffset := screen.GetOffsetToCenterText(lineHeight) - 4
 
 	leftIndentation := strings.Repeat(" ", leftOffset)
-	topIndentation := strings.Repeat("\n", topOffset)
+	topIndentation := strings.Repeat("\n", 7)
 
 	formattedText, _ := text.WrapWithPad(topIndentation+infoScreenText, screen.GetTerminalWidth(), leftIndentation)
 
