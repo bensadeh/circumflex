@@ -10,20 +10,20 @@ const (
 	indentationFromRight = " "
 )
 
-func AbsoluteRankings(viewableStoriesOnSinglePage int, currentPage int) string {
+func AbsoluteRankings(maxItems int, currentPage int) string {
 	rankings := ""
 
-	startingRank := viewableStoriesOnSinglePage*currentPage + 1
-	for i := startingRank; i < startingRank+viewableStoriesOnSinglePage; i++ {
+	startingRank := maxItems*currentPage + 1
+	for i := startingRank; i < startingRank+maxItems; i++ {
 		rankings += strconv.Itoa(i) + "." + indentationFromRight + newParagraph
 	}
 
 	return rankings
 }
 
-func RelativeRankings(viewableStoriesOnSinglePage int, currentPosition int, currentPage int) string {
+func RelativeRankings(maxItems int, currentPosition int, currentPage int) string {
 	rankings := ""
-	end := viewableStoriesOnSinglePage - currentPosition
+	end := maxItems - currentPosition
 	iterator := currentPosition
 
 	for iterator != 0 {
@@ -32,7 +32,7 @@ func RelativeRankings(viewableStoriesOnSinglePage int, currentPosition int, curr
 		iterator--
 	}
 
-	rankOfCurrentlySelectedItem := viewableStoriesOnSinglePage*currentPage + currentPosition + 1
+	rankOfCurrentlySelectedItem := maxItems*currentPage + currentPosition + 1
 	rankings += strconv.Itoa(rankOfCurrentlySelectedItem) + " " + indentationFromRight + newParagraph
 	iterator++
 
