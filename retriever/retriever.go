@@ -150,7 +150,7 @@ func removeIndex(s []*core.Submission, index int) []*core.Submission {
 func (r *Retriever) GetMaxPages(category int, submissionsToShow int) int {
 	if category == categories.Favorites {
 		fav := r.Submissions[categories.Favorites].Entries
-		favItems := len(fav)
+		favItems := len(fav) - 1
 		availablePages := favItems / submissionsToShow
 
 		return min(availablePages, favoritesMaxPages)

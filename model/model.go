@@ -180,6 +180,10 @@ func changePage(app *cview.Application, list *cview.List, main *core.MainView, a
 }
 
 func getMarginText(useRelativeNumbering bool, viewableStories, maxItems, currentPosition, currentPage int) string {
+	if maxItems == 0 {
+		return ""
+	}
+
 	if useRelativeNumbering {
 		return vim.RelativeRankings(viewableStories, maxItems, currentPosition, currentPage)
 	}
@@ -213,10 +217,9 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	view.SelectItem(list, currentItem)
 	ClearVimRegister(main, appState)
 
-	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, len(listItems), currentItem,
-		appState.CurrentPage)
+	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, len(listItems),
+		list.GetCurrentItemIndex(), appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
-
 	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory, appState.SubmissionsToShow))
 	view.SetHackerNewsHeader(main, appState.CurrentCategory)
 }
@@ -286,13 +289,12 @@ func ScrollSettingsToEnd(main *core.MainView) {
 	view.ScrollSettingsToEnd(main)
 }
 
-func CancelConfirmation(app *cview.Application, appState *core.ApplicationState, main *core.MainView) {
+func CancelConfirmation(appState *core.ApplicationState, main *core.MainView) {
 	appState.IsOnAddFavoriteConfirmationMessage = false
 	appState.IsOnDeleteFavoriteConfirmationMessage = false
 	appState.IsOnConfigCreationConfirmationMessage = false
 
-	duration := time.Millisecond * 2000
-	view.SetTemporaryStatusBar(app, main, "Cancelled", duration)
+	view.SetPermanentStatusBar(main, "Cancelled", cview.AlignCenter)
 }
 
 func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
@@ -513,14 +515,22 @@ func Refresh(app *cview.Application, list *cview.List, main *core.MainView, appS
 	}
 }
 
-func AddToFavoritesConfirmationDialogue(main *core.MainView, appState *core.ApplicationState) {
+func AddToFavoritesConfirmationDialogue(main *core.MainView, appState *core.ApplicationState, list *cview.List) {
+	if list.GetItemCount() == 0 {
+		return
+	}
+
 	appState.IsOnAddFavoriteConfirmationMessage = true
 
 	view.SetPermanentStatusBar(main,
 		"Highlighted item will be added to Favorites, press Y to Confirm", cview.AlignCenter)
 }
 
-func DeleteFavoriteConfirmationDialogue(main *core.MainView, appState *core.ApplicationState) {
+func DeleteFavoriteConfirmationDialogue(main *core.MainView, appState *core.ApplicationState, list *cview.List) {
+	if list.GetItemCount() == 0 {
+		return
+	}
+
 	appState.IsOnDeleteFavoriteConfirmationMessage = true
 
 	view.SetPermanentStatusBar(main,
@@ -549,13 +559,17 @@ func AddToFavorites(app *cview.Application, list *cview.List, main *core.MainVie
 	view.SetPermanentStatusBar(main, statusBarMessage, cview.AlignCenter)
 }
 
-func DeleteItem(app *cview.Application, event *tcell.EventKey, list *cview.List, appState *core.ApplicationState,
+func DeleteItem(app *cview.Application, list *cview.List, appState *core.ApplicationState,
 	main *core.MainView, config *core.Config, ret *retriever.Retriever) {
 	appState.IsOnDeleteFavoriteConfirmationMessage = false
 	ret.DeleteStoryAndWriteToDisk(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
 		appState.CurrentPage)
 
-	changePage(app, list, main, appState, config, ret, 0)
+	if list.GetCurrentItemIndex() == 0 && list.GetItemCount() == 1 && appState.CurrentPage != 0 {
+		changePage(app, list, main, appState, config, ret, -1)
+	} else {
+		changePage(app, list, main, appState, config, ret, 0)
+	}
 
-	view.SetTemporaryStatusBar(app, main, "Item deleted", 2*time.Second)
+	view.SetPermanentStatusBar(main, "Item deleted", cview.AlignCenter)
 }

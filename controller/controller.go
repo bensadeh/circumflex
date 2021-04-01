@@ -38,7 +38,7 @@ func SetApplicationShortcuts(ret *retriever.Retriever, app *cview.Application, l
 			model.CreateConfig(appState, main)
 
 		case appState.IsOnConfigCreationConfirmationMessage:
-			model.CancelConfirmation(app, appState, main)
+			model.CancelConfirmation(appState, main)
 
 		case isOnSettingsPage && event.Rune() == 't':
 			model.ShowCreateConfigConfirmationMessage(main, appState)
@@ -78,16 +78,16 @@ func SetApplicationShortcuts(ret *retriever.Retriever, app *cview.Application, l
 			model.AddToFavorites(app, list, main, appState, config, ret)
 
 		case appState.IsOnDeleteFavoriteConfirmationMessage && event.Rune() == 'y':
-			model.DeleteItem(app, event, list, appState, main, config, ret)
+			model.DeleteItem(app, list, appState, main, config, ret)
 
 		case appState.IsOnAddFavoriteConfirmationMessage || appState.IsOnDeleteFavoriteConfirmationMessage:
-			model.CancelConfirmation(app, appState, main)
+			model.CancelConfirmation(appState, main)
 
 		case event.Rune() == 'f':
-			model.AddToFavoritesConfirmationDialogue(main, appState)
+			model.AddToFavoritesConfirmationDialogue(main, appState, list)
 
 		case event.Rune() == 'x' && appState.CurrentCategory == categories.Favorites:
-			model.DeleteFavoriteConfirmationDialogue(main, appState)
+			model.DeleteFavoriteConfirmationDialogue(main, appState, list)
 
 		case event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab:
 			model.ChangeCategory(app, event, list, appState, main, config, ret)
