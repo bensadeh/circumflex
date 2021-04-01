@@ -45,7 +45,7 @@ func getOfflineSubmissions(page int, visibleStories int, highlightHeadlines int,
 	subs *Submissions) ([]*cview.ListItem, error) {
 	storiesToShow := min(visibleStories, len(subs.Entries))
 	firstItemToDisplay := page * storiesToShow
-	lastItemToDisplay := firstItemToDisplay + len(subs.Entries) - (page * storiesToShow)
+	lastItemToDisplay := min(firstItemToDisplay+storiesToShow, len(subs.Entries))
 
 	listItems := convert(subs.Entries[firstItemToDisplay:lastItemToDisplay], highlightHeadlines)
 
