@@ -534,6 +534,5 @@ func AddToFavorites(list *cview.List, main *core.MainView, appState *core.Applic
 		statusBarMessage = message.Success("Item added to favorites")
 	}
 
-	view.UpdateSettingsScreen(main)
 	view.SetPermanentStatusBar(main, statusBarMessage, cview.AlignCenter)
 }
