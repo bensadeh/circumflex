@@ -35,7 +35,7 @@ type Submissions struct {
 func (r *Retriever) GetSubmissions(category int, page int, visibleStories int, highlightHeadlines int,
 	hideYCJobs bool) ([]*cview.ListItem, error) {
 	if category == categories.Favorites {
-		return getOfflineSubmissions(page, visibleStories, highlightHeadlines, r.Submissions[category])
+		return getOfflineSubmissions(page, visibleStories, highlightHeadlines, r.Submissions[categories.Favorites])
 	}
 
 	return getOnlineSubmissions(category, page, visibleStories, highlightHeadlines, hideYCJobs, r.Submissions[category])
@@ -44,10 +44,10 @@ func (r *Retriever) GetSubmissions(category int, page int, visibleStories int, h
 func getOfflineSubmissions(page int, visibleStories int, highlightHeadlines int,
 	subs *Submissions) ([]*cview.ListItem, error) {
 	storiesToShow := min(visibleStories, len(subs.Entries))
-	smallestItemToDisplay := page * storiesToShow
-	largestItemToDisplay := (page * storiesToShow) + storiesToShow
+	firstItemToDisplay := page * storiesToShow
+	lastItemToDisplay := firstItemToDisplay + len(subs.Entries) - (page * storiesToShow)
 
-	listItems := convert(subs.Entries[smallestItemToDisplay:largestItemToDisplay], highlightHeadlines)
+	listItems := convert(subs.Entries[firstItemToDisplay:lastItemToDisplay], highlightHeadlines)
 
 	return listItems, nil
 }
