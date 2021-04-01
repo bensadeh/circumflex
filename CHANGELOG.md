@@ -3,6 +3,9 @@
 ## 0.13
 _WIP_
 
+**New features:**
+- Submissions can now be added to the Favorites category
+
 **Cosmetic**
 - Headlines are now fully highlighted by default
 - Definition on info screen now realigns after resizing the terminal
