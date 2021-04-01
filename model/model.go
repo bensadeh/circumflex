@@ -503,16 +503,14 @@ func Refresh(app *cview.Application, list *cview.List, main *core.MainView, appS
 	}
 }
 
-func AddToFavoritesConfirmationDialogue(app *cview.Application, list *cview.List, main *core.MainView,
-	appState *core.ApplicationState, config *core.Config, ret *retriever.Retriever) {
+func AddToFavoritesConfirmationDialogue(main *core.MainView, appState *core.ApplicationState) {
 	appState.IsOnFavoritesConfirmationMessage = true
 
 	view.SetPermanentStatusBar(main,
 		"Highlighted item will be added to Favorites, press Y to Confirm", cview.AlignCenter)
 }
 
-func AddToFavorites(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config, ret *retriever.Retriever) {
+func AddToFavorites(list *cview.List, main *core.MainView, appState *core.ApplicationState, ret *retriever.Retriever) {
 	statusBarMessage := ""
 	appState.IsOnFavoritesConfirmationMessage = false
 
