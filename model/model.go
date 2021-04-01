@@ -172,8 +172,8 @@ func changePage(app *cview.Application, list *cview.List, main *core.MainView, a
 
 	ClearVimRegister(main, appState)
 
-	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, len(listItems), currentlySelectedItem,
-		appState.CurrentPage)
+	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, len(listItems),
+		list.GetCurrentItemIndex(), appState.CurrentPage)
 	view.SetLeftMarginText(main, marginText)
 	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory,
 		appState.SubmissionsToShow))
@@ -181,7 +181,7 @@ func changePage(app *cview.Application, list *cview.List, main *core.MainView, a
 
 func getMarginText(useRelativeNumbering bool, viewableStories, maxItems, currentPosition, currentPage int) string {
 	if useRelativeNumbering {
-		return vim.RelativeRankings(maxItems, currentPosition, currentPage)
+		return vim.RelativeRankings(viewableStories, maxItems, currentPosition, currentPage)
 	}
 
 	return vim.AbsoluteRankings(viewableStories, maxItems, currentPage)

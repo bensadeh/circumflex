@@ -21,7 +21,7 @@ func AbsoluteRankings(viewableStories int, maxItems int, currentPage int) string
 	return rankings
 }
 
-func RelativeRankings(maxItems int, currentPosition int, currentPage int) string {
+func RelativeRankings(viewableStories int, maxItems int, currentPosition int, currentPage int) string {
 	rankings := ""
 	end := maxItems - currentPosition
 	iterator := currentPosition
@@ -32,7 +32,7 @@ func RelativeRankings(maxItems int, currentPosition int, currentPage int) string
 		iterator--
 	}
 
-	rankOfCurrentlySelectedItem := maxItems*currentPage + currentPosition + 1
+	rankOfCurrentlySelectedItem := viewableStories*currentPage + currentPosition + 1
 	rankings += strconv.Itoa(rankOfCurrentlySelectedItem) + " " + indentationFromRight + newParagraph
 	iterator++
 
