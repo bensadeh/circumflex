@@ -11,18 +11,21 @@ import (
 
 const (
 	helpScreenText = `
-      [-:-:b]Main Screen[-:-:-]
+           [-:-:b]Main Screen[-:-:-]
 
 Read comments ............................... Enter         
 Change category ............................. Tab
 Open submission link in browser ............. o
 Open comments in browser .................... c
 Refresh ..................................... r
+
+Add to favorites ............................ f
+Delete from favorites ....................... x
                                     
 Bring up this screen ........................ i, ?
 Quit to prompt .............................. q             
 
-      [-:-:b]Comment Section (less)[-:-:-]
+           [-:-:b]Comment Section (less)[-:-:-]
 
 Down one half-window ........................ d
 Up one half-window .......................... u
