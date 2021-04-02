@@ -96,15 +96,8 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
 		appState.CurrentPage)
 
-	if story.Author == "" {
-		appState.IsReturningFromSuspension = true
-
-		return
-	}
-
 	app.Suspend(func() {
 		id := strconv.Itoa(story.ID)
-		screenWidth := screen.GetTerminalWidth()
 
 		comments, err := comment.FetchComments(id)
 		if err != nil {
@@ -115,12 +108,14 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 		}
 
 		r.UpdateFavoriteStoryAndWriteToDisk(comments)
+		screenWidth := screen.GetTerminalWidth()
 		commentTree := comment.ToString(*comments, config.IndentSize, config.CommentWidth, screenWidth,
 			config.PreserveRightMargin)
 
 		cli.Less(commentTree)
 	})
 
+	changePage(app, list, main, appState, config, r, 0)
 	appState.IsReturningFromSuspension = true
 }
 

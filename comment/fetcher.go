@@ -13,7 +13,7 @@ type Comments struct {
 	Title         string     `json:"title"`
 	Points        int        `json:"points"`
 	User          string     `json:"user"`
-	Time          int        `json:"time"`
+	Time          int64      `json:"time"`
 	TimeAgo       string     `json:"time_ago"`
 	Type          string     `json:"type"`
 	URL           string     `json:"url"`

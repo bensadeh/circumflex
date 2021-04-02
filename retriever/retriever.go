@@ -178,12 +178,15 @@ func (r *Retriever) UpdateFavoriteStoryAndWriteToDisk(updatedStory *comment.Comm
 	for i, s := range r.submissions[categories.Favorites].entries {
 		if s.ID == updatedStory.ID {
 			isFieldsUpdated := s.Title != updatedStory.Title || s.Points != updatedStory.Points ||
+				s.Time != updatedStory.Time || s.Author != updatedStory.User ||
 				s.CommentsCount != updatedStory.CommentsCount || s.URL != updatedStory.URL ||
 				s.Domain != updatedStory.Domain
 
 			if isFieldsUpdated {
 				r.submissions[categories.Favorites].entries[i].Title = updatedStory.Title
 				r.submissions[categories.Favorites].entries[i].Points = updatedStory.Points
+				r.submissions[categories.Favorites].entries[i].Time = updatedStory.Time
+				r.submissions[categories.Favorites].entries[i].Author = updatedStory.User
 				r.submissions[categories.Favorites].entries[i].CommentsCount = updatedStory.CommentsCount
 				r.submissions[categories.Favorites].entries[i].URL = updatedStory.URL
 				r.submissions[categories.Favorites].entries[i].Domain = updatedStory.Domain

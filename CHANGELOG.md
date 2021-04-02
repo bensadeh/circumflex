@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.14
+_WIP_
+
+**Backend:**
+- Gracefully handle adding favorites by ID key only
+
 ## 0.13
 _2021-04-02_
 

@@ -32,9 +32,7 @@ clx
 
 Press <kbd>i</kbd> to show available keymaps and settings.
 
-## Features
-
-### Overview
+## Overview
 
 `circumflex` is a text-based user interface (TUI) application that lets you browse Hacker News in your terminal. It can
 list submissions by category and show the comment section. 
@@ -51,7 +49,7 @@ On the Main View, `circumflex` supports Vim keybindings for navigating between s
 
 
 
-### Comment section
+## Comment section
 
 Comments are pretty-printed and piped to the pager `less`. To present a nice and readable comment section,
 `circumflex` features:
@@ -61,8 +59,8 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 * Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
 * Ability to jump between top-level comments by searching for `::`
 
-### Syntax highlighting
-#### Quotes
+## Syntax highlighting
+### Quotes
 
 In the comment section in Hacker News, quotes are separated by a paragraph and open with a `>`. However, besides these 
 distinctions, quotes are not further stylized or formatted:
@@ -78,7 +76,7 @@ In `circumflex`, the `>` symbol is omitted and quotes are instead italicised and
   <img src="screenshots/quotes.png" width="700" alt="^"/>
 </p>
 
-#### Headlines
+### Headlines
 Certain submissions on the front page are also in their own 'category', such as `Show HN` and `Ask HN`. `circumflex` 
 colorizes these parts of the headlines to make it easier to distinguish them from each other. On by default, but can be 
 disabled.
@@ -87,7 +85,7 @@ disabled.
   <img src="screenshots/showtell.png" width="250" alt="^"/>
 </p>
 
-#### YC-funded startups
+### YC-funded startups
 [Twice a year](https://www.ycombinator.com/companies/), Y Combinator funds start-ups through its accelerator program. 
 `circumflex` highlights these startups to signalize their affiliation with YC. On by default, but can be disabled.
 
@@ -95,7 +93,7 @@ disabled.
   <img src="screenshots/yc.png" width="350" alt="^"/>
 </p>
 
-#### References
+### References
 References are formatted as numbers inside brackets: `[1]`, `[2]`, `[…]`. `circumflex` highlights the numbers 
 inside the brackets for easier cross-referencing.
 
@@ -116,10 +114,6 @@ Favorites are stored in `favorites.json` in `~/.config/circumflex`.
 The available options and their current values are displayed in the Settings View. Overridden values are marked with
 `*`. To enter Settings View, press <kbd>i</kbd> on the Main View and then <kbd>Tab</kbd> to change the category. Note 
 that the settings cannot be changed from within the Settings View.
-
-<p align="center">
-  <img src="screenshots/settings.png" width="700" alt="^"/>
-</p>
 
 To change the settings, you can either:
 
