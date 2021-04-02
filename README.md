@@ -64,15 +64,15 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 ### Syntax highlighting
 #### Quotes
 
-In the comment section, quotes are separated by a paragraph and open with a `>`:
+In the comment section in Hacker News, quotes are separated by a paragraph and open with a `>`. However, besides these 
+distinctions, quotes are not further stylized or formatted:
 ```
 > This is a quote 
 
 This is not a quote
 ```
 
-To improve legibility, `circumflex` italicises and dims the actual quote. Since the formatting now identifies the block
-as a quote, the symbol `>` is omitted, but the context is preserved. 
+In `circumflex`, the `>` symbol is omitted and quotes are instead italicised and dimmed.
 
 <p align="center">
   <img src="screenshots/quotes.png" width="700" alt="^"/>
@@ -96,12 +96,18 @@ disabled.
 </p>
 
 #### References
-References are listed in the following format: `[1]`, `[2]`, `[…]`. `circumflex` highlights the numbers 
+References are formatted as numbers inside brackets: `[1]`, `[2]`, `[…]`. `circumflex` highlights the numbers 
 inside the brackets for easier cross-referencing.
 
 <p align="center">
   <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
 </p>
+
+## Favorites
+You can save submissions you'd like to revisit by adding them to Favorites. Press <kbd>f</kbd> to add the highlighted 
+submission to your Favorites list. Press <kbd>x</kbd> to remove the highlighted submission from your Favorites list.
+
+Favorites are stored in `favorites.json` in `~/.config/circumflex`.
 
 ## Settings
 
