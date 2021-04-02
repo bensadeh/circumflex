@@ -522,8 +522,7 @@ func AddToFavoritesConfirmationDialogue(main *core.MainView, appState *core.Appl
 
 	appState.IsOnAddFavoriteConfirmationMessage = true
 
-	view.SetPermanentStatusBar(main,
-		"Highlighted item will be added to Favorites, press Y to Confirm", cview.AlignCenter)
+	view.SetPermanentStatusBar(main, "[green]Add[-] to Favorites? Press [::b]Y[::-] to Confirm", cview.AlignCenter)
 }
 
 func DeleteFavoriteConfirmationDialogue(main *core.MainView, appState *core.ApplicationState, list *cview.List) {
@@ -534,7 +533,7 @@ func DeleteFavoriteConfirmationDialogue(main *core.MainView, appState *core.Appl
 	appState.IsOnDeleteFavoriteConfirmationMessage = true
 
 	view.SetPermanentStatusBar(main,
-		"Highlighted item will be deleted from Favorites, press Y to Confirm", cview.AlignCenter)
+		"[red]Delete[-] from Favorites? Press [::b]Y[::-] to Confirm", cview.AlignCenter)
 }
 
 func AddToFavorites(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
@@ -571,5 +570,6 @@ func DeleteItem(app *cview.Application, list *cview.List, appState *core.Applica
 		changePage(app, list, main, appState, config, ret, 0)
 	}
 
-	view.SetPermanentStatusBar(main, "Item deleted", cview.AlignCenter)
+	m := message.Success("Item deleted")
+	view.SetPermanentStatusBar(main, m, cview.AlignCenter)
 }
