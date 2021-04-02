@@ -63,9 +63,9 @@ func printOptionsInTwoColumns(o options, textWidth int, space int) string {
 	output := ""
 
 	for i := 0; i < len(o.options); i += 2 {
-		isAtLeastTwoOptionsLeft := i+2 <= len(o.options)
+		hasAtLeastTwoOptionsLeft := i+2 <= len(o.options)
 
-		if isAtLeastTwoOptionsLeft {
+		if hasAtLeastTwoOptionsLeft {
 			leftDesc := o.options[i].print(textWidth)
 			rightDesc := o.options[i+1].print(textWidth)
 			output += column.PutInColumns(leftDesc, rightDesc, textWidth, space) + newLine
@@ -122,8 +122,10 @@ func makeHeadline(name string, key string, textWidth int) string {
 func (o option) printConfig() string {
 	cleanDesc := ansi.Strip(o.description)
 	description, _ := text.WrapWithPad(cleanDesc, 80, "# ")
+	separator := newLine + "#" + newLine
+	setting := "# " + o.key + "=" + o.defaultValue
 
-	return description + newLine + "# " + o.key + "=" + o.defaultValue
+	return description + separator + setting
 }
 
 func GetSettingsText() string {
