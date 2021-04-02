@@ -11,8 +11,12 @@ const (
 	symbolHeaderSpacing = "  "
 )
 
-func GetHackerNewsHeader(selectedSubHeader int) string {
-	return header("🆈", "Hacker News   ", []string{"new", "ask", "show", "favorites"}, selectedSubHeader)
+func GetHackerNewsHeader(selectedSubHeader int, showFavorites bool) string {
+	if showFavorites {
+		return header("🆈", "Hacker News   ", []string{"new", "ask", "show", "favorites"}, selectedSubHeader)
+	}
+
+	return header("🆈", "Hacker News   ", []string{"new", "ask", "show"}, selectedSubHeader)
 }
 
 func GetCircumflexHeader(selectedSubHeader int) string {

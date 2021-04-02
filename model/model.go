@@ -4,6 +4,7 @@ import (
 	"clx/browser"
 	"clx/cli"
 	"clx/comment"
+	"clx/constants/categories"
 	"clx/constants/help"
 	"clx/constants/messages"
 	"clx/core"
@@ -80,10 +81,12 @@ func resetApplicationState(appState *core.ApplicationState) {
 }
 
 func initializeView(appState *core.ApplicationState, main *core.MainView, ret *retriever.Retriever) {
+	header := ret.GetHackerNewsHeader(appState.CurrentCategory)
+
 	view.UpdateSettingsScreen(main)
 	view.UpdateInfoScreen(main)
 	view.SetPanelToSubmissions(main)
-	view.SetHackerNewsHeader(main, appState.CurrentCategory)
+	view.SetHackerNewsHeader(main, header)
 	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory,
 		appState.SubmissionsToShow))
 }
@@ -174,9 +177,12 @@ func changePage(app *cview.Application, list *cview.List, main *core.MainView, a
 
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, len(listItems),
 		list.GetCurrentItemIndex(), appState.CurrentPage)
+	header := ret.GetHackerNewsHeader(appState.CurrentCategory)
+	maxPages := ret.GetMaxPages(appState.CurrentCategory, appState.SubmissionsToShow)
+
 	view.SetLeftMarginText(main, marginText)
-	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory,
-		appState.SubmissionsToShow))
+	view.SetHackerNewsHeader(main, header)
+	view.SetPageCounter(main, appState.CurrentPage, maxPages)
 }
 
 func getMarginText(useRelativeNumbering bool, viewableStories, maxItems, currentPosition, currentPage int) string {
@@ -217,11 +223,14 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	view.SelectItem(list, currentItem)
 	ClearVimRegister(main, appState)
 
+	header := ret.GetHackerNewsHeader(appState.CurrentCategory)
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, len(listItems),
 		list.GetCurrentItemIndex(), appState.CurrentPage)
+	maxPages := ret.GetMaxPages(appState.CurrentCategory, appState.SubmissionsToShow)
+
 	view.SetLeftMarginText(main, marginText)
-	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory, appState.SubmissionsToShow))
-	view.SetHackerNewsHeader(main, appState.CurrentCategory)
+	view.SetPageCounter(main, appState.CurrentPage, maxPages)
+	view.SetHackerNewsHeader(main, header)
 }
 
 func getNextCategory(currentCategory int, numberOfCategories int) int {
@@ -369,11 +378,13 @@ func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, config
 
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
 		list.GetCurrentItemIndex(), appState.CurrentPage)
+	header := ret.GetHackerNewsHeader(appState.CurrentCategory)
+	maxPages := ret.GetMaxPages(appState.CurrentCategory, appState.SubmissionsToShow)
+
 	view.SetLeftMarginText(main, marginText)
-	view.SetHackerNewsHeader(main, appState.CurrentCategory)
+	view.SetHackerNewsHeader(main, header)
 	view.SetPanelToSubmissions(main)
-	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory,
-		appState.SubmissionsToShow))
+	view.SetPageCounter(main, appState.CurrentPage, maxPages)
 	view.ClearStatusBar(main)
 }
 
@@ -564,9 +575,18 @@ func DeleteItem(app *cview.Application, list *cview.List, appState *core.Applica
 	ret.DeleteStoryAndWriteToDisk(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
 		appState.CurrentPage)
 
-	if list.GetCurrentItemIndex() == 0 && list.GetItemCount() == 1 && appState.CurrentPage != 0 {
+	hasDeletedLastItemOnSecondOrThirdPage := list.GetCurrentItemIndex() == 0 &&
+		list.GetItemCount() == 1 && appState.CurrentPage != 0
+	hasDeletedLastItemOnFirstPage := list.GetCurrentItemIndex() == 0 &&
+		list.GetItemCount() == 1 && appState.CurrentPage == 0
+
+	switch {
+	case hasDeletedLastItemOnSecondOrThirdPage:
 		changePage(app, list, main, appState, config, ret, -1)
-	} else {
+	case hasDeletedLastItemOnFirstPage:
+		appState.CurrentCategory = categories.Show
+		ChangeCategory(app, tcell.NewEventKey(tcell.KeyTab, ' ', tcell.ModNone), list, appState, main, config, ret)
+	default:
 		changePage(app, list, main, appState, config, ret, 0)
 	}
 

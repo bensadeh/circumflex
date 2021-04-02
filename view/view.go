@@ -13,9 +13,8 @@ import (
 	"gitlab.com/tslocum/cview"
 )
 
-func SetHackerNewsHeader(m *core.MainView, category int) {
-	h := header.GetHackerNewsHeader(category)
-	m.Header.SetText(h)
+func SetHackerNewsHeader(m *core.MainView, header string) {
+	m.Header.SetText(header)
 }
 
 func SetHelpScreenHeader(m *core.MainView, category int) {

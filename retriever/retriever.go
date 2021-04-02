@@ -6,6 +6,7 @@ import (
 	"clx/core"
 	"clx/favorites"
 	"clx/file"
+	"clx/header"
 	"clx/sub"
 	"encoding/json"
 	"fmt"
@@ -193,8 +194,17 @@ func (r *Retriever) UpdateFavoriteStoryAndWriteToDisk(updatedStory *comment.Comm
 	}
 }
 
+func (r *Retriever) GetHackerNewsHeader(currentCategory int) string {
+	fav := r.submissions[categories.Favorites].entries
+	showFavorites := len(fav) != 0
+
+	return header.GetHackerNewsHeader(currentCategory, showFavorites)
+}
+
 func (r *Retriever) GetNextCategory(currentCategory int) int {
-	if currentCategory == (totalNumberOfCategories - 1) {
+	numberOfCategories := r.getTotalNumberOfCategories()
+
+	if currentCategory == (numberOfCategories - 1) {
 		return 0
 	}
 
@@ -202,11 +212,24 @@ func (r *Retriever) GetNextCategory(currentCategory int) int {
 }
 
 func (r *Retriever) GetPreviousCategory(currentCategory int) int {
+	numberOfCategories := r.getTotalNumberOfCategories()
+
 	if currentCategory == 0 {
-		return totalNumberOfCategories - 1
+		return numberOfCategories - 1
 	}
 
 	return currentCategory - 1
+}
+
+func (r *Retriever) getTotalNumberOfCategories() int {
+	fav := r.submissions[categories.Favorites].entries
+	hasFavorites := len(fav) != 0
+
+	if hasFavorites {
+		return totalNumberOfCategories
+	}
+
+	return totalNumberOfCategories - 1
 }
 
 func write(r *Retriever) {
