@@ -1,13 +1,13 @@
 # Changelog
 
 ## 0.13
-_WIP_
+_2021-04-02_
 
 **New features:**
-- Submissions can now be added to the Favorites category
+- Submissions can now be added to Favorites
 
 **Cosmetic**
-- Headlines are now fully highlighted by default
+- Headlines are now syntax highlighted by default
 - Definition on info screen now realigns after resizing the terminal
 
 **Backend:**
