@@ -193,6 +193,22 @@ func (r *Retriever) UpdateFavoriteStoryAndWriteToDisk(updatedStory *comment.Comm
 	}
 }
 
+func (r *Retriever) GetNextCategory(currentCategory int) int {
+	if currentCategory == (totalNumberOfCategories - 1) {
+		return 0
+	}
+
+	return currentCategory + 1
+}
+
+func (r *Retriever) GetPreviousCategory(currentCategory int) int {
+	if currentCategory == 0 {
+		return totalNumberOfCategories - 1
+	}
+
+	return currentCategory - 1
+}
+
 func write(r *Retriever) {
 	bytes, _ := r.GetFavoritesJSON()
 

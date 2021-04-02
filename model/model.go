@@ -197,9 +197,9 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	nextCategory := 0
 
 	if event.Key() == tcell.KeyBacktab {
-		nextCategory = getPreviousCategory(appState.CurrentCategory, 5)
+		nextCategory = ret.GetPreviousCategory(appState.CurrentCategory)
 	} else {
-		nextCategory = getNextCategory(appState.CurrentCategory, 5)
+		nextCategory = ret.GetNextCategory(appState.CurrentCategory)
 	}
 
 	appState.CurrentCategory = nextCategory
