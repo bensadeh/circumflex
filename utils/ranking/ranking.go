@@ -1,4 +1,4 @@
-package vim
+package ranking
 
 import (
 	"clx/utils/format"
@@ -10,7 +10,19 @@ const (
 	indentationFromRight = " "
 )
 
-func AbsoluteRankings(viewableStories int, maxItems int, currentPage int) string {
+func GetRankings(useRelativeNumbering bool, viewableStories, maxItems, currentPosition, currentPage int) string {
+	if maxItems == 0 {
+		return ""
+	}
+
+	if useRelativeNumbering {
+		return relativeRankings(viewableStories, maxItems, currentPosition, currentPage)
+	}
+
+	return absoluteRankings(viewableStories, maxItems, currentPage)
+}
+
+func absoluteRankings(viewableStories int, maxItems int, currentPage int) string {
 	rankings := ""
 
 	startingRank := viewableStories*currentPage + 1
@@ -21,7 +33,7 @@ func AbsoluteRankings(viewableStories int, maxItems int, currentPage int) string
 	return rankings
 }
 
-func RelativeRankings(viewableStories int, maxItems int, currentPosition int, currentPage int) string {
+func relativeRankings(viewableStories int, maxItems int, currentPosition int, currentPage int) string {
 	rankings := ""
 	end := maxItems - currentPosition
 	iterator := currentPosition
