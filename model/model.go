@@ -269,8 +269,7 @@ func ShowCreateConfigConfirmationMessage(main *core.MainView, appState *core.App
 
 	appState.IsOnConfigCreationConfirmationMessage = true
 
-	view.SetPermanentStatusBar(main,
-		"[::b]config.env[::-] will be created in [::r]~/.config/circumflex[::-], press Y to Confirm", cview.AlignCenter)
+	view.SetPermanentStatusBar(main, messages.ConfigConfirmation, cview.AlignCenter)
 }
 
 func ScrollSettingsOneLineUp(main *core.MainView) {
@@ -304,7 +303,7 @@ func CancelConfirmation(appState *core.ApplicationState, main *core.MainView) {
 	appState.IsOnDeleteFavoriteConfirmationMessage = false
 	appState.IsOnConfigCreationConfirmationMessage = false
 
-	view.SetPermanentStatusBar(main, "Cancelled", cview.AlignCenter)
+	view.SetPermanentStatusBar(main, messages.Cancelled, cview.AlignCenter)
 }
 
 func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
@@ -373,7 +372,7 @@ func updateInfoScreenView(main *core.MainView, helpScreenCategory int, statusBar
 	view.SetHelpScreenPanel(main, helpScreenCategory)
 }
 
-func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, config *core.Config, list *cview.List,
+func ExitInfoScreen(main *core.MainView, appState *core.ApplicationState, config *core.Config, list *cview.List,
 	ret *retriever.Retriever) {
 	appState.State = state.OnSubmissionPage
 
@@ -513,7 +512,7 @@ func Refresh(app *cview.Application, list *cview.List, main *core.MainView, appS
 	afterResizeFunc := app.GetAfterResizeFunc()
 	afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
 
-	ExitHelpScreen(main, appState, config, list, ret)
+	ExitInfoScreen(main, appState, config, list, ret)
 
 	if appState.State == state.Offline {
 		errorMessage := message.Error(messages.OfflineMessage)
@@ -523,7 +522,7 @@ func Refresh(app *cview.Application, list *cview.List, main *core.MainView, appS
 		app.Draw()
 	} else {
 		duration := time.Millisecond * 2000
-		view.SetTemporaryStatusBar(app, main, "Refreshed", duration)
+		view.SetTemporaryStatusBar(app, main, messages.Refreshed, duration)
 	}
 }
 
@@ -534,7 +533,7 @@ func AddToFavoritesConfirmationDialogue(main *core.MainView, appState *core.Appl
 
 	appState.IsOnAddFavoriteConfirmationMessage = true
 
-	view.SetPermanentStatusBar(main, "[green]Add[-] to Favorites? Press [::b]Y[::-] to Confirm", cview.AlignCenter)
+	view.SetPermanentStatusBar(main, messages.AddToFavorites, cview.AlignCenter)
 }
 
 func DeleteFavoriteConfirmationDialogue(main *core.MainView, appState *core.ApplicationState, list *cview.List) {
@@ -544,17 +543,16 @@ func DeleteFavoriteConfirmationDialogue(main *core.MainView, appState *core.Appl
 
 	appState.IsOnDeleteFavoriteConfirmationMessage = true
 
-	view.SetPermanentStatusBar(main,
-		"[red]Delete[-] from Favorites? Press [::b]Y[::-] to Confirm", cview.AlignCenter)
+	view.SetPermanentStatusBar(main, messages.DeleteFromFavorites, cview.AlignCenter)
 }
 
 func AddToFavorites(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
 	config *core.Config, ret *retriever.Retriever) {
 	statusBarMessage := ""
 	appState.IsOnAddFavoriteConfirmationMessage = false
-
 	story := ret.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
 		appState.CurrentPage)
+
 	err := ret.AddItemToFavoritesAndWriteToFile(story)
 	if err != nil {
 		statusBarMessage = message.Error("Could not add to favorites")

@@ -66,7 +66,7 @@ func SetApplicationShortcuts(ret *retriever.Retriever, app *cview.Application, l
 			model.ChangeHelpScreenCategory(event, appState, main)
 
 		case isOnHelpScreen && (event.Rune() == 'i'):
-			model.ExitHelpScreen(main, appState, config, list, ret)
+			model.ExitInfoScreen(main, appState, config, list, ret)
 
 		case isOnHelpScreen && (event.Rune() == 'q'):
 			model.Quit(app)
