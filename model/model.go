@@ -37,6 +37,8 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 			return
 		}
 
+		app.SetRoot(main.Grid, true)
+
 		resetStates(appState, ret)
 		initializeView(appState, main, ret)
 
@@ -53,6 +55,7 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 
 		view.ShowItems(list, listItems)
 		view.SetLeftMarginText(main, marginText)
+		view.ClearStatusBar(main)
 
 		if appState.State == state.OnHelpScreen {
 			updateInfoScreenView(main, appState.CurrentHelpScreenCategory, statusBarText)
@@ -79,6 +82,8 @@ func resetApplicationState(appState *core.ApplicationState) {
 	appState.ScreenWidth = screen.GetTerminalWidth()
 	appState.ScreenHeight = screen.GetTerminalHeight()
 	appState.SubmissionsToShow = screen.GetSubmissionsToShow(appState.ScreenHeight, 30)
+	appState.IsOnAddFavoriteConfirmationMessage = false
+	appState.IsOnAddFavoriteByID = false
 }
 
 func initializeView(appState *core.ApplicationState, main *core.MainView, ret *retriever.Retriever) {
@@ -602,18 +607,21 @@ func ShowAddCustomFavorite(app *cview.Application, list *cview.List, main *core.
 		if key == tcell.KeyEnter {
 			appState.IsOnAddFavoriteByID = false
 			text := main.CustomFavorite.GetText()
-			id, _ := strconv.Atoi(text)
 
-			item := new(core.Submission)
-			item.ID = id
-			item.Title = "[Enter comment section to update fields]"
-			item.Time = time.Now().Unix()
+			if text != "" {
+				id, _ := strconv.Atoi(text)
 
-			ret.AddItemToFavorites(item)
-			bytes, _ := ret.GetFavoritesJSON()
-			filePath := file.PathToFavoritesFile()
+				item := new(core.Submission)
+				item.ID = id
+				item.Title = "[Enter comment section to update fields]"
+				item.Time = time.Now().Unix()
 
-			_ = file.WriteToFile(filePath, string(bytes))
+				ret.AddItemToFavorites(item)
+				bytes, _ := ret.GetFavoritesJSON()
+				filePath := file.PathToFavoritesFile()
+
+				_ = file.WriteToFile(filePath, string(bytes))
+			}
 		}
 
 		main.Panels.SetCurrentPanel(panels.SubmissionsPanel)
