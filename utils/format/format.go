@@ -19,6 +19,10 @@ func Red(text string) string {
 	return "[maroon]" + text + resetForeground
 }
 
+func Yellow(text string) string {
+	return "[yellow]" + text + resetForeground
+}
+
 func Blue(text string) string {
 	return "[navy]" + text + resetForeground
 }
@@ -37,10 +41,6 @@ func Reverse(text string) string {
 
 func BlackOnOrange(text string) string {
 	return "[#0c0c0c:orange]" + text + resetForegroundAndBackground
-}
-
-func ResetStyle() string {
-	return resetStyle
 }
 
 func Len(textWithTage string) int {

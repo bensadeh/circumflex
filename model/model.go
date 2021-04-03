@@ -613,8 +613,9 @@ func ShowAddCustomFavorite(app *cview.Application, list *cview.List, main *core.
 
 				item := new(core.Submission)
 				item.ID = id
-				item.Title = "[Enter comment section to update fields]"
+				item.Title = messages.EnterCommentSectionToUpdate
 				item.Time = time.Now().Unix()
+				item.Author = "[]"
 
 				ret.AddItemToFavorites(item)
 				bytes, _ := ret.GetFavoritesJSON()

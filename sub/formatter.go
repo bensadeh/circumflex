@@ -1,6 +1,7 @@
 package sub
 
 import (
+	"clx/constants/messages"
 	"clx/utils/format"
 	"fmt"
 	"strconv"
@@ -27,6 +28,10 @@ func FormatSubMain(title string, domain string, mode int) string {
 }
 
 func formatTitle(title string, mode int) string {
+	if title == messages.EnterCommentSectionToUpdate {
+		return format.Yellow(title)
+	}
+
 	title = strings.ReplaceAll(title, tripleSpace, singleSpace)
 	title = strings.ReplaceAll(title, doubleSpace, singleSpace)
 	title = strings.ReplaceAll(title, "]", "[]")
