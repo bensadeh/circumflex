@@ -105,6 +105,8 @@ func newFavoritesFlex() (*cview.Flex, *cview.InputField) {
 	inputField.SetBorder(true)
 	inputField.SetBorderColor(tcell.ColorDefault)
 
+	inputField.SetBackgroundColor(tcell.ColorDefault)
+
 	inputField.SetLabel("ID: ")
 	inputField.SetLabelColor(tcell.ColorDefault)
 
@@ -137,6 +139,7 @@ func newFavoritesFlex() (*cview.Flex, *cview.InputField) {
 func demoBox() *cview.Box {
 	b := cview.NewBox()
 	b.SetBorder(false)
+	b.SetBackgroundColor(tcell.ColorDefault)
 
 	return b
 }
