@@ -555,11 +555,7 @@ func AddToFavorites(app *cview.Application, list *cview.List, main *core.MainVie
 
 	story := ret.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
 		appState.CurrentPage)
-	ret.AddItemToFavorites(story)
-	bytes, _ := ret.GetFavoritesJSON()
-	filePath := file.PathToFavoritesFile()
-
-	err := file.WriteToFile(filePath, string(bytes))
+	err := ret.AddItemToFavoritesAndWriteToFile(story)
 	if err != nil {
 		statusBarMessage = message.Error("Could not add to favorites")
 	} else {
@@ -573,7 +569,7 @@ func AddToFavorites(app *cview.Application, list *cview.List, main *core.MainVie
 func DeleteItem(app *cview.Application, list *cview.List, appState *core.ApplicationState,
 	main *core.MainView, config *core.Config, ret *retriever.Retriever) {
 	appState.IsOnDeleteFavoriteConfirmationMessage = false
-	ret.DeleteStoryAndWriteToDisk(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
+	ret.DeleteStoryAndWriteToFile(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
 		appState.CurrentPage)
 
 	hasDeletedLastItemOnSecondOrThirdPage := list.GetCurrentItemIndex() == 0 &&
@@ -617,11 +613,7 @@ func ShowAddCustomFavorite(app *cview.Application, list *cview.List, main *core.
 				item.Time = time.Now().Unix()
 				item.Author = "[]"
 
-				ret.AddItemToFavorites(item)
-				bytes, _ := ret.GetFavoritesJSON()
-				filePath := file.PathToFavoritesFile()
-
-				_ = file.WriteToFile(filePath, string(bytes))
+				_ = ret.AddItemToFavoritesAndWriteToFile(item)
 			}
 		}
 

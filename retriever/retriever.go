@@ -135,7 +135,7 @@ func (r *Retriever) GetStory(category, currentItemIndex, submissionsToShow, curr
 	return r.submissions[category].entries[index]
 }
 
-func (r *Retriever) DeleteStoryAndWriteToDisk(category, currentItemIndex, submissionsToShow, currentPage int) {
+func (r *Retriever) DeleteStoryAndWriteToFile(category, currentItemIndex, submissionsToShow, currentPage int) {
 	index := getIndex(currentItemIndex, submissionsToShow, currentPage)
 	r.submissions[category].entries = removeIndex(r.submissions[category].entries, index)
 	write(r)
@@ -161,8 +161,18 @@ func (r *Retriever) GetMaxPages(category int, submissionsToShow int) int {
 	return r.submissions[category].maxPages
 }
 
-func (r *Retriever) AddItemToFavorites(story *core.Submission) {
+func (r *Retriever) AddItemToFavoritesAndWriteToFile(story *core.Submission) error {
 	r.submissions[categories.Favorites].entries = append(r.submissions[categories.Favorites].entries, story)
+
+	bytes, _ := r.GetFavoritesJSON()
+	filePath := file.PathToFavoritesFile()
+
+	err := file.WriteToFile(filePath, string(bytes))
+	if err != nil {
+		return fmt.Errorf("could not write to file: %w", err)
+	}
+
+	return nil
 }
 
 func (r *Retriever) GetFavoritesJSON() ([]byte, error) {
