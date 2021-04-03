@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.14
-_WIP_
+_2021-04-03_
 
 **New features:**
 - Press <kbd>F</kbd> to add submission to Favorites by ID 
