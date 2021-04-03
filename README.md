@@ -53,8 +53,7 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 
 ## Syntax highlighting
 ### Quotes
-
-On Hacker News, quotes are separated by a paragraph and open with a `>`. Quotes are not further stylized or formatted: 
+On Hacker News, quotes are in their own paragraph and open with a `>`. They are not further stylized or formatted. 
 
 In `circumflex`, the `>` symbol is omitted and quotes are instead italicised and dimmed.
 
@@ -63,9 +62,8 @@ In `circumflex`, the `>` symbol is omitted and quotes are instead italicised and
 </p>
 
 ### Headlines
-Certain submissions on the front page are also in their own 'category', such as `Show HN` and `Ask HN`. `circumflex` 
-colorizes these parts of the headlines to make it easier to distinguish them from each other. On by default, but can be 
-disabled.
+Headlines containing the text `Ask HN`, `Tell HN`, `Show HN` and `Launch HN` are highlighted. On by default, 
+but can be disabled.
 
 <p align="center">
   <img src="screenshots/showtell.png" width="250" alt="^"/>
@@ -80,15 +78,15 @@ disabled.
 </p>
 
 ### References
-References are formatted as numbers inside brackets: `[1]`, `[2]`, `[…]`. `circumflex` highlights the numbers 
-inside the brackets for easier cross-referencing.
+By convention, references on Hacker News are formatted as numbers inside brackets. `circumflex` highlights these numbers 
+for easier cross-referencing.
 
 <p align="center">
   <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
 </p>
 
 ## Favorites
-You can save submissions you'd like to revisit later by adding them to Favorites. Press <kbd>f</kbd> to add the 
+Save submissions you'd like to revisit by adding them to Favorites. Press <kbd>f</kbd> to add the 
 currently highlighted submission to your Favorites list. Press <kbd>F</kbd> to add a submission by ID. Submissions can
 be removed with <kbd>x</kbd>.
 
