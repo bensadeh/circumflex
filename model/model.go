@@ -48,7 +48,6 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 			return
 		}
 
-		appState.State = state.OnSubmissionPage
 		statusBarText := getInfoScreenStatusBarText(appState.CurrentHelpScreenCategory)
 		marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, len(listItems), 0, 0)
 
