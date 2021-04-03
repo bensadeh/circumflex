@@ -106,8 +106,8 @@ To change the settings, you can either:
 2. set environment variables in your shell
 
 #### Changing settings through `config.env`
-`circumflex` can create a `config.env` in `~/.config/circumflex` by pressing <kbd>t</kbd> in the Settings View. This
-file will contain the available options, their descriptions and default values.
+`circumflex` can create a `config.env` template in `~/.config/circumflex` by pressing <kbd>t</kbd> in the Settings View.
+Edit this file and uncomment the values you want to change. 
 
 #### Changing settings with environment variables
 Depending on your preference, it might be more convenient for you to configure `circumflex` by setting 
