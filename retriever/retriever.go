@@ -11,6 +11,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/gdamore/tcell/v2"
+
 	"gitlab.com/tslocum/cview"
 )
 
@@ -214,7 +216,15 @@ func (r *Retriever) GetHackerNewsHeader(currentCategory int) string {
 	return header.GetHackerNewsHeader(currentCategory, showFavorites)
 }
 
-func (r *Retriever) GetNextCategory(currentCategory int) int {
+func (r *Retriever) GetNewCategory(event *tcell.EventKey, appState *core.ApplicationState) int {
+	if event.Key() == tcell.KeyBacktab {
+		return r.getPreviousCategory(appState.CurrentCategory)
+	}
+
+	return r.getNextCategory(appState.CurrentCategory)
+}
+
+func (r *Retriever) getNextCategory(currentCategory int) int {
 	numberOfCategories := r.getTotalNumberOfCategories()
 
 	if currentCategory == (numberOfCategories - 1) {
@@ -224,7 +234,7 @@ func (r *Retriever) GetNextCategory(currentCategory int) int {
 	return currentCategory + 1
 }
 
-func (r *Retriever) GetPreviousCategory(currentCategory int) int {
+func (r *Retriever) getPreviousCategory(currentCategory int) int {
 	numberOfCategories := r.getTotalNumberOfCategories()
 
 	if currentCategory == 0 {

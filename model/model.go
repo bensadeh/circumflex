@@ -201,15 +201,7 @@ func getMarginText(useRelativeNumbering bool, viewableStories, maxItems, current
 func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.List, appState *core.ApplicationState,
 	main *core.MainView, config *core.Config, ret *retriever.Retriever) {
 	currentItem := list.GetCurrentItemIndex()
-	nextCategory := 0
-
-	if event.Key() == tcell.KeyBacktab {
-		nextCategory = ret.GetPreviousCategory(appState.CurrentCategory)
-	} else {
-		nextCategory = ret.GetNextCategory(appState.CurrentCategory)
-	}
-
-	appState.CurrentCategory = nextCategory
+	appState.CurrentCategory = ret.GetNewCategory(event, appState)
 	appState.CurrentPage = 0
 
 	listItems, err := ret.GetSubmissions(appState.CurrentCategory, appState.CurrentPage,
