@@ -225,9 +225,9 @@ func (r *Retriever) GetNewCategory(event *tcell.EventKey, appState *core.Applica
 }
 
 func (r *Retriever) getNextCategory(currentCategory int) int {
-	numberOfCategories := r.getTotalNumberOfCategories()
+	isAtLastCategory := currentCategory == (r.getTotalNumberOfCategories() - 1)
 
-	if currentCategory == (numberOfCategories - 1) {
+	if isAtLastCategory {
 		return 0
 	}
 
@@ -235,10 +235,10 @@ func (r *Retriever) getNextCategory(currentCategory int) int {
 }
 
 func (r *Retriever) getPreviousCategory(currentCategory int) int {
-	numberOfCategories := r.getTotalNumberOfCategories()
+	isAtFirstCategory := currentCategory == 0
 
-	if currentCategory == 0 {
-		return numberOfCategories - 1
+	if isAtFirstCategory {
+		return r.getTotalNumberOfCategories() - 1
 	}
 
 	return currentCategory - 1
