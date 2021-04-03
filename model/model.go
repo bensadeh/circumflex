@@ -7,6 +7,8 @@ import (
 	"clx/constants/categories"
 	"clx/constants/help"
 	"clx/constants/messages"
+	"clx/constants/panels"
+	"clx/constants/state"
 	"clx/core"
 	"clx/file"
 	"clx/retriever"
@@ -46,14 +48,14 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 			return
 		}
 
-		appState.IsOffline = false
+		appState.State = state.OnSubmissionPage
 		statusBarText := getInfoScreenStatusBarText(appState.CurrentHelpScreenCategory)
 		marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, len(listItems), 0, 0)
 
 		view.ShowItems(list, listItems)
 		view.SetLeftMarginText(main, marginText)
 
-		if appState.IsOnHelpScreen {
+		if appState.State == state.OnHelpScreen {
 			updateInfoScreenView(main, appState.CurrentHelpScreenCategory, statusBarText)
 		}
 	})
@@ -61,7 +63,7 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 
 func setToErrorState(appState *core.ApplicationState, main *core.MainView, list *cview.List, app *cview.Application) {
 	errorMessage := message.Error(messages.OfflineMessage)
-	appState.IsOffline = true
+	appState.State = state.Offline
 
 	view.SetPermanentStatusBar(main, errorMessage, cview.AlignCenter)
 	view.ClearList(list)
@@ -345,7 +347,7 @@ func SelectItemUp(main *core.MainView, list *cview.List, appState *core.Applicat
 
 func EnterInfoScreen(main *core.MainView, appState *core.ApplicationState) {
 	statusBarText := getInfoScreenStatusBarText(appState.CurrentHelpScreenCategory)
-	appState.IsOnHelpScreen = true
+	appState.State = state.OnHelpScreen
 
 	ClearVimRegister(main, appState)
 	updateInfoScreenView(main, appState.CurrentHelpScreenCategory, statusBarText)
@@ -369,7 +371,7 @@ func updateInfoScreenView(main *core.MainView, helpScreenCategory int, statusBar
 
 func ExitHelpScreen(main *core.MainView, appState *core.ApplicationState, config *core.Config, list *cview.List,
 	ret *retriever.Retriever) {
-	appState.IsOnHelpScreen = false
+	appState.State = state.OnSubmissionPage
 
 	marginText := getMarginText(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
 		list.GetCurrentItemIndex(), appState.CurrentPage)
@@ -509,7 +511,7 @@ func Refresh(app *cview.Application, list *cview.List, main *core.MainView, appS
 
 	ExitHelpScreen(main, appState, config, list, ret)
 
-	if appState.IsOffline {
+	if appState.State == state.Offline {
 		errorMessage := message.Error(messages.OfflineMessage)
 
 		view.SetPermanentStatusBar(main, errorMessage, cview.AlignCenter)
@@ -587,4 +589,42 @@ func DeleteItem(app *cview.Application, list *cview.List, appState *core.Applica
 
 	m := message.Success("Item deleted")
 	view.SetPermanentStatusBar(main, m, cview.AlignCenter)
+}
+
+func ShowAddCustomFavorite(app *cview.Application, list *cview.List, main *core.MainView,
+	appState *core.ApplicationState, config *core.Config, ret *retriever.Retriever) {
+	appState.IsOnAddFavoriteByID = true
+
+	view.HideLeftMarginRanks(main)
+
+	main.CustomFavorite.SetText("")
+	main.CustomFavorite.SetAcceptanceFunc(cview.InputFieldInteger)
+	main.CustomFavorite.SetDoneFunc(func(key tcell.Key) {
+		if key == tcell.KeyEnter {
+			appState.IsOnAddFavoriteByID = false
+			text := main.CustomFavorite.GetText()
+			id, _ := strconv.Atoi(text)
+
+			item := new(core.Submission)
+			item.ID = id
+			item.Title = "[Enter comment section to update fields]"
+			item.Time = time.Now().Unix()
+
+			ret.AddItemToFavorites(item)
+			bytes, _ := ret.GetFavoritesJSON()
+			filePath := file.PathToFavoritesFile()
+
+			_ = file.WriteToFile(filePath, string(bytes))
+		}
+
+		main.Panels.SetCurrentPanel(panels.SubmissionsPanel)
+		app.SetFocus(main.Grid)
+
+		changePage(app, list, main, appState, config, ret, 0)
+		appState.IsOnAddFavoriteByID = false
+	})
+
+	app.SetFocus(main.CustomFavorite)
+
+	view.ShowFavoritesBox(main)
 }

@@ -3,6 +3,7 @@ package controller
 import (
 	"clx/constants/categories"
 	"clx/constants/help"
+	"clx/constants/state"
 	"clx/core"
 	"clx/model"
 	"clx/retriever"
@@ -20,17 +21,17 @@ func SetAfterInitializationAndAfterResizeFunctions(ret *retriever.Retriever,
 func SetApplicationShortcuts(ret *retriever.Retriever, app *cview.Application, list *cview.List,
 	main *core.MainView, appState *core.ApplicationState, config *core.Config) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		isOnHelpScreen := appState.IsOnHelpScreen
+		isOnHelpScreen := appState.State == state.OnHelpScreen
 		isOnSettingsPage := isOnHelpScreen && (appState.CurrentHelpScreenCategory == help.Settings)
 
 		switch {
 		// Offline
-		case appState.IsOffline && event.Rune() == 'r':
+		case appState.State == state.Offline && event.Rune() == 'r':
 			model.Refresh(app, list, main, appState, config, ret)
 
-		case appState.IsOffline && event.Rune() == 'q':
+		case appState.State == state.Offline && event.Rune() == 'q':
 			model.Quit(app)
-		case appState.IsOffline:
+		case appState.State == state.Offline:
 			return event
 
 		// Help View
@@ -74,6 +75,9 @@ func SetApplicationShortcuts(ret *retriever.Retriever, app *cview.Application, l
 			return event
 
 		// Main View
+		case appState.IsOnAddFavoriteByID:
+			return event
+
 		case appState.IsOnAddFavoriteConfirmationMessage && event.Rune() == 'y':
 			model.AddToFavorites(app, list, main, appState, config, ret)
 
@@ -85,6 +89,9 @@ func SetApplicationShortcuts(ret *retriever.Retriever, app *cview.Application, l
 
 		case event.Rune() == 'f':
 			model.AddToFavoritesConfirmationDialogue(main, appState, list)
+
+		case event.Rune() == 'F':
+			model.ShowAddCustomFavorite(app, list, main, appState, config, ret)
 
 		case event.Rune() == 'x' && appState.CurrentCategory == categories.Favorites:
 			model.DeleteFavoriteConfirmationDialogue(main, appState, list)

@@ -132,3 +132,7 @@ func ShowItems(list *cview.List, listItems []*cview.ListItem) {
 		list.AddItem(item)
 	}
 }
+
+func ShowFavoritesBox(m *core.MainView) {
+	m.Panels.SetCurrentPanel(panels.AddCustomFavoritePanel)
+}

@@ -31,24 +31,25 @@ type ApplicationState struct {
 	ScreenWidth                           int
 	CurrentPage                           int
 	VimNumberRegister                     string
-	IsOffline                             bool
 	IsReturningFromSuspension             bool
-	IsOnHelpScreen                        bool
 	IsOnConfigCreationConfirmationMessage bool
 	IsOnAddFavoriteConfirmationMessage    bool
 	IsOnDeleteFavoriteConfirmationMessage bool
+	IsOnAddFavoriteByID                   bool
+	State                                 int
 }
 
 type MainView struct {
-	Grid          *cview.Grid
-	Header        *cview.TextView
-	LeftMargin    *cview.TextView
-	Panels        *cview.Panels
-	StatusBar     *cview.TextView
-	PageCounter   *cview.TextView
-	Settings      *cview.TextView
-	InfoScreen    *cview.TextView
-	KeymapsScreen *cview.TextView
+	Grid           *cview.Grid
+	Header         *cview.TextView
+	LeftMargin     *cview.TextView
+	Panels         *cview.Panels
+	StatusBar      *cview.TextView
+	PageCounter    *cview.TextView
+	Settings       *cview.TextView
+	InfoScreen     *cview.TextView
+	KeymapsScreen  *cview.TextView
+	CustomFavorite *cview.InputField
 }
 
 type Config struct {

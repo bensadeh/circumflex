@@ -103,7 +103,8 @@ inside the brackets for easier cross-referencing.
 
 ## Favorites
 You can save submissions you'd like to revisit later by adding them to Favorites. Press <kbd>f</kbd> to add the 
-currently highlighted submission to your Favorites list. Favorited items can be removed with <kbd>x</kbd>.
+currently highlighted submission to your Favorites list or press <kbd>F</kbd> to add a submission by ID. Submissions can
+be removed from favorites with <kbd>x</kbd>.
 
 Favorites are stored in `favorites.json` in `~/.config/circumflex`.
 

@@ -3,8 +3,8 @@
 ## 0.14
 _WIP_
 
-**Backend:**
-- Gracefully handle adding favorites by ID key only
+**New features:**
+- Press <kbd>F</kbd> to add submission to Favorites by ID 
 
 ## 0.13
 _2021-04-02_

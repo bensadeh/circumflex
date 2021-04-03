@@ -20,6 +20,7 @@ Open comments in browser .................... c
 Refresh ..................................... r
 
 Add to favorites ............................ f
+Add to favorites by ID ...................... F
 Delete from favorites ....................... x
                                     
 Bring up this screen ........................ i, ?

@@ -61,6 +61,10 @@ func NewMainView() *core.MainView {
 	main.Settings = newTextViewPrimitive(GetSettingsText())
 	main.InfoScreen = newTextViewPrimitive(GetInfoText())
 
+	flex, inputField := newFavoritesFlex()
+
+	main.CustomFavorite = inputField
+
 	main.Grid.SetBorder(false)
 	main.Grid.SetRows(2, 0, 1)
 	main.Grid.SetColumns(margins.LeftMargin, 0, margins.RightMarginPageCounter)
@@ -74,6 +78,7 @@ func NewMainView() *core.MainView {
 	main.Panels.AddPanel(panels.InfoPanel, main.InfoScreen, true, false)
 	main.Panels.AddPanel(panels.KeymapsPanel, GetHelpScreen(), true, false)
 	main.Panels.AddPanel(panels.SettingsPanel, main.Settings, true, false)
+	main.Panels.AddPanel(panels.AddCustomFavoritePanel, flex, true, false)
 
 	return main
 }
@@ -89,4 +94,49 @@ func newTextViewPrimitive(text string) *cview.TextView {
 	tv.SetScrollBarVisibility(cview.ScrollBarNever)
 
 	return tv
+}
+
+func newFavoritesFlex() (*cview.Flex, *cview.InputField) {
+	inputField := cview.NewInputField()
+	inputField.SetTitle("Add to favorites by ID")
+	inputField.SetTitleColor(tcell.ColorDefault)
+	inputField.SetTitleAlign(cview.AlignCenter)
+
+	inputField.SetBorder(true)
+	inputField.SetBorderColor(tcell.ColorDefault)
+
+	inputField.SetLabel("ID: ")
+	inputField.SetLabelColor(tcell.ColorDefault)
+
+	inputField.SetFieldTextColor(tcell.ColorDefault)
+	inputField.SetFieldBackgroundColor(tcell.ColorDefault)
+
+	inputField.SetFieldWidth(20)
+	inputField.SetPadding(1, 0, 5, 5)
+
+	inputField.SetAcceptanceFunc(cview.InputFieldInteger)
+	inputField.SetDoneFunc(func(key tcell.Key) {
+		inputField.GetText()
+	})
+
+	subFlex := cview.NewFlex()
+	subFlex.SetDirection(cview.FlexRow)
+	subFlex.AddItem(demoBox(), 0, 1, false)
+	subFlex.AddItem(inputField, 5, 0, false)
+	subFlex.AddItem(demoBox(), 0, 1, false)
+
+	flex := cview.NewFlex()
+	flex.AddItem(demoBox(), 0, 1, false)
+	flex.AddItem(subFlex, 30, 2, false)
+	flex.AddItem(demoBox(), 0, 1, false)
+	flex.AddItem(demoBox(), margins.LeftMargin, 0, false)
+
+	return flex, inputField
+}
+
+func demoBox() *cview.Box {
+	b := cview.NewBox()
+	b.SetBorder(false)
+
+	return b
 }
