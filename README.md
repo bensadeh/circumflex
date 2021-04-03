@@ -34,20 +34,12 @@ Press <kbd>i</kbd> to show available keymaps and settings.
 
 ## Overview
 
-`circumflex` is a text-based user interface (TUI) application that lets you browse Hacker News in your terminal. It can
-list submissions by category and show the comment section. 
-
-On the Main View, `circumflex` supports Vim keybindings for navigating between submissions, including <kbd>h</kbd>, 
-<kbd>j</kbd>, <kbd>k</kbd> and <kbd>l</kbd>, digits and <kbd>g</kbd>/<kbd>G</kbd>.
-
-`circumflex` is made to look well across different configurations by adhering to your terminal's native color scheme. 
-
+`circumflex` is Hacker News on the command line. It lets you browse submissions by category and read comments. 
+`circumflex` is customizable, supports Vim-keybindings and respects your terminal's native color scheme.
 
 <p align="center">
   <img src="screenshots/comments.png" width="700" alt="^"/>
 </p>
-
-
 
 ## Comment section
 
@@ -62,13 +54,7 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 ## Syntax highlighting
 ### Quotes
 
-In the comment section in Hacker News, quotes are separated by a paragraph and open with a `>`. However, besides these 
-distinctions, quotes are not further stylized or formatted:
-```
-> This is a quote 
-
-This is not a quote
-```
+On Hacker News, quotes are separated by a paragraph and open with a `>`. Quotes are not further stylized or formatted: 
 
 In `circumflex`, the `>` symbol is omitted and quotes are instead italicised and dimmed.
 
@@ -104,7 +90,7 @@ inside the brackets for easier cross-referencing.
 ## Favorites
 You can save submissions you'd like to revisit later by adding them to Favorites. Press <kbd>f</kbd> to add the 
 currently highlighted submission to your Favorites list. Press <kbd>F</kbd> to add a submission by ID. Submissions can
-be removed from favorites with <kbd>x</kbd>.
+be removed with <kbd>x</kbd>.
 
 Favorites are stored in `favorites.json` in `~/.config/circumflex`.
 
