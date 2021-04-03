@@ -461,9 +461,9 @@ func PutDigitInRegister(main *core.MainView, element rune, appState *core.Applic
 		ClearVimRegister(main, appState)
 	}
 
-	registerIsMoreThanThreeDigits := len(appState.VimNumberRegister) > 2
+	registerHasMoreThanThreeDigits := len(appState.VimNumberRegister) > 2
 
-	if registerIsMoreThanThreeDigits {
+	if registerHasMoreThanThreeDigits {
 		appState.VimNumberRegister = trimFirstRune(appState.VimNumberRegister)
 	}
 
