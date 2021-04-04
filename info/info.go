@@ -3,19 +3,21 @@ package info
 import (
 	"clx/constants/categories"
 	constructor "clx/constructors"
+	"clx/keymaps"
 	"clx/screen"
 	"strings"
 
 	text "github.com/MichaelMure/go-term-text"
 )
 
-func GetText(category int) string {
+func GetText(category int, screenWidth int) string {
 	switch category {
+
 	case categories.Definition:
 		return getDefinition()
 
 	case categories.Keymaps:
-		return getKeymaps()
+		return getKeymaps(screenWidth)
 
 	case categories.Settings:
 		return getSettings()
@@ -53,22 +55,39 @@ adjective [::di]Anatomy[::-]
 	return formattedText
 }
 
-func getKeymaps() string {
-	km := `     Header
+func getKeymaps(screenWidth int) string {
+	keys := new(keymaps.List)
+	keys.Init()
 
-Very long descriptionx
-Separate item .. xyz
+	keys.AddSeparator()
+	keys.AddHeader("Main View")
+	keys.AddSeparator()
+	keys.AddKeymap("Read comments", "Enter")
+	keys.AddKeymap("Change category", "Tab")
+	keys.AddKeymap("Open submission link in browser", "o")
+	keys.AddKeymap("Open comments in browser", "c")
+	keys.AddKeymap("Refresh", "r")
+	keys.AddSeparator()
+	keys.AddKeymap("Add to favorites", "f")
+	keys.AddKeymap("Add to favorites by ID", "F")
+	keys.AddKeymap("Delete from favorites", "x")
+	keys.AddSeparator()
+	keys.AddKeymap("Bring up this screen", "i, ?")
+	keys.AddKeymap("Quit to prompt", "q")
+	keys.AddSeparator()
+	keys.AddHeader("Comment Section")
+	keys.AddSeparator()
+	keys.AddKeymap("Down one half-window", "d")
+	keys.AddKeymap("Up one half-window", "u")
+	keys.AddSeparator()
+	keys.AddKeymap("Jump to next top-level comment", "/ + '::'")
+	keys.AddKeymap("Repeat last search", "n")
+	keys.AddKeymap("Repeat last search in reverse direction", "N")
+	keys.AddSeparator()
+	keys.AddKeymap("Help screen", "h")
+	keys.AddKeymap("Quit to Main Screen", "q")
 
-Add item ......... x
-Delete item ...... x
-
-     Header
-
-Delete item ...... x
-Item ......... a + b
-`
-
-	return km
+	return keys.Print(screenWidth)
 }
 
 func getSettings() string {

@@ -26,20 +26,20 @@ func TestKeymaps(t *testing.T) {
 	keys.AddKeymap("Delete item", "x")
 	keys.AddKeymap("Item", "a + b")
 
-	actual := keys.Print(5, 20)
+	actual := keys.Print(80)
 
-	expected := `     Header
+	expected := `                              [::b]Header[::-]
 
-Very long descriptionx
-Separate item .. xyz
+                     Very long description  x
+                     Separate item ...... xyz
 
-Add item ......... x
-Delete item ...... x
+                     Add item ............. x
+                     Delete item .......... x
 
-     Header
+                              [::b]Header[::-]
 
-Delete item ...... x
-Item ......... a + b
+                     Delete item .......... x
+                     Item ............. a + b
 `
 
 	assert.Equal(t, expected, actual)

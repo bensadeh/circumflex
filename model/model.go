@@ -60,7 +60,7 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 		view.ClearStatusBar(main)
 
 		if appState.State == state.OnHelpScreen {
-			updateInfoScreenView(main, appState.CurrentHelpScreenCategory, statusBarText)
+			updateInfoScreenView(main, appState, statusBarText)
 		}
 	})
 }
@@ -241,7 +241,7 @@ func ChangeHelpScreenCategory(event *tcell.EventKey, appState *core.ApplicationS
 
 	statusBarText := getInfoScreenStatusBarText(appState.CurrentHelpScreenCategory)
 
-	updateInfoScreenView(main, appState.CurrentHelpScreenCategory, statusBarText)
+	updateInfoScreenView(main, appState, statusBarText)
 }
 
 func ShowCreateConfigConfirmationMessage(main *core.MainView, appState *core.ApplicationState) {
@@ -299,9 +299,7 @@ func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
 		statusBarMessage = message.Success(messages.ConfigCreatedAt)
 	}
 
-	updateInfoScreenView(main, appState.CurrentHelpScreenCategory, statusBarMessage)
-	// view.UpdateSettingsScreen(main)
-	// view.SetPermanentStatusBar(main, statusBarMessage, cview.AlignCenter)
+	updateInfoScreenView(main, appState, statusBarMessage)
 }
 
 func SelectItemDown(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config) {
@@ -336,7 +334,7 @@ func EnterInfoScreen(main *core.MainView, appState *core.ApplicationState) {
 	appState.State = state.OnHelpScreen
 
 	ClearVimRegister(main, appState)
-	updateInfoScreenView(main, appState.CurrentHelpScreenCategory, statusBarText)
+	updateInfoScreenView(main, appState, statusBarText)
 }
 
 func getInfoScreenStatusBarText(category int) string {
@@ -347,11 +345,13 @@ func getInfoScreenStatusBarText(category int) string {
 	return ""
 }
 
-func updateInfoScreenView(main *core.MainView, helpScreenCategory int, statusBarText string) {
-	view.SetInfoScreenText(main, info.GetText(helpScreenCategory))
+func updateInfoScreenView(main *core.MainView, appState *core.ApplicationState, statusBarText string) {
+	infoScreenText := info.GetText(appState.CurrentHelpScreenCategory, appState.ScreenWidth)
+
+	view.SetInfoScreenText(main, infoScreenText)
 	view.SetPermanentStatusBar(main, statusBarText, cview.AlignCenter)
 	view.HidePageCounter(main)
-	view.SetHelpScreenHeader(main, helpScreenCategory)
+	view.SetHelpScreenHeader(main, appState.CurrentHelpScreenCategory)
 	view.HideLeftMarginRanks(main)
 	view.SetPanelToInfoView(main)
 }

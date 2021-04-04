@@ -1,6 +1,12 @@
 package keymaps
 
-import "strings"
+import (
+	"clx/constants/margins"
+	"clx/utils/format"
+	"strings"
+
+	text "github.com/MichaelMure/go-term-text"
+)
 
 const (
 	header    = 0
@@ -50,21 +56,26 @@ func (k *List) AddKeymap(description string, key string) {
 	k.keymaps = append(k.keymaps, item)
 }
 
-func (k *List) Print(headerMargin int, width int) string {
+func (k *List) Print(screenWidth int) string {
 	output := ""
-	headerIndentation := strings.Repeat(" ", headerMargin)
 
 	for _, item := range k.keymaps {
 		switch item.category {
 		case header:
-			output += headerIndentation + item.header + newline
+			padding := k.getLongestLineLength(screenWidth)/2 - len(item.header) + len(item.header)/2
+			padToCenterAlign := strings.Repeat(" ", padding)
+
+			output += padToCenterAlign + format.Bold(item.header) + newline
 		case separator:
 			output += newline
 		case keymap:
-			dots := getDotSeparators(item.description, item.key, width)
+			dots := getDotSeparators(item.description, item.key, screenWidth-margins.LeftMargin*8)
 			output += item.description + dots + item.key + newline
 		}
 	}
+
+	pad := strings.Repeat(" ", margins.LeftMargin*3)
+	output, _ = text.WrapWithPad(output, screenWidth, pad)
 
 	return output
 }
@@ -81,4 +92,17 @@ func getDotSeparators(description string, key string, width int) string {
 	}
 
 	return space + strings.Repeat(".", numberOfDotSeparators) + space
+}
+
+func (k *List) getLongestLineLength(screenWidth int) int {
+	allLines := ""
+
+	for _, item := range k.keymaps {
+		if item.category == keymap {
+			dots := getDotSeparators(item.description, item.key, screenWidth-margins.LeftMargin*8)
+			allLines += item.description + dots + item.key + newline
+		}
+	}
+
+	return text.MaxLineLen(allLines)
 }
