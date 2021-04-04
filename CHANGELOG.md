@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.15
-_WIP_
+_2021-04-04_
 
 **Cosmetic**
 - All views are now responsive
