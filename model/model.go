@@ -11,6 +11,7 @@ import (
 	"clx/constants/state"
 	"clx/core"
 	"clx/file"
+	"clx/info"
 	"clx/retriever"
 	"clx/screen"
 	"clx/utils/message"
@@ -90,9 +91,9 @@ func resetApplicationState(appState *core.ApplicationState) {
 func initializeView(appState *core.ApplicationState, main *core.MainView, ret *retriever.Retriever) {
 	header := ret.GetHackerNewsHeader(appState.CurrentCategory)
 
-	view.UpdateSettingsScreen(main)
+	// view.UpdateSettingsScreen(main)
 	view.UpdateInfoScreen(main)
-	view.SetPanelToSubmissions(main)
+	view.SetPanelToMainView(main)
 	view.SetHackerNewsHeader(main, header)
 	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory,
 		appState.SubmissionsToShow))
@@ -254,29 +255,29 @@ func ShowCreateConfigConfirmationMessage(main *core.MainView, appState *core.App
 }
 
 func ScrollSettingsOneLineUp(main *core.MainView) {
-	view.ScrollSettingsOneLineUp(main)
+	view.ScrollInfoScreenByAmount(main, -1)
 }
 
 func ScrollSettingsOneLineDown(main *core.MainView) {
-	view.ScrollSettingsOneLineDown(main)
+	view.ScrollInfoScreenByAmount(main, 1)
 }
 
 func ScrollSettingsOneHalfPageUp(main *core.MainView) {
 	halfPage := screen.GetTerminalHeight() / 2
-	view.ScrollSettingsByAmount(main, -halfPage)
+	view.ScrollInfoScreenByAmount(main, -halfPage)
 }
 
 func ScrollSettingsOneHalfPageDown(main *core.MainView) {
 	halfPage := screen.GetTerminalHeight() / 2
-	view.ScrollSettingsByAmount(main, halfPage)
+	view.ScrollInfoScreenByAmount(main, halfPage)
 }
 
 func ScrollSettingsToBeginning(main *core.MainView) {
-	view.ScrollSettingsToBeginning(main)
+	view.ScrollInfoScreenToBeginning(main)
 }
 
 func ScrollSettingsToEnd(main *core.MainView) {
-	view.ScrollSettingsToEnd(main)
+	view.ScrollInfoScreenToEnd(main)
 }
 
 func CancelConfirmation(appState *core.ApplicationState, main *core.MainView) {
@@ -298,8 +299,9 @@ func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
 		statusBarMessage = message.Success(messages.ConfigCreatedAt)
 	}
 
-	view.UpdateSettingsScreen(main)
-	view.SetPermanentStatusBar(main, statusBarMessage, cview.AlignCenter)
+	updateInfoScreenView(main, appState.CurrentHelpScreenCategory, statusBarMessage)
+	// view.UpdateSettingsScreen(main)
+	// view.SetPermanentStatusBar(main, statusBarMessage, cview.AlignCenter)
 }
 
 func SelectItemDown(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config) {
@@ -346,11 +348,12 @@ func getInfoScreenStatusBarText(category int) string {
 }
 
 func updateInfoScreenView(main *core.MainView, helpScreenCategory int, statusBarText string) {
+	view.SetInfoScreenText(main, info.GetText(helpScreenCategory))
 	view.SetPermanentStatusBar(main, statusBarText, cview.AlignCenter)
 	view.HidePageCounter(main)
 	view.SetHelpScreenHeader(main, helpScreenCategory)
 	view.HideLeftMarginRanks(main)
-	view.SetHelpScreenPanel(main, helpScreenCategory)
+	view.SetPanelToInfoView(main)
 }
 
 func ExitInfoScreen(main *core.MainView, appState *core.ApplicationState, config *core.Config, list *cview.List,
@@ -364,7 +367,7 @@ func ExitInfoScreen(main *core.MainView, appState *core.ApplicationState, config
 
 	view.SetLeftMarginText(main, marginText)
 	view.SetHackerNewsHeader(main, header)
-	view.SetPanelToSubmissions(main)
+	view.SetPanelToMainView(main)
 	view.SetPageCounter(main, appState.CurrentPage, maxPages)
 	view.ClearStatusBar(main)
 }

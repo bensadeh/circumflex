@@ -1,7 +1,6 @@
 package view
 
 import (
-	"clx/constants/help"
 	"clx/constants/panels"
 	"clx/core"
 	"clx/header"
@@ -22,29 +21,17 @@ func SetHelpScreenHeader(m *core.MainView, category int) {
 	m.Header.SetText(h)
 }
 
-func SetPanelToSubmissions(m *core.MainView) {
+func SetPanelToMainView(m *core.MainView) {
 	m.Panels.SetCurrentPanel(panels.SubmissionsPanel)
 }
 
-func SetHelpScreenPanel(m *core.MainView, category int) {
-	switch category {
-	case help.Info:
-		m.Panels.SetCurrentPanel(panels.InfoPanel)
-	case help.Keymaps:
-		m.Panels.SetCurrentPanel(panels.KeymapsPanel)
-	case help.Settings:
-		m.Panels.SetCurrentPanel(panels.SettingsPanel)
-	default:
-		return
-	}
+func SetPanelToInfoView(m *core.MainView) {
+	m.Panels.SetCurrentPanel(panels.InfoPanel)
+	m.InfoScreen.ScrollToBeginning()
 }
 
 func ClearStatusBar(m *core.MainView) {
 	SetPermanentStatusBar(m, "", cview.AlignCenter)
-}
-
-func UpdateSettingsScreen(m *core.MainView) {
-	m.Settings.SetText(constructor.GetSettingsText())
 }
 
 func UpdateInfoScreen(m *core.MainView) {
@@ -79,27 +66,27 @@ func HidePageCounter(m *core.MainView) {
 	m.PageCounter.SetText("")
 }
 
-func ScrollSettingsOneLineUp(m *core.MainView) {
-	row, col := m.Settings.GetScrollOffset()
-	m.Settings.ScrollTo(row-1, col)
+//func ScrollInfoScreenOneLineUp(m *core.MainView) {
+//	row, col := m.InfoScreen.GetScrollOffset()
+//	m.InfoScreen.ScrollTo(row-1, col)
+//}
+//
+//func ScrollInfoScreenOneLineDown(m *core.MainView) {
+//	row, col := m.InfoScreen.GetScrollOffset()
+//	m.InfoScreen.ScrollTo(row+1, col)
+//}
+
+func ScrollInfoScreenByAmount(m *core.MainView, amount int) {
+	row, col := m.InfoScreen.GetScrollOffset()
+	m.InfoScreen.ScrollTo(row+amount, col)
 }
 
-func ScrollSettingsOneLineDown(m *core.MainView) {
-	row, col := m.Settings.GetScrollOffset()
-	m.Settings.ScrollTo(row+1, col)
+func ScrollInfoScreenToBeginning(m *core.MainView) {
+	m.InfoScreen.ScrollToBeginning()
 }
 
-func ScrollSettingsByAmount(m *core.MainView, amount int) {
-	row, col := m.Settings.GetScrollOffset()
-	m.Settings.ScrollTo(row+amount, col)
-}
-
-func ScrollSettingsToBeginning(m *core.MainView) {
-	m.Settings.ScrollToBeginning()
-}
-
-func ScrollSettingsToEnd(m *core.MainView) {
-	m.Settings.ScrollToEnd()
+func ScrollInfoScreenToEnd(m *core.MainView) {
+	m.InfoScreen.ScrollToEnd()
 }
 
 func SetPageCounter(m *core.MainView, currentPage int, maxPages int) {
@@ -135,4 +122,8 @@ func ShowItems(list *cview.List, listItems []*cview.ListItem) {
 
 func ShowFavoritesBox(m *core.MainView) {
 	m.Panels.SetCurrentPanel(panels.AddCustomFavoritePanel)
+}
+
+func SetInfoScreenText(m *core.MainView, text string) {
+	m.InfoScreen.SetText(text)
 }

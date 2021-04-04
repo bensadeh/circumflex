@@ -76,8 +76,8 @@ func NewMainView() *core.MainView {
 	main.Grid.AddItem(main.PageCounter, 2, 2, 1, 1, 0, 0, false)
 
 	main.Panels.AddPanel(panels.InfoPanel, main.InfoScreen, true, false)
-	main.Panels.AddPanel(panels.KeymapsPanel, GetHelpScreen(), true, false)
-	main.Panels.AddPanel(panels.SettingsPanel, main.Settings, true, false)
+	// main.Panels.AddPanel(panels.KeymapsPanel, GetHelpScreen(), true, false)
+	// main.Panels.AddPanel(panels.SettingsPanel, main.Settings, true, false)
 	main.Panels.AddPanel(panels.AddCustomFavoritePanel, flex, true, false)
 
 	return main
