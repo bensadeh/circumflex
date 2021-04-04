@@ -5,7 +5,6 @@ import (
 	"clx/cli"
 	"clx/comment"
 	"clx/constants/categories"
-	"clx/constants/help"
 	"clx/constants/messages"
 	"clx/constants/panels"
 	"clx/constants/state"
@@ -335,7 +334,7 @@ func EnterInfoScreen(main *core.MainView, appState *core.ApplicationState) {
 }
 
 func getInfoScreenStatusBarText(category int) string {
-	if category == help.Info {
+	if category == categories.Definition {
 		return messages.GetCircumflexStatusMessage()
 	}
 

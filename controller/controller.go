@@ -2,7 +2,6 @@ package controller
 
 import (
 	"clx/constants/categories"
-	"clx/constants/help"
 	"clx/constants/state"
 	"clx/core"
 	"clx/model"
@@ -22,7 +21,7 @@ func SetApplicationShortcuts(ret *retriever.Retriever, app *cview.Application, l
 	main *core.MainView, appState *core.ApplicationState, config *core.Config) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		isOnHelpScreen := appState.State == state.OnHelpScreen
-		isOnSettingsPage := isOnHelpScreen && (appState.CurrentHelpScreenCategory == help.Settings)
+		isOnSettingsPage := isOnHelpScreen && (appState.CurrentHelpScreenCategory == categories.Settings)
 
 		switch {
 		// Offline
