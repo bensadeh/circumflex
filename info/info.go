@@ -2,9 +2,9 @@ package info
 
 import (
 	"clx/constants/categories"
-	constructor "clx/constructors"
 	"clx/keymaps"
 	"clx/screen"
+	"clx/settings"
 	"strings"
 
 	text "github.com/MichaelMure/go-term-text"
@@ -12,7 +12,6 @@ import (
 
 func GetText(category int, screenWidth int) string {
 	switch category {
-
 	case categories.Definition:
 		return getDefinition()
 
@@ -91,5 +90,5 @@ func getKeymaps(screenWidth int) string {
 }
 
 func getSettings() string {
-	return constructor.GetSettingsText()
+	return settings.GetSettingsText()
 }

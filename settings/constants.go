@@ -2,10 +2,7 @@ package settings
 
 const (
 	ConfigFileNameAbbreviated = "config"
-	ConfigFileNameFull        = "config.env"
-	FavoritesFileNameFull     = "favorites.json"
 	ConfigFilePath            = "~/.config/circumflex/config.env"
-	FavoritesFilePath         = "~/.config/circumflex/favorites.json"
 	ConfigDirPath             = "~/.config/circumflex/"
 
 	CommentWidthName        = "Comment Width"

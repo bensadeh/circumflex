@@ -32,10 +32,6 @@ func ClearStatusBar(m *core.MainView) {
 	SetPermanentStatusBar(m, "", cview.AlignCenter)
 }
 
-//func UpdateInfoScreen(m *core.MainView) {
-//	m.InfoScreen.SetText(constructor.GetInfoText())
-//}
-
 func SetPermanentStatusBar(m *core.MainView, text string, align int) {
 	m.StatusBar.SetTextAlign(align)
 	m.StatusBar.SetText(text)
@@ -63,16 +59,6 @@ func HideLeftMarginRanks(m *core.MainView) {
 func HidePageCounter(m *core.MainView) {
 	m.PageCounter.SetText("")
 }
-
-//func ScrollInfoScreenOneLineUp(m *core.MainView) {
-//	row, col := m.InfoScreen.GetScrollOffset()
-//	m.InfoScreen.ScrollTo(row-1, col)
-//}
-//
-//func ScrollInfoScreenOneLineDown(m *core.MainView) {
-//	row, col := m.InfoScreen.GetScrollOffset()
-//	m.InfoScreen.ScrollTo(row+1, col)
-//}
 
 func ScrollInfoScreenByAmount(m *core.MainView, amount int) {
 	row, col := m.InfoScreen.GetScrollOffset()

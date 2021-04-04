@@ -1,10 +1,14 @@
 package file
 
 import (
-	"clx/constants/settings"
 	"fmt"
 	"os"
 	"path"
+)
+
+const (
+	ConfigFileNameFull    = "config.env"
+	FavoritesFileNameFull = "favorites.json"
 )
 
 func PathToConfigDirectory() string {
@@ -16,11 +20,11 @@ func PathToConfigDirectory() string {
 }
 
 func PathToConfigFile() string {
-	return path.Join(PathToConfigDirectory(), settings.ConfigFileNameFull)
+	return path.Join(PathToConfigDirectory(), ConfigFileNameFull)
 }
 
 func PathToFavoritesFile() string {
-	return path.Join(PathToConfigDirectory(), settings.FavoritesFileNameFull)
+	return path.Join(PathToConfigDirectory(), FavoritesFileNameFull)
 }
 
 func Exists(pathToFile string) bool {

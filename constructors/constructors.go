@@ -51,14 +51,14 @@ func NewMainView() *core.MainView {
 	main := new(core.MainView)
 	main.Panels = cview.NewPanels()
 	main.Grid = cview.NewGrid()
-	main.LeftMargin = newTextViewPrimitive("")
+	main.LeftMargin = newTextViewPrimitive()
 	main.LeftMargin.SetTextAlign(cview.AlignRight)
-	main.Header = newTextViewPrimitive("")
-	main.PageCounter = newTextViewPrimitive("")
-	main.StatusBar = newTextViewPrimitive("")
+	main.Header = newTextViewPrimitive()
+	main.PageCounter = newTextViewPrimitive()
+	main.StatusBar = newTextViewPrimitive()
 	main.StatusBar.SetTextAlign(cview.AlignCenter)
 	main.StatusBar.SetPadding(0, 0, -4, 0)
-	main.InfoScreen = newTextViewPrimitive("")
+	main.InfoScreen = newTextViewPrimitive()
 
 	flex, inputField := newFavoritesFlex()
 
@@ -80,10 +80,9 @@ func NewMainView() *core.MainView {
 	return main
 }
 
-func newTextViewPrimitive(text string) *cview.TextView {
+func newTextViewPrimitive() *cview.TextView {
 	tv := cview.NewTextView()
 	tv.SetTextAlign(cview.AlignLeft)
-	tv.SetText(text)
 	tv.SetBorder(false)
 	tv.SetBackgroundColor(tcell.ColorDefault)
 	tv.SetTextColor(tcell.ColorDefault)

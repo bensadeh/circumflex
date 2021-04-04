@@ -14,6 +14,7 @@ import (
 	"clx/info"
 	"clx/retriever"
 	"clx/screen"
+	"clx/settings"
 	"clx/utils/message"
 	"clx/utils/ranking"
 	"clx/utils/vim"
@@ -22,8 +23,6 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
-
-	constructor "clx/constructors"
 
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
@@ -290,7 +289,7 @@ func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
 	statusBarMessage := ""
 	appState.IsOnConfigCreationConfirmationMessage = false
 
-	err := file.WriteToFile(file.PathToConfigFile(), constructor.GetConfigFileContents())
+	err := file.WriteToFile(file.PathToConfigFile(), settings.GetConfigFileContents())
 	if err != nil {
 		statusBarMessage = message.Error(messages.ConfigNotCreated)
 	} else {

@@ -1,9 +1,8 @@
-package constructor
+package settings
 
 import (
 	"clx/column"
 	"clx/constants/margins"
-	"clx/constants/settings"
 	"clx/file"
 	"clx/screen"
 	"clx/utils/format"
@@ -134,9 +133,9 @@ func GetSettingsText() string {
 	commentWidth := getCommentWidth()
 
 	if file.Exists(pathToConfigFile) {
-		message += format.Dim("Using config file at " + settings.ConfigFilePath)
+		message += format.Dim("Using config file at " + ConfigFilePath)
 	} else {
-		message += format.Dim("Press T to create config.env in " + settings.ConfigDirPath)
+		message += format.Dim("Press T to create config.env in " + ConfigDirPath)
 	}
 
 	o := initializeOptions()
@@ -146,7 +145,7 @@ func GetSettingsText() string {
 }
 
 func getCommentWidth() int {
-	commentWidthFromSettings := viper.GetInt(settings.CommentWidthKey)
+	commentWidthFromSettings := viper.GetInt(CommentWidthKey)
 
 	if commentWidthFromSettings == 0 {
 		return screen.GetTerminalWidth() - margins.LeftMargin
@@ -162,26 +161,26 @@ func GetConfigFileContents() string {
 }
 
 func initializeOptions() *options {
-	currentCommentWidth := strconv.Itoa(viper.GetInt(settings.CommentWidthKey))
-	currentIndentSize := strconv.Itoa(viper.GetInt(settings.IndentSizeKey))
-	currentPreserveRightMargin := strconv.FormatBool(viper.GetBool(settings.PreserveRightMarginKey))
-	currentHighlightHeadlines := strconv.Itoa(viper.GetInt(settings.HighlightHeadlinesKey))
-	currentRelativeNumbering := strconv.FormatBool(viper.GetBool(settings.RelativeNumberingKey))
-	currentHideYCJobs := strconv.FormatBool(viper.GetBool(settings.HideYCJobsKey))
+	currentCommentWidth := strconv.Itoa(viper.GetInt(CommentWidthKey))
+	currentIndentSize := strconv.Itoa(viper.GetInt(IndentSizeKey))
+	currentPreserveRightMargin := strconv.FormatBool(viper.GetBool(PreserveRightMarginKey))
+	currentHighlightHeadlines := strconv.Itoa(viper.GetInt(HighlightHeadlinesKey))
+	currentRelativeNumbering := strconv.FormatBool(viper.GetBool(RelativeNumberingKey))
+	currentHideYCJobs := strconv.FormatBool(viper.GetBool(HideYCJobsKey))
 
 	o := new(options)
-	o.addOption(settings.HighlightHeadlinesName, settings.HighlightHeadlinesKey, currentHighlightHeadlines,
-		strconv.Itoa(settings.HighlightHeadlinesDefault), settings.HighlightHeadlinesDescription)
-	o.addOption(settings.CommentWidthName, settings.CommentWidthKey, currentCommentWidth,
-		strconv.Itoa(settings.CommentWidthDefault), settings.CommentWidthDescription)
-	o.addOption(settings.PreserveRightMarginName, settings.PreserveRightMarginKey, currentPreserveRightMargin,
-		strconv.FormatBool(settings.PreserveRightMarginDefault), settings.PreserveRightMarginDescription)
-	o.addOption(settings.IndentSizeName, settings.IndentSizeKey, currentIndentSize,
-		strconv.Itoa(settings.IndentSizeDefault), settings.IndentSizeDescription)
-	o.addOption(settings.RelativeNumberingName, settings.RelativeNumberingKey, currentRelativeNumbering,
-		strconv.FormatBool(settings.RelativeNumberingDefault), settings.RelativeNumberingDescription)
-	o.addOption(settings.HideYCJobsName, settings.HideYCJobsKey, currentHideYCJobs,
-		strconv.FormatBool(settings.HideYCJobsDefault), settings.HideYCJobsDescription)
+	o.addOption(HighlightHeadlinesName, HighlightHeadlinesKey, currentHighlightHeadlines,
+		strconv.Itoa(HighlightHeadlinesDefault), HighlightHeadlinesDescription)
+	o.addOption(CommentWidthName, CommentWidthKey, currentCommentWidth,
+		strconv.Itoa(CommentWidthDefault), CommentWidthDescription)
+	o.addOption(PreserveRightMarginName, PreserveRightMarginKey, currentPreserveRightMargin,
+		strconv.FormatBool(PreserveRightMarginDefault), PreserveRightMarginDescription)
+	o.addOption(IndentSizeName, IndentSizeKey, currentIndentSize,
+		strconv.Itoa(IndentSizeDefault), IndentSizeDescription)
+	o.addOption(RelativeNumberingName, RelativeNumberingKey, currentRelativeNumbering,
+		strconv.FormatBool(RelativeNumberingDefault), RelativeNumberingDescription)
+	o.addOption(HideYCJobsName, HideYCJobsKey, currentHideYCJobs,
+		strconv.FormatBool(HideYCJobsDefault), HideYCJobsDescription)
 
 	return o
 }

@@ -1,9 +1,9 @@
 package config
 
 import (
-	"clx/constants/settings"
 	"clx/core"
 	"clx/file"
+	"clx/settings"
 
 	"github.com/spf13/viper"
 )
