@@ -46,9 +46,7 @@ type MainView struct {
 	Panels         *cview.Panels
 	StatusBar      *cview.TextView
 	PageCounter    *cview.TextView
-	Settings       *cview.TextView
 	InfoScreen     *cview.TextView
-	KeymapsScreen  *cview.TextView
 	CustomFavorite *cview.InputField
 }
 

@@ -7,8 +7,6 @@ import (
 	"clx/pages"
 	"time"
 
-	constructor "clx/constructors"
-
 	"gitlab.com/tslocum/cview"
 )
 
@@ -34,9 +32,9 @@ func ClearStatusBar(m *core.MainView) {
 	SetPermanentStatusBar(m, "", cview.AlignCenter)
 }
 
-func UpdateInfoScreen(m *core.MainView) {
-	m.InfoScreen.SetText(constructor.GetInfoText())
-}
+//func UpdateInfoScreen(m *core.MainView) {
+//	m.InfoScreen.SetText(constructor.GetInfoText())
+//}
 
 func SetPermanentStatusBar(m *core.MainView, text string, align int) {
 	m.StatusBar.SetTextAlign(align)

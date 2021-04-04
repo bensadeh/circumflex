@@ -91,8 +91,6 @@ func resetApplicationState(appState *core.ApplicationState) {
 func initializeView(appState *core.ApplicationState, main *core.MainView, ret *retriever.Retriever) {
 	header := ret.GetHackerNewsHeader(appState.CurrentCategory)
 
-	// view.UpdateSettingsScreen(main)
-	view.UpdateInfoScreen(main)
 	view.SetPanelToMainView(main)
 	view.SetHackerNewsHeader(main, header)
 	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory,
