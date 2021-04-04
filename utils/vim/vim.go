@@ -4,32 +4,108 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
-func GetItemDown(vimNumberRegister string, currentItem int, itemCount int) int {
-	register, _ := strconv.Atoi(vimNumberRegister)
-	availableItemsDown := itemCount - currentItem
-	isVimRegisterEmpty := register == 0
-	isAtTheBottomOfTheList := currentItem+1 == itemCount
-
-	var selectedItem int
-
-	switch {
-	case isAtTheBottomOfTheList:
-		selectedItem = currentItem
-	case isVimRegisterEmpty:
-		selectedItem = currentItem + 1
-	case register >= availableItemsDown:
-		selectedItem = itemCount - 1
-	case register < availableItemsDown:
-		selectedItem += currentItem + register
-	}
-
-	return selectedItem
+type Register struct {
+	register string
 }
 
-func GetItemUp(vimNumberRegister string, currentItem int) int {
-	register, _ := strconv.Atoi(vimNumberRegister)
+func (r *Register) PutInRegister(number rune) {
+	isEmptyAndNewNumberIsZero := len(r.register) == 0 && string(number) == "0"
+	hasMoreThanThreeDigits := len(r.register) > 2
+
+	switch {
+	case isEmptyAndNewNumberIsZero:
+		return
+
+	case r.register == "g":
+		r.Clear()
+
+	case hasMoreThanThreeDigits:
+		r.register = trimFirstRune(r.register)
+		r.register += string(number)
+
+	default:
+		r.register += string(number)
+	}
+}
+
+func trimFirstRune(s string) string {
+	_, i := utf8.DecodeRuneInString(s)
+
+	return s[i:]
+}
+
+func (r *Register) Print() string {
+	return r.register + "  "
+}
+
+func (r *Register) LowerCaseG(currentItem int, submissionsToShow int, currentPage int) int {
+	switch {
+	case r.register == "g":
+		r.Clear()
+
+		return 0
+
+	case r.containsOnlyNumbers():
+		r.register += "g"
+
+		return currentItem
+
+	case r.isNumberWithLowerCaseGAppended():
+		r.register = strings.TrimSuffix(r.register, "g")
+		itemToJumpTo := r.getItemToJumpTo(currentItem, submissionsToShow, currentPage)
+
+		r.Clear()
+
+		return itemToJumpTo
+
+	default:
+		r.register += "g"
+
+		return currentItem
+	}
+}
+
+func (r *Register) UpperCaseG(currentItem int, submissionsToShow int, currentPage int) int {
+	lastElement := -1
+
+	switch {
+	case r.register == "":
+		return lastElement
+
+	case r.containsOnlyNumbers():
+		itemToJumpTo := r.getItemToJumpTo(currentItem, submissionsToShow, currentPage)
+
+		r.Clear()
+
+		return itemToJumpTo
+
+	default:
+		r.Clear()
+
+		return currentItem
+	}
+}
+
+func (r *Register) containsOnlyNumbers() bool {
+	return r.toInt() != 0
+}
+
+func (r *Register) Clear() {
+	r.register = ""
+}
+
+func (r *Register) isNumberWithLowerCaseGAppended() bool {
+	expression := regexp.MustCompile(`\d+g`)
+	result := expression.FindString(r.register)
+
+	return result != ""
+}
+
+func (r *Register) GetItemUp(currentItem int) int {
+	register := r.toInt()
 	availableItemsUp := currentItem
 	isVimRegisterEmpty := register == 0
 	isAtTheTopOfTheList := currentItem == 0
@@ -50,8 +126,30 @@ func GetItemUp(vimNumberRegister string, currentItem int) int {
 	return selectedItem
 }
 
-func GetItemToJumpTo(vimNumberRegister string, currentItem int, submissionsToShow int, currentPage int) int {
-	rankToJumpTo, _ := strconv.Atoi(vimNumberRegister)
+func (r *Register) GetItemDown(currentItem int, itemCount int) int {
+	register := r.toInt()
+	availableItemsDown := itemCount - currentItem
+	isVimRegisterEmpty := register == 0
+	isAtTheBottomOfTheList := currentItem+1 == itemCount
+
+	var selectedItem int
+
+	switch {
+	case isAtTheBottomOfTheList:
+		selectedItem = currentItem
+	case isVimRegisterEmpty:
+		selectedItem = currentItem + 1
+	case register >= availableItemsDown:
+		selectedItem = itemCount - 1
+	case register < availableItemsDown:
+		selectedItem += currentItem + register
+	}
+
+	return selectedItem
+}
+
+func (r *Register) getItemToJumpTo(currentItem int, submissionsToShow int, currentPage int) int {
+	rankToJumpTo := r.toInt()
 	isVimRegisterEmpty := rankToJumpTo == 0
 
 	if isVimRegisterEmpty {
@@ -71,20 +169,8 @@ func GetItemToJumpTo(vimNumberRegister string, currentItem int, submissionsToSho
 	return itemToJumpTo - 1
 }
 
-func IsNumberWithGAppended(text string) bool {
-	expression := regexp.MustCompile(`\d+g`)
+func (r *Register) toInt() int {
+	integer, _ := strconv.Atoi(r.register)
 
-	result := expression.FindString(text)
-
-	return result != ""
-}
-
-func ContainsOnlyNumbers(text string) bool {
-	numbers, _ := strconv.Atoi(text)
-
-	return numbers != 0
-}
-
-func FormatRegisterOutput(register string) string {
-	return register + strings.Repeat(" ", 5-len(register))
+	return integer
 }

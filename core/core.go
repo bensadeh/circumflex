@@ -30,7 +30,6 @@ type ApplicationState struct {
 	ScreenHeight                          int
 	ScreenWidth                           int
 	CurrentPage                           int
-	VimNumberRegister                     string
 	IsReturningFromSuspension             bool
 	IsOnConfigCreationConfirmationMessage bool
 	IsOnAddFavoriteConfirmationMessage    bool

@@ -19,9 +19,7 @@ import (
 	"clx/utils/vim"
 	"clx/view"
 	"strconv"
-	"strings"
 	"time"
-	"unicode/utf8"
 
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
@@ -95,7 +93,7 @@ func initializeView(appState *core.ApplicationState, main *core.MainView, ret *r
 }
 
 func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *cview.List,
-	appState *core.ApplicationState, config *core.Config, r *retriever.Retriever) {
+	appState *core.ApplicationState, config *core.Config, r *retriever.Retriever, reg *vim.Register) {
 	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
 		appState.CurrentPage)
 
@@ -118,7 +116,7 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 		cli.Less(commentTree)
 	})
 
-	changePage(app, list, main, appState, config, r, 0)
+	changePage(app, list, main, appState, config, r, reg, 0)
 	appState.IsReturningFromSuspension = true
 }
 
@@ -136,27 +134,27 @@ func OpenLinkInBrowser(list *cview.List, appState *core.ApplicationState, r *ret
 }
 
 func NextPage(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config, ret *retriever.Retriever) {
+	config *core.Config, ret *retriever.Retriever, reg *vim.Register) {
 	isOnLastPage := appState.CurrentPage+1 > ret.GetMaxPages(appState.CurrentCategory, appState.SubmissionsToShow)
 	if isOnLastPage {
 		return
 	}
 
-	changePage(app, list, main, appState, config, ret, 1)
+	changePage(app, list, main, appState, config, ret, reg, 1)
 }
 
 func PreviousPage(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config, ret *retriever.Retriever) {
+	config *core.Config, ret *retriever.Retriever, reg *vim.Register) {
 	isOnFirstPage := appState.CurrentPage-1 < 0
 	if isOnFirstPage {
 		return
 	}
 
-	changePage(app, list, main, appState, config, ret, -1)
+	changePage(app, list, main, appState, config, ret, reg, -1)
 }
 
 func changePage(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config, ret *retriever.Retriever, delta int) {
+	config *core.Config, ret *retriever.Retriever, reg *vim.Register, delta int) {
 	currentlySelectedItem := list.GetCurrentItemIndex()
 	appState.CurrentPage += delta
 
@@ -171,7 +169,7 @@ func changePage(app *cview.Application, list *cview.List, main *core.MainView, a
 	view.ShowItems(list, listItems)
 	view.SelectItem(list, currentlySelectedItem)
 
-	ClearVimRegister(main, appState)
+	ClearVimRegister(main, reg)
 
 	marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, len(listItems),
 		list.GetCurrentItemIndex(), appState.CurrentPage)
@@ -184,7 +182,7 @@ func changePage(app *cview.Application, list *cview.List, main *core.MainView, a
 }
 
 func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.List, appState *core.ApplicationState,
-	main *core.MainView, config *core.Config, ret *retriever.Retriever) {
+	main *core.MainView, config *core.Config, ret *retriever.Retriever, reg *vim.Register) {
 	currentItem := list.GetCurrentItemIndex()
 	appState.CurrentCategory = ret.GetNewCategory(event, appState)
 	appState.CurrentPage = 0
@@ -199,7 +197,7 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 
 	view.ShowItems(list, listItems)
 	view.SelectItem(list, currentItem)
-	ClearVimRegister(main, appState)
+	ClearVimRegister(main, reg)
 
 	header := ret.GetHackerNewsHeader(appState.CurrentCategory)
 	marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, len(listItems),
@@ -276,37 +274,39 @@ func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
 	view.SetPermanentStatusBar(main, statusBarMessage, cview.AlignCenter)
 }
 
-func SelectItemDown(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config) {
+func SelectItemUp(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config,
+	reg *vim.Register) {
+	currentItem := list.GetCurrentItemIndex()
+	nextItem := reg.GetItemUp(currentItem)
+
+	selectItem(main, list, appState, config, reg, nextItem)
+}
+
+func SelectItemDown(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config,
+	reg *vim.Register) {
 	currentItem := list.GetCurrentItemIndex()
 	itemCount := list.GetItemCount()
-	nextItem := vim.GetItemDown(appState.VimNumberRegister, currentItem, itemCount)
+	nextItem := reg.GetItemDown(currentItem, itemCount)
 
-	view.SelectItem(list, nextItem)
+	selectItem(main, list, appState, config, reg, nextItem)
+}
 
-	ClearVimRegister(main, appState)
-	marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(), nextItem,
-		appState.CurrentPage)
+func selectItem(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config,
+	reg *vim.Register, item int) {
+	ClearVimRegister(main, reg)
+
+	marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
+		item, appState.CurrentPage)
+
+	view.SelectItem(list, item)
 	view.SetLeftMarginText(main, marginText)
 	view.ClearStatusBar(main)
 }
 
-func SelectItemUp(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config) {
-	currentItem := list.GetCurrentItemIndex()
-	nextItem := vim.GetItemUp(appState.VimNumberRegister, currentItem)
-
-	view.SelectItem(list, nextItem)
-
-	ClearVimRegister(main, appState)
-	marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(), nextItem,
-		appState.CurrentPage)
-	view.SetLeftMarginText(main, marginText)
-	view.ClearStatusBar(main)
-}
-
-func EnterInfoScreen(main *core.MainView, appState *core.ApplicationState) {
+func EnterInfoScreen(main *core.MainView, appState *core.ApplicationState, reg *vim.Register) {
 	appState.State = state.OnHelpScreen
 
-	ClearVimRegister(main, appState)
+	ClearVimRegister(main, reg)
 	updateInfoScreenView(main, appState)
 }
 
@@ -338,121 +338,44 @@ func ExitInfoScreen(main *core.MainView, appState *core.ApplicationState, config
 	view.ClearStatusBar(main)
 }
 
-func SelectFirstElementInList(main *core.MainView, appState *core.ApplicationState, list *cview.List,
-	config *core.Config) {
-	view.SelectFirstElementInList(list)
-	ClearVimRegister(main, appState)
+func LowerCaseG(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config,
+	reg *vim.Register) {
+	currentItem := list.GetCurrentItemIndex()
+	itemToJumpTo := reg.LowerCaseG(currentItem, appState.SubmissionsToShow, appState.CurrentPage)
+	register := reg.Print()
+	marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
+		itemToJumpTo, appState.CurrentPage)
 
+	view.SetLeftMarginText(main, marginText)
+	view.SelectItem(list, itemToJumpTo)
+	view.SetPermanentStatusBar(main, register, cview.AlignRight)
+}
+
+func UpperCaseG(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config,
+	reg *vim.Register) {
+	currentItem := list.GetCurrentItemIndex()
+	itemToJumpTo := reg.UpperCaseG(currentItem, appState.SubmissionsToShow, appState.CurrentPage)
+	register := reg.Print()
 	marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
 		list.GetCurrentItemIndex(), appState.CurrentPage)
+
 	view.SetLeftMarginText(main, marginText)
+	view.SelectItem(list, itemToJumpTo)
+	view.SetPermanentStatusBar(main, register, cview.AlignRight)
 }
 
-func GoToLowerCaseG(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config) {
-	switch {
-	case appState.VimNumberRegister == "g":
-		SelectFirstElementInList(main, appState, list, config)
+func PutDigitInRegister(main *core.MainView, number rune, reg *vim.Register) {
+	reg.PutInRegister(number)
 
-		marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
-			list.GetCurrentItemIndex(),
-			appState.CurrentPage)
-
-		view.SetLeftMarginText(main, marginText)
-		view.ClearStatusBar(main)
-
-	case vim.ContainsOnlyNumbers(appState.VimNumberRegister):
-		appState.VimNumberRegister += "g"
-
-		view.SetPermanentStatusBar(main, vim.FormatRegisterOutput(appState.VimNumberRegister), cview.AlignRight)
-
-	case vim.IsNumberWithGAppended(appState.VimNumberRegister):
-		register := strings.TrimSuffix(appState.VimNumberRegister, "g")
-
-		itemToJumpTo := vim.GetItemToJumpTo(register,
-			list.GetCurrentItemIndex(),
-			appState.SubmissionsToShow,
-			appState.CurrentPage)
-
-		ClearVimRegister(main, appState)
-		view.SelectItem(list, itemToJumpTo)
-		view.ClearStatusBar(main)
-
-		marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
-			list.GetCurrentItemIndex(), appState.CurrentPage)
-		view.SetLeftMarginText(main, marginText)
-
-	case appState.VimNumberRegister == "":
-		appState.VimNumberRegister += "g"
-
-		view.SetPermanentStatusBar(main, vim.FormatRegisterOutput(appState.VimNumberRegister), cview.AlignRight)
-	}
-}
-
-func GoToUpperCaseG(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config) {
-	switch {
-	case appState.VimNumberRegister == "":
-		view.SelectLastElementInList(list)
-		ClearVimRegister(main, appState)
-
-		marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
-			list.GetCurrentItemIndex(), appState.CurrentPage)
-		view.SetLeftMarginText(main, marginText)
-
-	case vim.ContainsOnlyNumbers(appState.VimNumberRegister):
-		register := strings.TrimSuffix(appState.VimNumberRegister, "g")
-
-		itemToJumpTo := vim.GetItemToJumpTo(register, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
-			appState.CurrentPage)
-
-		ClearVimRegister(main, appState)
-		view.SelectItem(list, itemToJumpTo)
-		view.ClearStatusBar(main)
-
-		marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
-			list.GetCurrentItemIndex(), appState.CurrentPage)
-		view.SetLeftMarginText(main, marginText)
-	case vim.IsNumberWithGAppended(appState.VimNumberRegister):
-		ClearVimRegister(main, appState)
-		view.ClearStatusBar(main)
-
-	case appState.VimNumberRegister == "g":
-		ClearVimRegister(main, appState)
-		view.ClearStatusBar(main)
-	}
-}
-
-func PutDigitInRegister(main *core.MainView, element rune, appState *core.ApplicationState) {
-	if len(appState.VimNumberRegister) == 0 && string(element) == "0" {
-		return
-	}
-
-	if appState.VimNumberRegister == "g" {
-		ClearVimRegister(main, appState)
-	}
-
-	registerHasMoreThanThreeDigits := len(appState.VimNumberRegister) > 2
-
-	if registerHasMoreThanThreeDigits {
-		appState.VimNumberRegister = trimFirstRune(appState.VimNumberRegister)
-	}
-
-	appState.VimNumberRegister += string(element)
-
-	view.SetPermanentStatusBar(main, vim.FormatRegisterOutput(appState.VimNumberRegister), cview.AlignRight)
-}
-
-func trimFirstRune(s string) string {
-	_, i := utf8.DecodeRuneInString(s)
-
-	return s[i:]
+	view.SetPermanentStatusBar(main, reg.Print(), cview.AlignRight)
 }
 
 func Quit(app *cview.Application) {
 	app.Stop()
 }
 
-func ClearVimRegister(main *core.MainView, appState *core.ApplicationState) {
-	appState.VimNumberRegister = ""
+func ClearVimRegister(main *core.MainView, reg *vim.Register) {
+	reg.Clear()
 
 	view.ClearStatusBar(main)
 }
@@ -497,7 +420,7 @@ func DeleteFavoriteConfirmationDialogue(main *core.MainView, appState *core.Appl
 }
 
 func AddToFavorites(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config, ret *retriever.Retriever) {
+	config *core.Config, ret *retriever.Retriever, reg *vim.Register) {
 	statusBarMessage := ""
 	appState.IsOnAddFavoriteConfirmationMessage = false
 	story := ret.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
@@ -510,12 +433,12 @@ func AddToFavorites(app *cview.Application, list *cview.List, main *core.MainVie
 		statusBarMessage = message.Success("Item added to favorites")
 	}
 
-	changePage(app, list, main, appState, config, ret, 0)
+	changePage(app, list, main, appState, config, ret, reg, 0)
 	view.SetPermanentStatusBar(main, statusBarMessage, cview.AlignCenter)
 }
 
 func DeleteItem(app *cview.Application, list *cview.List, appState *core.ApplicationState,
-	main *core.MainView, config *core.Config, ret *retriever.Retriever) {
+	main *core.MainView, config *core.Config, ret *retriever.Retriever, reg *vim.Register) {
 	appState.IsOnDeleteFavoriteConfirmationMessage = false
 	ret.DeleteStoryAndWriteToFile(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
 		appState.CurrentPage)
@@ -527,12 +450,13 @@ func DeleteItem(app *cview.Application, list *cview.List, appState *core.Applica
 
 	switch {
 	case hasDeletedLastItemOnSecondOrThirdPage:
-		changePage(app, list, main, appState, config, ret, -1)
+		changePage(app, list, main, appState, config, ret, reg, -1)
 	case hasDeletedLastItemOnFirstPage:
 		appState.CurrentCategory = categories.Show
-		ChangeCategory(app, tcell.NewEventKey(tcell.KeyTab, ' ', tcell.ModNone), list, appState, main, config, ret)
+		ChangeCategory(app, tcell.NewEventKey(tcell.KeyTab, ' ', tcell.ModNone), list, appState, main, config, ret,
+			reg)
 	default:
-		changePage(app, list, main, appState, config, ret, 0)
+		changePage(app, list, main, appState, config, ret, reg, 0)
 	}
 
 	m := message.Success("Item deleted")
@@ -540,7 +464,7 @@ func DeleteItem(app *cview.Application, list *cview.List, appState *core.Applica
 }
 
 func ShowAddCustomFavorite(app *cview.Application, list *cview.List, main *core.MainView,
-	appState *core.ApplicationState, config *core.Config, ret *retriever.Retriever) {
+	appState *core.ApplicationState, config *core.Config, ret *retriever.Retriever, reg *vim.Register) {
 	appState.IsOnAddFavoriteByID = true
 
 	view.HideLeftMarginRanks(main)
@@ -568,7 +492,7 @@ func ShowAddCustomFavorite(app *cview.Application, list *cview.List, main *core.
 		main.Panels.SetCurrentPanel(panels.SubmissionsPanel)
 		app.SetFocus(main.Grid)
 
-		changePage(app, list, main, appState, config, ret, 0)
+		changePage(app, list, main, appState, config, ret, reg, 0)
 		appState.IsOnAddFavoriteByID = false
 	})
 

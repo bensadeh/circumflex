@@ -6,6 +6,7 @@ import (
 	"clx/core"
 	"clx/model"
 	"clx/retriever"
+	"clx/utils/vim"
 	"unicode"
 
 	"github.com/gdamore/tcell/v2"
@@ -17,7 +18,7 @@ func SetAfterInitializationAndAfterResizeFunctions(ret *retriever.Retriever,
 	model.SetAfterInitializationAndAfterResizeFunctions(app, list, main, appState, config, ret)
 }
 
-func SetApplicationShortcuts(ret *retriever.Retriever, app *cview.Application, list *cview.List,
+func SetApplicationShortcuts(ret *retriever.Retriever, reg *vim.Register, app *cview.Application, list *cview.List,
 	main *core.MainView, appState *core.ApplicationState, config *core.Config) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		isOnHelpScreen := appState.State == state.OnHelpScreen
@@ -78,10 +79,10 @@ func SetApplicationShortcuts(ret *retriever.Retriever, app *cview.Application, l
 			return event
 
 		case appState.IsOnAddFavoriteConfirmationMessage && event.Rune() == 'y':
-			model.AddToFavorites(app, list, main, appState, config, ret)
+			model.AddToFavorites(app, list, main, appState, config, ret, reg)
 
 		case appState.IsOnDeleteFavoriteConfirmationMessage && event.Rune() == 'y':
-			model.DeleteItem(app, list, appState, main, config, ret)
+			model.DeleteItem(app, list, appState, main, config, ret, reg)
 
 		case appState.IsOnAddFavoriteConfirmationMessage || appState.IsOnDeleteFavoriteConfirmationMessage:
 			model.CancelConfirmation(appState, main)
@@ -90,46 +91,46 @@ func SetApplicationShortcuts(ret *retriever.Retriever, app *cview.Application, l
 			model.AddToFavoritesConfirmationDialogue(main, appState, list)
 
 		case event.Rune() == 'F':
-			model.ShowAddCustomFavorite(app, list, main, appState, config, ret)
+			model.ShowAddCustomFavorite(app, list, main, appState, config, ret, reg)
 
 		case event.Rune() == 'x' && appState.CurrentCategory == categories.Favorites:
 			model.DeleteFavoriteConfirmationDialogue(main, appState, list)
 
 		case event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab:
-			model.ChangeCategory(app, event, list, appState, main, config, ret)
+			model.ChangeCategory(app, event, list, appState, main, config, ret, reg)
 
 		case event.Rune() == 'l' || event.Key() == tcell.KeyRight:
-			model.NextPage(app, list, main, appState, config, ret)
+			model.NextPage(app, list, main, appState, config, ret, reg)
 
 		case event.Rune() == 'h' || event.Key() == tcell.KeyLeft:
-			model.PreviousPage(app, list, main, appState, config, ret)
-
-		case event.Rune() == 'j' || event.Key() == tcell.KeyDown:
-			model.SelectItemDown(main, list, appState, config)
+			model.PreviousPage(app, list, main, appState, config, ret, reg)
 
 		case event.Rune() == 'k' || event.Key() == tcell.KeyUp:
-			model.SelectItemUp(main, list, appState, config)
+			model.SelectItemUp(main, list, appState, config, reg)
+
+		case event.Rune() == 'j' || event.Key() == tcell.KeyDown:
+			model.SelectItemDown(main, list, appState, config, reg)
 
 		case event.Rune() == 'q':
 			model.Quit(app)
 
 		case event.Key() == tcell.KeyEsc:
-			model.ClearVimRegister(main, appState)
+			model.ClearVimRegister(main, reg)
 
 		case event.Rune() == 'i' || event.Rune() == '?':
-			model.EnterInfoScreen(main, appState)
+			model.EnterInfoScreen(main, appState, reg)
 
 		case event.Rune() == 'g':
-			model.GoToLowerCaseG(main, appState, list, config)
+			model.LowerCaseG(main, appState, list, config, reg)
 
 		case event.Rune() == 'G':
-			model.GoToUpperCaseG(main, appState, list, config)
+			model.UpperCaseG(main, appState, list, config, reg)
 
 		case event.Rune() == 'r':
 			model.Refresh(app, list, main, appState, config, ret)
 
 		case event.Key() == tcell.KeyEnter:
-			model.ReadSubmissionComments(app, main, list, appState, config, ret)
+			model.ReadSubmissionComments(app, main, list, appState, config, ret, reg)
 
 		case event.Rune() == 'o':
 			model.OpenLinkInBrowser(list, appState, ret)
@@ -138,7 +139,7 @@ func SetApplicationShortcuts(ret *retriever.Retriever, app *cview.Application, l
 			model.OpenCommentsInBrowser(list, appState, ret)
 
 		case unicode.IsDigit(event.Rune()):
-			model.PutDigitInRegister(main, event.Rune(), appState)
+			model.PutDigitInRegister(main, event.Rune(), reg)
 		}
 
 		return event

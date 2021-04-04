@@ -6,6 +6,7 @@ import (
 	"clx/controller"
 	"clx/favorites"
 	"clx/retriever"
+	"clx/utils/vim"
 	"os"
 
 	constructor "clx/constructors"
@@ -32,6 +33,7 @@ func main() {
 
 	controller.SetApplicationShortcuts(
 		ret,
+		new(vim.Register),
 		sc.Application,
 		sc.Articles,
 		sc.MainView,
