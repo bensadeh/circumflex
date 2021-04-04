@@ -50,7 +50,6 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 			return
 		}
 
-		statusBarText := getInfoScreenStatusBarText(appState.CurrentHelpScreenCategory)
 		marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, len(listItems), 0, 0)
 
 		view.ShowItems(list, listItems)
@@ -58,7 +57,7 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 		view.ClearStatusBar(main)
 
 		if appState.State == state.OnHelpScreen {
-			updateInfoScreenView(main, appState, statusBarText)
+			updateInfoScreenView(main, appState)
 		}
 	})
 }
@@ -235,9 +234,7 @@ func ChangeHelpScreenCategory(event *tcell.EventKey, appState *core.ApplicationS
 		appState.CurrentHelpScreenCategory = getNextCategory(appState.CurrentHelpScreenCategory, 3)
 	}
 
-	statusBarText := getInfoScreenStatusBarText(appState.CurrentHelpScreenCategory)
-
-	updateInfoScreenView(main, appState, statusBarText)
+	updateInfoScreenView(main, appState)
 }
 
 func ShowCreateConfigConfirmationMessage(main *core.MainView, appState *core.ApplicationState) {
@@ -295,7 +292,8 @@ func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
 		statusBarMessage = message.Success(messages.ConfigCreatedAt)
 	}
 
-	updateInfoScreenView(main, appState, statusBarMessage)
+	updateInfoScreenView(main, appState)
+	view.SetPermanentStatusBar(main, statusBarMessage, cview.AlignCenter)
 }
 
 func SelectItemDown(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config) {
@@ -326,11 +324,10 @@ func SelectItemUp(main *core.MainView, list *cview.List, appState *core.Applicat
 }
 
 func EnterInfoScreen(main *core.MainView, appState *core.ApplicationState) {
-	statusBarText := getInfoScreenStatusBarText(appState.CurrentHelpScreenCategory)
 	appState.State = state.OnHelpScreen
 
 	ClearVimRegister(main, appState)
-	updateInfoScreenView(main, appState, statusBarText)
+	updateInfoScreenView(main, appState)
 }
 
 func getInfoScreenStatusBarText(category int) string {
@@ -341,7 +338,8 @@ func getInfoScreenStatusBarText(category int) string {
 	return ""
 }
 
-func updateInfoScreenView(main *core.MainView, appState *core.ApplicationState, statusBarText string) {
+func updateInfoScreenView(main *core.MainView, appState *core.ApplicationState) {
+	statusBarText := getInfoScreenStatusBarText(appState.CurrentHelpScreenCategory)
 	infoScreenText := info.GetText(appState.CurrentHelpScreenCategory, appState.ScreenWidth)
 
 	view.SetInfoScreenText(main, infoScreenText)
