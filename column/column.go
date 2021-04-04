@@ -21,6 +21,7 @@ func PutInColumns(leftCol string, rightCol string, colWidth int, spaceWidth int)
 	length := max(len(linesA), len(linesB))
 
 	output := ""
+
 	for i := 0; i < length; i++ {
 		switch {
 		case i >= len(linesA):

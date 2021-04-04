@@ -27,6 +27,14 @@ type options struct {
 	options []*option
 }
 
+type option struct {
+	name         string
+	key          string
+	value        string
+	defaultValue string
+	description  string
+}
+
 func (o *options) addOption(name, key, value, defaultValue, description string) {
 	newOption := new(option)
 	newOption.name = name
@@ -85,14 +93,6 @@ func (o options) getConfigFileTemplate() string {
 	return output
 }
 
-type option struct {
-	name         string
-	key          string
-	value        string
-	defaultValue string
-	description  string
-}
-
 func (o option) print(textWidth int) string {
 	currentValue := highlight(o.value, o.defaultValue)
 	headline := makeHeadline(o.name, currentValue, textWidth) + newLine
@@ -130,7 +130,7 @@ func (o option) printConfig() string {
 func GetSettingsText() string {
 	message := ""
 	pathToConfigFile := file.PathToConfigFile()
-	commentWidth := getCommentWidth()
+	settingsWidth := 50
 
 	if file.Exists(pathToConfigFile) {
 		message += format.Dim("Using config file at " + ConfigFilePath)
@@ -139,19 +139,9 @@ func GetSettingsText() string {
 	}
 
 	o := initializeOptions()
-	s := cview.TranslateANSI(message + newParagraph + o.printAll(commentWidth))
+	s := cview.TranslateANSI(message + newParagraph + o.printAll(settingsWidth))
 
 	return s
-}
-
-func getCommentWidth() int {
-	commentWidthFromSettings := viper.GetInt(CommentWidthKey)
-
-	if commentWidthFromSettings == 0 {
-		return screen.GetTerminalWidth() - margins.LeftMargin
-	}
-
-	return commentWidthFromSettings
 }
 
 func GetConfigFileContents() string {
