@@ -88,13 +88,13 @@ func SetApplicationShortcuts(ret *retriever.Retriever, reg *vim.Register, app *c
 			model.CancelConfirmation(appState, main)
 
 		case event.Rune() == 'f':
-			model.AddToFavoritesConfirmationDialogue(main, appState, list)
+			model.AddToFavoritesConfirmationDialogue(main, appState)
 
 		case event.Rune() == 'F':
 			model.ShowAddCustomFavorite(app, list, main, appState, config, ret, reg)
 
 		case event.Rune() == 'x' && appState.CurrentCategory == categories.Favorites:
-			model.DeleteFavoriteConfirmationDialogue(main, appState, list)
+			model.DeleteFavoriteConfirmationDialogue(main, appState)
 
 		case event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab:
 			model.ChangeCategory(app, event, list, appState, main, config, ret, reg)

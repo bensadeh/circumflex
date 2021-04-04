@@ -399,21 +399,13 @@ func Refresh(app *cview.Application, list *cview.List, main *core.MainView, appS
 	}
 }
 
-func AddToFavoritesConfirmationDialogue(main *core.MainView, appState *core.ApplicationState, list *cview.List) {
-	if list.GetItemCount() == 0 {
-		return
-	}
-
+func AddToFavoritesConfirmationDialogue(main *core.MainView, appState *core.ApplicationState) {
 	appState.IsOnAddFavoriteConfirmationMessage = true
 
 	view.SetPermanentStatusBar(main, messages.AddToFavorites, cview.AlignCenter)
 }
 
-func DeleteFavoriteConfirmationDialogue(main *core.MainView, appState *core.ApplicationState, list *cview.List) {
-	if list.GetItemCount() == 0 {
-		return
-	}
-
+func DeleteFavoriteConfirmationDialogue(main *core.MainView, appState *core.ApplicationState) {
 	appState.IsOnDeleteFavoriteConfirmationMessage = true
 
 	view.SetPermanentStatusBar(main, messages.DeleteFromFavorites, cview.AlignCenter)
