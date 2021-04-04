@@ -3,6 +3,12 @@
 ## 0.15
 _WIP_
 
+**Cosmetic**
+- All views are now responsive
+
+**Backend:**
+- Simplified Info View logic
+
 ## 0.14
 _2021-04-03_
 
