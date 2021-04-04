@@ -2,13 +2,56 @@ package info
 
 import (
 	"clx/constants/categories"
+	"clx/constants/messages"
 	"clx/keymaps"
 	"clx/screen"
 	"clx/settings"
 	"strings"
 
+	"github.com/gdamore/tcell/v2"
+
 	text "github.com/MichaelMure/go-term-text"
 )
+
+const (
+	numberOfCategories = 3
+)
+
+func GetStatusBarText(category int) string {
+	if category == categories.Definition {
+		return messages.GetCircumflexStatusMessage()
+	}
+
+	return ""
+}
+
+func GetNewCategory(event *tcell.EventKey, currentCategory int) int {
+	if event.Key() == tcell.KeyBacktab {
+		return getPreviousCategory(currentCategory)
+	}
+
+	return getNextCategory(currentCategory)
+}
+
+func getNextCategory(currentCategory int) int {
+	isOnLastCategory := currentCategory == (numberOfCategories - 1)
+
+	if isOnLastCategory {
+		return 0
+	}
+
+	return currentCategory + 1
+}
+
+func getPreviousCategory(currentCategory int) int {
+	isOnFirstCategory := currentCategory == 0
+
+	if isOnFirstCategory {
+		return numberOfCategories - 1
+	}
+
+	return currentCategory - 1
+}
 
 func GetText(category int, screenWidth int) string {
 	switch category {

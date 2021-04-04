@@ -211,28 +211,8 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	view.SetHackerNewsHeader(main, header)
 }
 
-func getNextCategory(currentCategory int, numberOfCategories int) int {
-	if currentCategory == (numberOfCategories - 1) {
-		return 0
-	}
-
-	return currentCategory + 1
-}
-
-func getPreviousCategory(currentCategory int, numberOfCategories int) int {
-	if currentCategory == 0 {
-		return numberOfCategories - 1
-	}
-
-	return currentCategory - 1
-}
-
 func ChangeHelpScreenCategory(event *tcell.EventKey, appState *core.ApplicationState, main *core.MainView) {
-	if event.Key() == tcell.KeyBacktab {
-		appState.CurrentHelpScreenCategory = getPreviousCategory(appState.CurrentHelpScreenCategory, 3)
-	} else {
-		appState.CurrentHelpScreenCategory = getNextCategory(appState.CurrentHelpScreenCategory, 3)
-	}
+	appState.CurrentHelpScreenCategory = info.GetNewCategory(event, appState.CurrentHelpScreenCategory)
 
 	updateInfoScreenView(main, appState)
 }
@@ -330,16 +310,8 @@ func EnterInfoScreen(main *core.MainView, appState *core.ApplicationState) {
 	updateInfoScreenView(main, appState)
 }
 
-func getInfoScreenStatusBarText(category int) string {
-	if category == categories.Definition {
-		return messages.GetCircumflexStatusMessage()
-	}
-
-	return ""
-}
-
 func updateInfoScreenView(main *core.MainView, appState *core.ApplicationState) {
-	statusBarText := getInfoScreenStatusBarText(appState.CurrentHelpScreenCategory)
+	statusBarText := info.GetStatusBarText(appState.CurrentHelpScreenCategory)
 	infoScreenText := info.GetText(appState.CurrentHelpScreenCategory, appState.ScreenWidth)
 
 	view.SetInfoScreenText(main, infoScreenText)
@@ -499,7 +471,7 @@ func Refresh(app *cview.Application, list *cview.List, main *core.MainView, appS
 		view.ClearList(list)
 		app.Draw()
 	} else {
-		duration := time.Millisecond * 2000
+		duration := time.Second * 2
 		view.SetTemporaryStatusBar(app, main, messages.Refreshed, duration)
 	}
 }
