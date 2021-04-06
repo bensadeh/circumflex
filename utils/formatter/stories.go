@@ -1,4 +1,4 @@
-package format
+package formatter
 
 import (
 	"clx/constants/messages"

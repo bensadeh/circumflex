@@ -1,7 +1,7 @@
 package ranking
 
 import (
-	"clx/utils/format"
+	"clx/utils/formatter"
 	"strconv"
 )
 
@@ -40,7 +40,7 @@ func relativeRankings(viewableStories int, maxItems int, currentPosition int, cu
 
 	for iterator != 0 {
 		number := strconv.Itoa(iterator)
-		rankings += format.Dim(number) + indentationFromRight + newParagraph
+		rankings += formatter.Dim(number) + indentationFromRight + newParagraph
 		iterator--
 	}
 
@@ -50,7 +50,7 @@ func relativeRankings(viewableStories int, maxItems int, currentPosition int, cu
 
 	for iterator < end {
 		number := strconv.Itoa(iterator)
-		rankings += format.Dim(number) + indentationFromRight + newParagraph
+		rankings += formatter.Dim(number) + indentationFromRight + newParagraph
 		iterator++
 	}
 

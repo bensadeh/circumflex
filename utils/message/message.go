@@ -1,13 +1,13 @@
 package message
 
-import "clx/utils/format"
+import "clx/utils/formatter"
 
 func Error(text string) string {
-	return format.Red("✘ " + text)
+	return formatter.Red("✘ " + text)
 }
 
 func Success(text string) string {
-	label := format.Green("✔")
+	label := formatter.Green("✔")
 
 	return label + " " + text
 }

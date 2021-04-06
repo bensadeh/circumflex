@@ -2,7 +2,7 @@ package keymaps
 
 import (
 	"clx/constants/margins"
-	"clx/utils/format"
+	"clx/utils/formatter"
 	"strings"
 
 	text "github.com/MichaelMure/go-term-text"
@@ -65,7 +65,7 @@ func (k *List) Print(screenWidth int) string {
 			padding := k.getLongestLineLength(screenWidth)/2 - len(item.header) + len(item.header)/2
 			padToCenterAlign := strings.Repeat(" ", padding)
 
-			output += padToCenterAlign + format.Bold(item.header) + newline
+			output += padToCenterAlign + formatter.Bold(item.header) + newline
 		case separator:
 			output += newline
 		case keymap:

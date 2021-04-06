@@ -2,7 +2,7 @@ package header
 
 import (
 	"clx/screen"
-	"clx/utils/format"
+	"clx/utils/formatter"
 	"strings"
 )
 
@@ -35,7 +35,7 @@ func header(symbol string, title string, subHeaders []string, selectedSubHeader 
 }
 
 func getWhitespaceFiller(base string, screenWidth int) string {
-	availableScreenSpace := screenWidth - format.Len(base)
+	availableScreenSpace := screenWidth - formatter.Len(base)
 
 	return strings.Repeat(" ", availableScreenSpace)
 }

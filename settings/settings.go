@@ -5,7 +5,7 @@ import (
 	"clx/constants/margins"
 	"clx/file"
 	"clx/screen"
-	"clx/utils/format"
+	"clx/utils/formatter"
 	ansi "clx/utils/strip-ansi"
 	"strconv"
 	"strings"
@@ -133,9 +133,9 @@ func GetSettingsText() string {
 	settingsWidth := 50
 
 	if file.Exists(pathToConfigFile) {
-		message += format.Dim("Using config file at " + ConfigFilePath)
+		message += formatter.Dim("Using config file at " + ConfigFilePath)
 	} else {
-		message += format.Dim("Press T to create config.env in " + ConfigDirPath)
+		message += formatter.Dim("Press T to create config.env in " + ConfigDirPath)
 	}
 
 	o := initializeOptions()

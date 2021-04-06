@@ -8,7 +8,7 @@ import (
 	"clx/file"
 	"clx/header"
 	"clx/utils/filter"
-	"clx/utils/format"
+	"clx/utils/formatter"
 	"clx/utils/http"
 	"encoding/json"
 	"fmt"
@@ -121,8 +121,8 @@ func convert(subs []*core.Story, highlightHeadlines int) []*cview.ListItem {
 	listItems := make([]*cview.ListItem, len(subs))
 
 	for i, s := range subs {
-		main := format.FormatMain(s.Title, s.Domain, highlightHeadlines)
-		secondary := format.FormatSecondary(s.Points, s.Author, s.Time, s.CommentsCount)
+		main := formatter.FormatMain(s.Title, s.Domain, highlightHeadlines)
+		secondary := formatter.FormatSecondary(s.Points, s.Author, s.Time, s.CommentsCount)
 
 		item := cview.NewListItem(main)
 		item.SetSecondaryText(secondary)

@@ -1,4 +1,4 @@
-package format
+package formatter
 
 import (
 	text "github.com/MichaelMure/go-term-text"
