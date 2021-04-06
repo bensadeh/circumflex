@@ -11,7 +11,7 @@ type ScreenController struct {
 	ApplicationState *ApplicationState
 }
 
-type Submission struct {
+type Story struct {
 	ID            int    `json:"id"`
 	Title         string `json:"title"`
 	Points        int    `json:"points"`
@@ -24,7 +24,7 @@ type Submission struct {
 }
 
 type ApplicationState struct {
-	SubmissionsToShow                     int
+	StoriesToShow                         int
 	CurrentCategory                       int
 	CurrentHelpScreenCategory             int
 	ScreenHeight                          int

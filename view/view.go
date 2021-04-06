@@ -20,7 +20,7 @@ func SetHelpScreenHeader(m *core.MainView, category int) {
 }
 
 func SetPanelToMainView(m *core.MainView) {
-	m.Panels.SetCurrentPanel(panels.SubmissionsPanel)
+	m.Panels.SetCurrentPanel(panels.StoriesPanel)
 }
 
 func SetPanelToInfoView(m *core.MainView) {

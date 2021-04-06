@@ -10,8 +10,8 @@ import (
 	"clx/constants/state"
 	"clx/core"
 	"clx/file"
+	"clx/handler"
 	"clx/info"
-	"clx/retriever"
 	"clx/screen"
 	"clx/settings"
 	"clx/utils/message"
@@ -27,7 +27,7 @@ import (
 
 func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list *cview.List,
 	main *core.MainView, appState *core.ApplicationState, config *core.Config,
-	ret *retriever.Retriever) {
+	ret *handler.StoryHandler) {
 	app.SetAfterResizeFunc(func(width int, height int) {
 		if appState.IsReturningFromSuspension {
 			appState.IsReturningFromSuspension = false
@@ -40,15 +40,15 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 		resetStates(appState, ret)
 		initializeView(appState, main, ret)
 
-		listItems, err := ret.GetSubmissions(appState.CurrentCategory, appState.CurrentPage,
-			appState.SubmissionsToShow, config.HighlightHeadlines, config.HideYCJobs)
+		listItems, err := ret.GetStories(appState.CurrentCategory, appState.CurrentPage,
+			appState.StoriesToShow, config.HighlightHeadlines, config.HideYCJobs)
 		if err != nil {
 			setToErrorState(appState, main, list, app)
 
 			return
 		}
 
-		marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, len(listItems), 0, 0)
+		marginText := ranking.GetRankings(config.RelativeNumbering, appState.StoriesToShow, len(listItems), 0, 0)
 
 		view.ShowItems(list, listItems)
 		view.SetLeftMarginText(main, marginText)
@@ -69,7 +69,7 @@ func setToErrorState(appState *core.ApplicationState, main *core.MainView, list 
 	app.Draw()
 }
 
-func resetStates(appState *core.ApplicationState, ret *retriever.Retriever) {
+func resetStates(appState *core.ApplicationState, ret *handler.StoryHandler) {
 	resetApplicationState(appState)
 	ret.Reset()
 }
@@ -78,23 +78,23 @@ func resetApplicationState(appState *core.ApplicationState) {
 	appState.CurrentPage = 0
 	appState.ScreenWidth = screen.GetTerminalWidth()
 	appState.ScreenHeight = screen.GetTerminalHeight()
-	appState.SubmissionsToShow = screen.GetSubmissionsToShow(appState.ScreenHeight, 30)
+	appState.StoriesToShow = screen.GetSubmissionsToShow(appState.ScreenHeight, 30)
 	appState.IsOnAddFavoriteConfirmationMessage = false
 	appState.IsOnAddFavoriteByID = false
 }
 
-func initializeView(appState *core.ApplicationState, main *core.MainView, ret *retriever.Retriever) {
+func initializeView(appState *core.ApplicationState, main *core.MainView, ret *handler.StoryHandler) {
 	header := ret.GetHackerNewsHeader(appState.CurrentCategory)
 
 	view.SetPanelToMainView(main)
 	view.SetHackerNewsHeader(main, header)
 	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory,
-		appState.SubmissionsToShow))
+		appState.StoriesToShow))
 }
 
 func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *cview.List,
-	appState *core.ApplicationState, config *core.Config, r *retriever.Retriever, reg *vim.Register) {
-	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
+	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
+	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 
 	app.Suspend(func() {
@@ -120,22 +120,22 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 	appState.IsReturningFromSuspension = true
 }
 
-func OpenCommentsInBrowser(list *cview.List, appState *core.ApplicationState, r *retriever.Retriever) {
-	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
+func OpenCommentsInBrowser(list *cview.List, appState *core.ApplicationState, r *handler.StoryHandler) {
+	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 	url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(story.ID)
 	browser.Open(url)
 }
 
-func OpenLinkInBrowser(list *cview.List, appState *core.ApplicationState, r *retriever.Retriever) {
-	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
+func OpenLinkInBrowser(list *cview.List, appState *core.ApplicationState, r *handler.StoryHandler) {
+	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 	browser.Open(story.URL)
 }
 
 func NextPage(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config, ret *retriever.Retriever, reg *vim.Register) {
-	isOnLastPage := appState.CurrentPage+1 > ret.GetMaxPages(appState.CurrentCategory, appState.SubmissionsToShow)
+	config *core.Config, ret *handler.StoryHandler, reg *vim.Register) {
+	isOnLastPage := appState.CurrentPage+1 > ret.GetMaxPages(appState.CurrentCategory, appState.StoriesToShow)
 	if isOnLastPage {
 		return
 	}
@@ -144,7 +144,7 @@ func NextPage(app *cview.Application, list *cview.List, main *core.MainView, app
 }
 
 func PreviousPage(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config, ret *retriever.Retriever, reg *vim.Register) {
+	config *core.Config, ret *handler.StoryHandler, reg *vim.Register) {
 	isOnFirstPage := appState.CurrentPage-1 < 0
 	if isOnFirstPage {
 		return
@@ -154,12 +154,12 @@ func PreviousPage(app *cview.Application, list *cview.List, main *core.MainView,
 }
 
 func changePage(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config, ret *retriever.Retriever, reg *vim.Register, delta int) {
+	config *core.Config, ret *handler.StoryHandler, reg *vim.Register, delta int) {
 	currentlySelectedItem := list.GetCurrentItemIndex()
 	appState.CurrentPage += delta
 
-	listItems, err := ret.GetSubmissions(appState.CurrentCategory, appState.CurrentPage,
-		appState.SubmissionsToShow, config.HighlightHeadlines, config.HideYCJobs)
+	listItems, err := ret.GetStories(appState.CurrentCategory, appState.CurrentPage,
+		appState.StoriesToShow, config.HighlightHeadlines, config.HideYCJobs)
 	if err != nil {
 		setToErrorState(appState, main, list, app)
 
@@ -171,10 +171,10 @@ func changePage(app *cview.Application, list *cview.List, main *core.MainView, a
 
 	ClearVimRegister(main, reg)
 
-	marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, len(listItems),
+	marginText := ranking.GetRankings(config.RelativeNumbering, appState.StoriesToShow, len(listItems),
 		list.GetCurrentItemIndex(), appState.CurrentPage)
 	header := ret.GetHackerNewsHeader(appState.CurrentCategory)
-	maxPages := ret.GetMaxPages(appState.CurrentCategory, appState.SubmissionsToShow)
+	maxPages := ret.GetMaxPages(appState.CurrentCategory, appState.StoriesToShow)
 
 	view.SetLeftMarginText(main, marginText)
 	view.SetHackerNewsHeader(main, header)
@@ -182,13 +182,13 @@ func changePage(app *cview.Application, list *cview.List, main *core.MainView, a
 }
 
 func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.List, appState *core.ApplicationState,
-	main *core.MainView, config *core.Config, ret *retriever.Retriever, reg *vim.Register) {
+	main *core.MainView, config *core.Config, ret *handler.StoryHandler, reg *vim.Register) {
 	currentItem := list.GetCurrentItemIndex()
 	appState.CurrentCategory = ret.GetNewCategory(event, appState)
 	appState.CurrentPage = 0
 
-	listItems, err := ret.GetSubmissions(appState.CurrentCategory, appState.CurrentPage,
-		appState.SubmissionsToShow, config.HighlightHeadlines, config.HideYCJobs)
+	listItems, err := ret.GetStories(appState.CurrentCategory, appState.CurrentPage,
+		appState.StoriesToShow, config.HighlightHeadlines, config.HideYCJobs)
 	if err != nil {
 		setToErrorState(appState, main, list, app)
 
@@ -200,9 +200,9 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	ClearVimRegister(main, reg)
 
 	header := ret.GetHackerNewsHeader(appState.CurrentCategory)
-	marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, len(listItems),
+	marginText := ranking.GetRankings(config.RelativeNumbering, appState.StoriesToShow, len(listItems),
 		list.GetCurrentItemIndex(), appState.CurrentPage)
-	maxPages := ret.GetMaxPages(appState.CurrentCategory, appState.SubmissionsToShow)
+	maxPages := ret.GetMaxPages(appState.CurrentCategory, appState.StoriesToShow)
 
 	view.SetLeftMarginText(main, marginText)
 	view.SetPageCounter(main, appState.CurrentPage, maxPages)
@@ -295,7 +295,7 @@ func selectItem(main *core.MainView, list *cview.List, appState *core.Applicatio
 	reg *vim.Register, item int) {
 	ClearVimRegister(main, reg)
 
-	marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
+	marginText := ranking.GetRankings(config.RelativeNumbering, appState.StoriesToShow, list.GetItemCount(),
 		item, appState.CurrentPage)
 
 	view.SelectItem(list, item)
@@ -323,13 +323,13 @@ func updateInfoScreenView(main *core.MainView, appState *core.ApplicationState) 
 }
 
 func ExitInfoScreen(main *core.MainView, appState *core.ApplicationState, config *core.Config, list *cview.List,
-	ret *retriever.Retriever) {
+	ret *handler.StoryHandler) {
 	appState.State = state.OnSubmissionPage
 
-	marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
+	marginText := ranking.GetRankings(config.RelativeNumbering, appState.StoriesToShow, list.GetItemCount(),
 		list.GetCurrentItemIndex(), appState.CurrentPage)
 	header := ret.GetHackerNewsHeader(appState.CurrentCategory)
-	maxPages := ret.GetMaxPages(appState.CurrentCategory, appState.SubmissionsToShow)
+	maxPages := ret.GetMaxPages(appState.CurrentCategory, appState.StoriesToShow)
 
 	view.SetLeftMarginText(main, marginText)
 	view.SetHackerNewsHeader(main, header)
@@ -341,9 +341,9 @@ func ExitInfoScreen(main *core.MainView, appState *core.ApplicationState, config
 func LowerCaseG(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config,
 	reg *vim.Register) {
 	currentItem := list.GetCurrentItemIndex()
-	itemToJumpTo := reg.LowerCaseG(currentItem, appState.SubmissionsToShow, appState.CurrentPage)
+	itemToJumpTo := reg.LowerCaseG(currentItem, appState.StoriesToShow, appState.CurrentPage)
 	register := reg.Print()
-	marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
+	marginText := ranking.GetRankings(config.RelativeNumbering, appState.StoriesToShow, list.GetItemCount(),
 		itemToJumpTo, appState.CurrentPage)
 
 	view.SetLeftMarginText(main, marginText)
@@ -354,9 +354,9 @@ func LowerCaseG(main *core.MainView, appState *core.ApplicationState, list *cvie
 func UpperCaseG(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config,
 	reg *vim.Register) {
 	currentItem := list.GetCurrentItemIndex()
-	itemToJumpTo := reg.UpperCaseG(currentItem, appState.SubmissionsToShow, appState.CurrentPage)
+	itemToJumpTo := reg.UpperCaseG(currentItem, appState.StoriesToShow, appState.CurrentPage)
 	register := reg.Print()
-	marginText := ranking.GetRankings(config.RelativeNumbering, appState.SubmissionsToShow, list.GetItemCount(),
+	marginText := ranking.GetRankings(config.RelativeNumbering, appState.StoriesToShow, list.GetItemCount(),
 		list.GetCurrentItemIndex(), appState.CurrentPage)
 
 	view.SetLeftMarginText(main, marginText)
@@ -381,7 +381,7 @@ func ClearVimRegister(main *core.MainView, reg *vim.Register) {
 }
 
 func Refresh(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config, ret *retriever.Retriever) {
+	config *core.Config, ret *handler.StoryHandler) {
 	afterResizeFunc := app.GetAfterResizeFunc()
 	afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
 
@@ -412,10 +412,10 @@ func DeleteFavoriteConfirmationDialogue(main *core.MainView, appState *core.Appl
 }
 
 func AddToFavorites(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config, ret *retriever.Retriever, reg *vim.Register) {
+	config *core.Config, ret *handler.StoryHandler, reg *vim.Register) {
 	statusBarMessage := ""
 	appState.IsOnAddFavoriteConfirmationMessage = false
-	story := ret.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
+	story := ret.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 
 	err := ret.AddItemToFavoritesAndWriteToFile(story)
@@ -430,9 +430,9 @@ func AddToFavorites(app *cview.Application, list *cview.List, main *core.MainVie
 }
 
 func DeleteItem(app *cview.Application, list *cview.List, appState *core.ApplicationState,
-	main *core.MainView, config *core.Config, ret *retriever.Retriever, reg *vim.Register) {
+	main *core.MainView, config *core.Config, ret *handler.StoryHandler, reg *vim.Register) {
 	appState.IsOnDeleteFavoriteConfirmationMessage = false
-	ret.DeleteStoryAndWriteToFile(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.SubmissionsToShow,
+	ret.DeleteStoryAndWriteToFile(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 
 	hasDeletedLastItemOnSecondOrThirdPage := list.GetCurrentItemIndex() == 0 &&
@@ -456,7 +456,7 @@ func DeleteItem(app *cview.Application, list *cview.List, appState *core.Applica
 }
 
 func ShowAddCustomFavorite(app *cview.Application, list *cview.List, main *core.MainView,
-	appState *core.ApplicationState, config *core.Config, ret *retriever.Retriever, reg *vim.Register) {
+	appState *core.ApplicationState, config *core.Config, ret *handler.StoryHandler, reg *vim.Register) {
 	appState.IsOnAddFavoriteByID = true
 
 	view.HideLeftMarginRanks(main)
@@ -471,7 +471,7 @@ func ShowAddCustomFavorite(app *cview.Application, list *cview.List, main *core.
 			if text != "" {
 				id, _ := strconv.Atoi(text)
 
-				item := new(core.Submission)
+				item := new(core.Story)
 				item.ID = id
 				item.Title = messages.EnterCommentSectionToUpdate
 				item.Time = time.Now().Unix()
@@ -481,7 +481,7 @@ func ShowAddCustomFavorite(app *cview.Application, list *cview.List, main *core.
 			}
 		}
 
-		main.Panels.SetCurrentPanel(panels.SubmissionsPanel)
+		main.Panels.SetCurrentPanel(panels.StoriesPanel)
 		app.SetFocus(main.Grid)
 
 		changePage(app, list, main, appState, config, ret, reg, 0)

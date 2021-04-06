@@ -34,7 +34,7 @@ Press <kbd>i</kbd> to show available keymaps and settings.
 
 ## Overview
 
-`circumflex` is Hacker News on the command line. It lets you browse submissions by category and read comments. 
+`circumflex` is Hacker News on the command line. It lets you browse stories by category and read comments. 
 `circumflex` is customizable, supports Vim-keybindings and respects your terminal's native color scheme.
 
 <p align="center">
@@ -86,8 +86,8 @@ for easier cross-referencing.
 </p>
 
 ## Favorites
-Save submissions you'd like to revisit by adding them to Favorites. Press <kbd>f</kbd> to add the 
-currently highlighted submission to your Favorites list. Press <kbd>F</kbd> to add a submission by ID. Submissions can
+Save stories you'd like to revisit by adding them to Favorites. Press <kbd>f</kbd> to add the 
+currently highlighted story to your Favorites list. Press <kbd>F</kbd> to add a story by ID. Stories can
 be removed with <kbd>x</kbd>.
 
 Favorites are stored in `favorites.json` in `~/.config/circumflex`.
@@ -145,7 +145,7 @@ The following table shows the ways `circumflex` can be configured:
 
 * [tcell](https://github.com/gdamore/tcell) and [cview](https://gitlab.com/tslocum/cview) for the TUI
 * [viper](https://github.com/spf13/viper) for reading and setting configurations
-* [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) for providing submissions and comments
+* [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) for providing stories and comments
 * [`less`](http://greenwoodsoftware.com/less/) for viewing comments
 * [go-term-text](https://github.com/MichaelMure/go-term-text) for text formatting
 

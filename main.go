@@ -5,7 +5,7 @@ import (
 	"clx/config"
 	"clx/controller"
 	"clx/favorites"
-	"clx/retriever"
+	"clx/handler"
 	"clx/utils/vim"
 	"os"
 
@@ -19,7 +19,7 @@ func main() {
 	configuration := config.GetConfig()
 
 	fav := favorites.Initialize()
-	ret := new(retriever.Retriever)
+	ret := new(handler.StoryHandler)
 	ret.Init(fav)
 
 	sc := constructor.NewScreenController()

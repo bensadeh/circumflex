@@ -4,8 +4,8 @@ import (
 	"clx/constants/categories"
 	"clx/constants/state"
 	"clx/core"
+	"clx/handler"
 	"clx/model"
-	"clx/retriever"
 	"clx/utils/vim"
 	"unicode"
 
@@ -13,12 +13,12 @@ import (
 	"gitlab.com/tslocum/cview"
 )
 
-func SetAfterInitializationAndAfterResizeFunctions(ret *retriever.Retriever,
+func SetAfterInitializationAndAfterResizeFunctions(ret *handler.StoryHandler,
 	app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
 	model.SetAfterInitializationAndAfterResizeFunctions(app, list, main, appState, config, ret)
 }
 
-func SetApplicationShortcuts(ret *retriever.Retriever, reg *vim.Register, app *cview.Application, list *cview.List,
+func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *cview.Application, list *cview.List,
 	main *core.MainView, appState *core.ApplicationState, config *core.Config) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		isOnHelpScreen := appState.State == state.OnHelpScreen

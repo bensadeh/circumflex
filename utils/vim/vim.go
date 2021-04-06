@@ -41,7 +41,7 @@ func (r *Register) Print() string {
 	return r.register + "  "
 }
 
-func (r *Register) LowerCaseG(currentItem int, submissionsToShow int, currentPage int) int {
+func (r *Register) LowerCaseG(currentItem int, storiesToShow int, currentPage int) int {
 	switch {
 	case r.register == "g":
 		r.Clear()
@@ -55,7 +55,7 @@ func (r *Register) LowerCaseG(currentItem int, submissionsToShow int, currentPag
 
 	case r.isNumberWithLowerCaseGAppended():
 		r.register = strings.TrimSuffix(r.register, "g")
-		itemToJumpTo := r.getItemToJumpTo(currentItem, submissionsToShow, currentPage)
+		itemToJumpTo := r.getItemToJumpTo(currentItem, storiesToShow, currentPage)
 
 		r.Clear()
 
@@ -68,7 +68,7 @@ func (r *Register) LowerCaseG(currentItem int, submissionsToShow int, currentPag
 	}
 }
 
-func (r *Register) UpperCaseG(currentItem int, submissionsToShow int, currentPage int) int {
+func (r *Register) UpperCaseG(currentItem int, storiesToShow int, currentPage int) int {
 	lastElement := -1
 
 	switch {
@@ -76,7 +76,7 @@ func (r *Register) UpperCaseG(currentItem int, submissionsToShow int, currentPag
 		return lastElement
 
 	case r.containsOnlyNumbers():
-		itemToJumpTo := r.getItemToJumpTo(currentItem, submissionsToShow, currentPage)
+		itemToJumpTo := r.getItemToJumpTo(currentItem, storiesToShow, currentPage)
 
 		r.Clear()
 
@@ -148,7 +148,7 @@ func (r *Register) GetItemDown(currentItem int, itemCount int) int {
 	return selectedItem
 }
 
-func (r *Register) getItemToJumpTo(currentItem int, submissionsToShow int, currentPage int) int {
+func (r *Register) getItemToJumpTo(currentItem int, storiesToShow int, currentPage int) int {
 	rankToJumpTo := r.toInt()
 	isVimRegisterEmpty := rankToJumpTo == 0
 
@@ -156,14 +156,14 @@ func (r *Register) getItemToJumpTo(currentItem int, submissionsToShow int, curre
 		return currentItem
 	}
 
-	itemToJumpTo := rankToJumpTo - (submissionsToShow * currentPage)
+	itemToJumpTo := rankToJumpTo - (storiesToShow * currentPage)
 
 	if itemToJumpTo <= 0 {
 		return 0
 	}
 
-	if itemToJumpTo >= submissionsToShow {
-		return submissionsToShow - 1
+	if itemToJumpTo >= storiesToShow {
+		return storiesToShow - 1
 	}
 
 	return itemToJumpTo - 1

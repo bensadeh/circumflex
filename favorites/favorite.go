@@ -8,7 +8,7 @@ import (
 )
 
 type Favorites struct {
-	Items []*core.Submission
+	Items []*core.Story
 }
 
 func Initialize() *Favorites {
@@ -29,8 +29,8 @@ func Initialize() *Favorites {
 	return f
 }
 
-func unmarshal(data []byte) []*core.Submission {
-	var subs []*core.Submission
+func unmarshal(data []byte) []*core.Story {
+	var subs []*core.Story
 
 	err := json.Unmarshal(data, &subs)
 	if err != nil {

@@ -1,4 +1,4 @@
-package sub
+package http
 
 import (
 	"clx/constants/categories"
@@ -16,11 +16,11 @@ const (
 	page    = "?page="
 )
 
-func FetchSubmissions(page int, category int) ([]*core.Submission, error) {
+func FetchStories(page int, category int) ([]*core.Story, error) {
 	url := getURL(category)
 	p := strconv.Itoa(page)
 
-	var s []*core.Submission
+	var s []*core.Story
 
 	client := resty.New()
 	client.SetTimeout(5 * time.Second)
@@ -30,7 +30,7 @@ func FetchSubmissions(page int, category int) ([]*core.Submission, error) {
 		SetResult(&s).
 		Get(url + p)
 	if err != nil {
-		return nil, fmt.Errorf("could not fetch submissions: %w", err)
+		return nil, fmt.Errorf("could not fetch stories: %w", err)
 	}
 
 	return s, nil

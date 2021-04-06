@@ -1,8 +1,7 @@
-package sub
+package format
 
 import (
 	"clx/constants/messages"
-	"clx/utils/format"
 	"fmt"
 	"strconv"
 	"strings"
@@ -23,13 +22,13 @@ const (
 	singleSpace           = " "
 )
 
-func FormatSubMain(title string, domain string, mode int) string {
+func FormatMain(title string, domain string, mode int) string {
 	return formatTitle(title, mode) + formatDomain(domain)
 }
 
 func formatTitle(title string, mode int) string {
 	if title == messages.EnterCommentSectionToUpdate {
-		return format.Yellow(title)
+		return Yellow(title)
 	}
 
 	title = strings.ReplaceAll(title, tripleSpace, singleSpace)
@@ -45,17 +44,17 @@ func formatTitle(title string, mode int) string {
 func highlightShowAndTell(title string, mode int) string {
 	switch mode {
 	case reverseHighlighting:
-		title = strings.ReplaceAll(title, askHN, format.Reverse(askHN))
-		title = strings.ReplaceAll(title, showHN, format.Reverse(showHN))
-		title = strings.ReplaceAll(title, tellHN, format.Reverse(tellHN))
-		title = strings.ReplaceAll(title, launchHN, format.Reverse(launchHN))
+		title = strings.ReplaceAll(title, askHN, Reverse(askHN))
+		title = strings.ReplaceAll(title, showHN, Reverse(showHN))
+		title = strings.ReplaceAll(title, tellHN, Reverse(tellHN))
+		title = strings.ReplaceAll(title, launchHN, Reverse(launchHN))
 
 		return title
 	case colorizedHighlighting:
-		title = strings.ReplaceAll(title, askHN, format.Magenta(askHN))
-		title = strings.ReplaceAll(title, showHN, format.Red(showHN))
-		title = strings.ReplaceAll(title, tellHN, format.Blue(tellHN))
-		title = strings.ReplaceAll(title, launchHN, format.Green(launchHN))
+		title = strings.ReplaceAll(title, askHN, Magenta(askHN))
+		title = strings.ReplaceAll(title, showHN, Red(showHN))
+		title = strings.ReplaceAll(title, tellHN, Blue(tellHN))
+		title = strings.ReplaceAll(title, launchHN, Green(launchHN))
 
 		return title
 
@@ -85,13 +84,13 @@ func highlightYCStartups(title string, mode int) string {
 
 func formatStartup(title string, mode int, summer string, year string, winter string) string {
 	if mode == reverseHighlighting {
-		title = strings.ReplaceAll(title, summer, format.Reverse(" YC S"+year+" "))
-		title = strings.ReplaceAll(title, winter, format.Reverse(" YC W"+year+" "))
+		title = strings.ReplaceAll(title, summer, Reverse(" YC S"+year+" "))
+		title = strings.ReplaceAll(title, winter, Reverse(" YC W"+year+" "))
 	}
 
 	if mode == colorizedHighlighting {
-		title = strings.ReplaceAll(title, summer, format.BlackOnOrange(" YC S"+year+" "))
-		title = strings.ReplaceAll(title, winter, format.BlackOnOrange(" YC W"+year+" "))
+		title = strings.ReplaceAll(title, summer, BlackOnOrange(" YC S"+year+" "))
+		title = strings.ReplaceAll(title, winter, BlackOnOrange(" YC W"+year+" "))
 	}
 
 	return title
@@ -103,18 +102,18 @@ func formatDomain(domain string) string {
 	}
 
 	domainInParenthesis := " (" + domain + ")"
-	domainInParenthesisAndDimmed := format.Dim(domainInParenthesis)
+	domainInParenthesisAndDimmed := Dim(domainInParenthesis)
 
 	return domainInParenthesisAndDimmed
 }
 
-func FormatSubSecondary(points int, author string, unixTime int64, comments int) string {
+func FormatSecondary(points int, author string, unixTime int64, comments int) string {
 	parsedPoints := parsePoints(points)
 	parsedAuthor := parseAuthor(author)
 	parsedTime := parseTime(unixTime)
 	parsedComments := parseComments(comments, author)
 
-	return format.Dim(parsedPoints + parsedAuthor + parsedTime + parsedComments)
+	return Dim(parsedPoints + parsedAuthor + parsedTime + parsedComments)
 }
 
 func parsePoints(points int) string {

@@ -21,14 +21,14 @@ func NewScreenController() *core.ScreenController {
 	sc.ApplicationState = new(core.ApplicationState)
 	sc.ApplicationState.ScreenWidth = screen.GetTerminalWidth()
 	sc.ApplicationState.ScreenHeight = screen.GetTerminalHeight()
-	sc.ApplicationState.SubmissionsToShow = screen.GetSubmissionsToShow(
+	sc.ApplicationState.StoriesToShow = screen.GetSubmissionsToShow(
 		sc.ApplicationState.ScreenHeight,
 		maximumStoriesToDisplay)
 
 	sc.Articles = NewList()
 
 	sc.MainView = NewMainView()
-	sc.MainView.Panels.AddPanel(panels.SubmissionsPanel, sc.Articles, true, true)
+	sc.MainView.Panels.AddPanel(panels.StoriesPanel, sc.Articles, true, true)
 
 	return sc
 }

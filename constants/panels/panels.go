@@ -1,9 +1,7 @@
 package panels
 
 const (
-	SubmissionsPanel       = "submissions"
+	StoriesPanel           = "stories"
 	InfoPanel              = "info"
-	KeymapsPanel           = "keymaps"
-	SettingsPanel          = "settings"
 	AddCustomFavoritePanel = "custom_favorite"
 )
