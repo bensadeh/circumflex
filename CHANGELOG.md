@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.16
-_WIP_
+_2021-04-07_
 
 **Backend**
 - Rename submission to story
