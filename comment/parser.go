@@ -52,8 +52,8 @@ func ParseComment(text string) (string, []string) {
 		case section.IsQuote:
 			section.Text = strings.ReplaceAll(section.Text, "<i>", "")
 			section.Text = strings.ReplaceAll(section.Text, "</i>", "")
-			section.Text = strings.ReplaceAll(section.Text, doubleSpace, singleSpace)
 			section.Text = strings.ReplaceAll(section.Text, tripleSpace, singleSpace)
+			section.Text = strings.ReplaceAll(section.Text, doubleSpace, singleSpace)
 			section.Text = strings.Replace(section.Text, ">>", "", 1)
 			section.Text = strings.Replace(section.Text, ">", "", 1)
 			section.Text = strings.TrimLeft(section.Text, " ")
@@ -64,8 +64,8 @@ func ParseComment(text string) (string, []string) {
 			section.Text = replaceHTML(section.Text)
 
 		default:
-			section.Text = strings.ReplaceAll(section.Text, doubleSpace, singleSpace)
 			section.Text = strings.ReplaceAll(section.Text, tripleSpace, singleSpace)
+			section.Text = strings.ReplaceAll(section.Text, doubleSpace, singleSpace)
 			section.Text = highlightReferences(section.Text)
 			section.Text = replaceHTML(section.Text)
 			URLs = append(URLs, extractURLs(section.Text)...)

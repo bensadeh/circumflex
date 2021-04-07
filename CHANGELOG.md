@@ -3,9 +3,11 @@
 ## 0.16
 _WIP_
 
-$%&
 **Backend**
 - Rename submission to story
+
+**Bugfixes**
+- Fixed a bug where triple spaces would not be correctly converted to single space
 
 ## 0.15
 _2021-04-04_
@@ -20,7 +22,7 @@ _2021-04-04_
 _2021-04-03_
 
 **New features:**
-- Press <kbd>F</kbd> to add submission to Favorites by ID 
+- Press <kbd>F</kbd> to add submission to Favorites by ID
 
 ## 0.13
 _2021-04-02_

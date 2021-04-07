@@ -358,7 +358,7 @@ Edit2: looks like it was a soda, not a second sandwich.
         [0m[33m▎[0man authorization for any amount that fast, since it can't know the total while
         [0m[33m▎[0mthe cashier is still scanning items, and it's Costco, so it could be anywhere
         [0m[33m▎[0mfrom $50 to $5,000 so surely it's getting the authorization after the
-        [0m[33m▎[0mtransaction finishes?  The flow is almost perfect. I have them scan my Costco
+        [0m[33m▎[0mtransaction finishes? The flow is almost perfect. I have them scan my Costco
         [0m[33m▎[0mmembership, I use tap to pay on the card reader, then I or 2nd cashier move to
         [0m[33m▎[0morganizing the items into the cart, and then the cashier hands me a receipt
         [0m[33m▎[0mwith basically zero wasted time.
@@ -4158,7 +4158,7 @@ very fast.
 Nothing to see here.
 
 Speed always has been not only the most important thing, but virtually the only
-important thing.  Back before most of you were born, there was a review (in PC
+important thing. Back before most of you were born, there was a review (in PC
 Magazine, IIRC) of the category of spreadsheet programs. MBA Analyst dominated
 the others (visicalc and lotus 123, IIRC) in every category except speed, in
 which it was OK, but not great. That's why you never heard of it.
