@@ -3,6 +3,9 @@
 ## 0.17
 _WIP_
 
+**New features:**
+- Exit info screen with <kbd>Esc</kbd> and <kbd>?</kbd> (in addition to <kbd>i</kbd>)
+
 ## 0.16
 _2021-04-07_
 
