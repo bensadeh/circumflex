@@ -1,7 +1,10 @@
 # Changelog
 
 ## 0.17
-_WIP_
+_2021-04-07_
+
+**Bugfixes**
+- Fixed a bug where hidden stories of the type `X is hiring` would cause a panic
 
 **New features:**
 - Exit info screen with <kbd>Esc</kbd> and <kbd>?</kbd> (in addition to <kbd>i</kbd>)
