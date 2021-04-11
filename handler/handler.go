@@ -60,6 +60,7 @@ func getOfflineStories(page int, visibleStories int, highlightHeadlines int, sc 
 
 func getOnlineStories(category int, page int, visibleStories int, highlightHeadlines int, hideYCJobs bool,
 	sc *storyCategory) ([]*cview.ListItem, error) {
+	overriddenYCJobsStatus := getOverriddenYCJobsStatus(visibleStories, hideYCJobs)
 	smallestItemToDisplay := page * visibleStories
 	largestItemToDisplay := (page * visibleStories) + visibleStories
 
@@ -79,12 +80,20 @@ func getOnlineStories(category int, page int, visibleStories int, highlightHeadl
 		return nil, fmt.Errorf("could not fetch storyCategory: %w", err)
 	}
 
-	filteredStories := filter.Filter(newStories, hideYCJobs)
+	filteredStories := filter.Filter(newStories, overriddenYCJobsStatus)
 	sc.stories = append(sc.stories, filteredStories...)
 
 	listItems := convert(sc.stories[smallestItemToDisplay:largestItemToDisplay], highlightHeadlines)
 
 	return listItems, nil
+}
+
+func getOverriddenYCJobsStatus(visibleStories int, hideYCJobs bool) bool {
+	if visibleStories >= 28 {
+		return false
+	}
+
+	return hideYCJobs
 }
 
 func (r *StoryHandler) Init(fav *favorites.Favorites) {
