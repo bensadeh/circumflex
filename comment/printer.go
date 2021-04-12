@@ -1,13 +1,14 @@
 package comment
 
 import (
+	"clx/endpoints"
 	"strconv"
 	"strings"
 
 	text "github.com/MichaelMure/go-term-text"
 )
 
-func ToString(comments Comments, indentSize int, commentWidth int, screenWidth int, preserveRightMargin bool) string {
+func ToString(comments endpoints.Comments, indentSize int, commentWidth int, screenWidth int, preserveRightMargin bool) string {
 	header := getHeader(comments, commentWidth, screenWidth)
 	replies := ""
 
@@ -19,7 +20,7 @@ func ToString(comments Comments, indentSize int, commentWidth int, screenWidth i
 	return header + replies
 }
 
-func getHeader(c Comments, commentWidth int, screenWidth int) string {
+func getHeader(c endpoints.Comments, commentWidth int, screenWidth int) string {
 	if commentWidth == 0 {
 		commentWidth = screenWidth
 	}
@@ -81,7 +82,7 @@ func parseRootComment(c string, commentWidth int) string {
 	return NewLine + wrappedComment + NewLine
 }
 
-func printReplies(c Comments, indentSize int, commentWidth int, screenWidth int, originalPoster string,
+func printReplies(c endpoints.Comments, indentSize int, commentWidth int, screenWidth int, originalPoster string,
 	parentPoster string, preserveRightMargin bool) string {
 	comment, URLs := ParseComment(c.Content)
 	adjustedCommentWidth := getCommentWidthForLevel(c.Level, indentSize, commentWidth, screenWidth, preserveRightMargin)
@@ -109,7 +110,7 @@ func printReplies(c Comments, indentSize int, commentWidth int, screenWidth int,
 	return fullComment
 }
 
-func getCommentHeading(c Comments, level int, commentWidth int, originalPoster string, parentPoster string) string {
+func getCommentHeading(c endpoints.Comments, level int, commentWidth int, originalPoster string, parentPoster string) string {
 	timeAgo := c.TimeAgo
 	author := bold(c.User)
 	label := getAuthorLabel(c.User, originalPoster, parentPoster) + " "
@@ -134,13 +135,13 @@ func getRepliesTag(numberOfReplies int) string {
 	return strconv.Itoa(numberOfReplies) + " ⤶"
 }
 
-func getReplyCount(comments Comments) int {
+func getReplyCount(comments endpoints.Comments) int {
 	numberOfReplies := 0
 
 	return incrementReplyCount(comments, &numberOfReplies)
 }
 
-func incrementReplyCount(comments Comments, repliesSoFar *int) int {
+func incrementReplyCount(comments endpoints.Comments, repliesSoFar *int) int {
 	for _, reply := range comments.Comments {
 		*repliesSoFar++
 		incrementReplyCount(reply, repliesSoFar)

@@ -1,9 +1,8 @@
 package handler
 
 import (
-	"clx/comment"
 	"clx/constants/categories"
-	"clx/core"
+	"clx/endpoints"
 	"clx/favorites"
 	"clx/file"
 	"clx/header"
@@ -35,7 +34,7 @@ type StoryHandler struct {
 type storyCategory struct {
 	maxPages           int
 	pageToFetchFromAPI int
-	stories            []*core.Story
+	stories            []*endpoints.Story
 }
 
 func (r *StoryHandler) GetStories(category int, page int, visibleStories int, highlightHeadlines int,
@@ -126,7 +125,7 @@ func (r *StoryHandler) Reset() {
 	r.sc[categories.Show].stories = nil
 }
 
-func convert(subs []*core.Story, highlightHeadlines int) []*cview.ListItem {
+func convert(subs []*endpoints.Story, highlightHeadlines int) []*cview.ListItem {
 	listItems := make([]*cview.ListItem, len(subs))
 
 	for i, s := range subs {
@@ -142,7 +141,7 @@ func convert(subs []*core.Story, highlightHeadlines int) []*cview.ListItem {
 	return listItems
 }
 
-func (r *StoryHandler) GetStory(category, currentItemIndex, storiesToShow, currentPage int) *core.Story {
+func (r *StoryHandler) GetStory(category, currentItemIndex, storiesToShow, currentPage int) *endpoints.Story {
 	index := getIndex(currentItemIndex, storiesToShow, currentPage)
 
 	return r.sc[category].stories[index]
@@ -158,7 +157,7 @@ func getIndex(currentItemIndex, storiesToShow, currentPage int) int {
 	return currentItemIndex + storiesToShow*(currentPage)
 }
 
-func removeIndex(s []*core.Story, index int) []*core.Story {
+func removeIndex(s []*endpoints.Story, index int) []*endpoints.Story {
 	return append(s[:index], s[index+1:]...)
 }
 
@@ -174,7 +173,7 @@ func (r *StoryHandler) GetMaxPages(category int, storiesToShow int) int {
 	return r.sc[category].maxPages
 }
 
-func (r *StoryHandler) AddItemToFavoritesAndWriteToFile(story *core.Story) error {
+func (r *StoryHandler) AddItemToFavoritesAndWriteToFile(story *endpoints.Story) error {
 	r.sc[categories.Favorites].stories = append(r.sc[categories.Favorites].stories, story)
 
 	bytes, _ := r.GetFavoritesJSON()
@@ -197,7 +196,7 @@ func (r *StoryHandler) GetFavoritesJSON() ([]byte, error) {
 	return b, nil
 }
 
-func (r *StoryHandler) UpdateFavoriteStoryAndWriteToDisk(newStory *comment.Comments) {
+func (r *StoryHandler) UpdateFavoriteStoryAndWriteToDisk(newStory *endpoints.Comments) {
 	for i, s := range r.sc[categories.Favorites].stories {
 		if s.ID == newStory.ID {
 			isFieldsUpdated := s.Title != newStory.Title || s.Points != newStory.Points ||
@@ -227,12 +226,12 @@ func (r *StoryHandler) GetHackerNewsHeader(currentCategory int) string {
 	return header.GetHackerNewsHeader(currentCategory, showFavorites)
 }
 
-func (r *StoryHandler) GetNewCategory(event *tcell.EventKey, appState *core.ApplicationState) int {
+func (r *StoryHandler) GetNewCategory(event *tcell.EventKey, currentCategory int) int {
 	if event.Key() == tcell.KeyBacktab {
-		return r.getPreviousCategory(appState.CurrentCategory)
+		return r.getPreviousCategory(currentCategory)
 	}
 
-	return r.getNextCategory(appState.CurrentCategory)
+	return r.getNextCategory(currentCategory)
 }
 
 func (r *StoryHandler) getNextCategory(currentCategory int) int {

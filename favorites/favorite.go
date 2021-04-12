@@ -1,14 +1,14 @@
 package favorites
 
 import (
-	"clx/core"
+	"clx/endpoints"
 	"clx/file"
 	"encoding/json"
 	"io/ioutil"
 )
 
 type Favorites struct {
-	Items []*core.Story
+	Items []*endpoints.Story
 }
 
 func Initialize() *Favorites {
@@ -29,8 +29,8 @@ func Initialize() *Favorites {
 	return f
 }
 
-func unmarshal(data []byte) []*core.Story {
-	var subs []*core.Story
+func unmarshal(data []byte) []*endpoints.Story {
+	var subs []*endpoints.Story
 
 	err := json.Unmarshal(data, &subs)
 	if err != nil {

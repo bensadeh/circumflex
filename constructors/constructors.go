@@ -4,7 +4,10 @@ import (
 	"clx/constants/margins"
 	"clx/constants/panels"
 	"clx/core"
+	"clx/favorites"
+	"clx/handler"
 	"clx/screen"
+	"clx/utils/vim"
 
 	"github.com/gdamore/tcell/v2"
 	"gitlab.com/tslocum/cview"
@@ -29,6 +32,12 @@ func NewScreenController() *core.ScreenController {
 
 	sc.MainView = NewMainView()
 	sc.MainView.Panels.AddPanel(panels.StoriesPanel, sc.Articles, true, true)
+
+	fav := favorites.Initialize()
+	sc.StoryHandler = new(handler.StoryHandler)
+	sc.StoryHandler.Init(fav)
+
+	sc.VimRegister = new(vim.Register)
 
 	return sc
 }

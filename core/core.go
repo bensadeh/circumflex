@@ -1,6 +1,9 @@
 package core
 
 import (
+	"clx/handler"
+	"clx/utils/vim"
+
 	"gitlab.com/tslocum/cview"
 )
 
@@ -9,18 +12,8 @@ type ScreenController struct {
 	Articles         *cview.List
 	MainView         *MainView
 	ApplicationState *ApplicationState
-}
-
-type Story struct {
-	ID            int    `json:"id"`
-	Title         string `json:"title"`
-	Points        int    `json:"points"`
-	Author        string `json:"user"`
-	Time          int64  `json:"time"`
-	CommentsCount int    `json:"comments_count"`
-	URL           string `json:"url"`
-	Domain        string `json:"domain"`
-	Type          string `json:"type"`
+	StoryHandler     *handler.StoryHandler
+	VimRegister      *vim.Register
 }
 
 type ApplicationState struct {

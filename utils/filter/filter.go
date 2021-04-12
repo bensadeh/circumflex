@@ -1,13 +1,15 @@
 package filter
 
-import "clx/core"
+import (
+	"clx/endpoints"
+)
 
-func Filter(stories []*core.Story, hideYCJobs bool) []*core.Story {
+func Filter(stories []*endpoints.Story, hideYCJobs bool) []*endpoints.Story {
 	if !hideYCJobs {
 		return stories
 	}
 
-	var filtered []*core.Story
+	var filtered []*endpoints.Story
 
 	for _, v := range stories {
 		if v.Type == "job" {

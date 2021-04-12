@@ -3,7 +3,7 @@ package http
 import (
 	"clx/constants/categories"
 	"clx/constants/clx"
-	"clx/core"
+	"clx/endpoints"
 	"fmt"
 	"strconv"
 	"time"
@@ -16,11 +16,11 @@ const (
 	page    = "?page="
 )
 
-func FetchStories(page int, category int) ([]*core.Story, error) {
+func FetchStories(page int, category int) ([]*endpoints.Story, error) {
 	url := getURL(category)
 	p := strconv.Itoa(page)
 
-	var s []*core.Story
+	var s []*endpoints.Story
 
 	client := resty.New()
 	client.SetTimeout(5 * time.Second)

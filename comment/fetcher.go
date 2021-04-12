@@ -2,30 +2,15 @@ package comment
 
 import (
 	"clx/constants/clx"
+	"clx/endpoints"
 	"fmt"
 	"time"
 
 	"github.com/go-resty/resty/v2"
 )
 
-type Comments struct {
-	ID            int        `json:"id"`
-	Title         string     `json:"title"`
-	Points        int        `json:"points"`
-	User          string     `json:"user"`
-	Time          int64      `json:"time"`
-	TimeAgo       string     `json:"time_ago"`
-	Type          string     `json:"type"`
-	URL           string     `json:"url"`
-	Level         int        `json:"level"`
-	Domain        string     `json:"domain"`
-	Comments      []Comments `json:"comments"`
-	Content       string     `json:"content"`
-	CommentsCount int        `json:"comments_count"`
-}
-
-func FetchComments(id string) (*Comments, error) {
-	comments := new(Comments)
+func FetchComments(id string) (*endpoints.Comments, error) {
+	comments := new(endpoints.Comments)
 
 	client := resty.New()
 	client.SetTimeout(5 * time.Second)

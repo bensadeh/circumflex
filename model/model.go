@@ -9,6 +9,7 @@ import (
 	"clx/constants/panels"
 	"clx/constants/state"
 	"clx/core"
+	"clx/endpoints"
 	"clx/file"
 	"clx/handler"
 	"clx/info"
@@ -184,7 +185,7 @@ func changePage(app *cview.Application, list *cview.List, main *core.MainView, a
 func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.List, appState *core.ApplicationState,
 	main *core.MainView, config *core.Config, ret *handler.StoryHandler, reg *vim.Register) {
 	currentItem := list.GetCurrentItemIndex()
-	appState.CurrentCategory = ret.GetNewCategory(event, appState)
+	appState.CurrentCategory = ret.GetNewCategory(event, appState.CurrentCategory)
 	appState.CurrentPage = 0
 
 	listItems, err := ret.GetStories(appState.CurrentCategory, appState.CurrentPage,
@@ -471,7 +472,7 @@ func ShowAddCustomFavorite(app *cview.Application, list *cview.List, main *core.
 			if text != "" {
 				id, _ := strconv.Atoi(text)
 
-				item := new(core.Story)
+				item := new(endpoints.Story)
 				item.ID = id
 				item.Title = messages.EnterCommentSectionToUpdate
 				item.Time = time.Now().Unix()
