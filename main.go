@@ -23,8 +23,7 @@ func main() {
 	cli.ClearScreen()
 	sc.Application.SetRoot(sc.MainView.Grid, true)
 
-	err := sc.Application.Run()
-	if err != nil {
+	if err := sc.Application.Run(); err != nil {
 		panic(err)
 	}
 }
