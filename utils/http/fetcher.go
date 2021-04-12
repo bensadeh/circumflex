@@ -40,13 +40,17 @@ func getURL(category int) string {
 	switch category {
 	case categories.FrontPage:
 		return baseURL + "news" + page
+
 	case categories.New:
 		return baseURL + "newest" + page
+
 	case categories.Ask:
 		return baseURL + "ask" + page
+
 	case categories.Show:
 		return baseURL + "show" + page
-	}
 
-	return ""
+	default:
+		return ""
+	}
 }
