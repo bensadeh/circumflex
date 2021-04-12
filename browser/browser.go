@@ -1,25 +1,25 @@
 package browser
 
 import (
-	"fmt"
 	"os/exec"
 	"runtime"
 )
 
 func Open(url string) {
-	var err error
-
 	switch runtime.GOOS {
 	case "linux":
-		err = exec.Command("xdg-open", url).Start()
+		cmd := exec.Command("xdg-open", url)
+		_ = cmd.Start()
+
 	case "windows":
-		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+		cmd := exec.Command("rundll32", "url.dll,FileProtocolHandler", url)
+		_ = cmd.Start()
+
 	case "darwin":
-		err = exec.Command("open", url).Start()
+		cmd := exec.Command("open", url)
+		_ = cmd.Start()
+
 	default:
-		err = fmt.Errorf("unsupported platform")
-	}
-	if err != nil {
-		println(err)
+		panic("unsupported platform")
 	}
 }
