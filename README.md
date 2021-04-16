@@ -94,8 +94,7 @@ Favorites are stored in `favorites.json` in `~/.config/circumflex`.
 
 ## Settings
 
-### How to configure
-#### Overview
+### Overview
 The available options and their current values are displayed in the Settings View. Overridden values are marked with
 `*`. To enter Settings View, press <kbd>i</kbd> on the Main View and then <kbd>Tab</kbd> to change the category. Note 
 that the settings cannot be changed from within the Settings View.
@@ -105,11 +104,11 @@ To change the settings, you can either:
 1. edit `config.env` in `~/.config/circumflex`, or
 2. set environment variables in your shell
 
-#### Changing settings through `config.env`
+### Changing settings through `config.env`
 `circumflex` can create a `config.env` template in `~/.config/circumflex` by pressing <kbd>t</kbd> in the Settings View.
 Edit this file and uncomment the values you want to change. 
 
-#### Changing settings with environment variables
+### Changing settings with environment variables
 Depending on your preference, it might be more convenient for you to configure `circumflex` by setting 
 [environment variables](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables).
 Below are a couple of examples on how to set the variables in different shells. Run the commands directly from your 
