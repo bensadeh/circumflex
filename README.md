@@ -18,8 +18,9 @@
 `circumflex` is Hacker News on the command line. It lets you browse stories by category and read comments. 
 `circumflex` is customizable, supports Vim-keybindings and respects your terminal's native color scheme.
 
-<img align="center" width="700" src="screenshots/mainview.png" alt="^">
-
+<p align="center">
+  <img src="screenshots/mainview.png" width="700" alt="^"/>
+</p>
 
 ## Getting started
 
