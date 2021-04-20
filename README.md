@@ -2,8 +2,6 @@
   <img src="screenshots/circumflex.png" width="350" alt="^"/>
 </p>
 
-#
-
 <div align="center">
 
 [![Latest release](https://img.shields.io/github/v/release/bensadeh/circumflex?style=flat&label=stable&color=e1acff&labelColor=292D3E)](https://github.com/bensadeh/circumflex/releases)
@@ -12,6 +10,7 @@
 [![Go Version](https://img.shields.io/github/go-mod/go-version/bensadeh/circumflex?style=flat&color=ffe585&labelColor=292D3E)](https://github.com/bensadeh/circumflex/blob/master/go.mod)
 </div>
 
+#
 `circumflex` is a command line tool for browsing Hacker&nbsp;News in your terminal.
 
 <p align="center">
