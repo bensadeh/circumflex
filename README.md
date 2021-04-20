@@ -1,8 +1,9 @@
 <p align="center">
   <img src="screenshots/circumflex.png" width="350" alt="^"/>
 </p>
-
-#
+<p align="center">
+  <b>It's Hacker News in your terminal</b>
+</p>
 
 <div align="center">
 
@@ -12,11 +13,13 @@
 [![Go Version](https://img.shields.io/github/go-mod/go-version/bensadeh/circumflex?style=flat&color=ffe585&labelColor=292D3E)](https://github.com/bensadeh/circumflex/blob/master/go.mod)
 </div>
 
-`circumflex` is a command line tool for browsing Hacker&nbsp;News in your terminal.
+#
 
-<p align="center">
-  <img src="screenshots/mainview.png" width="700" alt="^"/>
-</p>
+`circumflex` is Hacker News on the command line. It lets you browse stories by category and read comments. 
+`circumflex` is customizable, supports Vim-keybindings and respects your terminal's native color scheme.
+
+<img align="center" width="700" src="screenshots/mainview.png" alt="^">
+
 
 ## Getting started
 
