@@ -12,7 +12,8 @@
 [![Go Version](https://img.shields.io/github/go-mod/go-version/bensadeh/circumflex?style=flat&color=ffe585&labelColor=292D3E)](https://github.com/bensadeh/circumflex/blob/master/go.mod)
 </div>
 
-`circumflex` is a command line tool for browsing Hacker&nbsp;News in your terminal.
+`circumflex` is Hacker News on the command line. It lets you browse submissions by category and read comments. 
+`circumflex` is customizable, dotfiles-friendly and respects your terminal's native color scheme.
 
 <p align="center">
   <img src="screenshots/mainview.png" width="700" alt="^"/>
@@ -32,24 +33,32 @@ clx
 
 Press <kbd>i</kbd> to show available keymaps and settings.
 
-## Overview
-
-`circumflex` is Hacker News on the command line. It lets you browse stories by category and read comments. 
-`circumflex` is customizable, supports Vim-keybindings and respects your terminal's native color scheme.
-
-<p align="center">
-  <img src="screenshots/comments.png" width="700" alt="^"/>
-</p>
-
 ## Comment section
-
+### Overview
 Comments are pretty-printed and piped to the pager `less`. To present a nice and readable comment section,
 `circumflex` features:
 
 * Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and
   `code` where available
 * Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
-* Ability to jump between top-level comments by searching for `::`
+* Color-coded indentations
+
+<p align="center">
+  <img src="screenshots/comments.png" width="700" alt="^"/>
+</p>
+
+### Jumping between top-level comments
+`circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality, one can move between these posts by searching for it.
+
+To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. Then, press <kbd>n</kbd> and <kbd>N</kbd> to jump forwards and backwards, respectively.
+
+<pre>  
+  <kbd>/</kbd>: search
+  <kbd>n</kbd>: repeat search forwards
+  <kbd>N</kbd>: repeat search backward
+</pre>
+
+`less` remembers your search term between sessions. This means that the next time you want to jump between top-level posts, you can hit <kbd>n</kbd> to go to the next `::` directly.
 
 ## Syntax highlighting
 ### Quotes
@@ -86,11 +95,13 @@ for easier cross-referencing.
 </p>
 
 ## Favorites
-Save stories you'd like to revisit by adding them to Favorites. Press <kbd>f</kbd> to add the 
-currently highlighted story to your Favorites list. Press <kbd>F</kbd> to add a story by ID. Stories can
+Save submissions you'd like to revisit by adding them to Favorites. Press <kbd>f</kbd> to add the 
+currently highlighted submission to your Favorites list. Press <kbd>F</kbd> to add a submission by ID. Submissions can
 be removed with <kbd>x</kbd>.
 
 Favorites are stored in `favorites.json` in `~/.config/circumflex`.
+
+**Tip:** `favorites.json` is formatted (prettified) in order to be VCS-friendly.
 
 ## Settings
 
