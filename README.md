@@ -12,9 +12,8 @@
 [![Go Version](https://img.shields.io/github/go-mod/go-version/bensadeh/circumflex?style=flat&color=ffe585&labelColor=292D3E)](https://github.com/bensadeh/circumflex/blob/master/go.mod)
 </div>
 
-`circumflex` is Hacker News on the command line. It lets you browse submissions and read comments. 
-
-`circumflex` is customizable, dotfiles-friendly and respects your terminal's native color scheme.
+`circumflex` is a command line tool for browsing Hacker News in your terminal. It is customizable, 
+dotfiles-friendly and respects your terminal's native color scheme.
 
 <p align="center">
   <img src="screenshots/mainview.png" width="700" alt="^"/>
