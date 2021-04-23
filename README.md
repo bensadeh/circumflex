@@ -13,6 +13,7 @@
 </div>
 
 `circumflex` is Hacker News on the command line. It lets you browse submissions by category and read comments. 
+
 `circumflex` is customizable, dotfiles-friendly and respects your terminal's native color scheme.
 
 <p align="center">
@@ -101,8 +102,6 @@ be removed with <kbd>x</kbd>.
 
 Favorites are stored in `favorites.json` in `~/.config/circumflex`.
 
-**Tip:** `favorites.json` is formatted (prettified) in order to be VCS-friendly.
-
 ## Settings
 
 ### Overview
@@ -138,7 +137,7 @@ set -x CLX_COMMENT_WIDTH "65"
 
 ### Available options
 
-The following table shows the ways `circumflex` can be configured:
+The following table shows the different ways in which `circumflex` can be configured:
 
 | Key                         | Default Value | Description |
 | :-------------------------- | :-------: |---|
