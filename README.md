@@ -19,9 +19,9 @@ dotfiles-friendly and respects your terminal's native color scheme.
   <img src="screenshots/mainview.png" width="700" alt="^"/>
 </p>
 
-## Getting started
+## Installing
 
-Install `circumflex` with Homebrew:
+### Homebrew
 
 ```console
 # Install
@@ -31,7 +31,24 @@ brew install bensadeh/circumflex/circumflex
 clx
 ```
 
-Press <kbd>i</kbd> to show available keymaps and settings.
+### From Source
+
+Make sure you have Go installed. Clone the repo locally and run:
+
+```console
+# Install
+go install
+
+# Run
+clx
+```
+
+## Getting started
+Press <kbd>Tab</kbd> to change categories.
+
+Press <kbd>f</kbd> to add submission to your list of [favorites](#favorites).
+
+Press <kbd>i</kbd> to show available keymaps and [settings](#settings).
 
 ## Comment section
 ### Overview
