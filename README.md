@@ -65,7 +65,7 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 * Color-coded indentations
 
 ### Navigating
-Here are some useful shortcuts for moving around in `less`:
+Moving around in `less` is similar to Vim:
 
 <pre>
 <kbd>d</kbd>: Down one half-window
