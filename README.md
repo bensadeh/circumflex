@@ -53,7 +53,7 @@ Press <kbd>i</kbd> to show available keymaps and [settings](#settings).
 
 ## Comment section
 
-<img align="right" width="500" src="screenshots/comments.png" alt="Screenshot">
+<img align="right" width="50%" src="screenshots/comments.png" alt="Screenshot">
 
 ### Overview
 Comments are pretty-printed and piped to the pager `less`. To present a nice and readable comment section,
