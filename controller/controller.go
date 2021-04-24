@@ -9,8 +9,8 @@ import (
 	"clx/utils/vim"
 	"unicode"
 
+	"code.rocketnine.space/tslocum/cview"
 	"github.com/gdamore/tcell/v2"
-	"gitlab.com/tslocum/cview"
 )
 
 func SetAfterInitializationAndAfterResizeFunctions(ret *handler.StoryHandler,

@@ -7,7 +7,7 @@ import (
 	"clx/pages"
 	"time"
 
-	"gitlab.com/tslocum/cview"
+	"code.rocketnine.space/tslocum/cview"
 )
 
 func SetHackerNewsHeader(m *core.MainView, header string) {

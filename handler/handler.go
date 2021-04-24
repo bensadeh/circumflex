@@ -14,7 +14,7 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 
-	"gitlab.com/tslocum/cview"
+	"code.rocketnine.space/tslocum/cview"
 )
 
 const (

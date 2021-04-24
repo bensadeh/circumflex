@@ -2,5 +2,5 @@ package clx
 
 const (
 	Name    = "circumflex"
-	Version = "0.18"
+	Version = "1.0"
 )

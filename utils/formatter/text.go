@@ -1,8 +1,8 @@
 package formatter
 
 import (
+	"code.rocketnine.space/tslocum/cview"
 	text "github.com/MichaelMure/go-term-text"
-	"gitlab.com/tslocum/cview"
 )
 
 const (

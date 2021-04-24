@@ -9,8 +9,8 @@ import (
 	"clx/screen"
 	"clx/utils/vim"
 
+	"code.rocketnine.space/tslocum/cview"
 	"github.com/gdamore/tcell/v2"
-	"gitlab.com/tslocum/cview"
 )
 
 const (

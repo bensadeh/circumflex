@@ -168,7 +168,7 @@ The following table shows the different ways in which `circumflex` can be config
 
 `circumflex` uses:
 
-* [tcell](https://github.com/gdamore/tcell) and [cview](https://gitlab.com/tslocum/cview) for the TUI
+* [tcell](https://github.com/gdamore/tcell) and [cview](https://code.rocketnine.space/tslocum/cview) for the TUI
 * [viper](https://github.com/spf13/viper) for reading and setting configurations
 * [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) for providing stories and comments
 * [`less`](http://greenwoodsoftware.com/less/) for viewing comments

@@ -10,9 +10,9 @@ import (
 	"strconv"
 	"strings"
 
+	"code.rocketnine.space/tslocum/cview"
 	text "github.com/MichaelMure/go-term-text"
 	"github.com/spf13/viper"
-	"gitlab.com/tslocum/cview"
 )
 
 const (

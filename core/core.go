@@ -4,7 +4,7 @@ import (
 	"clx/handler"
 	"clx/utils/vim"
 
-	"gitlab.com/tslocum/cview"
+	"code.rocketnine.space/tslocum/cview"
 )
 
 type ScreenController struct {

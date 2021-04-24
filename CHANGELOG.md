@@ -1,8 +1,10 @@
 # Changelog
 
-## 0.18
+## 1.0
 _WIP_
 
+**Bugfixes**
+- Fixed a bug where the first keystroke was lost when entering the comment section
 
 ## 0.17
 _2021-04-07_
