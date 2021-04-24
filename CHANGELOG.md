@@ -1,11 +1,11 @@
 # Changelog
 
 ## 1.0
-_WIP_
+_2021-04-24_
 
 **Bugfixes**
 - Fixed a bug where the first keystroke was lost when entering the comment section
-- Fixed a bug where pressing <kbd>G</kbd> while in Relative Numbering mode would not 
+- Fixed a bug where pressing <kbd>G</kbd> while in Relative Numbering mode would not
 properly update the left margin
 
 ## 0.17
