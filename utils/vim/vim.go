@@ -69,7 +69,7 @@ func (r *Register) LowerCaseG(currentItem int, storiesToShow int, currentPage in
 }
 
 func (r *Register) UpperCaseG(currentItem int, storiesToShow int, currentPage int) int {
-	lastElement := -1
+	lastElement := storiesToShow - 1
 
 	switch {
 	case r.register == "":

@@ -358,7 +358,7 @@ func UpperCaseG(main *core.MainView, appState *core.ApplicationState, list *cvie
 	itemToJumpTo := reg.UpperCaseG(currentItem, appState.StoriesToShow, appState.CurrentPage)
 	register := reg.Print()
 	marginText := ranking.GetRankings(config.RelativeNumbering, appState.StoriesToShow, list.GetItemCount(),
-		list.GetCurrentItemIndex(), appState.CurrentPage)
+		itemToJumpTo, appState.CurrentPage)
 
 	view.SetLeftMarginText(main, marginText)
 	view.SelectItem(list, itemToJumpTo)
