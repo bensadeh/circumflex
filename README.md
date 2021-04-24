@@ -12,8 +12,9 @@
 [![Go Version](https://img.shields.io/github/go-mod/go-version/bensadeh/circumflex?style=flat&color=ffe585&labelColor=292D3E)](https://github.com/bensadeh/circumflex/blob/master/go.mod)
 </div>
 
-`circumflex` is a command line tool for browsing Hacker News in your terminal. It is customizable, 
-dotfiles-friendly and respects your terminal's native color scheme.
+`circumflex` is a command line tool for browsing Hacker News in your terminal. 
+
+`circumflex` is customizable, dotfiles-friendly and respects your terminal's native color scheme.
 
 <p align="center">
   <img src="screenshots/mainview.png" width="700" alt="^"/>
@@ -21,7 +22,7 @@ dotfiles-friendly and respects your terminal's native color scheme.
 
 ## Installing
 
-### Homebrew
+### Via Homebrew
 
 ```console
 # Install
@@ -31,9 +32,9 @@ brew install bensadeh/circumflex/circumflex
 clx
 ```
 
-### From Source
+### From source
 
-Make sure you have Go installed. Clone the repo locally and run:
+Make sure you have Go installed. Clone the repo locally and from the base directory run:
 
 ```console
 # Install
@@ -64,8 +65,23 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
   <img src="screenshots/comments.png" width="700" alt="^"/>
 </p>
 
+### Navigating
+Here are some useful shortcuts for moving around in `less`:
+
+<pre>
+<kbd>d</kbd>: Down one half-window
+<kbd>u</kbd>: Up one half-window
+
+<kbd>j</kbd>: Down one line
+<kbd>k</kbd>: Up one line
+
+<kbd>h</kbd>: Bring up the help screen
+<kbd>q</kbd>: Quit (back to clx)
+</pre>
+
 ### Jumping between top-level comments
-`circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality, one can move between these posts by searching for it.
+`circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality, 
+one can move between top-level posts by searching for `::`.
 
 To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. Then, press <kbd>n</kbd> and <kbd>N</kbd> to jump forwards and backwards, respectively.
 
