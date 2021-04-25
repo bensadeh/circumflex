@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1
+_WIP_
+
+**Bugfixes**
+- Fixed a bug where hrefs were not stripped inside quotes 
+
 ## 1.0
 _2021-04-24_
 
