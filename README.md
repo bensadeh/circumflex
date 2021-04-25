@@ -49,7 +49,7 @@ Press <kbd>Tab</kbd> to change categories.
 
 Press <kbd>f</kbd> to add submission to your list of [favorites](#favorites).
 
-Press <kbd>i</kbd> to show available keymaps and [settings](#settings).
+Press <kbd>?</kbd>/<kbd>i</kbd> to show available keymaps and [settings](#settings).
 
 ## Comment section
 
