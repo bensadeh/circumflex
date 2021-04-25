@@ -353,11 +353,14 @@ func LowerCaseG(main *core.MainView, appState *core.ApplicationState, list *cvie
 }
 
 func UpperCaseG(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config,
-	reg *vim.Register) {
+	reg *vim.Register, ret *handler.StoryHandler) {
+	stories, _ := ret.GetStories(appState.CurrentCategory, appState.CurrentPage,
+		appState.StoriesToShow, config.HighlightHeadlines, config.HideYCJobs)
+	storiesToShow := len(stories)
 	currentItem := list.GetCurrentItemIndex()
-	itemToJumpTo := reg.UpperCaseG(currentItem, appState.StoriesToShow, appState.CurrentPage)
+	itemToJumpTo := reg.UpperCaseG(currentItem, storiesToShow, appState.CurrentPage)
 	register := reg.Print()
-	marginText := ranking.GetRankings(config.RelativeNumbering, appState.StoriesToShow, list.GetItemCount(),
+	marginText := ranking.GetRankings(config.RelativeNumbering, storiesToShow, list.GetItemCount(),
 		itemToJumpTo, appState.CurrentPage)
 
 	view.SetLeftMarginText(main, marginText)

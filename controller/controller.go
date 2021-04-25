@@ -124,7 +124,7 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 			model.LowerCaseG(main, appState, list, config, reg)
 
 		case event.Rune() == 'G':
-			model.UpperCaseG(main, appState, list, config, reg)
+			model.UpperCaseG(main, appState, list, config, reg, ret)
 
 		case event.Rune() == 'r':
 			model.Refresh(app, list, main, appState, config, ret)

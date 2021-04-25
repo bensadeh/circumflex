@@ -4,7 +4,9 @@
 _WIP_
 
 **Bugfixes**
-- Fixed a bug where hrefs were not stripped inside quotes 
+- Fixed a bug where hrefs were not stripped inside quotes
+- Fixed a bug where pressing <kbd>G</kbd> while in Relative Numbering mode would not
+  properly update the left margin on the favorites page
 
 ## 1.0
 _2021-04-24_
