@@ -51,6 +51,11 @@ Press <kbd>f</kbd> to add submission to your list of [favorites](#favorites).
 
 Press <kbd>?</kbd>/<kbd>i</kbd> to show available keymaps and [settings](#settings).
 
+Supported Vim movements include:
+* <kbd>h</kbd>, <kbd>j</kbd>, <kbd>k</kbd> and <kbd>l</kbd>
+* Repeat navigation motion with <kbd>1</kbd>-<kbd>9</kbd>
+* <kbd>g</kbd> and <kbd>G</kbd> to jump directly to specific lines
+
 ## Comment section
 
 <img align="right" width="400" src="screenshots/comments.png" alt="Screenshot">
