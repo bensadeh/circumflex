@@ -63,8 +63,6 @@ clx
 
 ## Comment section
 
-<img align="right" width="400" src="screenshots/comments.png" alt="Screenshot">
-
 ### Overview
 Comments are pretty-printed and piped to the pager `less`. To present a nice and readable comment section,
 `circumflex` features:
@@ -72,7 +70,10 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 * Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and
   `code` where available
 * Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
-* Color-coded indentations
+
+<p align="center">
+  <img src="screenshots/comments.png" width="600" alt="^"/>
+</p>
 
 ### Jumping between top-level comments
 `circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality,
