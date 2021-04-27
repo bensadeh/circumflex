@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.1
-_WIP_
+_2021-04-27_
 
 **Cosmetic**
 - Show item ID in comment section
@@ -11,7 +11,7 @@ _WIP_
 - Fixed a bug where pressing <kbd>G</kbd> while in Relative Numbering mode would not
   properly update the left margin on the favorites page
 - Fixed a bug where a refresh wouldn't trigger after returning from the comment section 
-  
+
 
 ## 1.0
 _2021-04-24_
