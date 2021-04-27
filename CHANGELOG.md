@@ -3,6 +3,9 @@
 ## 1.1
 _WIP_
 
+**Cosmetic**
+- Show item ID in comment section
+
 **Bugfixes**
 - Fixed a bug where hrefs were not stripped inside quotes
 - Fixed a bug where pressing <kbd>G</kbd> while in Relative Numbering mode would not

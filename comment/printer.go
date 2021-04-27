@@ -26,9 +26,9 @@ func getHeader(c endpoints.Comments, commentWidth int, screenWidth int) string {
 	}
 
 	headline := getHeadline(c.Title, c.Domain, c.URL, c.ID, commentWidth)
-	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount)
+	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
 	rootComment := parseRootComment(c.Content, commentWidth)
-	helpMessage := dimmed("You are now in 'less'. Press 'q' to return and 'h' for help.") + NewLine
+	helpMessage := dimmed("You are now in 'less' • Press 'q' to return and 'h' for help") + NewLine
 	separator := strings.Repeat("-", commentWidth)
 
 	return headline + infoLine + helpMessage + rootComment + separator + NewParagraph
@@ -59,11 +59,12 @@ func getHyperlink(domain string, url string, id int) string {
 	return getHyperlinkText(linkToComments, linkText)
 }
 
-func getInfoLine(points int, user string, timeAgo string, numberOfComments int) string {
+func getInfoLine(points int, user string, timeAgo string, numberOfComments int, id int) string {
 	p := strconv.Itoa(points)
 	c := strconv.Itoa(numberOfComments)
+	i := strconv.Itoa(id)
 
-	return dimmed(p+" points by "+user+" "+timeAgo+" • "+c+" comments") + NewLine
+	return dimmed(p+" points by "+user+" "+timeAgo+" • "+c+" comments"+" • "+"ID "+i) + NewLine
 }
 
 func getHyperlinkText(url string, text string) string {
