@@ -12,10 +12,14 @@ cloud.google.com/go/pubsub v1.0.1/go.mod h1:R0Gpsv3s54REJCy4fxDixWD93lHJMoZTyQ2k
 cloud.google.com/go/storage v1.0.0/go.mod h1:IhtSnM/ZTZV8YYJWCY8RULGVqBDmpoyjwiyrjsg+URw=
 code.rocketnine.space/tslocum/cbind v0.1.5 h1:i6NkeLLNPNMS4NWNi3302Ay3zSU6MrqOT+yJskiodxE=
 code.rocketnine.space/tslocum/cbind v0.1.5/go.mod h1:LtfqJTzM7qhg88nAvNhx+VnTjZ0SXBJtxBObbfBWo/M=
+code.rocketnine.space/tslocum/cview v1.5.2 h1:pt1d4L0LGghwpGRDXN5dPTp0+M5cZhoYooblLLNOA1A=
+code.rocketnine.space/tslocum/cview v1.5.2/go.mod h1:tnNYj71jg9ZvvF9Eu9/2f0Yji0Rwjy2JK36UoS/Hxvo=
 code.rocketnine.space/tslocum/cview v1.5.4 h1:zBUFAanViudrAw8ZCqNxaufqrYL6a7F1AkkIClXIzYo=
 code.rocketnine.space/tslocum/cview v1.5.4/go.mod h1:JjgoZi3b528SaV923oQq14PGUCTE/g/6iggnDUxsChE=
 code.rocketnine.space/tslocum/cview v1.5.5-0.20210423164733-9dbc4a3a0330 h1:1+ZLf5bXaHiioaB6RKkzCvYKEWzkThJWquFxbYXgMo8=
 code.rocketnine.space/tslocum/cview v1.5.5-0.20210423164733-9dbc4a3a0330/go.mod h1:peg3a4WKQcs2Xyq3vM5IzvUksUUEZMBksuOpoS/V/rU=
+code.rocketnine.space/tslocum/cview v1.5.5-0.20210425060849-1653d59d6bf9 h1:sh4L2GdaHbgKfc44fnFKbvrGgOz6vm5hR/ac44ca4OU=
+code.rocketnine.space/tslocum/cview v1.5.5-0.20210425060849-1653d59d6bf9/go.mod h1:peg3a4WKQcs2Xyq3vM5IzvUksUUEZMBksuOpoS/V/rU=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
@@ -217,8 +221,6 @@ github.com/wayneashleyberry/terminal-dimensions v1.0.0/go.mod h1:PW2XrtV6KmKOPhu
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 gitlab.com/tslocum/cbind v0.1.4 h1:cbZXPPcieXspk8cShoT6efz7HAT8yMNQcofYWNizis4=
 gitlab.com/tslocum/cbind v0.1.4/go.mod h1:RvwYE3auSjBNlCmWeGspzn+jdLUVQ8C2QGC+0nP9ChI=
-code.rocketnine.space/tslocum/cview v1.5.2 h1:pt1d4L0LGghwpGRDXN5dPTp0+M5cZhoYooblLLNOA1A=
-code.rocketnine.space/tslocum/cview v1.5.2/go.mod h1:tnNYj71jg9ZvvF9Eu9/2f0Yji0Rwjy2JK36UoS/Hxvo=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.opencensus.io v0.21.0/go.mod h1:mSImk1erAIZhrmZN+AvHh14ztQfjbGwt4TtuofqLduU=
 go.opencensus.io v0.22.0/go.mod h1:+kGneAE2xo2IficOXnaByMWTGM9T73dGwxeWcUqIpI8=
