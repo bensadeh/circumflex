@@ -46,19 +46,21 @@ clx
 ## Keymaps
 
 <pre>
-<kbd>Tab</kbd>: Change categories
-<kbd>Enter</kbd>: Enter comment section
-<kbd>?</kbd>/<kbd>i</kbd>: Show keymaps and settings
+<kbd>Enter</kbd>: Read comments
+<kbd>Tab</kbd>: Change category
 
-<kbd>o</kbd>: Open link in browser
+<kbd>o</kbd>: Open link to article in browser
 <kbd>c</kbd>: Open comment section in browser
+<kbd>r</kbd>: Refresh
 
 <kbd>f</kbd>: Add submission to favorites
 <kbd>F</kbd>: Add submission to favorites by ID
+<kbd>x</kbd>: Remove submission from favorites
 
 <kbd>g</kbd>/<kbd>G</kbd>: Go to line (Vim)
 
 <kbd>q</kbd>: Quit
+<kbd>?</kbd>/<kbd>i</kbd>: Show keymaps and settings
 </pre>
 
 ## Comment section
