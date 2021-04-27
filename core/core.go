@@ -23,7 +23,6 @@ type ApplicationState struct {
 	ScreenHeight                          int
 	ScreenWidth                           int
 	CurrentPage                           int
-	IsReturningFromSuspension             bool
 	IsOnConfigCreationConfirmationMessage bool
 	IsOnAddFavoriteConfirmationMessage    bool
 	IsOnDeleteFavoriteConfirmationMessage bool

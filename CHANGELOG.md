@@ -10,6 +10,8 @@ _WIP_
 - Fixed a bug where hrefs were not stripped inside quotes
 - Fixed a bug where pressing <kbd>G</kbd> while in Relative Numbering mode would not
   properly update the left margin on the favorites page
+- Fixed a bug where a refresh wouldn't trigger after returning from the comment section 
+  
 
 ## 1.0
 _2021-04-24_

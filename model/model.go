@@ -30,12 +30,6 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 	main *core.MainView, appState *core.ApplicationState, config *core.Config,
 	ret *handler.StoryHandler) {
 	app.SetAfterResizeFunc(func(width int, height int) {
-		if appState.IsReturningFromSuspension {
-			appState.IsReturningFromSuspension = false
-
-			return
-		}
-
 		app.SetRoot(main.Grid, true)
 
 		resetStates(appState, ret)
@@ -118,7 +112,6 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 	})
 
 	changePage(app, list, main, appState, config, r, reg, 0)
-	appState.IsReturningFromSuspension = true
 }
 
 func OpenCommentsInBrowser(list *cview.List, appState *core.ApplicationState, r *handler.StoryHandler) {
