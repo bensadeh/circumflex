@@ -12,7 +12,7 @@
 [![Go Version](https://img.shields.io/github/go-mod/go-version/bensadeh/circumflex?style=flat&color=ffe585&labelColor=292D3E)](https://github.com/bensadeh/circumflex/blob/master/go.mod)
 </div>
 
-`circumflex` is a command line tool for browsing Hacker News in your terminal. 
+`circumflex` is a command line tool for browsing Hacker News in your terminal.
 
 `circumflex` is customizable, dotfiles-friendly and respects your terminal's native color scheme.
 
@@ -34,8 +34,6 @@ clx
 
 ### From source
 
-Make sure you have Go installed. Clone the repo locally and from the base directory run:
-
 ```console
 # Install
 go install
@@ -44,17 +42,24 @@ go install
 clx
 ```
 
-## Getting started
-Press <kbd>Tab</kbd> to change categories.
 
-Press <kbd>f</kbd> to add submission to your list of [favorites](#favorites).
+## Keymaps
 
-Press <kbd>?</kbd>/<kbd>i</kbd> to show available keymaps and [settings](#settings).
+<pre>
+<kbd>Tab</kbd>: Change categories
+<kbd>Enter</kbd>: Enter comment section
+<kbd>?</kbd>/<kbd>i</kbd>: Show keymaps and settings
 
-Supported Vim movements include:
-* <kbd>h</kbd>, <kbd>j</kbd>, <kbd>k</kbd> and <kbd>l</kbd>
-* Repeat navigation motion with <kbd>1</kbd>-<kbd>9</kbd>
-* <kbd>g</kbd> and <kbd>G</kbd> to jump directly to specific lines
+<kbd>o</kbd>: Open link in browser
+<kbd>c</kbd>: Open comment section in browser
+
+<kbd>f</kbd>: Add submission to favorites
+<kbd>F</kbd>: Add submission to favorites by ID
+
+<kbd>g</kbd>/<kbd>G</kbd>: Go to line (Vim)
+
+<kbd>q</kbd>: Quit
+</pre>
 
 ## Comment section
 
@@ -69,22 +74,8 @@ Comments are pretty-printed and piped to the pager `less`. To present a nice and
 * Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
 * Color-coded indentations
 
-### Navigating
-Moving around in `less` is similar to Vim:
-
-<pre>
-<kbd>d</kbd>: Down one half-window
-<kbd>u</kbd>: Up one half-window
-
-<kbd>j</kbd>: Down one line
-<kbd>k</kbd>: Up one line
-
-<kbd>h</kbd>: Bring up the help screen
-<kbd>q</kbd>: Quit (back to clx)
-</pre>
-
 ### Jumping between top-level comments
-`circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality, 
+`circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality,
 one can move between top-level posts by searching for `::`.
 
 To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. Then, press <kbd>n</kbd> and <kbd>N</kbd> to jump forwards and backwards, respectively.
@@ -99,7 +90,7 @@ To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. T
 
 ## Syntax highlighting
 ### Quotes
-On Hacker News, quotes are in their own paragraph and open with a `>`. They are not further stylized or formatted. 
+On Hacker News, quotes are in their own paragraph and open with a `>`. They are not further stylized or formatted.
 
 In `circumflex`, the `>` symbol is omitted and quotes are instead italicised and dimmed.
 
@@ -108,7 +99,7 @@ In `circumflex`, the `>` symbol is omitted and quotes are instead italicised and
 </p>
 
 ### Headlines
-Headlines containing the text `Ask HN`, `Tell HN`, `Show HN` and `Launch HN` are highlighted. On by default, 
+Headlines containing the text `Ask HN`, `Tell HN`, `Show HN` and `Launch HN` are highlighted. On by default,
 but can be disabled.
 
 <p align="center">
@@ -116,7 +107,7 @@ but can be disabled.
 </p>
 
 ### YC-funded startups
-[Twice a year](https://www.ycombinator.com/companies/), Y Combinator funds start-ups through its accelerator program. 
+[Twice a year](https://www.ycombinator.com/companies/), Y Combinator funds start-ups through its accelerator program.
 `circumflex` highlights these startups to signalize their affiliation with YC. On by default, but can be disabled.
 
 <p align="center">
@@ -124,7 +115,7 @@ but can be disabled.
 </p>
 
 ### References
-By convention, references on Hacker News are formatted as numbers inside brackets. `circumflex` highlights these numbers 
+By convention, references on Hacker News are formatted as numbers inside brackets. `circumflex` highlights these numbers
 for easier cross-referencing.
 
 <p align="center">
@@ -132,7 +123,7 @@ for easier cross-referencing.
 </p>
 
 ## Favorites
-Save submissions you'd like to revisit by adding them to Favorites. Press <kbd>f</kbd> to add the 
+Save submissions you'd like to revisit by adding them to Favorites. Press <kbd>f</kbd> to add the
 currently highlighted submission to your Favorites list. Press <kbd>F</kbd> to add a submission by ID. Submissions can
 be removed with <kbd>x</kbd>.
 
@@ -142,7 +133,7 @@ Favorites are stored in `favorites.json` in `~/.config/circumflex`.
 
 ### Overview
 The available options and their current values are displayed in the Settings View. Overridden values are marked with
-`*`. To enter Settings View, press <kbd>i</kbd> on the Main View and then <kbd>Tab</kbd> to change the category. Note 
+`*`. To enter Settings View, press <kbd>i</kbd> on the Main View and then <kbd>Tab</kbd> to change the category. Note
 that the settings cannot be changed from within the Settings View.
 
 To change the settings, you can either:
@@ -152,13 +143,13 @@ To change the settings, you can either:
 
 ### Changing settings through `config.env`
 `circumflex` can create a `config.env` template in `~/.config/circumflex` by pressing <kbd>t</kbd> in the Settings View.
-Edit this file and uncomment the values you want to change. 
+Edit this file and uncomment the values you want to change.
 
 ### Changing settings with environment variables
-Depending on your preference, it might be more convenient for you to configure `circumflex` by setting 
+Depending on your preference, it might be more convenient for you to configure `circumflex` by setting
 [environment variables](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables).
-Below are a couple of examples on how to set the variables in different shells. Run the commands directly from your 
-shell to set the value for the current session. Put the commands in somewhere in your 
+Below are a couple of examples on how to set the variables in different shells. Run the commands directly from your
+shell to set the value for the current session. Put the commands in somewhere in your
 [dotfiles](https://dotfiles.github.io/) to make the settings permanent.
 
 Bash and zsh:
@@ -178,7 +169,7 @@ The following table shows the different ways in which `circumflex` can be config
 | Key                         | Default Value | Description |
 | :-------------------------- | :-------: |---|
 | `CLX_COMMENT_WIDTH`         | `70` | Sets the maximum number of characters on each line for comments, replies and descriptions in settings. Set to 0 to use the whole screen.       |
-| `CLX_INDENT_SIZE`           | `4` | The number of whitespaces prepended to each reply, not including the color bar.        |
+| `CLX_INDENT_SIZE`           | `4` | The number of whitespaces prepended to each reply multiplied by the indent level. |
 | `CLX_HIGHLIGHT_HEADLINES`   | `2` | Highlights YC-funded startups and text containing `Show HN`, `Ask HN`, `Tell HN` and `Launch HN`. Can be set to 0 (No highlighting), 1 (inverse highlighting) or 2 (colored highlighting).        |
 | `CLX_RELATIVE_NUMBERING`    | `false` | Shows each line with a number relative to the currently selected element. Similar to Vim's hybrid line number mode.        |
 | `CLX_HIDE_YC_JOBS`          | `true` | Hides `X is hiring` posts from YC-funded startups. Does not affect the monthly `Who is Hiring?` posts.        |
