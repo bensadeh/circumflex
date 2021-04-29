@@ -69,6 +69,8 @@ func ParseComment(text string) (string, []string) {
 			section.Text = strings.ReplaceAll(section.Text, doubleSpace, singleSpace)
 			section.Text = highlightReferences(section.Text)
 			section.Text = replaceHTML(section.Text)
+			section.Text = strings.TrimLeft(section.Text, " ")
+
 			URLs = append(URLs, extractURLs(section.Text)...)
 			section.Text = trimURLs(section.Text)
 		}
