@@ -1,6 +1,7 @@
 package model
 
 import (
+	"clx/article"
 	"clx/browser"
 	"clx/cli"
 	"clx/comment"
@@ -130,14 +131,15 @@ func ReadSubmissionContent(app *cview.Application, main *core.MainView, list *cv
 		}
 		defer resp.Body.Close()
 
-		article, err := readability.FromReader(resp.Body, url)
+		art, err := readability.FromReader(resp.Body, url)
 		if err != nil {
 			return
 		}
 
-		a := article.Title + article.Content
+		a := art.Title + art.Content
 
 		output := cli.Lynx(a)
+		output = article.Parse(output)
 
 		cli.Less(output)
 	})
