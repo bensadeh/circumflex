@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2
+_WIP_
+
+**New features:**
+- Read a submission's article in `reader view` mode in `less`
+
 ## 1.1
 _2021-04-27_
 
