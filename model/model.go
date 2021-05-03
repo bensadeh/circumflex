@@ -19,11 +19,13 @@ import (
 	"clx/utils/ranking"
 	"clx/utils/vim"
 	"clx/view"
+	"net/http"
 	"strconv"
 	"time"
 
 	"code.rocketnine.space/tslocum/cview"
 	"github.com/gdamore/tcell/v2"
+	"github.com/go-shiori/go-readability"
 )
 
 func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list *cview.List,
@@ -109,6 +111,35 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 			config.PreserveRightMargin)
 
 		cli.Less(commentTree)
+	})
+
+	changePage(app, list, main, appState, config, r, reg, 0)
+}
+
+func ReadSubmissionContent(app *cview.Application, main *core.MainView, list *cview.List,
+	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
+	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
+		appState.CurrentPage)
+
+	app.Suspend(func() {
+		url := story.URL
+
+		resp, err := http.Get(url)
+		if err != nil {
+			return
+		}
+		defer resp.Body.Close()
+
+		article, err := readability.FromReader(resp.Body, url)
+		if err != nil {
+			return
+		}
+
+		a := article.Title + article.Content
+
+		output := cli.Lynx(a)
+
+		cli.Less(output)
 	})
 
 	changePage(app, list, main, appState, config, r, reg, 0)

@@ -132,6 +132,9 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 		case event.Key() == tcell.KeyEnter:
 			model.ReadSubmissionComments(app, main, list, appState, config, ret, reg)
 
+		case event.Rune() == ' ':
+			model.ReadSubmissionContent(app, main, list, appState, config, ret, reg)
+
 		case event.Rune() == 'o':
 			model.OpenLinkInBrowser(list, appState, ret)
 
