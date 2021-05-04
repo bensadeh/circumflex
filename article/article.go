@@ -3,6 +3,8 @@ package article
 import (
 	"strings"
 
+	text "github.com/MichaelMure/go-term-text"
+
 	. "github.com/logrusorgru/aurora/v3"
 )
 
@@ -10,15 +12,26 @@ const (
 	newLine = "\n"
 )
 
-func Parse(article string) string {
+func Parse(title, article string) string {
+	title = Bold(title).String()
+
+	wrappedTitle, _ := text.Wrap(title, 80)
+	wrappedTitle += newLine + newLine
+
 	lines := strings.Split(article, newLine)
-	formatted := ""
+	formattedArticle := ""
 
 	for i, line := range lines {
 		isOnFirstOrLastLine := i == 0 || i == len(lines)-1
 
 		if isOnFirstOrLastLine {
-			formatted += line + newLine
+			formattedArticle += line + newLine
+
+			continue
+		}
+
+		if line == "References" {
+			formattedArticle += Faint(line).String() + newLine
 
 			continue
 		}
@@ -32,17 +45,17 @@ func Parse(article string) string {
 		lineIsHeader := currentLineIsNotIndented && previousLineIsEmpty && nextLineLineIsEmpty
 
 		if lineIsHeader {
-			formatted += Underline(line).String() + newLine
+			formattedArticle += Underline(line).String() + newLine
 
 			continue
 		}
 
-		formatted += line + newLine
+		formattedArticle += line + newLine
 	}
 
-	formatted = highlightReferences(formatted)
+	formattedArticle = highlightReferences(formattedArticle)
 
-	return formatted
+	return wrappedTitle + formattedArticle
 }
 
 func highlightReferences(input string) string {

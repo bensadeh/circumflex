@@ -136,10 +136,8 @@ func ReadSubmissionContent(app *cview.Application, main *core.MainView, list *cv
 			return
 		}
 
-		a := art.Title + art.Content
-
-		output := cli.Lynx(a)
-		output = article.Parse(output)
+		output := cli.Lynx(art.Content)
+		output = article.Parse(art.Title, output)
 
 		cli.Less(output)
 	})
