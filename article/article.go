@@ -6,10 +6,43 @@ import (
 	. "github.com/logrusorgru/aurora/v3"
 )
 
-func Parse(article string) string {
-	article = highlightReferences(article)
+const (
+	newLine = "\n"
+)
 
-	return article
+func Parse(article string) string {
+	lines := strings.Split(article, newLine)
+	formatted := ""
+
+	for i, line := range lines {
+		isOnFirstOrLastLine := i == 0 || i == len(lines)-1
+
+		if isOnFirstOrLastLine {
+			formatted += line + newLine
+
+			continue
+		}
+
+		previousLine := lines[i-1]
+		previousLineIsEmpty := len(previousLine) == 0
+		nextLine := lines[i+1]
+		nextLineLineIsEmpty := len(nextLine) == 0
+		currentLineIsNotIndented := !strings.HasPrefix(line, " ")
+
+		lineIsHeader := currentLineIsNotIndented && previousLineIsEmpty && nextLineLineIsEmpty
+
+		if lineIsHeader {
+			formatted += Underline(line).String() + newLine
+
+			continue
+		}
+
+		formatted += line + newLine
+	}
+
+	formatted = highlightReferences(formatted)
+
+	return formatted
 }
 
 func highlightReferences(input string) string {
