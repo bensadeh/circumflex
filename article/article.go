@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	newLine = "\n"
+	newLine     = "\n"
+	indentBlock = "   "
 )
 
 func Parse(title, article string) string {
@@ -36,19 +37,13 @@ func Parse(title, article string) string {
 			continue
 		}
 
-		previousLine := lines[i-1]
-		previousLineIsEmpty := len(previousLine) == 0
-		nextLine := lines[i+1]
-		nextLineLineIsEmpty := len(nextLine) == 0
-		currentLineIsNotIndented := !strings.HasPrefix(line, " ")
-
-		lineIsHeader := currentLineIsNotIndented && previousLineIsEmpty && nextLineLineIsEmpty
-
-		if lineIsHeader {
+		if isHeader(lines, i, line) {
 			formattedArticle += Underline(line).String() + newLine
 
 			continue
 		}
+
+		line = strings.TrimPrefix(line, indentBlock)
 
 		formattedArticle += line + newLine
 	}
@@ -56,6 +51,20 @@ func Parse(title, article string) string {
 	formattedArticle = highlightReferences(formattedArticle)
 
 	return wrappedTitle + formattedArticle
+}
+
+func isHeader(lines []string, i int, line string) bool {
+	previousLine := lines[i-1]
+	previousLineIsEmpty := len(previousLine) == 0
+
+	nextLine := lines[i+1]
+	nextLineLineIsEmpty := len(nextLine) == 0
+
+	currentLineIsNotIndented := !strings.HasPrefix(line, " ")
+
+	lineIsHeader := currentLineIsNotIndented && previousLineIsEmpty && nextLineLineIsEmpty
+
+	return lineIsHeader
 }
 
 func highlightReferences(input string) string {
