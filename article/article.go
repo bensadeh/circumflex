@@ -1,6 +1,8 @@
 package article
 
 import (
+	"clx/constants/messages"
+	"strconv"
 	"strings"
 
 	text "github.com/MichaelMure/go-term-text"
@@ -13,11 +15,15 @@ const (
 	indentBlock = "   "
 )
 
-func Parse(title, article string) string {
-	title = Bold(title).String()
+func Parse(title, domain, article, references string) string {
+	wrappedTitle, _ := text.Wrap(title, 73)
+	truncatedDomain := text.TruncateMax(domain, 73)
 
-	wrappedTitle, _ := text.Wrap(title, 80)
-	wrappedTitle += newLine + newLine
+	wrappedTitle += newLine
+	wrappedTitle += Faint(truncatedDomain).String() + newLine
+	wrappedTitle += Faint(messages.LessScreenInfo).String() + newLine
+	separator := messages.GetSeparator(73)
+	wrappedTitle += separator + newLine + newLine
 
 	lines := strings.Split(article, newLine)
 	formattedArticle := ""
@@ -32,25 +38,24 @@ func Parse(title, article string) string {
 		}
 
 		if line == "References" {
-			formattedArticle += Faint(line).String() + newLine
+			break
+		}
+
+		lineIsHeader := isHeader(lines, i, line)
+
+		if lineIsHeader {
+			formattedArticle += Bold(line).String() + newLine
 
 			continue
 		}
-
-		if isHeader(lines, i, line) {
-			formattedArticle += Underline(line).String() + newLine
-
-			continue
-		}
-
-		line = strings.TrimPrefix(line, indentBlock)
 
 		formattedArticle += line + newLine
 	}
 
 	formattedArticle = highlightReferences(formattedArticle)
+	formattedReferences := newLine + formatReferences(references)
 
-	return wrappedTitle + formattedArticle
+	return wrappedTitle + formattedArticle + formattedReferences
 }
 
 func isHeader(lines []string, i int, line string) bool {
@@ -86,4 +91,33 @@ func highlightReferences(input string) string {
 	input = strings.ReplaceAll(input, "[16]", "["+Green("16").String()+"]")
 
 	return input
+}
+
+func formatReferences(references string) string {
+	lines := strings.Split(references, newLine)
+	formattedReferences := Faint("References").String() + newLine + newLine
+
+	if len(lines) == 1 {
+		return ""
+	}
+
+	for i, line := range lines {
+		isOnLastLine := i == len(lines)-1
+
+		if isOnLastLine {
+			break
+		}
+
+		if i == 16 {
+			break
+		}
+
+		number := strconv.Itoa(i + 1)
+
+		formattedReferences += indentBlock + "[" + number + "] " + line + newLine
+	}
+
+	formattedReferences = highlightReferences(formattedReferences)
+
+	return formattedReferences
 }

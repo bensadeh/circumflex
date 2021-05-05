@@ -1,6 +1,7 @@
 package comment
 
 import (
+	"clx/constants/messages"
 	"clx/endpoints"
 	"strconv"
 	"strings"
@@ -28,8 +29,8 @@ func getHeader(c endpoints.Comments, commentWidth int, screenWidth int) string {
 	headline := getHeadline(c.Title, c.Domain, c.URL, c.ID, commentWidth)
 	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
 	rootComment := parseRootComment(c.Content, commentWidth)
-	helpMessage := dimmed("You are now in 'less' • Press 'q' to return and 'h' for help") + NewLine
-	separator := strings.Repeat("-", commentWidth)
+	helpMessage := dimmed(messages.LessScreenInfo) + NewLine
+	separator := messages.GetSeparator(commentWidth)
 
 	return headline + infoLine + helpMessage + rootComment + separator + NewParagraph
 }

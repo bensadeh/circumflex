@@ -1,8 +1,13 @@
 package messages
 
-import "clx/constants/clx"
+import (
+	"clx/constants/clx"
+	"strings"
+)
 
 const (
+	separator = "-"
+
 	Refreshed          = "Refreshed"
 	Cancelled          = "Cancelled"
 	OfflineMessage     = "Could not fetch stories          [-]Press 'r' to retry or 'q' to quit"
@@ -14,8 +19,13 @@ const (
 	EnterCommentSectionToUpdate = "[Enter comment section to update story]"
 	DeleteFromFavorites         = "[red]Delete[-] from Favorites? Press [::b]Y[::-] to Confirm"
 	AddToFavorites              = "[green]Add[-] to Favorites? Press [::b]Y[::-] to Confirm"
+	LessScreenInfo              = "You are now in 'less' • Press 'q' to return and 'h' for help"
 )
 
 func GetCircumflexStatusMessage() string {
 	return "[::d]github.com/bensadeh/circumflex • version " + clx.Version
+}
+
+func GetSeparator(width int) string {
+	return strings.Repeat(separator, width)
 }

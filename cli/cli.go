@@ -16,16 +16,30 @@ func Less(input string) {
 	}
 }
 
-func Lynx(input string) string {
-	command := exec.Command("lynx", "-stdin", "-display_charset=utf-8", "-assume_charset=utf-8", "-dump")
-	command.Stdin = strings.NewReader(input)
+func Lynx(input string) (string, string) {
+	commandArticle := exec.Command("lynx", "-stdin", "-display_charset=utf-8", "-assume_charset=utf-8", "-dump",
+		"-hiddenlinks=ignore")
+	commandArticle.Stdin = strings.NewReader(input)
 
-	out, err := command.CombinedOutput()
-	if err != nil {
-		panic(err)
+	art, errA := commandArticle.CombinedOutput()
+	if errA != nil {
+		panic(errA)
 	}
 
-	return string(out)
+	article := string(art)
+
+	commandReferences := exec.Command("lynx", "-stdin", "-display_charset=utf-8", "-assume_charset=utf-8",
+		"-listonly", "-nomargins", "-nonumbers", "-hiddenlinks=ignore", "-notitle", "-dump")
+	commandReferences.Stdin = strings.NewReader(input)
+
+	ref, errR := commandReferences.CombinedOutput()
+	if errR != nil {
+		panic(errR)
+	}
+
+	references := string(ref)
+
+	return article, references
 }
 
 func ClearScreen() {
