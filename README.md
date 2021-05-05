@@ -42,6 +42,8 @@ go install
 clx
 ```
 
+When building from source, make sure the dependencies [`less`](http://greenwoodsoftware.com/less/) and 
+[`lynx`](https://lynx.invisible-island.net/lynx.html) are installed on your system.
 
 ## Keymaps
 
