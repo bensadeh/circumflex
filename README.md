@@ -49,6 +49,7 @@ When building from source, make sure the dependencies [`less`](http://greenwoods
 
 <pre>
 <kbd>Enter</kbd>: Read comments
+<kbd>Space</kbd>: Read article in Reader Mode
 <kbd>Tab</kbd>: Change category
 
 <kbd>o</kbd>: Open link to article in browser
@@ -92,6 +93,10 @@ To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. T
 </pre>
 
 `less` remembers your search term between sessions. This means that the next time you want to jump between top-level posts, you can hit <kbd>n</kbd> to go to the next `::` directly.
+
+## Reader Mode
+Press <kbd>Space</kbd> to read the submission link in Reader Mode. 
+
 
 ## Syntax highlighting
 ### Quotes

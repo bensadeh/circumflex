@@ -105,8 +105,10 @@ func getKeymaps(screenWidth int) string {
 	keys.AddHeader("Main View")
 	keys.AddSeparator()
 	keys.AddKeymap("Read comments", "Enter")
+	keys.AddKeymap("Read article in Reader Mode", "Space")
 	keys.AddKeymap("Change category", "Tab")
-	keys.AddKeymap("Open story in browser", "o")
+
+	keys.AddKeymap("Open story link in browser", "o")
 	keys.AddKeymap("Open comments in browser", "c")
 	keys.AddKeymap("Refresh", "r")
 	keys.AddSeparator()
