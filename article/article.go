@@ -56,7 +56,7 @@ func Parse(title, domain, article, references string) string {
 	}
 
 	formattedArticle = highlightReferences(formattedArticle)
-	formattedReferences := newLine + formatReferences(references)
+	formattedReferences := formatReferences(references)
 
 	return wrappedTitle + formattedArticle + formattedReferences
 }
@@ -130,9 +130,9 @@ func formatURL(url string, maxUrlLength int) string {
 		return getHyperlinkText(url, url)
 	}
 
-	truncatedUrl := text.TruncateMax(url, maxUrlLength)
+	truncatedURL := text.TruncateMax(url, maxUrlLength)
 
-	return getHyperlinkText(url, truncatedUrl)
+	return getHyperlinkText(url, truncatedURL)
 }
 
 func getHyperlinkText(url string, text string) string {
