@@ -13,6 +13,9 @@ import (
 const (
 	newLine     = "\n"
 	indentBlock = "   "
+	link1       = "\033]8;;"
+	link2       = "\a"
+	link3       = "\033]8;;\a"
 )
 
 func Parse(title, domain, article, references string) string {
@@ -114,10 +117,24 @@ func formatReferences(references string) string {
 
 		number := strconv.Itoa(i + 1)
 
-		formattedReferences += indentBlock + "[" + number + "] " + line + newLine
+		formattedReferences += indentBlock + "[" + number + "] " + formatURL(line, 65) + newLine
 	}
 
 	formattedReferences = highlightReferences(formattedReferences)
 
 	return formattedReferences
+}
+
+func formatURL(url string, maxUrlLength int) string {
+	if len(url) < maxUrlLength {
+		return getHyperlinkText(url, url)
+	}
+
+	truncatedUrl := text.TruncateMax(url, maxUrlLength)
+
+	return getHyperlinkText(url, truncatedUrl)
+}
+
+func getHyperlinkText(url string, text string) string {
+	return link1 + url + link2 + text + link3
 }
