@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+const (
+	newLine = "\n"
+)
+
 func Less(input string) {
 	command := exec.Command("less", "-r")
 	command.Stdin = strings.NewReader(input)
@@ -16,18 +20,7 @@ func Less(input string) {
 	}
 }
 
-func Lynx(input string) (string, string) {
-	commandArticle := exec.Command("lynx", "-stdin", "-display_charset=utf-8", "-assume_charset=utf-8", "-dump",
-		"-hiddenlinks=ignore")
-	commandArticle.Stdin = strings.NewReader(input)
-
-	art, errA := commandArticle.CombinedOutput()
-	if errA != nil {
-		panic(errA)
-	}
-
-	article := string(art)
-
+func ParseWithLynx(input string) (string, string) {
 	commandReferences := exec.Command("lynx", "-stdin", "-display_charset=utf-8", "-assume_charset=utf-8",
 		"-listonly", "-nomargins", "-nonumbers", "-hiddenlinks=ignore", "-notitle", "-dump")
 	commandReferences.Stdin = strings.NewReader(input)
@@ -38,6 +31,29 @@ func Lynx(input string) (string, string) {
 	}
 
 	references := string(ref)
+
+	numberOfReferences := len(strings.Split(references, newLine))
+	isManyReferences := numberOfReferences > 16
+	articleArguments := []string{
+		"-stdin", "-display_charset=utf-8", "-assume_charset=utf-8", "-dump",
+		"-hiddenlinks=ignore",
+	}
+
+	if isManyReferences {
+		references = ""
+
+		articleArguments = append(articleArguments, "-nonumbers")
+	}
+
+	commandArticle := exec.Command("lynx", articleArguments...)
+	commandArticle.Stdin = strings.NewReader(input)
+
+	art, errA := commandArticle.CombinedOutput()
+	if errA != nil {
+		panic(errA)
+	}
+
+	article := string(art)
 
 	return article, references
 }

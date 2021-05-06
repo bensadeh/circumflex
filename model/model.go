@@ -136,7 +136,7 @@ func ReadSubmissionContent(app *cview.Application, main *core.MainView, list *cv
 			return
 		}
 
-		content, references := cli.Lynx(art.Content)
+		content, references := cli.ParseWithLynx(art.Content)
 		parsedArticle := article.Parse(art.Title, story.URL, content, references)
 
 		cli.Less(parsedArticle)
