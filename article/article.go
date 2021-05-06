@@ -108,10 +108,14 @@ func formatReferences(references string) string {
 		isOnLastLine := i == len(lines)-1
 
 		if isOnLastLine {
+			formattedReferences += newLine
+
 			break
 		}
 
 		if i == 16 {
+			formattedReferences += newLine
+
 			break
 		}
 
