@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3
+_WIP_
+
+**Bugfixes:**
+- Fixed a bug where `Reader View` mode would occasionally format references incorrectly
+
 ## 1.2
 _2021-05-06_
 

@@ -21,41 +21,52 @@ func Less(input string) {
 }
 
 func ParseWithLynx(input string) (string, string) {
-	commandReferences := exec.Command("lynx", "-stdin", "-display_charset=utf-8", "-assume_charset=utf-8",
-		"-listonly", "-nomargins", "-nonumbers", "-hiddenlinks=ignore", "-notitle", "-dump")
-	commandReferences.Stdin = strings.NewReader(input)
-
-	ref, errR := commandReferences.CombinedOutput()
-	if errR != nil {
-		panic(errR)
-	}
-
-	references := string(ref)
+	references := getReferences(input)
 
 	numberOfReferences := len(strings.Split(references, newLine))
 	isManyReferences := numberOfReferences > 16
-	articleArguments := []string{
-		"-stdin", "-display_charset=utf-8", "-assume_charset=utf-8", "-dump",
-		"-hiddenlinks=ignore",
-	}
+
+	additionalArgument := ""
 
 	if isManyReferences {
 		references = ""
-
-		articleArguments = append(articleArguments, "-nonumbers")
+		additionalArgument = "-nolist"
 	}
 
-	commandArticle := exec.Command("lynx", articleArguments...)
-	commandArticle.Stdin = strings.NewReader(input)
-
-	art, errA := commandArticle.CombinedOutput()
-	if errA != nil {
-		panic(errA)
-	}
-
-	article := string(art)
+	article := getArticle(input, additionalArgument)
 
 	return article, references
+}
+
+func getReferences(input string) string {
+	command := exec.Command("lynx", "-stdin", "-display_charset=utf-8", "-assume_charset=utf-8",
+		"-listonly", "-nomargins", "-nonumbers", "-hiddenlinks=ignore", "-notitle", "-unique_urls", "-dump")
+	command.Stdin = strings.NewReader(input)
+
+	references, err := command.Output()
+	if err != nil {
+		panic(err)
+	}
+
+	return string(references)
+}
+
+func getArticle(input string, additionalArgument string) string {
+	articleArguments := []string{
+		"-stdin", "-display_charset=utf-8", "-assume_charset=utf-8", "-dump",
+		"-hiddenlinks=ignore", "-unique_urls",
+	}
+
+	articleArguments = append(articleArguments, additionalArgument)
+	command := exec.Command("lynx", articleArguments...)
+	command.Stdin = strings.NewReader(input)
+
+	article, err := command.Output()
+	if err != nil {
+		panic(err)
+	}
+
+	return string(article)
 }
 
 func ClearScreen() {
