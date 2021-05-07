@@ -40,7 +40,7 @@ func ParseWithLynx(input string) (string, string) {
 
 func getReferences(input string) string {
 	command := exec.Command("lynx", "-stdin", "-display_charset=utf-8", "-assume_charset=utf-8",
-		"-listonly", "-nomargins", "-nonumbers", "-hiddenlinks=ignore", "-notitle", "-unique_urls", "-dump")
+		"-listonly", "-nomargins", "-nonumbers", "-hiddenlinks=ignore", "-notitle", "-dump")
 	command.Stdin = strings.NewReader(input)
 
 	references, err := command.Output()
@@ -54,7 +54,7 @@ func getReferences(input string) string {
 func getArticle(input string, additionalArgument string) string {
 	articleArguments := []string{
 		"-stdin", "-display_charset=utf-8", "-assume_charset=utf-8", "-dump",
-		"-hiddenlinks=ignore", "-unique_urls",
+		"-hiddenlinks=ignore",
 	}
 
 	articleArguments = append(articleArguments, additionalArgument)
