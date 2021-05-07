@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.3
-_WIP_
+_2021-05-07_
 
 **New features:**
 - Added a validator to prevent entering Reader Mode on sites that are known to be unsupported
