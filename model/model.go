@@ -19,6 +19,7 @@ import (
 	"clx/utils/message"
 	"clx/utils/ranking"
 	"clx/utils/vim"
+	"clx/validator"
 	"clx/view"
 	"net/http"
 	"strconv"
@@ -121,7 +122,18 @@ func ReadSubmissionContent(app *cview.Application, main *core.MainView, list *cv
 	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
 	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
+	isValidDomain, status := validator.IsValidDomain(story.Title, story.Domain, story.Type)
 
+	if isValidDomain {
+		enterReaderMode(app, main, list, appState, config, r, reg, story)
+
+		return
+	}
+
+	view.SetPermanentStatusBar(main, status, cview.AlignCenter)
+}
+
+func enterReaderMode(app *cview.Application, main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register, story *endpoints.Story) {
 	app.Suspend(func() {
 		url := story.URL
 

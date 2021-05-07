@@ -3,6 +3,9 @@
 ## 1.3
 _WIP_
 
+**New features:**
+- Added a validator to prevent entering Reader Mode on sites that are known to be unsupported
+
 **Bugfixes:**
 - Fixed a bug where `Reader View` mode would occasionally format references incorrectly
 
