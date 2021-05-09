@@ -4,7 +4,7 @@ import "strings"
 
 func IsValidDomain(title, domain, category string) (bool, string) {
 	if strings.Contains(category, "ask") {
-		return false, "Reader Mode not supported for [purple]Ask HN[-] | Press Enter to go to comment section"
+		return false, "Reader Mode not supported for [purple]Ask HN[-] | Press Enter to go to the comment section"
 	}
 
 	if strings.Contains(domain, "twitter") ||
