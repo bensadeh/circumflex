@@ -11,6 +11,7 @@ func IsValidDomain(title, domain, category string) (bool, string) {
 		strings.Contains(domain, "youtube") ||
 		strings.Contains(domain, "washingtonpost") ||
 		strings.Contains(domain, "sciencedirect") ||
+		strings.Contains(domain, "marketplace.atlassian.com") ||
 		strings.Contains(domain, "chrome.google.com") {
 		return false, "Reader Mode not supported on " + domain
 	}
