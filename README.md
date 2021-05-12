@@ -3,14 +3,13 @@
 </p>
 
 
+<p align="center">
+<a href="https://github.com/bensadeh/circumflex/releases" target="__blank"><img src="https://img.shields.io/github/v/release/bensadeh/circumflex?style=flat&label=&color=e1acff"</a>
+<a href="/CHANGELOG.md" target="__blank"><img src="https://img.shields.io/badge/docs-changelog-9cc4ff?style=flat&label=" alt="Changelog"></a>
+<a href="/LICENSE" target="__blank"><img src="https://img.shields.io/github/license/bensadeh/circumflex?style=flat&color=c3e88d&label=" alt="License"></a>
+<a href="/go.mod" target="__blank"><img src="https://img.shields.io/static/v1?label=&message=Go+1.16&color=ffe585" alt="Go Version"></a>
+</p>
 
-<div align="center">
-
-[![Latest release](https://img.shields.io/github/v/release/bensadeh/circumflex?style=flat&label=stable&color=e1acff&labelColor=292D3E)](https://github.com/bensadeh/circumflex/releases)
-[![Changelog](https://img.shields.io/badge/docs-changelog-9cc4ff?style=flat&labelColor=292D3E)](https://github.com/bensadeh/circumflex/blob/master/CHANGELOG.md)
-[![License](https://img.shields.io/github/license/bensadeh/circumflex?style=flat&color=c3e88d&labelColor=292D3E)](https://github.com/bensadeh/circumflex/blob/master/LICENSE)
-[![Go Version](https://img.shields.io/github/go-mod/go-version/bensadeh/circumflex?style=flat&color=ffe585&labelColor=292D3E)](https://github.com/bensadeh/circumflex/blob/master/go.mod)
-</div>
 
 #
 
