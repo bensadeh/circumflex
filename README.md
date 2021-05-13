@@ -15,11 +15,20 @@
 
 `circumflex` is a command line tool for browsing Hacker News in your terminal.
 
-`circumflex` is customizable, dotfiles-friendly and respects your terminal's native color scheme.
-
 <p align="center">
   <img src="screenshots/mainview.png" width="700" alt="^"/>
 </p>
+
+
+## Features
+
+- 🛋 **Everything in one place** - read the comment section or the actual article without leaving your terminal
+- 🤹 **Native terminal colors** - you bring your own color scheme, `circumflex` does the rest
+- ⚡️ **Tools you already know** - articles and comments are piped to the pager `less`
+- ⌨️ **Vim keybindings** - including repeat motion and <kbd>g</kbd>and <kbd>G</kbd>
+- 🛠 **Configureable** - change comment width, indentation size, highlighting ++
+- ❤️ **Add to favorites** - Save interesting submissions for later
+- 🗄 **Dotfiles and VCS-friendly** - config files and favorites are convenient to be checked into your dotfiles repo
 
 ## Installing
 
