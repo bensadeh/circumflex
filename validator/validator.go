@@ -2,11 +2,7 @@ package validator
 
 import "strings"
 
-func IsValidDomain(title, domain, category string) (bool, string) {
-	if strings.Contains(category, "ask") {
-		return false, "Reader Mode not supported for [purple]Ask HN[-] | Press Enter to go to the comment section"
-	}
-
+func IsValidDomain(title, domain string) (bool, string) {
 	if strings.Contains(domain, "twitter") ||
 		strings.Contains(domain, "youtube") ||
 		strings.Contains(domain, "washingtonpost") ||

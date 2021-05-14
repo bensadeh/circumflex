@@ -122,7 +122,7 @@ func ReadSubmissionContent(app *cview.Application, main *core.MainView, list *cv
 	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
 	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
-	isValidDomain, status := validator.IsValidDomain(story.Title, story.Domain, story.Type)
+	isValidDomain, status := validator.IsValidDomain(story.Title, story.Domain)
 
 	if isValidDomain {
 		enterReaderMode(app, main, list, appState, config, r, reg, story)
