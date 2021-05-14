@@ -22,7 +22,7 @@
 
 ## Features
 
-- 🛋 **Everything in one place** - read comments and articles in Reader Mode without leaving your terminal
+- 🛋 **Everything in one place** - read articles in Reader Mode or enter the comment section without leaving your terminal
 - 🤹 **Native terminal colors** - you bring your own color scheme, `circumflex` does the rest
 - ⚡️ **Tools you already know** - articles and comments are piped to the pager `less`
 - 🌈 **Syntax highlighting** - syntax-aware formatting for comment quotes, references and submissions headlines
