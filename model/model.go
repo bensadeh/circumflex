@@ -122,15 +122,15 @@ func ReadSubmissionContent(app *cview.Application, main *core.MainView, list *cv
 	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
 	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
-	isValidDomain, status := validator.IsValidDomain(story.Title, story.Domain)
+	errorMessage := validator.GetErrorMessage(story.Title, story.Domain)
 
-	if isValidDomain {
+	if errorMessage == "" {
 		enterReaderMode(app, main, list, appState, config, r, reg, story)
 
 		return
 	}
 
-	view.SetPermanentStatusBar(main, status, cview.AlignCenter)
+	view.SetPermanentStatusBar(main, errorMessage, cview.AlignCenter)
 }
 
 func enterReaderMode(app *cview.Application, main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register, story *endpoints.Story) {
