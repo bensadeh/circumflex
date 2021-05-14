@@ -29,5 +29,9 @@ func IsValidDomain(title, domain, category string) (bool, string) {
 		return false, "Reader Mode not supported for audio"
 	}
 
+	if domain == "" {
+		return false, "Reader Mode only supported on submissions with link"
+	}
+
 	return true, ""
 }
