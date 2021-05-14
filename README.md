@@ -22,14 +22,14 @@
 
 ## Features
 
-- 🛋 **Everything in one place** - read the comment section or the actual article without leaving your terminal
+- 🛋 **Everything in one place** - read the comment section or articles in Reader Mode without leaving your terminal
 - 🤹 **Native terminal colors** - you bring your own color scheme, `circumflex` does the rest
 - ⚡️ **Tools you already know** - articles and comments are piped to the pager `less`
-- 🌈 **Syntax highlighting** - Syntax aware formatting for comment quotes, references and submissions headlines
+- 🌈 **Syntax highlighting** - syntax-aware formatting for comment quotes, references and submissions headlines
 - ⌨️ **Vim keybindings** - including repeat motion and <kbd>g</kbd>
 - 🛠 **Configureable** - change comment width, indentation size, highlighting ++
-- ❤️ **Add to favorites** - Save interesting submissions for later
-- 🗄 **Dotfiles and VCS-friendly** - config files and favorites are convenient to be checked into your dotfiles repo
+- ❤️ **Add to favorites** - save interesting submissions for later
+- 🗄 **Dotfiles and VCS-friendly** - easy to commit your config and favorites to your dotfiles repo
 
 ## Installing
 
