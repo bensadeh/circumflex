@@ -29,7 +29,6 @@
 - ⌨️ **Vim keybindings** - including repeat motion and <kbd>g</kbd>
 - 🛠 **Configureable** - change comment width, indentation size, highlighting ++
 - ❤️ **Add to favorites** - save interesting submissions for later
-- 🗄 **Dotfiles and VCS-friendly** - easy to commit your config and favorites to your dotfiles repo
 
 ## Installing
 
@@ -153,20 +152,25 @@ Favorites are stored in `favorites.json` in `~/.config/circumflex`.
 ## Settings
 
 ### Overview
-The available options and their current values are displayed in the Settings View. Overridden values are marked with
-`*`. To enter Settings View, press <kbd>i</kbd> on the Main View and then <kbd>Tab</kbd> to change the category. Note
-that the settings cannot be changed from within the Settings View.
+#### Configuration options
 
 To change the settings, you can either:
 
-1. edit `config.env` in `~/.config/circumflex`, or
+1. create an example config in `~/.config/circumflex/config.env`, or
 2. set environment variables in your shell
 
-### Changing settings through `config.env`
-`circumflex` can create a `config.env` template in `~/.config/circumflex` by pressing <kbd>t</kbd> in the Settings View.
-Edit this file and uncomment the values you want to change.
+#### Changing settings through `config.env`
 
-### Changing settings with environment variables
+The following command will create a config file in  `~/.config/circumflex/config.env`:
+
+```
+clx create_example_config
+```
+
+The config file contains all the available options. All fields are set to their default values.
+Uncomment and set the values of the settings you want to change.
+
+#### Changing settings with environment variables
 Depending on your preference, it might be more convenient for you to configure `circumflex` by setting
 [environment variables](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables).
 Below are a couple of examples on how to set the variables in different shells. Run the commands directly from your
@@ -201,9 +205,10 @@ The following table shows the different ways in which `circumflex` can be config
 `circumflex` uses:
 
 * [tcell](https://github.com/gdamore/tcell) and [cview](https://code.rocketnine.space/tslocum/cview) for the TUI
-* [viper](https://github.com/spf13/viper) for reading and setting configurations
+* [cobra](https://github.com/spf13/cobra) and [viper](https://github.com/spf13/viper) for the CLI
 * [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) for providing stories and comments
 * [`less`](http://greenwoodsoftware.com/less/) for viewing comments
+* [`lynx`](https://lynx.invisible-island.net/) for parsing HTML
 * [go-term-text](https://github.com/MichaelMure/go-term-text) for text formatting
 
 Screenshots use:
