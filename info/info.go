@@ -18,10 +18,10 @@ func getKeymaps(screenWidth int) string {
 	keys.Init()
 
 	keys.AddSeparator()
-	keys.AddHeader("Main View")
+	keys.AddHeader("circumflex")
 	keys.AddSeparator()
-	keys.AddKeymap("Read comments", "Enter")
-	keys.AddKeymap("Read article in Reader Mode", "Space")
+	keys.AddKeymap("Read comment section (less)", "Enter")
+	keys.AddKeymap("Read article in Reader Mode (less)", "Space")
 	keys.AddKeymap("Change category", "Tab")
 
 	keys.AddKeymap("Open story link in browser", "o")
@@ -35,7 +35,7 @@ func getKeymaps(screenWidth int) string {
 	keys.AddKeymap("Bring up this screen", "i, ?")
 	keys.AddKeymap("Quit to prompt", "q")
 	keys.AddSeparator()
-	keys.AddHeader("Comment Section")
+	keys.AddHeader("less")
 	keys.AddSeparator()
 	keys.AddKeymap("Down one half-window", "d")
 	keys.AddKeymap("Up one half-window", "u")
@@ -45,7 +45,7 @@ func getKeymaps(screenWidth int) string {
 	keys.AddKeymap("Repeat last search in reverse direction", "N")
 	keys.AddSeparator()
 	keys.AddKeymap("Help screen", "h")
-	keys.AddKeymap("Quit to Main Screen", "q")
+	keys.AddKeymap("Return to circumflex", "q")
 
 	return keys.Print(screenWidth)
 }
