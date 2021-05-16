@@ -3,6 +3,9 @@
 ## 1.4
 _WIP_
 
+**Cosmetic:**
+- Simplified keymaps screen
+
 ## 1.3
 _2021-05-07_
 
