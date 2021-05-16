@@ -3,18 +3,6 @@ package validator
 import "strings"
 
 func GetErrorMessage(title, domain string) string {
-	if strings.Contains(domain, "twitter") ||
-		strings.Contains(domain, "youtube") ||
-		strings.Contains(domain, "washingtonpost") ||
-		strings.Contains(domain, "sciencedirect") ||
-		strings.Contains(domain, "bloomberg.com") ||
-		strings.Contains(domain, "drive.google.com") ||
-		strings.Contains(domain, "spectrum.ieee.org") ||
-		strings.Contains(domain, "marketplace.atlassian.com") ||
-		strings.Contains(domain, "chrome.google.com") {
-		return "Reader Mode not supported on " + domain
-	}
-
 	if strings.Contains(title, "[video]") {
 		return "Reader Mode not supported for videos"
 	}
@@ -27,9 +15,36 @@ func GetErrorMessage(title, domain string) string {
 		return "Reader Mode not supported for audio"
 	}
 
+	if isInvalidDomain(domain) {
+		return "Reader Mode not supported on " + domain
+	}
+
 	if domain == "" {
 		return "Reader Mode only supported on submissions with link"
 	}
 
 	return ""
+}
+
+func isInvalidDomain(domain string) bool {
+	invalidDomains := [...]string{
+		"twitter.com",
+		"youtube.com",
+		"washingtonpost.com",
+		"sciencedirect.com",
+		"newsweek.com",
+		"bloomberg.com",
+		"drive.google.com",
+		"spectrum.ieee.org",
+		"marketplace.atlassian.com",
+		"chrome.google.com",
+	}
+
+	for _, invalidDomain := range invalidDomains {
+		if domain == invalidDomain {
+			return true
+		}
+	}
+
+	return false
 }
