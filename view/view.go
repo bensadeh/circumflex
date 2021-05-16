@@ -14,8 +14,8 @@ func SetHackerNewsHeader(m *core.MainView, header string) {
 	m.Header.SetText(header)
 }
 
-func SetHelpScreenHeader(m *core.MainView, category int) {
-	h := header.GetCircumflexHeader(category)
+func SetHelpScreenHeader(m *core.MainView) {
+	h := header.GetCircumflexHeader()
 	m.Header.SetText(h)
 }
 

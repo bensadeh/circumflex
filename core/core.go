@@ -19,7 +19,6 @@ type ScreenController struct {
 type ApplicationState struct {
 	StoriesToShow                         int
 	CurrentCategory                       int
-	CurrentHelpScreenCategory             int
 	ScreenHeight                          int
 	ScreenWidth                           int
 	CurrentPage                           int

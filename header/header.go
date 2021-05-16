@@ -19,7 +19,7 @@ func GetHackerNewsHeader(selectedSubHeader int, showFavorites bool) string {
 	return header("🆈", "Hacker News   ", []string{"new", "ask", "show"}, selectedSubHeader)
 }
 
-func GetCircumflexHeader(selectedSubHeader int) string {
+func GetCircumflexHeader() string {
 	return ""
 }
 

@@ -1,67 +1,16 @@
 package info
 
 import (
-	"clx/constants/categories"
 	"clx/constants/messages"
 	"clx/keymaps"
-
-	"github.com/gdamore/tcell/v2"
 )
 
-const (
-	numberOfCategories = 3
-)
-
-func GetStatusBarText(category int) string {
-	if category == categories.Definition {
-		return messages.GetCircumflexStatusMessage()
-	}
-
-	return ""
+func GetStatusBarText() string {
+	return messages.GetCircumflexStatusMessage()
 }
 
-func GetNewCategory(event *tcell.EventKey, currentCategory int) int {
-	if event.Key() == tcell.KeyBacktab {
-		return getPreviousCategory(currentCategory)
-	}
-
-	return getNextCategory(currentCategory)
-}
-
-func getNextCategory(currentCategory int) int {
-	isOnLastCategory := currentCategory == (numberOfCategories - 1)
-
-	if isOnLastCategory {
-		return 0
-	}
-
-	return currentCategory + 1
-}
-
-func getPreviousCategory(currentCategory int) int {
-	isOnFirstCategory := currentCategory == 0
-
-	if isOnFirstCategory {
-		return numberOfCategories - 1
-	}
-
-	return currentCategory - 1
-}
-
-func GetText(category int, screenWidth int) string {
-	switch category {
-	case categories.Definition:
-		return getKeymaps(screenWidth)
-
-	case categories.Keymaps:
-		return getKeymaps(screenWidth)
-
-	case categories.Settings:
-		return getKeymaps(screenWidth)
-
-	default:
-		return ""
-	}
+func GetText(screenWidth int) string {
+	return getKeymaps(screenWidth)
 }
 
 func getKeymaps(screenWidth int) string {

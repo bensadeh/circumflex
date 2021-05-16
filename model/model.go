@@ -342,13 +342,13 @@ func EnterInfoScreen(main *core.MainView, appState *core.ApplicationState, reg *
 }
 
 func updateInfoScreenView(main *core.MainView, appState *core.ApplicationState) {
-	statusBarText := info.GetStatusBarText(appState.CurrentHelpScreenCategory)
-	infoScreenText := info.GetText(appState.CurrentHelpScreenCategory, appState.ScreenWidth)
+	statusBarText := info.GetStatusBarText()
+	infoScreenText := info.GetText(appState.ScreenWidth)
 
 	view.SetInfoScreenText(main, infoScreenText)
 	view.SetPermanentStatusBar(main, statusBarText, cview.AlignCenter)
 	view.HidePageCounter(main)
-	view.SetHelpScreenHeader(main, appState.CurrentHelpScreenCategory)
+	view.SetHelpScreenHeader(main)
 	view.HideLeftMarginRanks(main)
 	view.SetPanelToInfoView(main)
 }

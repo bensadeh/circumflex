@@ -22,7 +22,6 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 	main *core.MainView, appState *core.ApplicationState, config *core.Config) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		isOnHelpScreen := appState.State == state.OnHelpScreen
-		isOnSettingsPage := isOnHelpScreen && (appState.CurrentHelpScreenCategory == categories.Settings)
 
 		switch {
 		// Offline
@@ -31,6 +30,7 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 
 		case appState.State == state.Offline && event.Rune() == 'q':
 			model.Quit(app)
+
 		case appState.State == state.Offline:
 			return event
 
@@ -41,32 +41,27 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 		case appState.IsOnConfigCreationConfirmationMessage:
 			model.CancelConfirmation(appState, main)
 
-		case isOnSettingsPage && event.Rune() == 't':
-			model.ShowCreateConfigConfirmationMessage(main, appState)
-
-		case isOnSettingsPage && (event.Rune() == 'j' || event.Key() == tcell.KeyDown):
+		case isOnHelpScreen && (event.Rune() == 'j' || event.Key() == tcell.KeyDown):
 			model.ScrollSettingsOneLineDown(main)
 
-		case isOnSettingsPage && (event.Rune() == 'k' || event.Key() == tcell.KeyUp):
+		case isOnHelpScreen && (event.Rune() == 'k' || event.Key() == tcell.KeyUp):
 			model.ScrollSettingsOneLineUp(main)
 
-		case isOnSettingsPage && event.Rune() == 'd':
+		case isOnHelpScreen && event.Rune() == 'd':
 			model.ScrollSettingsOneHalfPageDown(main)
 
-		case isOnSettingsPage && event.Rune() == 'u':
+		case isOnHelpScreen && event.Rune() == 'u':
 			model.ScrollSettingsOneHalfPageUp(main)
 
-		case isOnSettingsPage && event.Rune() == 'g':
+		case isOnHelpScreen && event.Rune() == 'g':
 			model.ScrollSettingsToBeginning(main)
 
-		case isOnSettingsPage && event.Rune() == 'G':
+		case isOnHelpScreen && event.Rune() == 'G':
 			model.ScrollSettingsToEnd(main)
 
-		case isOnHelpScreen && (event.Rune() == 'i' || event.Key() == tcell.KeyEsc || event.Rune() == '?'):
+		case isOnHelpScreen && (event.Rune() == 'i' || event.Key() == tcell.KeyEsc ||
+			event.Rune() == '?' || event.Rune() == 'q'):
 			model.ExitInfoScreen(main, appState, config, list, ret)
-
-		case isOnHelpScreen && (event.Rune() == 'q'):
-			model.Quit(app)
 
 		case isOnHelpScreen:
 			return event
