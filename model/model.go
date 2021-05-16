@@ -246,12 +246,6 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	view.SetHackerNewsHeader(main, header)
 }
 
-func ChangeHelpScreenCategory(event *tcell.EventKey, appState *core.ApplicationState, main *core.MainView) {
-	appState.CurrentHelpScreenCategory = info.GetNewCategory(event, appState.CurrentHelpScreenCategory)
-
-	updateInfoScreenView(main, appState)
-}
-
 func ShowCreateConfigConfirmationMessage(main *core.MainView, appState *core.ApplicationState) {
 	if file.ConfigFileExists() {
 		return

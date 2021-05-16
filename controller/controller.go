@@ -62,9 +62,6 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 		case isOnSettingsPage && event.Rune() == 'G':
 			model.ScrollSettingsToEnd(main)
 
-		case isOnHelpScreen && (event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab):
-			model.ChangeHelpScreenCategory(event, appState, main)
-
 		case isOnHelpScreen && (event.Rune() == 'i' || event.Key() == tcell.KeyEsc || event.Rune() == '?'):
 			model.ExitInfoScreen(main, appState, config, list, ret)
 

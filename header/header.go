@@ -20,7 +20,7 @@ func GetHackerNewsHeader(selectedSubHeader int, showFavorites bool) string {
 }
 
 func GetCircumflexHeader(selectedSubHeader int) string {
-	return header("🅲", "circumflex    ", []string{"keymaps", "settings"}, selectedSubHeader)
+	return ""
 }
 
 func header(symbol string, title string, subHeaders []string, selectedSubHeader int) string {

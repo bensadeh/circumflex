@@ -4,13 +4,8 @@ import (
 	"clx/constants/categories"
 	"clx/constants/messages"
 	"clx/keymaps"
-	"clx/screen"
-	"clx/settings"
-	"strings"
 
 	"github.com/gdamore/tcell/v2"
-
-	text "github.com/MichaelMure/go-term-text"
 )
 
 const (
@@ -56,45 +51,17 @@ func getPreviousCategory(currentCategory int) int {
 func GetText(category int, screenWidth int) string {
 	switch category {
 	case categories.Definition:
-		return getDefinition()
+		return getKeymaps(screenWidth)
 
 	case categories.Keymaps:
 		return getKeymaps(screenWidth)
 
 	case categories.Settings:
-		return getSettings()
+		return getKeymaps(screenWidth)
 
 	default:
 		return ""
 	}
-}
-
-func getDefinition() string {
-	infoScreenText := `
-[navy]circumflex[-::]  [::d]|ˈsəːkəmflɛks|[::-]
-
-noun (also circumflex accent)
-  a mark (^) placed over a vowel in some languages to 
-  indicate contraction, length, or a particular quality.
-
-adjective [::di]Anatomy[::-]
-  bending round something else; 
-  curved: [::i]circumflex coronary arteries.[::-]
-
-[::d]ORIGIN[::-]
-  late 16th century: from Latin [::bi]circumflexus[::-] 
-  (from [::bi]circum[::-] ‘around, about’ + [::bi]flectere[::-] ‘to bend’), 
-  translating Greek [::bi]perispōmenos[::-] ‘drawn around’.
-`
-	longestLineLength := text.MaxLineLen(infoScreenText)
-	leftOffset := screen.GetOffsetForLeftAlignedTextBlock(longestLineLength) + 5
-
-	leftIndentation := strings.Repeat(" ", leftOffset)
-	topIndentation := strings.Repeat("\n", 7)
-
-	formattedText, _ := text.WrapWithPad(topIndentation+infoScreenText, screen.GetTerminalWidth(), leftIndentation)
-
-	return formattedText
 }
 
 func getKeymaps(screenWidth int) string {
@@ -132,8 +99,4 @@ func getKeymaps(screenWidth int) string {
 	keys.AddKeymap("Quit to Main Screen", "q")
 
 	return keys.Print(screenWidth)
-}
-
-func getSettings() string {
-	return settings.GetSettingsText()
 }

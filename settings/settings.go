@@ -1,26 +1,16 @@
 package settings
 
 import (
-	"clx/column"
-	"clx/constants/margins"
-	"clx/file"
-	"clx/screen"
-	"clx/utils/formatter"
 	ansi "clx/utils/strip-ansi"
 	"strconv"
-	"strings"
 
-	"code.rocketnine.space/tslocum/cview"
 	text "github.com/MichaelMure/go-term-text"
 	"github.com/spf13/viper"
 )
 
 const (
-	newLine       = "\n"
-	newParagraph  = "\n\n"
-	textDimmed    = "\033[2m"
-	textUnderline = "\033[4m"
-	textNormal    = "\033[0m"
+	newLine      = "\n"
+	newParagraph = "\n\n"
 )
 
 type options struct {
@@ -46,44 +36,6 @@ func (o *options) addOption(name, key, value, defaultValue, description string) 
 	o.options = append(o.options, newOption)
 }
 
-func (o options) printAll(textWidth int) string {
-	usableScreenWidth := screen.GetTerminalWidth() - margins.LeftMargin - margins.RightMargin
-	hasEnoughScreenSpace := usableScreenWidth > (textWidth*2 + margins.SpaceBetweenDescriptions)
-
-	if hasEnoughScreenSpace {
-		return printOptionsInTwoColumns(o, textWidth, margins.SpaceBetweenDescriptions)
-	}
-
-	return printOptionsInOneColumn(o, textWidth)
-}
-
-func printOptionsInOneColumn(o options, textWidth int) string {
-	output := ""
-	for i := 0; i < len(o.options); i++ {
-		output += o.options[i].print(textWidth) + newParagraph
-	}
-
-	return output
-}
-
-func printOptionsInTwoColumns(o options, textWidth int, space int) string {
-	output := ""
-
-	for i := 0; i < len(o.options); i += 2 {
-		hasAtLeastTwoOptionsLeft := i+2 <= len(o.options)
-
-		if hasAtLeastTwoOptionsLeft {
-			leftDesc := o.options[i].print(textWidth)
-			rightDesc := o.options[i+1].print(textWidth)
-			output += column.PutInColumns(leftDesc, rightDesc, textWidth, space) + newLine
-		} else {
-			output += o.options[i].print(textWidth) + newParagraph
-		}
-	}
-
-	return output
-}
-
 func (o options) getConfigFileTemplate() string {
 	output := ""
 	for i := 0; i < len(o.options); i++ {
@@ -93,31 +45,6 @@ func (o options) getConfigFileTemplate() string {
 	return output
 }
 
-func (o option) print(textWidth int) string {
-	currentValue := highlight(o.value, o.defaultValue)
-	headline := makeHeadline(o.name, currentValue, textWidth) + newLine
-	wrappedDescription, _ := text.Wrap(o.description, textWidth)
-
-	return headline + wrappedDescription + newLine
-}
-
-func highlight(currentValue string, defaultValue string) string {
-	if currentValue != defaultValue {
-		return textUnderline + "*" + currentValue + "*" + textNormal
-	}
-
-	return textUnderline + currentValue + textNormal
-}
-
-func makeHeadline(name string, key string, textWidth int) string {
-	nameLength := text.Len(name)
-	keyLength := text.Len(key)
-	spaceBetweenNameAndKey := textWidth - nameLength - keyLength
-	whiteSpace := strings.Repeat(" ", spaceBetweenNameAndKey)
-
-	return dim(underlined(name + whiteSpace + key))
-}
-
 func (o option) printConfig() string {
 	cleanDesc := ansi.Strip(o.description)
 	description, _ := text.WrapWithPad(cleanDesc, 80, "# ")
@@ -125,23 +52,6 @@ func (o option) printConfig() string {
 	setting := "# " + o.key + "=" + o.defaultValue
 
 	return description + separator + setting
-}
-
-func GetSettingsText() string {
-	message := ""
-	pathToConfigFile := file.PathToConfigFile()
-	settingsWidth := 50
-
-	if file.Exists(pathToConfigFile) {
-		message += formatter.Dim("Using config file at " + ConfigFilePath)
-	} else {
-		message += formatter.Dim("Press T to create config.env in " + ConfigDirPath)
-	}
-
-	o := initializeOptions()
-	s := cview.TranslateANSI(message + newParagraph + o.printAll(settingsWidth))
-
-	return s
 }
 
 func GetConfigFileContents() string {
@@ -173,12 +83,4 @@ func initializeOptions() *options {
 		strconv.FormatBool(HideYCJobsDefault), HideYCJobsDescription)
 
 	return o
-}
-
-func dim(text string) string {
-	return textDimmed + text + textNormal
-}
-
-func underlined(text string) string {
-	return textUnderline + text + textNormal
 }
