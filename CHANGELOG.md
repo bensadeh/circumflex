@@ -3,6 +3,9 @@
 ## 1.4
 _WIP_
 
+**New features:**
+- Create example config from the terminal with `clx create_example_config`
+
 **Cosmetic:**
 - Simplified keymaps screen
 
