@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.4
-_WIP_
+_2021-05-16_
 
 **New features:**
 - Create example config from the terminal with `clx create_example_config`
