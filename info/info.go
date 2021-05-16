@@ -10,10 +10,6 @@ func GetStatusBarText() string {
 }
 
 func GetText(screenWidth int) string {
-	return getKeymaps(screenWidth)
-}
-
-func getKeymaps(screenWidth int) string {
 	keys := new(keymaps.List)
 	keys.Init()
 
