@@ -246,16 +246,6 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	view.SetHackerNewsHeader(main, header)
 }
 
-func ShowCreateConfigConfirmationMessage(main *core.MainView, appState *core.ApplicationState) {
-	if file.ConfigFileExists() {
-		return
-	}
-
-	appState.IsOnConfigCreationConfirmationMessage = true
-
-	view.SetPermanentStatusBar(main, messages.ConfigConfirmation, cview.AlignCenter)
-}
-
 func ScrollSettingsOneLineUp(main *core.MainView) {
 	view.ScrollInfoScreenByAmount(main, -1)
 }
@@ -428,8 +418,7 @@ func Refresh(app *cview.Application, list *cview.List, main *core.MainView, appS
 		view.ClearList(list)
 		app.Draw()
 	} else {
-		duration := time.Second * 2
-		view.SetTemporaryStatusBar(app, main, messages.Refreshed, duration)
+		view.SetTemporaryStatusBar(app, main, messages.Refreshed, time.Second*2)
 	}
 }
 
