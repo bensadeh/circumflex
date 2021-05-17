@@ -78,16 +78,6 @@ func SetPageCounter(m *core.MainView, currentPage int, maxPages int) {
 	m.PageCounter.SetText(pageCounter)
 }
 
-func SelectFirstElementInList(list *cview.List) {
-	firstElement := 0
-	list.SetCurrentItem(firstElement)
-}
-
-func SelectLastElementInList(list *cview.List) {
-	lastElement := -1
-	list.SetCurrentItem(lastElement)
-}
-
 func ClearList(list *cview.List) {
 	list.Clear()
 }
