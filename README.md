@@ -30,6 +30,20 @@
 - 🛠 **Configureable** - change comment width, indentation size, highlighting ++
 - ❤️ **Add to favorites** - save interesting submissions for later
 
+Table of Contents
+-----------------
+
+* [Installing](#installing)
+* [Keymaps](#keymaps)
+* [Comment section](#comment-section)
+* [Reader mode](#reader-mode)
+* [Syntax highlighting](#syntax-highlighting)
+* [Favorites](#favorites)
+* [Settings](#settings)
+* [Under the hood](#under-the-hood)
+
+
+
 ## Installing
 
 ### Via Homebrew
