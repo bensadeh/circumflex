@@ -177,7 +177,7 @@ To change the settings, you can either:
 
 The following command will create a config file in  `~/.config/circumflex/config.env`:
 
-```
+```console
 clx create_example_config
 ```
 
