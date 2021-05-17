@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5
+_WIP_
+
+**New features:**
+- Added option to force open article in Reader mode
+
 ## 1.4
 _2021-05-16_
 

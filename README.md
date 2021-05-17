@@ -42,8 +42,6 @@ Table of Contents
 * [Settings](#settings)
 * [Under the hood](#under-the-hood)
 
-
-
 ## Installing
 
 ### Via Homebrew
@@ -78,6 +76,7 @@ When building from source, make sure the dependencies [`less`](http://greenwoods
 
 <kbd>o</kbd>: Open link to article in browser
 <kbd>c</kbd>: Open comment section in browser
+<kbd>t</kbd>: Force Read article in Reader Mode
 <kbd>r</kbd>: Refresh
 
 <kbd>f</kbd>: Add submission to favorites
@@ -119,8 +118,11 @@ To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. T
 `less` remembers your search term between sessions. This means that the next time you want to jump between top-level posts, you can hit <kbd>n</kbd> to go to the next `::` directly.
 
 ## Reader Mode
-Press <kbd>Space</kbd> to read the submission link in Reader Mode. 
+Press <kbd>Space</kbd> to read the submission link in Reader Mode. Some website, like for example 
+`youtube`,`twitter` or `bloomberg.com` are known to have Reader Mode issues. For a full list of 
+incompatible sites, see [validator.go](/validator/validator.go).
 
+To force read incompatible sites anyway, press <kbd>t</kbd>.
 
 ## Syntax highlighting
 ### Quotes

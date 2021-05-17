@@ -13,15 +13,15 @@ func GetText(screenWidth int) string {
 	keys := new(keymaps.List)
 	keys.Init()
 
-	keys.AddSeparator()
 	keys.AddHeader("circumflex")
 	keys.AddSeparator()
 	keys.AddKeymap("Read comment section (less)", "Enter")
 	keys.AddKeymap("Read article in Reader Mode (less)", "Space")
 	keys.AddKeymap("Change category", "Tab")
-
+	keys.AddSeparator()
 	keys.AddKeymap("Open story link in browser", "o")
 	keys.AddKeymap("Open comments in browser", "c")
+	keys.AddKeymap("Force Read article in Reader Mode (less)", "t")
 	keys.AddKeymap("Refresh", "r")
 	keys.AddSeparator()
 	keys.AddKeymap("Add to favorites", "f")
