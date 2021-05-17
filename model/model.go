@@ -11,11 +11,9 @@ import (
 	"clx/constants/state"
 	"clx/core"
 	"clx/endpoints"
-	"clx/file"
 	"clx/handler"
 	"clx/info"
 	"clx/screen"
-	"clx/settings"
 	"clx/utils/message"
 	"clx/utils/ranking"
 	"clx/utils/vim"
@@ -283,24 +281,8 @@ func ScrollSettingsToEnd(main *core.MainView) {
 func CancelConfirmation(appState *core.ApplicationState, main *core.MainView) {
 	appState.IsOnAddFavoriteConfirmationMessage = false
 	appState.IsOnDeleteFavoriteConfirmationMessage = false
-	appState.IsOnConfigCreationConfirmationMessage = false
 
 	view.SetPermanentStatusBar(main, messages.Cancelled, cview.AlignCenter)
-}
-
-func CreateConfig(appState *core.ApplicationState, main *core.MainView) {
-	statusBarMessage := ""
-	appState.IsOnConfigCreationConfirmationMessage = false
-
-	err := file.WriteToFile(file.PathToConfigFile(), settings.GetConfigFileContents())
-	if err != nil {
-		statusBarMessage = message.Error(messages.ConfigNotCreated)
-	} else {
-		statusBarMessage = message.Success(messages.ConfigCreatedAt)
-	}
-
-	updateInfoScreenView(main, appState)
-	view.SetPermanentStatusBar(main, statusBarMessage, cview.AlignCenter)
 }
 
 func SelectItemUp(main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config,

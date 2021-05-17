@@ -35,12 +35,6 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 			return event
 
 		// Help View
-		case appState.IsOnConfigCreationConfirmationMessage && event.Rune() == 'y':
-			model.CreateConfig(appState, main)
-
-		case appState.IsOnConfigCreationConfirmationMessage:
-			model.CancelConfirmation(appState, main)
-
 		case isOnHelpScreen && (event.Rune() == 'j' || event.Key() == tcell.KeyDown):
 			model.ScrollSettingsOneLineDown(main)
 
