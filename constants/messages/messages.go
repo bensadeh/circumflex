@@ -20,6 +20,7 @@ const (
 	DeleteFromFavorites         = "[red]Delete[-] from Favorites? Press [::b]Y[::-] to Confirm"
 	AddToFavorites              = "[green]Add[-] to Favorites? Press [::b]Y[::-] to Confirm"
 	LessScreenInfo              = "You are now in 'less' • Press 'q' to return and 'h' for help"
+	HowToExitF                  = "[::d]Leave ID blank to return to main screen"
 )
 
 func GetCircumflexStatusMessage() string {

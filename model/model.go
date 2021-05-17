@@ -493,6 +493,7 @@ func ShowAddCustomFavorite(app *cview.Application, list *cview.List, main *core.
 	appState *core.ApplicationState, config *core.Config, ret *handler.StoryHandler, reg *vim.Register) {
 	appState.IsOnAddFavoriteByID = true
 
+	view.SetPermanentStatusBar(main, messages.HowToExitF, cview.AlignCenter)
 	view.HideLeftMarginRanks(main)
 
 	main.CustomFavorite.SetText("")
