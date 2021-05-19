@@ -20,9 +20,9 @@
 </p>
 
 
-## Features
+## ☁️ Features
 
-- 🛋 **Everything in one place** - read articles in Reader Mode or enter the comment section without leaving your terminal
+- 🛋 **Everything in one place** - browse submissions, read articles and enter the comment section without leaving your terminal
 - 🤹 **Native terminal colors** - you bring your own color scheme, `circumflex` does the rest
 - ⚡️ **Tools you already know** - articles and comments are piped to the pager `less`
 - 🌈 **Syntax highlighting** - syntax-aware formatting for comment quotes, references and submissions headlines
@@ -30,8 +30,7 @@
 - 🛠 **Configureable** - change comment width, indentation size, highlighting ++
 - ❤️ **Add to favorites** - save interesting submissions for later
 
-Table of Contents
------------------
+## 📚 Table of Contents
 
 * [Installing](#installing)
 * [Keymaps](#keymaps)
@@ -42,7 +41,7 @@ Table of Contents
 * [Settings](#settings)
 * [Under the hood](#under-the-hood)
 
-## Installing
+## 📦 Installing
 
 ### Via Homebrew
 
@@ -67,7 +66,7 @@ clx
 When building from source, make sure the dependencies [`less`](http://greenwoodsoftware.com/less/) and 
 [`lynx`](https://lynx.invisible-island.net/lynx.html) are installed on your system.
 
-## Keymaps
+## ⌨️ Keymaps
 
 <pre>
 <kbd>Enter</kbd>: Read comments
@@ -89,7 +88,7 @@ When building from source, make sure the dependencies [`less`](http://greenwoods
 <kbd>?</kbd>/<kbd>i</kbd>: Show keymaps and settings
 </pre>
 
-## Comment section
+## 💬 Comment section
 
 ### Overview
 Comments are pretty-printed and piped to the pager `less`. To present a nice and readable comment section,
@@ -117,14 +116,16 @@ To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. T
 
 `less` remembers your search term between sessions. This means that the next time you want to jump between top-level posts, you can hit <kbd>n</kbd> to go to the next `::` directly.
 
-## Reader Mode
-Press <kbd>Space</kbd> to read the submission link in Reader Mode. Some website, like for example 
-`youtube`,`twitter` or `bloomberg.com` are known to have Reader Mode issues. For a full list of 
-incompatible sites, see [validator.go](/validator/validator.go).
+## 👓 Reader Mode
+Press <kbd>Space</kbd> to read the submission link in Reader Mode. 
 
-To force read incompatible sites anyway, press <kbd>t</kbd>.
+Note: some website do not work well with Reader Mode. Sites and submission types that are known to have compatibility issues
+will not open in Reader Mode. See [validator.go](/validator/validator.go) for a full list of incompatible sites.
 
-## Syntax highlighting
+If you suspect that Reader Mode might work on incompatible sites, press <kbd>t</kbd> to force Reader Mode for the submission
+link.
+
+## 🌈 Syntax highlighting
 ### Quotes
 On Hacker News, quotes are in their own paragraph and open with a `>`. They are not further stylized or formatted.
 
@@ -158,14 +159,15 @@ for easier cross-referencing.
   <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
 </p>
 
-## Favorites
+## ❤️ Favorites
 Save submissions you'd like to revisit by adding them to Favorites. Press <kbd>f</kbd> to add the
-currently highlighted submission to your Favorites list. Press <kbd>F</kbd> to add a submission by ID. Submissions can
-be removed with <kbd>x</kbd>.
+currently highlighted submission to your Favorites list. Press <kbd>F</kbd> to add a submission by ID. 
+
+Submissions can be removed with <kbd>x</kbd>.
 
 Favorites are stored in `favorites.json` in `~/.config/circumflex`.
 
-## Settings
+## 🛠 Settings
 
 ### Overview
 #### Configuration options
@@ -218,7 +220,7 @@ The following table shows the different ways in which `circumflex` can be config
 | `CLX_HIDE_YC_JOBS`          | `true` | Hides `X is hiring` posts from YC-funded startups. Does not affect the monthly `Who is Hiring?` posts.        |
 | `CLX_PRESERVE_RIGHT_MARGIN` | `false` | Shortens replies so that the total length, including indentation, is the same as the comment width. Best used when Indent Size is small to avoid deep replies being too short.   |
 
-## Under the hood
+## 🚗 Under the hood
 
 `circumflex` uses:
 
