@@ -22,9 +22,9 @@
 
 ## ☁️ Features
 
-- 🛋 **Everything in one place** - browse submissions, read articles and enter the comment section without leaving your terminal
+- 🛋 **Everything in one place** - browse submissions, read articles and enter the comment section
 - 🤹 **Native terminal colors** - you bring your own color scheme, `circumflex` does the rest
-- ⚡️ **Tools you already know** - articles and comments are piped to the pager `less`
+- ⚡️ **Tools you already know** - read articles and comments with the pager `less`
 - 🌈 **Syntax highlighting** - syntax-aware formatting for comment quotes, references and submissions headlines
 - ⌨️ **Vim keybindings** - including repeat motion and <kbd>g</kbd>
 - 🛠 **Configureable** - change comment width, indentation size, highlighting ++
@@ -82,10 +82,10 @@ When building from source, make sure the dependencies [`less`](http://greenwoods
 <kbd>F</kbd>: Add submission to favorites by ID
 <kbd>x</kbd>: Remove submission from favorites
 
-<kbd>g</kbd>/<kbd>G</kbd>: Go to line (Vim)
+<kbd>g</kbd>/<kbd>G</kbd>: Go to line/top/bottom (Vim)
 
 <kbd>q</kbd>: Quit
-<kbd>?</kbd>/<kbd>i</kbd>: Show keymaps and settings
+<kbd>?</kbd>/<kbd>i</kbd>: Show available keymaps
 </pre>
 
 ## 💬 Comment section
@@ -127,9 +127,7 @@ link.
 
 ## 🌈 Syntax highlighting
 ### Quotes
-On Hacker News, quotes are in their own paragraph and open with a `>`. They are not further stylized or formatted.
-
-In `circumflex`, the `>` symbol is omitted and quotes are instead italicised and dimmed.
+Comment quotes are italicized and dimmed.
 
 <p align="center">
   <img src="screenshots/quotes.png" width="700" alt="^"/>
@@ -161,11 +159,11 @@ for easier cross-referencing.
 
 ## ❤️ Favorites
 Save submissions you'd like to revisit by adding them to Favorites. Press <kbd>f</kbd> to add the
-currently highlighted submission to your Favorites list. Press <kbd>F</kbd> to add a submission by ID. 
+currently highlighted submission to your list of favorites. Press <kbd>F</kbd> to add a submission by ID. 
 
 Submissions can be removed with <kbd>x</kbd>.
 
-Favorites are stored in `favorites.json` in `~/.config/circumflex`.
+Favorites are stored in `~/.config/circumflex/favorites.json`.
 
 ## 🛠 Settings
 
@@ -185,7 +183,7 @@ The following command will create a config file in  `~/.config/circumflex/config
 clx create_example_config
 ```
 
-The config file contains all the available options. All fields are set to their default values.
+The example config contains all the available options. All fields are commented out and set to their default values.
 Uncomment and set the values of the settings you want to change.
 
 #### Changing settings with environment variables
@@ -197,7 +195,7 @@ Run the commands directly from your
 shell to set the value for the current session. Put them somewhere in your
 [dotfiles](https://dotfiles.github.io/) to make the settings permanent.
 
-Bash and zsh:
+Bash and Zsh:
 ```bash
 export CLX_COMMENT_WIDTH=65
 ```
