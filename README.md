@@ -20,17 +20,17 @@
 </p>
 
 
-## ☁️ Features
+## Features
 
 - 🛋 **Everything in one place** - browse submissions, read articles and enter the comment section
 - 🤹 **Native terminal colors** - you bring your own color scheme, `circumflex` does the rest
-- ⚡️ **Tools you already know** - read articles and comments with the pager `less`
+- ⚡️ **Tools you already know** - read articles and comments in the pager `less`
 - 🌈 **Syntax highlighting** - syntax-aware formatting for comment quotes, references and submissions headlines
 - ⌨️ **Vim keybindings** - including repeat motion and <kbd>g</kbd>
 - 🛠 **Configureable** - change comment width, indentation size, highlighting ++
 - ❤️ **Add to favorites** - save interesting submissions for later
 
-## 📚 Table of Contents
+## Table of Contents
 
 * [Installing](#installing)
 * [Keymaps](#keymaps)
@@ -38,10 +38,11 @@
 * [Reader mode](#reader-mode)
 * [Syntax highlighting](#syntax-highlighting)
 * [Favorites](#favorites)
+* [Fine tuning](#fine-tuning)
 * [Settings](#settings)
 * [Under the hood](#under-the-hood)
 
-## 📦 Installing
+## Installing
 
 ### Via Homebrew
 
@@ -66,7 +67,7 @@ clx
 When building from source, make sure the dependencies [`less`](http://greenwoodsoftware.com/less/) and 
 [`lynx`](https://lynx.invisible-island.net/lynx.html) are installed on your system.
 
-## ⌨️ Keymaps
+## Keymaps
 
 <pre>
 <kbd>Enter</kbd>: Read comments
@@ -88,7 +89,7 @@ When building from source, make sure the dependencies [`less`](http://greenwoods
 <kbd>?</kbd>/<kbd>i</kbd>: Show available keymaps
 </pre>
 
-## 💬 Comment section
+## Comment section
 
 ### Overview
 Comments are pretty-printed and piped to the pager `less`. To present a nice and readable comment section,
@@ -116,7 +117,7 @@ To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. T
 
 `less` remembers your search term between sessions. This means that the next time you want to jump between top-level posts, you can hit <kbd>n</kbd> to go to the next `::` directly.
 
-## 👓 Reader Mode
+## Reader Mode
 Press <kbd>Space</kbd> to read the submission link in Reader Mode. 
 
 Note: some website do not work well with Reader Mode. Sites and submission types that are known to have compatibility issues
@@ -125,7 +126,7 @@ will not open in Reader Mode. See [validator.go](/validator/validator.go) for a 
 If you suspect that Reader Mode might work on incompatible sites, press <kbd>t</kbd> to force Reader Mode for the submission
 link.
 
-## 🌈 Syntax highlighting
+## Syntax highlighting
 ### Quotes
 Comment quotes are italicized and dimmed.
 
@@ -157,7 +158,7 @@ for easier cross-referencing.
   <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
 </p>
 
-## ❤️ Favorites
+## Favorites
 Save submissions you'd like to revisit by adding them to Favorites. Press <kbd>f</kbd> to add the
 currently highlighted submission to your list of favorites. Press <kbd>F</kbd> to add a submission by ID. 
 
@@ -165,7 +166,46 @@ Submissions can be removed with <kbd>x</kbd>.
 
 Favorites are stored in `~/.config/circumflex/favorites.json`.
 
-## 🛠 Settings
+## Fine-tuning
+
+### Different standards
+`circumflex` aims to be as compatible in as many setups as possible by following standard
+terminal conventions. However, not all conventions are agreed upon and not everything is 
+standardized. Because terminal emulators stil vary among themselves, some adjustment might 
+be needed. 
+
+### Disconnected indentation blocks
+
+Some terminals, like [`alacritty`](https://github.com/alacritty/alacritty), might render the 
+indentation block in a disconnected line.
+
+<p align="center">
+  <img src="screenshots/disconnected_indentations.png" width="700" alt="^"/>
+</p>
+
+Set `CLX_ALT_INDENT_BLOCK` to `true` to use a different indent block character which will
+appear as one connected line.
+
+### Low contrast headers
+
+Certain items, like headers and author names, are drawn in **bold** in order to give them 
+contrast. However, terminal emulators vary in how they render bold fonts. Some brighten 
+bold text while other do not. 
+
+See example screenshots below (low contrast header) and above (low 
+contrast author name) of terminal output which does not brighted bold fonts.
+
+<p align="center">
+  <img src="screenshots/low_contrast.png" width="500" alt="^"/>
+</p>
+
+If you are using `alacritty`, you can set `draw_bold_text_with_bright_colors` to `true`.
+Then, define `bright_foreground` and set it to a brighter value than `foreground`. See 
+[alacritty/alacritty/pull/1026](https://github.com/alacritty/alacritty/pull/1026) for 
+more info.
+
+
+## Settings
 
 ### Overview
 #### Configuration options
@@ -219,7 +259,7 @@ The following table shows the different ways in which `circumflex` can be config
 | `CLX_PRESERVE_RIGHT_MARGIN` | `false` | Shortens replies so that the total length, including indentation, is the same as the comment width. Best used when Indent Size is small to avoid deep replies being too short.   |
 | `CLX_ALT_INDENT_BLOCK`      | `false` | Turn this setting on if the indent block does not appear as one connected line. |
 
-## 🚗 Under the hood
+## Under the hood
 
 `circumflex` uses:
 
