@@ -34,6 +34,7 @@ func isInvalidDomain(domain string) bool {
 		"sciencedirect.com",
 		"newsweek.com",
 		"facebook.com",
+		"wsj.com",
 		"atlasobscura.com",
 		"bloomberg.com",
 		"drive.google.com",
