@@ -19,7 +19,6 @@ type options struct {
 type option struct {
 	name         string
 	key          string
-	value        string
 	defaultValue string
 	description  string
 }
