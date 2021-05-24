@@ -15,6 +15,7 @@
 
 `circumflex` is a command line tool for browsing Hacker News in your terminal.
 
+
 <p align="center">
   <img src="screenshots/mainview.png" width="700" alt="^"/>
 </p>
