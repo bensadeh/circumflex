@@ -46,4 +46,5 @@ type Config struct {
 	PreserveRightMargin bool `mapstructure:"CLX_PRESERVE_RIGHT_MARGIN"`
 	RelativeNumbering   bool `mapstructure:"CLX_RELATIVE_NUMBERING"`
 	HideYCJobs          bool `mapstructure:"CLX_HIDE_YC_JOBS"`
+	AltIndentBlock      bool `mapstructure:"CLX_ALT_INDENT_BLOCK"`
 }

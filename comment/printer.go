@@ -9,13 +9,14 @@ import (
 	text "github.com/MichaelMure/go-term-text"
 )
 
-func ToString(comments endpoints.Comments, indentSize int, commentWidth int, screenWidth int, preserveRightMargin bool) string {
+func ToString(comments endpoints.Comments, indentSize int, commentWidth int, screenWidth int, preserveRightMargin bool,
+	altIndentBlock bool) string {
 	header := getHeader(comments, commentWidth, screenWidth)
 	replies := ""
 
 	for _, reply := range comments.Comments {
 		replies += printReplies(reply, indentSize, commentWidth, screenWidth, comments.User, "",
-			preserveRightMargin)
+			preserveRightMargin, altIndentBlock)
 	}
 
 	return header + replies
@@ -85,11 +86,11 @@ func parseRootComment(c string, commentWidth int) string {
 }
 
 func printReplies(c endpoints.Comments, indentSize int, commentWidth int, screenWidth int, originalPoster string,
-	parentPoster string, preserveRightMargin bool) string {
+	parentPoster string, preserveRightMargin bool, altIndentBlock bool) string {
 	comment, URLs := ParseComment(c.Content)
 	adjustedCommentWidth := getCommentWidthForLevel(c.Level, indentSize, commentWidth, screenWidth, preserveRightMargin)
 
-	indentBlock := getIndentBlock(c.Level, indentSize)
+	indentBlock := getIndentBlock(c.Level, indentSize, altIndentBlock)
 	paddingWithBlock := text.WrapPad(indentBlock)
 	wrappedAndPaddedComment, _ := text.Wrap(comment, adjustedCommentWidth, paddingWithBlock)
 
@@ -106,7 +107,7 @@ func printReplies(c endpoints.Comments, indentSize int, commentWidth int, screen
 
 	for _, reply := range c.Comments {
 		fullComment += printReplies(reply, indentSize, commentWidth, screenWidth,
-			originalPoster, parentPoster, preserveRightMargin)
+			originalPoster, parentPoster, preserveRightMargin, altIndentBlock)
 	}
 
 	return fullComment
@@ -223,13 +224,22 @@ func getIndentBlockWithoutBar(level int, indentSize int) string {
 	return strings.Repeat(" ", indentSize*level+1)
 }
 
-func getIndentBlock(level int, indentSize int) string {
+func getIndentBlock(level int, indentSize int, altIndentBlock bool) string {
 	if level == 0 {
 		return ""
 	}
 
-	indentation := Normal + getColoredIndentBlock(level) + "▎" + Normal
+	indentBlock := getIndentationSymbol(altIndentBlock)
+	indentation := Normal + getColoredIndentBlock(level) + indentBlock + Normal
 	whitespace := strings.Repeat(" ", indentSize*level)
 
 	return whitespace + indentation
+}
+
+func getIndentationSymbol(useAlternateIndent bool) string {
+	if useAlternateIndent {
+		return "┃"
+	}
+
+	return "▎"
 }

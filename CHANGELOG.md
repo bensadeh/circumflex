@@ -5,6 +5,7 @@ _WIP_
 
 **New features:**
 - Added option to force open article in Reader mode
+- Added option to use alternate indentation blocks for compatibility issues
 
 ## 1.4
 _2021-05-16_

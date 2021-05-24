@@ -36,4 +36,9 @@ const (
 	HideYCJobsDefault     = true
 	HideYCJobsDescription = "Hides 'X is hiring' posts from YC-funded startups. Does not affect the monthly 'Who is " +
 		"Hiring?' posts."
+	UseAlternateIndentBlockName        = "Use alternate indent block"
+	UseAlternateIndentBlockKey         = "CLX_ALT_INDENT_BLOCK"
+	UseAlternateIndentBlockDefault     = false
+	UseAlternateIndentBlockDescription = "Turn this setting on if the indent block does not appear as one connected " +
+		"line."
 )

@@ -17,7 +17,7 @@ func TestIntegration(t *testing.T) {
 	expected, _ := ioutil.ReadFile("test/expected.txt")
 
 	comments := unmarshal(commentJSON)
-	actual := comment.ToString(*comments, 4, 80, 200, false)
+	actual := comment.ToString(*comments, 4, 80, 200, false, false)
 
 	assert.Equal(t, string(expected), actual)
 }
@@ -29,7 +29,7 @@ func TestRootComment(t *testing.T) {
 	expected, _ := ioutil.ReadFile("test/root_comment_expected.txt")
 
 	comments := unmarshal(commentJSON)
-	actual := comment.ToString(*comments, 4, 80, 200, false)
+	actual := comment.ToString(*comments, 4, 80, 200, false, false)
 
 	assert.Equal(t, string(expected), actual)
 }
