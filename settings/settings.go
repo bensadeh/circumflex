@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	text "github.com/MichaelMure/go-term-text"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -25,11 +24,10 @@ type option struct {
 	description  string
 }
 
-func (o *options) addOption(name, key, value, defaultValue, description string) {
+func (o *options) addOption(name, key, defaultValue, description string) {
 	newOption := new(option)
 	newOption.name = name
 	newOption.key = key
-	newOption.value = value
 	newOption.defaultValue = defaultValue
 	newOption.description = description
 
@@ -61,28 +59,21 @@ func GetConfigFileContents() string {
 }
 
 func initializeOptions() *options {
-	currentCommentWidth := strconv.Itoa(viper.GetInt(CommentWidthKey))
-	currentIndentSize := strconv.Itoa(viper.GetInt(IndentSizeKey))
-	currentPreserveRightMargin := strconv.FormatBool(viper.GetBool(PreserveRightMarginKey))
-	currentHighlightHeadlines := strconv.Itoa(viper.GetInt(HighlightHeadlinesKey))
-	currentRelativeNumbering := strconv.FormatBool(viper.GetBool(RelativeNumberingKey))
-	currentHideYCJobs := strconv.FormatBool(viper.GetBool(HideYCJobsKey))
-	currentAltIndentBlock := strconv.FormatBool(viper.GetBool(UseAlternateIndentBlockKey))
-
 	o := new(options)
-	o.addOption(HighlightHeadlinesName, HighlightHeadlinesKey, currentHighlightHeadlines,
+
+	o.addOption(HighlightHeadlinesName, HighlightHeadlinesKey,
 		strconv.Itoa(HighlightHeadlinesDefault), HighlightHeadlinesDescription)
-	o.addOption(CommentWidthName, CommentWidthKey, currentCommentWidth,
+	o.addOption(CommentWidthName, CommentWidthKey,
 		strconv.Itoa(CommentWidthDefault), CommentWidthDescription)
-	o.addOption(PreserveRightMarginName, PreserveRightMarginKey, currentPreserveRightMargin,
+	o.addOption(PreserveRightMarginName, PreserveRightMarginKey,
 		strconv.FormatBool(PreserveRightMarginDefault), PreserveRightMarginDescription)
-	o.addOption(IndentSizeName, IndentSizeKey, currentIndentSize,
+	o.addOption(IndentSizeName, IndentSizeKey,
 		strconv.Itoa(IndentSizeDefault), IndentSizeDescription)
-	o.addOption(RelativeNumberingName, RelativeNumberingKey, currentRelativeNumbering,
+	o.addOption(RelativeNumberingName, RelativeNumberingKey,
 		strconv.FormatBool(RelativeNumberingDefault), RelativeNumberingDescription)
-	o.addOption(HideYCJobsName, HideYCJobsKey, currentHideYCJobs,
+	o.addOption(HideYCJobsName, HideYCJobsKey,
 		strconv.FormatBool(HideYCJobsDefault), HideYCJobsDescription)
-	o.addOption(UseAlternateIndentBlockName, UseAlternateIndentBlockKey, currentAltIndentBlock,
+	o.addOption(UseAlternateIndentBlockName, UseAlternateIndentBlockKey,
 		strconv.FormatBool(UseAlternateIndentBlockDefault), UseAlternateIndentBlockDescription)
 
 	return o
