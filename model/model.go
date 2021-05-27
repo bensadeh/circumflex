@@ -165,7 +165,7 @@ func enterReaderMode(app *cview.Application, main *core.MainView, list *cview.Li
 	})
 
 	if fetchTimeout {
-		view.SetPermanentStatusBar(main, messages.StoryNotFetched, cview.AlignCenter)
+		view.SetPermanentStatusBar(main, message.Error(messages.ArticleNotFetched), cview.AlignCenter)
 
 		return
 	}
