@@ -90,20 +90,11 @@ func initializeView(appState *core.ApplicationState, main *core.MainView, ret *h
 		appState.StoriesToShow))
 }
 
-func Refresh(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config, ret *handler.StoryHandler) {
+func Refresh(app *cview.Application, main *core.MainView, appState *core.ApplicationState) {
 	afterResizeFunc := app.GetAfterResizeFunc()
 	afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
 
-	ExitInfoScreen(main, appState, config, list, ret)
-
-	if appState.IsOffline {
-		errorMessage := message.Error(messages.OfflineMessage)
-
-		view.SetPermanentStatusBar(main, errorMessage, cview.AlignCenter)
-		view.ClearList(list)
-		app.Draw()
-	} else {
+	if !appState.IsOffline {
 		view.SetTemporaryStatusBar(app, main, messages.Refreshed, time.Second*2)
 	}
 }

@@ -26,7 +26,7 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 		switch {
 		// Offline
 		case appState.IsOffline && event.Rune() == 'r':
-			model.Refresh(app, list, main, appState, config, ret)
+			model.Refresh(app, main, appState)
 
 		case appState.IsOffline && event.Rune() == 'q':
 			model.Quit(app)
@@ -113,7 +113,7 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 			model.UpperCaseG(main, appState, list, config, reg, ret)
 
 		case event.Rune() == 'r':
-			model.Refresh(app, list, main, appState, config, ret)
+			model.Refresh(app, main, appState)
 
 		case event.Key() == tcell.KeyEnter:
 			model.ReadSubmissionComments(app, main, list, appState, config, ret, reg)
