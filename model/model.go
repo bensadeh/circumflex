@@ -59,7 +59,7 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 
 func setToErrorState(appState *core.ApplicationState, main *core.MainView, list *cview.List, app *cview.Application) {
 	errorMessage := message.Error(messages.OfflineMessage)
-	appState.State = state.Offline
+	appState.IsOffline = true
 
 	view.SetPermanentStatusBar(main, errorMessage, cview.AlignCenter)
 	view.ClearList(list)
@@ -78,6 +78,7 @@ func resetApplicationState(appState *core.ApplicationState) {
 	appState.StoriesToShow = screen.GetSubmissionsToShow(appState.ScreenHeight, 30)
 	appState.IsOnAddFavoriteConfirmationMessage = false
 	appState.IsOnAddFavoriteByID = false
+	appState.IsOffline = false
 }
 
 func initializeView(appState *core.ApplicationState, main *core.MainView, ret *handler.StoryHandler) {
@@ -87,6 +88,24 @@ func initializeView(appState *core.ApplicationState, main *core.MainView, ret *h
 	view.SetHackerNewsHeader(main, header)
 	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory,
 		appState.StoriesToShow))
+}
+
+func Refresh(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
+	config *core.Config, ret *handler.StoryHandler) {
+	afterResizeFunc := app.GetAfterResizeFunc()
+	afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
+
+	ExitInfoScreen(main, appState, config, list, ret)
+
+	if appState.IsOffline {
+		errorMessage := message.Error(messages.OfflineMessage)
+
+		view.SetPermanentStatusBar(main, errorMessage, cview.AlignCenter)
+		view.ClearList(list)
+		app.Draw()
+	} else {
+		view.SetTemporaryStatusBar(app, main, messages.Refreshed, time.Second*2)
+	}
 }
 
 func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *cview.List,
@@ -392,24 +411,6 @@ func ClearVimRegister(main *core.MainView, reg *vim.Register) {
 	reg.Clear()
 
 	view.ClearStatusBar(main)
-}
-
-func Refresh(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config, ret *handler.StoryHandler) {
-	afterResizeFunc := app.GetAfterResizeFunc()
-	afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
-
-	ExitInfoScreen(main, appState, config, list, ret)
-
-	if appState.State == state.Offline {
-		errorMessage := message.Error(messages.OfflineMessage)
-
-		view.SetPermanentStatusBar(main, errorMessage, cview.AlignCenter)
-		view.ClearList(list)
-		app.Draw()
-	} else {
-		view.SetTemporaryStatusBar(app, main, messages.Refreshed, time.Second*2)
-	}
 }
 
 func AddToFavoritesConfirmationDialogue(main *core.MainView, appState *core.ApplicationState) {

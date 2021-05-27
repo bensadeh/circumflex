@@ -25,6 +25,7 @@ type ApplicationState struct {
 	IsOnAddFavoriteConfirmationMessage    bool
 	IsOnDeleteFavoriteConfirmationMessage bool
 	IsOnAddFavoriteByID                   bool
+	IsOffline                             bool
 	State                                 int
 }
 

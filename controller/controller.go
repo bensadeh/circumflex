@@ -25,13 +25,13 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 
 		switch {
 		// Offline
-		case appState.State == state.Offline && event.Rune() == 'r':
+		case appState.IsOffline && event.Rune() == 'r':
 			model.Refresh(app, list, main, appState, config, ret)
 
-		case appState.State == state.Offline && event.Rune() == 'q':
+		case appState.IsOffline && event.Rune() == 'q':
 			model.Quit(app)
 
-		case appState.State == state.Offline:
+		case appState.IsOffline:
 			return event
 
 		// Help View
