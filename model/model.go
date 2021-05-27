@@ -1,7 +1,6 @@
 package model
 
 import (
-	"clx/article"
 	"clx/browser"
 	"clx/cli"
 	"clx/comment"
@@ -13,19 +12,18 @@ import (
 	"clx/endpoints"
 	"clx/handler"
 	"clx/info"
+	"clx/reader"
 	"clx/screen"
 	"clx/utils/message"
 	"clx/utils/ranking"
 	"clx/utils/vim"
 	"clx/validator"
 	"clx/view"
-	"net/http"
 	"strconv"
 	"time"
 
 	"code.rocketnine.space/tslocum/cview"
 	"github.com/gdamore/tcell/v2"
-	"github.com/go-shiori/go-readability"
 )
 
 func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list *cview.List,
@@ -149,26 +147,28 @@ func ReadSubmissionContent(app *cview.Application, main *core.MainView, list *cv
 	view.SetPermanentStatusBar(main, errorMessage, cview.AlignCenter)
 }
 
-func enterReaderMode(app *cview.Application, main *core.MainView, list *cview.List, appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register, story *endpoints.Story) {
+func enterReaderMode(app *cview.Application, main *core.MainView, list *cview.List, appState *core.ApplicationState,
+	config *core.Config, r *handler.StoryHandler, reg *vim.Register, story *endpoints.Story) {
+	fetchTimeout := false
+
 	app.Suspend(func() {
 		url := story.URL
 
-		resp, err := http.Get(url)
+		article, err := reader.Get(url)
 		if err != nil {
-			return
-		}
-		defer resp.Body.Close()
+			fetchTimeout = true
 
-		art, err := readability.FromReader(resp.Body, url)
-		if err != nil {
 			return
 		}
 
-		content, references := cli.ParseWithLynx(art.Content)
-		parsedArticle := article.Parse(art.Title, story.URL, content, references)
-
-		cli.Less(parsedArticle)
+		cli.Less(article)
 	})
+
+	if fetchTimeout {
+		view.SetPermanentStatusBar(main, messages.StoryNotFetched, cview.AlignCenter)
+
+		return
+	}
 
 	changePage(app, list, main, appState, config, r, reg, 0)
 }

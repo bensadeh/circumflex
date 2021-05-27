@@ -12,6 +12,7 @@ const (
 	Cancelled                   = "Cancelled"
 	OfflineMessage              = "Could not fetch stories[-::] | [-]Press [::b]r[::-] to retry or [::b]q[::-] to quit"
 	CommentsNotFetched          = "Could not fetch comments"
+	StoryNotFetched             = "Timeout: Could not fetch story"
 	EnterCommentSectionToUpdate = "[Enter comment section to update story]"
 	DeleteFromFavorites         = "[red]Delete[-] from Favorites? Press [::b]y[::-] to Confirm"
 	AddToFavorites              = "[green]Add[-] to Favorites? Press [::b]y[::-] to Confirm"
