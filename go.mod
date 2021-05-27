@@ -7,11 +7,14 @@ require (
 	github.com/MichaelMure/go-term-text v0.2.9
 	github.com/gdamore/tcell/v2 v2.3.1
 	github.com/go-resty/resty/v2 v2.6.0
-	github.com/go-shiori/go-readability v0.0.0-20201011032228-bdc871772408
+	github.com/go-shiori/go-readability v0.0.0-20210520080909-1a0ca98baf0f
 	github.com/logrusorgru/aurora/v3 v3.0.0
 	github.com/nleeper/goment v1.4.0
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.7.0
 	github.com/wayneashleyberry/terminal-dimensions v1.0.0
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
+	golang.org/x/net v0.0.0-20210525063256-abc453219eb5 // indirect
+	golang.org/x/sys v0.0.0-20210525143221-35b2ab0089ea // indirect
 )
