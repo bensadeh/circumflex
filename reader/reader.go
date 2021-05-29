@@ -29,7 +29,7 @@ func Get(url string) (string, error) {
 
 func fetch(url string) (readability.Article, error) {
 	client := http.Client{
-		Timeout: 4 * time.Second,
+		Timeout: 5 * time.Second,
 	}
 
 	response, err := client.Get(url)
