@@ -83,12 +83,14 @@ func isHeader(lines []string, i int, line string) bool {
 }
 
 func isQuote(input string) bool {
+	indentCutOff := 5
+
 	for i, c := range input {
-		if i < 5 && c != ' ' {
+		if i < indentCutOff && c != ' ' {
 			return false
 		}
 
-		if i == 5 && c != ' ' && c != '*' {
+		if i == indentCutOff && c != ' ' && c != '*' {
 			return true
 		}
 	}
