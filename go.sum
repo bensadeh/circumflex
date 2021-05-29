@@ -14,6 +14,8 @@ code.rocketnine.space/tslocum/cbind v0.1.5 h1:i6NkeLLNPNMS4NWNi3302Ay3zSU6MrqOT+
 code.rocketnine.space/tslocum/cbind v0.1.5/go.mod h1:LtfqJTzM7qhg88nAvNhx+VnTjZ0SXBJtxBObbfBWo/M=
 code.rocketnine.space/tslocum/cview v1.5.5-0.20210519005123-bf491e965f97 h1:o8PWYYSnjnnLdzKEyYH9vMLx+HqQ4igpMaU3X7ELnXU=
 code.rocketnine.space/tslocum/cview v1.5.5-0.20210519005123-bf491e965f97/go.mod h1:LxailX0CNzOB9GKL4Cx1sg8MLvcL2NayFtfeXAUSTYc=
+code.rocketnine.space/tslocum/cview v1.5.6-0.20210526200516-29170b84538e h1:A99oYBh7/kkcsFfectQ7cXLQH7mXG/OSRte4qn+NYp8=
+code.rocketnine.space/tslocum/cview v1.5.6-0.20210526200516-29170b84538e/go.mod h1:KBRxzIsj8bfgFpnMpkGVoxsrPUvnQsRnX29XJ2yzB6M=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
@@ -56,6 +58,8 @@ github.com/gdamore/encoding v1.0.0/go.mod h1:alR0ol34c49FCSBLjhosxzcPHQbf2trDkoo
 github.com/gdamore/tcell/v2 v2.2.0/go.mod h1:cTTuF84Dlj/RqmaCIV5p4w8uG1zWdk0SF6oBpwHp4fU=
 github.com/gdamore/tcell/v2 v2.3.1 h1:htEXmKMzurgcnNH3VqQA7GYlCpdl9LCSNpzFpZOKhJE=
 github.com/gdamore/tcell/v2 v2.3.1/go.mod h1:cTTuF84Dlj/RqmaCIV5p4w8uG1zWdk0SF6oBpwHp4fU=
+github.com/gdamore/tcell/v2 v2.3.3 h1:RKoI6OcqYrr/Do8yHZklecdGzDTJH9ACKdfECbRdw3M=
+github.com/gdamore/tcell/v2 v2.3.3/go.mod h1:cTTuF84Dlj/RqmaCIV5p4w8uG1zWdk0SF6oBpwHp4fU=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
 github.com/go-kit/kit v0.8.0/go.mod h1:xBxKIO96dXMWWy0MnWVtmwkA9/13aqxPnvrjFYMA2as=
@@ -147,6 +151,8 @@ github.com/mattn/go-runewidth v0.0.9/go.mod h1:H031xJmbD/WCDINGzjvQ9THkh0rPKHF+m
 github.com/mattn/go-runewidth v0.0.10/go.mod h1:RAqKPSqVFrSLVXbA8x7dzmKdmGzieGRCM46jaSJTDAk=
 github.com/mattn/go-runewidth v0.0.12 h1:Y41i/hVW3Pgwr8gV+J23B9YEY0zxjptBuCWEaxmAOow=
 github.com/mattn/go-runewidth v0.0.12/go.mod h1:RAqKPSqVFrSLVXbA8x7dzmKdmGzieGRCM46jaSJTDAk=
+github.com/mattn/go-runewidth v0.0.13 h1:lTGmDsbAYt5DmK6OnoV7EuIF1wEIFAcxld6ypU4OSgU=
+github.com/mattn/go-runewidth v0.0.13/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh153qUoGf23w=
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/mitchellh/cli v1.0.0/go.mod h1:hNIlj7HEI86fIcpObd7a0FcrxTWetlwJDGcceTlRvqc=
