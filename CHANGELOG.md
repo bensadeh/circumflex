@@ -3,6 +3,8 @@
 ## 1.6
 _WIP_
 
+**Cosmetic:**
+- Quotes in Reader Mode are now dimmed and italicized
 
 ## 1.5
 _2021-05-24_

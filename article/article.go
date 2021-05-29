@@ -33,9 +33,16 @@ func Parse(title, domain, article, references string) string {
 
 	for i, line := range lines {
 		isOnFirstOrLastLine := i == 0 || i == len(lines)-1
+		isOnQuote := isQuote(line)
 
 		if isOnFirstOrLastLine {
 			formattedArticle += line + newLine
+
+			continue
+		}
+
+		if isOnQuote {
+			formattedArticle += "\033[2m" + "\033[3m" + line + newLine + "\033[0m"
 
 			continue
 		}
@@ -73,6 +80,20 @@ func isHeader(lines []string, i int, line string) bool {
 	lineIsHeader := currentLineIsNotIndented && previousLineIsEmpty && nextLineLineIsEmpty
 
 	return lineIsHeader
+}
+
+func isQuote(input string) bool {
+	for i, c := range input {
+		if i < 5 && c != ' ' {
+			return false
+		}
+
+		if i == 5 && c != ' ' && c != '*' {
+			return true
+		}
+	}
+
+	return false
 }
 
 func highlightReferences(input string) string {
@@ -129,12 +150,12 @@ func formatReferences(references string) string {
 	return formattedReferences
 }
 
-func formatURL(url string, maxUrlLength int) string {
-	if len(url) < maxUrlLength {
+func formatURL(url string, maxURLLength int) string {
+	if len(url) < maxURLLength {
 		return getHyperlinkText(url, url)
 	}
 
-	truncatedURL := text.TruncateMax(url, maxUrlLength)
+	truncatedURL := text.TruncateMax(url, maxURLLength)
 
 	return getHyperlinkText(url, truncatedURL)
 }
