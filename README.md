@@ -220,8 +220,9 @@ text` setting under Profiles.
 
 To change the settings, you can either:
 
-1. create an example config in `~/.config/circumflex/config.env`, or
+1. create a config file in `~/.config/circumflex/config.env`, or
 2. set environment variables in your shell
+
 
 #### Changing settings through `config.env`
 
