@@ -34,6 +34,7 @@ func Parse(title, domain, article, references string) string {
 
 	for i, line := range lines {
 		isOnFirstOrLastLine := i == 0 || i == len(lines)-1
+		isOnReferences := line == "References"
 
 		if isOnFirstOrLastLine {
 			formattedArticle += normal + line + newLine
@@ -41,9 +42,12 @@ func Parse(title, domain, article, references string) string {
 			continue
 		}
 
+		if isOnReferences {
+			break
+		}
+
 		isOnQuote := isQuote(line)
 		isOnHeader := isHeader(lines, i, line)
-		isOnReferences := line == "References"
 
 		if isOnQuote {
 			formattedArticle += normal + Faint(line).Italic().String() + newLine
@@ -55,10 +59,6 @@ func Parse(title, domain, article, references string) string {
 			formattedArticle += normal + Bold(line).String() + newLine
 
 			continue
-		}
-
-		if isOnReferences {
-			break
 		}
 
 		formattedArticle += normal + line + newLine

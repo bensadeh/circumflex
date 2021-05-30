@@ -5,6 +5,9 @@ _WIP_
 **Cosmetic:**
 - Keymaps screen is now fixed-width
 
+**Bugfixes:**
+- Fixed a bug where references was printed twice in Reader Mode
+
 ## 1.6
 _2021-05-30_
 
