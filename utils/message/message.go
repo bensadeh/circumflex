@@ -5,17 +5,21 @@ import "clx/utils/formatter"
 func Error(text string) string {
 	label := formatter.Red("✘")
 
-	return label + " " + text
+	return format(label, text)
 }
 
 func Success(text string) string {
 	label := formatter.Green("✔")
 
-	return label + " " + text
+	return format(label, text)
 }
 
 func Warning(text string) string {
 	label := formatter.Yellow("!")
 
+	return format(label, text)
+}
+
+func format(label string, text string) string {
 	return label + " " + text
 }
