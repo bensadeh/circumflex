@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.6
-_WIP_
+_2021-05-30_
 
 **Cosmetic:**
 - Quotes in Reader Mode are now dimmed and italicized
