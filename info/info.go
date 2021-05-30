@@ -1,8 +1,12 @@
 package info
 
 import (
+	"clx/constants/margins"
 	"clx/constants/messages"
 	"clx/keymaps"
+	"strings"
+
+	text "github.com/MichaelMure/go-term-text"
 )
 
 func GetStatusBarText() string {
@@ -43,5 +47,22 @@ func GetText(screenWidth int) string {
 	keys.AddKeymap("Help screen", "h")
 	keys.AddKeymap("Return to circumflex", "q")
 
-	return keys.Print(screenWidth)
+	keymapsWidth := 80
+	listOfKeymaps := keys.Print(keymapsWidth)
+	listOfKeymapsCentered := alignCenter(listOfKeymaps, screenWidth, keymapsWidth)
+
+	return listOfKeymapsCentered
+}
+
+func alignCenter(input string, screenWidth int, keymapsWidth int) string {
+	padding := screenWidth/2 - keymapsWidth/2 - margins.LeftMargin
+
+	if padding < 0 {
+		return input
+	}
+
+	padToCenterAlign := strings.Repeat(" ", padding)
+	output, _ := text.WrapWithPad(input, screenWidth, padToCenterAlign)
+
+	return output
 }

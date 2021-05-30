@@ -8,6 +8,7 @@ require (
 	github.com/gdamore/tcell/v2 v2.3.3
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/go-shiori/go-readability v0.0.0-20210520080909-1a0ca98baf0f
+	github.com/jedib0t/go-pretty/v6 v6.2.2
 	github.com/logrusorgru/aurora/v3 v3.0.0
 	github.com/nleeper/goment v1.4.0
 	github.com/spf13/cobra v1.1.3

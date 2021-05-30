@@ -1,4 +1,9 @@
 # Changelog
+## 1.7
+_WIP_
+
+**Cosmetic:**
+- Keymaps screen is now fixed-width
 
 ## 1.6
 _2021-05-30_
