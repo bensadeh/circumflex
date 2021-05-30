@@ -42,7 +42,7 @@
 * [Syntax highlighting](#-syntax-highlighting)
 * [Favorites](#%EF%B8%8F-favorites)
 * [Fine tuning](#-fine-tuning)
-* [Settings](#-settings)
+* [Settings](#%EF%B8%8F-settings)
 * [Under the hood](#-under-the-hood)
 
 ## 📦 Installing
