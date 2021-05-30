@@ -11,3 +11,9 @@ func Success(text string) string {
 
 	return label + " " + text
 }
+
+func Warning(text string) string {
+	label := formatter.Yellow("!")
+
+	return label + " " + text
+}

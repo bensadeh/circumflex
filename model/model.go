@@ -144,7 +144,7 @@ func ReadSubmissionContent(app *cview.Application, main *core.MainView, list *cv
 		return
 	}
 
-	view.SetPermanentStatusBar(main, errorMessage, cview.AlignCenter)
+	view.SetPermanentStatusBar(main, message.Warning(errorMessage), cview.AlignCenter)
 }
 
 func enterReaderMode(app *cview.Application, main *core.MainView, list *cview.List, appState *core.ApplicationState,
