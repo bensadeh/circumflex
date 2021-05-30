@@ -174,13 +174,15 @@ Favorites are stored in `~/.config/circumflex/favorites.json`.
 ### Different standards
 `circumflex` aims to be as compatible in as many setups as possible by following standard
 terminal conventions. However, not all conventions are agreed upon and not everything is 
-standardized. Because terminal emulators stil vary among themselves, some adjustment might 
-be needed. 
+standardized. 
+
+Because terminal emulators implementations vary, some adjustment might 
+be beneficial for getting most of out of `circumflex`. 
 
 ### Disconnected indentation blocks
 
-Some terminals, like [`alacritty`](https://github.com/alacritty/alacritty), might render the 
-indentation block in a disconnected line.
+In some terminals and configurations, the indentation block (the bar to the left of the comment)
+might appear disconnected.
 
 <p align="center">
   <img src="screenshots/disconnected_indentations.png" width="700" alt="^"/>
@@ -206,6 +208,9 @@ If you are using `alacritty`, you can set `draw_bold_text_with_bright_colors` to
 Then, define `bright_foreground` and set it to a brighter value than `foreground`. See 
 [alacritty/alacritty/pull/1026](https://github.com/alacritty/alacritty/pull/1026) for 
 more info.
+
+If you are using macOS's stock `Terminal`, you can check the `Use bright colors for bold 
+text` setting under Profiles.
 
 
 ## ⚙️ Settings
