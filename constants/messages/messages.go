@@ -18,6 +18,7 @@ const (
 	AddToFavorites              = "[green]Add[-] to Favorites? Press [::b]y[::-] to Confirm"
 	LessScreenInfo              = "You are now in 'less' • Press 'q' to return and 'h' for help"
 	HowToExitF                  = "[::d]Leave ID blank to return to main screen[::-]"
+	AddedStoryByID              = "Story added"
 )
 
 func GetCircumflexStatusMessage() string {

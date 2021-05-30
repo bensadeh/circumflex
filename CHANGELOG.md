@@ -3,6 +3,8 @@
 ## 1.8
 _WIP_
 
+**Cosmetic:**
+- A confirmation message is now shown after adding a story to favorites by ID
 
 ## 1.7
 _2021-05-30_

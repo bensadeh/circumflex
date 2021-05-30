@@ -470,12 +470,13 @@ func ShowAddCustomFavorite(app *cview.Application, list *cview.List, main *core.
 	main.CustomFavorite.SetText("")
 	main.CustomFavorite.SetAcceptanceFunc(cview.InputFieldInteger)
 	main.CustomFavorite.SetDoneFunc(func(key tcell.Key) {
+		input := ""
 		if key == tcell.KeyEnter {
 			appState.IsOnAddFavoriteByID = false
-			text := main.CustomFavorite.GetText()
+			input = main.CustomFavorite.GetText()
 
-			if text != "" {
-				id, _ := strconv.Atoi(text)
+			if input != "" {
+				id, _ := strconv.Atoi(input)
 
 				item := new(endpoints.Story)
 				item.ID = id
@@ -491,6 +492,11 @@ func ShowAddCustomFavorite(app *cview.Application, list *cview.List, main *core.
 		app.SetFocus(main.Grid)
 
 		changePage(app, list, main, appState, config, ret, reg, 0)
+
+		if input != "" {
+			view.SetPermanentStatusBar(main, messages.AddedStoryByID, cview.AlignCenter)
+		}
+
 		appState.IsOnAddFavoriteByID = false
 	})
 
