@@ -3,7 +3,9 @@ package message
 import "clx/utils/formatter"
 
 func Error(text string) string {
-	return formatter.Red("✘ " + text)
+	label := formatter.Red("✘")
+
+	return label + " " + text
 }
 
 func Success(text string) string {
