@@ -12,16 +12,18 @@
 
 
 #
-
-`circumflex` is a command line tool for browsing Hacker News in your terminal.
-
+  
+<p align="center">
+  <code>circumflex</code> is a command line tool for browsing Hacker News in your terminal
+</p>
+  
 
 <p align="center">
   <img src="screenshots/mainview.png" width="700" alt="^"/>
 </p>
 
 
-## Features
+### Features
 
 - 🛋 **Everything in one place** - browse submissions, read articles and enter the comment section
 - 🤹 **Native terminal colors** - you bring your own color scheme, `circumflex` does the rest
@@ -31,7 +33,7 @@
 - 🛠 **Configureable** - change comment width, indentation size, highlighting ++
 - ❤️ **Add to favorites** - save interesting submissions for later
 
-## Table of Contents
+### Table of Contents
 
 * [Installing](#installing)
 * [Keymaps](#keymaps)
