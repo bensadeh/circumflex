@@ -36,11 +36,11 @@
 ### Table of Contents
 
 * [Installing](#-installing)
-* [Keymaps](#-keymaps)
+* [Keymaps](#%EF%B8%8F-keymaps)
 * [Comment section](#-comment-section)
 * [Reader mode](#-reader-mode)
 * [Syntax highlighting](#-syntax-highlighting)
-* [Favorites](#-favorites)
+* [Favorites](#%EF%B8%8F-favorites)
 * [Fine tuning](#-fine-tuning)
 * [Settings](#-settings)
 * [Under the hood](#-under-the-hood)
