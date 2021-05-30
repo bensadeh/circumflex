@@ -6,6 +6,10 @@ _WIP_
 **Cosmetic:**
 - Quotes in Reader Mode are now dimmed and italicized
 
+**Bugfixes:**
+- Fixed a bug where scrolling backwards in less would lead to improper formatting
+
+
 ## 1.5
 _2021-05-24_
 

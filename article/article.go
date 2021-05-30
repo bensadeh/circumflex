@@ -16,6 +16,7 @@ const (
 	link1       = "\033]8;;"
 	link2       = "\a"
 	link3       = "\033]8;;\a"
+	normal      = "\033[0m"
 )
 
 func Parse(title, domain, article, references string) string {
@@ -33,33 +34,34 @@ func Parse(title, domain, article, references string) string {
 
 	for i, line := range lines {
 		isOnFirstOrLastLine := i == 0 || i == len(lines)-1
-		isOnQuote := isQuote(line)
 
 		if isOnFirstOrLastLine {
-			formattedArticle += line + newLine
+			formattedArticle += normal + line + newLine
 
 			continue
 		}
+
+		isOnQuote := isQuote(line)
+		isOnHeader := isHeader(lines, i, line)
+		isOnReferences := line == "References"
 
 		if isOnQuote {
-			formattedArticle += "\033[2m" + "\033[3m" + line + newLine + "\033[0m"
+			formattedArticle += normal + Faint(line).Italic().String() + newLine
 
 			continue
 		}
 
-		if line == "References" {
+		if isOnHeader {
+			formattedArticle += normal + Bold(line).String() + newLine
+
+			continue
+		}
+
+		if isOnReferences {
 			break
 		}
 
-		lineIsHeader := isHeader(lines, i, line)
-
-		if lineIsHeader {
-			formattedArticle += Bold(line).String() + newLine
-
-			continue
-		}
-
-		formattedArticle += line + newLine
+		formattedArticle += normal + line + newLine
 	}
 
 	formattedArticle = highlightReferences(formattedArticle)
