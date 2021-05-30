@@ -45,7 +45,7 @@
 * [Settings](#settings)
 * [Under the hood](#under-the-hood)
 
-## Installing
+## 📦 Installing
 
 ### Via Homebrew
 
