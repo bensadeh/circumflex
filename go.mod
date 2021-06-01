@@ -3,7 +3,7 @@ module clx
 go 1.16
 
 require (
-	code.rocketnine.space/tslocum/cview v1.5.6-0.20210526200516-29170b84538e
+	code.rocketnine.space/tslocum/cview v1.5.6-0.20210531040531-f8d1b2c63cd1
 	github.com/MichaelMure/go-term-text v0.2.9
 	github.com/gdamore/tcell/v2 v2.3.3
 	github.com/go-resty/resty/v2 v2.6.0

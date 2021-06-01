@@ -14,6 +14,8 @@ code.rocketnine.space/tslocum/cbind v0.1.5 h1:i6NkeLLNPNMS4NWNi3302Ay3zSU6MrqOT+
 code.rocketnine.space/tslocum/cbind v0.1.5/go.mod h1:LtfqJTzM7qhg88nAvNhx+VnTjZ0SXBJtxBObbfBWo/M=
 code.rocketnine.space/tslocum/cview v1.5.6-0.20210526200516-29170b84538e h1:A99oYBh7/kkcsFfectQ7cXLQH7mXG/OSRte4qn+NYp8=
 code.rocketnine.space/tslocum/cview v1.5.6-0.20210526200516-29170b84538e/go.mod h1:KBRxzIsj8bfgFpnMpkGVoxsrPUvnQsRnX29XJ2yzB6M=
+code.rocketnine.space/tslocum/cview v1.5.6-0.20210531040531-f8d1b2c63cd1 h1:EFj1cq8FBzDbU/JGKaDXVt/dXG9I/htNY+vVY8XTgUk=
+code.rocketnine.space/tslocum/cview v1.5.6-0.20210531040531-f8d1b2c63cd1/go.mod h1:KBRxzIsj8bfgFpnMpkGVoxsrPUvnQsRnX29XJ2yzB6M=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
