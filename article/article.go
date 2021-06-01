@@ -17,16 +17,17 @@ const (
 	link2       = "\a"
 	link3       = "\033]8;;\a"
 	normal      = "\033[0m"
+	screenWidth = 73
 )
 
 func Parse(title, domain, article, references string) string {
-	wrappedTitle, _ := text.Wrap(title, 73)
-	truncatedDomain := text.TruncateMax(domain, 73)
+	wrappedTitle, _ := text.Wrap(title, screenWidth)
+	truncatedDomain := text.TruncateMax(domain, screenWidth)
 
 	wrappedTitle += newLine
 	wrappedTitle += Faint(truncatedDomain).String() + newLine
 	wrappedTitle += Faint(messages.LessScreenInfo).String() + newLine
-	separator := messages.GetSeparator(73)
+	separator := messages.GetSeparator(screenWidth)
 	wrappedTitle += separator + newLine + newLine
 
 	lines := strings.Split(article, newLine)
