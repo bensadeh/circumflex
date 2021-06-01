@@ -113,7 +113,8 @@ func printReplies(c endpoints.Comments, indentSize int, commentWidth int, screen
 	return fullComment
 }
 
-func getCommentHeading(c endpoints.Comments, level int, commentWidth int, originalPoster string, parentPoster string) string {
+func getCommentHeading(c endpoints.Comments, level int, commentWidth int, originalPoster string,
+	parentPoster string) string {
 	timeAgo := c.TimeAgo
 	author := bold(c.User)
 	label := getAuthorLabel(c.User, originalPoster, parentPoster) + " "
