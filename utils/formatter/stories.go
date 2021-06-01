@@ -37,6 +37,7 @@ func formatTitle(title string, mode int) string {
 
 	title = highlightShowAndTell(title, mode)
 	title = highlightYCStartups(title, mode)
+	title = highlightSpecialContent(title, mode)
 
 	return title
 }
@@ -94,6 +95,28 @@ func formatStartup(title string, mode int, summer string, year string, winter st
 	}
 
 	return title
+}
+
+func highlightSpecialContent(title string, mode int) string {
+	switch mode {
+	case reverseHighlighting:
+		title = strings.ReplaceAll(title, "[audio[]", Reverse(" audio "))
+		title = strings.ReplaceAll(title, "[video[]", Reverse(" video "))
+		title = strings.ReplaceAll(title, "[pdf[]", Reverse(" pdf "))
+		title = strings.ReplaceAll(title, "[PDF[]", Reverse(" PDF "))
+
+		return title
+	case colorizedHighlighting:
+		title = strings.ReplaceAll(title, "[audio[]", BlackOnYellow(" audio "))
+		title = strings.ReplaceAll(title, "[video[]", BlackOnYellow(" video "))
+		title = strings.ReplaceAll(title, "[pdf[]", BlackOnYellow(" pdf "))
+		title = strings.ReplaceAll(title, "[PDF[]", BlackOnYellow(" PDF "))
+
+		return title
+
+	default:
+		return title
+	}
 }
 
 func formatDomain(domain string) string {

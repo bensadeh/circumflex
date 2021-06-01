@@ -11,24 +11,28 @@ const (
 	resetForegroundAndBackground = "[-:-:]"
 )
 
-func Magenta(text string) string {
-	return "[purple]" + text + resetForeground
-}
-
 func Red(text string) string {
 	return "[maroon]" + text + resetForeground
 }
 
+func Green(text string) string {
+	return "[green]" + text + resetForeground
+}
+
 func Yellow(text string) string {
-	return "[yellow]" + text + resetForeground
+	return "[olive]" + text + resetForeground
 }
 
 func Blue(text string) string {
 	return "[navy]" + text + resetForeground
 }
 
-func Green(text string) string {
-	return "[green]" + text + resetForeground
+func Magenta(text string) string {
+	return "[purple]" + text + resetForeground
+}
+
+func Cyan(text string) string {
+	return "[teal]" + text + resetForeground
 }
 
 func Dim(text string) string {
@@ -44,7 +48,11 @@ func Reverse(text string) string {
 }
 
 func BlackOnOrange(text string) string {
-	return "[#0c0c0c:orange]" + text + resetForegroundAndBackground
+	return "[#0c0c0c:#FFA500]" + text + resetForegroundAndBackground
+}
+
+func BlackOnYellow(text string) string {
+	return "[#0c0c0c:olive]" + text + resetForegroundAndBackground
 }
 
 func Len(textWithTage string) int {
