@@ -30,6 +30,10 @@ func Parse(title, domain, article, references string) string {
 	separator := messages.GetSeparator(screenWidth)
 	wrappedTitle += separator + newLine + newLine
 
+	if strings.Contains(domain, "https://en.wikipedia.org") {
+		article = preFormatWikipediaArticle(article)
+	}
+
 	lines := strings.Split(article, newLine)
 	formattedArticle := ""
 
