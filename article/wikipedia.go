@@ -44,11 +44,7 @@ func isOnLineBeforeReferences(lines []string, i int) bool {
 	nextLine := lines[i+1]
 	nextLineLineIsReferences := nextLine == "References[edit]"
 
-	if nextLineLineIsReferences {
-		return true
-	}
-
-	return false
+	return nextLineLineIsReferences
 }
 
 func removeReferences(input string) string {
