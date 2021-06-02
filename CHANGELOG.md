@@ -6,9 +6,9 @@ _2021-06-02_
 **Cosmetic**
 - A confirmation message is now shown after adding a story to favorites by ID
 - Submissions in specific formats ([pdf], [audio], etc.) are now highlighted
-- Monthly `Who is hiring` posts are now hightlighted
+- Monthly `Who is hiring` posts are now highlighted
 - Wikipedia articles in Reader Mode now have improved formatting
-- Improved formatting for confirmation, warning and error messsages
+- Improved formatting for confirmation, warning and error messages
 
 ## 1.7
 _2021-05-30_
