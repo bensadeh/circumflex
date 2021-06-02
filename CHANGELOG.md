@@ -8,6 +8,7 @@ _WIP_
 - Submissions in specific formats ([pdf], [audio], etc.) are now highlighted
 - Monthly `Who is hiring` posts are now hightlighted
 - Wikipedia articles in Reader Mode now have improved formatting
+- Improved formatting for confirmation, warning and error messsages
 
 ## 1.7
 _2021-05-30_

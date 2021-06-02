@@ -3,19 +3,19 @@ package message
 import "clx/utils/formatter"
 
 func Error(text string) string {
-	label := formatter.Red("✘")
+	label := formatter.BlackOnRed(" ✘ ")
 
 	return format(label, text)
 }
 
 func Success(text string) string {
-	label := formatter.Green("✔")
+	label := formatter.BlackOnGreen(" ✔ ")
 
 	return format(label, text)
 }
 
 func Warning(text string) string {
-	label := formatter.Yellow("!")
+	label := formatter.BlackOnYellow(" ! ")
 
 	return format(label, text)
 }
