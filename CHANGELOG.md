@@ -6,6 +6,7 @@ _WIP_
 **Cosmetic:**
 - A confirmation message is now shown after adding a story to favorites by ID
 - Submissions in specific formats ([pdf], [audio], etc.) are now highlighted
+- Monthly `Who is hiring` posts are now hightlighted
 - Wikipedia articles in Reader Mode now have improved formatting
 
 ## 1.7

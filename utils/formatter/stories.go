@@ -22,13 +22,17 @@ const (
 	singleSpace           = " "
 )
 
-func FormatMain(title string, domain string, mode int) string {
-	return formatTitle(title, mode) + formatDomain(domain)
+func FormatMain(title string, domain string, author string, mode int) string {
+	return formatTitle(title, author, mode) + formatDomain(domain)
 }
 
-func formatTitle(title string, mode int) string {
+func formatTitle(title string, author string, mode int) string {
 	if title == messages.EnterCommentSectionToUpdate {
 		return Yellow(title)
+	}
+
+	if author == "whoishiring" {
+		return highlightWhoIsHiring(title, mode)
 	}
 
 	title = strings.ReplaceAll(title, tripleSpace, singleSpace)
@@ -113,6 +117,19 @@ func highlightSpecialContent(title string, mode int) string {
 		title = strings.ReplaceAll(title, "[PDF[]", BlackOnYellow(" PDF "))
 
 		return title
+
+	default:
+		return title
+	}
+}
+
+func highlightWhoIsHiring(title string, mode int) string {
+	switch mode {
+	case reverseHighlighting:
+		return Reverse(title)
+
+	case colorizedHighlighting:
+		return BlackOnBlue(title)
 
 	default:
 		return title

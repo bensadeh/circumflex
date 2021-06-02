@@ -55,6 +55,10 @@ func BlackOnYellow(text string) string {
 	return "[#0c0c0c:olive]" + text + resetForegroundAndBackground
 }
 
+func BlackOnBlue(text string) string {
+	return "[#0c0c0c:navy]" + text + resetForegroundAndBackground
+}
+
 func Len(textWithTage string) int {
 	stripped := cview.StripTags([]byte(textWithTage), true, false)
 	strippedString := string(stripped)

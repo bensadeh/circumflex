@@ -129,7 +129,7 @@ func convert(subs []*endpoints.Story, highlightHeadlines int) []*cview.ListItem 
 	listItems := make([]*cview.ListItem, len(subs))
 
 	for i, s := range subs {
-		main := formatter.FormatMain(s.Title, s.Domain, highlightHeadlines)
+		main := formatter.FormatMain(s.Title, s.Domain, s.Author, highlightHeadlines)
 		secondary := formatter.FormatSecondary(s.Points, s.Author, s.Time, s.CommentsCount)
 
 		item := cview.NewListItem(main)
