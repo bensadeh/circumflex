@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.8
-_WIP_
+_2021-06-02_
 
 **Cosmetic:**
 - A confirmation message is now shown after adding a story to favorites by ID
