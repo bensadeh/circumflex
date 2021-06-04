@@ -15,6 +15,7 @@ const (
 	ArticleNotFetched           = "Could not fetch article"
 	EnterCommentSectionToUpdate = "[Enter comment section to update story]"
 	DeleteFromFavorites         = "[red]Delete[-] from Favorites? Press [::b]y[::-] to Confirm"
+	ItemDeleted                 = "Item deleted"
 	AddToFavorites              = "[green]Add[-] to Favorites? Press [::b]y[::-] to Confirm"
 	LessScreenInfo              = "You are now in 'less' • Press 'q' to return and 'h' for help"
 	HowToExitF                  = "[::d]Leave ID blank to return to main screen[::-]"

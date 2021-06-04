@@ -437,6 +437,7 @@ func AddToFavorites(app *cview.Application, list *cview.List, main *core.MainVie
 func DeleteItem(app *cview.Application, list *cview.List, appState *core.ApplicationState,
 	main *core.MainView, config *core.Config, ret *handler.StoryHandler, reg *vim.Register) {
 	appState.IsOnDeleteFavoriteConfirmationMessage = false
+
 	ret.DeleteStoryAndWriteToFile(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 
@@ -448,15 +449,17 @@ func DeleteItem(app *cview.Application, list *cview.List, appState *core.Applica
 	switch {
 	case hasDeletedLastItemOnSecondOrThirdPage:
 		changePage(app, list, main, appState, config, ret, reg, -1)
+
 	case hasDeletedLastItemOnFirstPage:
 		appState.CurrentCategory = categories.Show
-		ChangeCategory(app, tcell.NewEventKey(tcell.KeyTab, ' ', tcell.ModNone), list, appState, main, config, ret,
-			reg)
+		keyTab := tcell.NewEventKey(tcell.KeyTab, ' ', tcell.ModNone)
+		ChangeCategory(app, keyTab, list, appState, main, config, ret, reg)
+
 	default:
 		changePage(app, list, main, appState, config, ret, reg, 0)
 	}
 
-	m := message.Success("Item deleted")
+	m := message.Success(messages.ItemDeleted)
 	view.SetPermanentStatusBar(main, m, cview.AlignCenter)
 }
 
