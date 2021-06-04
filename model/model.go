@@ -425,9 +425,9 @@ func AddToFavorites(app *cview.Application, list *cview.List, main *core.MainVie
 
 	err := ret.AddItemToFavoritesAndWriteToFile(story)
 	if err != nil {
-		statusBarMessage = message.Error("Could not add to favorites")
+		statusBarMessage = message.Error(messages.FavoriteNotAdded)
 	} else {
-		statusBarMessage = message.Success("Item added to favorites")
+		statusBarMessage = message.Success(messages.FavoriteAdded)
 	}
 
 	changePage(app, list, main, appState, config, ret, reg, 0)

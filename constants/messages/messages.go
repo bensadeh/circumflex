@@ -9,7 +9,7 @@ const (
 	separator = "-"
 
 	Refreshed                   = "Refreshed"
-	Cancelled                   = "Cancelled"
+	Cancelled                   = "[::d]Cancelled"
 	OfflineMessage              = "Could not fetch stories[-::] | [-]Press [::b]r[::-] to retry or [::b]q[::-] to quit"
 	CommentsNotFetched          = "Could not fetch comments"
 	ArticleNotFetched           = "Could not fetch article"
@@ -19,6 +19,8 @@ const (
 	LessScreenInfo              = "You are now in 'less' • Press 'q' to return and 'h' for help"
 	HowToExitF                  = "[::d]Leave ID blank to return to main screen[::-]"
 	AddedStoryByID              = "Story added"
+	FavoriteNotAdded            = "Could not add to favorites"
+	FavoriteAdded               = "Item added to favorites"
 )
 
 func GetCircumflexStatusMessage() string {
