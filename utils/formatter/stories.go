@@ -108,6 +108,7 @@ func highlightSpecialContent(title string, mode int) string {
 		title = strings.ReplaceAll(title, "[video[]", Reverse(" video "))
 		title = strings.ReplaceAll(title, "[pdf[]", Reverse(" pdf "))
 		title = strings.ReplaceAll(title, "[PDF[]", Reverse(" PDF "))
+		title = strings.ReplaceAll(title, "[flagged[]", Reverse(" flagged "))
 
 		return title
 	case colorizedHighlighting:
@@ -115,6 +116,7 @@ func highlightSpecialContent(title string, mode int) string {
 		title = strings.ReplaceAll(title, "[video[]", BlackOnYellow(" video "))
 		title = strings.ReplaceAll(title, "[pdf[]", BlackOnYellow(" pdf "))
 		title = strings.ReplaceAll(title, "[PDF[]", BlackOnYellow(" PDF "))
+		title = strings.ReplaceAll(title, "[flagged[]", BlackOnRed(" flagged "))
 
 		return title
 
