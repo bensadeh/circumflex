@@ -10,7 +10,7 @@ const (
 
 	Refreshed                   = "Refreshed"
 	Cancelled                   = "[::d]Cancelled"
-	OfflineMessage              = "Could not fetch stories | Press [::b]r[::-] to retry or [::b]q[::-] to quit"
+	OfflineMessage              = "Could not fetch stories • Press [::b]r[::-] to retry or [::b]q[::-] to quit"
 	CommentsNotFetched          = "Could not fetch comments"
 	ArticleNotFetched           = "Could not fetch article"
 	EnterCommentSectionToUpdate = "[Enter comment section to update story]"
