@@ -16,6 +16,8 @@ code.rocketnine.space/tslocum/cview v1.5.6-0.20210526200516-29170b84538e h1:A99o
 code.rocketnine.space/tslocum/cview v1.5.6-0.20210526200516-29170b84538e/go.mod h1:KBRxzIsj8bfgFpnMpkGVoxsrPUvnQsRnX29XJ2yzB6M=
 code.rocketnine.space/tslocum/cview v1.5.6-0.20210531040531-f8d1b2c63cd1 h1:EFj1cq8FBzDbU/JGKaDXVt/dXG9I/htNY+vVY8XTgUk=
 code.rocketnine.space/tslocum/cview v1.5.6-0.20210531040531-f8d1b2c63cd1/go.mod h1:KBRxzIsj8bfgFpnMpkGVoxsrPUvnQsRnX29XJ2yzB6M=
+code.rocketnine.space/tslocum/cview v1.5.6-0.20210607034456-652afb9875a8 h1:ALnQpGYrOOJypj0k1de3SL7vea4lZPxoMS1tjz1GX10=
+code.rocketnine.space/tslocum/cview v1.5.6-0.20210607034456-652afb9875a8/go.mod h1:jCZN6bYOhipI1msEc7Yv8UAjTUEYW3ii2d7WMnuJAHg=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
@@ -59,6 +61,8 @@ github.com/gdamore/encoding v1.0.0/go.mod h1:alR0ol34c49FCSBLjhosxzcPHQbf2trDkoo
 github.com/gdamore/tcell/v2 v2.2.0/go.mod h1:cTTuF84Dlj/RqmaCIV5p4w8uG1zWdk0SF6oBpwHp4fU=
 github.com/gdamore/tcell/v2 v2.3.3 h1:RKoI6OcqYrr/Do8yHZklecdGzDTJH9ACKdfECbRdw3M=
 github.com/gdamore/tcell/v2 v2.3.3/go.mod h1:cTTuF84Dlj/RqmaCIV5p4w8uG1zWdk0SF6oBpwHp4fU=
+github.com/gdamore/tcell/v2 v2.3.8 h1:kU+TwS6JQ7Xao4kJkhnxkOB1fdNiIThfHKXqezvV3rM=
+github.com/gdamore/tcell/v2 v2.3.8/go.mod h1:cTTuF84Dlj/RqmaCIV5p4w8uG1zWdk0SF6oBpwHp4fU=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
 github.com/go-kit/kit v0.8.0/go.mod h1:xBxKIO96dXMWWy0MnWVtmwkA9/13aqxPnvrjFYMA2as=
@@ -321,6 +325,8 @@ golang.org/x/sys v0.0.0-20210423082822-04245dca01da/go.mod h1:h1NjWce9XRLGQEsW7w
 golang.org/x/sys v0.0.0-20210514084401-e8d321eab015/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20210525143221-35b2ab0089ea h1:+WiDlPBBaO+h9vPNZi8uJ3k4BkKQB7Iow3aqwHVA5hI=
 golang.org/x/sys v0.0.0-20210525143221-35b2ab0089ea/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.0.0-20210603125802-9665404d3644 h1:CA1DEQ4NdKphKeL70tvsWNdT5oFh1lOjihRcEDROi0I=
+golang.org/x/sys v0.0.0-20210603125802-9665404d3644/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/term v0.0.0-20210220032956-6a3ed077a48d/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
