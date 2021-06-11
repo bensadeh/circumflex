@@ -38,6 +38,7 @@ func isInvalidDomain(domain string) bool {
 		"newsweek.com",
 		"npr.org",
 		"play.google.com",
+		"blog.chromium.org",
 		"old.reddit.com",
 		"reddit.com",
 		"sciencedirect.com",
