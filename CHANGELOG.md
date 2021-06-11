@@ -10,6 +10,7 @@ _WIP_
 - Comment quotes now have an indentation block
 - Changed the order of colors for the indentation blocks
 - Code blocks now use the whole screen
+- Better handling of references inside quotes/nested blocks in Reader Mode
 
 ## 1.8
 _2021-06-02_
