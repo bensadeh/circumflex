@@ -7,6 +7,7 @@ const (
 	Dimmed       = "\033[2m"
 	Italic       = "\033[3m"
 	Underline    = "\033[4m"
+	Reversed     = "\033[7m"
 	Red          = "\033[31m"
 	Green        = "\033[32m"
 	Yellow       = "\033[33m"
@@ -18,8 +19,8 @@ const (
 	AltGreen     = "\033[32;1m"
 	AltYellow    = "\033[33;1m"
 	AltBlue      = "\033[34;1m"
-	AltCyan      = "\033[35;1m"
-	AltTeal      = "\033[36;1m"
+	AltMagenta   = "\033[35;1m"
+	AltCyan      = "\033[36;1m"
 	AltWhite     = "\033[37;1m"
 	Link1        = "\033]8;;"
 	Link2        = "\a"
@@ -97,9 +98,9 @@ func getColoredIndentBlock(level int) string {
 	case 3:
 		return Green
 	case 4:
-		return Blue
-	case 5:
 		return Cyan
+	case 5:
+		return Blue
 	case 6:
 		return Magenta
 	case 7:
@@ -111,11 +112,11 @@ func getColoredIndentBlock(level int) string {
 	case 10:
 		return AltGreen
 	case 11:
-		return AltBlue
-	case 12:
-		return AltTeal
-	case 13:
 		return AltCyan
+	case 12:
+		return AltBlue
+	case 13:
+		return AltMagenta
 	case 14:
 		return AltWhite
 	default:

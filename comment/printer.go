@@ -78,7 +78,7 @@ func parseRootComment(c string, commentWidth int) string {
 		return ""
 	}
 
-	comment, URLs := ParseComment(c)
+	comment, URLs := ParseComment(c, commentWidth, commentWidth)
 	wrappedComment, _ := text.Wrap(comment, commentWidth)
 	wrappedComment = applyURLs(wrappedComment, URLs)
 
@@ -87,12 +87,14 @@ func parseRootComment(c string, commentWidth int) string {
 
 func printReplies(c endpoints.Comments, indentSize int, commentWidth int, screenWidth int, originalPoster string,
 	parentPoster string, preserveRightMargin bool, altIndentBlock bool) string {
-	comment, URLs := ParseComment(c.Content)
+	currentIndentSize := indentSize * c.Level
+	usableScreenSize := screenWidth - currentIndentSize
+	comment, URLs := ParseComment(c.Content, commentWidth, usableScreenSize)
 	adjustedCommentWidth := getCommentWidthForLevel(c.Level, indentSize, commentWidth, screenWidth, preserveRightMargin)
 
 	indentBlock := getIndentBlock(c.Level, indentSize, altIndentBlock)
 	paddingWithBlock := text.WrapPad(indentBlock)
-	wrappedAndPaddedComment, _ := text.Wrap(comment, adjustedCommentWidth, paddingWithBlock)
+	wrappedAndPaddedComment, _ := text.Wrap(comment, usableScreenSize, paddingWithBlock)
 
 	paddingWithNoBlock := text.WrapPad(getIndentBlockWithoutBar(c.Level, indentSize))
 
@@ -206,6 +208,8 @@ func getCommentWidthForLevel(level int, indentSize int, commentWidth int, screen
 
 func getAuthorLabel(author, originalPoster, parentPoster string) string {
 	switch author {
+	case "":
+		return ""
 	case "dang":
 		return green(" mod")
 	case originalPoster:

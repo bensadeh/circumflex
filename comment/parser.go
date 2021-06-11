@@ -3,13 +3,15 @@ package comment
 import (
 	"regexp"
 	"strings"
+
+	text "github.com/MichaelMure/go-term-text"
 )
 
 type Comment struct {
-	Sections []*Section
+	Sections []*section
 }
 
-type Section struct {
+type section struct {
 	IsCodeBlock bool
 	IsQuote     bool
 	Text        string
@@ -21,64 +23,101 @@ const (
 	tripleSpace = "   "
 )
 
-func ParseComment(text string) (string, []string) {
-	text = strings.Replace(text, "<p>", "", 1)
-	paragraphs := strings.Split(text, "<p>")
+func ParseComment(c string, commentWidth int, availableScreenWidth int) (string, []string) {
+	if c == "[deleted]" {
+		return Dimmed + "[deleted]" + Normal, []string{}
+	}
+
+	c = strings.Replace(c, "<p>", "", 1)
+	c = strings.ReplaceAll(c, "\n</code></pre>\n", "<p>")
+	paragraphs := strings.Split(c, "<p>")
 
 	comment := new(Comment)
-	comment.Sections = make([]*Section, len(paragraphs))
+	comment.Sections = make([]*section, len(paragraphs))
 
 	for i, paragraph := range paragraphs {
-		section := new(Section)
-		section.Text = replaceCharacters(paragraph)
+		s := new(section)
+		s.Text = replaceCharacters(paragraph)
 
-		if strings.Contains(section.Text, "<pre><code>") {
-			section.IsCodeBlock = true
+		if strings.Contains(s.Text, "<pre><code>") {
+			s.IsCodeBlock = true
 		}
 
-		if isQuote(section.Text) {
-			section.IsQuote = true
+		if isQuote(s.Text) {
+			s.IsQuote = true
 		}
 
-		comment.Sections[i] = section
+		comment.Sections[i] = s
 	}
 
 	output := ""
 
 	var URLs []string
 
-	for i, section := range comment.Sections {
+	for i, s := range comment.Sections {
+		paragraph := s.Text
+
 		switch {
-		case section.IsQuote:
-			section.Text = strings.ReplaceAll(section.Text, "<i>", "")
-			section.Text = strings.ReplaceAll(section.Text, "</i>", "")
-			section.Text = strings.ReplaceAll(section.Text, tripleSpace, singleSpace)
-			section.Text = strings.ReplaceAll(section.Text, doubleSpace, singleSpace)
-			section.Text = strings.Replace(section.Text, ">>", "", 1)
-			section.Text = strings.Replace(section.Text, ">", "", 1)
-			section.Text = strings.ReplaceAll(section.Text, "@dang", green("@dang"))
-			section.Text = strings.TrimLeft(section.Text, " ")
-			section.Text = trimURLs(section.Text)
+		case s.IsQuote:
+			paragraph = strings.ReplaceAll(paragraph, "<i>", "")
+			paragraph = strings.ReplaceAll(paragraph, "</i>", "")
+			paragraph = strings.ReplaceAll(paragraph, "</a>", "")
+			paragraph = strings.ReplaceAll(paragraph, tripleSpace, singleSpace)
+			paragraph = strings.ReplaceAll(paragraph, doubleSpace, singleSpace)
+			paragraph = strings.Replace(paragraph, ">>", "", 1)
+			paragraph = strings.Replace(paragraph, ">", "", 1)
+			paragraph = strings.ReplaceAll(paragraph, "@dang", green("@dang"))
+			paragraph = strings.TrimLeft(paragraph, " ")
+			paragraph = trimURLs(paragraph)
 
-			section.Text = Italic + Dimmed + section.Text + Normal
+			paragraph = Italic + Dimmed + paragraph + Normal
 
-		case section.IsCodeBlock:
-			section.Text = replaceHTML(section.Text)
+			indentBlock := " ▎"
+			padding := text.WrapPad(Dimmed + indentBlock)
+			wrappedAndPaddedComment, _ := text.Wrap(paragraph, commentWidth, padding)
+			paragraph = wrappedAndPaddedComment
+
+		case s.IsCodeBlock:
+			paragraph = replaceHTML(paragraph)
+
+			paddingWithBlock := text.WrapPad("")
+			wrappedAndPaddedComment, _ := text.Wrap(paragraph, availableScreenWidth, paddingWithBlock)
+
+			codeLines := strings.Split(wrappedAndPaddedComment, NewLine)
+			formattedCodeLines := ""
+
+			for j, codeLine := range codeLines {
+				isOnLastLine := j == len(codeLines)-1
+
+				if isOnLastLine {
+					formattedCodeLines += Dimmed + codeLine + Normal
+
+					break
+				}
+
+				formattedCodeLines += Dimmed + codeLine + Normal + NewLine
+			}
+
+			paragraph = formattedCodeLines
 
 		default:
-			section.Text = strings.ReplaceAll(section.Text, tripleSpace, singleSpace)
-			section.Text = strings.ReplaceAll(section.Text, doubleSpace, singleSpace)
-			section.Text = highlightReferences(section.Text)
-			section.Text = replaceHTML(section.Text)
-			section.Text = strings.ReplaceAll(section.Text, "@dang", green("@dang"))
-			section.Text = strings.TrimLeft(section.Text, " ")
+			paragraph = strings.ReplaceAll(paragraph, tripleSpace, singleSpace)
+			paragraph = strings.ReplaceAll(paragraph, doubleSpace, singleSpace)
+			paragraph = highlightReferences(paragraph)
+			paragraph = replaceHTML(paragraph)
+			paragraph = strings.ReplaceAll(paragraph, "@dang", green("@dang"))
+			paragraph = strings.TrimLeft(paragraph, " ")
 
-			URLs = append(URLs, extractURLs(section.Text)...)
-			section.Text = trimURLs(section.Text)
+			URLs = append(URLs, extractURLs(paragraph)...)
+			paragraph = trimURLs(paragraph)
+
+			padding := text.WrapPad("")
+			wrappedAndPaddedComment, _ := text.Wrap(paragraph, commentWidth, padding)
+			paragraph = wrappedAndPaddedComment
 		}
 
-		separator := getSeparator(i, len(comment.Sections))
-		output += section.Text + separator
+		separator := getParagraphSeparator(i, len(comment.Sections))
+		output += paragraph + separator
 	}
 
 	return output, URLs
@@ -93,7 +132,7 @@ func isQuote(text string) bool {
 		strings.HasPrefix(text, "<i> "+quoteMark)
 }
 
-func getSeparator(index int, sliceLength int) string {
+func getParagraphSeparator(index int, sliceLength int) string {
 	isAtLastParagraph := index == sliceLength-1
 
 	if isAtLastParagraph {
@@ -121,8 +160,8 @@ func replaceHTML(input string) string {
 	input = strings.ReplaceAll(input, "<i>", Italic)
 	input = strings.ReplaceAll(input, "</i>", Normal)
 	input = strings.ReplaceAll(input, "</a>", "")
-	input = strings.ReplaceAll(input, "<pre><code>", Dimmed)
-	input = strings.ReplaceAll(input, "</code></pre>", Normal)
+	input = strings.ReplaceAll(input, "<pre><code>", "")
+	input = strings.ReplaceAll(input, "</code></pre>", "")
 
 	return input
 }

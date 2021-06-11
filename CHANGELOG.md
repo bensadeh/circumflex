@@ -1,4 +1,15 @@
 # Changelog
+## 1.9
+_WIP_
+
+**Bugfixes**
+- Fixed a bug where the formatting in the comment section would occasionally break
+
+**Cosmetic**
+- Default comment width is now 65 instead of 70
+- Comment quotes now have an indentation block
+- Changed the order of colors for the indentation blocks
+- Code blocks now use the whole screen
 
 ## 1.8
 _2021-06-02_

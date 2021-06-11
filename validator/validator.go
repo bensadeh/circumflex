@@ -37,6 +37,7 @@ func isInvalidDomain(domain string) bool {
 		"marketplace.atlassian.com",
 		"newsweek.com",
 		"npr.org",
+		"play.google.com",
 		"old.reddit.com",
 		"reddit.com",
 		"sciencedirect.com",

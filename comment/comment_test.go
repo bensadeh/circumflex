@@ -48,9 +48,9 @@ func TestParsing(t *testing.T) {
 		"<p><pre><code>  CODE BLOCK CODE BLOCK \n" +
 		"CODE BLOCK CODE BLOCK</code></pre>"
 
-	expected := "Not a code Block: \n\n\x1b[2m  CODE BLOCK CODE BLOCK \nCODE BLOCK CODE BLOCK\x1b[0m"
+	expected := "Not a code Block:\n\n\u001B[2m  CODE BLOCK CODE BLOCK\u001B[0m\n\u001B[2mCODE BLOCK CODE BLOCK\u001B[0m"
 
-	actual, _ := comment.ParseComment(input)
+	actual, _ := comment.ParseComment(input, 80, 80)
 
 	assert.Equal(t, expected, actual)
 }
