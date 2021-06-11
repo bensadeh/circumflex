@@ -38,7 +38,7 @@ func Parse(title, domain, article, references string) string {
 	formattedArticle := ""
 
 	for i, line := range lines {
-		if line == "References" {
+		if line == "References" || line == "     *" {
 			break
 		}
 
