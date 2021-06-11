@@ -65,11 +65,17 @@ func Parse(title, domain, article, references string) string {
 }
 
 func isHeader(lines []string, i int, line string) bool {
+	currentLineIsIndented := strings.HasPrefix(line, " ")
+
+	if currentLineIsIndented {
+		return false
+	}
+
 	var previousLine string
 	var nextLine string
 
 	isOnFirstLine := i == 0
-	isOnLastLine := len(lines) > i
+	isOnLastLine := len(lines) == i-1
 
 	if isOnFirstLine {
 		previousLine = ""
@@ -85,9 +91,8 @@ func isHeader(lines []string, i int, line string) bool {
 
 	previousLineIsEmpty := len(previousLine) == 0
 	nextLineLineIsEmpty := len(nextLine) == 0
-	currentLineIsNotIndented := !strings.HasPrefix(line, " ")
 
-	lineIsHeader := currentLineIsNotIndented && previousLineIsEmpty && nextLineLineIsEmpty
+	lineIsHeader := previousLineIsEmpty && nextLineLineIsEmpty
 
 	return lineIsHeader
 }
