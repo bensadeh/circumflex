@@ -1,6 +1,6 @@
 # Changelog
 ## 1.10
-_WIP_
+_2021-06-12_
 
 **Bugfixes**
 - Fixed a bug where deeply nested comment did not use the whole screen
