@@ -165,7 +165,7 @@ for easier cross-referencing.
 Save submissions you'd like to revisit by adding them to Favorites. Press <kbd>f</kbd> to add the
 currently highlighted submission to your list of favorites. Press <kbd>F</kbd> to add a submission by ID. 
 
-Submissions can be removed with <kbd>x</kbd>.
+Remove submissions with <kbd>x</kbd>.
 
 Favorites are stored in `~/.config/circumflex/favorites.json`.
 
@@ -214,10 +214,10 @@ set it to a brighter value than `foreground`. See
 more info.
 
 #### Terminal (macOS)
-Check the `Use bright colors for bold text` setting under Profiles.
+Check `Use bright colors for bold text` under Profiles.
 
 #### iTerm (macOS)
-Check the `Brighten bold text` setting under Profiles → Colors.
+Check `Brighten bold text` under Profiles → Colors.
 
 ## ⚙️ Settings
 
