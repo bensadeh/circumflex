@@ -59,12 +59,11 @@ clx
 
 ### From source
 
-```console
-# Install
-go install
+To build `circumflex` from source, run the following command from the base directory:
 
-# Run
-clx
+```console
+# Compile and run
+go run main.go
 ```
 
 When building from source, make sure the dependencies [`less`](http://greenwoodsoftware.com/less/) and 
