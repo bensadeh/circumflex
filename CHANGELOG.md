@@ -1,6 +1,6 @@
 # Changelog
 ## 1.9
-_WIP_
+_2021-06-12_
 
 **Bugfixes**
 - Fixed a bug where the formatting in the comment section would occasionally break
