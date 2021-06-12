@@ -75,7 +75,7 @@ func isHeader(lines []string, i int, line string) bool {
 	var nextLine string
 
 	isOnFirstLine := i == 0
-	isOnLastLine := len(lines) == i-1
+	isOnLastLine := len(lines) == i+1
 
 	if isOnFirstLine {
 		previousLine = ""
