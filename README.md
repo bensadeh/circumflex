@@ -131,7 +131,7 @@ link.
 
 ## 🌈 Syntax highlighting
 ### Quotes
-Comment quotes are italicized and dimmed.
+Quotes are indented, italicized and dimmed in order to distinguish cited text from the main comment.
 
 <p align="center">
   <img src="screenshots/quotes.png" width="700" alt="^"/>
@@ -192,10 +192,10 @@ Set `CLX_ALT_INDENT_BLOCK` to `true` to use a different indent block character w
 appear as one connected line.
 
 ### Low contrast headers
-
-Certain items, like headers and author names, are drawn in **bold** in order to give them 
-contrast. However, terminal emulators vary in how they render bold fonts. Some brighten 
-bold text while other do not. 
+#### Overview
+Terminals can brighten text in bold in order to give them better contrast in dark color 
+schemes. `circumflex` uses bold text to give headers and authors names additional contrast 
+for better legibility. 
 
 See example screenshots below (low contrast header) and above (low 
 contrast author name) of terminal output which does not brighted bold fonts.
@@ -204,14 +204,20 @@ contrast author name) of terminal output which does not brighted bold fonts.
   <img src="screenshots/low_contrast.png" width="500" alt="^"/>
 </p>
 
-If you are using `alacritty`, you can set `draw_bold_text_with_bright_colors` to `true`.
-Then, define `bright_foreground` and set it to a brighter value than `foreground`. See 
+Below are a few examples of how to enable bold text in bright colors in different terminals.
+
+#### alacritty
+
+Set `draw_bold_text_with_bright_colors` to `true`. Then, define `bright_foreground` and 
+set it to a brighter value than `foreground`. See 
 [alacritty/alacritty/pull/1026](https://github.com/alacritty/alacritty/pull/1026) for 
 more info.
 
-If you are using macOS's stock `Terminal`, you can check the `Use bright colors for bold 
-text` setting under Profiles.
+#### Terminal (macOS)
+Check the `Use bright colors for bold text` setting under Profiles.
 
+#### iTerm (macOS)
+Check the `Brighten bold text` setting under Profiles → Colors.
 
 ## ⚙️ Settings
 
