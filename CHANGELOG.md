@@ -2,6 +2,9 @@
 ## 1.10
 _WIP_
 
+**Bugfixes**
+- Fixed a bug where deeply nested comment did not use the whole screen
+
 ## 1.9
 _2021-06-12_
 

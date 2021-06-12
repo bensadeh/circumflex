@@ -94,7 +94,7 @@ func printReplies(c endpoints.Comments, indentSize int, commentWidth int, screen
 
 	indentBlock := getIndentBlock(c.Level, indentSize, altIndentBlock)
 	paddingWithBlock := text.WrapPad(indentBlock)
-	wrappedAndPaddedComment, _ := text.Wrap(comment, usableScreenSize, paddingWithBlock)
+	wrappedAndPaddedComment, _ := text.Wrap(comment, screenWidth, paddingWithBlock)
 
 	paddingWithNoBlock := text.WrapPad(getIndentBlockWithoutBar(c.Level, indentSize))
 
