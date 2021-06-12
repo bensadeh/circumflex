@@ -18,7 +18,7 @@ func preFormatWikipediaArticle(article string) string {
 			continue
 		}
 
-		isBeforeReferences := isOnLineBeforeReferences(lines, i)
+		isBeforeReferences := isOnLineBeforeReferencesOrFootnotes(lines, i)
 
 		if isBeforeReferences {
 			break
@@ -40,9 +40,9 @@ func preFormatWikipediaArticle(article string) string {
 	return formattedArticle
 }
 
-func isOnLineBeforeReferences(lines []string, i int) bool {
+func isOnLineBeforeReferencesOrFootnotes(lines []string, i int) bool {
 	nextLine := lines[i+1]
-	nextLineLineIsReferences := nextLine == "References[edit]"
+	nextLineLineIsReferences := nextLine == "References[edit]" || nextLine == "Footnotes[edit]"
 
 	return nextLineLineIsReferences
 }

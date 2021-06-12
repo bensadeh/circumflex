@@ -2,6 +2,9 @@
 ## 1.11
 _WIP_
 
+**Cosmetic**
+- Reader Mode: Do not print Footnotes in Wikipedia articles
+
 ## 1.10
 _2021-06-12_
 
