@@ -2,6 +2,9 @@
 ## 1.11
 _WIP_
 
+**New features**
+- Added a command to go directly to the comment section for a given ID
+
 **Cosmetic**
 - Reader Mode: Do not print Footnotes in Wikipedia articles
 - Reader Mode: Improved formatting for bullet points
