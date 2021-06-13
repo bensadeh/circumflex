@@ -131,7 +131,7 @@ link.
 
 ## 🌈 Syntax highlighting
 ### Quotes
-Quotes are indented, italicized and dimmed in order to distinguish cited text from the main comment.
+Quotes are indented, italicized and dimmed in order to distinguish them from the rest of the comment.
 
 <p align="center">
   <img src="screenshots/quotes.png" width="700" alt="^"/>
@@ -154,7 +154,7 @@ but can be disabled.
 </p>
 
 ### References
-By convention, references on Hacker News are formatted as numbers inside brackets. `circumflex` highlights these numbers
+References on Hacker News are formatted as numbers inside brackets. `circumflex` highlights these numbers
 for easier cross-referencing.
 
 <p align="center">
