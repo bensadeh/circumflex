@@ -3,9 +3,9 @@ package cmd
 import (
 	"clx/cli"
 	"clx/comment"
+	"clx/config"
 	"clx/constants/messages"
 	"clx/screen"
-	"clx/settings"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -30,9 +30,10 @@ var idCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		c := config.GetConfig()
 		screenWidth := screen.GetTerminalWidth()
-		commentTree := comment.ToString(*comments, settings.IndentSizeDefault, settings.CommentWidthDefault,
-			screenWidth, settings.PreserveRightMarginDefault, settings.UseAlternateIndentBlockDefault)
+		commentTree := comment.ToString(*comments, c.IndentSize, c.CommentWidth, screenWidth, c.PreserveRightMargin,
+			c.AltIndentBlock)
 
 		cli.Less(commentTree)
 

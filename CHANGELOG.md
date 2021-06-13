@@ -3,6 +3,8 @@
 ## 1.12
 _WIP_
 
+**Cosmetic**
+- `clx id [number]` now supports reading from config.env and environment variables
 
 ## 1.11
 _2021-06-13_
