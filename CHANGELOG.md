@@ -1,6 +1,6 @@
 # Changelog
 ## 1.11
-_WIP_
+_2021-06-13_
 
 **New features**
 - Added a command to go directly to the comment section for a given ID
