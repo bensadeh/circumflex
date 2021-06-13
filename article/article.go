@@ -55,6 +55,13 @@ func Parse(title, domain, article, references string) string {
 			continue
 		}
 
+		if isOnFirstBulletPoint(lines, i, line) {
+			formattedArticle += newLine
+			formattedArticle += normal + line + newLine
+
+			continue
+		}
+
 		formattedArticle += normal + line + newLine
 		formattedArticle = highlightReferences(formattedArticle)
 	}
@@ -95,6 +102,21 @@ func isHeader(lines []string, i int, line string) bool {
 	lineIsHeader := previousLineIsEmpty && nextLineLineIsEmpty
 
 	return lineIsHeader
+}
+
+func isOnFirstBulletPoint(lines []string, i int, line string) bool {
+	currentLineIsBulletPoint := strings.HasPrefix(line, "     * ") || strings.HasPrefix(line, "    1. ")
+	isOnFirstLine := i == 0
+
+	if !currentLineIsBulletPoint || isOnFirstLine {
+		return false
+	}
+
+	previousLine := lines[i-1]
+	normalIndent := "   "
+	bulletPointIndent := normalIndent + "  "
+
+	return strings.HasPrefix(previousLine, normalIndent) && !strings.HasPrefix(previousLine, bulletPointIndent)
 }
 
 func isQuote(input string) bool {

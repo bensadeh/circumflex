@@ -4,6 +4,7 @@ _WIP_
 
 **Cosmetic**
 - Reader Mode: Do not print Footnotes in Wikipedia articles
+- Reader Mode: Improved formatting for bullet points
 
 ## 1.10
 _2021-06-12_
