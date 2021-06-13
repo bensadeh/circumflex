@@ -134,7 +134,7 @@ link.
 Quotes are indented, italicized and dimmed in order to distinguish them from the rest of the comment.
 
 <p align="center">
-  <img src="screenshots/quotes.png" width="700" alt="^"/>
+  <img src="screenshots/quotes.png" width="800" alt="^"/>
 </p>
 
 ### Headlines
