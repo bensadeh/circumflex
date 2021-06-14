@@ -137,6 +137,13 @@ Quotes are indented, italicized and dimmed in order to distinguish them from the
   <img src="screenshots/quotes.png" width="800" alt="^"/>
 </p>
 
+### Mentions and code snippets
+Mentions (represented by leading `@`) and code snippets (represented by surrounding `` ` ``s) are highlighted.
+
+<p align="center">
+  <img src="screenshots/mentions.png" width="700" alt="^"/>
+</p>
+
 ### Headlines
 Headlines containing the text `Ask HN`, `Tell HN`, `Show HN` and `Launch HN` are highlighted. On by default,
 but can be disabled.
