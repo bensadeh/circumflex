@@ -242,7 +242,7 @@ func highlightMentions(input string) string {
 			strings.HasPrefix(word, "@120Hz"):
 			output += word + " "
 
-		case word == "@dang":
+		case strings.HasPrefix(word, "@dang"):
 			output += Green + word + Normal + " "
 
 		case strings.HasPrefix(word, "@"):
