@@ -130,21 +130,31 @@ If you suspect that Reader Mode might work on incompatible sites, press <kbd>t</
 link.
 
 ## 🌈 Syntax highlighting
-### Quotes
+### Comment section
+#### Quotes
 Quotes are indented, italicized and dimmed in order to distinguish them from the rest of the comment.
 
 <p align="center">
   <img src="screenshots/quotes.png" width="800" alt="^"/>
 </p>
 
-### Mentions and code snippets
-Mentions (represented by leading `@`) and code snippets (represented by surrounding `` ` ``s) are highlighted.
+#### Mentions and code snippets
+Mentions are yellow and code snippets are blue.
 
 <p align="center">
   <img src="screenshots/mentions.png" width="700" alt="^"/>
 </p>
 
+#### References
+References on Hacker News are formatted as numbers inside brackets. `circumflex` highlights these numbers
+for easier cross-referencing.
+
+<p align="center">
+  <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
+</p>
+
 ### Headlines
+#### Categories
 Headlines containing the text `Ask HN`, `Tell HN`, `Show HN` and `Launch HN` are highlighted. On by default,
 but can be disabled.
 
@@ -152,7 +162,7 @@ but can be disabled.
   <img src="screenshots/showtell.png" width="250" alt="^"/>
 </p>
 
-### YC-funded startups
+#### YC-funded startups
 [Twice a year](https://www.ycombinator.com/companies/), Y Combinator funds start-ups through its accelerator program.
 `circumflex` highlights these startups to signalize their affiliation with YC. On by default, but can be disabled.
 
@@ -160,13 +170,7 @@ but can be disabled.
   <img src="screenshots/yc.png" width="350" alt="^"/>
 </p>
 
-### References
-References on Hacker News are formatted as numbers inside brackets. `circumflex` highlights these numbers
-for easier cross-referencing.
 
-<p align="center">
-  <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
-</p>
 
 ## ❤️ Favorites
 Save submissions you'd like to revisit by adding them to Favorites. Press <kbd>f</kbd> to add the
