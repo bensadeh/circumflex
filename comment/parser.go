@@ -66,7 +66,6 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int) (string,
 			paragraph = strings.ReplaceAll(paragraph, doubleSpace, singleSpace)
 			paragraph = strings.Replace(paragraph, ">>", "", 1)
 			paragraph = strings.Replace(paragraph, ">", "", 1)
-			paragraph = strings.ReplaceAll(paragraph, "@dang", green("@dang"))
 			paragraph = strings.TrimLeft(paragraph, " ")
 			paragraph = trimURLs(paragraph)
 
@@ -108,6 +107,7 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int) (string,
 			paragraph = strings.ReplaceAll(paragraph, "@dang", green("@dang"))
 			paragraph = strings.TrimLeft(paragraph, " ")
 			paragraph = highlightBackticks(paragraph)
+			paragraph = highlightMentions(paragraph)
 
 			URLs = append(URLs, extractURLs(paragraph)...)
 			paragraph = trimURLs(paragraph)
@@ -223,4 +223,35 @@ func highlightBackticks(input string) string {
 	}
 
 	return input
+}
+
+func highlightMentions(input string) string {
+	numberOfMentions := strings.Count(input, "@")
+
+	if numberOfMentions == 0 {
+		return input
+	}
+
+	output := ""
+	words := strings.Split(input, " ")
+
+	for _, word := range words {
+		switch {
+		case strings.HasPrefix(word, "@60Hz") ||
+			strings.HasPrefix(word, "@144Hz") ||
+			strings.HasPrefix(word, "@120Hz"):
+			output += word + " "
+
+		case word == "@dang":
+			output += Green + word + Normal + " "
+
+		case strings.HasPrefix(word, "@"):
+			output += Yellow + word + Normal + " "
+
+		default:
+			output += word + " "
+		}
+	}
+
+	return output
 }

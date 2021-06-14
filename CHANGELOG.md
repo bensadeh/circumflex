@@ -3,9 +3,12 @@
 ## 1.12
 _WIP_
 
+**New features**
+- `clx id [item-id]` respects config.env and set environment variables
+
 **Cosmetic**
-- `clx id [number]` now supports reading from config.env and environment variables
-- Text inside backticks ````` is now highlighted
+- Text inside backticks is highlighted
+- Mentions in comments `@username` are highlighted
 - Changed highlighting of PDF, video and audio in headlines
 
 ## 1.11
