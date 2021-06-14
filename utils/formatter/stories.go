@@ -104,19 +104,19 @@ func formatStartup(title string, mode int, summer string, year string, winter st
 func highlightSpecialContent(title string, mode int) string {
 	switch mode {
 	case reverseHighlighting:
-		title = strings.ReplaceAll(title, "[audio[]", Reverse(" audio "))
-		title = strings.ReplaceAll(title, "[video[]", Reverse(" video "))
-		title = strings.ReplaceAll(title, "[pdf[]", Reverse(" pdf "))
-		title = strings.ReplaceAll(title, "[PDF[]", Reverse(" PDF "))
-		title = strings.ReplaceAll(title, "[flagged[]", Reverse(" flagged "))
+		title = strings.ReplaceAll(title, "[audio[]", Reverse("audio"))
+		title = strings.ReplaceAll(title, "[video[]", Reverse("video"))
+		title = strings.ReplaceAll(title, "[pdf[]", Reverse("pdf"))
+		title = strings.ReplaceAll(title, "[PDF[]", Reverse("PDF"))
+		title = strings.ReplaceAll(title, "[flagged[]", Reverse("flagged"))
 
 		return title
 	case colorizedHighlighting:
-		title = strings.ReplaceAll(title, "[audio[]", BlackOnYellow(" audio "))
-		title = strings.ReplaceAll(title, "[video[]", BlackOnYellow(" video "))
-		title = strings.ReplaceAll(title, "[pdf[]", BlackOnYellow(" pdf "))
-		title = strings.ReplaceAll(title, "[PDF[]", BlackOnYellow(" PDF "))
-		title = strings.ReplaceAll(title, "[flagged[]", BlackOnRed(" flagged "))
+		title = strings.ReplaceAll(title, "[audio[]", Yellow("audio"))
+		title = strings.ReplaceAll(title, "[video[]", Yellow("video"))
+		title = strings.ReplaceAll(title, "[pdf[]", Yellow("pdf"))
+		title = strings.ReplaceAll(title, "[PDF[]", Yellow("PDF"))
+		title = strings.ReplaceAll(title, "[flagged[]", Red("flagged"))
 
 		return title
 
