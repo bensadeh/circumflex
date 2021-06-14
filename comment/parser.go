@@ -107,6 +107,7 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int) (string,
 			paragraph = replaceHTML(paragraph)
 			paragraph = strings.ReplaceAll(paragraph, "@dang", green("@dang"))
 			paragraph = strings.TrimLeft(paragraph, " ")
+			paragraph = highlightBackticks(paragraph)
 
 			URLs = append(URLs, extractURLs(paragraph)...)
 			paragraph = trimURLs(paragraph)
@@ -198,4 +199,28 @@ func trimURLs(comment string) string {
 	expression := regexp.MustCompile(`<a href=".*?" rel="nofollow">`)
 
 	return expression.ReplaceAllString(comment, "")
+}
+
+func highlightBackticks(input string) string {
+	backtick := "`"
+	numberOfBackticks := strings.Count(input, backtick)
+	numberOfBackticksIsOdd := numberOfBackticks%2 != 0
+
+	if numberOfBackticks == 0 || numberOfBackticksIsOdd {
+		return input
+	}
+
+	isOnFirstBacktick := true
+
+	for i := 0; i < numberOfBackticks+1; i++ {
+		if isOnFirstBacktick {
+			input = strings.Replace(input, backtick, Blue, 1)
+		} else {
+			input = strings.Replace(input, backtick, Normal, 1)
+		}
+
+		isOnFirstBacktick = !isOnFirstBacktick
+	}
+
+	return input
 }

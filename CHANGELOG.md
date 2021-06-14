@@ -5,6 +5,7 @@ _WIP_
 
 **Cosmetic**
 - `clx id [number]` now supports reading from config.env and environment variables
+- Text inside backticks ````` is now highlighted
 
 ## 1.11
 _2021-06-13_
