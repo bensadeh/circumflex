@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.12
-_WIP_
+_2021-06-14_
 
 **New features**
 - `clx id [item-id]` respects config.env and set environment variables
