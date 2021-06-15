@@ -3,6 +3,8 @@
 ## 1.13
 _WIP_
 
+**Cosmetic**
+- Adjusted article width in Reader Mode
 
 ## 1.12
 _2021-06-14_

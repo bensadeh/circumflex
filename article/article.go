@@ -11,23 +11,23 @@ import (
 )
 
 const (
-	newLine     = "\n"
-	indentBlock = "   "
-	link1       = "\033]8;;"
-	link2       = "\a"
-	link3       = "\033]8;;\a"
-	normal      = "\033[0m"
-	screenWidth = 73
+	newLine      = "\n"
+	indentBlock  = "   "
+	link1        = "\033]8;;"
+	link2        = "\a"
+	link3        = "\033]8;;\a"
+	normal       = "\033[0m"
+	articleWidth = 74
 )
 
 func Parse(title, domain, article, references string) string {
-	wrappedTitle, _ := text.Wrap(title, screenWidth)
-	truncatedDomain := text.TruncateMax(domain, screenWidth)
+	wrappedTitle, _ := text.Wrap(title, articleWidth)
+	truncatedDomain := text.TruncateMax(domain, articleWidth)
 
 	wrappedTitle += newLine
 	wrappedTitle += Faint(truncatedDomain).String() + newLine
 	wrappedTitle += Faint(messages.LessScreenInfo).String() + newLine
-	separator := messages.GetSeparator(screenWidth)
+	separator := messages.GetSeparator(articleWidth)
 	wrappedTitle += separator + newLine + newLine
 
 	if strings.Contains(domain, "https://en.wikipedia.org") {
