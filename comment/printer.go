@@ -177,7 +177,7 @@ func truncateURL(url string) string {
 
 	for i, c := range url {
 		if i == hackerNewsMaxURLLength {
-			truncatedURL += "..."
+			truncatedURL += "…"
 
 			break
 		}

@@ -650,7 +650,7 @@ billions to achieve and IMO that should be chased after.
                 [0m[36m▎[0mAnd that has been known for decades - take a look at the "The Economic Value of
                 [0m[36m▎[0mRapid Response Time" from 1982:
                 [0m[36m▎[0m
-                [0m[36m▎[0m]8;;https://jlelliotton.blogspot.com/p/the-economic-value-of-rapid-response.htmlhttps://jlelliotton.blogspot.com/p/the-economic-value-of-rap...]8;;
+                [0m[36m▎[0mhttps://jlelliotton.blogspot.com/p/the-economic-value-of-rap...
                 [0m[36m▎[0m
                 [0m[36m▎[0mIt's puzzling to me why businisses still don't prioritize UI latency, but it's
                 [0m[36m▎[0mnot a rational decision.
@@ -1946,7 +1946,7 @@ billions to achieve and IMO that should be chased after.
     [0m[31m▎[0m]8;;https://en.m.wikipedia.org/wiki/OpenStephttps://en.m.wikipedia.org/wiki/OpenStep]8;; . OpenStep was a cross platform UI
     [0m[31m▎[0mdevelopment kit, even the web could be a target. Apple decided (possibly for
     [0m[31m▎[0mgood reasons, hard to argue with success) to kill this off. But, they had toyed
-    [0m[31m▎[0mwith it, ]8;;https://www.macrumors.com/2007/06/14/yellow-box-seems-to-exist-but-only-for-apples-use/https://www.macrumors.com/2007/06/14/yellow-box-seems-to-exi...]8;; . So,
+    [0m[31m▎[0mwith it, https://www.macrumors.com/2007/06/14/yellow-box-seems-to-exi... . So,
     [0m[31m▎[0mApple had effectively what Chromium has become. A cross-platform development and
     [0m[31m▎[0mruntime environment.
     [0m[31m▎[0m
@@ -2030,9 +2030,9 @@ billions to achieve and IMO that should be chased after.
      [1mkesor[0m [2m21 hours ago[0m
     [0m[31m▎[0mThat is because they do inject a delay.
     [0m[31m▎[0m
-    [0m[31m▎[0m]8;;https://apple.stackexchange.com/questions/17929/how-can-i-disable-animation-when-switching-desktops-in-lionhttps://apple.stackexchange.com/questions/17929/how-can-i-di...]8;;
+    [0m[31m▎[0mhttps://apple.stackexchange.com/questions/17929/how-can-i-di...
     [0m[31m▎[0m
-    [0m[31m▎[0m]8;;https://superuser.com/questions/455313/disable-os-x-enter-full-screen-animationhttps://superuser.com/questions/455313/disable-os-x-enter-fu...]8;;
+    [0m[31m▎[0mhttps://superuser.com/questions/455313/disable-os-x-enter-fu...
     [0m[31m▎[0m
     [0m[31m▎[0mIt looks "pretty" to the UI people.
 
@@ -3061,7 +3061,7 @@ programmers are hyper sensitive to text editor latency.
          [1mGuillaume86[0m [2ma day ago[0m
         [0m[33m▎[0mFair question, here's some 2019 benchs that found similar latencies between high
         [0m[33m▎[0mend Samsung and Apple devices:
-        [0m[33m▎[0m]8;;https://blog.gamebench.net/touch-latency-benchmarks-iphone-xs-max-galaxy-note-10https://blog.gamebench.net/touch-latency-benchmarks-iphone-x...]8;; so it seems some
+        [0m[33m▎[0mhttps://blog.gamebench.net/touch-latency-benchmarks-iphone-x... so it seems some
         [0m[33m▎[0mAndroid manufacturers did manage to catch up finally.
 
          [1mpiperswe[0m [2ma day ago[0m
@@ -3517,7 +3517,7 @@ or iPhone was a good representation of that.
     [0m[31m▎[0m
     [0m[31m▎[0mLikely biased study, but Nvidia found an eyebrow raising difference in player
     [0m[31m▎[0mperformance when using higher refresh rates.
-    [0m[31m▎[0m]8;;https://www.nvidia.com/en-us/geforce/news/geforce-gives-you-the-edge-in-battle-royale/https://www.nvidia.com/en-us/geforce/news/geforce-gives-you-...]8;;
+    [0m[31m▎[0mhttps://www.nvidia.com/en-us/geforce/news/geforce-gives-you-...
 
          [1mThePadawan[0m [2ma day ago[0m
         [0m[33m▎[0mSimilar anecdote: I recently investigated tablets to use for drawing.
@@ -3575,7 +3575,7 @@ or iPhone was a good representation of that.
 
                      [1mmnembrini[0m [2m20 hours ago[0m
                     [0m[34m▎[0mIt's pretty hard to measure end-to-end delay, Nvidia is only getting to it now
-                    [0m[34m▎[0mwith ]8;;https://www.nvidia.com/en-us/geforce/news/reflex-low-latency-platform/https://www.nvidia.com/en-us/geforce/news/reflex-low-latency...]8;;
+                    [0m[34m▎[0mwith https://www.nvidia.com/en-us/geforce/news/reflex-low-latency...
 
          [1maequitas[0m [2ma day ago[0m
         [0m[33m▎[0mI still play games in =<60fps, I see it like training in a gravity room ;)
@@ -4085,10 +4085,10 @@ makes a huge UI blunder all the others will follow it down the lemming hole.
 
 So tell me why some of the conclusions in a paper like
 ]8;;http://larch-www.lcs.mit.edu/~corbato/sjcc62/http://larch-www.lcs.mit.edu/~corbato/sjcc62/]8;; (1962) are wrong. How about:
-]8;;http://yusufarslan.net/sites/yusufarslan.net/files/upload/content/Miller1968.pdfhttp://yusufarslan.net/sites/yusufarslan.net/files/upload/co...]8;; (1968)
+http://yusufarslan.net/sites/yusufarslan.net/files/upload/co... (1968)
 
 Amusingly other classics like
-]8;;https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/acrobat-17.pdfhttps://www.microsoft.com/en-us/research/wp-content/uploads/...]8;; are discovered
+https://www.microsoft.com/en-us/research/wp-content/uploads/... are discovered
 regularly too (1983).
 
 [1mbdickason[0m[31m OP[0m [2m[4m12 hours ago                                                     ::[0m
