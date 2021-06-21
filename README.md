@@ -275,7 +275,7 @@ set -x CLX_COMMENT_WIDTH "65"
 
 The following table shows the different ways in which `circumflex` can be configured:
 
-| Key                         | Default Value | Description |
+| Key                         | Default | Description |
 | :-------------------------- | :-------: |---|
 | `CLX_COMMENT_WIDTH`         | `65` | Sets the maximum number of characters on each line for comments, replies and descriptions in settings. Set to 0 to use the whole screen.       |
 | `CLX_INDENT_SIZE`           | `4` | The number of whitespaces prepended to each reply multiplied by the indent level. |
