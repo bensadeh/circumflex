@@ -5,12 +5,9 @@ import (
 	"clx/config"
 	constructor "clx/constructors"
 	"clx/controller"
-	"os"
 )
 
 func Run() {
-	useNativeTerminalSchemeColors()
-
 	configuration := config.GetConfig()
 	sc := constructor.NewScreenController()
 
@@ -25,8 +22,4 @@ func Run() {
 	if err := sc.Application.Run(); err != nil {
 		panic(err)
 	}
-}
-
-func useNativeTerminalSchemeColors() {
-	_ = os.Setenv("TCELL_TRUECOLOR", "disable")
 }
