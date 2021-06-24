@@ -29,18 +29,18 @@ func GetErrorMessage(title, domain string) string {
 func isInvalidDomain(domain string) bool {
 	invalidDomains := [...]string{
 		"apnews.com",
+		"blog.chromium.org",
 		"bloomberg.com",
 		"chrome.google.com",
 		"drive.google.com",
 		"facebook.com",
-		"jalopnik.com",
 		"gizmodo.com",
+		"jalopnik.com",
 		"marketplace.atlassian.com",
 		"newsweek.com",
 		"npr.org",
-		"play.google.com",
-		"blog.chromium.org",
 		"old.reddit.com",
+		"play.google.com",
 		"reddit.com",
 		"sciencedirect.com",
 		"security.googleblog.com",
@@ -48,6 +48,7 @@ func isInvalidDomain(domain string) bool {
 		"twitter.com",
 		"washingtonpost.com",
 		"wsj.com",
+		"xkcd.com",
 		"youtube.com",
 	}
 
