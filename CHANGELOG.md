@@ -6,6 +6,7 @@ _WIP_
 **Cosmetic**
 - Adjusted article width in Reader Mode
 - Added a message when successfully running `clx create_example_config`
+- Reworked pagination indicator
 
 ## 1.12
 _2021-06-14_
