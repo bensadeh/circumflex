@@ -49,6 +49,8 @@
 
 ### Via Homebrew
 
+`circumflex` is available as a [Tap](https://docs.brew.sh/Taps) with the following commands:
+
 ```console
 # Install
 brew install bensadeh/circumflex/circumflex
@@ -59,15 +61,14 @@ clx
 
 ### From source
 
-To build `circumflex` from source, run the following command from the base directory:
+Make sure the dependencies [`less`](http://greenwoodsoftware.com/less/) and 
+[`lynx`](https://lynx.invisible-island.net/lynx.html) are installed on your system.
+Then, run the following command from the base directory:
 
 ```console
 # Compile and run
 go run main.go
 ```
-
-When building from source, make sure the dependencies [`less`](http://greenwoodsoftware.com/less/) and 
-[`lynx`](https://lynx.invisible-island.net/lynx.html) are installed on your system.
 
 ## ⌨️ Keymaps
 
@@ -219,16 +220,18 @@ Below are a few examples of how to enable bold text in bright colors in differen
 
 #### alacritty
 
-Set `draw_bold_text_with_bright_colors` to `true`. Then, define `bright_foreground` and 
-set it to a brighter value than `foreground`. See 
-[alacritty/alacritty/pull/1026](https://github.com/alacritty/alacritty/pull/1026) for 
-more info.
+- Set `draw_bold_text_with_bright_colors` to `true`
+- Define `bright_foreground` and set it to a brighter value than `foreground`
+- (See [alacritty/alacritty/pull/1026](https://github.com/alacritty/alacritty/pull/1026) for 
+more info}
 
 #### Terminal (macOS)
-Check `Use bright colors for bold text` under Profiles.
+
+- Check `Use bright colors for bold text` under Profiles
 
 #### iTerm (macOS)
-Check `Brighten bold text` under Profiles → Colors.
+
+- Check `Brighten bold text` under Profiles → Colors
 
 ## ⚙️ Settings
 
