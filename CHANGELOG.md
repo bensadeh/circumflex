@@ -7,6 +7,8 @@ _WIP_
 - Adjusted article width in Reader Mode
 - Added a message when successfully running `clx create_example_config`
 - Reworked pagination indicator
+- `Ask HN` is now highlighted in blue
+- `Tell HN` is now highlighted in magenta
 
 ## 1.12
 _2021-06-14_

@@ -56,9 +56,9 @@ func highlightShowAndTell(title string, mode int) string {
 
 		return title
 	case colorizedHighlighting:
-		title = strings.ReplaceAll(title, askHN, Magenta(askHN))
+		title = strings.ReplaceAll(title, askHN, Blue(askHN))
 		title = strings.ReplaceAll(title, showHN, Red(showHN))
-		title = strings.ReplaceAll(title, tellHN, Blue(tellHN))
+		title = strings.ReplaceAll(title, tellHN, Magenta(tellHN))
 		title = strings.ReplaceAll(title, launchHN, Green(launchHN))
 
 		return title
