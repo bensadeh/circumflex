@@ -3,6 +3,9 @@ package comment
 import (
 	"regexp"
 	"strings"
+	"unicode"
+
+	"golang.org/x/exp/utf8string"
 
 	text "github.com/MichaelMure/go-term-text"
 )
@@ -108,6 +111,7 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int) (string,
 			paragraph = strings.TrimLeft(paragraph, " ")
 			paragraph = highlightBackticks(paragraph)
 			paragraph = highlightMentions(paragraph)
+			paragraph = highlightVariables(paragraph)
 
 			URLs = append(URLs, extractURLs(paragraph)...)
 			paragraph = trimURLs(paragraph)
@@ -247,6 +251,51 @@ func highlightMentions(input string) string {
 
 		case strings.HasPrefix(word, "@"):
 			output += Yellow + word + Normal + " "
+
+		default:
+			output += word + " "
+		}
+	}
+
+	return output
+}
+
+func highlightVariables(input string) string {
+	backtick := "`"
+	numberOfBackticks := strings.Count(input, backtick)
+
+	// Highlighting variables inside commands marked with backticks
+	// messes with the formatting. If there are both backticks and variables
+	// in the comment, we give priority to the backticks.
+	if numberOfBackticks != 0 {
+		return input
+	}
+
+	numberOfDollarSigns := strings.Count(input, "$")
+
+	if numberOfDollarSigns == 0 {
+		return input
+	}
+
+	output := ""
+	words := strings.Split(input, " ")
+
+	for _, word := range words {
+		currentWord := utf8string.NewString(word)
+		wordHasOnlyOneCharacter := currentWord.RuneCount() == 1
+
+		if word == "$" || wordHasOnlyOneCharacter {
+			output += word + " "
+
+			continue
+		}
+
+		s := utf8string.NewString(word)
+		secondRune := s.At(1)
+
+		switch {
+		case strings.HasPrefix(word, "$") && unicode.IsLetter(secondRune):
+			output += Cyan + word + Normal + " "
 
 		default:
 			output += word + " "

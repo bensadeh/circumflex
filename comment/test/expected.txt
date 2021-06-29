@@ -322,6 +322,7 @@ Edit2: looks like it was a soda, not a second sandwich.
         [0m[33m▎[0m
         [0m[33m▎[0mI liked those printers and remember wanting one for myself even though I had no
         [0m[33m▎[0muse for it. They start at around $200 and take up space, so I managed to resist.
+        [0m[33m▎[0m
 
      [1mcastlecrasher2[0m [2m17 hours ago[0m
     [0m[31m▎[0mThat's amazing, thanks for sharing.
@@ -365,7 +366,7 @@ Edit2: looks like it was a soda, not a second sandwich.
             [0m[32m▎[0mbefore your purchase is complete. By scanning your membership card, they already
             [0m[32m▎[0mhave your average purchase profile.
             [0m[32m▎[0m
-            [0m[32m▎[0mThey actually ask the credit card processor to approve you for $avg + X%, so as
+            [0m[32m▎[0mThey actually ask the credit card processor to approve you for [36m$avg[0m + X%, so as
             [0m[32m▎[0mlong as your purchase comes in lower than that, you've already been approved. If
             [0m[32m▎[0myou make a really big purchase it will take a little longer, because they go
             [0m[32m▎[0mback for a second auth for the bigger amount.
@@ -3903,7 +3904,7 @@ that demands new features and doesn’t care about speed.
 
              [1mbombcar[0m [2m20 hours ago[0m
             [0m[32m▎[0mZoom is frighteningly above all the rest; the speed is there, the background
-            [0m[32m▎[0mreplacement is miles ahead of Bluejeans - if they weren't worth $infinity I'd
+            [0m[32m▎[0mreplacement is miles ahead of Bluejeans - if they weren't worth [36m$infinity[0m I'd
             [0m[32m▎[0mexpect Microsoft to buy them and shove it into Teams somehow.
 
          [1mjorams[0m [2m20 hours ago[0m

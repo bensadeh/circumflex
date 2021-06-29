@@ -9,6 +9,7 @@ _WIP_
 - Reworked pagination indicator
 - `Ask HN` is now highlighted in blue
 - `Tell HN` is now highlighted in magenta
+- `$variables` are now highlighted in cyan
 
 ## 1.12
 _2021-06-14_
