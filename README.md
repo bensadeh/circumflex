@@ -28,7 +28,7 @@
 
 ### Features
 
-- 🛋 **Everything in one place** - browse submissions, read articles and enter the comment section
+- 🛋 **Everything in one place** - browse submissions, read articles and view the comment section
 - 🤹 **Native terminal colors** - you bring your own color scheme, `circumflex` does the rest
 - ⚡️ **Tools you already know** - read articles and comments in the pager `less`
 - 🌈 **Syntax highlighting** - syntax-aware formatting for comment quotes, references and submissions headlines
@@ -98,8 +98,10 @@ go run main.go
 ## 💬 Comment section
 
 ### Overview
-Comments are pretty-printed and piped to the pager `less`. To present a nice and readable comment section,
-`circumflex` features:
+Press <kbd>Enter</kbd> to view the comment section. 
+
+Comments are pretty-printed and piped to the
+pager `less`. To present a nice and readable comment section, `circumflex` features:
 
 * Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and
   `code` where available
@@ -124,6 +126,7 @@ To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. T
 
 `less` remembers your search term between sessions. This means that the next time you want to jump between top-level posts, you can hit <kbd>n</kbd> to go to the next `::` directly.
 
+
 ## 👓 Reader Mode
 Press <kbd>Space</kbd> to read the submission link in Reader Mode. 
 
@@ -132,6 +135,7 @@ will not open in Reader Mode. See [validator.go](/validator/validator.go) for a 
 
 If you suspect that Reader Mode might work on incompatible sites, press <kbd>t</kbd> to force Reader Mode for the submission
 link.
+
 
 ## 🌈 Syntax highlighting
 ### Comment section
@@ -175,7 +179,6 @@ but can be disabled.
 </p>
 
 
-
 ## ❤️ Favorites
 Save submissions you'd like to revisit by adding them to Favorites. Press <kbd>f</kbd> to add the
 currently highlighted submission to your list of favorites. Press <kbd>F</kbd> to add a submission by ID. 
@@ -183,6 +186,7 @@ currently highlighted submission to your list of favorites. Press <kbd>F</kbd> t
 Remove submissions with <kbd>x</kbd>.
 
 Favorites are stored in `~/.config/circumflex/favorites.json`.
+
 
 ## 📐 Fine-tuning
 
