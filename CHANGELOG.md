@@ -10,6 +10,8 @@ _WIP_
 - `Ask HN` is now highlighted in blue
 - `Tell HN` is now highlighted in magenta
 - `$variables` are now highlighted in cyan
+- `IANAL` is now highlighted in red
+- `IAAL` is now highlighted in green
 
 ## 1.12
 _2021-06-14_

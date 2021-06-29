@@ -112,6 +112,7 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int) (string,
 			paragraph = highlightBackticks(paragraph)
 			paragraph = highlightMentions(paragraph)
 			paragraph = highlightVariables(paragraph)
+			paragraph = highlightLawyers(paragraph)
 
 			URLs = append(URLs, extractURLs(paragraph)...)
 			paragraph = trimURLs(paragraph)
@@ -303,4 +304,14 @@ func highlightVariables(input string) string {
 	}
 
 	return output
+}
+
+func highlightLawyers(input string) string {
+	iAmNotALawyer := "IANAL"
+	iAmALawyer := "IAAL"
+
+	input = strings.ReplaceAll(input, iAmNotALawyer, Red+iAmNotALawyer+Normal)
+	input = strings.ReplaceAll(input, iAmALawyer, Green+iAmALawyer+Normal)
+
+	return input
 }
