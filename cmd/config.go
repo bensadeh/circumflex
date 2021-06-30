@@ -14,9 +14,9 @@ func init() {
 }
 
 var versionCmd = &cobra.Command{
-	Use:   "create_example_config",
+	Use:   "create_config",
 	Short: "Create an example config file",
-	Long: "Create an example config file in ~/.config/circumflex/config.env. " +
+	Long: "Create an example config file in ~/.config/circumflex/config.env.\n" +
 		"If a config file already exists, it will be overwritten.",
 	Run: func(cmd *cobra.Command, args []string) {
 		err := file.WriteToFile(file.PathToConfigFile(), settings.GetConfigFileContents())
