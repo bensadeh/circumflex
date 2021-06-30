@@ -260,14 +260,12 @@ func highlightMentions(input string) string {
 
 		case strings.HasPrefix(word, "@dang"):
 			mention := Green + word + Normal + " "
-
 			mention = strings.ReplaceAll(mention, ",", Normal+",")
 
 			output += mention
 
 		case strings.HasPrefix(word, "@"):
 			mention := Yellow + word + Normal + " "
-
 			mention = strings.ReplaceAll(mention, ",", Normal+",")
 
 			output += mention
