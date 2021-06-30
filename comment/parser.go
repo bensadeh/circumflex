@@ -107,7 +107,6 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 			paragraph = strings.ReplaceAll(paragraph, doubleSpace, singleSpace)
 			paragraph = highlightReferences(paragraph)
 			paragraph = replaceHTML(paragraph)
-			paragraph = strings.ReplaceAll(paragraph, "@dang", green("@dang"))
 			paragraph = strings.TrimLeft(paragraph, " ")
 			paragraph = highlightCommentSyntax(paragraph, commentHighlighting)
 
