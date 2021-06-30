@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.13
-_WIP_
+_2021-06-30_
 
 **New features**
 - Comment syntax highlighting can now be disabled
