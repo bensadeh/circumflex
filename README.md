@@ -146,11 +146,12 @@ Quotes are indented, italicized and dimmed in order to distinguish them from the
   <img src="screenshots/quotes.png" width="800" alt="^"/>
 </p>
 
-#### Mentions and code snippets
-Mentions are yellow and code snippets are blue.
+#### Hacker News and forum idiosyncracies
+Code snippets, username mentions, variables and  `IANAL`/ `IAAL` disclaimers are highlighted. On by default,
+but can be disabled.
 
 <p align="center">
-  <img src="screenshots/mentions.png" width="700" alt="^"/>
+  <img src="screenshots/commentSyntax.png" width="700" alt="^"/>
 </p>
 
 #### References
