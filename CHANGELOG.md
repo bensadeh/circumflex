@@ -3,6 +3,9 @@
 ## 1.13
 _WIP_
 
+**New features**
+- Comment syntax highlighting can now be disabled
+
 **Cosmetic**
 - Adjusted article width in Reader Mode
 - Added a message when successfully running `clx create_example_config`

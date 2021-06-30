@@ -74,6 +74,8 @@ func initializeOptions() *options {
 		strconv.FormatBool(HideYCJobsDefault), HideYCJobsDescription)
 	o.addOption(UseAlternateIndentBlockName, UseAlternateIndentBlockKey,
 		strconv.FormatBool(UseAlternateIndentBlockDefault), UseAlternateIndentBlockDescription)
+	o.addOption(CommentHighlightingName, CommentHighlightingKey,
+		strconv.FormatBool(CommentHighlightingDefault), CommentHighlightingDescription)
 
 	return o
 }

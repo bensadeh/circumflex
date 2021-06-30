@@ -26,7 +26,7 @@ const (
 	tripleSpace = "   "
 )
 
-func ParseComment(c string, commentWidth int, availableScreenWidth int) (string, []string) {
+func ParseComment(c string, commentWidth int, availableScreenWidth int, commentHighlighting bool) (string, []string) {
 	if c == "[deleted]" {
 		return Dimmed + "[deleted]" + Normal, []string{}
 	}
@@ -109,10 +109,7 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int) (string,
 			paragraph = replaceHTML(paragraph)
 			paragraph = strings.ReplaceAll(paragraph, "@dang", green("@dang"))
 			paragraph = strings.TrimLeft(paragraph, " ")
-			paragraph = highlightBackticks(paragraph)
-			paragraph = highlightMentions(paragraph)
-			paragraph = highlightVariables(paragraph)
-			paragraph = highlightLawyers(paragraph)
+			paragraph = highlightCommentSyntax(paragraph, commentHighlighting)
 
 			URLs = append(URLs, extractURLs(paragraph)...)
 			paragraph = trimURLs(paragraph)
@@ -168,6 +165,19 @@ func replaceHTML(input string) string {
 	input = strings.ReplaceAll(input, "</a>", "")
 	input = strings.ReplaceAll(input, "<pre><code>", "")
 	input = strings.ReplaceAll(input, "</code></pre>", "")
+
+	return input
+}
+
+func highlightCommentSyntax(input string, commentHighlighting bool) string {
+	if !commentHighlighting {
+		return input
+	}
+
+	input = highlightBackticks(input)
+	input = highlightMentions(input)
+	input = highlightVariables(input)
+	input = highlightLawyers(input)
 
 	return input
 }

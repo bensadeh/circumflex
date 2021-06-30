@@ -48,4 +48,5 @@ type Config struct {
 	RelativeNumbering   bool `mapstructure:"CLX_RELATIVE_NUMBERING"`
 	HideYCJobs          bool `mapstructure:"CLX_HIDE_YC_JOBS"`
 	AltIndentBlock      bool `mapstructure:"CLX_ALT_INDENT_BLOCK"`
+	CommentHighlighting bool `mapstructure:"CLX_COMMENT_HIGHLIGHTING"`
 }

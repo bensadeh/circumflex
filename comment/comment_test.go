@@ -17,7 +17,7 @@ func TestIntegration(t *testing.T) {
 	expected, _ := ioutil.ReadFile("test/expected.txt")
 
 	comments := unmarshal(commentJSON)
-	actual := comment.ToString(*comments, 4, 80, 200, false, false)
+	actual := comment.ToString(*comments, 4, 80, 200, false, false, true)
 
 	assert.Equal(t, string(expected), actual)
 }
@@ -29,7 +29,7 @@ func TestRootComment(t *testing.T) {
 	expected, _ := ioutil.ReadFile("test/root_comment_expected.txt")
 
 	comments := unmarshal(commentJSON)
-	actual := comment.ToString(*comments, 4, 80, 200, false, false)
+	actual := comment.ToString(*comments, 4, 80, 200, false, false, true)
 
 	assert.Equal(t, string(expected), actual)
 }
@@ -50,7 +50,7 @@ func TestParsing(t *testing.T) {
 
 	expected := "Not a code Block:\n\n\u001B[2m  CODE BLOCK CODE BLOCK\u001B[0m\n\u001B[2mCODE BLOCK CODE BLOCK\u001B[0m"
 
-	actual, _ := comment.ParseComment(input, 80, 80)
+	actual, _ := comment.ParseComment(input, 80, 80, true)
 
 	assert.Equal(t, expected, actual)
 }

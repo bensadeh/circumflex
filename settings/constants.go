@@ -41,4 +41,9 @@ const (
 	UseAlternateIndentBlockDefault     = false
 	UseAlternateIndentBlockDescription = "Turn this setting on if the indent block does not appear as one connected " +
 		"line."
+	CommentHighlightingName        = "Show syntax highlighting in comments"
+	CommentHighlightingKey         = "CLX_COMMENT_HIGHLIGHTING"
+	CommentHighlightingDefault     = true
+	CommentHighlightingDescription = "Enables syntax highlighting for code snippets, @mentions, $variables," +
+		" IANAL and IAAL."
 )
