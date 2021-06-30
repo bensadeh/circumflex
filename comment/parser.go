@@ -313,7 +313,12 @@ func highlightVariables(input string) string {
 
 		switch {
 		case strings.HasPrefix(word, "$") && unicode.IsLetter(secondRune):
-			output += Cyan + word + Normal + " "
+			variable := Cyan + word + Normal + " "
+			variable = strings.ReplaceAll(variable, "\"", Normal+"\"")
+			variable = strings.ReplaceAll(variable, "'", Normal+"'")
+			variable = strings.ReplaceAll(variable, "”", Normal+"”")
+
+			output += variable
 
 		default:
 			output += word + " "
