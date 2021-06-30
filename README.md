@@ -52,7 +52,7 @@
 
 ### Via Homebrew
 
-`circumflex` is available as a [Tap](https://docs.brew.sh/Taps) with the following commands:
+`circumflex` is available as a [Tap](https://docs.brew.sh/Taps):
 
 ```console
 # Install
