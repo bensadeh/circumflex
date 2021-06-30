@@ -251,17 +251,27 @@ func highlightMentions(input string) string {
 	words := strings.Split(input, " ")
 
 	for _, word := range words {
-		switch {
-		case strings.HasPrefix(word, "@60Hz") ||
+		isScreenResolution := strings.HasPrefix(word, "@60Hz") ||
 			strings.HasPrefix(word, "@144Hz") ||
-			strings.HasPrefix(word, "@120Hz"):
+			strings.HasPrefix(word, "@120Hz")
+
+		switch {
+		case isScreenResolution:
 			output += word + " "
 
 		case strings.HasPrefix(word, "@dang"):
-			output += Green + word + Normal + " "
+			mention := Green + word + Normal + " "
+
+			mention = strings.ReplaceAll(mention, ",", Normal+",")
+
+			output += mention
 
 		case strings.HasPrefix(word, "@"):
-			output += Yellow + word + Normal + " "
+			mention := Yellow + word + Normal + " "
+
+			mention = strings.ReplaceAll(mention, ",", Normal+",")
+
+			output += mention
 
 		default:
 			output += word + " "
