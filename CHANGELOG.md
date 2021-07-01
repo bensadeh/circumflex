@@ -3,6 +3,8 @@
 ## 1.14
 _WIP_
 
+**Bugfixes**
+- Fixed a bug where a single @ would be highlighted
 
 ## 1.13
 _2021-06-30_

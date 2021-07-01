@@ -254,8 +254,10 @@ func highlightMentions(input string) string {
 			strings.HasPrefix(word, "@144Hz") ||
 			strings.HasPrefix(word, "@120Hz")
 
+		wordIsSingleAtSign := word == "@"
+
 		switch {
-		case isScreenResolution:
+		case isScreenResolution || wordIsSingleAtSign:
 			output += word + " "
 
 		case strings.HasPrefix(word, "@dang"):
