@@ -6,6 +6,10 @@ _WIP_
 **Bugfixes**
 - Fixed a bug where a single @ would be highlighted
 
+**Cosmetic**
+- Monthly Who is hiring, Freelancer, Who wants to be hired posts are now highlighted
+in their own color
+
 **Backend**
 - Bump cobra and viper
 

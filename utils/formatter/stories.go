@@ -126,12 +126,28 @@ func highlightSpecialContent(title string, mode int) string {
 }
 
 func highlightWhoIsHiring(title string, mode int) string {
+	title = strings.ReplaceAll(title, " (", "[-:-:] (")
+
 	switch mode {
 	case reverseHighlighting:
+		title = Reverse(title)
+
 		return Reverse(title)
 
 	case colorizedHighlighting:
-		return BlackOnBlue(title)
+		if strings.Contains(title, "Who is hiring?") {
+			return BlackOnBlue(title)
+		}
+
+		if strings.Contains(title, "Freelancer?") {
+			return BlackOnRed(title)
+		}
+
+		if strings.Contains(title, "Who wants to be hired?") {
+			return BlackOnYellow(title)
+		}
+
+		return title
 
 	default:
 		return title
