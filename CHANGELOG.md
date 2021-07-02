@@ -6,6 +6,9 @@ _WIP_
 **Bugfixes**
 - Fixed a bug where a single @ would be highlighted
 
+**Backend**
+- Bump cobra and viper
+
 ## 1.13
 _2021-06-30_
 
