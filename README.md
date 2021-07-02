@@ -3,8 +3,6 @@
 </p>
 
   
-
-  
 <p align="center">
 <a href="https://github.com/bensadeh/circumflex/releases" target="__blank"><img src="https://img.shields.io/github/v/release/bensadeh/circumflex?style=flat&label=&color=82aaff"</a>
 <a href="/CHANGELOG.md" target="__blank"><img src="https://img.shields.io/badge/docs-changelog-e1acff?style=flat&label=" alt="Changelog"></a>
@@ -12,7 +10,6 @@
 <a href="/LICENSE" target="__blank"><img src="https://img.shields.io/github/license/bensadeh/circumflex?style=flat&color=c3e88d&label=" alt="License"></a>
 
 </p>
-
 
 #
   
@@ -128,7 +125,7 @@ To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. T
 
 
 ## 👓 Reader Mode
-Press <kbd>Space</kbd> to read the submission link in Reader Mode. 
+Press <kbd>Space</kbd> to read the submission link in Reader Mode in the pager `less`. 
 
 Note: some website do not work well with Reader Mode. Sites and submission types that are known to have compatibility issues
 will not open in Reader Mode. See [validator.go](/validator/validator.go) for a full list of incompatible sites.
@@ -147,7 +144,7 @@ Quotes are indented, italicized and dimmed in order to distinguish them from the
 </p>
 
 #### Hacker News and forum idiosyncracies
-Code snippets, username mentions, variables and  `IANAL`/ `IAAL` disclaimers are highlighted. On by default,
+Code snippets, username mentions, variables and `I Am A Lawyer` / `I Am Not A Lawyer` disclaimers are highlighted. On by default,
 but can be disabled.
 
 <p align="center">
