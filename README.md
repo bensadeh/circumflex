@@ -52,7 +52,7 @@
 
 ### Via Homebrew
 
-`circumflex` is available as a [Tap](https://docs.brew.sh/Taps):
+`circumflex` is available as a [Tap](https://docs.brew.sh/Taps).
 
 ```console
 # Install
@@ -66,7 +66,6 @@ clx
 
 Make sure the dependencies [`less`](http://greenwoodsoftware.com/less/) and 
 [`lynx`](https://lynx.invisible-island.net/lynx.html) are installed on your system.
-Then, run the following command from the base directory:
 
 ```console
 # Compile and run
