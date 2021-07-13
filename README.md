@@ -28,12 +28,11 @@
 
 ### Features
 
-- 🛋 **Everything in one place** - browse submissions, read articles and view the comment section
+- 🛋 **Everything in one place** - browse submissions, read articles or view the comment section
 - 🤹 **Native terminal colors** - you bring your own color scheme, `circumflex` does the rest
-- ⚡️ **Tools you already know** - read articles and comments in the pager `less`
-- 🌈 **Syntax highlighting** - syntax-aware formatting for comment quotes, references and submissions headlines
-- ⌨️ **Vim keybindings** - including repeat motion and <kbd>g</kbd>
-- 🛠 **Configureable** - change comment width, indentation size, highlighting ++
+- ⚡️ **Tools you already know** - content is piped to the pager `less`
+- 🌈 **Syntax highlighting** - syntax-aware formatting for comments and headlines
+- 🛠 **Configureable** -  simple custumization through environmental variables or config file
 - ❤️ **Add to favorites** - save interesting submissions for later
 
 ### Table of Contents
