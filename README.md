@@ -97,7 +97,7 @@ Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of availables keymaps:
 ## 💬 Comment section
 
 ### Overview
-Press <kbd>Enter</kbd> to view the comment section. 
+Press <kbd>Enter</kbd> to read the comment section. 
 
 Comments are pretty-printed and piped to the
 pager `less`. To present a nice and readable comment section, `circumflex` features:
@@ -144,7 +144,7 @@ Quotes are indented, italicized and dimmed in order to distinguish them from the
 </p>
 
 #### Hacker News and forum idiosyncracies
-Code snippets, username mentions, variables and `I Am A Lawyer` / `I Am Not A Lawyer` disclaimers are highlighted. On by default,
+Code snippets, username mentions, variables and I Am A Lawyer / I Am Not A Lawyer disclaimers are highlighted. On by default,
 but can be disabled.
 
 <p align="center">
@@ -179,11 +179,11 @@ but can be disabled.
 
 ## ❤️ Favorites
 Save submissions you'd like to revisit by adding them to Favorites. Press <kbd>f</kbd> to add the
-currently highlighted submission to your list of favorites. Press <kbd>F</kbd> to add a submission by ID. 
+currently highlighted submission to your list of favorites. Press <kbd>F</kbd> to add any submission by ID. 
 
-Remove submissions with <kbd>x</kbd>.
+Remove submissions from the Favorites page with <kbd>x</kbd>.
 
-Favorites are stored in `~/.config/circumflex/favorites.json`.
+Favorites are stored in `~/.config/circumflex/favorites.json`. `circumflex` pretty-prints `favorites.json` to make it both human-readable and VCS-friendly.
 
 
 ## 📐 Fine-tuning
