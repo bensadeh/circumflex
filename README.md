@@ -115,7 +115,7 @@ pager `less`. To present a nice and readable comment section, `circumflex` featu
 `circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality,
 one can move between top-level posts by searching for `::`.
 
-To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. Then, press <kbd>n</kbd> and <kbd>N</kbd> to jump forwards and backwards, respectively.
+To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. Then, press <kbd>n</kbd> or <kbd>N</kbd> to jump forwards or backwards, respectively.
 
 <pre>  
   <kbd>/</kbd>: search
@@ -123,18 +123,16 @@ To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. T
   <kbd>N</kbd>: repeat search backward
 </pre>
 
-`less` remembers your search term between sessions. This means that the next time you want to jump between top-level posts, you can hit <kbd>n</kbd> to go to the next `::` directly.
+`less` remembers your search term between sessions. This means that the next time you want to jump between top-level posts, you can hit <kbd>n</kbd> (without pressing <kbd>/</kbd> ) to go to the next `::` directly.
 
 
 ## 👓 Reader Mode
 Press <kbd>Space</kbd> to read the submission link in Reader Mode in the pager `less`. 
 
-Note: some website do not work well with Reader Mode. Sites and submission types that are known to have compatibility issues
-will not open in Reader Mode. See [validator.go](/validator/validator.go) for a full list of incompatible sites.
+**Note**: some websites do not work well with Reader Mode. If the submission URL points to
+a domain with known Reader Mode incompatibility, the link cannot be opened in Reader Mode. See [validator.go](/validator/validator.go) for a full list of incompatible sites.
 
-If you suspect that Reader Mode might work on incompatible sites, press <kbd>t</kbd> to force Reader Mode for the submission
-link.
-
+If you suspect that Reader Mode might work on incompatible domain and you want to bypass  the validation step, press <kbd>t</kbd> to force open the article in Reader Mode. If the validation list is inaccurate, please let me know.
 
 ## 🌈 Syntax highlighting
 ### Comment section
