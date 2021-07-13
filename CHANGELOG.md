@@ -12,6 +12,7 @@ in their own color
 
 **Backend**
 - Bump cobra and viper
+- Bump cview
 
 ## 1.13
 _2021-06-30_
