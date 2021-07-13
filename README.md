@@ -73,6 +73,8 @@ go run main.go
 
 ## ⌨️ Keymaps
 
+Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of availables keymaps:
+
 <pre>
 <kbd>Enter</kbd>: Read comments
 <kbd>Space</kbd>: Read article in Reader Mode
@@ -90,7 +92,6 @@ go run main.go
 <kbd>g</kbd>/<kbd>G</kbd>: Go to line/top/bottom (Vim)
 
 <kbd>q</kbd>: Quit
-<kbd>?</kbd>/<kbd>i</kbd>: Show available keymaps
 </pre>
 
 ## 💬 Comment section
