@@ -29,7 +29,7 @@ import (
 func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list *cview.List,
 	main *core.MainView, appState *core.ApplicationState, config *core.Config,
 	ret *handler.StoryHandler) {
-	app.SetAfterResizeFunc(func(width int, height int) {
+	app.SetAfterResizeFunc(func(_ int, _ int) {
 		app.SetRoot(main.Grid, true)
 
 		resetStates(appState, ret)
