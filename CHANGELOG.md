@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.14
-_WIP_
+_2021-07-15_
 
 **Bugfixes**
 - Fixed a bug where a single @ would be highlighted
