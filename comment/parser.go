@@ -26,7 +26,8 @@ const (
 	tripleSpace = "   "
 )
 
-func ParseComment(c string, commentWidth int, availableScreenWidth int, commentHighlighting bool) (string, []string) {
+func ParseComment(c string, commentWidth int, availableScreenWidth int, commentHighlighting bool,
+	useAlternateIndent bool) (string, []string) {
 	if c == "[deleted]" {
 		return Dimmed + "[deleted]" + Normal, []string{}
 	}
@@ -74,7 +75,7 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 
 			paragraph = Italic + Dimmed + paragraph + Normal
 
-			indentBlock := " ▎"
+			indentBlock := getIndentationSymbol(useAlternateIndent)
 			padding := text.WrapPad(Dimmed + indentBlock)
 			wrappedAndPaddedComment, _ := text.Wrap(paragraph, commentWidth, padding)
 			paragraph = wrappedAndPaddedComment

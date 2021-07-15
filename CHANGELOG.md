@@ -5,6 +5,7 @@ _WIP_
 
 **Bugfixes**
 - Fixed a bug where a single @ would be highlighted
+- Fixed a bug where alternate indendation block would not apply for quotes
 
 **Cosmetic**
 - Monthly Who is hiring, Freelancer, Who wants to be hired posts are now highlighted
