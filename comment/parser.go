@@ -75,7 +75,7 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 
 			paragraph = Italic + Dimmed + paragraph + Normal
 
-			indentBlock := getIndentationSymbol(useAlternateIndent)
+			indentBlock := " " + getIndentationSymbol(useAlternateIndent)
 			padding := text.WrapPad(Dimmed + indentBlock)
 			wrappedAndPaddedComment, _ := text.Wrap(paragraph, commentWidth, padding)
 			paragraph = wrappedAndPaddedComment
