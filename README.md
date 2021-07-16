@@ -144,7 +144,7 @@ Quotes are indented, italicized and dimmed in order to distinguish them from the
 </p>
 
 #### Hacker News and forum idiosyncracies
-Code snippets, username mentions, variables and I Am A Lawyer / I Am Not A Lawyer disclaimers are highlighted. On by default,
+`` `Code snippets` ``, `@username` mentions, `$variables` and `I Am A Lawyer` / `I Am Not A Lawyer` disclaimers are all highlighted. On by default,
 but can be disabled.
 
 <p align="center">
