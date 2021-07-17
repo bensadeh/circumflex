@@ -177,7 +177,7 @@ func highlightCommentSyntax(input string, commentHighlighting bool) string {
 	input = highlightBackticks(input)
 	input = highlightMentions(input)
 	input = highlightVariables(input)
-	input = highlightLawyers(input)
+	input = highlightAbbreviations(input)
 
 	return input
 }
@@ -333,12 +333,20 @@ func highlightVariables(input string) string {
 	return output
 }
 
-func highlightLawyers(input string) string {
+func highlightAbbreviations(input string) string {
 	iAmNotALawyer := "IANAL"
 	iAmALawyer := "IAAL"
 
 	input = strings.ReplaceAll(input, iAmNotALawyer, Red+iAmNotALawyer+Normal)
 	input = strings.ReplaceAll(input, iAmALawyer, Green+iAmALawyer+Normal)
+
+	coloredFAANG := Blue + "F" + Normal +
+		Yellow + "A" + Normal +
+		White + "A" + Normal +
+		Red + "N" + Normal +
+		Green + "G" + Normal
+
+	input = strings.ReplaceAll(input, "FAANG", coloredFAANG)
 
 	return input
 }

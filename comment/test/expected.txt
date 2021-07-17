@@ -3689,7 +3689,7 @@ care more about trade-offs and marginal value”.
 
          [1mtheptip[0m[35m PP[0m [2m12 hours ago[0m
         [0m[33m▎[0mHacker News is affiliated with YC, a startup accelerator. While there are lots
-        [0m[33m▎[0mof FAANG engineers and engineers from all parts of the spectrum here too, this
+        [0m[33m▎[0mof [34mF[0m[33mA[0m[37mA[0m[31mN[0m[32mG[0m engineers and engineers from all parts of the spectrum here too, this
         [0m[33m▎[0mcommunity biases towards startups. If there is a place to discuss strategy for
         [0m[33m▎[0mpre-PMF startups on the internet, this is it.
         [0m[33m▎[0m

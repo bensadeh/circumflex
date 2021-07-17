@@ -3,6 +3,8 @@
 ## 1.15
 _WIP_
 
+**Cosmetic**
+- Highlight mentions of `FAANG` in the comment section
 
 ## 1.14
 _2021-07-15_
