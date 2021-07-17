@@ -29,6 +29,7 @@ func GetErrorMessage(title, domain string) string {
 func isInvalidDomain(domain string) bool {
 	invalidDomains := [...]string{
 		"apnews.com",
+		"scmp.com",
 		"blog.chromium.org",
 		"bloomberg.com",
 		"chrome.google.com",
