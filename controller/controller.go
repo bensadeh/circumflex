@@ -61,9 +61,6 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 			return event
 
 		// Main View
-		case appState.IsOnAddFavoriteByID:
-			return event
-
 		case appState.IsOnAddFavoriteConfirmationMessage && event.Rune() == 'y':
 			model.AddToFavorites(app, list, main, appState, config, ret, reg)
 
@@ -75,9 +72,6 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 
 		case event.Rune() == 'f':
 			model.AddToFavoritesConfirmationDialogue(main, appState)
-
-		case event.Rune() == 'F':
-			model.ShowAddCustomFavorite(app, list, main, appState, config, ret, reg)
 
 		case event.Rune() == 'x' && appState.CurrentCategory == categories.Favorites:
 			model.DeleteFavoriteConfirmationDialogue(main, appState)

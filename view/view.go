@@ -94,10 +94,6 @@ func ShowItems(list *cview.List, listItems []*cview.ListItem) {
 	}
 }
 
-func ShowFavoritesBox(m *core.MainView) {
-	m.Panels.SetCurrentPanel(panels.AddCustomFavoritePanel)
-}
-
 func SetInfoScreenText(m *core.MainView, text string) {
 	m.InfoScreen.SetText(text)
 }

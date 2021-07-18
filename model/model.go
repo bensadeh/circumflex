@@ -6,7 +6,6 @@ import (
 	"clx/comment"
 	"clx/constants/categories"
 	"clx/constants/messages"
-	"clx/constants/panels"
 	"clx/constants/state"
 	"clx/core"
 	"clx/endpoints"
@@ -75,7 +74,6 @@ func resetApplicationState(appState *core.ApplicationState) {
 	appState.ScreenHeight = screen.GetTerminalHeight()
 	appState.StoriesToShow = screen.GetSubmissionsToShow(appState.ScreenHeight, 30)
 	appState.IsOnAddFavoriteConfirmationMessage = false
-	appState.IsOnAddFavoriteByID = false
 	appState.IsOffline = false
 }
 
@@ -461,49 +459,4 @@ func DeleteItem(app *cview.Application, list *cview.List, appState *core.Applica
 
 	m := message.Success(messages.ItemDeleted)
 	view.SetPermanentStatusBar(main, m, cview.AlignCenter)
-}
-
-func ShowAddCustomFavorite(app *cview.Application, list *cview.List, main *core.MainView,
-	appState *core.ApplicationState, config *core.Config, ret *handler.StoryHandler, reg *vim.Register) {
-	appState.IsOnAddFavoriteByID = true
-
-	view.SetPermanentStatusBar(main, messages.HowToExitF, cview.AlignCenter)
-	view.HideLeftMarginRanks(main)
-
-	main.CustomFavorite.SetText("")
-	main.CustomFavorite.SetAcceptanceFunc(cview.InputFieldInteger)
-	main.CustomFavorite.SetDoneFunc(func(key tcell.Key) {
-		input := ""
-		if key == tcell.KeyEnter {
-			appState.IsOnAddFavoriteByID = false
-			input = main.CustomFavorite.GetText()
-
-			if input != "" {
-				id, _ := strconv.Atoi(input)
-
-				item := new(endpoints.Story)
-				item.ID = id
-				item.Title = messages.EnterCommentSectionToUpdate
-				item.Time = time.Now().Unix()
-				item.Author = "[]"
-
-				_ = ret.AddItemToFavoritesAndWriteToFile(item)
-			}
-		}
-
-		main.Panels.SetCurrentPanel(panels.StoriesPanel)
-		app.SetFocus(main.Grid)
-
-		changePage(app, list, main, appState, config, ret, reg, 0)
-
-		if input != "" {
-			view.SetPermanentStatusBar(main, messages.AddedStoryByID, cview.AlignCenter)
-		}
-
-		appState.IsOnAddFavoriteByID = false
-	})
-
-	app.SetFocus(main.CustomFavorite)
-
-	view.ShowFavoritesBox(main)
 }
