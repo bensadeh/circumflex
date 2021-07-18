@@ -12,13 +12,13 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(idCmd)
+	rootCmd.AddCommand(viewCmd)
 }
 
-var idCmd = &cobra.Command{
-	Use:   "id",
-	Short: "Go directly to comment section by ID",
-	Long:  `Enter the comment section for a given item directly without going through the main view`,
+var viewCmd = &cobra.Command{
+	Use:   "view",
+	Short: "Go directly to the comment section by ID",
+	Long:  `Enter the comment section for a given item directly without going through the main view first`,
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
