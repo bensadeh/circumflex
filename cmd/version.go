@@ -7,10 +7,10 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(configCmd)
+	rootCmd.AddCommand(versionCmd)
 }
 
-var configCmd = &cobra.Command{
+var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version number of circumflex",
 	Long:  `Print the version number of circumflex`,

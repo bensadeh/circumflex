@@ -10,10 +10,10 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(createConfigCmd)
 }
 
-var versionCmd = &cobra.Command{
+var createConfigCmd = &cobra.Command{
 	Use:   "create_config",
 	Short: "Create an example config file",
 	Long: "Create an example config file in ~/.config/circumflex/config.env.\n" +
