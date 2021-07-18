@@ -179,11 +179,16 @@ but can be disabled.
 
 ## ❤️ Favorites
 Save submissions you'd like to revisit by adding them to Favorites. Press <kbd>f</kbd> to add the
-currently highlighted submission to your list of favorites. Press <kbd>F</kbd> to add any submission by ID. 
+currently highlighted submission to your list of favorites. Remove submissions from the Favorites 
+page with <kbd>x</kbd>.
 
-Remove submissions from the Favorites page with <kbd>x</kbd>.
+You can add any submission by its ID from the command line:
+```console
+clx add [id]
+```
 
-Favorites are stored in `~/.config/circumflex/favorites.json`. `circumflex` pretty-prints `favorites.json` to make it both human-readable and VCS-friendly.
+Favorites are stored in `~/.config/circumflex/favorites.json`. `circumflex` pretty-prints 
+`favorites.json` to make it both human-readable and VCS-friendly.
 
 
 ## 📐 Fine-tuning
