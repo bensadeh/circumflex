@@ -5,6 +5,7 @@ _WIP_
 
 **Cosmetic**
 - Highlight mentions of `FAANG` in the comment section
+- Highlight moderator author names in main screen
 
 ## 1.14
 _2021-07-15_

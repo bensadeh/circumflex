@@ -165,9 +165,9 @@ func formatDomain(domain string) string {
 	return domainInParenthesisAndDimmed
 }
 
-func FormatSecondary(points int, author string, unixTime int64, comments int) string {
+func FormatSecondary(points int, author string, unixTime int64, comments int, mode int) string {
 	parsedPoints := parsePoints(points)
-	parsedAuthor := parseAuthor(author)
+	parsedAuthor := parseAuthor(author, mode)
 	parsedTime := parseTime(unixTime)
 	parsedComments := parseComments(comments, author)
 
@@ -182,9 +182,13 @@ func parsePoints(points int) string {
 	return strconv.Itoa(points) + " points "
 }
 
-func parseAuthor(author string) string {
+func parseAuthor(author string, mode int) string {
 	if author == "" {
 		return ""
+	}
+
+	if mode == colorizedHighlighting && author == "dang" {
+		return "by " + Green(author) + " "
 	}
 
 	return "by " + author + " "
