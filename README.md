@@ -73,23 +73,20 @@ go run main.go
 
 ## ⌨️ Keymaps
 
-Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of availables keymaps:
+Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of available keymaps:
 
 <pre>
 <kbd>Enter</kbd>: Read comments
 <kbd>Space</kbd>: Read article in Reader Mode
+
+<kbd>r</kbd>: Refresh
 <kbd>Tab</kbd>: Change category
 
 <kbd>o</kbd>: Open link to article in browser
 <kbd>c</kbd>: Open comment section in browser
-<kbd>t</kbd>: Force Read article in Reader Mode
-<kbd>r</kbd>: Refresh
 
-<kbd>f</kbd>: Add submission to favorites
-<kbd>F</kbd>: Add submission to favorites by ID
-<kbd>x</kbd>: Remove submission from favorites
-
-<kbd>g</kbd>/<kbd>G</kbd>: Go to line/top/bottom (Vim)
+<kbd>f</kbd>: Add to favorites
+<kbd>x</kbd>: Remove from favorites
 
 <kbd>q</kbd>: Quit
 </pre>
@@ -228,12 +225,12 @@ contrast author name) of terminal output which does not brighted bold fonts.
 
 Below are a few examples of how to enable bold text in bright colors in different terminals.
 
-#### alacritty
+#### Alacritty
 
 - Set `draw_bold_text_with_bright_colors` to `true`
 - Define `bright_foreground` and set it to a brighter value than `foreground`
 - (See [alacritty/alacritty/pull/1026](https://github.com/alacritty/alacritty/pull/1026) for 
-more info}
+more info)
 
 #### Terminal (macOS)
 
