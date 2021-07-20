@@ -66,8 +66,7 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 			paragraph = strings.ReplaceAll(paragraph, "<i>", "")
 			paragraph = strings.ReplaceAll(paragraph, "</i>", "")
 			paragraph = strings.ReplaceAll(paragraph, "</a>", "")
-			paragraph = strings.ReplaceAll(paragraph, tripleSpace, singleSpace)
-			paragraph = strings.ReplaceAll(paragraph, doubleSpace, singleSpace)
+			paragraph = replaceSymbols(paragraph)
 			paragraph = strings.Replace(paragraph, ">>", "", 1)
 			paragraph = strings.Replace(paragraph, ">", "", 1)
 			paragraph = strings.TrimLeft(paragraph, " ")
@@ -104,8 +103,7 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 			paragraph = formattedCodeLines
 
 		default:
-			paragraph = strings.ReplaceAll(paragraph, tripleSpace, singleSpace)
-			paragraph = strings.ReplaceAll(paragraph, doubleSpace, singleSpace)
+			paragraph = replaceSymbols(paragraph)
 			paragraph = highlightReferences(paragraph)
 			paragraph = replaceHTML(paragraph)
 			paragraph = strings.TrimLeft(paragraph, " ")
@@ -124,6 +122,26 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 	}
 
 	return output, URLs
+}
+
+func replaceSymbols(paragraph string) string {
+	paragraph = strings.ReplaceAll(paragraph, tripleSpace, singleSpace)
+	paragraph = strings.ReplaceAll(paragraph, doubleSpace, singleSpace)
+	paragraph = strings.ReplaceAll(paragraph, "... ", "… ")
+	paragraph = strings.ReplaceAll(paragraph, " -- ", " — ")
+	paragraph = strings.ReplaceAll(paragraph, "1/2", "½")
+	paragraph = strings.ReplaceAll(paragraph, "1/3", "⅓")
+	paragraph = strings.ReplaceAll(paragraph, "2/3", "⅔")
+	paragraph = strings.ReplaceAll(paragraph, "1/4", "¼")
+	paragraph = strings.ReplaceAll(paragraph, "3/4", "¾")
+	paragraph = strings.ReplaceAll(paragraph, "1/5", "⅕")
+	paragraph = strings.ReplaceAll(paragraph, "2/5", "⅖")
+	paragraph = strings.ReplaceAll(paragraph, "3/5", "⅗")
+	paragraph = strings.ReplaceAll(paragraph, "4/5", "⅘")
+	paragraph = strings.ReplaceAll(paragraph, "1/6", "⅙")
+	paragraph = strings.ReplaceAll(paragraph, "1/10", "⅒")
+
+	return paragraph
 }
 
 func isQuote(text string) bool {

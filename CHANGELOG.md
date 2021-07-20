@@ -6,14 +6,16 @@ _WIP_
 **Cosmetic**
 - Highlight mentions of `FAANG` in the comment section
 - Highlight moderator author names in main screen
-- Do not use white in the indentation colors
+- Removed white from indent blocks
+- Comments now show prettier Unicode fractions 
+- Double single dashes (--) now appear as an em-dash (—)
 
 ## 1.14
 _2021-07-15_
 
 **Bugfixes**
 - Fixed a bug where a single @ would be highlighted
-- Fixed a bug where alternate indendation block would not apply for quotes
+- Fixed a bug where alternate indentation block would not apply for quotes
 
 **Cosmetic**
 - Monthly Who is hiring, Freelancer, Who wants to be hired posts are now highlighted

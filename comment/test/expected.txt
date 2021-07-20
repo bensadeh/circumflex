@@ -103,9 +103,9 @@ OK.
          [1mhinkley[0m [2m14 hours ago[0m
         [0m[33m▎[0mThe capacitive touch and the accelerometer allowed them to make a web browser
         [0m[33m▎[0mthat could display 'normal' web pages. Up until then everyone had been dicking
-        [0m[33m▎[0maround with mobile web sites and the lack of ubiquity and cost of doing so... as
+        [0m[33m▎[0maround with mobile web sites and the lack of ubiquity and cost of doing so… as
         [0m[33m▎[0mwell as the often hamfisted attempts to assume [3mwhy[0m you were on the website from
-        [0m[33m▎[0mmobile... all of these hamstrung mobile browsing adoption.
+        [0m[33m▎[0mmobile… all of these hamstrung mobile browsing adoption.
         [0m[33m▎[0m
         [0m[33m▎[0mWith this in place commerce could begin on the phone. Once everyone added mobile
         [0m[33m▎[0mpay options it could end there as well. An now everyone has one, if they can.
@@ -257,7 +257,7 @@ OK.
 
 [1mpontifier[0m [2m[4ma day ago                                                      23 ⤶ ::[0m
 I vividly remember using a kiosk to order a sandwich at a gas station 3 years
-ago... Not because the sandwich was great, not because it had a great logo, or a
+ago… Not because the sandwich was great, not because it had a great logo, or a
 great name...
 
 The INSTANT I hit the button to complete the order, the built in printer almost
@@ -282,13 +282,13 @@ Edit2: looks like it was a soda, not a second sandwich.
 
      [1mbdickason[0m[31m OP[0m [2m13 hours ago[0m
     [0m[31m▎[0mThis is amazing!! In a world full of 'please wait for your receipt' and dot
-    [0m[31m▎[0mmatrix noises... this feels totally magical.
+    [0m[31m▎[0mmatrix noises… this feels totally magical.
     [0m[31m▎[0m
     [0m[31m▎[0mThanks for sharing this, it's crazy how much super fast experiences still
     [0m[31m▎[0msurprise us.
 
          [1mbillti[0m [2m12 hours ago[0m
-        [0m[33m▎[0mInterestingly... too fast can be a problem too. A prime example is this site,
+        [0m[33m▎[0mInterestingly… too fast can be a problem too. A prime example is this site,
         [0m[33m▎[0mHacker News, on a really fast browser. I'll often sit there waiting for a
         [0m[33m▎[0mnavigation to load, until I realize it had already loaded (to a similar looking
         [0m[33m▎[0mpage), just so fast I didn't notice the transition.
@@ -362,7 +362,7 @@ Edit2: looks like it was a soda, not a second sandwich.
         [0m[33m▎[0mwasted time.
 
              [1mjedberg[0m [2m10 hours ago[0m
-            [0m[32m▎[0mCostco has an advantage over everyone else -- they already know who you are
+            [0m[32m▎[0mCostco has an advantage over everyone else — they already know who you are
             [0m[32m▎[0mbefore your purchase is complete. By scanning your membership card, they already
             [0m[32m▎[0mhave your average purchase profile.
             [0m[32m▎[0m
@@ -372,8 +372,8 @@ Edit2: looks like it was a soda, not a second sandwich.
             [0m[32m▎[0mback for a second auth for the bigger amount.
             [0m[32m▎[0m
             [0m[32m▎[0mIt's also why you'll see some people making $700+ purchases without having to
-            [0m[32m▎[0msign anything -- because Costco already knows they do that every week and pay
-            [0m[32m▎[0mthe bill on time so they assume part of the risk.
+            [0m[32m▎[0msign anything — because Costco already knows they do that every week and pay the
+            [0m[32m▎[0mbill on time so they assume part of the risk.
 
                  [1mlotsofpulp[0m [2m9 hours ago[0m
                 [0m[36m▎[0mInteresting, I didn’t think Citibank and Costco would have made that kind of
@@ -420,7 +420,7 @@ we have waaaaaaaaaaay too much young JS devs who know nothing else.
 We need to get back to native UIs. Is it awfully hard? Yes it is. Do the users
 care? No, they don't. Many people want fast UIs.
 
-But to be fair to all sides -- there are also a lot of people who don't notice
+But to be fair to all sides — there are also a lot of people who don't notice
 certain slowdowns that I scoff at. So there is a middle ground that won't cost
 billions to achieve and IMO that should be chased after.
 
@@ -841,8 +841,8 @@ billions to achieve and IMO that should be chased after.
             [0m[32m▎[0msignal is sent.
 
          [1maembleton[0m [2m19 hours ago[0m
-        [0m[33m▎[0m161 ms is 1/6th of a second which I would have thought would be noticeable and
-        [0m[33m▎[0myet I haven't noticed it. I assume that is mouse clicks?
+        [0m[33m▎[0m161 ms is ⅙th of a second which I would have thought would be noticeable and yet
+        [0m[33m▎[0mI haven't noticed it. I assume that is mouse clicks?
         [0m[33m▎[0m
         [0m[33m▎[0mI'm sure Id notice if typing had that much lag on vs code. I am using manjaro
         [0m[33m▎[0mLinux but I can't imagine that it would be much faster than osx.
@@ -868,8 +868,8 @@ billions to achieve and IMO that should be chased after.
 
              [1maembleton[0m [2m18 hours ago[0m
             [0m[32m▎[0mJust trying in VS Code again, and there does seem to be a lag for mouse clicks.
-            [0m[32m▎[0mNot sure if its as much as 1/6s, but probably 1/10. Typing though looks as
-            [0m[32m▎[0msnappy as any terminal.
+            [0m[32m▎[0mNot sure if its as much as ⅙s, but probably ⅒. Typing though looks as snappy as
+            [0m[32m▎[0many terminal.
             [0m[32m▎[0m
             [0m[32m▎[0mI get electron or MS have optimised the typing path. I don't click that much in
             [0m[32m▎[0mVS Code so I don't think its ever bothered me.
@@ -974,7 +974,7 @@ billions to achieve and IMO that should be chased after.
          [1mPaulHoule[0m [2m18 hours ago[0m
         [0m[33m▎[0mI have Phillips Hue and Sengled lights at home and I usually disable the
         [0m[33m▎[0m"easing" animation on them to reduce the perception of time delay when I push
-        [0m[33m▎[0mthe button... It is maybe 100 of ms of perceived latency I can subtract.
+        [0m[33m▎[0mthe button… It is maybe 100 of ms of perceived latency I can subtract.
         [0m[33m▎[0m
         [0m[33m▎[0mIt help a lot in that "computer user bill of rights" issue that you start to
         [0m[33m▎[0mworry at some point that the button press wasn't registered and might then mash
@@ -1140,8 +1140,8 @@ billions to achieve and IMO that should be chased after.
          [1mjiggawatts[0m [2m21 hours ago[0m
         [0m[33m▎[0mI used to write 4K demos and the like in assembly, and I wrote a 3D engine in
         [0m[33m▎[0mthe era where you still thought hard about making something a function call or
-        [0m[33m▎[0mnot because... you know... those fractions of a microseconds [3madd up[0m, and next
-        [0m[33m▎[0mthing you know you've blown your 16.6ms frame time budget!
+        [0m[33m▎[0mnot because… you know… those fractions of a microseconds [3madd up[0m, and next thing
+        [0m[33m▎[0myou know you've blown your 16.6ms frame time budget!
         [0m[33m▎[0m
         [0m[33m▎[0mThese days I see people casually adding network hops to web applications like
         [0m[33m▎[0mit's [3mnothing[0m. These actually take [3mmultiple[0m milliseconds in common scenarios such
@@ -1168,7 +1168,7 @@ billions to achieve and IMO that should be chased after.
         [0m[33m▎[0m
         [0m[33m▎[0m[3mand then the reverse of the above for the data to be received![0m
         [0m[33m▎[0m
-        [0m[33m▎[0m[3mthen the forward -- and -- backwards stack -- again -- for the response[0m
+        [0m[33m▎[0m[3mthen the forward — and — backwards stack — again — for the response[0m
         [0m[33m▎[0m
         [0m[33m▎[0mIf this isn't insanity, I don't know what is...
 
@@ -1230,7 +1230,7 @@ billions to achieve and IMO that should be chased after.
                 [0m[36m▎[0mconnection speeds.
                 [0m[36m▎[0m
                 [0m[36m▎[0mMost web devs develop on localhost and test on some of the best connections you
-                [0m[36m▎[0mcan get today, leaving network performance testing as an afterthought at best...
+                [0m[36m▎[0mcan get today, leaving network performance testing as an afterthought at best…
                 [0m[36m▎[0mand it shows.
 
                      [1mbranko_d[0m [2m12 hours ago[0m
@@ -1246,7 +1246,7 @@ billions to achieve and IMO that should be chased after.
                     [0m[34m▎[0m
                     [0m[34m▎[0m[2m ▎[3m[2mMost web devs develop on localhost and test on some of the best connections[0m
                     [0m[34m▎[0m[2m ▎[2;3myou can get today, leaving network performance testing as an afterthought at[0m
-                    [0m[34m▎[0m[2m ▎[2;3mbest... and it shows.[0m
+                    [0m[34m▎[0m[2m ▎[2;3mbest… and it shows.[0m
                     [0m[34m▎[0m
                     [0m[34m▎[0mVery true! And on beefeir CPUs/GPUs, more RAM, faster storage etc.
                     [0m[34m▎[0m
@@ -1488,7 +1488,7 @@ billions to achieve and IMO that should be chased after.
                                         [0m[36;1m▎[0medit: grammar
 
                                          [1mpdimitar[0m[35m PP[0m [2m15 hours ago[0m
-                                        [0m[36;1m▎[0mObviously neither me nor you can generalize -- both extremes exist.
+                                        [0m[36;1m▎[0mObviously neither me nor you can generalize — both extremes exist.
                                         [0m[36;1m▎[0m
                                         [0m[36;1m▎[0mGiven the chance I'd likely collect a fat paycheck and bail out at the end of
                                         [0m[36;1m▎[0mthe contract as those other people did. But that attitude is responsible for the
@@ -1546,7 +1546,7 @@ billions to achieve and IMO that should be chased after.
                         [0m[35m▎[0mOr Java
 
                              [1mryandrake[0m [2m7 hours ago[0m
-                            [0m[31;1m▎[0mOr... and I know this is just crazy-talk... there is properly separating your
+                            [0m[31;1m▎[0mOr… and I know this is just crazy-talk… there is properly separating your
                             [0m[31;1m▎[0mplatform-independent business logic from the minimal platform-specific UI layer.
                             [0m[31;1m▎[0mA lost art these days it seems.
 
@@ -1837,7 +1837,7 @@ billions to achieve and IMO that should be chased after.
     [0m[31m▎[0m
     [0m[31m▎[0mSo when I saw how slow, bloated and laggy this app was, I wanted to try to make
     [0m[31m▎[0mher a better jigsaw app for the web and I think I succeeded [[31m1[0m]. It loads almost
-    [0m[31m▎[0minstantly, has no advertisements, and feels super smooth while playing... and
+    [0m[31m▎[0minstantly, has no advertisements, and feels super smooth while playing… and
     [0m[31m▎[0mit's mostly just js, svelte and a little bit of Rust WASM.
     [0m[31m▎[0m
     [0m[31m▎[0mAnyway, I do prefer a good native app over a web app when available. But with
@@ -2102,11 +2102,11 @@ billions to achieve and IMO that should be chased after.
         [0m[33m▎[0m(although I still know the last two rather well and plan on making a return
         [0m[33m▎[0mthere to author my own blog theme).
         [0m[33m▎[0m
-        [0m[33m▎[0mMain focus are Elixir and Rust -- the latter exactly because I want to make
+        [0m[33m▎[0mMain focus are Elixir and Rust — the latter exactly because I want to make
         [0m[33m▎[0mefficient and ultra-fast software. Also very invested and averagely skilled in
         [0m[33m▎[0mDevOps / sysadmin activities.
         [0m[33m▎[0m
-        [0m[33m▎[0mI hope there are more companies like yours out there -- and that yours is
+        [0m[33m▎[0mI hope there are more companies like yours out there — and that yours is
         [0m[33m▎[0mthriving!
 
      [1mthrowaway81523[0m [2ma day ago[0m
@@ -2195,7 +2195,7 @@ billions to achieve and IMO that should be chased after.
          [1mchromanoid[0m [2ma day ago[0m
         [0m[33m▎[0mYeah, totally :D ]8;;https://news.ycombinator.com/item?id=26296339https://news.ycombinator.com/item?id=26296339]8;;
         [0m[33m▎[0m
-        [0m[33m▎[0mMost game developers will make it as fast as they have to... in fact most
+        [0m[33m▎[0mMost game developers will make it as fast as they have to… in fact most
         [0m[33m▎[0mdevelopers do that.
         [0m[33m▎[0m
         [0m[33m▎[0mGames are usually developed as abandonware. Do you want your apps to be
@@ -2243,7 +2243,7 @@ billions to achieve and IMO that should be chased after.
     [0m[31m▎[0msomething has to change.
     [0m[31m▎[0m
     [0m[31m▎[0mCurrent systems are not only getting slower and less useful, but they're also
-    [0m[31m▎[0mgetting harder to develop, test and maintain as well -- and, consequently,
+    [0m[31m▎[0mgetting harder to develop, test and maintain as well — and, consequently,
     [0m[31m▎[0mbuggier.
     [0m[31m▎[0m
     [0m[31m▎[0mThe fact that there still are many old, TUI-based systems out there AND that
@@ -2296,7 +2296,7 @@ billions to achieve and IMO that should be chased after.
                 [0m[36m▎[0many given task, after the user gets over the "text is scary" stage.
 
              [1mpdimitar[0m[35m PP[0m [2m14 hours ago[0m
-            [0m[32m▎[0mI'm doing that lately -- very gradually and slowly, but I'm doing it.
+            [0m[32m▎[0mI'm doing that lately — very gradually and slowly, but I'm doing it.
             [0m[32m▎[0m
             [0m[32m▎[0mI've had enough of today's slow buggy messes that require gigabytes of memory
             [0m[32m▎[0mand two CPU cores to show me a splash screen for 10 seconds.
@@ -2388,7 +2388,7 @@ billions to achieve and IMO that should be chased after.
                     [0m[34m▎[0mpractical guy and people usually love my posts (scattered on different forums)
                     [0m[34m▎[0mwhere I make such lists. I should roll my own blog static web site generator in
                     [0m[34m▎[0mRust I suppose, because the existing ones are either slow or don't support what
-                    [0m[34m▎[0mI need... So, not going to happen in the next year, most likely. :(
+                    [0m[34m▎[0mI need… So, not going to happen in the next year, most likely. :(
 
                          [1mShared404[0m [2m9 hours ago[0m
                         [0m[35m▎[0mI'll have to try some of those out. I've used fzf a little, but haven't really
@@ -2400,8 +2400,8 @@ billions to achieve and IMO that should be chased after.
                         [0m[35m▎[0mcouple voids I've been feeling.
                         [0m[35m▎[0m
                         [0m[35m▎[0m[2m ▎[3m[2mI should roll my own blog static web site generator in Rust I suppose, because[0m
-                        [0m[35m▎[0m[2m ▎[2;3mthe existing ones are either slow or don't support what I need... So, not[0m
-                        [0m[35m▎[0m[2m ▎[2;3mgoing to happen in the next year, most likely. :([0m
+                        [0m[35m▎[0m[2m ▎[2;3mthe existing ones are either slow or don't support what I need… So, not going[0m
+                        [0m[35m▎[0m[2m ▎[2;3mto happen in the next year, most likely. :([0m
                         [0m[35m▎[0m
                         [0m[35m▎[0mIt isn't powerful enough to support what you need I'm sure, but I actually did
                         [0m[35m▎[0msomething similar a little while ago.
@@ -2531,12 +2531,12 @@ billions to achieve and IMO that should be chased after.
     [0m[31m▎[0mnative look/feel/platform (ie doesn’t look/feel like a MacOS app on macOS).
 
          [1mpdimitar[0m[35m PP[0m [2m15 hours ago[0m
-        [0m[33m▎[0mNot sure what you mean -- but I've never used Qt. I gather it's a controversial
+        [0m[33m▎[0mNot sure what you mean — but I've never used Qt. I gather it's a controversial
         [0m[33m▎[0mtopic because I've heard exactly the opposite feedback than yours about it.
         [0m[33m▎[0m
-        [0m[33m▎[0mStill, I bet if more people used it then its community would have an incentive
-        [0m[33m▎[0m-- or a kick in the butt -- to quickly fix its deficiencies and it could become
-        [0m[33m▎[0mthe de facto native GUI toolkit? Who knows.
+        [0m[33m▎[0mStill, I bet if more people used it then its community would have an incentive —
+        [0m[33m▎[0mor a kick in the butt — to quickly fix its deficiencies and it could become the
+        [0m[33m▎[0mde facto native GUI toolkit? Who knows.
 
              [1mkaba0[0m [2m9 hours ago[0m
             [0m[32m▎[0mQt is really quick and is used at plenty of places. Places where (critical)
@@ -2679,7 +2679,7 @@ billions to achieve and IMO that should be chased after.
         [0m[33m▎[0mAs for the free aspect, I feel like this ship has sailed like 20 years ago.
         [0m[33m▎[0mNobody will pay for an UI toolkit these days. This is not Unreal Engine 4, you
         [0m[33m▎[0mknow. That stuff only works on AAA games market, apparently (although I am
-        [0m[33m▎[0mcurious as to why it doesn't work everywhere else -- likely thin profit margins
+        [0m[33m▎[0mcurious as to why it doesn't work everywhere else — likely thin profit margins
         [0m[33m▎[0mand/or middle management greed outside of the gaming genre).
 
              [1mapi[0m [2m18 hours ago[0m
@@ -2911,9 +2911,8 @@ effort in where the others didn’t.
     [0m[31m▎[0msomething because it takes about a full minute to load the screen with the show
     [0m[31m▎[0mdetails. All that to load some thumbnails. And if you dare accidentally hit a
     [0m[31m▎[0mbutton before it’s fully loaded, it will crash the app half the time, and the
-    [0m[31m▎[0mwhole OS about 1/10 times. Instead of replacing it with something more
-    [0m[31m▎[0mperformant I use it as motivation to not watch TV and go exercise or read a book
-    [0m[31m▎[0minstead.
+    [0m[31m▎[0mwhole OS about ⅒ times. Instead of replacing it with something more performant I
+    [0m[31m▎[0muse it as motivation to not watch TV and go exercise or read a book instead.
 
      [1mjiggawatts[0m [2m9 hours ago[0m
     [0m[31m▎[0mMy experience with Netflix is the opposite. When you press play after pausing a
@@ -2945,8 +2944,8 @@ effort in where the others didn’t.
         [0m[33m▎[0mYou never used Disney Life, the decrepit predecessor to Disney+. Now that was a
         [0m[33m▎[0mshoddy app. It used to forget your password every time it did an update (which
         [0m[33m▎[0mwas very often), it crashed all the time and didn't even have very much content.
-        [0m[33m▎[0mBut I still subscribed because... kids. This is how they knew Disney+ would be
-        [0m[33m▎[0ma goer, they already had a lot of poor parents sending them nearly as much money
+        [0m[33m▎[0mBut I still subscribed because… kids. This is how they knew Disney+ would be a
+        [0m[33m▎[0mgoer, they already had a lot of poor parents sending them nearly as much money
         [0m[33m▎[0mfor a TERRIBLE app with relatively little content.
 
      [1mleokennis[0m [2ma day ago[0m
@@ -3252,7 +3251,7 @@ because Chrome became slower over time. How is Servo going BTW?
     [0m[31m▎[0m[2m ▎[3m[2myou have to do it early, because while can be relatively easy to increase[0m
     [0m[31m▎[0m[2m ▎[2;3mthroughput, latency is much harder to deal with.[0m
     [0m[31m▎[0m
-    [0m[31m▎[0mHum... I don't think that makes much sense. Yes, there are some latency
+    [0m[31m▎[0mHum… I don't think that makes much sense. Yes, there are some latency
     [0m[31m▎[0moptimizations that are certain and architecture wide, so they are much easier to
     [0m[31m▎[0mdo at first write time, but there are a lot of latency optimizations that are
     [0m[31m▎[0miffy and local, and thus much easier to do with an actual profiler running.
@@ -3333,7 +3332,7 @@ productivity centered display. Such as a fully adjustable stand, high color
 accuracy and viewing angles, virtual display splitting, or just overall design
 of the enclosure.
 
-I could go on another rant about display enclosure designs... Why isn't there a
+I could go on another rant about display enclosure designs… Why isn't there a
 single company out there (with perhaps the exception of Dell) that's creating
 nice and minimal display enclosures that aren't covered in cheap plastic and
 "aesthetic" ornaments? Apple's Cinema Display from 2004 is to this day one of
@@ -3348,7 +3347,7 @@ I want a great, fast, accurate panel with a nice, minimal, aluminum enclosure.
 Is that just too much to ask?
 
      [1mTacticalCoder[0m [2m20 hours ago[0m
-    [0m[31m▎[0m[2m ▎[3m[2m... of even just your mouse cursor reacting instantly to your movements.[0m
+    [0m[31m▎[0m[2m ▎[3m[2m… of even just your mouse cursor reacting instantly to your movements.[0m
     [0m[31m▎[0m
     [0m[31m▎[0mBut you probably haven't, except in, well, games?
     [0m[31m▎[0m
@@ -3423,7 +3422,7 @@ I tried but never succeeded in convincing people that speed was the issue.
 In our case, our users had a specific flow through the application they would
 use, and it worked, but it required clicking many (10+) buttons and waiting for
 a web request on each. People on the team were satisfied that the flow worked
-and going through it didn't take TOO long... But what people on our side didn't
+and going through it didn't take TOO long… But what people on our side didn't
 get is that our customers had to go through this flow dozens if not hundreds of
 times - some users would need to do it this many times regularly. It effectively
 made our users hate using the product, or they would refuse to, or they'd use
@@ -3439,8 +3438,8 @@ Maybe a mockup of a faster flow was what was needed to be persuasive there.
     [0m[31m▎[0mand I am scared that I'm failing. We're introducing new components that have
     [0m[31m▎[0mdeliberately introduced latency to make transitions smoother (and I mean LARGE
     [0m[31m▎[0mlatency. 500ms large). I brought up the terminal insanity of doing this and got
-    [0m[31m▎[0min response "no one has complained about it so far... we can tweak it if you
-    [0m[31m▎[0mlike, but I'm following best practices" (citing nothing).
+    [0m[31m▎[0min response "no one has complained about it so far… we can tweak it if you like,
+    [0m[31m▎[0mbut I'm following best practices" (citing nothing).
     [0m[31m▎[0m
     [0m[31m▎[0mI bring this up with others, and they are lukewarm about it. I feel like our
     [0m[31m▎[0mcompany is in deeeeep shit if I don't convince people this is a problem.
@@ -3496,10 +3495,10 @@ link and counter-throws within 7-frames (115 milliseconds). I'm well aware of
 the human-brain's capability to process data far faster than most people
 realize.
 
-Musicians, Video Game players, Athletes... I expect most of them to have
-reaction speeds well above average: below the 200ms typical human. Even then,
-"average" humans have far better reaction speeds and ability to perceive things
-that happen in factions-of-a-second (at least, once you make them aware of those
+Musicians, Video Game players, Athletes… I expect most of them to have reaction
+speeds well above average: below the 200ms typical human. Even then, "average"
+humans have far better reaction speeds and ability to perceive things that
+happen in factions-of-a-second (at least, once you make them aware of those
 things).
 
 UI-speed is absolutely a great feature. I just disagree that Apple's iPod Touch
@@ -3564,9 +3563,9 @@ or iPhone was a good representation of that.
                 [0m[36m▎[0msomething like 100ms of audio in the channel. That ~100ms to ~150ms of latency
                 [0m[36m▎[0mreally impacts reaction times.
                 [0m[36m▎[0m
-                [0m[36m▎[0mSo, I could switch to a wired headset... I just wish I could find a wireless
+                [0m[36m▎[0mSo, I could switch to a wired headset… I just wish I could find a wireless
                 [0m[36m▎[0mheadset that didn't suck. Microsoft just recently introduced their new "Xbox
-                [0m[36m▎[0mWireless Headset", which looks awesome, but... the absence of any latency
+                [0m[36m▎[0mWireless Headset", which looks awesome, but… the absence of any latency
                 [0m[36m▎[0mspecification is not encouraging.
 
                  [1me_proxus[0m [2m21 hours ago[0m
@@ -3589,11 +3588,11 @@ or iPhone was a good representation of that.
         [0m[33m▎[0man annoyance.
 
              [1muniversa1[0m [2ma day ago[0m
-            [0m[32m▎[0mWell that mostly depends on the kind of games you play... most Esports titles
-            [0m[32m▎[0mprobably benefit from a higher refresh rate/more fps... While most Singleplayer
-            [0m[32m▎[0mgames, except the occasional shooter, probably don't... With mmo's somewhere in
-            [0m[32m▎[0mbetween... It also quickly becomes very technical, as not only the display
-            [0m[32m▎[0mlatency is interesting, but also the input latency.
+            [0m[32m▎[0mWell that mostly depends on the kind of games you play… most Esports titles
+            [0m[32m▎[0mprobably benefit from a higher refresh rate/more fps… While most Singleplayer
+            [0m[32m▎[0mgames, except the occasional shooter, probably don't… With mmo's somewhere in
+            [0m[32m▎[0mbetween… It also quickly becomes very technical, as not only the display latency
+            [0m[32m▎[0mis interesting, but also the input latency.
 
              [1mthrowaway189262[0m [2ma day ago[0m
             [0m[32m▎[0mIt depends on the game. I play competitive shooters which I've gotten worse at
@@ -3625,7 +3624,7 @@ based script.
     [0m[31m▎[0m
     [0m[31m▎[0mBut when it mixed with Startup Culture it morphed into [3m"don't worry about speed,[0m
     [0m[31m▎[0m[3mjust write whatever shitty code comes into your head and only optimize if a[0m
-    [0m[31m▎[0m[3mcustomer complains... scratch that, let's not listen to customer complaints[0m
+    [0m[31m▎[0m[3mcustomer complains… scratch that, let's not listen to customer complaints[0m
     [0m[31m▎[0m[3mbecause we know better"[0m.
     [0m[31m▎[0m
     [0m[31m▎[0mLike you said, some companies with good products and some good developers are
@@ -4100,20 +4099,20 @@ these days).
 Thanks everyone for sharing really awesome examples in the comments here - from
 Games to Receipt Printers to Apps, it's clear that speed is valued.
 
-Or... that there's a big opportunity to bring back lightning fast products :)
+Or… that there's a big opportunity to bring back lightning fast products :)
 
 [1mancarda[0m [2m[4m21 hours ago                                                          ::[0m
 This is one reason why I prefer command line programs and websites like
 SourceHut and HackerNews over GitHub and Reddit. Also, why I disable or reduce
 as many animations as I can in graphical software I use.
 
-Everything is just too slow -- and it doesn't need to be.
+Everything is just too slow — and it doesn't need to be.
 
 [1mfelixding[0m [2m[4m19 hours ago                                                        ::[0m
-[2m ▎[3m[2m... a Palm phone, there was a delay.[0m
+[2m ▎[3m[2m… a Palm phone, there was a delay.[0m
 
 My first impression was "unbelievable" - how on earth would anyone think a Palm
-device is slow?! Then I followed the link and saw a Palm Tree 750/V... oh, of
+device is slow?! Then I followed the link and saw a Palm Tree 750/V… oh, of
 course, that thing run Windows Mobile.
 
 A Palm device running Palm OS is blazing fast! I switched to iPhone from Treo
@@ -4141,7 +4140,7 @@ pause, too.
 All I have to say is that the "what would it be like to live with lag?" is
 insane.
 
-1/3 of a second is already insane lag, 3 seconds is just ridiculous.
+⅓ of a second is already insane lag, 3 seconds is just ridiculous.
 
      [1mTepix[0m [2ma day ago[0m
     [0m[31m▎[0mAgree. In VR to achieve "presence" you aim for 20ms of lag, or less.
