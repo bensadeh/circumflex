@@ -1,18 +1,14 @@
 <p align="center">
   <img src="screenshots/circumflex.png" width="350" alt="^"/>
 </p>
-
- 
-    
+   
  <p align="center">
 <a href="https://github.com/bensadeh/circumflex/releases" target="__blank"><img src="https://img.shields.io/github/v/release/bensadeh/circumflex?style=flat&label=&color=293452"</a>
   <a href="/LICENSE" target="__blank"><img src="https://img.shields.io/github/license/bensadeh/circumflex?style=flat&color=89ddff&label=" alt="License"></a>
 <a href="/CHANGELOG.md" target="__blank"><img src="https://img.shields.io/badge/docs-changelog-9cc4ff?style=flat&label=" alt="Changelog"></a>
 <a href="/go.mod" target="__blank"><img src="https://img.shields.io/static/v1?label=&message=1.16&color=e1acff&logo=go&logoColor=black" alt="Go Version"></a>
 
-
 </p>
-  
 
 #
   
@@ -26,23 +22,27 @@
 </p>
 
 
-### Features
+### Main features
 
-- 🛋 **Everything in one place** - browse submissions, read articles or view the comment section
-- 🤹 **Native terminal colors** - you bring your own color scheme, `circumflex` does the rest
-- ⚡️ **Tools you already know** - content is piped to the pager `less`
-- 🌈 **Syntax highlighting** - syntax-aware formatting for comments and headlines
-- 🛠 **Configureable** -  simple custumization through environmental variables or config file
-- ❤️ **Add to favorites** - save interesting submissions for later
+- 🛋 **Everything in one place** — browse submissions, read articles or view the comment section
+- 🌈 **Syntax highlighting** — syntax-aware formatting for comments and headlines
+- ⚡️ **Familiar tools** — content is piped to the pager `less` 
+
+**You might also like:**
+- 🤹 **Native terminal colors** — you bring your own color scheme, `circumflex` does the rest
+- 🛠 **Customization** — change settings through environmental variables or a config file
+- ❤️ **Add to favorites** — save interesting submissions for later
 
 ### Table of Contents
 
 * [Installing](#-installing)
 * [Keymaps](#%EF%B8%8F-keymaps)
 * [Comment section](#-comment-section)
+###
 * [Reader mode](#-reader-mode)
 * [Syntax highlighting](#-syntax-highlighting)
 * [Favorites](#%EF%B8%8F-favorites)
+###
 * [Fine tuning](#-fine-tuning)
 * [Settings](#%EF%B8%8F-settings)
 * [Under the hood](#-under-the-hood)
