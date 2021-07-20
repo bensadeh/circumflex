@@ -104,21 +104,17 @@ func getColoredIndentBlock(level int) string {
 	case 6:
 		return Magenta
 	case 7:
-		return White
-	case 8:
 		return AltRed
-	case 9:
+	case 8:
 		return AltYellow
-	case 10:
+	case 9:
 		return AltGreen
-	case 11:
+	case 10:
 		return AltCyan
-	case 12:
+	case 11:
 		return AltBlue
-	case 13:
+	case 12:
 		return AltMagenta
-	case 14:
-		return AltWhite
 	default:
 		return Normal
 	}

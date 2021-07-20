@@ -506,11 +506,11 @@ billions to achieve and IMO that should be chased after.
                         [0m[35m▎[0msuppose. I believe the Xcode experience isn't too bad however.
 
                              [1mswiftcoder[0m [2m14 hours ago[0m
-                            [0m[37m▎[0mUsing a bloated non-native app to develop your elegant, fully native app. Uh
-                            [0m[37m▎[0mhuh.
+                            [0m[31;1m▎[0mUsing a bloated non-native app to develop your elegant, fully native app. Uh
+                            [0m[31;1m▎[0mhuh.
 
                                  [1mSiira[0m [2m9 hours ago[0m
-                                [0m[31;1m▎[0mJava is fast, unlike JS. Perhaps one day JS will be fast, too.
+                                [0m[33;1m▎[0mJava is fast, unlike JS. Perhaps one day JS will be fast, too.
 
                          [1mmattgreenrocks[0m [2m16 hours ago[0m
                         [0m[35m▎[0mGood to know, I'll give it a shot!
@@ -1207,19 +1207,19 @@ billions to achieve and IMO that should be chased after.
                         [0m[35m▎[0mas easy to use, but far more performant.
 
                              [1mlostcolony[0m [2m14 hours ago[0m
-                            [0m[37m▎[0mSo if it isn't easier to use, and less performant, why are these poor toolsets
-                            [0m[37m▎[0mbeing chosen?
+                            [0m[31;1m▎[0mSo if it isn't easier to use, and less performant, why are these poor toolsets
+                            [0m[31;1m▎[0mbeing chosen?
 
                                  [1mskohan[0m [2m14 hours ago[0m
-                                [0m[31;1m▎[0mHistory and inertia
+                                [0m[33;1m▎[0mHistory and inertia
 
                                      [1mlostcolony[0m [2m13 hours ago[0m
-                                    [0m[33;1m▎[0mThat would explain why they continue to be used after initial adoption. It
-                                    [0m[33;1m▎[0mdoesn't explain why they were initially chosen if there were better options
-                                    [0m[33;1m▎[0musing something that already existed.
-                                    [0m[33;1m▎[0m
-                                    [0m[33;1m▎[0mHistory and inertia also are nearly synonymous with "easier to use" in this
-                                    [0m[33;1m▎[0mcontext.
+                                    [0m[32;1m▎[0mThat would explain why they continue to be used after initial adoption. It
+                                    [0m[32;1m▎[0mdoesn't explain why they were initially chosen if there were better options
+                                    [0m[32;1m▎[0musing something that already existed.
+                                    [0m[32;1m▎[0m
+                                    [0m[32;1m▎[0mHistory and inertia also are nearly synonymous with "easier to use" in this
+                                    [0m[32;1m▎[0mcontext.
 
                  [1mforgotmypw17[0m [2m20 hours ago[0m
                 [0m[36m▎[0mYou,re pointing the blame at a source of EVEN WORSE performance issues, but it
@@ -1361,16 +1361,16 @@ billions to achieve and IMO that should be chased after.
                         [0m[35m▎[0myour program is fast!".
 
                              [1mtoast0[0m [2m13 hours ago[0m
-                            [0m[37m▎[0m[2m ▎[3m[2mTo be fair, profiling is way more difficult than it was in the days of[0m
-                            [0m[37m▎[0m[2m ▎[2;3msingle-core local applications.[0m
-                            [0m[37m▎[0m
-                            [0m[37m▎[0mNot if you graduated from the printf school of profiling[[31m1[0m].
-                            [0m[37m▎[0m
-                            [0m[37m▎[0mMeasure the time when you start something, measure the time when you finish, and
-                            [0m[37m▎[0mprint it. Anything that takes too long gets a closer look.
-                            [0m[37m▎[0m
-                            [0m[37m▎[0m[[31m1[0m] unaffiliated with the printf school of debugging, but coincidentally located
-                            [0m[37m▎[0mat the same campus.
+                            [0m[31;1m▎[0m[2m ▎[3m[2mTo be fair, profiling is way more difficult than it was in the days of[0m
+                            [0m[31;1m▎[0m[2m ▎[2;3msingle-core local applications.[0m
+                            [0m[31;1m▎[0m
+                            [0m[31;1m▎[0mNot if you graduated from the printf school of profiling[[31m1[0m].
+                            [0m[31;1m▎[0m
+                            [0m[31;1m▎[0mMeasure the time when you start something, measure the time when you finish, and
+                            [0m[31;1m▎[0mprint it. Anything that takes too long gets a closer look.
+                            [0m[31;1m▎[0m
+                            [0m[31;1m▎[0m[[31m1[0m] unaffiliated with the printf school of debugging, but coincidentally located
+                            [0m[31;1m▎[0mat the same campus.
 
                          [1mzwirbl[0m [2m20 hours ago[0m
                         [0m[35m▎[0mWirth's law is a reality, an awful, horribly annoying one
@@ -1411,95 +1411,95 @@ billions to achieve and IMO that should be chased after.
                         [0m[35m▎[0mrunning away to an uninhabited island to avoid paying it off.
 
                              [1mmynameisash[0m [2m14 hours ago[0m
-                            [0m[37m▎[0m[2m ▎[3m[2mIn theory yes, in practice this almost never happens. 95% of the teams just[0m
-                            [0m[37m▎[0m[2m ▎[2;3mquickly mash the product together and peace out before anyone notices what[0m
-                            [0m[37m▎[0m[2m ▎[2;3mmess did they make.[0m
-                            [0m[37m▎[0m
-                            [0m[37m▎[0mMuch of my work is in highly parallelized computing (think Spark across
-                            [0m[37m▎[0mthousands of nodes) processing 10s or 100s of TiB at a time with declarative
-                            [0m[37m▎[0msyntax. It's super cool. Until someone decides they're going to use this one
-                            [0m[37m▎[0mline expression to process data because it's just so easy to write. But it turns
-                            [0m[37m▎[0mout doing that absolutely destroys your performance because the query optimizer
-                            [0m[37m▎[0mnow has a black box in the middle of your job graph that it can't reason about.
-                            [0m[37m▎[0m
-                            [0m[37m▎[0mBad practices like that occur over and over again, and everyone just figures,
-                            [0m[37m▎[0m"Well, we have a lot of hardware. If the job takes an extra half hour, NBD."
-                            [0m[37m▎[0mSoon, you have scores of jobs that take eight hours to run and everyone starts
-                            [0m[37m▎[0mto become a little uneasy because the infrastructure is starting to fail jobs on
-                            [0m[37m▎[0maccount of bad data skew and vertexes exceeding the predefined limits.
-                            [0m[37m▎[0m
-                            [0m[37m▎[0mHow did we get here? We severely over-optimized for engineer time to the
-                            [0m[37m▎[0mdetriment of CPU time. Certainly, there [3mis[0m a balance to strike, no doubt. But
-                            [0m[37m▎[0mWhen writing one line of code versus six (and I'm not being hyperbolic here)
-                            [0m[37m▎[0mbecomes preferable to really understanding what your system is doing, you reap
-                            [0m[37m▎[0mwhat you sow.
-                            [0m[37m▎[0m
-                            [0m[37m▎[0mOn the plus side, I get to come in and make things run 5x, 10x, maybe even 20x
-                            [0m[37m▎[0mfaster with very little work. It sometimes feels magical, but it would be
-                            [0m[37m▎[0mpreferable if we had some appreciation for not letting our code slowly descend
-                            [0m[37m▎[0minto gross inefficiency.
+                            [0m[31;1m▎[0m[2m ▎[3m[2mIn theory yes, in practice this almost never happens. 95% of the teams just[0m
+                            [0m[31;1m▎[0m[2m ▎[2;3mquickly mash the product together and peace out before anyone notices what[0m
+                            [0m[31;1m▎[0m[2m ▎[2;3mmess did they make.[0m
+                            [0m[31;1m▎[0m
+                            [0m[31;1m▎[0mMuch of my work is in highly parallelized computing (think Spark across
+                            [0m[31;1m▎[0mthousands of nodes) processing 10s or 100s of TiB at a time with declarative
+                            [0m[31;1m▎[0msyntax. It's super cool. Until someone decides they're going to use this one
+                            [0m[31;1m▎[0mline expression to process data because it's just so easy to write. But it turns
+                            [0m[31;1m▎[0mout doing that absolutely destroys your performance because the query optimizer
+                            [0m[31;1m▎[0mnow has a black box in the middle of your job graph that it can't reason about.
+                            [0m[31;1m▎[0m
+                            [0m[31;1m▎[0mBad practices like that occur over and over again, and everyone just figures,
+                            [0m[31;1m▎[0m"Well, we have a lot of hardware. If the job takes an extra half hour, NBD."
+                            [0m[31;1m▎[0mSoon, you have scores of jobs that take eight hours to run and everyone starts
+                            [0m[31;1m▎[0mto become a little uneasy because the infrastructure is starting to fail jobs on
+                            [0m[31;1m▎[0maccount of bad data skew and vertexes exceeding the predefined limits.
+                            [0m[31;1m▎[0m
+                            [0m[31;1m▎[0mHow did we get here? We severely over-optimized for engineer time to the
+                            [0m[31;1m▎[0mdetriment of CPU time. Certainly, there [3mis[0m a balance to strike, no doubt. But
+                            [0m[31;1m▎[0mWhen writing one line of code versus six (and I'm not being hyperbolic here)
+                            [0m[31;1m▎[0mbecomes preferable to really understanding what your system is doing, you reap
+                            [0m[31;1m▎[0mwhat you sow.
+                            [0m[31;1m▎[0m
+                            [0m[31;1m▎[0mOn the plus side, I get to come in and make things run 5x, 10x, maybe even 20x
+                            [0m[31;1m▎[0mfaster with very little work. It sometimes feels magical, but it would be
+                            [0m[31;1m▎[0mpreferable if we had some appreciation for not letting our code slowly descend
+                            [0m[31;1m▎[0minto gross inefficiency.
 
                              [1mseer[0m [2m19 hours ago[0m
-                            [0m[37m▎[0mMaybe it didn’t really come across I am totally in the performance camp and love
-                            [0m[37m▎[0mto be able to craft a beautiful, lean and responsive UI if nothing else than for
-                            [0m[37m▎[0mseeing the joy on users’ faces when they are delighted (amazed!) that what they
-                            [0m[37m▎[0mwanted done happened so fast.
-                            [0m[37m▎[0m
-                            [0m[37m▎[0mBut time and time again I see that projects with a fast “enough” interfaces and
-                            [0m[37m▎[0mflexible systems win out on more specialized, faster ones. And I hate that but
-                            [0m[37m▎[0mhere we are. Sometime we see a really performant piece of software hit the sweet
-                            [0m[37m▎[0mspot of functionality for a while (for example sublime text) but then get
-                            [0m[37m▎[0movertaken by a fast enough but more flexible alternative (vacode)
+                            [0m[31;1m▎[0mMaybe it didn’t really come across I am totally in the performance camp and love
+                            [0m[31;1m▎[0mto be able to craft a beautiful, lean and responsive UI if nothing else than for
+                            [0m[31;1m▎[0mseeing the joy on users’ faces when they are delighted (amazed!) that what they
+                            [0m[31;1m▎[0mwanted done happened so fast.
+                            [0m[31;1m▎[0m
+                            [0m[31;1m▎[0mBut time and time again I see that projects with a fast “enough” interfaces and
+                            [0m[31;1m▎[0mflexible systems win out on more specialized, faster ones. And I hate that but
+                            [0m[31;1m▎[0mhere we are. Sometime we see a really performant piece of software hit the sweet
+                            [0m[31;1m▎[0mspot of functionality for a while (for example sublime text) but then get
+                            [0m[31;1m▎[0movertaken by a fast enough but more flexible alternative (vacode)
 
                              [1manthk[0m [2m19 hours ago[0m
-                            [0m[37m▎[0m[2m ▎[3m[2mEastern European[0m
-                            [0m[37m▎[0m
-                            [0m[37m▎[0mEastern European coders are highly competent, they did magic back in the day
-                            [0m[37m▎[0mwith just a ZX Spectrum.
+                            [0m[31;1m▎[0m[2m ▎[3m[2mEastern European[0m
+                            [0m[31;1m▎[0m
+                            [0m[31;1m▎[0mEastern European coders are highly competent, they did magic back in the day
+                            [0m[31;1m▎[0mwith just a ZX Spectrum.
 
                                  [1mpdimitar[0m[35m PP[0m [2m18 hours ago[0m
-                                [0m[31;1m▎[0mAs an Eastern European programmer, I agree. A lot of us are called to fix messes
-                                [0m[31;1m▎[0mleft by primadona devs (who are taking home $200K a year for the privilege of
-                                [0m[31;1m▎[0mmaking other people's lives a living nightmare).
+                                [0m[33;1m▎[0mAs an Eastern European programmer, I agree. A lot of us are called to fix messes
+                                [0m[33;1m▎[0mleft by primadona devs (who are taking home $200K a year for the privilege of
+                                [0m[33;1m▎[0mmaking other people's lives a living nightmare).
 
                                      [1mtharne[0m [2m17 hours ago[0m
-                                    [0m[33;1m▎[0mTo be fair, most of those "primadona devs", as you call them, would much prefer
-                                    [0m[33;1m▎[0mto write well-designed programs cleanly coded, but are given completely
-                                    [0m[33;1m▎[0munreasonable timeframes and staffing then told to create an MVP then turn it
-                                    [0m[33;1m▎[0mover to offshore.
-                                    [0m[33;1m▎[0m
-                                    [0m[33;1m▎[0mVery few people enjoy producing junk, but management (and customers) often
-                                    [0m[33;1m▎[0mdemand junk today rather than quality tomorrow.
+                                    [0m[32;1m▎[0mTo be fair, most of those "primadona devs", as you call them, would much prefer
+                                    [0m[32;1m▎[0mto write well-designed programs cleanly coded, but are given completely
+                                    [0m[32;1m▎[0munreasonable timeframes and staffing then told to create an MVP then turn it
+                                    [0m[32;1m▎[0mover to offshore.
+                                    [0m[32;1m▎[0m
+                                    [0m[32;1m▎[0mVery few people enjoy producing junk, but management (and customers) often
+                                    [0m[32;1m▎[0mdemand junk today rather than quality tomorrow.
 
                                          [1mridethebike[0m [2m12 hours ago[0m
-                                        [0m[32;1m▎[0mPrimadona dev here :)
-                                        [0m[32;1m▎[0m
-                                        [0m[32;1m▎[0m[2m ▎[3m[2mmost of those "primadona devs", as you call them, would much prefer to write[0m
-                                        [0m[32;1m▎[0m[2m ▎[2;3mwell-designed programs cleanly coded[0m
-                                        [0m[32;1m▎[0m
-                                        [0m[32;1m▎[0mMost of them - yes.
-                                        [0m[32;1m▎[0mBut there's a non-negligible chunk of them who are too careless or incompetent
-                                        [0m[32;1m▎[0mto care about quality - they've been around long enough to gain knowledge about
-                                        [0m[32;1m▎[0mproject and get Vice-President title(inflated ego included).
-                                        [0m[32;1m▎[0m
-                                        [0m[32;1m▎[0mIt is especially visible in big banks (I suppose it's typical for other big
-                                        [0m[32;1m▎[0mnon-tech corps as well) where tech culture is generally on poor side.
-                                        [0m[32;1m▎[0m
-                                        [0m[32;1m▎[0medit: grammar
+                                        [0m[36;1m▎[0mPrimadona dev here :)
+                                        [0m[36;1m▎[0m
+                                        [0m[36;1m▎[0m[2m ▎[3m[2mmost of those "primadona devs", as you call them, would much prefer to write[0m
+                                        [0m[36;1m▎[0m[2m ▎[2;3mwell-designed programs cleanly coded[0m
+                                        [0m[36;1m▎[0m
+                                        [0m[36;1m▎[0mMost of them - yes.
+                                        [0m[36;1m▎[0mBut there's a non-negligible chunk of them who are too careless or incompetent
+                                        [0m[36;1m▎[0mto care about quality - they've been around long enough to gain knowledge about
+                                        [0m[36;1m▎[0mproject and get Vice-President title(inflated ego included).
+                                        [0m[36;1m▎[0m
+                                        [0m[36;1m▎[0mIt is especially visible in big banks (I suppose it's typical for other big
+                                        [0m[36;1m▎[0mnon-tech corps as well) where tech culture is generally on poor side.
+                                        [0m[36;1m▎[0m
+                                        [0m[36;1m▎[0medit: grammar
 
                                          [1mpdimitar[0m[35m PP[0m [2m15 hours ago[0m
-                                        [0m[32;1m▎[0mObviously neither me nor you can generalize -- both extremes exist.
-                                        [0m[32;1m▎[0m
-                                        [0m[32;1m▎[0mGiven the chance I'd likely collect a fat paycheck and bail out at the end of
-                                        [0m[32;1m▎[0mthe contract as those other people did. But that attitude is responsible for the
-                                        [0m[32;1m▎[0mincreasingly awful mess that modern software is becoming.
-                                        [0m[32;1m▎[0m
-                                        [0m[32;1m▎[0mAlmost everyone is at fault, me included. The perverted incentives of today's
-                                        [0m[32;1m▎[0mworld are only making things worse.
+                                        [0m[36;1m▎[0mObviously neither me nor you can generalize -- both extremes exist.
+                                        [0m[36;1m▎[0m
+                                        [0m[36;1m▎[0mGiven the chance I'd likely collect a fat paycheck and bail out at the end of
+                                        [0m[36;1m▎[0mthe contract as those other people did. But that attitude is responsible for the
+                                        [0m[36;1m▎[0mincreasingly awful mess that modern software is becoming.
+                                        [0m[36;1m▎[0m
+                                        [0m[36;1m▎[0mAlmost everyone is at fault, me included. The perverted incentives of today's
+                                        [0m[36;1m▎[0mworld are only making things worse.
 
                                      [1mseer[0m [2m16 hours ago[0m
-                                    [0m[33;1m▎[0mHah true dat. Been my life for the last couple of years :-D Managed to pull
-                                    [0m[33;1m▎[0mthrough a project that “failed” two times and was 2.5 years behind schedule...
+                                    [0m[32;1m▎[0mHah true dat. Been my life for the last couple of years :-D Managed to pull
+                                    [0m[32;1m▎[0mthrough a project that “failed” two times and was 2.5 years behind schedule...
 
          [1mskohan[0m [2ma day ago[0m
         [0m[33m▎[0mGiven the state and culture of web development, it's honestly a travesty that
@@ -1546,9 +1546,9 @@ billions to achieve and IMO that should be chased after.
                         [0m[35m▎[0mOr Java
 
                              [1mryandrake[0m [2m7 hours ago[0m
-                            [0m[37m▎[0mOr... and I know this is just crazy-talk... there is properly separating your
-                            [0m[37m▎[0mplatform-independent business logic from the minimal platform-specific UI layer.
-                            [0m[37m▎[0mA lost art these days it seems.
+                            [0m[31;1m▎[0mOr... and I know this is just crazy-talk... there is properly separating your
+                            [0m[31;1m▎[0mplatform-independent business logic from the minimal platform-specific UI layer.
+                            [0m[31;1m▎[0mA lost art these days it seems.
 
                  [1mwruza[0m [2m20 hours ago[0m
                 [0m[36m▎[0mIf CorelDRAW were installed on every phone and given same privileges, they’d use
@@ -1599,9 +1599,9 @@ billions to achieve and IMO that should be chased after.
                         [0m[35m▎[0msupported systems.
 
                              [1mpdimitar[0m[35m PP[0m [2m20 hours ago[0m
-                            [0m[37m▎[0mI don't know engineers from in there but I am willing to bet $100 that part of
-                            [0m[37m▎[0mthem really want to make native OS UIs. It's just that business will never
-                            [0m[37m▎[0mgreen-light that as a priority.
+                            [0m[31;1m▎[0mI don't know engineers from in there but I am willing to bet $100 that part of
+                            [0m[31;1m▎[0mthem really want to make native OS UIs. It's just that business will never
+                            [0m[31;1m▎[0mgreen-light that as a priority.
 
                          [1mjamil7[0m [2m18 hours ago[0m
                         [0m[35m▎[0mAlthough I'm not a huge fan of it, you could argue that Flutter is trying to
@@ -1613,10 +1613,10 @@ billions to achieve and IMO that should be chased after.
                         [0m[35m▎[0mso web technologies spread with it.
 
                              [1mgrishka[0m [2m17 hours ago[0m
-                            [0m[37m▎[0mQt still feels not quite right on macOS — because it draws the controls itself
-                            [0m[37m▎[0minstead of using the native ones. wxWidgets is the best of the bunch, because it
-                            [0m[37m▎[0mapparently does wrap AppKit into itself, but then again, the layouts apps use
-                            [0m[37m▎[0mgive away that it's a cross-platform thing.
+                            [0m[31;1m▎[0mQt still feels not quite right on macOS — because it draws the controls itself
+                            [0m[31;1m▎[0minstead of using the native ones. wxWidgets is the best of the bunch, because it
+                            [0m[31;1m▎[0mapparently does wrap AppKit into itself, but then again, the layouts apps use
+                            [0m[31;1m▎[0mgive away that it's a cross-platform thing.
 
                  [1mbenhurmarcel[0m [2m20 hours ago[0m
                 [0m[36m▎[0mBecause it works everywhere.
@@ -1794,7 +1794,7 @@ billions to achieve and IMO that should be chased after.
                         [0m[35m▎[0mWell electron used to be called "atom shell" :)
 
                              [1mfoldr[0m [2m19 hours ago[0m
-                            [0m[37m▎[0mAh good point. I didn't know that.
+                            [0m[31;1m▎[0mAh good point. I didn't know that.
 
              [1mtonyedgecombe[0m [2m21 hours ago[0m
             [0m[32m▎[0mVS Code has a lot of native code and VS is particularly bloated. I'm not sure
@@ -2418,14 +2418,14 @@ billions to achieve and IMO that should be chased after.
                         [0m[35m▎[0mit to the top of my pile.
 
                              [1mpdimitar[0m[35m PP[0m [2m2 hours ago[0m
-                            [0m[37m▎[0mThe [34msssss[0m program might have a potential. But let me give you an example: I want
-                            [0m[37m▎[0mmy every blog article to also have versions / revisions and I'd like visitors to
-                            [0m[37m▎[0mbe able to read the older versions as well as the last version.
-                            [0m[37m▎[0m
-                            [0m[37m▎[0mI'd also like multilingual article ability (but I think some of the engines out
-                            [0m[37m▎[0mthere can do that). The more I think of it, the more I wonder if it should be
-                            [0m[37m▎[0msomething like Ghost.org: namely backed by sqlite and not naked files. But who
-                            [0m[37m▎[0mknows.
+                            [0m[31;1m▎[0mThe [34msssss[0m program might have a potential. But let me give you an example: I want
+                            [0m[31;1m▎[0mmy every blog article to also have versions / revisions and I'd like visitors to
+                            [0m[31;1m▎[0mbe able to read the older versions as well as the last version.
+                            [0m[31;1m▎[0m
+                            [0m[31;1m▎[0mI'd also like multilingual article ability (but I think some of the engines out
+                            [0m[31;1m▎[0mthere can do that). The more I think of it, the more I wonder if it should be
+                            [0m[31;1m▎[0msomething like Ghost.org: namely backed by sqlite and not naked files. But who
+                            [0m[31;1m▎[0mknows.
 
                      [1moftenwrong[0m [2m8 hours ago[0m
                     [0m[34m▎[0m]8;;https://github.com/rothgar/awesome-tuishttps://github.com/rothgar/awesome-tuis]8;;
