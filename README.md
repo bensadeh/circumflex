@@ -33,6 +33,8 @@
 - 🛠 **Customization** — change settings through environmental variables or a config file
 - ❤️ **Add to favorites** — save interesting submissions for later
 
+#
+
 ### Table of Contents
 
 * [Installing](#-installing)
@@ -46,6 +48,8 @@
 * [Fine tuning](#-fine-tuning)
 * [Settings](#%EF%B8%8F-settings)
 * [Under the hood](#-under-the-hood)
+
+***
 
 ## 📦 Installing
 
