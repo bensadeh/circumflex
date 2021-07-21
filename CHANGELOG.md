@@ -8,7 +8,8 @@ _WIP_
 - Highlight moderator author names in main screen
 - Removed white from indent blocks
 - Comments now show prettier Unicode fractions 
-- Double single dashes (--) now appear as an em-dash (—)
+- Double single dashes (--) now appear as a single em-dash (—)
+- Triple dots (...) now appear as a single ellipsis (…)
 
 ## 1.14
 _2021-07-15_
