@@ -10,6 +10,7 @@ _WIP_
 - Comments now show prettier Unicode fractions 
 - Double single dashes (--) now appear as a single em-dash (—)
 - Triple dots (...) now appear as a single ellipsis (…)
+- Added an option to convert smileys to emojis
 
 ## 1.14
 _2021-07-15_

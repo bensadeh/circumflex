@@ -46,4 +46,8 @@ const (
 	CommentHighlightingDefault     = true
 	CommentHighlightingDescription = "Enables syntax highlighting for code snippets, @mentions, $variables," +
 		" IANAL and IAAL."
+	EmojiSmileysName        = "Convert smileys to emojis"
+	EmojiSmileysKey         = "CLX_EMOJI_SMILEYS"
+	EmojiSmileysDefault     = false
+	EmojiSmileysDescription = "Convert smileys to emojis."
 )

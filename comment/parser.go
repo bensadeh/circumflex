@@ -27,7 +27,7 @@ const (
 )
 
 func ParseComment(c string, commentWidth int, availableScreenWidth int, commentHighlighting bool,
-	useAlternateIndent bool) (string, []string) {
+	useAlternateIndent bool, emojiSmiley bool) (string, []string) {
 	if c == "[deleted]" {
 		return Dimmed + "[deleted]" + Normal, []string{}
 	}
@@ -67,6 +67,8 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 			paragraph = strings.ReplaceAll(paragraph, "</i>", "")
 			paragraph = strings.ReplaceAll(paragraph, "</a>", "")
 			paragraph = replaceSymbols(paragraph)
+			paragraph = replaceSmileys(paragraph, emojiSmiley)
+
 			paragraph = strings.Replace(paragraph, ">>", "", 1)
 			paragraph = strings.Replace(paragraph, ">", "", 1)
 			paragraph = strings.TrimLeft(paragraph, " ")
@@ -104,6 +106,7 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 
 		default:
 			paragraph = replaceSymbols(paragraph)
+			paragraph = replaceSmileys(paragraph, emojiSmiley)
 			paragraph = highlightReferences(paragraph)
 			paragraph = replaceHTML(paragraph)
 			paragraph = strings.TrimLeft(paragraph, " ")
@@ -140,6 +143,19 @@ func replaceSymbols(paragraph string) string {
 	paragraph = strings.ReplaceAll(paragraph, "4/5", "⅘")
 	paragraph = strings.ReplaceAll(paragraph, "1/6", "⅙")
 	paragraph = strings.ReplaceAll(paragraph, "1/10", "⅒")
+
+	return paragraph
+}
+
+func replaceSmileys(paragraph string, emojiSmiley bool) string {
+	if !emojiSmiley {
+		return paragraph
+	}
+
+	paragraph = strings.ReplaceAll(paragraph, ":)", "😊")
+	paragraph = strings.ReplaceAll(paragraph, ":-)", "😊")
+	paragraph = strings.ReplaceAll(paragraph, ":(", "😔")
+	paragraph = strings.ReplaceAll(paragraph, ":-(", "😔")
 
 	return paragraph
 }

@@ -10,27 +10,27 @@ import (
 )
 
 func ToString(comments endpoints.Comments, indentSize int, commentWidth int, screenWidth int, preserveRightMargin bool,
-	altIndentBlock bool, commentHighlighting bool) string {
-	header := getHeader(comments, commentWidth, screenWidth, commentHighlighting, altIndentBlock)
+	altIndentBlock bool, commentHighlighting bool, emojiSmiley bool) string {
+	header := getHeader(comments, commentWidth, screenWidth, commentHighlighting, altIndentBlock, emojiSmiley)
 	replies := ""
 
 	for _, reply := range comments.Comments {
 		replies += printReplies(reply, indentSize, commentWidth, screenWidth, comments.User, "",
-			preserveRightMargin, altIndentBlock, commentHighlighting)
+			preserveRightMargin, altIndentBlock, commentHighlighting, emojiSmiley)
 	}
 
 	return header + replies
 }
 
 func getHeader(c endpoints.Comments, commentWidth int, screenWidth int, commentHighlighting bool,
-	altIndentBlock bool) string {
+	altIndentBlock bool, emojiSmiley bool) string {
 	if commentWidth == 0 {
 		commentWidth = screenWidth
 	}
 
 	headline := getHeadline(c.Title, c.Domain, c.URL, c.ID, commentWidth)
 	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
-	rootComment := parseRootComment(c.Content, commentWidth, commentHighlighting, altIndentBlock)
+	rootComment := parseRootComment(c.Content, commentWidth, commentHighlighting, altIndentBlock, emojiSmiley)
 	helpMessage := dimmed(messages.LessScreenInfo) + NewLine
 	separator := messages.GetSeparator(commentWidth)
 
@@ -74,12 +74,12 @@ func getHyperlinkText(url string, text string) string {
 	return Link1 + url + Link2 + text + Link3
 }
 
-func parseRootComment(c string, commentWidth int, commentHighlighting bool, altIndentBlock bool) string {
+func parseRootComment(c string, commentWidth int, commentHighlighting bool, altIndentBlock bool, emojiSmiley bool) string {
 	if c == "" {
 		return ""
 	}
 
-	comment, URLs := ParseComment(c, commentWidth, commentWidth, commentHighlighting, altIndentBlock)
+	comment, URLs := ParseComment(c, commentWidth, commentWidth, commentHighlighting, altIndentBlock, emojiSmiley)
 	wrappedComment, _ := text.Wrap(comment, commentWidth)
 	wrappedComment = applyURLs(wrappedComment, URLs)
 
@@ -87,10 +87,12 @@ func parseRootComment(c string, commentWidth int, commentHighlighting bool, altI
 }
 
 func printReplies(c endpoints.Comments, indentSize int, commentWidth int, screenWidth int, originalPoster string,
-	parentPoster string, preserveRightMargin bool, altIndentBlock bool, commentHighlighting bool) string {
+	parentPoster string, preserveRightMargin bool, altIndentBlock bool, commentHighlighting bool,
+	emojiSmiley bool) string {
 	currentIndentSize := indentSize * c.Level
 	usableScreenSize := screenWidth - currentIndentSize
-	comment, URLs := ParseComment(c.Content, commentWidth, usableScreenSize, commentHighlighting, altIndentBlock)
+	comment, URLs := ParseComment(c.Content, commentWidth, usableScreenSize, commentHighlighting, altIndentBlock,
+		emojiSmiley)
 	adjustedCommentWidth := getCommentWidthForLevel(c.Level, indentSize, commentWidth, screenWidth, preserveRightMargin)
 
 	indentBlock := getIndentBlock(c.Level, indentSize, altIndentBlock)
@@ -110,7 +112,7 @@ func printReplies(c endpoints.Comments, indentSize int, commentWidth int, screen
 
 	for _, reply := range c.Comments {
 		fullComment += printReplies(reply, indentSize, commentWidth, screenWidth,
-			originalPoster, parentPoster, preserveRightMargin, altIndentBlock, commentHighlighting)
+			originalPoster, parentPoster, preserveRightMargin, altIndentBlock, commentHighlighting, emojiSmiley)
 	}
 
 	return fullComment

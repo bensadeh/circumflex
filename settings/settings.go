@@ -76,6 +76,8 @@ func initializeOptions() *options {
 		strconv.FormatBool(UseAlternateIndentBlockDefault), UseAlternateIndentBlockDescription)
 	o.addOption(CommentHighlightingName, CommentHighlightingKey,
 		strconv.FormatBool(CommentHighlightingDefault), CommentHighlightingDescription)
+	o.addOption(EmojiSmileysName, EmojiSmileysKey,
+		strconv.FormatBool(EmojiSmileysDefault), EmojiSmileysDescription)
 
 	return o
 }
