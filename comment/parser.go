@@ -127,6 +127,9 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 func replaceSymbols(paragraph string) string {
 	paragraph = strings.ReplaceAll(paragraph, tripleSpace, singleSpace)
 	paragraph = strings.ReplaceAll(paragraph, doubleSpace, singleSpace)
+	paragraph = strings.ReplaceAll(paragraph, "https://www", "www")
+	paragraph = strings.ReplaceAll(paragraph, "http://www", "www")
+	paragraph = strings.ReplaceAll(paragraph, "https://en.wikipedia.org", "en.wikipedia.org")
 	paragraph = strings.ReplaceAll(paragraph, "...", "…")
 	paragraph = strings.ReplaceAll(paragraph, " -- ", " — ")
 	paragraph = strings.ReplaceAll(paragraph, "1/2", "½")
