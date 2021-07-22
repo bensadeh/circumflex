@@ -414,8 +414,8 @@ grind my teeth with 95% of all software. Everything feels like it has at least
 I'd honestly pay extra for an iPhone where I can disable ALL motion, too. But
 that's the least of the problems.
 
-I don't want to become the grumpy old grandpa yelling "back in my day!..." but
-we have waaaaaaaaaaay too much young JS devs who know nothing else.
+I don't want to become the grumpy old grandpa yelling "back in my day!…" but we
+have waaaaaaaaaaay too much young JS devs who know nothing else.
 
 We need to get back to native UIs. Is it awfully hard? Yes it is. Do the users
 care? No, they don't. Many people want fast UIs.
@@ -2694,7 +2694,7 @@ billions to achieve and IMO that should be chased after.
                 [0m[36m▎[0mfor people to pay for GUI toolkits alone, I think.
 
      [1mavereveard[0m [2m15 hours ago[0m
-    [0m[31m▎[0m[2m ▎[3m[2m"back in my day!..." but we have waaaaaaaaaaay too much young JS devs who know[0m
+    [0m[31m▎[0m[2m ▎[3m[2m"back in my day!…" but we have waaaaaaaaaaay too much young JS devs who know[0m
     [0m[31m▎[0m[2m ▎[2;3mnothing else.[0m
     [0m[31m▎[0m
     [0m[31m▎[0mfunny, java applet in the 90s gained a fame for being slow, being caused mostly
