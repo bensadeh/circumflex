@@ -6,6 +6,7 @@ import (
 	"clx/favorites"
 	"clx/file"
 	"clx/header"
+	"clx/history"
 	"clx/utils/filter"
 	"clx/utils/formatter"
 	"clx/utils/http"
@@ -28,7 +29,8 @@ const (
 )
 
 type StoryHandler struct {
-	sc []*storyCategory
+	sc      []*storyCategory
+	history *history.History
 }
 
 type storyCategory struct {
@@ -95,7 +97,7 @@ func getOverriddenYCJobsStatus(visibleStories int, hideYCJobs bool) bool {
 	return hideYCJobs
 }
 
-func (r *StoryHandler) Init(fav *favorites.Favorites) {
+func (r *StoryHandler) Init(fav *favorites.Favorites, his *history.History) {
 	r.sc = make([]*storyCategory, totalNumberOfCategories)
 
 	r.sc[categories.FrontPage] = new(storyCategory)
@@ -111,6 +113,7 @@ func (r *StoryHandler) Init(fav *favorites.Favorites) {
 	r.sc[categories.Favorites].maxPages = favoritesMaxPages
 
 	r.sc[categories.Favorites].stories = fav.Items
+	r.history = his
 }
 
 func (r *StoryHandler) Reset() {

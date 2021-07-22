@@ -5,6 +5,7 @@ import (
 	"clx/endpoints"
 	"clx/favorites"
 	"clx/handler"
+	"clx/history"
 	"strconv"
 	"time"
 
@@ -23,8 +24,9 @@ var addCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		fav := favorites.Initialize()
+		his := history.Initialize(0)
 		sh := new(handler.StoryHandler)
-		sh.Init(fav)
+		sh.Init(fav, his)
 
 		item := new(endpoints.Story)
 		item.ID, _ = strconv.Atoi(id)

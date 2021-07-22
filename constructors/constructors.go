@@ -6,6 +6,7 @@ import (
 	"clx/core"
 	"clx/favorites"
 	"clx/handler"
+	"clx/history"
 	"clx/screen"
 	"clx/utils/vim"
 
@@ -34,8 +35,9 @@ func NewScreenController() *core.ScreenController {
 	sc.MainView.Panels.AddPanel(panels.StoriesPanel, sc.Articles, true, true)
 
 	fav := favorites.Initialize()
+	his := history.Initialize(0)
 	sc.StoryHandler = new(handler.StoryHandler)
-	sc.StoryHandler.Init(fav)
+	sc.StoryHandler.Init(fav, his)
 
 	sc.VimRegister = new(vim.Register)
 

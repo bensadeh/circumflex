@@ -17,12 +17,14 @@ type History struct {
 	mode           int
 }
 
-func (h *History) Initialize(historyMode int) {
-	h.visitedStories = hashset.New()
-	h.mode = historyMode
+func Initialize(historyMode int) *History {
+	h := &History{
+		visitedStories: hashset.New(),
+		mode:           historyMode,
+	}
 
 	if h.mode == disableHistory {
-		return
+		return h
 	}
 
 	fullPath, dirPath, fileName := getCacheFilePaths()
@@ -30,7 +32,7 @@ func (h *History) Initialize(historyMode int) {
 	if !exists(fullPath) {
 		writeToDisk(h, dirPath, fileName)
 
-		return
+		return h
 	}
 
 	historyFileContent, readErr := os.ReadFile(fullPath)
@@ -42,6 +44,8 @@ func (h *History) Initialize(historyMode int) {
 	if deserializationErr != nil {
 		panic(deserializationErr)
 	}
+
+	return h
 }
 
 func writeToDisk(h *History, dirPath string, fileName string) {
