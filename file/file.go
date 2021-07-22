@@ -45,9 +45,9 @@ func WriteToFileInConfigDir(path string, content string) error {
 		return fmt.Errorf("could not create path to config dir: %w", mkdirErr)
 	}
 
-	file, createFileErr := os.Create(path)
-	if createFileErr != nil {
-		return fmt.Errorf("could not create config file: %w", createFileErr)
+	file, createPathErr := os.Create(path)
+	if createPathErr != nil {
+		return fmt.Errorf("could not create config file: %w", createPathErr)
 	}
 
 	_, writeFileErr := file.WriteString(content)
@@ -65,10 +65,9 @@ func WriteToFileNew(dirPath string, fileName string, content string) error {
 	}
 
 	filePath := path.Join(dirPath, fileName)
-	file, createFileErr := os.Create(filePath)
-
-	if createFileErr != nil {
-		return fmt.Errorf("could not create config file: %w", createFileErr)
+	file, createPathErr := os.Create(filePath)
+	if createPathErr != nil {
+		return fmt.Errorf("could not create config file: %w", createPathErr)
 	}
 
 	_, writeFileErr := file.WriteString(content)
