@@ -22,8 +22,14 @@ const (
 	singleSpace           = " "
 )
 
-func FormatMain(title string, domain string, author string, mode int) string {
-	return formatTitle(title, author, mode) + formatDomain(domain)
+func FormatMain(title string, domain string, author string, mode int, markAsRead bool) string {
+	readModifier := ""
+
+	if markAsRead {
+		readModifier = "[::d]"
+	}
+
+	return readModifier + formatTitle(title, author, mode) + formatDomain(domain)
 }
 
 func formatTitle(title string, author string, mode int) string {

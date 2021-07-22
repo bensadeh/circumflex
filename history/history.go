@@ -22,7 +22,7 @@ func (his *History) Contains(id int) bool {
 		return false
 	}
 
-	return his.visitedStories.Contains(id)
+	return his.visitedStories.Contains(float64(id))
 }
 
 func Initialize(historyMode int) *History {
@@ -57,6 +57,7 @@ func Initialize(historyMode int) *History {
 }
 
 func writeToDisk(h *History, dirPath string, fileName string) {
+	h.visitedStories.Add(27916178)
 	emptyJSON, _ := h.visitedStories.ToJSON()
 
 	err := file.WriteToFileNew(dirPath, fileName, string(emptyJSON))
