@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.15
-_WIP_
+_2021-07-22_
 
 **New features**
 - Submissions can now be marked as read (turned off by default)
