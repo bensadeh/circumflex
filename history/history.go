@@ -9,17 +9,13 @@ import (
 	"github.com/emirpasic/gods/sets/hashset"
 )
 
-const (
-	disableHistory = 0
-)
-
 type History struct {
 	visitedStories *hashset.Set
-	mode           int
+	markAsRead     bool
 }
 
 func (his *History) Contains(id int) bool {
-	if his.mode == disableHistory {
+	if !his.markAsRead {
 		return false
 	}
 
@@ -27,7 +23,7 @@ func (his *History) Contains(id int) bool {
 }
 
 func (his *History) AddStoryAndWriteToDisk(id int) {
-	if his.mode == disableHistory {
+	if !his.markAsRead {
 		return
 	}
 
@@ -37,13 +33,13 @@ func (his *History) AddStoryAndWriteToDisk(id int) {
 	writeToDisk(his, dirPath, fileName)
 }
 
-func Initialize(historyMode int) *History {
+func Initialize(markAsRead bool) *History {
 	h := &History{
 		visitedStories: hashset.New(),
-		mode:           historyMode,
+		markAsRead:     markAsRead,
 	}
 
-	if h.mode == disableHistory {
+	if !h.markAsRead {
 		return h
 	}
 

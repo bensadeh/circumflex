@@ -24,7 +24,7 @@ var addCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		fav := favorites.Initialize()
-		his := history.Initialize(0)
+		his := history.Initialize(false)
 		sh := new(handler.StoryHandler)
 		sh.Init(fav, his)
 

@@ -18,7 +18,7 @@ const (
 	maximumStoriesToDisplay = 30
 )
 
-func NewScreenController() *core.ScreenController {
+func NewScreenController(markAsRead bool) *core.ScreenController {
 	sc := new(core.ScreenController)
 	sc.Application = cview.NewApplication()
 
@@ -35,7 +35,7 @@ func NewScreenController() *core.ScreenController {
 	sc.MainView.Panels.AddPanel(panels.StoriesPanel, sc.Articles, true, true)
 
 	fav := favorites.Initialize()
-	his := history.Initialize(1)
+	his := history.Initialize(markAsRead)
 	sc.StoryHandler = new(handler.StoryHandler)
 	sc.StoryHandler.Init(fav, his)
 
