@@ -179,7 +179,7 @@ func (r *StoryHandler) AddItemToFavoritesAndWriteToFile(story *endpoints.Story) 
 	bytes, _ := r.GetFavoritesJSON()
 	filePath := file.PathToFavoritesFile()
 
-	err := file.WriteToFile(filePath, string(bytes))
+	err := file.WriteToFileInConfigDir(filePath, string(bytes))
 	if err != nil {
 		return fmt.Errorf("could not write to file: %w", err)
 	}
@@ -268,7 +268,7 @@ func (r *StoryHandler) getTotalNumberOfCategories() int {
 func write(r *StoryHandler) {
 	bytes, _ := r.GetFavoritesJSON()
 
-	err := file.WriteToFile(file.PathToFavoritesFile(), string(bytes))
+	err := file.WriteToFileInConfigDir(file.PathToFavoritesFile(), string(bytes))
 	if err != nil {
 		panic(err)
 	}

@@ -1,44 +1,68 @@
 package history
 
 import (
+	"clx/file"
 	"encoding/json"
-	"fmt"
 	"os"
 	"path"
+
+	"github.com/emirpasic/gods/sets/hashset"
+)
+
+const (
+	disableHistory = 0
 )
 
 type Handler struct {
-	visitedStories map[string]string
+	visitedStories *hashset.Set
+	mode           int
 }
 
-func (h *Handler) Initialize(enableHistory bool) {
-	if !enableHistory {
-		h.visitedStories = nil
-	}
+func (h *Handler) Initialize(historyMode int) {
+	h.mode = historyMode
 
-	historyPath := getPathToHistory()
+	if h.mode == disableHistory {
+		h.visitedStories = hashset.New()
 
-	if !exists(historyPath) {
 		return
 	}
 
-	historyFileContent, err := os.ReadFile(historyPath)
-	if err != nil {
-		print("Error: could not read from file")
+	fullPath, dirPath, fileName := getCacheFilePaths()
 
-		os.Exit(1)
+	if !exists(fullPath) {
+		writeToDisk(h, dirPath, fileName)
+
+		return
+	}
+
+	historyFileContent, err := os.ReadFile(fullPath)
+	if err != nil {
+		panic(err)
 	}
 
 	h.visitedStories = unmarshal(historyFileContent)
 }
 
-func getPathToHistory() string {
+func writeToDisk(h *Handler, dirPath string, fileName string) {
+	h.visitedStories = hashset.New()
+	emptyJSON, _ := h.visitedStories.ToJSON()
+
+	err := file.WriteToFileNew(dirPath, fileName, string(emptyJSON))
+	if err != nil {
+		panic(err)
+	}
+}
+
+func getCacheFilePaths() (string, string, string) {
 	homeDir, _ := os.UserHomeDir()
 	configDir := ".cache"
 	circumflexDir := "circumflex"
-	historyFile := "history.json"
+	fileName := "history.json"
 
-	return path.Join(homeDir, configDir, circumflexDir, historyFile)
+	fullPath := path.Join(homeDir, configDir, circumflexDir, fileName)
+	dirPath := path.Join(homeDir, configDir, circumflexDir)
+
+	return fullPath, dirPath, fileName
 }
 
 func exists(pathToFile string) bool {
@@ -49,15 +73,13 @@ func exists(pathToFile string) bool {
 	return true
 }
 
-func unmarshal(input []byte) map[string]string {
-	overrides := make(map[string]string)
+func unmarshal(input []byte) *hashset.Set {
+	cache := hashset.New()
 
-	err := json.Unmarshal(input, &overrides)
+	err := json.Unmarshal(input, &cache)
 	if err != nil {
-		fmt.Printf("Error: %s\n", err)
-
-		os.Exit(1)
+		panic(err)
 	}
 
-	return overrides
+	return cache
 }

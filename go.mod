@@ -5,6 +5,7 @@ go 1.16
 require (
 	code.rocketnine.space/tslocum/cview v1.5.6
 	github.com/MichaelMure/go-term-text v0.2.9
+	github.com/emirpasic/gods v1.12.0
 	github.com/gdamore/tcell/v2 v2.3.11
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/go-shiori/go-readability v0.0.0-20210520080909-1a0ca98baf0f

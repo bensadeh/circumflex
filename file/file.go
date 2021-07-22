@@ -39,13 +39,34 @@ func ConfigFileExists() bool {
 	return Exists(PathToConfigFile())
 }
 
-func WriteToFile(path string, content string) error {
+func WriteToFileInConfigDir(path string, content string) error {
 	mkdirErr := os.MkdirAll(PathToConfigDirectory(), 0o700)
 	if mkdirErr != nil {
 		return fmt.Errorf("could not create path to config dir: %w", mkdirErr)
 	}
 
 	file, createFileErr := os.Create(path)
+	if createFileErr != nil {
+		return fmt.Errorf("could not create config file: %w", createFileErr)
+	}
+
+	_, writeFileErr := file.WriteString(content)
+	if writeFileErr != nil {
+		return fmt.Errorf("could not write to file: %w", writeFileErr)
+	}
+
+	return nil
+}
+
+func WriteToFileNew(dirPath string, fileName string, content string) error {
+	mkdirErr := os.MkdirAll(dirPath, 0o700)
+	if mkdirErr != nil {
+		return fmt.Errorf("could not create path to config dir: %w", mkdirErr)
+	}
+
+	filePath := path.Join(dirPath, fileName)
+	file, createFileErr := os.Create(filePath)
+
 	if createFileErr != nil {
 		return fmt.Errorf("could not create config file: %w", createFileErr)
 	}
