@@ -16,6 +16,7 @@ _WIP_
 - Added an option to convert smileys to emojis
 - Removed support for hyperlinks in the terminal since they were somewhat too complex
 compared to the benefit / convenience they provided
+- URLs are now highlighted in dimmed blue
 
 ## 1.14
 _2021-07-15_

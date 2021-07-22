@@ -63,7 +63,7 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 		case s.IsQuote:
 			paragraph = strings.ReplaceAll(paragraph, "<i>", "")
 			paragraph = strings.ReplaceAll(paragraph, "</i>", "")
-			paragraph = strings.ReplaceAll(paragraph, "</a>", "")
+			paragraph = strings.ReplaceAll(paragraph, "</a>", Normal+Dimmed+Italic)
 			paragraph = replaceSymbols(paragraph)
 			paragraph = replaceSmileys(paragraph, emojiSmiley)
 
@@ -127,9 +127,8 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 func replaceSymbols(paragraph string) string {
 	paragraph = strings.ReplaceAll(paragraph, tripleSpace, singleSpace)
 	paragraph = strings.ReplaceAll(paragraph, doubleSpace, singleSpace)
-	paragraph = strings.ReplaceAll(paragraph, "https://www", "www")
-	paragraph = strings.ReplaceAll(paragraph, "http://www", "www")
-	paragraph = strings.ReplaceAll(paragraph, "https://en.wikipedia.org", "en.wikipedia.org")
+	paragraph = strings.ReplaceAll(paragraph, "https://", Dimmed+Blue)
+	paragraph = strings.ReplaceAll(paragraph, "http://", Dimmed+Blue)
 	paragraph = strings.ReplaceAll(paragraph, "...", "…")
 	paragraph = strings.ReplaceAll(paragraph, " -- ", " — ")
 	paragraph = strings.ReplaceAll(paragraph, "1/2", "½")
@@ -209,7 +208,7 @@ func replaceHTML(input string) string {
 	input = strings.ReplaceAll(input, "<p>", NewParagraph)
 	input = strings.ReplaceAll(input, "<i>", Italic)
 	input = strings.ReplaceAll(input, "</i>", Normal)
-	input = strings.ReplaceAll(input, "</a>", "")
+	input = strings.ReplaceAll(input, "</a>", Normal)
 	input = strings.ReplaceAll(input, "<pre><code>", "")
 	input = strings.ReplaceAll(input, "</code></pre>", "")
 

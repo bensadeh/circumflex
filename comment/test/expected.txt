@@ -85,8 +85,8 @@ OK.
     [0m[31m▎[0m
     [0m[31m▎[0m---
     [0m[31m▎[0m
-    [0m[31m▎[0m[[31m1[0m] https://en.wikipedia.org/wiki/Wireless_Application_Protocol
-    [0m[31m▎[0m[[33m2[0m] https://en.wikipedia.org/wiki/Wireless_Markup_Language
+    [0m[31m▎[0m[[31m1[0m] [2m[34men.wikipedia.org/wiki/Wireless_Application_Protocol[0m
+    [0m[31m▎[0m[[33m2[0m] [2m[34men.wikipedia.org/wiki/Wireless_Markup_Language[0m
 
          [1mjunon[0m [2m5 hours ago[0m
         [0m[33m▎[0mAgreed. When I didn't need to boot up BREW or whatever it was called to access
@@ -198,7 +198,7 @@ OK.
         [0m[33m▎[0m- that was a new thing around 2004-2006, something I think nobody really did
         [0m[33m▎[0mbefore).
         [0m[33m▎[0m
-        [0m[33m▎[0m[[31m1[0m] https://www.gsmarena.com/nokia_7700-570.php
+        [0m[33m▎[0m[[31m1[0m] [2m[34mwww.gsmarena.com/nokia_7700-570.php[0m
 
              [1mbdickason[0m[31m OP[0m [2m12 hours ago[0m
             [0m[32m▎[0mMy follow up question would be: Would a capacitive touch screen with 0.5s
@@ -265,7 +265,7 @@ spat the ticket at me. I ordered a second sandwich just so I could get a video
 of that happening again.
 
 Edit: Just found and uploaded the video :)
-https://youtu.be/TX_-dXIpPvA
+[2m[34myoutu.be/TX_-dXIpPvA[0m
 
 Edit2: looks like it was a soda, not a second sandwich.
 
@@ -520,7 +520,7 @@ billions to achieve and IMO that should be chased after.
                 [0m[36m▎[0mnon-themeable GUI toolkit written in C++, for Windows and Unix/X11. It's
                 [0m[36m▎[0mactively updated, but it's essentially a one man operation these days.
                 [0m[36m▎[0m
-                [0m[36m▎[0mhttp://fox-toolkit.org/
+                [0m[36m▎[0m[2m[34mfox-toolkit.org/[0m
 
                      [1mpindab0ter[0m [2m13 hours ago[0m
                     [0m[34m▎[0mThe first screenshot they show you (on the screenshots page) is a Windows XP
@@ -651,7 +651,7 @@ billions to achieve and IMO that should be chased after.
                 [0m[36m▎[0mAnd that has been known for decades - take a look at the "The Economic Value of
                 [0m[36m▎[0mRapid Response Time" from 1982:
                 [0m[36m▎[0m
-                [0m[36m▎[0mhttps://jlelliotton.blogspot.com/p/the-economic-value-of-rap…
+                [0m[36m▎[0m[2m[34mjlelliotton.blogspot.com/p/the-economic-value-of-rap…[0m
                 [0m[36m▎[0m
                 [0m[36m▎[0mIt's puzzling to me why businisses still don't prioritize UI latency, but it's
                 [0m[36m▎[0mnot a rational decision.
@@ -834,7 +834,7 @@ billions to achieve and IMO that should be chased after.
                 [0m[36m▎[0mat useful resolutions.
                 [0m[36m▎[0m
                 [0m[36m▎[0mGot my numbers by glancing at a few RTINGS.com reviews:
-                [0m[36m▎[0mhttps://www.rtings.com/monitor/reviews/best/by-usage/gaming
+                [0m[36m▎[0m[2m[34mwww.rtings.com/monitor/reviews/best/by-usage/gaming[0m
 
              [1muser-the-name[0m [2m18 hours ago[0m
             [0m[32m▎[0mConversions between analog and digital happen in nanoseconds. They happen as the
@@ -859,7 +859,7 @@ billions to achieve and IMO that should be chased after.
                 [0m[36m▎[0m333ms is ages! I can react way faster than that on a touchscreen. I bet you can
                 [0m[36m▎[0mtoo:
                 [0m[36m▎[0m
-                [0m[36m▎[0mhttps://humanbenchmark.com/tests/reactiontime
+                [0m[36m▎[0m[2m[34mhumanbenchmark.com/tests/reactiontime[0m
 
                      [1manonymoushn[0m [2m8 hours ago[0m
                     [0m[34m▎[0mYes. The players are trying to react to a bunch of other things, not just 1
@@ -877,7 +877,7 @@ billions to achieve and IMO that should be chased after.
                  [1mhedgehog[0m [2m14 hours ago[0m
                 [0m[36m▎[0mTyping in VSCode is high latency as well, I find it viscerally unpleasant to use
                 [0m[36m▎[0msolely due to this. There's already a ticket:
-                [0m[36m▎[0mhttps://github.com/Microsoft/vscode/issues/27378
+                [0m[36m▎[0m[2m[34mgithub.com/Microsoft/vscode/issues/27378[0m
 
          [1mHikikomori[0m [2m18 hours ago[0m
         [0m[33m▎[0mAnd some video games with good hardware manages less than 20-30ms button to
@@ -1035,7 +1035,7 @@ billions to achieve and IMO that should be chased after.
                  [1mHenryBemis[0m [2m20 hours ago[0m
                 [0m[36m▎[0mIT Crowd - Have You Tried Turning It Off And On Again?
                 [0m[36m▎[0m
-                [0m[36m▎[0mhttps://www.youtube.com/watch?v=nn2FB1P_Mn8
+                [0m[36m▎[0m[2m[34mwww.youtube.com/watch?v=nn2FB1P_Mn8[0m
 
          [1mPxtl[0m [2m16 hours ago[0m
         [0m[33m▎[0mOooh, thanks for this. I just applied the animation scale on my Pixel 4A and it
@@ -1666,11 +1666,10 @@ billions to achieve and IMO that should be chased after.
             [0m[32m▎[0mcouple of examples:
             [0m[32m▎[0m
             [0m[32m▎[0m1. It takes nine times as long as Vim to open a minified JavaScript file, and
-            [0m[32m▎[0mthen format it with Prettier:
-            [0m[32m▎[0mhttps://twitter.com/robenkleene/status/1285631026648276993
+            [0m[32m▎[0mthen format it with Prettier: [2m[34mtwitter.com/robenkleene/status/1285631026648276993[0m
             [0m[32m▎[0m
             [0m[32m▎[0m2. It takes 14 times as long to open an empty text file than BBEdit:
-            [0m[32m▎[0mhttps://twitter.com/robenkleene/status/1257724392458661889
+            [0m[32m▎[0m[2m[34mtwitter.com/robenkleene/status/1257724392458661889[0m
             [0m[32m▎[0m
             [0m[32m▎[0mBoth of the above examples revolve around opening files for the first time, and
             [0m[32m▎[0mI suspect a lot of the slowness I perceive is because I open a lot of different
@@ -1757,10 +1756,10 @@ billions to achieve and IMO that should be chased after.
                     [0m[34m▎[0mSublime and friends in the same way the VS Code did.
 
                      [1mfoldr[0m [2m21 hours ago[0m
-                    [0m[34m▎[0mAtom (https://atom.io/) is another Electron-based text editor release by GitHub
-                    [0m[34m▎[0m(before it was acquired by Microsoft). I think it predated VSCode. It certainly
-                    [0m[34m▎[0mhad more mindshare in the early days. But whereas VSCode has always been quite
-                    [0m[34m▎[0msnappy, Atom acquired a reputation for poor performance.
+                    [0m[34m▎[0mAtom ([2m[34matom.io/[0m) is another Electron-based text editor release by GitHub (before
+                    [0m[34m▎[0mit was acquired by Microsoft). I think it predated VSCode. It certainly had more
+                    [0m[34m▎[0mmindshare in the early days. But whereas VSCode has always been quite snappy,
+                    [0m[34m▎[0mAtom acquired a reputation for poor performance.
 
                          [1mWorldMaker[0m [2m14 hours ago[0m
                         [0m[35m▎[0m[2m ▎[3m[2mI think it predated VSCode[0m
@@ -1844,7 +1843,7 @@ billions to achieve and IMO that should be chased after.
     [0m[31m▎[0mnative apps, it's also harder to block ads and other trackers compared to the
     [0m[31m▎[0mweb.
     [0m[31m▎[0m
-    [0m[31m▎[0m[[31m1[0m]: https://puzzlepanda.com
+    [0m[31m▎[0m[[31m1[0m]: [2m[34mpuzzlepanda.com[0m
 
          [1mpdimitar[0m[35m PP[0m [2m14 hours ago[0m
         [0m[33m▎[0mSure, I'm not denying it. It's just that apparently it's very easy to produce
@@ -1944,12 +1943,12 @@ billions to achieve and IMO that should be chased after.
     [0m[31m▎[0m
     [0m[31m▎[0mChromium is a huge boon to developers for this reason. Now there could have been
     [0m[31m▎[0ma different history here. Apple after acquiring NeXT had also gotten OpenStep,
-    [0m[31m▎[0mhttps://en.m.wikipedia.org/wiki/OpenStep . OpenStep was a cross platform UI
-    [0m[31m▎[0mdevelopment kit, even the web could be a target. Apple decided (possibly for
-    [0m[31m▎[0mgood reasons, hard to argue with success) to kill this off. But, they had toyed
-    [0m[31m▎[0mwith it, https://www.macrumors.com/2007/06/14/yellow-box-seems-to-exi… . So,
-    [0m[31m▎[0mApple had effectively what Chromium has become. A cross-platform development and
-    [0m[31m▎[0mruntime environment.
+    [0m[31m▎[0m[2m[34men.m.wikipedia.org/wiki/OpenStep[0m . OpenStep was a cross platform UI development
+    [0m[31m▎[0mkit, even the web could be a target. Apple decided (possibly for good reasons,
+    [0m[31m▎[0mhard to argue with success) to kill this off. But, they had toyed with it,
+    [0m[31m▎[0m[2m[34mwww.macrumors.com/2007/06/14/yellow-box-seems-to-exi…[0m . So, Apple had
+    [0m[31m▎[0meffectively what Chromium has become. A cross-platform development and runtime
+    [0m[31m▎[0menvironment.
     [0m[31m▎[0m
     [0m[31m▎[0mWould things be different today if that wasn’t killed off? Would Apple have
     [0m[31m▎[0mnever come back from the brink of death to become the behemoth it is today,
@@ -1958,7 +1957,7 @@ billions to achieve and IMO that should be chased after.
     [0m[31m▎[0mefficient UIs like you want now.
     [0m[31m▎[0m
     [0m[31m▎[0mShoutout to GNUStep trying to keep the dream alive:
-    [0m[31m▎[0mhttps://en.m.wikipedia.org/wiki/GNUstep
+    [0m[31m▎[0m[2m[34men.m.wikipedia.org/wiki/GNUstep[0m
     [0m[31m▎[0m
     [0m[31m▎[0mFollow up question: maybe with Apple being so successful, now they could revive
     [0m[31m▎[0mthis and make it profitable for themselves, rather than starving their own
@@ -2031,16 +2030,16 @@ billions to achieve and IMO that should be chased after.
      [1mkesor[0m [2m21 hours ago[0m
     [0m[31m▎[0mThat is because they do inject a delay.
     [0m[31m▎[0m
-    [0m[31m▎[0mhttps://apple.stackexchange.com/questions/17929/how-can-i-di…
+    [0m[31m▎[0m[2m[34mapple.stackexchange.com/questions/17929/how-can-i-di…[0m
     [0m[31m▎[0m
-    [0m[31m▎[0mhttps://superuser.com/questions/455313/disable-os-x-enter-fu…
+    [0m[31m▎[0m[2m[34msuperuser.com/questions/455313/disable-os-x-enter-fu…[0m
     [0m[31m▎[0m
     [0m[31m▎[0mIt looks "pretty" to the UI people.
 
          [1mz92[0m [2m20 hours ago[0m
         [0m[33m▎[0mAnybody else remember the speedup loop.
         [0m[33m▎[0m
-        [0m[33m▎[0mhttps://thedailywtf.com/articles/The-Speedup-Loop
+        [0m[33m▎[0m[2m[34mthedailywtf.com/articles/The-Speedup-Loop[0m
         [0m[33m▎[0m
         [0m[33m▎[0mtl;dr : programmer inserts a large empty loop in a UI, so that in weeks when he
         [0m[33m▎[0machieves nothing, he removes a single zero from the end of the loop counter to
@@ -2091,9 +2090,9 @@ billions to achieve and IMO that should be chased after.
     [0m[31m▎[0mfound, is 100ms. If you can respond to a user action in 100ms, it feels instant
     [0m[31m▎[0mto the user.
     [0m[31m▎[0m
-    [0m[31m▎[0m0: https://www.enchant.com
+    [0m[31m▎[0m0: [2m[34mwww.enchant.com[0m
     [0m[31m▎[0m
-    [0m[31m▎[0m1: https://www.enchant.com/speed-is-a-feature
+    [0m[31m▎[0m1: [2m[34mwww.enchant.com/speed-is-a-feature[0m
 
          [1mpdimitar[0m[35m PP[0m [2m15 hours ago[0m
         [0m[33m▎[0mSounds like a good company to work in! :)
@@ -2193,7 +2192,7 @@ billions to achieve and IMO that should be chased after.
                 [0m[36m▎[0mGames are complex, but the dimensions question is trivial there.
 
          [1mchromanoid[0m [2ma day ago[0m
-        [0m[33m▎[0mYeah, totally :D https://news.ycombinator.com/item?id=26296339
+        [0m[33m▎[0mYeah, totally :D [2m[34mnews.ycombinator.com/item?id=26296339[0m
         [0m[33m▎[0m
         [0m[33m▎[0mMost game developers will make it as fast as they have to… in fact most
         [0m[33m▎[0mdevelopers do that.
@@ -2210,7 +2209,7 @@ billions to achieve and IMO that should be chased after.
         [0m[33m▎[0mAnd then they just end up using a middleware like Coherent[[37m0[0m] which is back to
         [0m[33m▎[0mHTML+CSS!
         [0m[33m▎[0m
-        [0m[33m▎[0mhttps://coherent-labs.com/
+        [0m[33m▎[0m[2m[34mcoherent-labs.com/[0m
 
      [1mjustin66[0m [2m19 hours ago[0m
     [0m[31m▎[0m[2m ▎[3m[2mThis might be because I am a former semi-pro Quake3 player but these days I[0m
@@ -2406,7 +2405,7 @@ billions to achieve and IMO that should be chased after.
                         [0m[35m▎[0mIt isn't powerful enough to support what you need I'm sure, but I actually did
                         [0m[35m▎[0msomething similar a little while ago.
                         [0m[35m▎[0m
-                        [0m[35m▎[0mhttp://a-shared-404.com/programs/
+                        [0m[35m▎[0m[2m[34ma-shared-404.com/programs/[0m
                         [0m[35m▎[0m
                         [0m[35m▎[0mIt's written in Rust, with dependencies on sh and markdown. I'm thinking about
                         [0m[35m▎[0madding the ability to automatically execute an (optional) shell script in each
@@ -2428,7 +2427,7 @@ billions to achieve and IMO that should be chased after.
                             [0m[31;1m▎[0mknows.
 
                      [1moftenwrong[0m [2m8 hours ago[0m
-                    [0m[34m▎[0mhttps://github.com/rothgar/awesome-tuis
+                    [0m[34m▎[0m[2m[34mgithub.com/rothgar/awesome-tuis[0m
 
      [1mridethebike[0m [2m17 hours ago[0m
     [0m[31m▎[0mI know right, these days I just open browser with Gmail and youtube home page
@@ -3061,8 +3060,8 @@ programmers are hyper sensitive to text editor latency.
          [1mGuillaume86[0m [2ma day ago[0m
         [0m[33m▎[0mFair question, here's some 2019 benchs that found similar latencies between high
         [0m[33m▎[0mend Samsung and Apple devices:
-        [0m[33m▎[0mhttps://blog.gamebench.net/touch-latency-benchmarks-iphone-x… so it seems some
-        [0m[33m▎[0mAndroid manufacturers did manage to catch up finally.
+        [0m[33m▎[0m[2m[34mblog.gamebench.net/touch-latency-benchmarks-iphone-x…[0m so it seems some Android
+        [0m[33m▎[0mmanufacturers did manage to catch up finally.
 
          [1mpiperswe[0m [2ma day ago[0m
         [0m[33m▎[0mPersonally I experienced a similar thing switching from a Galaxy S10+ to an
@@ -3076,7 +3075,7 @@ programmers are hyper sensitive to text editor latency.
             [0m[32m▎[0mresponsiveness. But due to the screen I went back to the S10.
 
          [1mcurist[0m [2ma day ago[0m
-        [0m[33m▎[0mSomewhat related: https://danluu.com/input-lag/
+        [0m[33m▎[0mSomewhat related: [2m[34mdanluu.com/input-lag/[0m
 
              [1mperryizgr8[0m [2m20 hours ago[0m
             [0m[32m▎[0mExactly, modern android flagships are at par or better than Iphone when it comes
@@ -3096,8 +3095,8 @@ programmers are hyper sensitive to text editor latency.
 [1mDarwinMailApp[0m [2m[4ma day ago                                                   5 ⤶ ::[0m
 I can certainly attest to this.
 
-Every second support email in the early days of https://www.darwinmail.app was
-from users who were wondering why the website wasn't faster to load and operate.
+Every second support email in the early days of [2m[34mwww.darwinmail.app[0m was from
+users who were wondering why the website wasn't faster to load and operate.
 
 I knew that this was going to slowly kill the product if I didn't focus on
 optimising the speed immediately. I also heard somewhere that even a 0.01
@@ -3107,8 +3106,8 @@ region of 100's of millions.
 1. I gathered feedback from all users that said the website was slow (in any way
 and in any page/component/workflow).
 
-2. I created a Trello board https://trello.com/c/PPuhLtW0/95-upgrade-performance
-for all the feedback.
+2. I created a Trello board [2m[34mtrello.com/c/PPuhLtW0/95-upgrade-performance[0m for all
+the feedback.
 
 3. Since that week of initial performance enhancement research and groundwork, I
 have essentially been completing todo's on that Trello card and adding more
@@ -3413,7 +3412,7 @@ Is that just too much to ask?
         [0m[33m▎[0m
         [0m[33m▎[0mMac OS 9 Lives praise Mac OS 9 against OSX because of that.
         [0m[33m▎[0m
-        [0m[33m▎[0mhttp://macos9lives.com/
+        [0m[33m▎[0m[2m[34mmacos9lives.com/[0m
 
 [1mALittleLight[0m [2m[4ma day ago                                                    2 ⤶ ::[0m
 I've worked on a project that failed and I always felt speed was a real problem.
@@ -3463,11 +3462,11 @@ sensitive. John Carmack [[32m3[0m] used to talk a lot about it when he was sti
 working on Oculus. How it was faster sending something hundreds of miles away
 than showing it on your computer screen.
 
-[[31m1[0m] https://danluu.com/input-lag/
+[[31m1[0m] [2m[34mdanluu.com/input-lag/[0m
 
-[[33m2[0m] https://www.youtube.com/watch?v=vOvQCPLkPt4
+[[33m2[0m] [2m[34mwww.youtube.com/watch?v=vOvQCPLkPt4[0m
 
-[[32m3[0m] https://danluu.com/latency-mitigation/
+[[32m3[0m] [2m[34mdanluu.com/latency-mitigation/[0m
 
 [1mdragontamer[0m [2m[4ma day ago                                                    10 ⤶ ::[0m
 [2m ▎[3m[2mWhen you touched a Razr or a Palm phone, there was a delay. It felt sluggish[0m
@@ -3517,7 +3516,7 @@ or iPhone was a good representation of that.
     [0m[31m▎[0m
     [0m[31m▎[0mLikely biased study, but Nvidia found an eyebrow raising difference in player
     [0m[31m▎[0mperformance when using higher refresh rates.
-    [0m[31m▎[0mhttps://www.nvidia.com/en-us/geforce/news/geforce-gives-you-…
+    [0m[31m▎[0m[2m[34mwww.nvidia.com/en-us/geforce/news/geforce-gives-you-…[0m
 
          [1mThePadawan[0m [2ma day ago[0m
         [0m[33m▎[0mSimilar anecdote: I recently investigated tablets to use for drawing.
@@ -3538,7 +3537,7 @@ or iPhone was a good representation of that.
             [0m[32m▎[0mGaming stuff is also low delay. My screen tested at 4ms and gaming mouse at 6ms.
             [0m[32m▎[0m
             [0m[32m▎[0mNewer studies have shown recognition of events as fast as 13ms.
-            [0m[32m▎[0mhttps://news.mit.edu/2014/in-the-blink-of-an-eye-0116
+            [0m[32m▎[0m[2m[34mnews.mit.edu/2014/in-the-blink-of-an-eye-0116[0m
             [0m[32m▎[0m
             [0m[32m▎[0mMore than 30ms of delay is noticable. My old screen + mouse had a delay of ~50
             [0m[32m▎[0mcrudely tested. My old bluetooth headset was over 400ms!
@@ -3575,7 +3574,7 @@ or iPhone was a good representation of that.
 
                      [1mmnembrini[0m [2m20 hours ago[0m
                     [0m[34m▎[0mIt's pretty hard to measure end-to-end delay, Nvidia is only getting to it now
-                    [0m[34m▎[0mwith https://www.nvidia.com/en-us/geforce/news/reflex-low-latency…
+                    [0m[34m▎[0mwith [2m[34mwww.nvidia.com/en-us/geforce/news/reflex-low-latency…[0m
 
          [1maequitas[0m [2ma day ago[0m
         [0m[33m▎[0mI still play games in =<60fps, I see it like training in a gravity room ;)
@@ -4084,12 +4083,12 @@ fashion industry and follow the latest trends. So it doesn't matter if BigCoX
 makes a huge UI blunder all the others will follow it down the lemming hole.
 
 So tell me why some of the conclusions in a paper like
-http://larch-www.lcs.mit.edu/~corbato/sjcc62/ (1962) are wrong. How about:
-http://yusufarslan.net/sites/yusufarslan.net/files/upload/co… (1968)
+[2m[34mlarch-www.lcs.mit.edu/~corbato/sjcc62/[0m (1962) are wrong. How about:
+[2m[34myusufarslan.net/sites/yusufarslan.net/files/upload/co…[0m (1968)
 
 Amusingly other classics like
-https://www.microsoft.com/en-us/research/wp-content/uploads/… are discovered
-regularly too (1983).
+[2m[34mwww.microsoft.com/en-us/research/wp-content/uploads/…[0m are discovered regularly
+too (1983).
 
 [1mbdickason[0m[31m OP[0m [2m[4m12 hours ago                                                     ::[0m
 Author of the post here - I had no idea there were so many more people out there
@@ -4286,9 +4285,9 @@ delay every time we reduce or open a window ?
 
 [1mpul[0m [2m[4m16 hours ago                                                              ::[0m
 I often wonder if my obsession with speed is helping me forward, or holding me
-back. (I'm working on https://www.nslookup.io on the side.) There's so much else
-to be done. Will users really care enough to come back? Is a 20% speed up worth
-more than a better design or an additional landing page? I don't know…
+back. (I'm working on [2m[34mwww.nslookup.io[0m on the side.) There's so much else to be
+done. Will users really care enough to come back? Is a 20% speed up worth more
+than a better design or an additional landing page? I don't know…
 
 [1mseanwilson[0m [2m[4ma day ago                                                      2 ⤶ ::[0m
 [2m ▎[3m[2mSpeed during Checkout - Every second of page load time kills conversion rates.[0m
@@ -4465,7 +4464,7 @@ product.
 [1mtuckerpo[0m [2m[4m17 hours ago                                                         ::[0m
 Mandatory Handmade shill
 
-https://handmade.network/
+[2m[34mhandmade.network/[0m
 
 [1mdigitaltrees[0m [2m[4m12 hours ago                                                     ::[0m
 For me it was safari. A real web browser. That was the game changer.
