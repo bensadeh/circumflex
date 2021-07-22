@@ -2,7 +2,6 @@ package history
 
 import (
 	"clx/file"
-	"encoding/json"
 	"os"
 	"path"
 
@@ -13,17 +12,16 @@ const (
 	disableHistory = 0
 )
 
-type Handler struct {
+type History struct {
 	visitedStories *hashset.Set
 	mode           int
 }
 
-func (h *Handler) Initialize(historyMode int) {
+func (h *History) Initialize(historyMode int) {
+	h.visitedStories = hashset.New()
 	h.mode = historyMode
 
 	if h.mode == disableHistory {
-		h.visitedStories = hashset.New()
-
 		return
 	}
 
@@ -35,16 +33,18 @@ func (h *Handler) Initialize(historyMode int) {
 		return
 	}
 
-	historyFileContent, err := os.ReadFile(fullPath)
-	if err != nil {
-		panic(err)
+	historyFileContent, readErr := os.ReadFile(fullPath)
+	if readErr != nil {
+		panic(readErr)
 	}
 
-	h.visitedStories = unmarshal(historyFileContent)
+	deserializationErr := h.visitedStories.FromJSON(historyFileContent)
+	if deserializationErr != nil {
+		panic(deserializationErr)
+	}
 }
 
-func writeToDisk(h *Handler, dirPath string, fileName string) {
-	h.visitedStories = hashset.New()
+func writeToDisk(h *History, dirPath string, fileName string) {
 	emptyJSON, _ := h.visitedStories.ToJSON()
 
 	err := file.WriteToFileNew(dirPath, fileName, string(emptyJSON))
@@ -71,15 +71,4 @@ func exists(pathToFile string) bool {
 	}
 
 	return true
-}
-
-func unmarshal(input []byte) *hashset.Set {
-	cache := hashset.New()
-
-	err := json.Unmarshal(input, &cache)
-	if err != nil {
-		panic(err)
-	}
-
-	return cache
 }

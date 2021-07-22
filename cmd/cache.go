@@ -14,7 +14,7 @@ var cacheCmd = &cobra.Command{
 	Use:   "cache",
 	Short: "cache",
 	Run: func(cmd *cobra.Command, args []string) {
-		c := new(history.Handler)
+		c := new(history.History)
 		c.Initialize(1)
 	},
 }
