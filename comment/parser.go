@@ -131,6 +131,8 @@ func replaceSymbols(paragraph string) string {
 	paragraph = strings.ReplaceAll(paragraph, tripleSpace, singleSpace)
 	paragraph = strings.ReplaceAll(paragraph, doubleSpace, singleSpace)
 	paragraph = strings.ReplaceAll(paragraph, "... ", "… ")
+	paragraph = strings.ReplaceAll(paragraph, "[...]", "[…]")
+	paragraph = strings.ReplaceAll(paragraph, `..."`, `…"`)
 	paragraph = strings.ReplaceAll(paragraph, " -- ", " — ")
 	paragraph = strings.ReplaceAll(paragraph, "1/2", "½")
 	paragraph = strings.ReplaceAll(paragraph, "1/3", "⅓")
