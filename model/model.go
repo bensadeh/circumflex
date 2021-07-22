@@ -97,7 +97,7 @@ func Refresh(app *cview.Application, main *core.MainView, appState *core.Applica
 
 func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *cview.List,
 	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
-	story := r.GetStoryAndMarkAsRead(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
+	story := r.GetStoryAndMarkAsNew(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 
 	app.Suspend(func() {
@@ -124,7 +124,7 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 
 func ForceReadSubmissionContent(app *cview.Application, main *core.MainView, list *cview.List,
 	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
-	story := r.GetStoryAndMarkAsRead(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
+	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 
 	enterReaderMode(app, main, list, appState, config, r, reg, story)
@@ -132,7 +132,7 @@ func ForceReadSubmissionContent(app *cview.Application, main *core.MainView, lis
 
 func ReadSubmissionContent(app *cview.Application, main *core.MainView, list *cview.List,
 	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
-	story := r.GetStoryAndMarkAsRead(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
+	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 	errorMessage := validator.GetErrorMessage(story.Title, story.Domain)
 
@@ -172,14 +172,14 @@ func enterReaderMode(app *cview.Application, main *core.MainView, list *cview.Li
 }
 
 func OpenCommentsInBrowser(list *cview.List, appState *core.ApplicationState, r *handler.StoryHandler) {
-	story := r.GetStoryAndMarkAsRead(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
+	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 	url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(story.ID)
 	browser.Open(url)
 }
 
 func OpenLinkInBrowser(list *cview.List, appState *core.ApplicationState, r *handler.StoryHandler) {
-	story := r.GetStoryAndMarkAsRead(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
+	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 	browser.Open(story.URL)
 }
@@ -418,7 +418,7 @@ func AddToFavorites(app *cview.Application, list *cview.List, main *core.MainVie
 	config *core.Config, ret *handler.StoryHandler, reg *vim.Register) {
 	statusBarMessage := ""
 	appState.IsOnAddFavoriteConfirmationMessage = false
-	story := ret.GetStoryAndMarkAsRead(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
+	story := ret.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 
 	err := ret.AddItemToFavoritesAndWriteToFile(story)
