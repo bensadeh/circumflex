@@ -27,9 +27,9 @@ const (
 )
 
 func ParseComment(c string, commentWidth int, availableScreenWidth int, commentHighlighting bool,
-	useAlternateIndent bool, emojiSmiley bool) (string, []string) {
+	useAlternateIndent bool, emojiSmiley bool) string {
 	if c == "[deleted]" {
-		return Dimmed + "[deleted]" + Normal, []string{}
+		return Dimmed + "[deleted]" + Normal
 	}
 
 	c = strings.Replace(c, "<p>", "", 1)
@@ -55,8 +55,6 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 	}
 
 	output := ""
-
-	var URLs []string
 
 	for i, s := range comment.Sections {
 		paragraph := s.Text
@@ -112,7 +110,6 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 			paragraph = strings.TrimLeft(paragraph, " ")
 			paragraph = highlightCommentSyntax(paragraph, commentHighlighting)
 
-			URLs = append(URLs, extractURLs(paragraph)...)
 			paragraph = trimURLs(paragraph)
 
 			padding := text.WrapPad("")
@@ -124,15 +121,13 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 		output += paragraph + separator
 	}
 
-	return output, URLs
+	return output
 }
 
 func replaceSymbols(paragraph string) string {
 	paragraph = strings.ReplaceAll(paragraph, tripleSpace, singleSpace)
 	paragraph = strings.ReplaceAll(paragraph, doubleSpace, singleSpace)
-	paragraph = strings.ReplaceAll(paragraph, "... ", "… ")
-	paragraph = strings.ReplaceAll(paragraph, "[...]", "[…]")
-	paragraph = strings.ReplaceAll(paragraph, `..."`, `…"`)
+	paragraph = strings.ReplaceAll(paragraph, "...", "…")
 	paragraph = strings.ReplaceAll(paragraph, " -- ", " — ")
 	paragraph = strings.ReplaceAll(paragraph, "1/2", "½")
 	paragraph = strings.ReplaceAll(paragraph, "1/3", "⅓")
@@ -245,18 +240,6 @@ func highlightReferences(input string) string {
 	input = strings.ReplaceAll(input, "[10]", "["+altGreen("10")+"]")
 
 	return input
-}
-
-func extractURLs(input string) []string {
-	expForFirstTag := regexp.MustCompile(`<a href=".*?" rel="nofollow">`)
-	URLs := expForFirstTag.FindAllString(input, 10)
-
-	for i := range URLs {
-		URLs[i] = strings.ReplaceAll(URLs[i], `<a href="`, "")
-		URLs[i] = strings.ReplaceAll(URLs[i], `" rel="nofollow">`, "")
-	}
-
-	return URLs
 }
 
 func trimURLs(comment string) string {

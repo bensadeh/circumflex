@@ -14,6 +14,8 @@ _WIP_
 - Double single dashes (--) now appear as a single em-dash (—)
 - Triple dots (...) now appear as a single ellipsis (…)
 - Added an option to convert smileys to emojis
+- Removed support for hyperlinks in the terminal since they were somewhat too complex
+compared to the benefit / convenience they provided
 
 ## 1.14
 _2021-07-15_

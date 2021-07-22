@@ -74,14 +74,14 @@ func getHyperlinkText(url string, text string) string {
 	return Link1 + url + Link2 + text + Link3
 }
 
-func parseRootComment(c string, commentWidth int, commentHighlighting bool, altIndentBlock bool, emojiSmiley bool) string {
+func parseRootComment(c string, commentWidth int, commentHighlighting bool, altIndentBlock bool,
+	emojiSmiley bool) string {
 	if c == "" {
 		return ""
 	}
 
-	comment, URLs := ParseComment(c, commentWidth, commentWidth, commentHighlighting, altIndentBlock, emojiSmiley)
+	comment := ParseComment(c, commentWidth, commentWidth, commentHighlighting, altIndentBlock, emojiSmiley)
 	wrappedComment, _ := text.Wrap(comment, commentWidth)
-	wrappedComment = applyURLs(wrappedComment, URLs)
 
 	return NewLine + wrappedComment + NewLine
 }
@@ -91,8 +91,7 @@ func printReplies(c endpoints.Comments, indentSize int, commentWidth int, screen
 	emojiSmiley bool) string {
 	currentIndentSize := indentSize * c.Level
 	usableScreenSize := screenWidth - currentIndentSize
-	comment, URLs := ParseComment(c.Content, commentWidth, usableScreenSize, commentHighlighting, altIndentBlock,
-		emojiSmiley)
+	comment := ParseComment(c.Content, commentWidth, usableScreenSize, commentHighlighting, altIndentBlock, emojiSmiley)
 	adjustedCommentWidth := getCommentWidthForLevel(c.Level, indentSize, commentWidth, screenWidth, preserveRightMargin)
 
 	indentBlock := getIndentBlock(c.Level, indentSize, altIndentBlock)
@@ -104,7 +103,6 @@ func printReplies(c endpoints.Comments, indentSize int, commentWidth int, screen
 	author := getCommentHeading(c, c.Level, commentWidth, originalPoster, parentPoster)
 	paddedAuthor, _ := text.Wrap(author, adjustedCommentWidth, paddingWithNoBlock)
 	fullComment := paddedAuthor + wrappedAndPaddedComment + NewParagraph
-	fullComment = applyURLs(fullComment, URLs)
 
 	if c.Level == 0 {
 		parentPoster = c.User
@@ -157,38 +155,6 @@ func incrementReplyCount(comments endpoints.Comments, repliesSoFar *int) int {
 	}
 
 	return *repliesSoFar
-}
-
-func applyURLs(comment string, urls []string) string {
-	for _, url := range urls {
-		truncatedURL := truncateURL(url)
-		URLWithHyperlinkCode := getHyperlinkText(url, truncatedURL)
-		comment = strings.ReplaceAll(comment, truncatedURL, URLWithHyperlinkCode)
-	}
-
-	return comment
-}
-
-func truncateURL(url string) string {
-	const hackerNewsMaxURLLength = 60
-
-	if len(url) < hackerNewsMaxURLLength {
-		return url
-	}
-
-	truncatedURL := ""
-
-	for i, c := range url {
-		if i == hackerNewsMaxURLLength {
-			truncatedURL += "…"
-
-			break
-		}
-
-		truncatedURL += string(c)
-	}
-
-	return truncatedURL
 }
 
 // Adjusted comment width shortens the commentWidth if the available screen size

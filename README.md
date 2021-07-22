@@ -103,8 +103,7 @@ Press <kbd>Enter</kbd> to read the comment section.
 Comments are pretty-printed and piped to the
 pager `less`. To present a nice and readable comment section, `circumflex` features:
 
-* Text in **bold**, _italics_, [hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) and
-  `code` where available
+* Text formatting in **bold**, _italics_ and `code` where available
 * Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
 * Adjustable margins and comment width
 
