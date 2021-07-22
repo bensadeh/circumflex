@@ -300,6 +300,7 @@ The following table shows the different ways in which `circumflex` can be config
 | `CLX_ALT_INDENT_BLOCK`      | `false` | Turn this setting on if the indent block does not appear as one connected line. |
 | `CLX_COMMENT_HIGHLIGHTING`  | `true` | Enables syntax highlighting in the comment section for \`code snippets\`, `@mentions`, `$variables` and `IANAL`/`IAAL` disclaimers. |
 | `CLX_EMOJI_SMILEYS`         | `false` | Converts regular smileys to their emoji counterpart |
+| `CLX_MARK_AS_READ`          | `false` | Mark submissions as read after entering the comment section |
 
 ## 🚗 Under the hood
 

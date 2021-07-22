@@ -3,6 +3,9 @@
 ## 1.15
 _WIP_
 
+**New features**
+- Submissions can now be marked as read (turned off by default)
+
 **Cosmetic**
 - Highlight mentions of `FAANG` in the comment section
 - Highlight moderator author names in main screen
