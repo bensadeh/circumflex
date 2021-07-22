@@ -22,6 +22,13 @@ func (his *History) Contains(id int) bool {
 	return his.visitedStories.Contains(strconv.Itoa(id))
 }
 
+func (his *History) ClearAndWriteToDisk() {
+	his.visitedStories.Clear()
+
+	_, dirPath, fileName := getCacheFilePaths()
+	writeToDisk(his, dirPath, fileName)
+}
+
 func (his *History) AddStoryAndWriteToDisk(id int) {
 	if !his.markAsRead {
 		return
