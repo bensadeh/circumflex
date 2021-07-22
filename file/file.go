@@ -65,6 +65,7 @@ func WriteToFileNew(dirPath string, fileName string, content string) error {
 	}
 
 	filePath := path.Join(dirPath, fileName)
+
 	file, createPathErr := os.Create(filePath)
 	if createPathErr != nil {
 		return fmt.Errorf("could not create config file: %w", createPathErr)
