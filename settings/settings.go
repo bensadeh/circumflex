@@ -78,6 +78,8 @@ func initializeOptions() *options {
 		strconv.FormatBool(CommentHighlightingDefault), CommentHighlightingDescription)
 	o.addOption(EmojiSmileysName, EmojiSmileysKey,
 		strconv.FormatBool(EmojiSmileysDefault), EmojiSmileysDescription)
+	o.addOption(MarkAsReadName, MarkAsReadKey,
+		strconv.FormatBool(MarkAsReadDefault), MarkAsReadDescription)
 
 	return o
 }

@@ -49,4 +49,5 @@ type Config struct {
 	AltIndentBlock      bool `mapstructure:"CLX_ALT_INDENT_BLOCK"`
 	CommentHighlighting bool `mapstructure:"CLX_COMMENT_HIGHLIGHTING"`
 	EmojiSmileys        bool `mapstructure:"CLX_EMOJI_SMILEYS"`
+	MarkAsRead          bool `mapstructure:"CLX_MARK_AS_READ"`
 }
