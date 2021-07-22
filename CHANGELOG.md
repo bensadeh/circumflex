@@ -3,6 +3,9 @@
 ## 1.16
 _WIP_
 
+**Cosmetic**
+- Code snippets are now highlighted in magenta instead of blue
+
 ## 1.15
 _2021-07-22_
 

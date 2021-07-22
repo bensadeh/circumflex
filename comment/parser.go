@@ -263,7 +263,7 @@ func highlightBackticks(input string) string {
 
 	for i := 0; i < numberOfBackticks+1; i++ {
 		if isOnFirstBacktick {
-			input = strings.Replace(input, backtick, Blue, 1)
+			input = strings.Replace(input, backtick, Magenta, 1)
 		} else {
 			input = strings.Replace(input, backtick, Normal, 1)
 		}
