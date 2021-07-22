@@ -26,10 +26,10 @@ func FormatMain(title string, domain string, author string, mode int, markAsRead
 	readModifier := ""
 
 	if markAsRead {
-		readModifier = "[::d]"
+		readModifier = "[::di]"
 	}
 
-	return readModifier + formatTitle(title, author, mode) + formatDomain(domain)
+	return readModifier + formatTitle(title, author, mode) + formatDomain(domain, markAsRead)
 }
 
 func formatTitle(title string, author string, mode int) string {
@@ -160,13 +160,19 @@ func highlightWhoIsHiring(title string, mode int) string {
 	}
 }
 
-func formatDomain(domain string) string {
+func formatDomain(domain string, markAsRead bool) string {
 	if domain == "" {
 		return ""
 	}
 
+	readModifier := ""
+
+	if markAsRead {
+		readModifier = "i"
+	}
+
 	domainInParenthesis := " (" + domain + ")"
-	domainInParenthesisAndDimmed := Dim(domainInParenthesis)
+	domainInParenthesisAndDimmed := "[::d" + readModifier + "]" + domainInParenthesis
 
 	return domainInParenthesisAndDimmed
 }
@@ -177,7 +183,7 @@ func FormatSecondary(points int, author string, unixTime int64, comments int, mo
 	parsedTime := parseTime(unixTime)
 	parsedComments := parseComments(comments, author)
 
-	return Dim(parsedPoints + parsedAuthor + parsedTime + parsedComments)
+	return "[::d]" + parsedPoints + parsedAuthor + parsedTime + parsedComments
 }
 
 func parsePoints(points int) string {
