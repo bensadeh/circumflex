@@ -17,6 +17,14 @@ type History struct {
 	mode           int
 }
 
+func (his *History) Contains(id int) bool {
+	if his.mode == disableHistory {
+		return false
+	}
+
+	return his.visitedStories.Contains(id)
+}
+
 func Initialize(historyMode int) *History {
 	h := &History{
 		visitedStories: hashset.New(),

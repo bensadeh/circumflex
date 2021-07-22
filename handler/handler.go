@@ -42,25 +42,26 @@ type storyCategory struct {
 func (r *StoryHandler) GetStories(category int, page int, visibleStories int, highlightHeadlines int,
 	hideYCJobs bool) ([]*cview.ListItem, error) {
 	if category == categories.Favorites {
-		return getOfflineStories(page, visibleStories, highlightHeadlines, r.sc[category])
+		return getFavoritesStories(page, visibleStories, highlightHeadlines, r.sc[category], r.history)
 	}
 
-	return getOnlineStories(category, page, visibleStories, highlightHeadlines, hideYCJobs, r.sc[category])
+	return getOnlineStories(category, page, visibleStories, highlightHeadlines, hideYCJobs, r.sc[category], r.history)
 }
 
-func getOfflineStories(page int, visibleStories int, highlightHeadlines int, sc *storyCategory) ([]*cview.ListItem,
+func getFavoritesStories(page int, visibleStories int, highlightHeadlines int, sc *storyCategory,
+	his *history.History) ([]*cview.ListItem,
 	error) {
 	storiesToShow := min(visibleStories, len(sc.stories))
 	firstItemToDisplay := page * storiesToShow
 	lastItemToDisplay := min(firstItemToDisplay+storiesToShow, len(sc.stories))
 
-	listItems := convert(sc.stories[firstItemToDisplay:lastItemToDisplay], highlightHeadlines)
+	listItems := convert(sc.stories[firstItemToDisplay:lastItemToDisplay], his, highlightHeadlines, true)
 
 	return listItems, nil
 }
 
 func getOnlineStories(category int, page int, visibleStories int, highlightHeadlines int, hideYCJobs bool,
-	sc *storyCategory) ([]*cview.ListItem, error) {
+	sc *storyCategory, his *history.History) ([]*cview.ListItem, error) {
 	overriddenYCJobsStatus := getOverriddenYCJobsStatus(visibleStories, hideYCJobs)
 	smallestItemToDisplay := page * visibleStories
 	largestItemToDisplay := (page * visibleStories) + visibleStories
@@ -69,7 +70,7 @@ func getOnlineStories(category int, page int, visibleStories int, highlightHeadl
 	pageHasEnoughStoriesToView := downloadedStories > largestItemToDisplay
 
 	if pageHasEnoughStoriesToView {
-		listItems := convert(sc.stories[smallestItemToDisplay:largestItemToDisplay], highlightHeadlines)
+		listItems := convert(sc.stories[smallestItemToDisplay:largestItemToDisplay], his, highlightHeadlines, false)
 
 		return listItems, nil
 	}
@@ -84,7 +85,7 @@ func getOnlineStories(category int, page int, visibleStories int, highlightHeadl
 	filteredStories := filter.Filter(newStories, overriddenYCJobsStatus)
 	sc.stories = append(sc.stories, filteredStories...)
 
-	listItems := convert(sc.stories[smallestItemToDisplay:largestItemToDisplay], highlightHeadlines)
+	listItems := convert(sc.stories[smallestItemToDisplay:largestItemToDisplay], his, highlightHeadlines, false)
 
 	return listItems, nil
 }
@@ -128,10 +129,13 @@ func (r *StoryHandler) Reset() {
 	r.sc[categories.Show].stories = nil
 }
 
-func convert(subs []*endpoints.Story, highlightHeadlines int) []*cview.ListItem {
+func convert(subs []*endpoints.Story, his *history.History, highlightHeadlines int,
+	isOnFavorites bool) []*cview.ListItem {
 	listItems := make([]*cview.ListItem, len(subs))
 
 	for i, s := range subs {
+		_ = his.Contains(s.ID) && !isOnFavorites
+
 		main := formatter.FormatMain(s.Title, s.Domain, s.Author, highlightHeadlines)
 		secondary := formatter.FormatSecondary(s.Points, s.Author, s.Time, s.CommentsCount, highlightHeadlines)
 
