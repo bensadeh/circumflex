@@ -160,6 +160,7 @@ func replaceSmileys(paragraph string, emojiSmiley bool) string {
 	paragraph = strings.ReplaceAll(paragraph, ":D", "😄")
 
 	paragraph = strings.ReplaceAll(paragraph, "=)", "😃")
+	paragraph = strings.ReplaceAll(paragraph, "=D", "😃")
 
 	paragraph = strings.ReplaceAll(paragraph, ";)", "😉")
 	paragraph = strings.ReplaceAll(paragraph, ";D", "😉")
