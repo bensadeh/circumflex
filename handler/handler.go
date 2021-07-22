@@ -134,8 +134,7 @@ func convert(subs []*endpoints.Story, his *history.History, highlightHeadlines i
 	listItems := make([]*cview.ListItem, len(subs))
 
 	for i, s := range subs {
-		// markAsRead := his.Contains(s.ID) && !isOnFavorites
-		markAsRead := his.Contains(s.ID)
+		markAsRead := his.Contains(s.ID) && !isOnFavorites
 
 		main := formatter.FormatMain(s.Title, s.Domain, s.Author, highlightHeadlines, markAsRead)
 		secondary := formatter.FormatSecondary(s.Points, s.Author, s.Time, s.CommentsCount, highlightHeadlines)
@@ -149,8 +148,12 @@ func convert(subs []*endpoints.Story, his *history.History, highlightHeadlines i
 	return listItems
 }
 
-func (r *StoryHandler) GetStory(category, currentItemIndex, storiesToShow, currentPage int) *endpoints.Story {
+func (r *StoryHandler) GetStoryAndMarkAsRead(category, currentItemIndex, storiesToShow,
+	currentPage int) *endpoints.Story {
 	index := getIndex(currentItemIndex, storiesToShow, currentPage)
+	id := r.sc[category].stories[index].ID
+
+	r.history.AddStoryAndWriteToDisk(id)
 
 	return r.sc[category].stories[index]
 }

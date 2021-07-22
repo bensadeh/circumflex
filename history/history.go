@@ -25,6 +25,17 @@ func (his *History) Contains(id int) bool {
 	return his.visitedStories.Contains(float64(id))
 }
 
+func (his *History) AddStoryAndWriteToDisk(id int) {
+	if his.mode == disableHistory {
+		return
+	}
+
+	his.visitedStories.Add(id)
+
+	_, dirPath, fileName := getCacheFilePaths()
+	writeToDisk(his, dirPath, fileName)
+}
+
 func Initialize(historyMode int) *History {
 	h := &History{
 		visitedStories: hashset.New(),
@@ -57,10 +68,9 @@ func Initialize(historyMode int) *History {
 }
 
 func writeToDisk(h *History, dirPath string, fileName string) {
-	h.visitedStories.Add(27916178)
-	emptyJSON, _ := h.visitedStories.ToJSON()
+	visitedStoriesJSON, _ := h.visitedStories.ToJSON()
 
-	err := file.WriteToFileNew(dirPath, fileName, string(emptyJSON))
+	err := file.WriteToFileNew(dirPath, fileName, string(visitedStoriesJSON))
 	if err != nil {
 		panic(err)
 	}
