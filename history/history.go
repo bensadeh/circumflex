@@ -4,6 +4,7 @@ import (
 	"clx/file"
 	"os"
 	"path"
+	"strconv"
 
 	"github.com/emirpasic/gods/sets/hashset"
 )
@@ -22,7 +23,7 @@ func (his *History) Contains(id int) bool {
 		return false
 	}
 
-	return his.visitedStories.Contains(float64(id))
+	return his.visitedStories.Contains(strconv.Itoa(id))
 }
 
 func (his *History) AddStoryAndWriteToDisk(id int) {
@@ -30,7 +31,7 @@ func (his *History) AddStoryAndWriteToDisk(id int) {
 		return
 	}
 
-	his.visitedStories.Add(id)
+	his.visitedStories.Add(strconv.Itoa(id))
 
 	_, dirPath, fileName := getCacheFilePaths()
 	writeToDisk(his, dirPath, fileName)
