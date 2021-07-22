@@ -26,10 +26,10 @@ func FormatMain(title string, domain string, author string, mode int, markAsRead
 	readModifier := ""
 
 	if markAsRead {
-		readModifier = " [::d]✓"
+		readModifier = "[::di]"
 	}
 
-	return formatTitle(title, author, mode) + formatDomain(domain) + readModifier
+	return readModifier + formatTitle(title, author, mode) + formatDomain(domain)
 }
 
 func formatTitle(title string, author string, mode int) string {
