@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"clx/clx"
+	clx2 "clx/constants/clx"
 
 	"github.com/spf13/cobra"
 )
@@ -9,8 +10,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "clx",
 	Short: "It's Hacker News in your terminal",
-	Long: `circumflex is a command line tool for browsing Hacker News
-in your terminal.`,
+	Long:  "circumflex " + clx2.Version,
 	Run: func(cmd *cobra.Command, args []string) {
 		clx.Run()
 	},

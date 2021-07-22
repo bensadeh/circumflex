@@ -17,10 +17,11 @@ func init() {
 }
 
 var addCmd = &cobra.Command{
-	Use:   "add",
-	Short: "Add item to list of favorites by ID",
-	Long:  "Add item to list of favorites by ID. Enter the comment section from inside 'clx' to update fields.",
-	Args:  cobra.ExactArgs(1),
+	Use:                   "add",
+	Short:                 "Add item to list of favorites by ID",
+	Long:                  "Add item to list of favorites by ID. Enter the comment section from inside 'clx' to update fields.",
+	Args:                  cobra.ExactArgs(1),
+	DisableFlagsInUseLine: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		fav := favorites.Initialize()
