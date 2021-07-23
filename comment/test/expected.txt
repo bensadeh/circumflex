@@ -4139,7 +4139,7 @@ pause, too.
 All I have to say is that the "what would it be like to live with lag?" is
 insane.
 
-⅓ of a second is already insane lag, 3 seconds is just ridiculous.
+1/3 of a second is already insane lag, 3 seconds is just ridiculous.
 
      [1mTepix[0m [2ma day ago[0m
     [0m[31m▎[0mAgree. In VR to achieve "presence" you aim for 20ms of lag, or less.
