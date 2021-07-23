@@ -259,7 +259,7 @@ To change the settings, you can either:
 The following command will create a config file in  `~/.config/circumflex/config.env`:
 
 ```console
-clx create_config
+clx config
 ```
 
 The example config contains all the available options. All fields are commented out and set to their default values.
