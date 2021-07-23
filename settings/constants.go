@@ -52,6 +52,6 @@ const (
 	EmojiSmileysDescription = "Convert smileys to emojis."
 	MarkAsReadName          = "Mark submissions as read"
 	MarkAsReadKey           = "CLX_MARK_AS_READ"
-	MarkAsReadDefault       = false
+	MarkAsReadDefault       = true
 	MarkAsReadDescription   = "Mark submissions as read after entering the comment section"
 )

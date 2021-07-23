@@ -5,6 +5,7 @@ _WIP_
 
 **Cosmetic**
 - Code snippets are now highlighted in magenta instead of blue
+- Mark as read setting now turned on by default
 
 ## 1.15
 _2021-07-22_
