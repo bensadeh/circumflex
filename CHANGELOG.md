@@ -6,7 +6,8 @@ _WIP_
 **Cosmetic**
 - Code snippets are now highlighted in magenta instead of blue
 - Mark as read setting now turned on by default
-- Rename create_config command to config
+- Rename `create_config` command to config
+- Hyperlinks are now in blue instead of dimmed blue
 
 ## 1.15
 _2021-07-22_
