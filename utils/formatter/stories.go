@@ -29,7 +29,7 @@ func FormatMain(title string, domain string, author string, mode int, markAsRead
 		readModifier = "[::di]"
 	}
 
-	return readModifier + formatTitle(title, author, mode) + formatDomain(domain)
+	return readModifier + formatTitle(title, author, mode) + formatDomain(domain, markAsRead)
 }
 
 func formatTitle(title string, author string, mode int) string {
@@ -160,13 +160,19 @@ func highlightWhoIsHiring(title string, mode int) string {
 	}
 }
 
-func formatDomain(domain string) string {
+func formatDomain(domain string, markAsRead bool) string {
 	if domain == "" {
 		return ""
 	}
 
+	readModifier := ""
+
+	if markAsRead {
+		readModifier = "[::di]"
+	}
+
 	domainInParenthesis := " (" + domain + ")"
-	domainInParenthesisAndDimmed := Dim(domainInParenthesis)
+	domainInParenthesisAndDimmed := readModifier + Dim(readModifier+domainInParenthesis)
 
 	return domainInParenthesisAndDimmed
 }
