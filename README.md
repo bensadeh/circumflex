@@ -144,8 +144,7 @@ Quotes are indented, italicized and dimmed in order to distinguish them from the
 </p>
 
 #### Hacker News and forum idiosyncracies
-`` `Code snippets` ``, `@username` mentions, `$variables` and `I Am A Lawyer` / `I Am Not A Lawyer` disclaimers are all highlighted. On by default,
-but can be disabled.
+`` `Code snippets` ``, `@username` mentions, `$variables` and `I Am A Lawyer` / `I Am Not A Lawyer` disclaimers are all highlighted.
 
 <p align="center">
   <img src="screenshots/commentSyntax.png" width="700" alt="^"/>
@@ -161,8 +160,7 @@ for easier cross-referencing.
 
 ### Headlines
 #### Categories
-Headlines containing the text `Ask HN`, `Tell HN`, `Show HN` and `Launch HN` are highlighted. On by default,
-but can be disabled.
+Headlines containing the text `Ask HN`, `Tell HN`, `Show HN` and `Launch HN` are highlighted.
 
 <p align="center">
   <img src="screenshots/showtell.png" width="250" alt="^"/>
@@ -170,7 +168,7 @@ but can be disabled.
 
 #### YC-funded startups
 [Twice a year](https://www.ycombinator.com/companies/), Y Combinator funds start-ups through its accelerator program.
-`circumflex` highlights these startups to signalize their affiliation with YC. On by default, but can be disabled.
+`circumflex` highlights these startups to signalize their affiliation with YC.
 
 <p align="center">
   <img src="screenshots/yc.png" width="350" alt="^"/>
