@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	PlainHeadlines bool
-	PlainComments  bool
+	plainHeadlines bool
+	plainComments  bool
 )
 
 var rootCmd = &cobra.Command{
@@ -20,11 +20,11 @@ var rootCmd = &cobra.Command{
 	Short: "It's Hacker News in your terminal",
 	Long:  "circumflex " + clx2.Version,
 	Run: func(cmd *cobra.Command, args []string) {
-		if PlainHeadlines {
+		if plainHeadlines {
 			viper.Set(settings.HighlightHeadlinesKey, false)
 		}
 
-		if PlainComments {
+		if plainComments {
 			viper.Set(settings.HighlightHeadlinesKey, false)
 		}
 
@@ -34,9 +34,9 @@ var rootCmd = &cobra.Command{
 
 func Execute() error {
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
-	rootCmd.PersistentFlags().BoolVarP(&PlainHeadlines, "plain-headlines", "l", false,
+	rootCmd.PersistentFlags().BoolVarP(&plainHeadlines, "plain-headlines", "l", false,
 		"disable syntax highlighting for headlines")
-	rootCmd.PersistentFlags().BoolVarP(&PlainComments, "plain-comments", "c", false,
+	rootCmd.PersistentFlags().BoolVarP(&plainComments, "plain-comments", "c", false,
 		"disable syntax highlighting for comments")
 
 	return rootCmd.Execute()
