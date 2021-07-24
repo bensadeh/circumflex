@@ -3,6 +3,9 @@
 ## 1.17
 _WIP_
 
+**Cosmetic**
+- Code snippets are now in italics and magenta (was: just magenta)
+
 
 ## 1.16
 _2021-07-24_
