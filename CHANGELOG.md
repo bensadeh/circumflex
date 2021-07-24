@@ -20,6 +20,7 @@ flag)
 **Bugfixes**
 - Fixed a bug where highlighting of `$` would cause a panic
 - Comments are now properly shortened when they reach the edge of the screen
+- Fractions now have proper spacing between them and the next word
 
 ## 1.15
 _2021-07-22_
