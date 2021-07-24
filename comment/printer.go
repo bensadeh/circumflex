@@ -90,10 +90,12 @@ func printReplies(c endpoints.Comments, indentSize int, commentWidth int, screen
 	parentPoster string, preserveRightMargin bool, altIndentBlock bool, commentHighlighting bool,
 	emojiSmiley bool) string {
 	currentIndentSize := indentSize * c.Level
-	usableScreenSize := screenWidth - currentIndentSize
-	comment := ParseComment(c.Content, commentWidth, usableScreenSize, commentHighlighting, altIndentBlock, emojiSmiley)
+	usableScreenSize := screenWidth - currentIndentSize - 1
 	adjustedCommentWidth := getCommentWidthForLevel(currentIndentSize, usableScreenSize, c.Level, indentSize,
 		commentWidth, preserveRightMargin)
+
+	comment := ParseComment(c.Content, adjustedCommentWidth, usableScreenSize, commentHighlighting, altIndentBlock,
+		emojiSmiley)
 
 	indentBlock := getIndentBlock(c.Level, indentSize, altIndentBlock)
 	paddingWithBlock := text.WrapPad(indentBlock)
@@ -162,16 +164,16 @@ func incrementReplyCount(comments endpoints.Comments, repliesSoFar *int) int {
 // is smaller than the size of the commentWidth.
 func getCommentWidthForLevel(currentIndentSize int, usableScreenSize int, level int, indentSize int, commentWidth int,
 	preserveRightMargin bool) int {
-
 	if usableScreenSize < commentWidth || commentWidth == 0 {
-		return usableScreenSize + currentIndentSize
+		return usableScreenSize
 	}
 
 	if preserveRightMargin {
 		return commentWidth
 	}
 
-	return commentWidth + indentSize*level
+	// return commentWidth + indentSize*level
+	return commentWidth
 }
 
 func getAuthorLabel(author, originalPoster, parentPoster string) string {
