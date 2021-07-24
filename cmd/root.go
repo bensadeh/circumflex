@@ -14,6 +14,7 @@ var (
 	plainHeadlines bool
 	plainComments  bool
 	disableHistory bool
+	altIndentBlock bool
 )
 
 var rootCmd = &cobra.Command{
@@ -33,6 +34,10 @@ var rootCmd = &cobra.Command{
 			viper.Set(settings.MarkAsReadKey, false)
 		}
 
+		if altIndentBlock {
+			viper.Set(settings.UseAltIndentBlockKey, true)
+		}
+
 		clx.Run()
 	},
 }
@@ -45,6 +50,8 @@ func Execute() error {
 		"disable syntax highlighting for comments")
 	rootCmd.PersistentFlags().BoolVarP(&disableHistory, "disable-history", "d", false,
 		"disable marking stories as read")
+	rootCmd.PersistentFlags().BoolVarP(&altIndentBlock, "use-alt-indent-block", "a", false,
+		"use alternate indentation block")
 
 	return rootCmd.Execute()
 }
