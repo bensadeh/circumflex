@@ -1717,8 +1717,8 @@ billions to achieve and IMO that should be chased after.
                     [0m[34m▎[0mapp itself is already running), although notably most of the time spent in the
                     [0m[34m▎[0mPrettier example seems to be spent syntax highlighting the JavaScript. If you
                     [0m[34m▎[0mwant to try a direct comparison of opening a file vs. a window, you can see the
-                    [0m[34m▎[0mdifference between opening a new file in an existing window (on Mac, [35m⌘N[0m / [35mFile[0m
-                    [0m[34m▎[0m[35m> New File[0m) or new window (on Mac, [35m⌥⌘N[0m / [35mFile > New Window[0m). For me the latter
+                    [0m[34m▎[0mdifference between opening a new file in an existing window (on Mac, [3m[35m⌘N[0m / [3m[35mFile[0m
+                    [0m[34m▎[0m[3;35m> New File[0m) or new window (on Mac, [3m[35m⌥⌘N[0m / [3m[35mFile > New Window[0m). For me the latter
                     [0m[34m▎[0mis far slower than the former.
 
              [1mbaybal2[0m [2ma day ago[0m
@@ -2330,34 +2330,34 @@ billions to achieve and IMO that should be chased after.
                      [1mpdimitar[0m[35m PP[0m [2m11 hours ago[0m
                     [0m[34m▎[0mI just started like 6 months ago but…
                     [0m[34m▎[0m
-                    [0m[34m▎[0m- [35mlazygit[0m is extremely valuable.
+                    [0m[34m▎[0m- [3m[35mlazygit[0m is extremely valuable.
                     [0m[34m▎[0m
-                    [0m[34m▎[0m- [35mlnav[0m for inspecting log files has turned out to be surprisingly good.
+                    [0m[34m▎[0m- [3m[35mlnav[0m for inspecting log files has turned out to be surprisingly good.
                     [0m[34m▎[0m
-                    [0m[34m▎[0m- Do you use [35mfzf[0m in tandem with your shell so you can also search your command
+                    [0m[34m▎[0m- Do you use [3m[35mfzf[0m in tandem with your shell so you can also search your command
                     [0m[34m▎[0mhistory (and not just look for files)? I use that for like a year now and can't
                     [0m[34m▎[0mlive without it.
                     [0m[34m▎[0m
-                    [0m[34m▎[0m- [35mmc[0m for TUI file management has been moderately alright.
+                    [0m[34m▎[0m- [3m[35mmc[0m for TUI file management has been moderately alright.
                     [0m[34m▎[0m
-                    [0m[34m▎[0m- How about [35mripgrep[0m? Can't believe I lived without that one too.
+                    [0m[34m▎[0m- How about [3m[35mripgrep[0m? Can't believe I lived without that one too.
                     [0m[34m▎[0m
-                    [0m[34m▎[0m- Rust's tool [35mskim[0m (the command is [35msk[0m) in tandem with [35mripgrep[0m or
-                    [0m[34m▎[0m[35mthe_silver_searcher[0m to very quickly search in file contents in big directories
+                    [0m[34m▎[0m- Rust's tool [3m[35mskim[0m (the command is [3m[35msk[0m) in tandem with [3m[35mripgrep[0m or
+                    [0m[34m▎[0m[3m[35mthe_silver_searcher[0m to very quickly search in file contents in big directories
                     [0m[34m▎[0mhas saved me a ton of time already (although I moved to search file contents in
-                    [0m[34m▎[0mprojects in Emacs since). To be fair, you can just use [35mfzf[0m instead of [35msk[0m here
+                    [0m[34m▎[0mprojects in Emacs since). To be fair, you can just use [3m[35mfzf[0m instead of [3m[35msk[0m here
                     [0m[34m▎[0mthough; I am just positively biased towards Rust.
                     [0m[34m▎[0m
-                    [0m[34m▎[0m- [35mripgrep_all[0m allows you to search in ZIP archives, PDF docs, Office
+                    [0m[34m▎[0m- [3m[35mripgrep_all[0m allows you to search in ZIP archives, PDF docs, Office
                     [0m[34m▎[0mdocs/spreadsheets etc. Really useful.
                     [0m[34m▎[0m
-                    [0m[34m▎[0m- [35mht[0m is a Rust rewrite of [35mhttpie[0m, the Python friendlier [35mcurl[0m. I like [35mht[0m much
+                    [0m[34m▎[0m- [3m[35mht[0m is a Rust rewrite of [3m[35mhttpie[0m, the Python friendlier [3m[35mcurl[0m. I like [3m[35mht[0m much
                     [0m[34m▎[0mmore because it doesn't incur any startup overhead and started replacing my
-                    [0m[34m▎[0mscraping / syncing scripts with [35mht[0m where applicable which is NOT everywhere
-                    [0m[34m▎[0mbecause [35mcurl[0m is extremely powerful and it doesn't often make sense to replace
+                    [0m[34m▎[0mscraping / syncing scripts with [3m[35mht[0m where applicable which is NOT everywhere
+                    [0m[34m▎[0mbecause [3m[35mcurl[0m is extremely powerful and it doesn't often make sense to replace
                     [0m[34m▎[0mit.
                     [0m[34m▎[0m
-                    [0m[34m▎[0m- Command-line or in-terminal charting/plotting: [35mjp[0m. I have made a CSV file out
+                    [0m[34m▎[0m- Command-line or in-terminal charting/plotting: [3m[35mjp[0m. I have made a CSV file out
                     [0m[34m▎[0mof all file sizes on my NAS (bucketed by powers of 2) and then invoked it on
                     [0m[34m▎[0mthe input. Here's a sample CSV from a random directory:
                     [0m[34m▎[0m
@@ -2395,7 +2395,7 @@ billions to achieve and IMO that should be chased after.
                     [0m[34m▎[0m
                     [0m[34m▎[0mThen do this:
                     [0m[34m▎[0m
-                    [0m[34m▎[0m[35mcat THIS_FILE.csv | jp -input csv -xy '[*][0,1]' -type bar -height 57[0m
+                    [0m[34m▎[0m[3m[35mcat THIS_FILE.csv | jp -input csv -xy '[*][0,1]' -type bar -height 57[0m
                     [0m[34m▎[0m
                     [0m[34m▎[0mAnd enjoy an in-terminal vertical bar charts. :)
                     [0m[34m▎[0m
@@ -2437,7 +2437,7 @@ billions to achieve and IMO that should be chased after.
                         [0m[35m▎[0mI need to move it to the top of my pile.
 
                              [1mpdimitar[0m[35m PP[0m [2m2 hours ago[0m
-                            [0m[31;1m▎[0mThe [35msssss[0m program might have a potential. But let me give you an
+                            [0m[31;1m▎[0mThe [3m[35msssss[0m program might have a potential. But let me give you an
                             [0m[31;1m▎[0mexample: I want my every blog article to also have versions / revisions
                             [0m[31;1m▎[0mand I'd like visitors to be able to read the older versions as well as
                             [0m[31;1m▎[0mthe last version.
@@ -3709,7 +3709,7 @@ care more about trade-offs and marginal value”.
 
          [1mtheptip[0m[35m PP[0m [2m12 hours ago[0m
         [0m[33m▎[0mHacker News is affiliated with YC, a startup accelerator. While there are lots
-        [0m[33m▎[0mof [34mF[0m[33mA[0m[37mA[0m[31mN[0m[32mG[0m engineers and engineers from all parts of the spectrum here too, this
+        [0m[33m▎[0mof FAANG engineers and engineers from all parts of the spectrum here too, this
         [0m[33m▎[0mcommunity biases towards startups. If there is a place to discuss strategy for
         [0m[33m▎[0mpre-PMF startups on the internet, this is it.
         [0m[33m▎[0m
