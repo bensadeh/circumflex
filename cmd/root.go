@@ -15,6 +15,7 @@ var (
 	plainComments  bool
 	disableHistory bool
 	altIndentBlock bool
+	smileyEmojis   bool
 )
 
 var rootCmd = &cobra.Command{
@@ -38,6 +39,10 @@ var rootCmd = &cobra.Command{
 			viper.Set(settings.UseAltIndentBlockKey, true)
 		}
 
+		if smileyEmojis {
+			viper.Set(settings.EmojiSmileysKey, true)
+		}
+
 		clx.Run()
 	},
 }
@@ -52,6 +57,8 @@ func Execute() error {
 		"disable marking stories as read")
 	rootCmd.PersistentFlags().BoolVarP(&altIndentBlock, "use-alt-indent-block", "i", false,
 		"use alternate indentation block")
+	rootCmd.PersistentFlags().BoolVarP(&smileyEmojis, "smiley-emojis", "s", false,
+		"convert smileys to emojis")
 
 	return rootCmd.Execute()
 }
