@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.16
-_WIP_
+_2021-07-24_
 
 **New features**
 - `circumflex` can now be customized with flags
@@ -9,7 +9,7 @@ _WIP_
 **Changes**
 - Highlight headlines option has been simplified and can now be either 
 enabled or disabled (Removed an option to highlight headlines with the reverse
-flag)
+highlighting flag)
 
 **Cosmetic**
 - Code snippets are now highlighted in magenta instead of blue
