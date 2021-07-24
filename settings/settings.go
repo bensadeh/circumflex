@@ -17,15 +17,13 @@ type options struct {
 }
 
 type option struct {
-	name         string
 	key          string
 	defaultValue string
 	description  string
 }
 
-func (o *options) addOption(name, key, defaultValue, description string) {
+func (o *options) addOption(key, defaultValue, description string) {
 	newOption := new(option)
-	newOption.name = name
 	newOption.key = key
 	newOption.defaultValue = defaultValue
 	newOption.description = description
@@ -60,26 +58,16 @@ func GetConfigFileContents() string {
 func initializeOptions() *options {
 	o := new(options)
 
-	o.addOption(HighlightHeadlinesName, HighlightHeadlinesKey,
-		strconv.Itoa(HighlightHeadlinesDefault), HighlightHeadlinesDescription)
-	o.addOption(CommentWidthName, CommentWidthKey,
-		strconv.Itoa(CommentWidthDefault), CommentWidthDescription)
-	o.addOption(PreserveRightMarginName, PreserveRightMarginKey,
-		strconv.FormatBool(PreserveRightMarginDefault), PreserveRightMarginDescription)
-	o.addOption(IndentSizeName, IndentSizeKey,
-		strconv.Itoa(IndentSizeDefault), IndentSizeDescription)
-	o.addOption(RelativeNumberingName, RelativeNumberingKey,
-		strconv.FormatBool(RelativeNumberingDefault), RelativeNumberingDescription)
-	o.addOption(HideYCJobsName, HideYCJobsKey,
-		strconv.FormatBool(HideYCJobsDefault), HideYCJobsDescription)
-	o.addOption(UseAlternateIndentBlockName, UseAlternateIndentBlockKey,
-		strconv.FormatBool(UseAlternateIndentBlockDefault), UseAlternateIndentBlockDescription)
-	o.addOption(CommentHighlightingName, CommentHighlightingKey,
-		strconv.FormatBool(CommentHighlightingDefault), CommentHighlightingDescription)
-	o.addOption(EmojiSmileysName, EmojiSmileysKey,
-		strconv.FormatBool(EmojiSmileysDefault), EmojiSmileysDescription)
-	o.addOption(MarkAsReadName, MarkAsReadKey,
-		strconv.FormatBool(MarkAsReadDefault), MarkAsReadDescription)
+	o.addOption(HighlightHeadlinesKey, strconv.Itoa(HighlightHeadlinesDefault), HighlightHeadlinesDescription)
+	o.addOption(CommentWidthKey, strconv.Itoa(CommentWidthDefault), CommentWidthDescription)
+	o.addOption(PreserveRightMarginKey, strconv.FormatBool(PreserveRightMarginDefault), PreserveRightMarginDescription)
+	o.addOption(IndentSizeKey, strconv.Itoa(IndentSizeDefault), IndentSizeDescription)
+	o.addOption(RelativeNumberingKey, strconv.FormatBool(RelativeNumberingDefault), RelativeNumberingDescription)
+	o.addOption(HideYCJobsKey, strconv.FormatBool(HideYCJobsDefault), HideYCJobsDescription)
+	o.addOption(UseAltIndentBlockKey, strconv.FormatBool(UseAltIndentBlockDefault), UseAltIndentBlockDescription)
+	o.addOption(CommentHighlightingKey, strconv.FormatBool(CommentHighlightingDefault), CommentHighlightingDescription)
+	o.addOption(EmojiSmileysKey, strconv.FormatBool(EmojiSmileysDefault), EmojiSmileysDescription)
+	o.addOption(MarkAsReadKey, strconv.FormatBool(MarkAsReadDefault), MarkAsReadDescription)
 
 	return o
 }
