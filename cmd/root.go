@@ -27,7 +27,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		if plainComments {
-			viper.Set(settings.HighlightHeadlinesKey, false)
+			viper.Set(settings.CommentHighlightingKey, false)
 		}
 
 		if disableHistory {
