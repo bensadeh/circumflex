@@ -105,7 +105,7 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 		default:
 			paragraph = replaceSymbols(paragraph)
 			paragraph = replaceSmileys(paragraph, emojiSmiley)
-			paragraph = highlightReferences(paragraph)
+
 			paragraph = replaceHTML(paragraph)
 			paragraph = strings.TrimLeft(paragraph, " ")
 			paragraph = highlightCommentSyntax(paragraph, commentHighlighting)
@@ -127,8 +127,6 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 func replaceSymbols(paragraph string) string {
 	paragraph = strings.ReplaceAll(paragraph, tripleSpace, singleSpace)
 	paragraph = strings.ReplaceAll(paragraph, doubleSpace, singleSpace)
-	paragraph = strings.ReplaceAll(paragraph, "https://", Blue)
-	paragraph = strings.ReplaceAll(paragraph, "http://", Blue)
 	paragraph = strings.ReplaceAll(paragraph, "...", "…")
 	paragraph = strings.ReplaceAll(paragraph, " -- ", " — ")
 	paragraph = strings.ReplaceAll(paragraph, " 1/2", " ½")
@@ -216,10 +214,19 @@ func highlightCommentSyntax(input string, commentHighlighting bool) string {
 		return input
 	}
 
+	input = highlightUrls(input)
 	input = highlightBackticks(input)
 	input = highlightMentions(input)
 	input = highlightVariables(input)
 	input = highlightAbbreviations(input)
+	input = highlightReferences(input)
+
+	return input
+}
+
+func highlightUrls(input string) string {
+	input = strings.ReplaceAll(input, "https://", Blue)
+	input = strings.ReplaceAll(input, "http://", Blue)
 
 	return input
 }
