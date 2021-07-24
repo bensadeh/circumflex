@@ -50,7 +50,7 @@ func Execute() error {
 		"disable syntax highlighting for comments")
 	rootCmd.PersistentFlags().BoolVarP(&disableHistory, "disable-history", "d", false,
 		"disable marking stories as read")
-	rootCmd.PersistentFlags().BoolVarP(&altIndentBlock, "use-alt-indent-block", "a", false,
+	rootCmd.PersistentFlags().BoolVarP(&altIndentBlock, "use-alt-indent-block", "i", false,
 		"use alternate indentation block")
 
 	return rootCmd.Execute()
