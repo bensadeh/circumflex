@@ -18,10 +18,9 @@ const (
 	PreserveRightMarginDescription = "Shortens replies so that the total length, including indentation, is the same " +
 		"as the comment width. Best used when Indent Size is small to avoid deep replies being too short."
 	HighlightHeadlinesKey         = "CLX_HIGHLIGHT_HEADLINES"
-	HighlightHeadlinesDefault     = 2
+	HighlightHeadlinesDefault     = true
 	HighlightHeadlinesDescription = "Highlights YC-funded startups and text containing \033[31mShow HN\033[0m, " +
-		"\033[35mAsk HN\033[0m, \033[34mTell HN\033[0m and \033[32mLaunch HN\033[0m. Can be set to \033[1m0\033[0m " +
-		"(No highlighting), \u001B[1m1\u001B[0m (inverse highlighting) or \u001B[1m2\u001B[0m (colored highlighting)."
+		"\033[35mAsk HN\033[0m, \033[34mTell HN\033[0m and \033[32mLaunch HN\033[0m."
 	RelativeNumberingKey         = "CLX_RELATIVE_NUMBERING"
 	RelativeNumberingDefault     = false
 	RelativeNumberingDescription = "Shows each line with a number relative to the currently selected element. " +

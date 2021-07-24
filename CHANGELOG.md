@@ -3,6 +3,12 @@
 ## 1.16
 _WIP_
 
+
+**Changes**
+- Highlight headlines option has been simplified and can now be either 
+enabled or disabled (Removed an option to highlight headlines with the reverse
+flag)
+
 **Cosmetic**
 - Code snippets are now highlighted in magenta instead of blue
 - Mark as read setting now turned on by default

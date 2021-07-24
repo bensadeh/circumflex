@@ -10,75 +10,57 @@ import (
 )
 
 const (
-	noHighlighting        = 0
-	reverseHighlighting   = 1
-	colorizedHighlighting = 2
-	askHN                 = "Ask HN:"
-	showHN                = "Show HN:"
-	tellHN                = "Tell HN:"
-	launchHN              = "Launch HN:"
-	tripleSpace           = "   "
-	doubleSpace           = "  "
-	singleSpace           = " "
+	askHN       = "Ask HN:"
+	showHN      = "Show HN:"
+	tellHN      = "Tell HN:"
+	launchHN    = "Launch HN:"
+	tripleSpace = "   "
+	doubleSpace = "  "
+	singleSpace = " "
 )
 
-func FormatMain(title string, domain string, author string, mode int, markAsRead bool) string {
+func FormatMain(title string, domain string, author string, highlightHeadlines bool, markAsRead bool) string {
 	readModifier := ""
 
 	if markAsRead {
 		readModifier = "[::di]"
 	}
 
-	return readModifier + formatTitle(title, author, mode) + formatDomain(domain, markAsRead)
+	return readModifier + formatTitle(title, author, highlightHeadlines) + formatDomain(domain, markAsRead)
 }
 
-func formatTitle(title string, author string, mode int) string {
+func formatTitle(title string, author string, highlightHeadlines bool) string {
 	if title == messages.EnterCommentSectionToUpdate {
 		return Yellow(title)
 	}
 
 	if author == "whoishiring" {
-		return highlightWhoIsHiring(title, mode)
+		return highlightWhoIsHiring(title)
 	}
 
 	title = strings.ReplaceAll(title, tripleSpace, singleSpace)
 	title = strings.ReplaceAll(title, doubleSpace, singleSpace)
 	title = strings.ReplaceAll(title, "]", "[]")
 
-	title = highlightShowAndTell(title, mode)
-	title = highlightYCStartups(title, mode)
-	title = highlightSpecialContent(title, mode)
+	if highlightHeadlines {
+		title = highlightShowAndTell(title)
+		title = highlightYCStartups(title)
+		title = highlightSpecialContent(title)
+	}
 
 	return title
 }
 
-func highlightShowAndTell(title string, mode int) string {
-	switch mode {
-	case reverseHighlighting:
-		title = strings.ReplaceAll(title, askHN, Reverse(askHN))
-		title = strings.ReplaceAll(title, showHN, Reverse(showHN))
-		title = strings.ReplaceAll(title, tellHN, Reverse(tellHN))
-		title = strings.ReplaceAll(title, launchHN, Reverse(launchHN))
+func highlightShowAndTell(title string) string {
+	title = strings.ReplaceAll(title, askHN, Blue(askHN))
+	title = strings.ReplaceAll(title, showHN, Red(showHN))
+	title = strings.ReplaceAll(title, tellHN, Magenta(tellHN))
+	title = strings.ReplaceAll(title, launchHN, Green(launchHN))
 
-		return title
-	case colorizedHighlighting:
-		title = strings.ReplaceAll(title, askHN, Blue(askHN))
-		title = strings.ReplaceAll(title, showHN, Red(showHN))
-		title = strings.ReplaceAll(title, tellHN, Magenta(tellHN))
-		title = strings.ReplaceAll(title, launchHN, Green(launchHN))
-
-		return title
-
-	default:
-		return title
-	}
+	return title
 }
 
-func highlightYCStartups(title string, mode int) string {
-	if mode == noHighlighting {
-		return title
-	}
-
+func highlightYCStartups(title string) string {
 	startYear, endYear := 0o5, 22
 
 	for i := startYear; i <= endYear; i++ {
@@ -87,19 +69,6 @@ func highlightYCStartups(title string, mode int) string {
 		summer := "(YC S" + year + ")"
 		winter := "(YC W" + year + ")"
 
-		title = formatStartup(title, mode, summer, year, winter)
-	}
-
-	return title
-}
-
-func formatStartup(title string, mode int, summer string, year string, winter string) string {
-	if mode == reverseHighlighting {
-		title = strings.ReplaceAll(title, summer, Reverse(" YC S"+year+" "))
-		title = strings.ReplaceAll(title, winter, Reverse(" YC W"+year+" "))
-	}
-
-	if mode == colorizedHighlighting {
 		title = strings.ReplaceAll(title, summer, BlackOnOrange(" YC S"+year+" "))
 		title = strings.ReplaceAll(title, winter, BlackOnOrange(" YC W"+year+" "))
 	}
@@ -107,57 +76,32 @@ func formatStartup(title string, mode int, summer string, year string, winter st
 	return title
 }
 
-func highlightSpecialContent(title string, mode int) string {
-	switch mode {
-	case reverseHighlighting:
-		title = strings.ReplaceAll(title, "[audio[]", Reverse("audio"))
-		title = strings.ReplaceAll(title, "[video[]", Reverse("video"))
-		title = strings.ReplaceAll(title, "[pdf[]", Reverse("pdf"))
-		title = strings.ReplaceAll(title, "[PDF[]", Reverse("PDF"))
-		title = strings.ReplaceAll(title, "[flagged[]", Reverse("flagged"))
+func highlightSpecialContent(title string) string {
+	title = strings.ReplaceAll(title, "[audio[]", Yellow("audio"))
+	title = strings.ReplaceAll(title, "[video[]", Yellow("video"))
+	title = strings.ReplaceAll(title, "[pdf[]", Yellow("pdf"))
+	title = strings.ReplaceAll(title, "[PDF[]", Yellow("PDF"))
+	title = strings.ReplaceAll(title, "[flagged[]", Red("flagged"))
 
-		return title
-	case colorizedHighlighting:
-		title = strings.ReplaceAll(title, "[audio[]", Yellow("audio"))
-		title = strings.ReplaceAll(title, "[video[]", Yellow("video"))
-		title = strings.ReplaceAll(title, "[pdf[]", Yellow("pdf"))
-		title = strings.ReplaceAll(title, "[PDF[]", Yellow("PDF"))
-		title = strings.ReplaceAll(title, "[flagged[]", Red("flagged"))
-
-		return title
-
-	default:
-		return title
-	}
+	return title
 }
 
-func highlightWhoIsHiring(title string, mode int) string {
+func highlightWhoIsHiring(title string) string {
 	title = strings.ReplaceAll(title, " (", "[-:-:] (")
 
-	switch mode {
-	case reverseHighlighting:
-		title = Reverse(title)
-
-		return Reverse(title)
-
-	case colorizedHighlighting:
-		if strings.Contains(title, "Who is hiring?") {
-			return BlackOnBlue(title)
-		}
-
-		if strings.Contains(title, "Freelancer?") {
-			return BlackOnRed(title)
-		}
-
-		if strings.Contains(title, "Who wants to be hired?") {
-			return BlackOnYellow(title)
-		}
-
-		return title
-
-	default:
-		return title
+	if strings.Contains(title, "Who is hiring?") {
+		return BlackOnBlue(title)
 	}
+
+	if strings.Contains(title, "Freelancer?") {
+		return BlackOnRed(title)
+	}
+
+	if strings.Contains(title, "Who wants to be hired?") {
+		return BlackOnYellow(title)
+	}
+
+	return title
 }
 
 func formatDomain(domain string, markAsRead bool) string {
@@ -177,9 +121,9 @@ func formatDomain(domain string, markAsRead bool) string {
 	return domainInParenthesisAndDimmed
 }
 
-func FormatSecondary(points int, author string, unixTime int64, comments int, mode int) string {
+func FormatSecondary(points int, author string, unixTime int64, comments int, highlightHeadlines bool) string {
 	parsedPoints := parsePoints(points)
-	parsedAuthor := parseAuthor(author, mode)
+	parsedAuthor := parseAuthor(author, highlightHeadlines)
 	parsedTime := parseTime(unixTime)
 	parsedComments := parseComments(comments, author)
 
@@ -194,12 +138,12 @@ func parsePoints(points int) string {
 	return strconv.Itoa(points) + " points "
 }
 
-func parseAuthor(author string, mode int) string {
+func parseAuthor(author string, highlightHeadlines bool) string {
 	if author == "" {
 		return ""
 	}
 
-	if mode == colorizedHighlighting && author == "dang" {
+	if highlightHeadlines && author == "dang" {
 		return "by " + Green(author) + " "
 	}
 

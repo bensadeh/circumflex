@@ -39,7 +39,7 @@ type storyCategory struct {
 	stories            []*endpoints.Story
 }
 
-func (r *StoryHandler) GetStories(category int, page int, visibleStories int, highlightHeadlines int,
+func (r *StoryHandler) GetStories(category int, page int, visibleStories int, highlightHeadlines bool,
 	hideYCJobs bool) ([]*cview.ListItem, error) {
 	if category == categories.Favorites {
 		return getFavoritesStories(page, visibleStories, highlightHeadlines, r.sc[category], r.history)
@@ -48,7 +48,7 @@ func (r *StoryHandler) GetStories(category int, page int, visibleStories int, hi
 	return getOnlineStories(category, page, visibleStories, highlightHeadlines, hideYCJobs, r.sc[category], r.history)
 }
 
-func getFavoritesStories(page int, visibleStories int, highlightHeadlines int, sc *storyCategory,
+func getFavoritesStories(page int, visibleStories int, highlightHeadlines bool, sc *storyCategory,
 	his *history.History) ([]*cview.ListItem,
 	error) {
 	storiesToShow := min(visibleStories, len(sc.stories))
@@ -60,7 +60,7 @@ func getFavoritesStories(page int, visibleStories int, highlightHeadlines int, s
 	return listItems, nil
 }
 
-func getOnlineStories(category int, page int, visibleStories int, highlightHeadlines int, hideYCJobs bool,
+func getOnlineStories(category int, page int, visibleStories int, highlightHeadlines bool, hideYCJobs bool,
 	sc *storyCategory, his *history.History) ([]*cview.ListItem, error) {
 	overriddenYCJobsStatus := getOverriddenYCJobsStatus(visibleStories, hideYCJobs)
 	smallestItemToDisplay := page * visibleStories
@@ -129,7 +129,7 @@ func (r *StoryHandler) Reset() {
 	r.sc[categories.Show].stories = nil
 }
 
-func convert(subs []*endpoints.Story, his *history.History, highlightHeadlines int,
+func convert(subs []*endpoints.Story, his *history.History, highlightHeadlines bool,
 	isOnFavorites bool) []*cview.ListItem {
 	listItems := make([]*cview.ListItem, len(subs))
 

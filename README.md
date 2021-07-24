@@ -290,16 +290,16 @@ The following table shows the different ways in which `circumflex` can be config
 
 | Key                         | Default | Description |
 | :-------------------------- | :-------: |---|
-| `CLX_COMMENT_WIDTH`         | `65` | Sets the maximum number of characters on each line for comments, replies and descriptions in settings. Set to 0 to use the whole screen.       |
+| `CLX_COMMENT_WIDTH`         | `65` | Sets the maximum number of characters on each line for comments, replies and descriptions in settings. Set to 0 to use the whole screen. |
 | `CLX_INDENT_SIZE`           | `4` | The number of whitespaces prepended to each reply multiplied by the indent level. |
-| `CLX_HIGHLIGHT_HEADLINES`   | `2` | Highlights YC-funded startups and text containing `Show HN`, `Ask HN`, `Tell HN` and `Launch HN`. Can be set to 0 (No highlighting), 1 (inverse highlighting) or 2 (colored highlighting).        |
-| `CLX_RELATIVE_NUMBERING`    | `false` | Shows each line with a number relative to the currently selected element. Similar to Vim's hybrid line number mode.        |
-| `CLX_HIDE_YC_JOBS`          | `true` | Hides `X is hiring` posts from YC-funded startups. Does not affect the monthly `Who is Hiring?` posts.        |
-| `CLX_PRESERVE_RIGHT_MARGIN` | `false` | Shortens replies so that the total length, including indentation, is the same as the comment width. Best used when Indent Size is small to avoid deep replies being too short.   |
+| `CLX_HIGHLIGHT_HEADLINES`   | `true` | Highlights YC-funded startups and text containing `Show HN`, `Ask HN`, `Tell HN` and `Launch HN`. |
+| `CLX_RELATIVE_NUMBERING`    | `false` | Shows each line with a number relative to the currently selected element. Similar to Vim's hybrid line number mode. |
+| `CLX_HIDE_YC_JOBS`          | `true` | Hides `X is hiring` posts from YC-funded startups. Does not affect the monthly `Who is Hiring?` posts. |
+| `CLX_PRESERVE_RIGHT_MARGIN` | `false` | Shortens replies so that the total length, including indentation, is the same as the comment width. Best used when Indent Size is small to avoid deep replies being too short. |
 | `CLX_ALT_INDENT_BLOCK`      | `false` | Turn this setting on if the indent block does not appear as one connected line. |
 | `CLX_COMMENT_HIGHLIGHTING`  | `true` | Enables syntax highlighting in the comment section for \`code snippets\`, `@mentions`, `$variables` and `IANAL`/`IAAL` disclaimers. |
-| `CLX_EMOJI_SMILEYS`         | `false` | Converts regular smileys to their emoji counterpart |
-| `CLX_MARK_AS_READ`          | `true` | Mark submissions as read after entering the comment section |
+| `CLX_EMOJI_SMILEYS`         | `false` | Converts regular smileys to their emoji counterpart. |
+| `CLX_MARK_AS_READ`          | `true` | Mark submissions as read after entering the comment section. |
 
 ## 🚗 Under the hood
 

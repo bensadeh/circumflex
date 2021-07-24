@@ -58,7 +58,7 @@ func GetConfigFileContents() string {
 func initializeOptions() *options {
 	o := new(options)
 
-	o.addOption(HighlightHeadlinesKey, strconv.Itoa(HighlightHeadlinesDefault), HighlightHeadlinesDescription)
+	o.addOption(HighlightHeadlinesKey, strconv.FormatBool(HighlightHeadlinesDefault), HighlightHeadlinesDescription)
 	o.addOption(CommentWidthKey, strconv.Itoa(CommentWidthDefault), CommentWidthDescription)
 	o.addOption(PreserveRightMarginKey, strconv.FormatBool(PreserveRightMarginDefault), PreserveRightMarginDescription)
 	o.addOption(IndentSizeKey, strconv.Itoa(IndentSizeDefault), IndentSizeDescription)
