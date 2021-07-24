@@ -11,13 +11,14 @@ import (
 )
 
 var (
-	plainHeadlines    bool
-	plainComments     bool
-	disableHistory    bool
-	altIndentBlock    bool
-	smileyEmojis      bool
-	relativeNumbering bool
-	showYCJobs        bool
+	plainHeadlines      bool
+	plainComments       bool
+	disableHistory      bool
+	altIndentBlock      bool
+	smileyEmojis        bool
+	relativeNumbering   bool
+	showYCJobs          bool
+	preserveRightMargin bool
 )
 
 var rootCmd = &cobra.Command{
@@ -53,6 +54,10 @@ var rootCmd = &cobra.Command{
 			viper.Set(settings.HideYCJobsKey, false)
 		}
 
+		if preserveRightMargin {
+			viper.Set(settings.PreserveRightMarginKey, true)
+		}
+
 		clx.Run()
 	},
 }
@@ -73,6 +78,8 @@ func Execute() error {
 		"use relative numbering for submissions")
 	rootCmd.PersistentFlags().BoolVarP(&showYCJobs, "show-jobs", "j", false,
 		"show submissions of the type 'X is hiring'")
+	rootCmd.PersistentFlags().BoolVarP(&preserveRightMargin, "preserve-right-margin", "p", false,
+		"preserve right margin at the cost of comment width")
 
 	rootCmd.PersistentFlags().IntP("comment-width", "c", settings.CommentWidthDefault,
 		"set the comment width")
