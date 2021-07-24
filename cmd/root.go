@@ -11,11 +11,12 @@ import (
 )
 
 var (
-	plainHeadlines bool
-	plainComments  bool
-	disableHistory bool
-	altIndentBlock bool
-	smileyEmojis   bool
+	plainHeadlines    bool
+	plainComments     bool
+	disableHistory    bool
+	altIndentBlock    bool
+	smileyEmojis      bool
+	relativeNumbering bool
 )
 
 var rootCmd = &cobra.Command{
@@ -43,6 +44,10 @@ var rootCmd = &cobra.Command{
 			viper.Set(settings.EmojiSmileysKey, true)
 		}
 
+		if relativeNumbering {
+			viper.Set(settings.RelativeNumberingKey, true)
+		}
+
 		clx.Run()
 	},
 }
@@ -59,6 +64,8 @@ func Execute() error {
 		"use alternate indentation block")
 	rootCmd.PersistentFlags().BoolVarP(&smileyEmojis, "smiley-emojis", "s", false,
 		"convert smileys to emojis")
+	rootCmd.PersistentFlags().BoolVarP(&relativeNumbering, "relative-numbering", "r", false,
+		"use relative numbering for submissions")
 
 	rootCmd.PersistentFlags().IntP("comment-width", "c", settings.CommentWidthDefault,
 		"set the comment width")
