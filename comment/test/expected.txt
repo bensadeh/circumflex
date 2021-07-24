@@ -385,8 +385,8 @@ Edit2: looks like it was a soda, not a second sandwich.
                     [0m[34m▎[0mbetter rewards to compete with Amex, but they agreed to honor all the reward
                     [0m[34m▎[0mpoints too. They just rolled over from Amex.
                     [0m[34m▎[0m
-                    [0m[34m▎[0mI'm sure Costco got a deal that gives them nearly at cost processing and a bunch
-                    [0m[34m▎[0mof other stuff.
+                    [0m[34m▎[0mI'm sure Costco got a deal that gives them nearly at cost processing and a
+                    [0m[34m▎[0mbunch of other stuff.
                     [0m[34m▎[0m
                     [0m[34m▎[0mIt was worth it for Citi too. The moment I got my Costco Amex replaced with a
                     [0m[34m▎[0mCostco Citi, the Citi became my primary card, because everyone takes Visa.
@@ -497,8 +497,8 @@ billions to achieve and IMO that should be chased after.
                 [0m[36m▎[0mstatic typing with a dynamic typing escape hatch for metaprogramming.
 
                      [1mbrobdingnagians[0m [2m16 hours ago[0m
-                    [0m[34m▎[0mThe JetBrains IDE for it (AppCode) is pretty nice, but you have to use Xcode for
-                    [0m[34m▎[0mstoryboards and UI design; other than that, light years ahead of the Xcode
+                    [0m[34m▎[0mThe JetBrains IDE for it (AppCode) is pretty nice, but you have to use Xcode
+                    [0m[34m▎[0mfor storyboards and UI design; other than that, light years ahead of the Xcode
                     [0m[34m▎[0mexperience.
 
                          [1mapples_oranges[0m [2m15 hours ago[0m
@@ -506,8 +506,8 @@ billions to achieve and IMO that should be chased after.
                         [0m[35m▎[0msuppose. I believe the Xcode experience isn't too bad however.
 
                              [1mswiftcoder[0m [2m14 hours ago[0m
-                            [0m[31;1m▎[0mUsing a bloated non-native app to develop your elegant, fully native app. Uh
-                            [0m[31;1m▎[0mhuh.
+                            [0m[31;1m▎[0mUsing a bloated non-native app to develop your elegant, fully native
+                            [0m[31;1m▎[0mapp. Uh huh.
 
                                  [1mSiira[0m [2m9 hours ago[0m
                                 [0m[33;1m▎[0mJava is fast, unlike JS. Perhaps one day JS will be fast, too.
@@ -527,19 +527,20 @@ billions to achieve and IMO that should be chased after.
                     [0m[34m▎[0mprogram. I can't say that inspires much confidence. Am I wrong?
 
                          [1mlelanthran[0m [2m11 hours ago[0m
-                        [0m[35m▎[0mIt does look dated, but I use it daily (I use the xfe file manager) and it is
-                        [0m[35m▎[0mbloody quick - every action is almost instantaneous compare to the KDE, gnome,
-                        [0m[35m▎[0mmate or cinnamon file managers.
+                        [0m[35m▎[0mIt does look dated, but I use it daily (I use the xfe file manager) and it
+                        [0m[35m▎[0mis bloody quick - every action is almost instantaneous compare to the KDE,
+                        [0m[35m▎[0mgnome, mate or cinnamon file managers.
                         [0m[35m▎[0m
-                        [0m[35m▎[0mIt depends on the target market for your application I suppose - if your target
-                        [0m[35m▎[0mwon't be happy unless they have html/CSS or similar animations, then using
-                        [0m[35m▎[0msomething with low latency isn't going to make them happy.
+                        [0m[35m▎[0mIt depends on the target market for your application I suppose - if your
+                        [0m[35m▎[0mtarget won't be happy unless they have html/CSS or similar animations, then
+                        [0m[35m▎[0musing something with low latency isn't going to make them happy.
 
                          [1mMaxBarraclough[0m [2m12 hours ago[0m
-                        [0m[35m▎[0mI can confirm it compiles with the latest Visual Studio and runs fine on Windows
-                        [0m[35m▎[0m10 in both 32-bit and 64-bit. (Well it did last time I checked, haven't tried
-                        [0m[35m▎[0mthe very latest release.) You're right the screenshots are ancient, but the code
-                        [0m[35m▎[0mitself is still being updated by the project's maintainer Jeroen.
+                        [0m[35m▎[0mI can confirm it compiles with the latest Visual Studio and runs fine on
+                        [0m[35m▎[0mWindows 10 in both 32-bit and 64-bit. (Well it did last time I checked,
+                        [0m[35m▎[0mhaven't tried the very latest release.) You're right the screenshots are
+                        [0m[35m▎[0mancient, but the code itself is still being updated by the project's
+                        [0m[35m▎[0mmaintainer Jeroen.
                         [0m[35m▎[0m
                         [0m[35m▎[0mThe FOX codebase isn't terribly modern, as it's older than the standard C++
                         [0m[35m▎[0mconcurrency machinery, but it works.
@@ -1203,23 +1204,23 @@ billions to achieve and IMO that should be chased after.
 
                          [1mskohan[0m [2m17 hours ago[0m
                         [0m[35m▎[0mA lot of the problems with web development have nothing to do with time to
-                        [0m[35m▎[0mmarket. There's no technical reason you could not have a toolset which is just
-                        [0m[35m▎[0mas easy to use, but far more performant.
+                        [0m[35m▎[0mmarket. There's no technical reason you could not have a toolset which is
+                        [0m[35m▎[0mjust as easy to use, but far more performant.
 
                              [1mlostcolony[0m [2m14 hours ago[0m
-                            [0m[31;1m▎[0mSo if it isn't easier to use, and less performant, why are these poor toolsets
-                            [0m[31;1m▎[0mbeing chosen?
+                            [0m[31;1m▎[0mSo if it isn't easier to use, and less performant, why are these poor
+                            [0m[31;1m▎[0mtoolsets being chosen?
 
                                  [1mskohan[0m [2m14 hours ago[0m
                                 [0m[33;1m▎[0mHistory and inertia
 
                                      [1mlostcolony[0m [2m13 hours ago[0m
-                                    [0m[32;1m▎[0mThat would explain why they continue to be used after initial adoption. It
-                                    [0m[32;1m▎[0mdoesn't explain why they were initially chosen if there were better options
-                                    [0m[32;1m▎[0musing something that already existed.
+                                    [0m[32;1m▎[0mThat would explain why they continue to be used after initial
+                                    [0m[32;1m▎[0madoption. It doesn't explain why they were initially chosen if
+                                    [0m[32;1m▎[0mthere were better options using something that already existed.
                                     [0m[32;1m▎[0m
-                                    [0m[32;1m▎[0mHistory and inertia also are nearly synonymous with "easier to use" in this
-                                    [0m[32;1m▎[0mcontext.
+                                    [0m[32;1m▎[0mHistory and inertia also are nearly synonymous with "easier to
+                                    [0m[32;1m▎[0muse" in this context.
 
                  [1mforgotmypw17[0m [2m20 hours ago[0m
                 [0m[36m▎[0mYou,re pointing the blame at a source of EVEN WORSE performance issues, but it
@@ -1241,8 +1242,8 @@ billions to achieve and IMO that should be chased after.
                     [0m[34m▎[0m
                     [0m[34m▎[0mHowever, that's only during the initial load. After that, JS can just keep
                     [0m[34m▎[0mmodifying the DOM based on the data retrieved from API, and never download HTML
-                    [0m[34m▎[0mand construct new DOM again. If done properly (and that's a big if!), and where
-                    [0m[34m▎[0mappropriate, this can be much faster.
+                    [0m[34m▎[0mand construct new DOM again. If done properly (and that's a big if!), and
+                    [0m[34m▎[0mwhere appropriate, this can be much faster.
                     [0m[34m▎[0m
                     [0m[34m▎[0m[2m ▎[3m[2mMost web devs develop on localhost and test on some of the best connections[0m
                     [0m[34m▎[0m[2m ▎[2;3myou can get today, leaving network performance testing as an afterthought at[0m
@@ -1258,17 +1259,17 @@ billions to achieve and IMO that should be chased after.
                         [0m[35m▎[0m
                         [0m[35m▎[0mPrimary and by far most frequent use case.
                         [0m[35m▎[0m
-                        [0m[35m▎[0m[2m ▎[3m[2mAfter that, JS can just keep modifying the DOM based on the data retrieved[0m
-                        [0m[35m▎[0m[2m ▎[2;3mfrom API, and never download HTML and construct new DOM again.[0m
+                        [0m[35m▎[0m[2m ▎[3m[2mAfter that, JS can just keep modifying the DOM based on the data[0m
+                        [0m[35m▎[0m[2m ▎[2;3mretrieved from API, and never download HTML and construct new DOM again.[0m
                         [0m[35m▎[0m
-                        [0m[35m▎[0mAnd then you can never return to the same page again, it's gone into the either,
-                        [0m[35m▎[0mand the Back button doesn't work properly.
+                        [0m[35m▎[0mAnd then you can never return to the same page again, it's gone into the
+                        [0m[35m▎[0meither, and the Back button doesn't work properly.
                         [0m[35m▎[0m
-                        [0m[35m▎[0mAnyone who doesn't support JS to the level you want? Well, fuck those people,
-                        [0m[35m▎[0mlet them make their own wheelchair ramps.
+                        [0m[35m▎[0mAnyone who doesn't support JS to the level you want? Well, fuck those
+                        [0m[35m▎[0mpeople, let them make their own wheelchair ramps.
                         [0m[35m▎[0m
-                        [0m[35m▎[0m[2m ▎[3m[2mIf done properly (and that's a big if!), and where appropriate, this can be[0m
-                        [0m[35m▎[0m[2m ▎[2;3mmuch faster.[0m
+                        [0m[35m▎[0m[2m ▎[3m[2mIf done properly (and that's a big if!), and where appropriate, this can[0m
+                        [0m[35m▎[0m[2m ▎[2;3mbe much faster.[0m
                         [0m[35m▎[0m
                         [0m[35m▎[0mA big IF, indeed.
 
@@ -1337,40 +1338,40 @@ billions to achieve and IMO that should be chased after.
                 [0m[36m▎[0msuddenly sound as insane as they truly are.
 
                      [1mjosephg[0m [2m21 hours ago[0m
-                    [0m[34m▎[0mI totally agree. I think about it like, you spend $3000 on a computer. $100 goes
-                    [0m[34m▎[0minto actually doing your computing. The rest is thrown away by lazy programmers
-                    [0m[34m▎[0mwho can’t be bothered to learn how a profiler works. Most software is written
-                    [0m[34m▎[0mthe same way a lazy college student treats their dorm room - all available
-                    [0m[34m▎[0mresources (surfaces) are filled before anything gets cleaned up. Getting a
-                    [0m[34m▎[0mbigger room provides temporary relief before they just make more mess to fill
-                    [0m[34m▎[0mthe space.
+                    [0m[34m▎[0mI totally agree. I think about it like, you spend $3000 on a computer. $100
+                    [0m[34m▎[0mgoes into actually doing your computing. The rest is thrown away by lazy
+                    [0m[34m▎[0mprogrammers who can’t be bothered to learn how a profiler works. Most software
+                    [0m[34m▎[0mis written the same way a lazy college student treats their dorm room - all
+                    [0m[34m▎[0mavailable resources (surfaces) are filled before anything gets cleaned up.
+                    [0m[34m▎[0mGetting a bigger room provides temporary relief before they just make more mess
+                    [0m[34m▎[0mto fill the space.
 
                          [1mPxtl[0m [2m16 hours ago[0m
                         [0m[35m▎[0m"can't be bothered to learn how a profiler works"
                         [0m[35m▎[0m
                         [0m[35m▎[0mTo be fair, profiling is way more difficult than it was in the days of
-                        [0m[35m▎[0msingle-core local applications. A single-threaded single-machine application
-                        [0m[35m▎[0mmeans you can get a very clear and simple tree-chart of where your program's
-                        [0m[35m▎[0mtime is spent, and the places to optimize are dead obvious.
+                        [0m[35m▎[0msingle-core local applications. A single-threaded single-machine
+                        [0m[35m▎[0mapplication means you can get a very clear and simple tree-chart of where
+                        [0m[35m▎[0myour program's time is spent, and the places to optimize are dead obvious.
                         [0m[35m▎[0m
-                        [0m[35m▎[0mEven if you're using async/await but are basically mostly releasing the thread
-                        [0m[35m▎[0mand awaiting the response, the end-user experience of that time is the same -
-                        [0m[35m▎[0mthey don't give a crap that you're being thoughtful to the processor if it's
-                        [0m[35m▎[0mstill 0.5s of file IO before they can do anything, but now the profiler is lying
-                        [0m[35m▎[0mto you and saying "nope, the processor isn't spending any time in that wait,
-                        [0m[35m▎[0myour program is fast!".
+                        [0m[35m▎[0mEven if you're using async/await but are basically mostly releasing the
+                        [0m[35m▎[0mthread and awaiting the response, the end-user experience of that time is
+                        [0m[35m▎[0mthe same - they don't give a crap that you're being thoughtful to the
+                        [0m[35m▎[0mprocessor if it's still 0.5s of file IO before they can do anything, but
+                        [0m[35m▎[0mnow the profiler is lying to you and saying "nope, the processor isn't
+                        [0m[35m▎[0mspending any time in that wait, your program is fast!".
 
                              [1mtoast0[0m [2m13 hours ago[0m
-                            [0m[31;1m▎[0m[2m ▎[3m[2mTo be fair, profiling is way more difficult than it was in the days of[0m
-                            [0m[31;1m▎[0m[2m ▎[2;3msingle-core local applications.[0m
+                            [0m[31;1m▎[0m[2m ▎[3m[2mTo be fair, profiling is way more difficult than it was in the days[0m
+                            [0m[31;1m▎[0m[2m ▎[2;3mof single-core local applications.[0m
                             [0m[31;1m▎[0m
                             [0m[31;1m▎[0mNot if you graduated from the printf school of profiling[[31m1[0m].
                             [0m[31;1m▎[0m
-                            [0m[31;1m▎[0mMeasure the time when you start something, measure the time when you finish, and
-                            [0m[31;1m▎[0mprint it. Anything that takes too long gets a closer look.
+                            [0m[31;1m▎[0mMeasure the time when you start something, measure the time when you
+                            [0m[31;1m▎[0mfinish, and print it. Anything that takes too long gets a closer look.
                             [0m[31;1m▎[0m
-                            [0m[31;1m▎[0m[[31m1[0m] unaffiliated with the printf school of debugging, but coincidentally located
-                            [0m[31;1m▎[0mat the same campus.
+                            [0m[31;1m▎[0m[[31m1[0m] unaffiliated with the printf school of debugging, but
+                            [0m[31;1m▎[0mcoincidentally located at the same campus.
 
                          [1mzwirbl[0m [2m20 hours ago[0m
                         [0m[35m▎[0mWirth's law is a reality, an awful, horribly annoying one
@@ -1395,111 +1396,125 @@ billions to achieve and IMO that should be chased after.
                     [0m[34m▎[0mpriorities I guess.
 
                          [1mpdimitar[0m[35m PP[0m [2m20 hours ago[0m
-                        [0m[35m▎[0m[2m ▎[3m[2myou are paying for a more flexible software that can be more easily changed in[0m
-                        [0m[35m▎[0m[2m ▎[2;3mthe future[0m
+                        [0m[35m▎[0m[2m ▎[3m[2myou are paying for a more flexible software that can be more easily[0m
+                        [0m[35m▎[0m[2m ▎[2;3mchanged in the future[0m
                         [0m[35m▎[0m
                         [0m[35m▎[0mIn theory yes, in practice this almost never happens. 95% of the teams just
-                        [0m[35m▎[0mquickly mash the product together and peace out before anyone notices what mess
-                        [0m[35m▎[0mdid they make. And then you have some poor Indian / African / Eastern European
-                        [0m[35m▎[0mteam trying to untangle and improve it.
+                        [0m[35m▎[0mquickly mash the product together and peace out before anyone notices what
+                        [0m[35m▎[0mmess did they make. And then you have some poor Indian / African / Eastern
+                        [0m[35m▎[0mEuropean team trying to untangle and improve it.
                         [0m[35m▎[0m
                         [0m[35m▎[0mSeen it literally tens of times over a course of 19 years career.
                         [0m[35m▎[0m
-                        [0m[35m▎[0m[2m ▎[3m[2mNobody wants slow software, its just cheaper, in upfront and maintenance costs[0m
+                        [0m[35m▎[0m[2m ▎[3m[2mNobody wants slow software, its just cheaper, in upfront and maintenance[0m
+                        [0m[35m▎[0m[2m ▎[2;3mcosts[0m
                         [0m[35m▎[0m
                         [0m[35m▎[0mThat is true. But nowadays it's more like taking a loan from the bank and
                         [0m[35m▎[0mrunning away to an uninhabited island to avoid paying it off.
 
                              [1mmynameisash[0m [2m14 hours ago[0m
-                            [0m[31;1m▎[0m[2m ▎[3m[2mIn theory yes, in practice this almost never happens. 95% of the teams just[0m
-                            [0m[31;1m▎[0m[2m ▎[2;3mquickly mash the product together and peace out before anyone notices what[0m
-                            [0m[31;1m▎[0m[2m ▎[2;3mmess did they make.[0m
+                            [0m[31;1m▎[0m[2m ▎[3m[2mIn theory yes, in practice this almost never happens. 95% of the[0m
+                            [0m[31;1m▎[0m[2m ▎[2;3mteams just quickly mash the product together and peace out before[0m
+                            [0m[31;1m▎[0m[2m ▎[2;3manyone notices what mess did they make.[0m
                             [0m[31;1m▎[0m
                             [0m[31;1m▎[0mMuch of my work is in highly parallelized computing (think Spark across
-                            [0m[31;1m▎[0mthousands of nodes) processing 10s or 100s of TiB at a time with declarative
-                            [0m[31;1m▎[0msyntax. It's super cool. Until someone decides they're going to use this one
-                            [0m[31;1m▎[0mline expression to process data because it's just so easy to write. But it turns
-                            [0m[31;1m▎[0mout doing that absolutely destroys your performance because the query optimizer
-                            [0m[31;1m▎[0mnow has a black box in the middle of your job graph that it can't reason about.
+                            [0m[31;1m▎[0mthousands of nodes) processing 10s or 100s of TiB at a time with
+                            [0m[31;1m▎[0mdeclarative syntax. It's super cool. Until someone decides they're
+                            [0m[31;1m▎[0mgoing to use this one line expression to process data because it's just
+                            [0m[31;1m▎[0mso easy to write. But it turns out doing that absolutely destroys your
+                            [0m[31;1m▎[0mperformance because the query optimizer now has a black box in the
+                            [0m[31;1m▎[0mmiddle of your job graph that it can't reason about.
                             [0m[31;1m▎[0m
-                            [0m[31;1m▎[0mBad practices like that occur over and over again, and everyone just figures,
-                            [0m[31;1m▎[0m"Well, we have a lot of hardware. If the job takes an extra half hour, NBD."
-                            [0m[31;1m▎[0mSoon, you have scores of jobs that take eight hours to run and everyone starts
-                            [0m[31;1m▎[0mto become a little uneasy because the infrastructure is starting to fail jobs on
-                            [0m[31;1m▎[0maccount of bad data skew and vertexes exceeding the predefined limits.
+                            [0m[31;1m▎[0mBad practices like that occur over and over again, and everyone just
+                            [0m[31;1m▎[0mfigures, "Well, we have a lot of hardware. If the job takes an extra
+                            [0m[31;1m▎[0mhalf hour, NBD." Soon, you have scores of jobs that take eight hours to
+                            [0m[31;1m▎[0mrun and everyone starts to become a little uneasy because the
+                            [0m[31;1m▎[0minfrastructure is starting to fail jobs on account of bad data skew and
+                            [0m[31;1m▎[0mvertexes exceeding the predefined limits.
                             [0m[31;1m▎[0m
-                            [0m[31;1m▎[0mHow did we get here? We severely over-optimized for engineer time to the
-                            [0m[31;1m▎[0mdetriment of CPU time. Certainly, there [3mis[0m a balance to strike, no doubt. But
-                            [0m[31;1m▎[0mWhen writing one line of code versus six (and I'm not being hyperbolic here)
-                            [0m[31;1m▎[0mbecomes preferable to really understanding what your system is doing, you reap
-                            [0m[31;1m▎[0mwhat you sow.
+                            [0m[31;1m▎[0mHow did we get here? We severely over-optimized for engineer time to
+                            [0m[31;1m▎[0mthe detriment of CPU time. Certainly, there [3mis[0m a balance to strike, no
+                            [0m[31;1m▎[0mdoubt. But When writing one line of code versus six (and I'm not being
+                            [0m[31;1m▎[0mhyperbolic here) becomes preferable to really understanding what your
+                            [0m[31;1m▎[0msystem is doing, you reap what you sow.
                             [0m[31;1m▎[0m
-                            [0m[31;1m▎[0mOn the plus side, I get to come in and make things run 5x, 10x, maybe even 20x
-                            [0m[31;1m▎[0mfaster with very little work. It sometimes feels magical, but it would be
-                            [0m[31;1m▎[0mpreferable if we had some appreciation for not letting our code slowly descend
-                            [0m[31;1m▎[0minto gross inefficiency.
+                            [0m[31;1m▎[0mOn the plus side, I get to come in and make things run 5x, 10x, maybe
+                            [0m[31;1m▎[0meven 20x faster with very little work. It sometimes feels magical, but
+                            [0m[31;1m▎[0mit would be preferable if we had some appreciation for not letting our
+                            [0m[31;1m▎[0mcode slowly descend into gross inefficiency.
 
                              [1mseer[0m [2m19 hours ago[0m
-                            [0m[31;1m▎[0mMaybe it didn’t really come across I am totally in the performance camp and love
-                            [0m[31;1m▎[0mto be able to craft a beautiful, lean and responsive UI if nothing else than for
-                            [0m[31;1m▎[0mseeing the joy on users’ faces when they are delighted (amazed!) that what they
-                            [0m[31;1m▎[0mwanted done happened so fast.
+                            [0m[31;1m▎[0mMaybe it didn’t really come across I am totally in the performance camp
+                            [0m[31;1m▎[0mand love to be able to craft a beautiful, lean and responsive UI if
+                            [0m[31;1m▎[0mnothing else than for seeing the joy on users’ faces when they are
+                            [0m[31;1m▎[0mdelighted (amazed!) that what they wanted done happened so fast.
                             [0m[31;1m▎[0m
-                            [0m[31;1m▎[0mBut time and time again I see that projects with a fast “enough” interfaces and
-                            [0m[31;1m▎[0mflexible systems win out on more specialized, faster ones. And I hate that but
-                            [0m[31;1m▎[0mhere we are. Sometime we see a really performant piece of software hit the sweet
-                            [0m[31;1m▎[0mspot of functionality for a while (for example sublime text) but then get
-                            [0m[31;1m▎[0movertaken by a fast enough but more flexible alternative (vacode)
+                            [0m[31;1m▎[0mBut time and time again I see that projects with a fast “enough”
+                            [0m[31;1m▎[0minterfaces and flexible systems win out on more specialized, faster
+                            [0m[31;1m▎[0mones. And I hate that but here we are. Sometime we see a really
+                            [0m[31;1m▎[0mperformant piece of software hit the sweet spot of functionality for a
+                            [0m[31;1m▎[0mwhile (for example sublime text) but then get overtaken by a fast
+                            [0m[31;1m▎[0menough but more flexible alternative (vacode)
 
                              [1manthk[0m [2m19 hours ago[0m
                             [0m[31;1m▎[0m[2m ▎[3m[2mEastern European[0m
                             [0m[31;1m▎[0m
-                            [0m[31;1m▎[0mEastern European coders are highly competent, they did magic back in the day
-                            [0m[31;1m▎[0mwith just a ZX Spectrum.
+                            [0m[31;1m▎[0mEastern European coders are highly competent, they did magic back in
+                            [0m[31;1m▎[0mthe day with just a ZX Spectrum.
 
                                  [1mpdimitar[0m[35m PP[0m [2m18 hours ago[0m
-                                [0m[33;1m▎[0mAs an Eastern European programmer, I agree. A lot of us are called to fix messes
-                                [0m[33;1m▎[0mleft by primadona devs (who are taking home $200K a year for the privilege of
-                                [0m[33;1m▎[0mmaking other people's lives a living nightmare).
+                                [0m[33;1m▎[0mAs an Eastern European programmer, I agree. A lot of us are called
+                                [0m[33;1m▎[0mto fix messes left by primadona devs (who are taking home $200K a
+                                [0m[33;1m▎[0myear for the privilege of making other people's lives a living
+                                [0m[33;1m▎[0mnightmare).
 
                                      [1mtharne[0m [2m17 hours ago[0m
-                                    [0m[32;1m▎[0mTo be fair, most of those "primadona devs", as you call them, would much prefer
-                                    [0m[32;1m▎[0mto write well-designed programs cleanly coded, but are given completely
-                                    [0m[32;1m▎[0munreasonable timeframes and staffing then told to create an MVP then turn it
-                                    [0m[32;1m▎[0mover to offshore.
+                                    [0m[32;1m▎[0mTo be fair, most of those "primadona devs", as you call them,
+                                    [0m[32;1m▎[0mwould much prefer to write well-designed programs cleanly
+                                    [0m[32;1m▎[0mcoded, but are given completely unreasonable timeframes and
+                                    [0m[32;1m▎[0mstaffing then told to create an MVP then turn it over to
+                                    [0m[32;1m▎[0moffshore.
                                     [0m[32;1m▎[0m
-                                    [0m[32;1m▎[0mVery few people enjoy producing junk, but management (and customers) often
-                                    [0m[32;1m▎[0mdemand junk today rather than quality tomorrow.
+                                    [0m[32;1m▎[0mVery few people enjoy producing junk, but management (and
+                                    [0m[32;1m▎[0mcustomers) often demand junk today rather than quality
+                                    [0m[32;1m▎[0mtomorrow.
 
-                                         [1mridethebike[0m [2m12 hours ago[0m
+                                         [1mridethebike[0m [2m12[0m
+                                         [2mhours ago[0m
                                         [0m[36;1m▎[0mPrimadona dev here :)
                                         [0m[36;1m▎[0m
-                                        [0m[36;1m▎[0m[2m ▎[3m[2mmost of those "primadona devs", as you call them, would much prefer to write[0m
-                                        [0m[36;1m▎[0m[2m ▎[2;3mwell-designed programs cleanly coded[0m
+                                        [0m[36;1m▎[0m[2m ▎[3m[2mmost of those "primadona devs", as you call them, would[0m
+                                        [0m[36;1m▎[0m[2m ▎[2;3mmuch prefer to write well-designed programs cleanly coded[0m
                                         [0m[36;1m▎[0m
                                         [0m[36;1m▎[0mMost of them - yes.
-                                        [0m[36;1m▎[0mBut there's a non-negligible chunk of them who are too careless or incompetent
-                                        [0m[36;1m▎[0mto care about quality - they've been around long enough to gain knowledge about
-                                        [0m[36;1m▎[0mproject and get Vice-President title(inflated ego included).
+                                        [0m[36;1m▎[0mBut there's a non-negligible chunk of them who are too
+                                        [0m[36;1m▎[0mcareless or incompetent to care about quality - they've
+                                        [0m[36;1m▎[0mbeen around long enough to gain knowledge about project and
+                                        [0m[36;1m▎[0mget Vice-President title(inflated ego included).
                                         [0m[36;1m▎[0m
-                                        [0m[36;1m▎[0mIt is especially visible in big banks (I suppose it's typical for other big
-                                        [0m[36;1m▎[0mnon-tech corps as well) where tech culture is generally on poor side.
+                                        [0m[36;1m▎[0mIt is especially visible in big banks (I suppose it's
+                                        [0m[36;1m▎[0mtypical for other big non-tech corps as well) where tech
+                                        [0m[36;1m▎[0mculture is generally on poor side.
                                         [0m[36;1m▎[0m
                                         [0m[36;1m▎[0medit: grammar
 
-                                         [1mpdimitar[0m[35m PP[0m [2m15 hours ago[0m
-                                        [0m[36;1m▎[0mObviously neither me nor you can generalize — both extremes exist.
+                                         [1mpdimitar[0m[35m PP[0m [2m15[0m
+                                         [2mhours ago[0m
+                                        [0m[36;1m▎[0mObviously neither me nor you can generalize — both extremes
+                                        [0m[36;1m▎[0mexist.
                                         [0m[36;1m▎[0m
-                                        [0m[36;1m▎[0mGiven the chance I'd likely collect a fat paycheck and bail out at the end of
-                                        [0m[36;1m▎[0mthe contract as those other people did. But that attitude is responsible for the
-                                        [0m[36;1m▎[0mincreasingly awful mess that modern software is becoming.
+                                        [0m[36;1m▎[0mGiven the chance I'd likely collect a fat paycheck and bail
+                                        [0m[36;1m▎[0mout at the end of the contract as those other people did.
+                                        [0m[36;1m▎[0mBut that attitude is responsible for the increasingly awful
+                                        [0m[36;1m▎[0mmess that modern software is becoming.
                                         [0m[36;1m▎[0m
-                                        [0m[36;1m▎[0mAlmost everyone is at fault, me included. The perverted incentives of today's
-                                        [0m[36;1m▎[0mworld are only making things worse.
+                                        [0m[36;1m▎[0mAlmost everyone is at fault, me included. The perverted
+                                        [0m[36;1m▎[0mincentives of today's world are only making things worse.
 
                                      [1mseer[0m [2m16 hours ago[0m
-                                    [0m[32;1m▎[0mHah true dat. Been my life for the last couple of years :-D Managed to pull
-                                    [0m[32;1m▎[0mthrough a project that “failed” two times and was 2.5 years behind schedule…
+                                    [0m[32;1m▎[0mHah true dat. Been my life for the last couple of years :-D
+                                    [0m[32;1m▎[0mManaged to pull through a project that “failed” two times and
+                                    [0m[32;1m▎[0mwas 2.5 years behind schedule…
 
          [1mskohan[0m [2ma day ago[0m
         [0m[33m▎[0mGiven the state and culture of web development, it's honestly a travesty that
@@ -1546,9 +1561,9 @@ billions to achieve and IMO that should be chased after.
                         [0m[35m▎[0mOr Java
 
                              [1mryandrake[0m [2m7 hours ago[0m
-                            [0m[31;1m▎[0mOr… and I know this is just crazy-talk… there is properly separating your
-                            [0m[31;1m▎[0mplatform-independent business logic from the minimal platform-specific UI layer.
-                            [0m[31;1m▎[0mA lost art these days it seems.
+                            [0m[31;1m▎[0mOr… and I know this is just crazy-talk… there is properly separating
+                            [0m[31;1m▎[0myour platform-independent business logic from the minimal
+                            [0m[31;1m▎[0mplatform-specific UI layer. A lost art these days it seems.
 
                  [1mwruza[0m [2m20 hours ago[0m
                 [0m[36m▎[0mIf CorelDRAW were installed on every phone and given same privileges, they’d use
@@ -1579,8 +1594,8 @@ billions to achieve and IMO that should be chased after.
 
                      [1mjosephg[0m [2m20 hours ago[0m
                     [0m[34m▎[0mYep. Native software development houses never invested enough in making a cross
-                    [0m[34m▎[0mplatform app toolkit as good as the web. There’s no technical reason why we don’
-                    [0m[34m▎[0mt have something like electron, but lightweight and without javascript. But
+                    [0m[34m▎[0mplatform app toolkit as good as the web. There’s no technical reason why we don
+                    [0m[34m▎[0m’t have something like electron, but lightweight and without javascript. But
                     [0m[34m▎[0mnative-feeling cross platform UI is really hard (like $100M+ hard) and no
                     [0m[34m▎[0mindividual company cares enough to make it happen. I’m sure it would be a great
                     [0m[34m▎[0minvestment for the industry as a whole, but every actor with the resources is
@@ -1588,42 +1603,43 @@ billions to achieve and IMO that should be chased after.
                     [0m[34m▎[0mdisappointing.
 
                          [1mgrishka[0m [2m20 hours ago[0m
-                        [0m[35m▎[0mI don't think it's at all possible to make cross-platform GUIs that feel native.
-                        [0m[35m▎[0mIt's of course fine to share the core of your application across platforms, but
-                        [0m[35m▎[0myou have to make the UI part separately for each platform for a truly nice
-                        [0m[35m▎[0mresult. There's no escaping that. And it's not like companies like Slack and
-                        [0m[35m▎[0mDiscord lack the resources to do so — they absolutely deliberately continue
-                        [0m[35m▎[0mstubbornly ignoring the fact that, setting aside excessive resource usage, no
-                        [0m[35m▎[0mone likes UIs that look and feel out of place in their OS. They totally have the
-                        [0m[35m▎[0mresources necessary to rewrite their apps to use native UI toolkits on all
-                        [0m[35m▎[0msupported systems.
+                        [0m[35m▎[0mI don't think it's at all possible to make cross-platform GUIs that feel
+                        [0m[35m▎[0mnative. It's of course fine to share the core of your application across
+                        [0m[35m▎[0mplatforms, but you have to make the UI part separately for each platform
+                        [0m[35m▎[0mfor a truly nice result. There's no escaping that. And it's not like
+                        [0m[35m▎[0mcompanies like Slack and Discord lack the resources to do so — they
+                        [0m[35m▎[0mabsolutely deliberately continue stubbornly ignoring the fact that, setting
+                        [0m[35m▎[0maside excessive resource usage, no one likes UIs that look and feel out of
+                        [0m[35m▎[0mplace in their OS. They totally have the resources necessary to rewrite
+                        [0m[35m▎[0mtheir apps to use native UI toolkits on all supported systems.
 
                              [1mpdimitar[0m[35m PP[0m [2m20 hours ago[0m
-                            [0m[31;1m▎[0mI don't know engineers from in there but I am willing to bet $100 that part of
-                            [0m[31;1m▎[0mthem really want to make native OS UIs. It's just that business will never
-                            [0m[31;1m▎[0mgreen-light that as a priority.
+                            [0m[31;1m▎[0mI don't know engineers from in there but I am willing to bet $100 that
+                            [0m[31;1m▎[0mpart of them really want to make native OS UIs. It's just that business
+                            [0m[31;1m▎[0mwill never green-light that as a priority.
 
                          [1mjamil7[0m [2m18 hours ago[0m
-                        [0m[35m▎[0mAlthough I'm not a huge fan of it, you could argue that Flutter is trying to
-                        [0m[35m▎[0msolve this problem in some ways and has the right backing to be able to pull it
-                        [0m[35m▎[0moff. It unfortunately doesn't feel native though (apart from on Android).
+                        [0m[35m▎[0mAlthough I'm not a huge fan of it, you could argue that Flutter is trying
+                        [0m[35m▎[0mto solve this problem in some ways and has the right backing to be able to
+                        [0m[35m▎[0mpull it off. It unfortunately doesn't feel native though (apart from on
+                        [0m[35m▎[0mAndroid).
 
                          [1mmichael1999[0m [2m17 hours ago[0m
-                        [0m[35m▎[0mQt and wxWidgets are still out there. But big money is flowing through the web,
-                        [0m[35m▎[0mso web technologies spread with it.
+                        [0m[35m▎[0mQt and wxWidgets are still out there. But big money is flowing through the
+                        [0m[35m▎[0mweb, so web technologies spread with it.
 
                              [1mgrishka[0m [2m17 hours ago[0m
-                            [0m[31;1m▎[0mQt still feels not quite right on macOS — because it draws the controls itself
-                            [0m[31;1m▎[0minstead of using the native ones. wxWidgets is the best of the bunch, because it
-                            [0m[31;1m▎[0mapparently does wrap AppKit into itself, but then again, the layouts apps use
-                            [0m[31;1m▎[0mgive away that it's a cross-platform thing.
+                            [0m[31;1m▎[0mQt still feels not quite right on macOS — because it draws the controls
+                            [0m[31;1m▎[0mitself instead of using the native ones. wxWidgets is the best of the
+                            [0m[31;1m▎[0mbunch, because it apparently does wrap AppKit into itself, but then
+                            [0m[31;1m▎[0magain, the layouts apps use give away that it's a cross-platform thing.
 
                  [1mbenhurmarcel[0m [2m20 hours ago[0m
                 [0m[36m▎[0mBecause it works everywhere.
 
                      [1mtimw4mail[0m [2m19 hours ago[0m
-                    [0m[34m▎[0m* As long as everywhere is a recent device that can run the latest version of an
-                    [0m[34m▎[0m"evergreen" web browser
+                    [0m[34m▎[0m* As long as everywhere is a recent device that can run the latest version of
+                    [0m[34m▎[0man "evergreen" web browser
 
              [1msjy[0m [2m20 hours ago[0m
             [0m[32m▎[0m[2m ▎[3m[2mThe weakness of CSS is evident by how difficult it has been to properly center[0m
@@ -1701,9 +1717,9 @@ billions to achieve and IMO that should be chased after.
                     [0m[34m▎[0mapp itself is already running), although notably most of the time spent in the
                     [0m[34m▎[0mPrettier example seems to be spent syntax highlighting the JavaScript. If you
                     [0m[34m▎[0mwant to try a direct comparison of opening a file vs. a window, you can see the
-                    [0m[34m▎[0mdifference between opening a new file in an existing window (on Mac, [35m⌘N[0m / [35mFile >[0m
-                    [0m[34m▎[0m[35mNew File[0m) or new window (on Mac, [35m⌥⌘N[0m / [35mFile > New Window[0m). For me the latter is
-                    [0m[34m▎[0mfar slower than the former.
+                    [0m[34m▎[0mdifference between opening a new file in an existing window (on Mac, [35m⌘N[0m / [35mFile[0m
+                    [0m[34m▎[0m[35m> New File[0m) or new window (on Mac, [35m⌥⌘N[0m / [35mFile > New Window[0m). For me the latter
+                    [0m[34m▎[0mis far slower than the former.
 
              [1mbaybal2[0m [2ma day ago[0m
             [0m[32m▎[0mVs code is an antiexample here.
@@ -1725,27 +1741,27 @@ billions to achieve and IMO that should be chased after.
                      [1mdisgruntledphd2[0m [2m21 hours ago[0m
                     [0m[34m▎[0mI noticed this a bunch when I moved from emacs to Jupyter notebook.
                     [0m[34m▎[0m
-                    [0m[34m▎[0mEmacs will sometimes become slower (especially remote emacs), but it will always
-                    [0m[34m▎[0mbuffer your keypresses and do them in the correct order.
+                    [0m[34m▎[0mEmacs will sometimes become slower (especially remote emacs), but it will
+                    [0m[34m▎[0malways buffer your keypresses and do them in the correct order.
                     [0m[34m▎[0m
                     [0m[34m▎[0mJupyter (for whatever reason), doesn't do this with the result that I ended up
-                    [0m[34m▎[0mwanting to create a new code block, but that keypress got lost and then i end up
-                    [0m[34m▎[0mruining my original code block.
+                    [0m[34m▎[0mwanting to create a new code block, but that keypress got lost and then i end
+                    [0m[34m▎[0mup ruining my original code block.
                     [0m[34m▎[0m
                     [0m[34m▎[0mI 100% noticed the difference, and it was super frustrating (fortunately I left
                     [0m[34m▎[0mthat job, and have managed to avoid Jupyter in the new gig).
 
                          [1mpdimitar[0m[35m PP[0m [2m20 hours ago[0m
-                        [0m[35m▎[0mI am using Spacemacs and have spent days trying to make it work faster (I am on
-                        [0m[35m▎[0mmacOS). Took a while and some effort but with a few strange tweaks I managed to
-                        [0m[35m▎[0mmake it more responsive.
+                        [0m[35m▎[0mI am using Spacemacs and have spent days trying to make it work faster (I
+                        [0m[35m▎[0mam on macOS). Took a while and some effort but with a few strange tweaks I
+                        [0m[35m▎[0mmanaged to make it more responsive.
                         [0m[35m▎[0m
-                        [0m[35m▎[0mEmacs/Spacemacs can still be weirdly slow sometimes but UI responsiveness is
-                        [0m[35m▎[0mgenerally miles ahead of all Electron-based software still.
+                        [0m[35m▎[0mEmacs/Spacemacs can still be weirdly slow sometimes but UI responsiveness
+                        [0m[35m▎[0mis generally miles ahead of all Electron-based software still.
                         [0m[35m▎[0m
-                        [0m[35m▎[0mWhich makes it even funnier. Emacs is decades old and still uses quite a few
-                        [0m[35m▎[0mancient techniques that are only hampering it. Even with that, it's still so
-                        [0m[35m▎[0mmuch better in terms of speed! Funny.
+                        [0m[35m▎[0mWhich makes it even funnier. Emacs is decades old and still uses quite a
+                        [0m[35m▎[0mfew ancient techniques that are only hampering it. Even with that, it's
+                        [0m[35m▎[0mstill so much better in terms of speed! Funny.
 
                  [1mschmorptron[0m [2ma day ago[0m
                 [0m[36m▎[0mWait, what is the atom fiasco?
@@ -1757,35 +1773,36 @@ billions to achieve and IMO that should be chased after.
 
                      [1mfoldr[0m [2m21 hours ago[0m
                     [0m[34m▎[0mAtom ([34matom.io/[0m) is another Electron-based text editor release by GitHub (before
-                    [0m[34m▎[0mit was acquired by Microsoft). I think it predated VSCode. It certainly had more
-                    [0m[34m▎[0mmindshare in the early days. But whereas VSCode has always been quite snappy,
-                    [0m[34m▎[0mAtom acquired a reputation for poor performance.
+                    [0m[34m▎[0mit was acquired by Microsoft). I think it predated VSCode. It certainly had
+                    [0m[34m▎[0mmore mindshare in the early days. But whereas VSCode has always been quite
+                    [0m[34m▎[0msnappy, Atom acquired a reputation for poor performance.
 
                          [1mWorldMaker[0m [2m14 hours ago[0m
                         [0m[35m▎[0m[2m ▎[3m[2mI think it predated VSCode[0m
                         [0m[35m▎[0m
                         [0m[35m▎[0mYes, and no. They have a really interesting tale of convergent evolution.
                         [0m[35m▎[0m
-                        [0m[35m▎[0mAtom was the original Electron app (as pointed out Electron was even originally
-                        [0m[35m▎[0mnamed "atom-shell"), so it predates VSCode as an Electron app. But the extremely
-                        [0m[35m▎[0mperformant "Monaco code editor" that VSCode was built on top of (that forms the
-                        [0m[35m▎[0mheart of VSCode) was started at Microsoft years before to be a code editor in
-                        [0m[35m▎[0mparts of the Azure Portal, and also it was the code editor in IE/Edge dev tools
-                        [0m[35m▎[0mfrom as far back as IE 9 or 10 I think it was (up until the Chromium Edge). It
-                        [0m[35m▎[0mwasn't packaged into an Electron app until after Atom, but it has an interesting
-                        [0m[35m▎[0mheritage that predates Atom and was built for some of the same reasons that
-                        [0m[35m▎[0mGitHub wanted to build Atom.
+                        [0m[35m▎[0mAtom was the original Electron app (as pointed out Electron was even
+                        [0m[35m▎[0moriginally named "atom-shell"), so it predates VSCode as an Electron app.
+                        [0m[35m▎[0mBut the extremely performant "Monaco code editor" that VSCode was built on
+                        [0m[35m▎[0mtop of (that forms the heart of VSCode) was started at Microsoft years
+                        [0m[35m▎[0mbefore to be a code editor in parts of the Azure Portal, and also it was
+                        [0m[35m▎[0mthe code editor in IE/Edge dev tools from as far back as IE 9 or 10 I think
+                        [0m[35m▎[0mit was (up until the Chromium Edge). It wasn't packaged into an Electron
+                        [0m[35m▎[0mapp until after Atom, but it has an interesting heritage that predates Atom
+                        [0m[35m▎[0mand was built for some of the same reasons that GitHub wanted to build
+                        [0m[35m▎[0mAtom.
                         [0m[35m▎[0m
                         [0m[35m▎[0m(ETA: Monaco's experience especially in IE Dev Tools and the wild west of
-                        [0m[35m▎[0mminified JS dumps it had to work with from day one in that environment is where
-                        [0m[35m▎[0ma lot of its performance came from that led VSCode to jumping Atom on
+                        [0m[35m▎[0mminified JS dumps it had to work with from day one in that environment is
+                        [0m[35m▎[0mwhere a lot of its performance came from that led VSCode to jumping Atom on
                         [0m[35m▎[0mperformance out of the gate.)
 
                          [1mzwirbl[0m [2m20 hours ago[0m
-                        [0m[35m▎[0mPretty much like that, I tried Atom once (when I found platform.io and wanted to
-                        [0m[35m▎[0mhave a look) and it was just wild how slow it felt. On the upside, it made using
-                        [0m[35m▎[0mthose crappy Eclipse forks MCU manufacturers release (like CCC, Dave, etc.)
-                        [0m[35m▎[0mfell a lot less painful
+                        [0m[35m▎[0mPretty much like that, I tried Atom once (when I found platform.io and
+                        [0m[35m▎[0mwanted to have a look) and it was just wild how slow it felt. On the
+                        [0m[35m▎[0mupside, it made using those crappy Eclipse forks MCU manufacturers release
+                        [0m[35m▎[0m(like CCC, Dave, etc.) fell a lot less painful
 
                          [1mRapzid[0m [2m20 hours ago[0m
                         [0m[35m▎[0m[2m ▎[3m[2manother Electron-based text editor[0m
@@ -2141,12 +2158,13 @@ billions to achieve and IMO that should be chased after.
                     [0m[34m▎[0mcomplexity, stability, flexibility and extensibility, pieces of software ever
                     [0m[34m▎[0mcreated. It spawned dozens of other games that all sold millions of copies and
                     [0m[34m▎[0moffered completely different but high-quality experiences. Sure, your typical
-                    [0m[34m▎[0mAAA game isn't near this level of perfection, but your typical non-game software
-                    [0m[34m▎[0mis hardly any better.
+                    [0m[34m▎[0mAAA game isn't near this level of perfection, but your typical non-game
+                    [0m[34m▎[0msoftware is hardly any better.
 
                          [1mkaba0[0m [2m9 hours ago[0m
-                        [0m[35m▎[0mI like hl2 and all, but I doubt it would be even close in complexity to a web
-                        [0m[35m▎[0mbrowser/OS kernel/good performing virtual runtime, like the JVM, compilers.
+                        [0m[35m▎[0mI like hl2 and all, but I doubt it would be even close in complexity to a
+                        [0m[35m▎[0mweb browser/OS kernel/good performing virtual runtime, like the JVM,
+                        [0m[35m▎[0mcompilers.
                         [0m[35m▎[0mThere are insanely complex programs out there.
 
              [1mthrowaway7644[0m [2m9 hours ago[0m
@@ -2340,8 +2358,8 @@ billions to achieve and IMO that should be chased after.
                     [0m[34m▎[0mit.
                     [0m[34m▎[0m
                     [0m[34m▎[0m- Command-line or in-terminal charting/plotting: [35mjp[0m. I have made a CSV file out
-                    [0m[34m▎[0mof all file sizes on my NAS (bucketed by powers of 2) and then invoked it on the
-                    [0m[34m▎[0minput. Here's a sample CSV from a random directory:
+                    [0m[34m▎[0mof all file sizes on my NAS (bucketed by powers of 2) and then invoked it on
+                    [0m[34m▎[0mthe input. Here's a sample CSV from a random directory:
                     [0m[34m▎[0m
                     [0m[34m▎[0m0k,79
                     [0m[34m▎[0m
@@ -2386,45 +2404,48 @@ billions to achieve and IMO that should be chased after.
                     [0m[34m▎[0mBut your question makes me sigh. I really have to start a blog. I am a very
                     [0m[34m▎[0mpractical guy and people usually love my posts (scattered on different forums)
                     [0m[34m▎[0mwhere I make such lists. I should roll my own blog static web site generator in
-                    [0m[34m▎[0mRust I suppose, because the existing ones are either slow or don't support what
-                    [0m[34m▎[0mI need… So, not going to happen in the next year, most likely. :(
+                    [0m[34m▎[0mRust I suppose, because the existing ones are either slow or don't support
+                    [0m[34m▎[0mwhat I need… So, not going to happen in the next year, most likely. :(
 
                          [1mShared404[0m [2m9 hours ago[0m
-                        [0m[35m▎[0mI'll have to try some of those out. I've used fzf a little, but haven't really
-                        [0m[35m▎[0mlooked at it enough to get the full productivity gains. I've heard of rg ofc,
-                        [0m[35m▎[0mbut ripgrep_all has flown under my radar thus far, and actually sounds [3mamazing[0m,
-                        [0m[35m▎[0mI've got a decently large library of pdf's I keep losing stuff in.
+                        [0m[35m▎[0mI'll have to try some of those out. I've used fzf a little, but haven't
+                        [0m[35m▎[0mreally looked at it enough to get the full productivity gains. I've heard
+                        [0m[35m▎[0mof rg ofc, but ripgrep_all has flown under my radar thus far, and actually
+                        [0m[35m▎[0msounds [3mamazing[0m, I've got a decently large library of pdf's I keep losing
+                        [0m[35m▎[0mstuff in.
                         [0m[35m▎[0m
                         [0m[35m▎[0mThe rest I haven't looked at, but will have to add to my list, they fill a
                         [0m[35m▎[0mcouple voids I've been feeling.
                         [0m[35m▎[0m
-                        [0m[35m▎[0m[2m ▎[3m[2mI should roll my own blog static web site generator in Rust I suppose, because[0m
-                        [0m[35m▎[0m[2m ▎[2;3mthe existing ones are either slow or don't support what I need… So, not going[0m
-                        [0m[35m▎[0m[2m ▎[2;3mto happen in the next year, most likely. :([0m
+                        [0m[35m▎[0m[2m ▎[3m[2mI should roll my own blog static web site generator in Rust I suppose,[0m
+                        [0m[35m▎[0m[2m ▎[2;3mbecause the existing ones are either slow or don't support what I need…[0m
+                        [0m[35m▎[0m[2m ▎[2;3mSo, not going to happen in the next year, most likely. :([0m
                         [0m[35m▎[0m
-                        [0m[35m▎[0mIt isn't powerful enough to support what you need I'm sure, but I actually did
-                        [0m[35m▎[0msomething similar a little while ago.
+                        [0m[35m▎[0mIt isn't powerful enough to support what you need I'm sure, but I actually
+                        [0m[35m▎[0mdid something similar a little while ago.
                         [0m[35m▎[0m
                         [0m[35m▎[0m[34ma-shared-404.com/programs/[0m
                         [0m[35m▎[0m
-                        [0m[35m▎[0mIt's written in Rust, with dependencies on sh and markdown. I'm thinking about
-                        [0m[35m▎[0madding the ability to automatically execute an (optional) shell script in each
-                        [0m[35m▎[0mdirectory, so that it would be easier to do things that markdown doesn't.
+                        [0m[35m▎[0mIt's written in Rust, with dependencies on sh and markdown. I'm thinking
+                        [0m[35m▎[0mabout adding the ability to automatically execute an (optional) shell
+                        [0m[35m▎[0mscript in each directory, so that it would be easier to do things that
+                        [0m[35m▎[0mmarkdown doesn't.
                         [0m[35m▎[0m
-                        [0m[35m▎[0mThe code quality is [3matrocious[0m (first Rust program of any size, and I'm not great
-                        [0m[35m▎[0mat programming in the first place), but it may be useful. If you're interested
-                        [0m[35m▎[0min me adding that functionality, let me know, it may be the push I need to move
-                        [0m[35m▎[0mit to the top of my pile.
+                        [0m[35m▎[0mThe code quality is [3matrocious[0m (first Rust program of any size, and I'm not
+                        [0m[35m▎[0mgreat at programming in the first place), but it may be useful. If you're
+                        [0m[35m▎[0minterested in me adding that functionality, let me know, it may be the push
+                        [0m[35m▎[0mI need to move it to the top of my pile.
 
                              [1mpdimitar[0m[35m PP[0m [2m2 hours ago[0m
-                            [0m[31;1m▎[0mThe [35msssss[0m program might have a potential. But let me give you an example: I want
-                            [0m[31;1m▎[0mmy every blog article to also have versions / revisions and I'd like visitors to
-                            [0m[31;1m▎[0mbe able to read the older versions as well as the last version.
+                            [0m[31;1m▎[0mThe [35msssss[0m program might have a potential. But let me give you an
+                            [0m[31;1m▎[0mexample: I want my every blog article to also have versions / revisions
+                            [0m[31;1m▎[0mand I'd like visitors to be able to read the older versions as well as
+                            [0m[31;1m▎[0mthe last version.
                             [0m[31;1m▎[0m
-                            [0m[31;1m▎[0mI'd also like multilingual article ability (but I think some of the engines out
-                            [0m[31;1m▎[0mthere can do that). The more I think of it, the more I wonder if it should be
-                            [0m[31;1m▎[0msomething like Ghost.org: namely backed by sqlite and not naked files. But who
-                            [0m[31;1m▎[0mknows.
+                            [0m[31;1m▎[0mI'd also like multilingual article ability (but I think some of the
+                            [0m[31;1m▎[0mengines out there can do that). The more I think of it, the more I
+                            [0m[31;1m▎[0mwonder if it should be something like Ghost.org: namely backed by
+                            [0m[31;1m▎[0msqlite and not naked files. But who knows.
 
                      [1moftenwrong[0m [2m8 hours ago[0m
                     [0m[34m▎[0m[34mgithub.com/rothgar/awesome-tuis[0m
@@ -2858,9 +2879,10 @@ effort in where the others didn’t.
                 [0m[36m▎[0mincentive to use bit rates straight from the shitter.
 
                      [1mjonplackett[0m[35m PP[0m [2ma day ago[0m
-                    [0m[34m▎[0mThe terrible quality and slowness I think is a remnant from them buying LoveFilm
-                    [0m[34m▎[0mand rebranding it as Prime video all those years back, which was based on that
-                    [0m[34m▎[0mawful Microsoft DRM that I can't remember the name of, was it Silverlight?
+                    [0m[34m▎[0mThe terrible quality and slowness I think is a remnant from them buying
+                    [0m[34m▎[0mLoveFilm and rebranding it as Prime video all those years back, which was based
+                    [0m[34m▎[0mon that awful Microsoft DRM that I can't remember the name of, was it
+                    [0m[34m▎[0mSilverlight?
 
                          [1mhef19898[0m [2m21 hours ago[0m
                         [0m[35m▎[0mIt was silverlight. Might still be installed on my desktop.
@@ -3088,8 +3110,8 @@ programmers are hyper sensitive to text editor latency.
                 [0m[36m▎[0mlatency.
 
                      [1mperryizgr8[0m [2m6 hours ago[0m
-                    [0m[34m▎[0mThat link is old. There are similar measurements for modern devices available on
-                    [0m[34m▎[0mmany review websites. This link does identify the correct metric that people
+                    [0m[34m▎[0mThat link is old. There are similar measurements for modern devices available
+                    [0m[34m▎[0mon many review websites. This link does identify the correct metric that people
                     [0m[34m▎[0mseem to respond to when they feel a phone is "faster".
 
 [1mDarwinMailApp[0m [2m[4ma day ago                                                   5 ⤶ ::[0m
