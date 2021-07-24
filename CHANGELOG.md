@@ -3,6 +3,9 @@
 ## 1.16
 _WIP_
 
+**New features**
+- `circumflex` can now be customized with flags
+
 **Changes**
 - Highlight headlines option has been simplified and can now be either 
 enabled or disabled (Removed an option to highlight headlines with the reverse

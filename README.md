@@ -30,7 +30,7 @@
 
 **You might also like:**
 - 🤹 **Native terminal colors** — you bring your own color scheme, `circumflex` does the rest
-- 🛠 **Customization** — change settings through environmental variables or a config file
+- 🛠 **Easy customization** — change settings with flags, environmental variables or config files
 - ❤️ **Add to favorites** — save interesting submissions for later
 
 #
@@ -248,11 +248,18 @@ more info)
 ### Overview
 #### Configuration options
 
-To change the settings, you can either:
+There are three ways to configure `circumflex`:
 
-1. create a config file in `~/.config/circumflex/config.env`, or
-2. set environment variables in your shell
+1. run `clx` with flags
+2. create a config file in `~/.config/circumflex/config.env`
+3. set environment variables in your shell
 
+#### Flags
+To see a list of available flags, run the following command:
+
+```console
+clx help
+```
 
 #### Changing settings through `config.env`
 
