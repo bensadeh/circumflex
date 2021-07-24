@@ -16,8 +16,6 @@ var (
 	disableHistory bool
 	altIndentBlock bool
 	smileyEmojis   bool
-	commentWidth   int
-	indentSize     int
 )
 
 var rootCmd = &cobra.Command{
@@ -62,11 +60,11 @@ func Execute() error {
 	rootCmd.PersistentFlags().BoolVarP(&smileyEmojis, "smiley-emojis", "s", false,
 		"convert smileys to emojis")
 
-	rootCmd.PersistentFlags().IntVarP(&commentWidth, "comment-width", "c", settings.CommentWidthDefault,
+	rootCmd.PersistentFlags().IntP("comment-width", "c", settings.CommentWidthDefault,
 		"set the comment width")
 	_ = viper.BindPFlag(settings.CommentWidthKey, rootCmd.PersistentFlags().Lookup("comment-width"))
 
-	rootCmd.PersistentFlags().IntVarP(&indentSize, "indent-size", "i", settings.IndentSizeDefault,
+	rootCmd.PersistentFlags().IntP("indent-size", "i", settings.IndentSizeDefault,
 		"set the indent size")
 	_ = viper.BindPFlag(settings.IndentSizeKey, rootCmd.PersistentFlags().Lookup("indent-size"))
 
