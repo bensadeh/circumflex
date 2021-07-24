@@ -169,7 +169,7 @@ func getCommentWidthForLevel(currentIndentSize int, usableScreenSize int, level 
 	}
 
 	if preserveRightMargin {
-		return commentWidth
+		return commentWidth - currentIndentSize
 	}
 
 	// return commentWidth + indentSize*level
