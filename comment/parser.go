@@ -337,7 +337,7 @@ func highlightVariables(input string) string {
 		currentWord := utf8string.NewString(word)
 		wordHasOnlyOneCharacter := currentWord.RuneCount() == 1
 
-		if word == "$" || wordHasOnlyOneCharacter {
+		if word == "$" || word == "" || wordHasOnlyOneCharacter {
 			output += word + " "
 
 			continue

@@ -3,7 +3,6 @@
 ## 1.16
 _WIP_
 
-
 **Changes**
 - Highlight headlines option has been simplified and can now be either 
 enabled or disabled (Removed an option to highlight headlines with the reverse
@@ -14,6 +13,9 @@ flag)
 - Mark as read setting now turned on by default
 - Rename `create_config` command to config
 - Hyperlinks are now in blue instead of dimmed blue
+
+**Bugfixes**
+- Fixed a bug where highlighting of `$` would cause a panic
 
 ## 1.15
 _2021-07-22_
