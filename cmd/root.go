@@ -13,6 +13,7 @@ import (
 var (
 	plainHeadlines bool
 	plainComments  bool
+	disableHistory bool
 )
 
 var rootCmd = &cobra.Command{
@@ -28,6 +29,10 @@ var rootCmd = &cobra.Command{
 			viper.Set(settings.HighlightHeadlinesKey, false)
 		}
 
+		if disableHistory {
+			viper.Set(settings.MarkAsReadKey, false)
+		}
+
 		clx.Run()
 	},
 }
@@ -38,6 +43,8 @@ func Execute() error {
 		"disable syntax highlighting for headlines")
 	rootCmd.PersistentFlags().BoolVarP(&plainComments, "plain-comments", "c", false,
 		"disable syntax highlighting for comments")
+	rootCmd.PersistentFlags().BoolVarP(&disableHistory, "disable-history", "d", false,
+		"disable marking stories as read")
 
 	return rootCmd.Execute()
 }
