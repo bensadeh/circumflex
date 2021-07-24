@@ -5,6 +5,7 @@ _WIP_
 
 **Cosmetic**
 - Code snippets are now in italics and magenta (was: just magenta)
+- Remove `FAANG` highlighting (it was a bit too colorful)
 
 
 ## 1.16

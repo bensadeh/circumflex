@@ -378,13 +378,5 @@ func highlightAbbreviations(input string) string {
 	input = strings.ReplaceAll(input, iAmNotALawyer, Red+iAmNotALawyer+Normal)
 	input = strings.ReplaceAll(input, iAmALawyer, Green+iAmALawyer+Normal)
 
-	coloredFAANG := Blue + "F" + Normal +
-		Yellow + "A" + Normal +
-		White + "A" + Normal +
-		Red + "N" + Normal +
-		Green + "G" + Normal
-
-	input = strings.ReplaceAll(input, "FAANG", coloredFAANG)
-
 	return input
 }
