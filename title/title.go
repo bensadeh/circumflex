@@ -1,7 +1,8 @@
-package formatter
+package title
 
 import (
 	"clx/constants/messages"
+	"clx/utils/formatter"
 	"fmt"
 	"strconv"
 	"strings"
@@ -31,7 +32,7 @@ func FormatMain(title string, domain string, author string, highlightHeadlines b
 
 func formatTitle(title string, author string, highlightHeadlines bool) string {
 	if title == messages.EnterCommentSectionToUpdate {
-		return Yellow(title)
+		return formatter.Yellow(title)
 	}
 
 	if author == "whoishiring" {
@@ -52,10 +53,10 @@ func formatTitle(title string, author string, highlightHeadlines bool) string {
 }
 
 func highlightShowAndTell(title string) string {
-	title = strings.ReplaceAll(title, askHN, Blue(askHN))
-	title = strings.ReplaceAll(title, showHN, Red(showHN))
-	title = strings.ReplaceAll(title, tellHN, Magenta(tellHN))
-	title = strings.ReplaceAll(title, launchHN, Green(launchHN))
+	title = strings.ReplaceAll(title, askHN, formatter.Blue(askHN))
+	title = strings.ReplaceAll(title, showHN, formatter.Red(showHN))
+	title = strings.ReplaceAll(title, tellHN, formatter.Magenta(tellHN))
+	title = strings.ReplaceAll(title, launchHN, formatter.Green(launchHN))
 
 	return title
 }
@@ -69,19 +70,19 @@ func highlightYCStartups(title string) string {
 		summer := "(YC S" + year + ")"
 		winter := "(YC W" + year + ")"
 
-		title = strings.ReplaceAll(title, summer, BlackOnOrange(" YC S"+year+" "))
-		title = strings.ReplaceAll(title, winter, BlackOnOrange(" YC W"+year+" "))
+		title = strings.ReplaceAll(title, summer, formatter.BlackOnOrange(" YC S"+year+" "))
+		title = strings.ReplaceAll(title, winter, formatter.BlackOnOrange(" YC W"+year+" "))
 	}
 
 	return title
 }
 
 func highlightSpecialContent(title string) string {
-	title = strings.ReplaceAll(title, "[audio[]", Yellow("audio"))
-	title = strings.ReplaceAll(title, "[video[]", Yellow("video"))
-	title = strings.ReplaceAll(title, "[pdf[]", Yellow("pdf"))
-	title = strings.ReplaceAll(title, "[PDF[]", Yellow("PDF"))
-	title = strings.ReplaceAll(title, "[flagged[]", Red("flagged"))
+	title = strings.ReplaceAll(title, "[audio[]", formatter.Yellow("audio"))
+	title = strings.ReplaceAll(title, "[video[]", formatter.Yellow("video"))
+	title = strings.ReplaceAll(title, "[pdf[]", formatter.Yellow("pdf"))
+	title = strings.ReplaceAll(title, "[PDF[]", formatter.Yellow("PDF"))
+	title = strings.ReplaceAll(title, "[flagged[]", formatter.Red("flagged"))
 
 	return title
 }
@@ -90,15 +91,15 @@ func highlightWhoIsHiring(title string) string {
 	title = strings.ReplaceAll(title, " (", "[-:-:] (")
 
 	if strings.Contains(title, "Who is hiring?") {
-		return BlackOnBlue(title)
+		return formatter.BlackOnBlue(title)
 	}
 
 	if strings.Contains(title, "Freelancer?") {
-		return BlackOnRed(title)
+		return formatter.BlackOnRed(title)
 	}
 
 	if strings.Contains(title, "Who wants to be hired?") {
-		return BlackOnYellow(title)
+		return formatter.BlackOnYellow(title)
 	}
 
 	return title
@@ -116,7 +117,7 @@ func formatDomain(domain string, markAsRead bool) string {
 	}
 
 	domainInParenthesis := " (" + domain + ")"
-	domainInParenthesisAndDimmed := readModifier + Dim(readModifier+domainInParenthesis)
+	domainInParenthesisAndDimmed := readModifier + formatter.Dim(readModifier+domainInParenthesis)
 
 	return domainInParenthesisAndDimmed
 }
@@ -144,7 +145,7 @@ func parseAuthor(author string, highlightHeadlines bool) string {
 	}
 
 	if highlightHeadlines && author == "dang" {
-		return "by " + Green(author) + " "
+		return "by " + formatter.Green(author) + " "
 	}
 
 	return "by " + author + " "

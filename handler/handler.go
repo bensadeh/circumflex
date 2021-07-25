@@ -7,8 +7,8 @@ import (
 	"clx/file"
 	"clx/header"
 	"clx/history"
+	"clx/title"
 	"clx/utils/filter"
-	"clx/utils/formatter"
 	"clx/utils/http"
 	"encoding/json"
 	"fmt"
@@ -136,8 +136,8 @@ func convert(subs []*endpoints.Story, his *history.History, highlightHeadlines b
 	for i, s := range subs {
 		markAsRead := his.Contains(s.ID) && !isOnFavorites
 
-		main := formatter.FormatMain(s.Title, s.Domain, s.Author, highlightHeadlines, markAsRead)
-		secondary := formatter.FormatSecondary(s.Points, s.Author, s.Time, s.CommentsCount, highlightHeadlines)
+		main := title.FormatMain(s.Title, s.Domain, s.Author, highlightHeadlines, markAsRead)
+		secondary := title.FormatSecondary(s.Points, s.Author, s.Time, s.CommentsCount, highlightHeadlines)
 
 		item := cview.NewListItem(main)
 		item.SetSecondaryText(secondary)
