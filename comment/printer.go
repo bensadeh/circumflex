@@ -1,6 +1,7 @@
 package comment
 
 import (
+	"clx/colors"
 	"clx/constants/messages"
 	"clx/endpoints"
 	"strconv"
@@ -31,10 +32,10 @@ func getHeader(c endpoints.Comments, commentWidth int, screenWidth int, commentH
 	headline := getHeadline(c.Title, c.Domain, c.URL, c.ID, commentWidth)
 	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
 	rootComment := parseRootComment(c.Content, commentWidth, commentHighlighting, altIndentBlock, emojiSmiley)
-	helpMessage := dimmed(messages.LessScreenInfo) + NewLine
+	helpMessage := colors.ToDimmed(messages.LessScreenInfo) + colors.NewLine
 	separator := messages.GetSeparator(commentWidth)
 
-	return headline + infoLine + helpMessage + rootComment + separator + NewParagraph
+	return headline + infoLine + helpMessage + rootComment + separator + colors.NewParagraph
 }
 
 func getHeadline(title, domain, url string, id, commentWidth int) string {
@@ -42,13 +43,13 @@ func getHeadline(title, domain, url string, id, commentWidth int) string {
 		domain = "item?id=" + strconv.Itoa(id)
 	}
 
-	headline := title + " " + paren(domain)
+	headline := title + " " + colors.SurroundWithParen(domain)
 	wrappedHeadline, _ := text.Wrap(headline, commentWidth)
 	hyperlink := getHyperlink(domain, url, id)
 
 	wrappedHeadline = strings.ReplaceAll(wrappedHeadline, domain, hyperlink)
 
-	return wrappedHeadline + NewLine
+	return wrappedHeadline + colors.NewLine
 }
 
 func getHyperlink(domain string, url string, id int) string {
@@ -67,11 +68,11 @@ func getInfoLine(points int, user string, timeAgo string, numberOfComments int, 
 	c := strconv.Itoa(numberOfComments)
 	i := strconv.Itoa(id)
 
-	return dimmed(p+" points by "+user+" "+timeAgo+" • "+c+" comments"+" • "+"ID "+i) + NewLine
+	return colors.ToDimmed(p+" points by "+user+" "+timeAgo+" • "+c+" comments"+" • "+"ID "+i) + colors.NewLine
 }
 
 func getHyperlinkText(url string, text string) string {
-	return Link1 + url + Link2 + text + Link3
+	return colors.Link1 + url + colors.Link2 + text + colors.Link3
 }
 
 func parseRootComment(c string, commentWidth int, commentHighlighting bool, altIndentBlock bool,
@@ -83,7 +84,7 @@ func parseRootComment(c string, commentWidth int, commentHighlighting bool, altI
 	comment := ParseComment(c, commentWidth, commentWidth, commentHighlighting, altIndentBlock, emojiSmiley)
 	wrappedComment, _ := text.Wrap(comment, commentWidth)
 
-	return NewLine + wrappedComment + NewLine
+	return colors.NewLine + wrappedComment + colors.NewLine
 }
 
 func printReplies(c endpoints.Comments, indentSize int, commentWidth int, screenWidth int, originalPoster string,
@@ -105,7 +106,7 @@ func printReplies(c endpoints.Comments, indentSize int, commentWidth int, screen
 
 	author := getCommentHeading(c, c.Level, commentWidth, originalPoster, parentPoster)
 	paddedAuthor, _ := text.Wrap(author, adjustedCommentWidth, paddingWithNoBlock)
-	fullComment := paddedAuthor + wrappedAndPaddedComment + NewParagraph
+	fullComment := paddedAuthor + wrappedAndPaddedComment + colors.NewParagraph
 
 	if c.Level == 0 {
 		parentPoster = c.User
@@ -122,7 +123,7 @@ func printReplies(c endpoints.Comments, indentSize int, commentWidth int, screen
 func getCommentHeading(c endpoints.Comments, level int, commentWidth int, originalPoster string,
 	parentPoster string) string {
 	timeAgo := c.TimeAgo
-	author := bold(c.User)
+	author := colors.ToBold(c.User)
 	label := getAuthorLabel(c.User, originalPoster, parentPoster) + " "
 
 	if level == 0 {
@@ -131,10 +132,10 @@ func getCommentHeading(c endpoints.Comments, level int, commentWidth int, origin
 		lengthOfUnderline := commentWidth - text.Len(author+label+anchor+timeAgo+replies)
 		headerLine := strings.Repeat(" ", lengthOfUnderline)
 
-		return author + label + dimmedAndUnderlined(timeAgo+headerLine+replies+anchor) + NewLine
+		return author + label + colors.ToDimmedAndUnderlined(timeAgo+headerLine+replies+anchor) + colors.NewLine
 	}
 
-	return author + label + dimmed(timeAgo) + NewLine
+	return author + label + colors.ToDimmed(timeAgo) + colors.NewLine
 }
 
 func getRepliesTag(numberOfReplies int) string {
@@ -181,11 +182,11 @@ func getAuthorLabel(author, originalPoster, parentPoster string) string {
 	case "":
 		return ""
 	case "dang":
-		return green(" mod")
+		return colors.ToGreen(" mod")
 	case originalPoster:
-		return red(" OP")
+		return colors.ToRed(" OP")
 	case parentPoster:
-		return magenta(" PP")
+		return colors.ToMagenta(" PP")
 	default:
 		return ""
 	}
@@ -205,7 +206,7 @@ func getIndentBlock(level int, indentSize int, altIndentBlock bool) string {
 	}
 
 	indentBlock := getIndentationSymbol(altIndentBlock)
-	indentation := Normal + getColoredIndentBlock(level) + indentBlock + Normal
+	indentation := colors.Normal + colors.GetIndentBlockColor(level) + indentBlock + colors.Normal
 	whitespace := strings.Repeat(" ", indentSize*level)
 
 	return whitespace + indentation

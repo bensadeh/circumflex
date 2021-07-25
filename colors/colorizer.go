@@ -1,4 +1,4 @@
-package comment
+package colors
 
 // ANSI escape codes
 const (
@@ -29,67 +29,67 @@ const (
 	NewParagraph = "\n\n"
 )
 
-func bold(text string) string {
+func ToBold(text string) string {
 	return Bold + text + Normal
 }
 
-func dimmed(text string) string {
+func ToDimmed(text string) string {
 	return Dimmed + text + Normal
 }
 
-func dimmedAndUnderlined(text string) string {
+func ToDimmedAndUnderlined(text string) string {
 	return Dimmed + Underline + text + Normal
 }
 
-func red(text string) string {
+func ToRed(text string) string {
 	return Red + text + Normal
 }
 
-func yellow(text string) string {
+func ToYellow(text string) string {
 	return Yellow + text + Normal
 }
 
-func green(text string) string {
+func ToGreen(text string) string {
 	return Green + text + Normal
 }
 
-func blue(text string) string {
+func ToBlue(text string) string {
 	return Blue + text + Normal
 }
 
-func cyan(text string) string {
+func ToCyan(text string) string {
 	return Cyan + text + Normal
 }
 
-func magenta(text string) string {
+func ToMagenta(text string) string {
 	return Magenta + text + Normal
 }
 
-func white(text string) string {
+func ToWhite(text string) string {
 	return White + text + Normal
 }
 
-func altRed(text string) string {
+func ToBrightRed(text string) string {
 	return AltRed + text + Normal
 }
 
-func altYellow(text string) string {
+func ToBrightYellow(text string) string {
 	return AltYellow + text + Normal
 }
 
-func altGreen(text string) string {
+func ToBrightGreen(text string) string {
 	return AltGreen + text + Normal
 }
 
-func altWhite(text string) string {
+func ToBrightWhite(text string) string {
 	return AltWhite + text + Normal
 }
 
-func paren(text string) string {
+func SurroundWithParen(text string) string {
 	return "(" + text + ")"
 }
 
-func getColoredIndentBlock(level int) string {
+func GetIndentBlockColor(level int) string {
 	switch level {
 	case 1:
 		return Red

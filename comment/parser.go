@@ -1,6 +1,7 @@
 package comment
 
 import (
+	"clx/colors"
 	"regexp"
 	"strings"
 	"unicode"
@@ -29,7 +30,7 @@ const (
 func ParseComment(c string, commentWidth int, availableScreenWidth int, commentHighlighting bool,
 	useAlternateIndent bool, emojiSmiley bool) string {
 	if c == "[deleted]" {
-		return Dimmed + "[deleted]" + Normal
+		return colors.Dimmed + "[deleted]" + colors.Normal
 	}
 
 	c = strings.Replace(c, "<p>", "", 1)
@@ -63,7 +64,7 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 		case s.IsQuote:
 			paragraph = strings.ReplaceAll(paragraph, "<i>", "")
 			paragraph = strings.ReplaceAll(paragraph, "</i>", "")
-			paragraph = strings.ReplaceAll(paragraph, "</a>", Normal+Dimmed+Italic)
+			paragraph = strings.ReplaceAll(paragraph, "</a>", colors.Normal+colors.Dimmed+colors.Italic)
 			paragraph = replaceSymbols(paragraph)
 			paragraph = replaceSmileys(paragraph, emojiSmiley)
 
@@ -72,10 +73,10 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 			paragraph = strings.TrimLeft(paragraph, " ")
 			paragraph = trimURLs(paragraph)
 
-			paragraph = Italic + Dimmed + paragraph + Normal
+			paragraph = colors.Italic + colors.Dimmed + paragraph + colors.Normal
 
 			indentBlock := " " + getIndentationSymbol(useAlternateIndent)
-			padding := text.WrapPad(Dimmed + indentBlock)
+			padding := text.WrapPad(colors.Dimmed + indentBlock)
 			wrappedAndPaddedComment, _ := text.Wrap(paragraph, commentWidth, padding)
 			paragraph = wrappedAndPaddedComment
 
@@ -85,19 +86,19 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 			paddingWithBlock := text.WrapPad("")
 			wrappedAndPaddedComment, _ := text.Wrap(paragraph, availableScreenWidth, paddingWithBlock)
 
-			codeLines := strings.Split(wrappedAndPaddedComment, NewLine)
+			codeLines := strings.Split(wrappedAndPaddedComment, colors.NewLine)
 			formattedCodeLines := ""
 
 			for j, codeLine := range codeLines {
 				isOnLastLine := j == len(codeLines)-1
 
 				if isOnLastLine {
-					formattedCodeLines += Dimmed + codeLine + Normal
+					formattedCodeLines += colors.Dimmed + codeLine + colors.Normal
 
 					break
 				}
 
-				formattedCodeLines += Dimmed + codeLine + Normal + NewLine
+				formattedCodeLines += colors.Dimmed + codeLine + colors.Normal + colors.NewLine
 			}
 
 			paragraph = formattedCodeLines
@@ -183,7 +184,7 @@ func getParagraphSeparator(index int, sliceLength int) string {
 		return ""
 	}
 
-	return NewParagraph
+	return colors.NewParagraph
 }
 
 func replaceCharacters(input string) string {
@@ -200,10 +201,10 @@ func replaceCharacters(input string) string {
 func replaceHTML(input string) string {
 	input = strings.Replace(input, "<p>", "", 1)
 
-	input = strings.ReplaceAll(input, "<p>", NewParagraph)
-	input = strings.ReplaceAll(input, "<i>", Italic)
-	input = strings.ReplaceAll(input, "</i>", Normal)
-	input = strings.ReplaceAll(input, "</a>", Normal)
+	input = strings.ReplaceAll(input, "<p>", colors.NewParagraph)
+	input = strings.ReplaceAll(input, "<i>", colors.Italic)
+	input = strings.ReplaceAll(input, "</i>", colors.Normal)
+	input = strings.ReplaceAll(input, "</a>", colors.Normal)
 	input = strings.ReplaceAll(input, "<pre><code>", "")
 	input = strings.ReplaceAll(input, "</code></pre>", "")
 
@@ -226,24 +227,24 @@ func highlightCommentSyntax(input string, commentHighlighting bool) string {
 }
 
 func highlightUrls(input string) string {
-	input = strings.ReplaceAll(input, "https://", Blue)
-	input = strings.ReplaceAll(input, "http://", Blue)
+	input = strings.ReplaceAll(input, "https://", colors.Blue)
+	input = strings.ReplaceAll(input, "http://", colors.Blue)
 
 	return input
 }
 
 func highlightReferences(input string) string {
-	input = strings.ReplaceAll(input, "[0]", "["+white("0")+"]")
-	input = strings.ReplaceAll(input, "[1]", "["+red("1")+"]")
-	input = strings.ReplaceAll(input, "[2]", "["+yellow("2")+"]")
-	input = strings.ReplaceAll(input, "[3]", "["+green("3")+"]")
-	input = strings.ReplaceAll(input, "[4]", "["+blue("4")+"]")
-	input = strings.ReplaceAll(input, "[5]", "["+cyan("5")+"]")
-	input = strings.ReplaceAll(input, "[6]", "["+magenta("6")+"]")
-	input = strings.ReplaceAll(input, "[7]", "["+altWhite("7")+"]")
-	input = strings.ReplaceAll(input, "[8]", "["+altRed("8")+"]")
-	input = strings.ReplaceAll(input, "[9]", "["+altYellow("9")+"]")
-	input = strings.ReplaceAll(input, "[10]", "["+altGreen("10")+"]")
+	input = strings.ReplaceAll(input, "[0]", "["+colors.ToWhite("0")+"]")
+	input = strings.ReplaceAll(input, "[1]", "["+colors.ToRed("1")+"]")
+	input = strings.ReplaceAll(input, "[2]", "["+colors.ToYellow("2")+"]")
+	input = strings.ReplaceAll(input, "[3]", "["+colors.ToGreen("3")+"]")
+	input = strings.ReplaceAll(input, "[4]", "["+colors.ToBlue("4")+"]")
+	input = strings.ReplaceAll(input, "[5]", "["+colors.ToCyan("5")+"]")
+	input = strings.ReplaceAll(input, "[6]", "["+colors.ToMagenta("6")+"]")
+	input = strings.ReplaceAll(input, "[7]", "["+colors.ToBrightWhite("7")+"]")
+	input = strings.ReplaceAll(input, "[8]", "["+colors.ToBrightRed("8")+"]")
+	input = strings.ReplaceAll(input, "[9]", "["+colors.ToBrightYellow("9")+"]")
+	input = strings.ReplaceAll(input, "[10]", "["+colors.ToBrightGreen("10")+"]")
 
 	return input
 }
@@ -267,9 +268,9 @@ func highlightBackticks(input string) string {
 
 	for i := 0; i < numberOfBackticks+1; i++ {
 		if isOnFirstBacktick {
-			input = strings.Replace(input, backtick, Italic+Magenta, 1)
+			input = strings.Replace(input, backtick, colors.Italic+colors.Magenta, 1)
 		} else {
-			input = strings.Replace(input, backtick, Normal, 1)
+			input = strings.Replace(input, backtick, colors.Normal, 1)
 		}
 
 		isOnFirstBacktick = !isOnFirstBacktick
@@ -300,16 +301,16 @@ func highlightMentions(input string) string {
 			output += word + " "
 
 		case strings.HasPrefix(word, "@dang"):
-			mention := Green + word + Normal + " "
-			mention = strings.ReplaceAll(mention, ",", Normal+",")
-			mention = strings.ReplaceAll(mention, ".", Normal+".")
+			mention := colors.Green + word + colors.Normal + " "
+			mention = strings.ReplaceAll(mention, ",", colors.Normal+",")
+			mention = strings.ReplaceAll(mention, ".", colors.Normal+".")
 
 			output += mention
 
 		case strings.HasPrefix(word, "@"):
-			mention := Yellow + word + Normal + " "
-			mention = strings.ReplaceAll(mention, ",", Normal+",")
-			mention = strings.ReplaceAll(mention, ".", Normal+".")
+			mention := colors.Yellow + word + colors.Normal + " "
+			mention = strings.ReplaceAll(mention, ",", colors.Normal+",")
+			mention = strings.ReplaceAll(mention, ".", colors.Normal+".")
 
 			output += mention
 
@@ -356,10 +357,10 @@ func highlightVariables(input string) string {
 
 		switch {
 		case strings.HasPrefix(word, "$") && unicode.IsLetter(secondRune):
-			variable := Cyan + word + Normal + " "
-			variable = strings.ReplaceAll(variable, "\"", Normal+"\"")
-			variable = strings.ReplaceAll(variable, "'", Normal+"'")
-			variable = strings.ReplaceAll(variable, "”", Normal+"”")
+			variable := colors.Cyan + word + colors.Normal + " "
+			variable = strings.ReplaceAll(variable, "\"", colors.Normal+"\"")
+			variable = strings.ReplaceAll(variable, "'", colors.Normal+"'")
+			variable = strings.ReplaceAll(variable, "”", colors.Normal+"”")
 
 			output += variable
 
@@ -375,8 +376,8 @@ func highlightAbbreviations(input string) string {
 	iAmNotALawyer := "IANAL"
 	iAmALawyer := "IAAL"
 
-	input = strings.ReplaceAll(input, iAmNotALawyer, Red+iAmNotALawyer+Normal)
-	input = strings.ReplaceAll(input, iAmALawyer, Green+iAmALawyer+Normal)
+	input = strings.ReplaceAll(input, iAmNotALawyer, colors.Red+iAmNotALawyer+colors.Normal)
+	input = strings.ReplaceAll(input, iAmALawyer, colors.Green+iAmALawyer+colors.Normal)
 
 	return input
 }
