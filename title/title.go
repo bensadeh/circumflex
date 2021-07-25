@@ -55,12 +55,9 @@ func formatTitle(title string, author string, highlightHeadlines bool) string {
 }
 
 func highlightShowAndTell(title string) string {
-	title = strings.ReplaceAll(title, askHN, formatter.Blue(askHN))
-	title = strings.ReplaceAll(title, showHN, formatter.Red(showHN))
-	title = strings.ReplaceAll(title, tellHN, formatter.Magenta(tellHN))
-	title = strings.ReplaceAll(title, launchHN, formatter.Green(launchHN))
+	title = syntax.HighlightHackerNewsHeadlines(title)
 
-	return title
+	return cview.TranslateANSI(title)
 }
 
 func highlightYCStartups(title string) string {

@@ -4,6 +4,7 @@ import (
 	"clx/colors"
 	"clx/constants/messages"
 	"clx/endpoints"
+	"clx/syntax"
 	"strconv"
 	"strings"
 
@@ -43,6 +44,7 @@ func getHeadline(title, domain, url string, id, commentWidth int) string {
 		domain = "item?id=" + strconv.Itoa(id)
 	}
 
+	title = syntax.HighlightHackerNewsHeadlines(title)
 	headline := title + " " + colors.SurroundWithParen(domain)
 	wrappedHeadline, _ := text.Wrap(headline, commentWidth)
 	hyperlink := getHyperlink(domain, url, id)
