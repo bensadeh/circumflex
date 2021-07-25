@@ -37,8 +37,8 @@ func formatTitle(title string, author string, highlightHeadlines bool) string {
 		return formatter.Yellow(title)
 	}
 
-	if author == "whoishiring" {
-		return highlightWhoIsHiring(title, highlightHeadlines)
+	if author == "whoishiring" && highlightHeadlines {
+		return highlightWhoIsHiring(title, author)
 	}
 
 	title = strings.ReplaceAll(title, tripleSpace, singleSpace)
@@ -76,26 +76,10 @@ func highlightSpecialContent(title string) string {
 	return title
 }
 
-func highlightWhoIsHiring(title string, highlightHeadlines bool) string {
-	if !highlightHeadlines {
-		return title
-	}
+func highlightWhoIsHiring(title string, author string) string {
+	title = syntax.HighlightWhoIsHiring(title, author)
 
-	title = strings.ReplaceAll(title, " (", "[-:-:] (")
-
-	if strings.Contains(title, "Who is hiring?") {
-		return formatter.BlackOnBlue(title)
-	}
-
-	if strings.Contains(title, "Freelancer?") {
-		return formatter.BlackOnRed(title)
-	}
-
-	if strings.Contains(title, "Who wants to be hired?") {
-		return formatter.BlackOnYellow(title)
-	}
-
-	return title
+	return cview.TranslateANSI(title)
 }
 
 func formatDomain(domain string, markAsRead bool) string {
