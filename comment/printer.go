@@ -44,6 +44,7 @@ func getHeadline(title, domain, url string, id, commentWidth int) string {
 		domain = "item?id=" + strconv.Itoa(id)
 	}
 
+	// TODO: disable this when syntax highlighting for headlines is disabled
 	title = syntax.HighlightHackerNewsHeadlines(title)
 	headline := title + " " + colors.SurroundWithParen(domain)
 	wrappedHeadline, _ := text.Wrap(headline, commentWidth)
