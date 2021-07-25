@@ -7,6 +7,8 @@ _WIP_
 - Code snippets are now in italics and magenta (was: just magenta)
 - Remove `FAANG` highlighting (it was a bit too colorful)
 
+**Bugfixes**
+- Monthly 'Who is Hiring' posts now honor the 'highlight headlines' setting
 
 ## 1.16
 _2021-07-24_

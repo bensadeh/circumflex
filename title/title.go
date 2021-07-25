@@ -36,7 +36,7 @@ func formatTitle(title string, author string, highlightHeadlines bool) string {
 	}
 
 	if author == "whoishiring" {
-		return highlightWhoIsHiring(title)
+		return highlightWhoIsHiring(title, highlightHeadlines)
 	}
 
 	title = strings.ReplaceAll(title, tripleSpace, singleSpace)
@@ -87,7 +87,11 @@ func highlightSpecialContent(title string) string {
 	return title
 }
 
-func highlightWhoIsHiring(title string) string {
+func highlightWhoIsHiring(title string, highlightHeadlines bool) string {
+	if !highlightHeadlines {
+		return title
+	}
+
 	title = strings.ReplaceAll(title, " (", "[-:-:] (")
 
 	if strings.Contains(title, "Who is hiring?") {
