@@ -3,6 +3,9 @@
 ## 1.17
 _WIP_
 
+**New features**
+- Included syntax highlighting for YC-funded startups in the comment section
+
 **Cosmetic**
 - Code snippets are now in italics and magenta (was: just magenta)
 - Remove `FAANG` highlighting (it was a bit too colorful)

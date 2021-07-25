@@ -2,10 +2,12 @@ package title
 
 import (
 	"clx/constants/messages"
+	"clx/syntax"
 	"clx/utils/formatter"
-	"fmt"
 	"strconv"
 	"strings"
+
+	"code.rocketnine.space/tslocum/cview"
 
 	"github.com/nleeper/goment"
 )
@@ -62,19 +64,9 @@ func highlightShowAndTell(title string) string {
 }
 
 func highlightYCStartups(title string) string {
-	startYear, endYear := 0o5, 22
+	title = syntax.HighlightYCStartups(title)
 
-	for i := startYear; i <= endYear; i++ {
-		year := fmt.Sprintf("%02d", i)
-
-		summer := "(YC S" + year + ")"
-		winter := "(YC W" + year + ")"
-
-		title = strings.ReplaceAll(title, summer, formatter.BlackOnOrange(" YC S"+year+" "))
-		title = strings.ReplaceAll(title, winter, formatter.BlackOnOrange(" YC W"+year+" "))
-	}
-
-	return title
+	return cview.TranslateANSI(title)
 }
 
 func highlightSpecialContent(title string) string {
