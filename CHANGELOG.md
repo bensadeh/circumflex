@@ -6,6 +6,7 @@ _WIP_
 **Cosmetic**
 - Code snippets are now in italics and magenta (was: just magenta)
 - Remove `FAANG` highlighting (it was a bit too colorful)
+- Better handling of fractions
 
 **Bugfixes**
 - Monthly 'Who is Hiring' posts now honor the 'highlight headlines' setting

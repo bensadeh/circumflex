@@ -130,6 +130,12 @@ func replaceSymbols(paragraph string) string {
 	paragraph = strings.ReplaceAll(paragraph, doubleSpace, singleSpace)
 	paragraph = strings.ReplaceAll(paragraph, "...", "…")
 	paragraph = strings.ReplaceAll(paragraph, " -- ", " — ")
+	paragraph = replaceFractions(paragraph)
+
+	return paragraph
+}
+
+func replaceFractions(paragraph string) string {
 	paragraph = strings.ReplaceAll(paragraph, " 1/2", " ½ ")
 	paragraph = strings.ReplaceAll(paragraph, " 1/3", " ⅓ ")
 	paragraph = strings.ReplaceAll(paragraph, " 2/3", " ⅔ ")
@@ -142,6 +148,9 @@ func replaceSymbols(paragraph string) string {
 	paragraph = strings.ReplaceAll(paragraph, " 1/6", " ⅙ ")
 	paragraph = strings.ReplaceAll(paragraph, " 1/10", " ⅒ ")
 
+	paragraph = strings.ReplaceAll(paragraph, "1/5th", "⅕ th")
+	paragraph = strings.ReplaceAll(paragraph, "1/6th", "⅙ th")
+	paragraph = strings.ReplaceAll(paragraph, "1/10th", "⅒ th")
 	return paragraph
 }
 
