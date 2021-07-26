@@ -113,8 +113,7 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 
 		r.UpdateFavoriteStoryAndWriteToDisk(comments)
 		screenWidth := screen.GetTerminalWidth()
-		commentTree := comment.ToString(*comments, config.IndentSize, config.CommentWidth, screenWidth,
-			config.PreserveRightMargin, config.AltIndentBlock, config.CommentHighlighting, config.EmojiSmileys)
+		commentTree := comment.ToString(*comments, config, screenWidth)
 
 		cli.Less(commentTree)
 	})

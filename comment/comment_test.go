@@ -2,6 +2,7 @@ package comment_test
 
 import (
 	"clx/comment"
+	"clx/core"
 	"clx/endpoints"
 	"encoding/json"
 	"io/ioutil"
@@ -17,7 +18,7 @@ func TestIntegration(t *testing.T) {
 	expected, _ := ioutil.ReadFile("test/expected.txt")
 
 	comments := unmarshal(commentJSON)
-	actual := comment.ToString(*comments, 4, 80, 100, false, false, true, false)
+	actual := comment.ToString(*comments, getConfig(), 100)
 
 	assert.Equal(t, string(expected), actual)
 }
@@ -29,7 +30,7 @@ func TestRootComment(t *testing.T) {
 	expected, _ := ioutil.ReadFile("test/root_comment_expected.txt")
 
 	comments := unmarshal(commentJSON)
-	actual := comment.ToString(*comments, 4, 80, 200, false, false, true, false)
+	actual := comment.ToString(*comments, getConfig(), 80)
 
 	assert.Equal(t, string(expected), actual)
 }
@@ -50,7 +51,22 @@ func TestParsing(t *testing.T) {
 
 	expected := "Not a code Block:\n\n\u001B[2m  CODE BLOCK CODE BLOCK\u001B[0m\n\u001B[2mCODE BLOCK CODE BLOCK\u001B[0m"
 
-	actual := comment.ParseComment(input, 80, 80, true, false, false)
+	actual := comment.ParseComment(input, getConfig(), 80, 80)
 
 	assert.Equal(t, expected, actual)
+}
+
+func getConfig() *core.Config {
+	return &core.Config{
+		CommentWidth:        80,
+		IndentSize:          4,
+		HighlightHeadlines:  true,
+		PreserveRightMargin: false,
+		RelativeNumbering:   false,
+		HideYCJobs:          false,
+		AltIndentBlock:      false,
+		CommentHighlighting: true,
+		EmojiSmileys:        false,
+		MarkAsRead:          false,
+	}
 }

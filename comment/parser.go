@@ -2,6 +2,7 @@ package comment
 
 import (
 	"clx/colors"
+	"clx/core"
 	s "clx/syntax"
 	"regexp"
 	"strings"
@@ -28,8 +29,7 @@ const (
 	tripleSpace = "   "
 )
 
-func ParseComment(c string, commentWidth int, availableScreenWidth int, commentHighlighting bool,
-	useAlternateIndent bool, emojiSmiley bool) string {
+func ParseComment(c string, config *core.Config, availableCommentWidth int, availableScreenWidth int) string {
 	if c == "[deleted]" {
 		return colors.Dimmed + "[deleted]" + colors.Normal
 	}
@@ -67,7 +67,7 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 			paragraph = strings.ReplaceAll(paragraph, "</i>", "")
 			paragraph = strings.ReplaceAll(paragraph, "</a>", colors.Normal+colors.Dimmed+colors.Italic)
 			paragraph = replaceSymbols(paragraph)
-			paragraph = replaceSmileys(paragraph, emojiSmiley)
+			paragraph = replaceSmileys(paragraph, config.EmojiSmileys)
 
 			paragraph = strings.Replace(paragraph, ">>", "", 1)
 			paragraph = strings.Replace(paragraph, ">", "", 1)
@@ -76,9 +76,9 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 
 			paragraph = colors.Italic + colors.Dimmed + paragraph + colors.Normal
 
-			indentBlock := " " + getIndentationSymbol(useAlternateIndent)
+			indentBlock := " " + getIndentationSymbol(config.AltIndentBlock)
 			padding := text.WrapPad(colors.Dimmed + indentBlock)
-			wrappedAndPaddedComment, _ := text.Wrap(paragraph, commentWidth, padding)
+			wrappedAndPaddedComment, _ := text.Wrap(paragraph, availableCommentWidth, padding)
 			paragraph = wrappedAndPaddedComment
 
 		case s.IsCodeBlock:
@@ -106,16 +106,16 @@ func ParseComment(c string, commentWidth int, availableScreenWidth int, commentH
 
 		default:
 			paragraph = replaceSymbols(paragraph)
-			paragraph = replaceSmileys(paragraph, emojiSmiley)
+			paragraph = replaceSmileys(paragraph, config.EmojiSmileys)
 
 			paragraph = replaceHTML(paragraph)
 			paragraph = strings.TrimLeft(paragraph, " ")
-			paragraph = highlightCommentSyntax(paragraph, commentHighlighting)
+			paragraph = highlightCommentSyntax(paragraph, config.CommentHighlighting)
 
 			paragraph = trimURLs(paragraph)
 
 			padding := text.WrapPad("")
-			wrappedAndPaddedComment, _ := text.Wrap(paragraph, commentWidth, padding)
+			wrappedAndPaddedComment, _ := text.Wrap(paragraph, availableCommentWidth, padding)
 			paragraph = wrappedAndPaddedComment
 		}
 
@@ -152,6 +152,7 @@ func replaceFractions(paragraph string) string {
 	paragraph = strings.ReplaceAll(paragraph, "1/5th", "⅕ th")
 	paragraph = strings.ReplaceAll(paragraph, "1/6th", "⅙ th")
 	paragraph = strings.ReplaceAll(paragraph, "1/10th", "⅒ th")
+
 	return paragraph
 }
 

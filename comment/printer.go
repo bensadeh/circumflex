@@ -3,6 +3,7 @@ package comment
 import (
 	"clx/colors"
 	"clx/constants/messages"
+	"clx/core"
 	"clx/endpoints"
 	"clx/syntax"
 	"strconv"
@@ -11,30 +12,27 @@ import (
 	text "github.com/MichaelMure/go-term-text"
 )
 
-func ToString(comments endpoints.Comments, indentSize int, commentWidth int, screenWidth int, preserveRightMargin bool,
-	altIndentBlock bool, commentHighlighting bool, emojiSmiley bool) string {
-	header := getHeader(comments, commentWidth, screenWidth, commentHighlighting, altIndentBlock, emojiSmiley)
+func ToString(comments endpoints.Comments, config *core.Config, screenWidth int) string {
+	header := getHeader(comments, config, screenWidth)
 	replies := ""
 
 	for _, reply := range comments.Comments {
-		replies += printReplies(reply, indentSize, commentWidth, screenWidth, comments.User, "",
-			preserveRightMargin, altIndentBlock, commentHighlighting, emojiSmiley)
+		replies += printReplies(reply, config, screenWidth, comments.User, "")
 	}
 
 	return header + replies
 }
 
-func getHeader(c endpoints.Comments, commentWidth int, screenWidth int, commentHighlighting bool,
-	altIndentBlock bool, emojiSmiley bool) string {
-	if commentWidth == 0 {
-		commentWidth = screenWidth
+func getHeader(c endpoints.Comments, config *core.Config, screenWidth int) string {
+	if config.CommentWidth == 0 {
+		config.CommentWidth = screenWidth
 	}
 
-	headline := getHeadline(c.Title, c.User, c.Domain, c.URL, c.ID, commentWidth)
+	headline := getHeadline(c.Title, c.User, c.Domain, c.URL, c.ID, config.CommentWidth)
 	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
-	rootComment := parseRootComment(c.Content, commentWidth, commentHighlighting, altIndentBlock, emojiSmiley)
+	rootComment := parseRootComment(c.Content, config)
 	helpMessage := colors.ToDimmed(messages.LessScreenInfo) + colors.NewLine
-	separator := messages.GetSeparator(commentWidth)
+	separator := messages.GetSeparator(config.CommentWidth)
 
 	return headline + infoLine + helpMessage + rootComment + separator + colors.NewParagraph
 }
@@ -89,36 +87,33 @@ func getHyperlinkText(url string, text string) string {
 	return colors.Link1 + url + colors.Link2 + text + colors.Link3
 }
 
-func parseRootComment(c string, commentWidth int, commentHighlighting bool, altIndentBlock bool,
-	emojiSmiley bool) string {
+func parseRootComment(c string, config *core.Config) string {
 	if c == "" {
 		return ""
 	}
 
-	comment := ParseComment(c, commentWidth, commentWidth, commentHighlighting, altIndentBlock, emojiSmiley)
-	wrappedComment, _ := text.Wrap(comment, commentWidth)
+	comment := ParseComment(c, config, config.CommentWidth, config.CommentWidth)
+	wrappedComment, _ := text.Wrap(comment, config.CommentWidth)
 
 	return colors.NewLine + wrappedComment + colors.NewLine
 }
 
-func printReplies(c endpoints.Comments, indentSize int, commentWidth int, screenWidth int, originalPoster string,
-	parentPoster string, preserveRightMargin bool, altIndentBlock bool, commentHighlighting bool,
-	emojiSmiley bool) string {
-	currentIndentSize := indentSize * c.Level
+func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, originalPoster string,
+	parentPoster string) string {
+	currentIndentSize := config.IndentSize * c.Level
 	usableScreenSize := screenWidth - currentIndentSize - 1
-	adjustedCommentWidth := getCommentWidthForLevel(currentIndentSize, usableScreenSize, c.Level, indentSize,
-		commentWidth, preserveRightMargin)
+	adjustedCommentWidth := getCommentWidthForLevel(currentIndentSize, usableScreenSize, c.Level, config.IndentSize,
+		config.CommentWidth, config.PreserveRightMargin)
 
-	comment := ParseComment(c.Content, adjustedCommentWidth, usableScreenSize, commentHighlighting, altIndentBlock,
-		emojiSmiley)
+	comment := ParseComment(c.Content, config, adjustedCommentWidth, usableScreenSize)
 
-	indentBlock := getIndentBlock(c.Level, indentSize, altIndentBlock)
+	indentBlock := getIndentBlock(c.Level, config.IndentSize, config.AltIndentBlock)
 	paddingWithBlock := text.WrapPad(indentBlock)
 	wrappedAndPaddedComment, _ := text.Wrap(comment, screenWidth, paddingWithBlock)
 
-	paddingWithNoBlock := text.WrapPad(getIndentBlockWithoutBar(c.Level, indentSize))
+	paddingWithNoBlock := text.WrapPad(getIndentBlockWithoutBar(c.Level, config.IndentSize))
 
-	author := getCommentHeading(c, c.Level, commentWidth, originalPoster, parentPoster)
+	author := getCommentHeading(c, c.Level, config.CommentWidth, originalPoster, parentPoster)
 	paddedAuthor, _ := text.Wrap(author, adjustedCommentWidth, paddingWithNoBlock)
 	fullComment := paddedAuthor + wrappedAndPaddedComment + colors.NewParagraph
 
@@ -127,8 +122,7 @@ func printReplies(c endpoints.Comments, indentSize int, commentWidth int, screen
 	}
 
 	for _, reply := range c.Comments {
-		fullComment += printReplies(reply, indentSize, commentWidth, screenWidth,
-			originalPoster, parentPoster, preserveRightMargin, altIndentBlock, commentHighlighting, emojiSmiley)
+		fullComment += printReplies(reply, config, screenWidth, originalPoster, parentPoster)
 	}
 
 	return fullComment
@@ -193,8 +187,8 @@ func getCommentWidthForLevel(currentIndentSize int, usableScreenSize int, level 
 
 func getAuthorLabel(author, originalPoster, parentPoster string) string {
 	switch author {
-	case "":
-		return ""
+	// case "":
+	//	return ""
 	case "dang":
 		return colors.ToGreen(" mod")
 	case originalPoster:

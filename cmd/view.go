@@ -33,11 +33,8 @@ var viewCmd = &cobra.Command{
 
 		c := config.GetConfig()
 		screenWidth := screen.GetTerminalWidth()
-		commentTree := comment.ToString(*comments, c.IndentSize, c.CommentWidth, screenWidth, c.PreserveRightMargin,
-			c.AltIndentBlock, c.CommentHighlighting, c.EmojiSmileys)
+		commentTree := comment.ToString(*comments, c, screenWidth)
 
 		cli.Less(commentTree)
-
-		os.Exit(0)
 	},
 }
