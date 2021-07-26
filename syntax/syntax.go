@@ -18,7 +18,10 @@ const (
 func HighlightYCStartups(comment string) string {
 	expression := regexp.MustCompile(`\((YC [SW]\d{2})\)`)
 
-	return expression.ReplaceAllString(comment, colors.OrangeBackground+colors.NearBlack+" "+`$1`+" "+colors.Normal)
+	firstHighlightGroup := `$1`
+	highlightedStartup := colors.OrangeBackground + colors.NearBlack + " " + firstHighlightGroup + " " + colors.Normal
+
+	return expression.ReplaceAllString(comment, highlightedStartup)
 }
 
 func HighlightHackerNewsHeadlines(title string) string {

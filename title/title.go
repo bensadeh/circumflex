@@ -3,7 +3,7 @@ package formatter
 import (
 	"clx/constants/messages"
 	"clx/utils/formatter"
-	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -62,19 +62,12 @@ func highlightShowAndTell(title string) string {
 }
 
 func highlightYCStartups(title string) string {
-	startYear, endYear := 0o5, 22
+	expression := regexp.MustCompile(`\((YC [SW]\d{2})\)`)
 
-	for i := startYear; i <= endYear; i++ {
-		year := fmt.Sprintf("%02d", i)
+	firstHighlightGroup := `$1`
+	highlightedStartup := formatter.BlackOnOrange(" " + firstHighlightGroup + " ")
 
-		summer := "(YC S" + year + ")"
-		winter := "(YC W" + year + ")"
-
-		title = strings.ReplaceAll(title, summer, formatter.BlackOnOrange(" YC S"+year+" "))
-		title = strings.ReplaceAll(title, winter, formatter.BlackOnOrange(" YC W"+year+" "))
-	}
-
-	return title
+	return expression.ReplaceAllString(title, highlightedStartup)
 }
 
 func highlightSpecialContent(title string) string {
