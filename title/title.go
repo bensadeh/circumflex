@@ -1,13 +1,11 @@
-package title
+package formatter
 
 import (
 	"clx/constants/messages"
-	"clx/syntax"
 	"clx/utils/formatter"
+	"fmt"
 	"strconv"
 	"strings"
-
-	"code.rocketnine.space/tslocum/cview"
 
 	"github.com/nleeper/goment"
 )
@@ -37,8 +35,8 @@ func formatTitle(title string, author string, highlightHeadlines bool) string {
 		return formatter.Yellow(title)
 	}
 
-	if author == "whoishiring" && highlightHeadlines {
-		return highlightWhoIsHiring(title, author)
+	if author == "whoishiring" {
+		return highlightWhoIsHiring(title)
 	}
 
 	title = strings.ReplaceAll(title, tripleSpace, singleSpace)
@@ -55,15 +53,28 @@ func formatTitle(title string, author string, highlightHeadlines bool) string {
 }
 
 func highlightShowAndTell(title string) string {
-	title = syntax.HighlightHackerNewsHeadlines(title)
+	title = strings.ReplaceAll(title, askHN, formatter.Blue(askHN))
+	title = strings.ReplaceAll(title, showHN, formatter.Red(showHN))
+	title = strings.ReplaceAll(title, tellHN, formatter.Magenta(tellHN))
+	title = strings.ReplaceAll(title, launchHN, formatter.Green(launchHN))
 
-	return cview.TranslateANSI(title)
+	return title
 }
 
 func highlightYCStartups(title string) string {
-	title = syntax.HighlightYCStartups(title)
+	startYear, endYear := 0o5, 22
 
-	return cview.TranslateANSI(title)
+	for i := startYear; i <= endYear; i++ {
+		year := fmt.Sprintf("%02d", i)
+
+		summer := "(YC S" + year + ")"
+		winter := "(YC W" + year + ")"
+
+		title = strings.ReplaceAll(title, summer, formatter.BlackOnOrange(" YC S"+year+" "))
+		title = strings.ReplaceAll(title, winter, formatter.BlackOnOrange(" YC W"+year+" "))
+	}
+
+	return title
 }
 
 func highlightSpecialContent(title string) string {
@@ -76,10 +87,22 @@ func highlightSpecialContent(title string) string {
 	return title
 }
 
-func highlightWhoIsHiring(title string, author string) string {
-	title = syntax.HighlightWhoIsHiring(title, author)
+func highlightWhoIsHiring(title string) string {
+	title = strings.ReplaceAll(title, " (", "[-:-:] (")
 
-	return cview.TranslateANSI(title)
+	if strings.Contains(title, "Who is hiring?") {
+		return formatter.BlackOnBlue(title)
+	}
+
+	if strings.Contains(title, "Freelancer?") {
+		return formatter.BlackOnRed(title)
+	}
+
+	if strings.Contains(title, "Who wants to be hired?") {
+		return formatter.BlackOnYellow(title)
+	}
+
+	return title
 }
 
 func formatDomain(domain string, markAsRead bool) string {
