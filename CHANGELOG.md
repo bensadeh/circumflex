@@ -11,6 +11,7 @@ _WIP_
 - Remove `FAANG` highlighting (it was a bit too colorful)
 - Better handling of fractions
 - Better handling of syntax highlighting for URLs
+- Comments that have been deleted and have no replies are no longer printed
 
 **Bugfixes**
 - Monthly 'Who is Hiring' posts now honor the 'highlight headlines' setting
