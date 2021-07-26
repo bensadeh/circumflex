@@ -143,8 +143,8 @@ Quotes are indented, italicized and dimmed in order to distinguish them from the
   <img src="screenshots/quotes.png" width="800" alt="^"/>
 </p>
 
-#### Hacker News and forum idiosyncracies
-`` `Code snippets` ``, `@username` mentions, `$variables` and `I Am A Lawyer` / `I Am Not A Lawyer` disclaimers are all highlighted.
+#### Hacker News and forum idiosyncrasies
+Code snippets, `@username` mentions, `$variables` and URLs are all highlighted.
 
 <p align="center">
   <img src="screenshots/commentSyntax.png" width="700" alt="^"/>
@@ -302,7 +302,7 @@ The following table shows the different ways in which `circumflex` can be config
 | `CLX_HIDE_YC_JOBS`          | `true` | Hides `X is hiring` posts from YC-funded startups. Does not affect the monthly `Who is Hiring?` posts. |
 | `CLX_PRESERVE_RIGHT_MARGIN` | `false` | Shortens replies so that the total length, including indentation, is the same as the comment width. Best used when Indent Size is small to avoid deep replies being too short. |
 | `CLX_ALT_INDENT_BLOCK`      | `false` | Turn this setting on if the indent block does not appear as one connected line. |
-| `CLX_COMMENT_HIGHLIGHTING`  | `true` | Enables syntax highlighting in the comment section for \`code snippets\`, `@mentions`, `$variables` and `IANAL`/`IAAL` disclaimers. |
+| `CLX_COMMENT_HIGHLIGHTING`  | `true` | Enables syntax highlighting in the comment section. |
 | `CLX_EMOJI_SMILEYS`         | `false` | Converts regular smileys to their emoji counterpart. |
 | `CLX_MARK_AS_READ`          | `true` | Mark submissions as read after entering the comment section. |
 
