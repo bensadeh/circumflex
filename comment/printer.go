@@ -28,7 +28,7 @@ func getHeader(c endpoints.Comments, config *core.Config, screenWidth int) strin
 		config.CommentWidth = screenWidth
 	}
 
-	headline := getHeadline(c.Title, c.User, c.Domain, c.URL, c.ID, config.CommentWidth)
+	headline := getHeadline(c.Title, c.User, c.Domain, c.URL, c.ID, config)
 	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
 	rootComment := parseRootComment(c.Content, config)
 	helpMessage := colors.ToDimmed(messages.LessScreenInfo) + colors.NewLine
@@ -37,15 +37,14 @@ func getHeader(c endpoints.Comments, config *core.Config, screenWidth int) strin
 	return headline + infoLine + helpMessage + rootComment + separator + colors.NewParagraph
 }
 
-func getHeadline(title, author, domain, url string, id, commentWidth int) string {
+func getHeadline(title, author, domain, url string, id int, config *core.Config) string {
 	if domain == "" {
 		domain = "item?id=" + strconv.Itoa(id)
 	}
 
-	// TODO: disable this when syntax highlighting for headlines is disabled
-	title = highlightTitle(title, author)
+	title = highlightTitle(title, author, config.HighlightHeadlines)
 	headline := title + " " + colors.SurroundWithParen(domain)
-	wrappedHeadline, _ := text.Wrap(headline, commentWidth)
+	wrappedHeadline, _ := text.Wrap(headline, config.CommentWidth)
 	hyperlink := getHyperlink(domain, url, id)
 
 	wrappedHeadline = strings.ReplaceAll(wrappedHeadline, domain, hyperlink)
@@ -53,13 +52,15 @@ func getHeadline(title, author, domain, url string, id, commentWidth int) string
 	return wrappedHeadline + colors.NewLine
 }
 
-func highlightTitle(title, author string) string {
+func highlightTitle(title, author string, highlightHeadlines bool) string {
 	if author == "whoishiring" {
 		return syntax.HighlightWhoIsHiring(title, author)
 	}
 
-	title = syntax.HighlightYCStartups(title)
-	title = syntax.HighlightHackerNewsHeadlines(title)
+	if highlightHeadlines {
+		title = syntax.HighlightYCStartups(title)
+		title = syntax.HighlightHackerNewsHeadlines(title)
+	}
 
 	return title
 }
