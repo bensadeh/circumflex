@@ -30,7 +30,7 @@ func getHeader(c endpoints.Comments, commentWidth int, screenWidth int, commentH
 		commentWidth = screenWidth
 	}
 
-	headline := getHeadline(c.Title, c.Domain, c.URL, c.ID, commentWidth)
+	headline := getHeadline(c.Title, c.User, c.Domain, c.URL, c.ID, commentWidth)
 	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
 	rootComment := parseRootComment(c.Content, commentWidth, commentHighlighting, altIndentBlock, emojiSmiley)
 	helpMessage := colors.ToDimmed(messages.LessScreenInfo) + colors.NewLine
@@ -39,13 +39,13 @@ func getHeader(c endpoints.Comments, commentWidth int, screenWidth int, commentH
 	return headline + infoLine + helpMessage + rootComment + separator + colors.NewParagraph
 }
 
-func getHeadline(title, domain, url string, id, commentWidth int) string {
+func getHeadline(title, author, domain, url string, id, commentWidth int) string {
 	if domain == "" {
 		domain = "item?id=" + strconv.Itoa(id)
 	}
 
 	// TODO: disable this when syntax highlighting for headlines is disabled
-	title = syntax.HighlightHackerNewsHeadlines(title)
+	title = highlightTitle(title, author)
 	headline := title + " " + colors.SurroundWithParen(domain)
 	wrappedHeadline, _ := text.Wrap(headline, commentWidth)
 	hyperlink := getHyperlink(domain, url, id)
@@ -53,6 +53,17 @@ func getHeadline(title, domain, url string, id, commentWidth int) string {
 	wrappedHeadline = strings.ReplaceAll(wrappedHeadline, domain, hyperlink)
 
 	return wrappedHeadline + colors.NewLine
+}
+
+func highlightTitle(title, author string) string {
+	if author == "whoishiring" {
+		return syntax.HighlightWhoIsHiring(title, author)
+	}
+
+	title = syntax.HighlightYCStartups(title)
+	title = syntax.HighlightHackerNewsHeadlines(title)
+
+	return title
 }
 
 func getHyperlink(domain string, url string, id int) string {
