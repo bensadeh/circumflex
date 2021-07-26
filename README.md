@@ -135,22 +135,21 @@ a domain with known Reader Mode incompatibility, the link cannot be opened in Re
 If you suspect that Reader Mode might work on incompatible domain and you want to bypass  the validation step, press <kbd>t</kbd> to force open the article in Reader Mode. If the validation list is inaccurate, please let me know.
 
 ## 🌈 Syntax highlighting
-### Comment section
-#### Quotes
+### Quotes
 Quotes are indented, italicized and dimmed in order to distinguish them from the rest of the comment.
 
 <p align="center">
   <img src="screenshots/quotes.png" width="800" alt="^"/>
 </p>
 
-#### Hacker News and forum idiosyncrasies
+### Hacker News and forum idiosyncrasies
 Code snippets, `@username` mentions, `$variables` and URLs are all highlighted.
 
 <p align="center">
   <img src="screenshots/commentSyntax.png" width="700" alt="^"/>
 </p>
 
-#### References
+### References
 References on Hacker News are formatted as numbers inside brackets. `circumflex` highlights these numbers
 for easier cross-referencing.
 
@@ -158,15 +157,14 @@ for easier cross-referencing.
   <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
 </p>
 
-### Headlines
-#### Categories
+### Categories
 Headlines containing the text `Ask HN`, `Tell HN`, `Show HN` and `Launch HN` are highlighted.
 
 <p align="center">
   <img src="screenshots/showtell.png" width="250" alt="^"/>
 </p>
 
-#### YC-funded startups
+### YC-funded startups
 [Twice a year](https://www.ycombinator.com/companies/), Y Combinator funds start-ups through its accelerator program.
 `circumflex` highlights these startups to signalize their affiliation with YC.
 
