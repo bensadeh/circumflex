@@ -269,13 +269,9 @@ The example config contains all the available options. All fields are commented 
 Uncomment and set the values of the settings you want to change.
 
 #### Changing settings with environment variables
-Depending on your preference, it might be more convenient for you to configure `circumflex` by setting
+You can configure `circumflex` by setting 
 [environment variables](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables).
 Below are a couple of examples on how to set the variables in different shells. 
-
-Run the commands directly from your
-shell to set the value for the current session. Put them somewhere in your
-[dotfiles](https://dotfiles.github.io/) to make the settings permanent.
 
 Bash and Zsh:
 ```bash
