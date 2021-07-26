@@ -6,9 +6,6 @@ import (
 	s "clx/syntax"
 	"regexp"
 	"strings"
-	"unicode"
-
-	"golang.org/x/exp/utf8string"
 
 	text "github.com/MichaelMure/go-term-text"
 )
@@ -307,47 +304,13 @@ func highlightVariables(input string) string {
 	// Highlighting variables inside commands marked with backticks
 	// messes with the formatting. If there are both backticks and variables
 	// in the comment, we give priority to the backticks.
-	if numberOfBackticks != 0 {
+	if numberOfBackticks > 0 {
 		return input
 	}
 
-	numberOfDollarSigns := strings.Count(input, "$")
+	exp := regexp.MustCompile(`(\$+[a-zA-Z]+)`)
 
-	if numberOfDollarSigns == 0 {
-		return input
-	}
-
-	output := ""
-	words := strings.Split(input, " ")
-
-	for _, word := range words {
-		currentWord := utf8string.NewString(word)
-		wordHasOnlyOneCharacter := currentWord.RuneCount() == 1
-
-		if word == "$" || word == "" || wordHasOnlyOneCharacter {
-			output += word + " "
-
-			continue
-		}
-
-		s := utf8string.NewString(word)
-		secondRune := s.At(1)
-
-		switch {
-		case strings.HasPrefix(word, "$") && unicode.IsLetter(secondRune):
-			variable := colors.Cyan + word + colors.Normal + " "
-			variable = strings.ReplaceAll(variable, "\"", colors.Normal+"\"")
-			variable = strings.ReplaceAll(variable, "'", colors.Normal+"'")
-			variable = strings.ReplaceAll(variable, "”", colors.Normal+"”")
-
-			output += variable
-
-		default:
-			output += word + " "
-		}
-	}
-
-	return output
+	return exp.ReplaceAllString(input, colors.Cyan+`$1`+colors.Normal)
 }
 
 func highlightAbbreviations(input string) string {
