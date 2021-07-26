@@ -292,46 +292,12 @@ func highlightBackticks(input string) string {
 }
 
 func highlightMentions(input string) string {
-	numberOfMentions := strings.Count(input, "@")
+	exp := regexp.MustCompile(`(@+[a-zA-Z]+)`)
+	input = exp.ReplaceAllString(input, colors.Yellow+`$1`+colors.Normal)
 
-	if numberOfMentions == 0 {
-		return input
-	}
+	input = strings.ReplaceAll(input, colors.Yellow+"@dang", colors.Green+"@dang")
 
-	output := ""
-	words := strings.Split(input, " ")
-
-	for _, word := range words {
-		isScreenResolution := strings.HasPrefix(word, "@60Hz") ||
-			strings.HasPrefix(word, "@144Hz") ||
-			strings.HasPrefix(word, "@120Hz")
-
-		wordIsSingleAtSign := word == "@"
-
-		switch {
-		case isScreenResolution || wordIsSingleAtSign:
-			output += word + " "
-
-		case strings.HasPrefix(word, "@dang"):
-			mention := colors.Green + word + colors.Normal + " "
-			mention = strings.ReplaceAll(mention, ",", colors.Normal+",")
-			mention = strings.ReplaceAll(mention, ".", colors.Normal+".")
-
-			output += mention
-
-		case strings.HasPrefix(word, "@"):
-			mention := colors.Yellow + word + colors.Normal + " "
-			mention = strings.ReplaceAll(mention, ",", colors.Normal+",")
-			mention = strings.ReplaceAll(mention, ".", colors.Normal+".")
-
-			output += mention
-
-		default:
-			output += word + " "
-		}
-	}
-
-	return output
+	return input
 }
 
 func highlightVariables(input string) string {
