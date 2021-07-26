@@ -842,8 +842,8 @@ billions to achieve and IMO that should be chased after.
             [0m[32m▎[0msignal is sent.
 
          [1maembleton[0m [2m19 hours ago[0m
-        [0m[33m▎[0m161 ms is ⅙ th of a second which I would have thought would be noticeable and
-        [0m[33m▎[0myet I haven't noticed it. I assume that is mouse clicks?
+        [0m[33m▎[0m161 ms is ⅙th of a second which I would have thought would be noticeable and yet
+        [0m[33m▎[0mI haven't noticed it. I assume that is mouse clicks?
         [0m[33m▎[0m
         [0m[33m▎[0mI'm sure Id notice if typing had that much lag on vs code. I am using manjaro
         [0m[33m▎[0mLinux but I can't imagine that it would be much faster than osx.
@@ -869,8 +869,8 @@ billions to achieve and IMO that should be chased after.
 
              [1maembleton[0m [2m18 hours ago[0m
             [0m[32m▎[0mJust trying in VS Code again, and there does seem to be a lag for mouse clicks.
-            [0m[32m▎[0mNot sure if its as much as ⅙ s, but probably ⅒ . Typing though looks as snappy
-            [0m[32m▎[0mas any terminal.
+            [0m[32m▎[0mNot sure if its as much as ⅙s, but probably ⅒ . Typing though looks as snappy as
+            [0m[32m▎[0many terminal.
             [0m[32m▎[0m
             [0m[32m▎[0mI get electron or MS have optimised the typing path. I don't click that much in
             [0m[32m▎[0mVS Code so I don't think its ever bothered me.
