@@ -72,7 +72,7 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 			paragraph = strings.Replace(paragraph, ">>", "", 1)
 			paragraph = strings.Replace(paragraph, ">", "", 1)
 			paragraph = strings.TrimLeft(paragraph, " ")
-			paragraph = trimURLs(paragraph)
+			paragraph = trimURLs(paragraph, false)
 
 			paragraph = colors.Italic + colors.Dimmed + paragraph + colors.Normal
 
@@ -112,7 +112,7 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 			paragraph = strings.TrimLeft(paragraph, " ")
 			paragraph = highlightCommentSyntax(paragraph, config.CommentHighlighting)
 
-			paragraph = trimURLs(paragraph)
+			paragraph = trimURLs(paragraph, config.CommentHighlighting)
 
 			padding := text.WrapPad("")
 			wrappedAndPaddedComment, _ := text.Wrap(paragraph, availableCommentWidth, padding)
@@ -215,7 +215,7 @@ func replaceHTML(input string) string {
 	input = strings.ReplaceAll(input, "<p>", colors.NewParagraph)
 	input = strings.ReplaceAll(input, "<i>", colors.Italic)
 	input = strings.ReplaceAll(input, "</i>", colors.Normal)
-	input = strings.ReplaceAll(input, "</a>", colors.Normal)
+	input = strings.ReplaceAll(input, "</a>", "")
 	input = strings.ReplaceAll(input, "<pre><code>", "")
 	input = strings.ReplaceAll(input, "</code></pre>", "")
 
@@ -227,20 +227,12 @@ func highlightCommentSyntax(input string, commentHighlighting bool) string {
 		return input
 	}
 
-	input = highlightUrls(input)
 	input = highlightBackticks(input)
 	input = highlightMentions(input)
 	input = highlightVariables(input)
 	input = highlightAbbreviations(input)
 	input = highlightReferences(input)
 	input = s.HighlightYCStartups(input)
-
-	return input
-}
-
-func highlightUrls(input string) string {
-	input = strings.ReplaceAll(input, "https://", colors.Blue)
-	input = strings.ReplaceAll(input, "http://", colors.Blue)
 
 	return input
 }
@@ -261,10 +253,18 @@ func highlightReferences(input string) string {
 	return input
 }
 
-func trimURLs(comment string) string {
+func trimURLs(comment string, highlightComment bool) string {
 	expression := regexp.MustCompile(`<a href=".*?" rel="nofollow">`)
 
-	return expression.ReplaceAllString(comment, "")
+	if !highlightComment {
+		return expression.ReplaceAllString(comment, "")
+	}
+
+	comment = expression.ReplaceAllString(comment, "")
+
+	e := regexp.MustCompile(`https?://([^,\) ]+)`)
+
+	return e.ReplaceAllString(comment, colors.Blue+`$1`+colors.Normal)
 }
 
 func highlightBackticks(input string) string {
