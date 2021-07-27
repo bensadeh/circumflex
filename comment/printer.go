@@ -91,11 +91,6 @@ func parseRootComment(c string, config *core.Config) string {
 
 func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, originalPoster string,
 	parentPoster string) string {
-	isDeletedAndHasNoReplies := c.Content == "[deleted]" && len(c.Comments) == 0
-	if isDeletedAndHasNoReplies {
-		return ""
-	}
-
 	currentIndentSize := config.IndentSize * c.Level
 	usableScreenSize := screenWidth - currentIndentSize - 1
 	adjustedCommentWidth := getCommentWidthForLevel(currentIndentSize, usableScreenSize, c.Level, config.IndentSize,
