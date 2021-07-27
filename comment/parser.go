@@ -262,7 +262,7 @@ func trimURLs(comment string, highlightComment bool) string {
 
 	comment = expression.ReplaceAllString(comment, "")
 
-	e := regexp.MustCompile(`https?://([^,"\) ]+)`)
+	e := regexp.MustCompile(`https?://([^,"\) \n]+)`)
 
 	return e.ReplaceAllString(comment, colors.Blue+`$1`+colors.Normal)
 }
