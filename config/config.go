@@ -35,7 +35,7 @@ func setDefaultValues() {
 	viper.SetDefault(settings.RelativeNumberingKey, settings.RelativeNumberingDefault)
 	viper.SetDefault(settings.HideYCJobsKey, settings.HideYCJobsDefault)
 	viper.SetDefault(settings.UseAltIndentBlockKey, settings.UseAltIndentBlockDefault)
-	viper.SetDefault(settings.CommentHighlightingKey, settings.CommentHighlightingDefault)
+	viper.SetDefault(settings.HighlightCommentsKey, settings.HighlightCommentsDefault)
 	viper.SetDefault(settings.EmojiSmileysKey, settings.EmojiSmileysDefault)
 	viper.SetDefault(settings.MarkAsReadKey, settings.MarkAsReadDefault)
 }

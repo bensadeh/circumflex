@@ -65,7 +65,7 @@ func initializeOptions() *options {
 	o.addOption(RelativeNumberingKey, strconv.FormatBool(RelativeNumberingDefault), RelativeNumberingDescription)
 	o.addOption(HideYCJobsKey, strconv.FormatBool(HideYCJobsDefault), HideYCJobsDescription)
 	o.addOption(UseAltIndentBlockKey, strconv.FormatBool(UseAltIndentBlockDefault), UseAltIndentBlockDescription)
-	o.addOption(CommentHighlightingKey, strconv.FormatBool(CommentHighlightingDefault), CommentHighlightingDescription)
+	o.addOption(HighlightCommentsKey, strconv.FormatBool(HighlightCommentsDefault), HighlightCommentsDescription)
 	o.addOption(EmojiSmileysKey, strconv.FormatBool(EmojiSmileysDefault), EmojiSmileysDescription)
 	o.addOption(MarkAsReadKey, strconv.FormatBool(MarkAsReadDefault), MarkAsReadDescription)
 

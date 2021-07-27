@@ -2,8 +2,6 @@ package settings
 
 const (
 	ConfigFileNameAbbreviated = "config"
-	ConfigFilePath            = "~/.config/circumflex/config.env"
-	ConfigDirPath             = "~/.config/circumflex/"
 
 	CommentWidthKey         = "CLX_COMMENT_WIDTH"
 	CommentWidthDefault     = 65
@@ -19,11 +17,13 @@ const (
 		"as the comment width. Best used when Indent Size is small to avoid deep replies being too short."
 	HighlightHeadlinesKey         = "CLX_HIGHLIGHT_HEADLINES"
 	HighlightHeadlinesDefault     = true
-	HighlightHeadlinesDescription = "Highlights YC-funded startups and text containing \033[31mShow HN\033[0m, " +
-		"\033[35mAsk HN\033[0m, \033[34mTell HN\033[0m and \033[32mLaunch HN\033[0m."
-	RelativeNumberingKey         = "CLX_RELATIVE_NUMBERING"
-	RelativeNumberingDefault     = false
-	RelativeNumberingDescription = "Shows each line with a number relative to the currently selected element. " +
+	HighlightHeadlinesDescription = "Enables syntax highlighting for the headlines."
+	HighlightCommentsKey          = "CLX_HIGHLIGHT_COMMENTS"
+	HighlightCommentsDefault      = true
+	HighlightCommentsDescription  = "Enables syntax highlighting in the comment section."
+	RelativeNumberingKey          = "CLX_RELATIVE_NUMBERING"
+	RelativeNumberingDefault      = false
+	RelativeNumberingDescription  = "Shows each line with a number relative to the currently selected element. " +
 		"Similar to Vim's hybrid line number mode."
 	HideYCJobsKey         = "CLX_HIDE_YC_JOBS"
 	HideYCJobsDefault     = true
@@ -33,10 +33,6 @@ const (
 	UseAltIndentBlockDefault     = false
 	UseAltIndentBlockDescription = "Turn this setting on if the indent block does not appear as one connected " +
 		"line."
-	CommentHighlightingKey         = "CLX_COMMENT_HIGHLIGHTING"
-	CommentHighlightingDefault     = true
-	CommentHighlightingDescription = "Enables syntax highlighting for code snippets, @mentions, $variables," +
-		" IANAL and IAAL."
 	EmojiSmileysKey         = "CLX_EMOJI_SMILEYS"
 	EmojiSmileysDefault     = false
 	EmojiSmileysDescription = "Convert smileys to emojis."

@@ -107,9 +107,9 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 
 			paragraph = replaceHTML(paragraph)
 			paragraph = strings.TrimLeft(paragraph, " ")
-			paragraph = highlightCommentSyntax(paragraph, config.CommentHighlighting)
+			paragraph = highlightCommentSyntax(paragraph, config.HighlightComments)
 
-			paragraph = trimURLs(paragraph, config.CommentHighlighting)
+			paragraph = trimURLs(paragraph, config.HighlightComments)
 
 			padding := text.WrapPad("")
 			wrappedAndPaddedComment, _ := text.Wrap(paragraph, availableCommentWidth, padding)
