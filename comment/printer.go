@@ -64,6 +64,7 @@ func highlightTitle(title, author string, highlightHeadlines bool) string {
 	if highlightHeadlines {
 		title = syntax.HighlightYCStartups(title)
 		title = syntax.HighlightHackerNewsHeadlines(title)
+		title = syntax.HighlightSpecialContent(title)
 	}
 
 	return title

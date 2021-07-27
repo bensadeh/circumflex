@@ -33,6 +33,16 @@ func HighlightHackerNewsHeadlines(title string) string {
 	return title
 }
 
+func HighlightSpecialContent(title string) string {
+	title = strings.ReplaceAll(title, "[audio]", aurora.Yellow("audio").String())
+	title = strings.ReplaceAll(title, "[video]", aurora.Yellow("video").String())
+	title = strings.ReplaceAll(title, "[pdf]", aurora.Yellow("pdf").String())
+	title = strings.ReplaceAll(title, "[PDF]", aurora.Yellow("PDF").String())
+	title = strings.ReplaceAll(title, "[flagged]", aurora.Red("flagged").String())
+
+	return title
+}
+
 func HighlightWhoIsHiring(title string, author string) string {
 	if author != "whoishiring" {
 		return title
