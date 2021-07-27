@@ -271,8 +271,11 @@ func trimURLs(comment string, highlightComment bool) string {
 	comment = expression.ReplaceAllString(comment, "")
 
 	e := regexp.MustCompile(`https?://([^,"\) \n]+)`)
+	comment = e.ReplaceAllString(comment, colors.Blue+`$1`+colors.Normal)
 
-	return e.ReplaceAllString(comment, colors.Blue+`$1`+colors.Normal)
+	comment = strings.ReplaceAll(comment, "."+colors.Normal+" ", colors.Normal+"."+" ")
+
+	return comment
 }
 
 func highlightBackticks(input string) string {
