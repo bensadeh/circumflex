@@ -88,7 +88,7 @@ OK.
     [0m[31m▎[0m---
     [0m[31m▎[0m
     [0m[31m▎[0m[[31m1[0m] [34men.wikipedia.org/wiki/Wireless_Application_Protocol[0m
-    [0m[31m▎[0m[34m[[33m2[0m][0m [34men.wikipedia.org/wiki/Wireless_Markup_Language[0m
+    [0m[31m▎[0m[[33m2[0m] [34men.wikipedia.org/wiki/Wireless_Markup_Language[0m
 
          [1mjunon[0m [2m5 hours ago[0m
         [0m[33m▎[0mAgreed. When I didn't need to boot up BREW or whatever it was called to access

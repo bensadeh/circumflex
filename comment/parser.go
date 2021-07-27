@@ -127,11 +127,19 @@ func replaceSymbols(paragraph string) string {
 	paragraph = strings.ReplaceAll(paragraph, tripleSpace, singleSpace)
 	paragraph = strings.ReplaceAll(paragraph, doubleSpace, singleSpace)
 	paragraph = strings.ReplaceAll(paragraph, "...", "…")
-	paragraph = strings.ReplaceAll(paragraph, " -- ", " — ")
+	paragraph = replaceDoubleDashes(paragraph)
 	paragraph = strings.ReplaceAll(paragraph, "CO2", "CO₂")
 	paragraph = replaceFractions(paragraph)
 
 	return paragraph
+}
+
+func replaceDoubleDashes(paragraph string) string {
+	paragraph = strings.ReplaceAll(paragraph, " -- ", " — ")
+
+	exp := regexp.MustCompile(`([a-zA-Z])--([a-zA-Z])`)
+
+	return exp.ReplaceAllString(paragraph, `$1`+"—"+`$2`)
 }
 
 func replaceFractions(paragraph string) string {

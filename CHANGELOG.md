@@ -12,6 +12,7 @@ _WIP_
 - Better handling of fractions
 - Better handling of smiley to emoji substitution
 - Better handling of syntax highlighting for URLs
+- Better handling of double dashes to em-dashes conversion
 - Comments that have been deleted and have no replies are no longer printed
 - Redesigned comment section header
 
