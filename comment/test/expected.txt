@@ -2462,7 +2462,7 @@ billions to achieve and IMO that should be chased after.
 
          [1mhypertele-Xii[0m [2m14 hours ago[0m
         [0m[33m▎[0mWhat's absolutely mind-boggling to me is that [3mmoving my mouse consumes 10% of[0m
-        [0m[33m▎[0m[3mCPU.[0m I fought tooth and nail to keep my PS2 ports, but everything's USB now. And
+        [0m[33m▎[0m[3mCPU[0m. I fought tooth and nail to keep my PS2 ports, but everything's USB now. And
         [0m[33m▎[0mapparently USB consumes 10% CPU to read mouse movements.
 
          [1mjeffbee[0m [2m17 hours ago[0m
