@@ -28,28 +28,32 @@ func getHeader(c endpoints.Comments, config *core.Config, screenWidth int) strin
 		config.CommentWidth = screenWidth
 	}
 
-	headline := getHeadline(c.Title, c.User, c.Domain, c.URL, c.ID, config)
+	headline := getHeadline(c.Title, c.User, config)
 	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
-	rootComment := parseRootComment(c.Content, config)
 	helpMessage := colors.ToDimmed(messages.LessScreenInfo) + colors.NewLine
+	url := getURL(c.URL, c.Domain, config)
+	rootComment := parseRootComment(c.Content, config)
 	separator := messages.GetSeparator(config.CommentWidth)
 
-	return headline + infoLine + helpMessage + rootComment + separator + colors.NewParagraph
+	return headline + infoLine + helpMessage + url + rootComment + separator + colors.NewParagraph
 }
 
-func getHeadline(title, author, domain, url string, id int, config *core.Config) string {
+func getHeadline(title string, author string, config *core.Config) string {
+	formattedTitle := highlightTitle(title, author, config.HighlightHeadlines)
+	wrappedHeadline, _ := text.Wrap(formattedTitle, config.CommentWidth)
+
+	return wrappedHeadline + colors.NewParagraph
+}
+
+func getURL(url string, domain string, config *core.Config) string {
 	if domain == "" {
-		domain = "item?id=" + strconv.Itoa(id)
+		url = "https://news.ycombinator.com/" + url
 	}
 
-	title = highlightTitle(title, author, config.HighlightHeadlines)
-	headline := title + " " + colors.SurroundWithParen(domain)
-	wrappedHeadline, _ := text.Wrap(headline, config.CommentWidth)
-	hyperlink := getHyperlink(domain, url, id)
+	truncatedURL := text.TruncateMax(url, config.CommentWidth)
+	formattedUrl := colors.ToDimmed(truncatedURL) + colors.NewLine
 
-	wrappedHeadline = strings.ReplaceAll(wrappedHeadline, domain, hyperlink)
-
-	return wrappedHeadline + colors.NewLine
+	return formattedUrl
 }
 
 func highlightTitle(title, author string, highlightHeadlines bool) string {
@@ -65,27 +69,12 @@ func highlightTitle(title, author string, highlightHeadlines bool) string {
 	return title
 }
 
-func getHyperlink(domain string, url string, id int) string {
-	if domain != "" {
-		return getHyperlinkText(url, domain)
-	}
-
-	linkToComments := "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
-	linkText := "item?id=" + strconv.Itoa(id)
-
-	return getHyperlinkText(linkToComments, linkText)
-}
-
 func getInfoLine(points int, user string, timeAgo string, numberOfComments int, id int) string {
 	p := strconv.Itoa(points)
 	c := strconv.Itoa(numberOfComments)
 	i := strconv.Itoa(id)
 
 	return colors.ToDimmed(p+" points by "+user+" "+timeAgo+" • "+c+" comments"+" • "+"ID "+i) + colors.NewLine
-}
-
-func getHyperlinkText(url string, text string) string {
-	return colors.Link1 + url + colors.Link2 + text + colors.Link3
 }
 
 func parseRootComment(c string, config *core.Config) string {
@@ -187,14 +176,11 @@ func getCommentWidthForLevel(currentIndentSize int, usableScreenSize int, level 
 		return commentWidth - currentIndentSize
 	}
 
-	// return commentWidth + indentSize*level
 	return commentWidth
 }
 
 func getAuthorLabel(author, originalPoster, parentPoster string) string {
 	switch author {
-	// case "":
-	//	return ""
 	case "dang":
 		return colors.ToGreen(" mod")
 	case originalPoster:

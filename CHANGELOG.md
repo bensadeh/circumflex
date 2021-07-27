@@ -13,6 +13,7 @@ _WIP_
 - Better handling of smiley to emoji substitution
 - Better handling of syntax highlighting for URLs
 - Comments that have been deleted and have no replies are no longer printed
+- Redesigned comment section header
 
 **Bugfixes**
 - Monthly 'Who is Hiring' posts now honor the 'highlight headlines' setting

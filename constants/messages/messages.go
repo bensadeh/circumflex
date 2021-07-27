@@ -17,9 +17,7 @@ const (
 	DeleteFromFavorites         = "[red]Delete[-] from Favorites? Press [::b]y[::-] to Confirm"
 	ItemDeleted                 = "Item deleted"
 	AddToFavorites              = "[green]Add[-] to Favorites? Press [::b]y[::-] to Confirm"
-	LessScreenInfo              = "You are now in 'less' • Press 'q' to return and 'h' for help"
-	HowToExitF                  = "[::d]Leave ID blank to return to main screen[::-]"
-	AddedStoryByID              = "Submission added"
+	LessScreenInfo              = "You are now in 'less' • Press 'q' to return or 'h' for help"
 	FavoriteNotAdded            = "Could not add submission to favorites"
 	FavoriteAdded               = "Submission added to favorites"
 )
