@@ -105,7 +105,7 @@ func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, or
 	paddingWithNoBlock := text.WrapPad(getIndentBlockWithoutBar(c.Level, config.IndentSize))
 
 	author := getCommentHeading(c, c.Level, config.CommentWidth, originalPoster, parentPoster)
-	paddedAuthor, _ := text.Wrap(author, adjustedCommentWidth, paddingWithNoBlock)
+	paddedAuthor, _ := text.Wrap(author, usableScreenSize, paddingWithNoBlock)
 	fullComment := paddedAuthor + wrappedAndPaddedComment + colors.NewParagraph
 
 	if c.Level == 0 {
