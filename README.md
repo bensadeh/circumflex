@@ -112,10 +112,11 @@ pager `less`. To present a nice and readable comment section, `circumflex` featu
 </p>
 
 ### Jumping between top-level comments
-`circumflex` prints every top-level comment with the string `::`. Using `less`'s search functionality,
-one can move between top-level posts by searching for `::`.
+`circumflex` prints every top-level comment with the string `::`. Using `less`'s search,
+you can move between top-level posts by searching for `::`.
 
-To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. Then, press <kbd>n</kbd> or <kbd>N</kbd> to jump forwards or backwards, respectively.
+To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. Then, press <kbd>n</kbd> or <kbd>N</kbd> 
+to jump forwards or backwards, respectively.
 
 <pre>  
   <kbd>/</kbd>: search
@@ -123,8 +124,10 @@ To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. T
   <kbd>N</kbd>: repeat search backward
 </pre>
 
-`less` remembers your search term between sessions. This means that the next time you want to jump between top-level posts, you can hit <kbd>n</kbd> (without pressing <kbd>/</kbd> ) to go to the next `::` directly.
+`less` remembers your search term between sessions. This means that once you have searched for the string `::` once, 
+you can use <kbd>n</kbd>/<kbd>N</kbd> directly (without pressing <kbd>/</kbd> first).
 
+In practice, <kbd>n</kbd>/<kbd>N</kbd> becomes another shortcut for navigating the comment section.
 
 ## 👓 Reader Mode
 Press <kbd>Space</kbd> to read the submission link in Reader Mode in the pager `less`. 
@@ -132,7 +135,8 @@ Press <kbd>Space</kbd> to read the submission link in Reader Mode in the pager `
 **Note**: some websites do not work well with Reader Mode. If the submission URL points to
 a domain with known Reader Mode incompatibility, the link cannot be opened in Reader Mode. See [validator.go](/validator/validator.go) for a full list of incompatible sites.
 
-If you suspect that Reader Mode might work on incompatible domain and you want to bypass  the validation step, press <kbd>t</kbd> to force open the article in Reader Mode. If the validation list is inaccurate, please let me know.
+If you suspect that Reader Mode might work on incompatible domain, and you want to bypass the validation step, 
+press <kbd>t</kbd> to open the article. If the validation list is inaccurate, please let me know.
 
 ## 🌈 Syntax highlighting
 ### Quotes
@@ -143,7 +147,7 @@ Quotes are indented, italicized and dimmed in order to distinguish them from the
 </p>
 
 ### Hacker News and forum idiosyncrasies
-Code snippets, `@username` mentions, `$variables` and URLs are all highlighted.
+Code snippets, `@username` mentions, `$variables` and URLs are highlighted.
 
 <p align="center">
   <img src="screenshots/commentSyntax.png" width="700" alt="^"/>
@@ -251,7 +255,8 @@ There are three ways to configure `circumflex`:
 3. set environment variables in your shell
 
 #### Flags
-To see a list of available flags, run the following command:
+The easiest and quickest way to configure `circumflex` is by running `clx` with flags.
+To see a list of available flags, run the following:
 
 ```console
 clx help
@@ -283,7 +288,7 @@ Fish:
 set -x CLX_COMMENT_WIDTH "65"
 ```
 
-### Available options
+### Available settings
 
 The following table shows the different ways in which `circumflex` can be configured:
 
