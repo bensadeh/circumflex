@@ -27,10 +27,6 @@ const (
 )
 
 func ParseComment(c string, config *core.Config, availableCommentWidth int, availableScreenWidth int) string {
-	if c == "[deleted]" {
-		return colors.Dimmed + "[deleted]" + colors.Normal
-	}
-
 	c = strings.Replace(c, "<p>", "", 1)
 	c = strings.ReplaceAll(c, "\n</code></pre>\n", "<p>")
 	paragraphs := strings.Split(c, "<p>")
