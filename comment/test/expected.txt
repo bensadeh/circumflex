@@ -825,7 +825,7 @@ billions to achieve and IMO that should be chased after.
                 [0m[36m▎[0mthe top of the screen. Since CRTs (and LCDs) draw the image over the course of a
                 [0m[36m▎[0mfull frame, it's more fair to say 8.3ms, since that's when the middle of the
                 [0m[36m▎[0mscreen will be drawn (at 60Hz). This is pretty comparable to modern gaming
-                [0m[36m▎[0mmonitors, which have around 8.5-10ms of input delay [33m@60Hz.[0m
+                [0m[36m▎[0mmonitors, which have around 8.5-10ms of input delay[33m @60Hz.[0m
                 [0m[36m▎[0m
                 [0m[36m▎[0mWhere CRTs do have an advantage over LCDs is response time, which is generally a
                 [0m[36m▎[0mfew ms even on the best monitors but basically nonexistent on CRTs.

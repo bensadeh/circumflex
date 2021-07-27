@@ -303,7 +303,7 @@ func highlightBackticks(input string) string {
 }
 
 func highlightMentions(input string) string {
-	exp := regexp.MustCompile(`\B(@+[a-zA-Z_.\d]+)`)
+	exp := regexp.MustCompile(`((?:^| )\B@[\w.]+)`)
 	input = exp.ReplaceAllString(input, colors.Yellow+`$1`+colors.Normal)
 
 	input = strings.ReplaceAll(input, colors.Yellow+"@dang", colors.Green+"@dang")
