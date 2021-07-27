@@ -307,6 +307,7 @@ func highlightMentions(input string) string {
 	input = exp.ReplaceAllString(input, colors.Yellow+`$1`+colors.Normal)
 
 	input = strings.ReplaceAll(input, colors.Yellow+"@dang", colors.Green+"@dang")
+	input = strings.ReplaceAll(input, colors.Yellow+" @dang", colors.Green+" @dang")
 
 	return input
 }
