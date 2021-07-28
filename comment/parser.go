@@ -3,7 +3,7 @@ package comment
 import (
 	"clx/colors"
 	"clx/core"
-	s "clx/syntax"
+	"clx/syntax"
 	"regexp"
 	"strings"
 
@@ -236,7 +236,7 @@ func highlightCommentSyntax(input string, commentHighlighting bool) string {
 	input = highlightVariables(input)
 	input = highlightAbbreviations(input)
 	input = highlightReferences(input)
-	input = s.HighlightYCStartups(input)
+	input = syntax.HighlightYCStartups(input)
 
 	return input
 }
