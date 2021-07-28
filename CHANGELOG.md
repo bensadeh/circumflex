@@ -1,7 +1,9 @@
 # Changelog
 
 ## 1.17
-_WIP_
+_2021-07-28_
+
+This release marks the one year anniversary since the first commit of `circumflex` 🎉
 
 **Cosmetic**
 - Included syntax highlighting for YC-funded startups in the comment section
