@@ -51,9 +51,9 @@ func getURL(url string, domain string, config *core.Config) string {
 	}
 
 	truncatedURL := text.TruncateMax(url, config.CommentWidth)
-	formattedUrl := colors.ToDimmed(truncatedURL) + colors.NewLine
+	formattedURL := colors.ToDimmed(truncatedURL) + colors.NewLine
 
-	return formattedUrl
+	return formattedURL
 }
 
 func highlightTitle(title, author string, highlightHeadlines bool) string {
@@ -98,8 +98,8 @@ func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, or
 
 	currentIndentSize := config.IndentSize * c.Level
 	usableScreenSize := screenWidth - currentIndentSize - 1
-	adjustedCommentWidth := getCommentWidthForLevel(currentIndentSize, usableScreenSize, c.Level, config.IndentSize,
-		config.CommentWidth, config.PreserveRightMargin)
+	adjustedCommentWidth := getCommentWidthForLevel(currentIndentSize, usableScreenSize, config.CommentWidth,
+		config.PreserveRightMargin)
 
 	comment := ParseComment(c.Content, config, adjustedCommentWidth, usableScreenSize)
 
@@ -167,7 +167,7 @@ func incrementReplyCount(comments endpoints.Comments, repliesSoFar *int) int {
 
 // Adjusted comment width shortens the commentWidth if the available screen size
 // is smaller than the size of the commentWidth.
-func getCommentWidthForLevel(currentIndentSize int, usableScreenSize int, level int, indentSize int, commentWidth int,
+func getCommentWidthForLevel(currentIndentSize int, usableScreenSize int, commentWidth int,
 	preserveRightMargin bool) int {
 	if usableScreenSize < commentWidth || commentWidth == 0 {
 		return usableScreenSize
