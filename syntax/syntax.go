@@ -48,8 +48,7 @@ func HighlightWhoIsHiring(title string, author string) string {
 		return title
 	}
 
-	title = strings.ReplaceAll(title, " (", colors.Normal+" ")
-	title = strings.ReplaceAll(title, ")", "")
+	title = strings.ReplaceAll(title, " (", colors.Normal+" (")
 
 	if strings.Contains(title, "Who is hiring?") {
 		title = aurora.Index(232, title).String()
