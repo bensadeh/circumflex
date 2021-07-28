@@ -66,7 +66,7 @@ func getConfig() *core.Config {
 		HideYCJobs:          false,
 		AltIndentBlock:      false,
 		HighlightComments:   true,
-		EmojiSmileys:        false,
+		EmojiSmileys:        true,
 		MarkAsRead:          false,
 	}
 }
