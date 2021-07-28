@@ -26,7 +26,9 @@ const (
 	tripleSpace = "   "
 )
 
-func ParseComment(c string, config *core.Config, availableCommentWidth int, availableScreenWidth int) string {
+func ParseComment(c string, config *core.Config, indentBlock string, availableCommentWidth int,
+	availableScreenWidth int) string {
+	indentBlock = " " + indentBlock
 	c = strings.Replace(c, "<p>", "", 1)
 	c = strings.ReplaceAll(c, "\n</code></pre>\n", "<p>")
 	paragraphs := strings.Split(c, "<p>")
@@ -69,7 +71,6 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 
 			paragraph = colors.Italic + colors.Dimmed + paragraph + colors.Normal
 
-			indentBlock := " " + getIndentationSymbol(config.AltIndentBlock)
 			padding := text.WrapPad(colors.Dimmed + indentBlock)
 			wrappedAndPaddedComment, _ := text.Wrap(paragraph, availableCommentWidth, padding)
 			paragraph = wrappedAndPaddedComment

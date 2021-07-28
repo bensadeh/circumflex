@@ -5,6 +5,7 @@ import (
 	"clx/constants/messages"
 	"clx/core"
 	"clx/endpoints"
+	"clx/indent"
 	"clx/syntax"
 	"strconv"
 	"strings"
@@ -13,17 +14,19 @@ import (
 )
 
 func ToString(comments endpoints.Comments, config *core.Config, screenWidth int) string {
-	header := getHeader(comments, config, screenWidth)
+	indentSymbol := indent.GetIndentSymbol(config.AltIndentBlock)
+	header := getHeader(comments, config, screenWidth, indentSymbol)
+
 	replies := ""
 
 	for _, reply := range comments.Comments {
-		replies += printReplies(reply, config, screenWidth, comments.User, "")
+		replies += printReplies(reply, config, screenWidth, comments.User, "", indentSymbol)
 	}
 
 	return header + replies
 }
 
-func getHeader(c endpoints.Comments, config *core.Config, screenWidth int) string {
+func getHeader(c endpoints.Comments, config *core.Config, screenWidth int, indentSymbol string) string {
 	if config.CommentWidth == 0 {
 		config.CommentWidth = screenWidth
 	}
@@ -32,7 +35,7 @@ func getHeader(c endpoints.Comments, config *core.Config, screenWidth int) strin
 	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
 	helpMessage := colors.ToDimmed(messages.LessScreenInfo) + colors.NewLine
 	url := getURL(c.URL, c.Domain, config)
-	rootComment := parseRootComment(c.Content, config)
+	rootComment := parseRootComment(c.Content, config, indentSymbol)
 	separator := messages.GetSeparator(config.CommentWidth)
 
 	return headline + infoLine + helpMessage + url + rootComment + separator + colors.NewParagraph
@@ -78,19 +81,19 @@ func getInfoLine(points int, user string, timeAgo string, numberOfComments int, 
 	return colors.ToDimmed(p+" points by "+user+" "+timeAgo+" • "+c+" comments"+" • "+"ID "+i) + colors.NewLine
 }
 
-func parseRootComment(c string, config *core.Config) string {
+func parseRootComment(c string, config *core.Config, indentSymbol string) string {
 	if c == "" {
 		return ""
 	}
 
-	comment := ParseComment(c, config, config.CommentWidth, config.CommentWidth)
+	comment := ParseComment(c, config, indentSymbol, config.CommentWidth, config.CommentWidth)
 	wrappedComment, _ := text.Wrap(comment, config.CommentWidth)
 
 	return colors.NewLine + wrappedComment + colors.NewLine
 }
 
 func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, originalPoster string,
-	parentPoster string) string {
+	parentPoster string, indentSymbol string) string {
 	isDeletedAndHasNoReplies := c.Content == "[deleted]" && len(c.Comments) == 0
 	if isDeletedAndHasNoReplies {
 		return ""
@@ -101,9 +104,9 @@ func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, or
 	adjustedCommentWidth := getCommentWidthForLevel(currentIndentSize, usableScreenSize, config.CommentWidth,
 		config.PreserveRightMargin)
 
-	comment := ParseComment(c.Content, config, adjustedCommentWidth, usableScreenSize)
+	comment := ParseComment(c.Content, config, indentSymbol, adjustedCommentWidth, usableScreenSize)
 
-	indentBlock := getIndentBlock(c.Level, config.IndentSize, config.AltIndentBlock)
+	indentBlock := getIndentBlock(indentSymbol, c.Level, config.IndentSize)
 	paddingWithBlock := text.WrapPad(indentBlock)
 	wrappedAndPaddedComment, _ := text.Wrap(comment, screenWidth, paddingWithBlock)
 
@@ -118,7 +121,7 @@ func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, or
 	}
 
 	for _, reply := range c.Comments {
-		fullComment += printReplies(reply, config, screenWidth, originalPoster, parentPoster)
+		fullComment += printReplies(reply, config, screenWidth, originalPoster, parentPoster, indentSymbol)
 	}
 
 	return fullComment
@@ -201,22 +204,13 @@ func getIndentBlockWithoutBar(level int, indentSize int) string {
 	return strings.Repeat(" ", indentSize*level+1)
 }
 
-func getIndentBlock(level int, indentSize int, altIndentBlock bool) string {
+func getIndentBlock(indentSymbol string, level int, indentSize int) string {
 	if level == 0 {
 		return ""
 	}
 
-	indentBlock := getIndentationSymbol(altIndentBlock)
-	indentation := colors.Normal + colors.GetIndentBlockColor(level) + indentBlock + colors.Normal
+	indentation := colors.Normal + colors.GetIndentBlockColor(level) + indentSymbol + colors.Normal
 	whitespace := strings.Repeat(" ", indentSize*level)
 
 	return whitespace + indentation
-}
-
-func getIndentationSymbol(useAlternateIndent bool) string {
-	if useAlternateIndent {
-		return "┃"
-	}
-
-	return "▎"
 }
