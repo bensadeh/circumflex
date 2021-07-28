@@ -3,11 +3,10 @@
 ## 1.17
 _WIP_
 
-**New features**
-- Included syntax highlighting for YC-funded startups in the comment section
-
 **Cosmetic**
+- Included syntax highlighting for YC-funded startups in the comment section
 - Code snippets are now in italics and magenta (was: just magenta)
+- Monthly 'Who is Hiring' posts now honor the 'highlight headlines' setting
 - Remove `FAANG` highlighting (it was a bit too colorful)
 - Better handling of fractions
 - Better handling of smiley to emoji substitution
@@ -17,8 +16,6 @@ _WIP_
 - Comments that have been deleted and have no replies are no longer printed
 - Redesigned comment section header
 
-**Bugfixes**
-- Monthly 'Who is Hiring' posts now honor the 'highlight headlines' setting
 
 ## 1.16
 _2021-07-24_
