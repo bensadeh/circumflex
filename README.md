@@ -304,6 +304,7 @@ The following table shows the different ways in which `circumflex` can be config
 | `CLX_PRESERVE_RIGHT_MARGIN` | `false` | Shortens replies so that the total length, including indentation, is the same as the comment width. Best used when Indent Size is small to avoid deep replies being too short. |
 | `CLX_ALT_INDENT_BLOCK`      | `false` | Turn this setting on if the indent block does not appear as one connected line. |
 | `CLX_HIDE_YC_JOBS`          | `true` | Hides `X is hiring` posts from YC-funded startups. Does not affect the monthly `Who is Hiring?` posts. |
+| `CLX_HIDE_INDENT_SYMBOL`    | `false` | Hides the indentation symbol from the comment section. Does not affect quotes. |
 
 ## 🚗 Under the hood
 

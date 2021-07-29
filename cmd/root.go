@@ -19,6 +19,7 @@ var (
 	relativeNumbering   bool
 	showYCJobs          bool
 	preserveRightMargin bool
+	hideIndentSymbol    bool
 )
 
 var rootCmd = &cobra.Command{
@@ -58,6 +59,10 @@ var rootCmd = &cobra.Command{
 			viper.Set(settings.PreserveRightMarginKey, true)
 		}
 
+		if hideIndentSymbol {
+			viper.Set(settings.HideIndentSymbolKey, true)
+		}
+
 		clx.Run()
 	},
 }
@@ -80,6 +85,8 @@ func Execute() error {
 		"show submissions of the type 'X is hiring'")
 	rootCmd.PersistentFlags().BoolVarP(&preserveRightMargin, "preserve-right-margin", "p", false,
 		"preserve right margin at the cost of comment width")
+	rootCmd.PersistentFlags().BoolVarP(&hideIndentSymbol, "hide-indent", "n", true,
+		"hide the indentation symbol")
 
 	rootCmd.PersistentFlags().IntP("comment-width", "c", settings.CommentWidthDefault,
 		"set the comment width")

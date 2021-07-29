@@ -33,10 +33,13 @@ const (
 	UseAltIndentBlockDefault     = false
 	UseAltIndentBlockDescription = "Turn this setting on if the indent block does not appear as one connected " +
 		"line."
-	EmojiSmileysKey         = "CLX_EMOJI_SMILEYS"
-	EmojiSmileysDefault     = false
-	EmojiSmileysDescription = "Convert smileys to emojis."
-	MarkAsReadKey           = "CLX_MARK_AS_READ"
-	MarkAsReadDefault       = true
-	MarkAsReadDescription   = "Mark submissions as read after entering the comment section"
+	EmojiSmileysKey             = "CLX_EMOJI_SMILEYS"
+	EmojiSmileysDefault         = false
+	EmojiSmileysDescription     = "Convert smileys to emojis."
+	MarkAsReadKey               = "CLX_MARK_AS_READ"
+	MarkAsReadDefault           = true
+	MarkAsReadDescription       = "Mark submissions as read after entering the comment section"
+	HideIndentSymbolKey         = "CLX_HIDE_INDENT_SYMBOL"
+	HideIndentSymbolDefault     = false
+	HideIndentSymbolDescription = "Hides the indent symbol from the comment section"
 )

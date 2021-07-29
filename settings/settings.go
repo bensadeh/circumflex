@@ -68,6 +68,7 @@ func initializeOptions() *options {
 	o.addOption(HighlightCommentsKey, strconv.FormatBool(HighlightCommentsDefault), HighlightCommentsDescription)
 	o.addOption(EmojiSmileysKey, strconv.FormatBool(EmojiSmileysDefault), EmojiSmileysDescription)
 	o.addOption(MarkAsReadKey, strconv.FormatBool(MarkAsReadDefault), MarkAsReadDescription)
+	o.addOption(HideIndentSymbolKey, strconv.FormatBool(HideIndentSymbolDefault), HideIndentSymbolDescription)
 
 	return o
 }
