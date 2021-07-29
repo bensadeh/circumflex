@@ -85,7 +85,7 @@ func Execute() error {
 		"show submissions of the type 'X is hiring'")
 	rootCmd.PersistentFlags().BoolVarP(&preserveRightMargin, "preserve-right-margin", "p", false,
 		"preserve right margin at the cost of comment width")
-	rootCmd.PersistentFlags().BoolVarP(&hideIndentSymbol, "hide-indent", "t", true,
+	rootCmd.PersistentFlags().BoolVarP(&hideIndentSymbol, "hide-indent", "t", false,
 		"hide the indentation symbol")
 
 	rootCmd.PersistentFlags().IntP("comment-width", "c", settings.CommentWidthDefault,
