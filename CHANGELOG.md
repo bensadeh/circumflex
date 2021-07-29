@@ -3,6 +3,8 @@
 ## 1.18
 _2021-07-28
 
+**New features**
+- Added an option to remove indentation symbols from the comment section
 
 ## 1.17
 _2021-07-28_

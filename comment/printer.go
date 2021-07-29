@@ -14,19 +14,18 @@ import (
 )
 
 func ToString(comments endpoints.Comments, config *core.Config, screenWidth int) string {
-	indentSymbol := indent.GetIndentSymbol(config.AltIndentBlock)
-	header := getHeader(comments, config, screenWidth, indentSymbol)
+	header := getHeader(comments, config, screenWidth)
 
 	replies := ""
 
 	for _, reply := range comments.Comments {
-		replies += printReplies(reply, config, screenWidth, comments.User, "", indentSymbol)
+		replies += printReplies(reply, config, screenWidth, comments.User, "")
 	}
 
 	return header + replies
 }
 
-func getHeader(c endpoints.Comments, config *core.Config, screenWidth int, indentSymbol string) string {
+func getHeader(c endpoints.Comments, config *core.Config, screenWidth int) string {
 	if config.CommentWidth == 0 {
 		config.CommentWidth = screenWidth
 	}
@@ -35,7 +34,7 @@ func getHeader(c endpoints.Comments, config *core.Config, screenWidth int, inden
 	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
 	helpMessage := colors.ToDimmed(messages.LessScreenInfo) + colors.NewLine
 	url := getURL(c.URL, c.Domain, config)
-	rootComment := parseRootComment(c.Content, config, indentSymbol)
+	rootComment := parseRootComment(c.Content, config)
 	separator := messages.GetSeparator(config.CommentWidth)
 
 	return headline + infoLine + helpMessage + url + rootComment + separator + colors.NewParagraph
@@ -81,19 +80,19 @@ func getInfoLine(points int, user string, timeAgo string, numberOfComments int, 
 	return colors.ToDimmed(p+" points by "+user+" "+timeAgo+" • "+c+" comments"+" • "+"ID "+i) + colors.NewLine
 }
 
-func parseRootComment(c string, config *core.Config, indentSymbol string) string {
+func parseRootComment(c string, config *core.Config) string {
 	if c == "" {
 		return ""
 	}
 
-	comment := ParseComment(c, config, indentSymbol, config.CommentWidth, config.CommentWidth)
+	comment := ParseComment(c, config, config.CommentWidth, config.CommentWidth)
 	wrappedComment, _ := text.Wrap(comment, config.CommentWidth)
 
 	return colors.NewLine + wrappedComment + colors.NewLine
 }
 
 func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, originalPoster string,
-	parentPoster string, indentSymbol string) string {
+	parentPoster string) string {
 	isDeletedAndHasNoReplies := c.Content == "[deleted]" && len(c.Comments) == 0
 	if isDeletedAndHasNoReplies {
 		return ""
@@ -104,8 +103,9 @@ func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, or
 	adjustedCommentWidth := getCommentWidthForLevel(currentIndentSize, usableScreenSize, config.CommentWidth,
 		config.PreserveRightMargin)
 
-	comment := ParseComment(c.Content, config, indentSymbol, adjustedCommentWidth, usableScreenSize)
+	comment := ParseComment(c.Content, config, adjustedCommentWidth, usableScreenSize)
 
+	indentSymbol := indent.GetIndentSymbol(config.HideIndentSymbol, config.AltIndentBlock)
 	indentBlock := getIndentBlock(indentSymbol, c.Level, config.IndentSize)
 	paddingWithBlock := text.WrapPad(indentBlock)
 	wrappedAndPaddedComment, _ := text.Wrap(comment, screenWidth, paddingWithBlock)
@@ -121,7 +121,7 @@ func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, or
 	}
 
 	for _, reply := range c.Comments {
-		fullComment += printReplies(reply, config, screenWidth, originalPoster, parentPoster, indentSymbol)
+		fullComment += printReplies(reply, config, screenWidth, originalPoster, parentPoster)
 	}
 
 	return fullComment

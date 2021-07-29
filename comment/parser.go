@@ -3,6 +3,7 @@ package comment
 import (
 	"clx/colors"
 	"clx/core"
+	"clx/indent"
 	"clx/syntax"
 	"regexp"
 	"strings"
@@ -26,9 +27,7 @@ const (
 	tripleSpace = "   "
 )
 
-func ParseComment(c string, config *core.Config, indentBlock string, availableCommentWidth int,
-	availableScreenWidth int) string {
-	indentBlock = " " + indentBlock
+func ParseComment(c string, config *core.Config, availableCommentWidth int, availableScreenWidth int) string {
 	c = strings.Replace(c, "<p>", "", 1)
 	c = strings.ReplaceAll(c, "\n</code></pre>\n", "<p>")
 	paragraphs := strings.Split(c, "<p>")
@@ -71,7 +70,8 @@ func ParseComment(c string, config *core.Config, indentBlock string, availableCo
 
 			paragraph = colors.Italic + colors.Dimmed + paragraph + colors.Normal
 
-			padding := text.WrapPad(colors.Dimmed + indentBlock)
+			quoteIndent := " " + indent.GetIndentSymbol(false, config.AltIndentBlock)
+			padding := text.WrapPad(colors.Dimmed + quoteIndent)
 			wrappedAndPaddedComment, _ := text.Wrap(paragraph, availableCommentWidth, padding)
 			paragraph = wrappedAndPaddedComment
 

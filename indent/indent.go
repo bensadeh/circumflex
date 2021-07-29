@@ -1,9 +1,19 @@
 package indent
 
-func GetIndentSymbol(useAlternateIndent bool) string {
-	if useAlternateIndent {
-		return "┃"
+const (
+	noIndent     = " "
+	altIndent    = "┃"
+	normalIndent = "▎"
+)
+
+func GetIndentSymbol(hideIndentSymbol bool, useAlternateIndent bool) string {
+	if hideIndentSymbol {
+		return noIndent
 	}
 
-	return "▎"
+	if useAlternateIndent {
+		return altIndent
+	}
+
+	return normalIndent
 }
