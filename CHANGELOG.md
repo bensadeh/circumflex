@@ -6,6 +6,9 @@ _2021-07-28
 **New features**
 - Added an option to remove indentation symbols from the comment section
 
+**Cosmetic**
+- Better handling of fractions
+
 ## 1.17
 _2021-07-28_
 
