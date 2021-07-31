@@ -92,8 +92,28 @@ func ConvertSmileys(text string) string {
 	return text
 }
 
+func ConvertFractions(text string) string {
+	text = replaceWhitespaceSeparatedToken(text, "1/2", "½")
+	text = replaceWhitespaceSeparatedToken(text, "1/3", "⅓")
+	text = replaceWhitespaceSeparatedToken(text, "2/3", "⅔")
+	text = replaceWhitespaceSeparatedToken(text, "1/4", "¼")
+	text = replaceWhitespaceSeparatedToken(text, "3/4", "¾")
+	text = replaceWhitespaceSeparatedToken(text, "1/5", "⅕")
+	text = replaceWhitespaceSeparatedToken(text, "2/5", "⅖")
+	text = replaceWhitespaceSeparatedToken(text, "3/5", "⅗")
+	text = replaceWhitespaceSeparatedToken(text, "4/5", "⅘")
+	text = replaceWhitespaceSeparatedToken(text, "1/6", "⅙")
+	text = replaceWhitespaceSeparatedToken(text, "1/10", "⅒")
+
+	text = strings.ReplaceAll(text, "1/5th", "⅕ th")
+	text = strings.ReplaceAll(text, "1/6th", "⅙ th")
+	text = strings.ReplaceAll(text, "1/10th", "⅒ th")
+
+	return text
+}
+
 func replaceWhitespaceSeparatedToken(text, targetToken, replacementToken string) string {
-	exp := regexp.MustCompile(`((?:^| ))(` + targetToken + `)((?:$| |\.))`)
+	exp := regexp.MustCompile(`((?:^| ))(` + targetToken + `)((?:$| |\.|\,))`)
 
 	return exp.ReplaceAllString(text, `$1`+replacementToken+`$3`)
 }

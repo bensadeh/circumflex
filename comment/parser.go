@@ -126,7 +126,7 @@ func replaceSymbols(paragraph string) string {
 	paragraph = strings.ReplaceAll(paragraph, "...", "…")
 	paragraph = replaceDoubleDashes(paragraph)
 	paragraph = strings.ReplaceAll(paragraph, "CO2", "CO₂")
-	paragraph = replaceFractions(paragraph)
+	paragraph = syntax.ConvertFractions(paragraph)
 
 	return paragraph
 }
@@ -137,26 +137,6 @@ func replaceDoubleDashes(paragraph string) string {
 	exp := regexp.MustCompile(`([a-zA-Z])--([a-zA-Z])`)
 
 	return exp.ReplaceAllString(paragraph, `$1`+"—"+`$2`)
-}
-
-func replaceFractions(paragraph string) string {
-	paragraph = strings.ReplaceAll(paragraph, " 1/2 ", " ½ ")
-	paragraph = strings.ReplaceAll(paragraph, " 1/3 ", " ⅓ ")
-	paragraph = strings.ReplaceAll(paragraph, " 2/3 ", " ⅔ ")
-	paragraph = strings.ReplaceAll(paragraph, " 1/4 ", " ¼ ")
-	paragraph = strings.ReplaceAll(paragraph, " 3/4 ", " ¾ ")
-	paragraph = strings.ReplaceAll(paragraph, " 1/5 ", " ⅕ ")
-	paragraph = strings.ReplaceAll(paragraph, " 2/5 ", " ⅖ ")
-	paragraph = strings.ReplaceAll(paragraph, " 3/5 ", " ⅗ ")
-	paragraph = strings.ReplaceAll(paragraph, " 4/5 ", " ⅘ ")
-	paragraph = strings.ReplaceAll(paragraph, " 1/6 ", " ⅙ ")
-	paragraph = strings.ReplaceAll(paragraph, " 1/10 ", " ⅒  ")
-
-	paragraph = strings.ReplaceAll(paragraph, "1/5th", "⅕ th")
-	paragraph = strings.ReplaceAll(paragraph, "1/6th", "⅙ th")
-	paragraph = strings.ReplaceAll(paragraph, "1/10th", "⅒ th")
-
-	return paragraph
 }
 
 func replaceSmileys(paragraph string, emojiSmiley bool) string {

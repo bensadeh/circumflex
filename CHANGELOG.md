@@ -7,7 +7,7 @@ _2021-07-28
 - Added an option to remove indentation symbols from the comment section
 
 **Cosmetic**
-- Better handling of fractions
+- Better handling of fractions through regexp
 - Better smiley substitution through regexp
 
 ## 1.17
