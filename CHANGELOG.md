@@ -8,6 +8,7 @@ _2021-07-28
 
 **Cosmetic**
 - Better handling of fractions
+- Better smiley substitution through regexp
 
 ## 1.17
 _2021-07-28_

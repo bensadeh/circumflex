@@ -70,3 +70,30 @@ func HighlightWhoIsHiring(title string, author string) string {
 
 	return title
 }
+
+func ConvertSmileys(text string) string {
+	text = replaceWhitespaceSeparatedToken(text, `\:\)`, "😊")
+	text = replaceWhitespaceSeparatedToken(text, `\(\:`, "😊")
+	text = replaceWhitespaceSeparatedToken(text, `\:\-\)`, "😊")
+	text = replaceWhitespaceSeparatedToken(text, `\:D`, "😄")
+	text = replaceWhitespaceSeparatedToken(text, `\=\)`, "😃")
+	text = replaceWhitespaceSeparatedToken(text, `\=D`, "😃")
+	text = replaceWhitespaceSeparatedToken(text, `\;\)`, "😉")
+	text = replaceWhitespaceSeparatedToken(text, `\;\-\)`, "😉")
+	text = replaceWhitespaceSeparatedToken(text, `\:P`, "😜")
+	text = replaceWhitespaceSeparatedToken(text, `\;P`, "😜")
+	text = replaceWhitespaceSeparatedToken(text, `\:o`, "😮")
+	text = replaceWhitespaceSeparatedToken(text, `\:O`, "😮")
+	text = replaceWhitespaceSeparatedToken(text, `\:\(`, "😔")
+	text = replaceWhitespaceSeparatedToken(text, `\:\-\(`, "😔")
+	text = replaceWhitespaceSeparatedToken(text, `\:\/`, "😕")
+	text = replaceWhitespaceSeparatedToken(text, `\:\-\/`, "😕")
+
+	return text
+}
+
+func replaceWhitespaceSeparatedToken(text, targetToken, replacementToken string) string {
+	exp := regexp.MustCompile(`((?:^| ))(` + targetToken + `)((?:$| |\.))`)
+
+	return exp.ReplaceAllString(text, `$1`+replacementToken+`$3`)
+}
