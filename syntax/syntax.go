@@ -113,7 +113,7 @@ func ConvertFractions(text string) string {
 }
 
 func replaceWhitespaceSeparatedToken(text, targetToken, replacementToken string) string {
-	exp := regexp.MustCompile(`((?:^| ))(` + targetToken + `)((?:$| |\.|\,))`)
+	exp := regexp.MustCompile(`((?:^| ))(` + targetToken + `)((?:$| |\.|\,)|\))`)
 
 	return exp.ReplaceAllString(text, `$1`+replacementToken+`$3`)
 }
