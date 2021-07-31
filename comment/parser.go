@@ -285,7 +285,7 @@ func highlightVariables(input string) string {
 		return input
 	}
 
-	exp := regexp.MustCompile(`(\$+[a-zA-Z]+)`)
+	exp := regexp.MustCompile(`(\$+[a-zA-Z_\-]+)`)
 
 	return exp.ReplaceAllString(input, colors.Cyan+`$1`+colors.Normal)
 }
