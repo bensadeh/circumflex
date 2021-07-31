@@ -67,6 +67,7 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 			paragraph = strings.Replace(paragraph, ">", "", 1)
 			paragraph = strings.TrimLeft(paragraph, " ")
 			paragraph = trimURLs(paragraph, false)
+			paragraph = syntax.RemoveUnwantedNewLines(paragraph)
 
 			paragraph = colors.Italic + colors.Dimmed + paragraph + colors.Normal
 
@@ -107,6 +108,7 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 			paragraph = highlightCommentSyntax(paragraph, config.HighlightComments)
 
 			paragraph = trimURLs(paragraph, config.HighlightComments)
+			paragraph = syntax.RemoveUnwantedNewLines(paragraph)
 
 			padding := text.WrapPad("")
 			wrappedAndPaddedComment, _ := text.Wrap(paragraph, availableCommentWidth, padding)

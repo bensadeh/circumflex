@@ -9,10 +9,13 @@ import (
 )
 
 const (
-	askHN    = "Ask HN:"
-	showHN   = "Show HN:"
-	tellHN   = "Tell HN:"
-	launchHN = "Launch HN:"
+	askHN       = "Ask HN:"
+	showHN      = "Show HN:"
+	tellHN      = "Tell HN:"
+	launchHN    = "Launch HN:"
+	singleSpace = " "
+	doubleSpace = "  "
+	tripleSpace = "   "
 )
 
 func HighlightYCStartups(comment string) string {
@@ -116,4 +119,15 @@ func replaceWhitespaceSeparatedToken(text, targetToken, replacementToken string)
 	exp := regexp.MustCompile(`((?:^| ))(` + targetToken + `)((?:$| |\.|\,)|\))`)
 
 	return exp.ReplaceAllString(text, `$1`+replacementToken+`$3`)
+}
+
+func RemoveUnwantedNewLines(text string) string {
+	exp := regexp.MustCompile(`([a-zA-Z. ])(\n)([a-zA-Z" ])`)
+
+	text = exp.ReplaceAllString(text, `$1`+" "+`$3`)
+
+	text = strings.ReplaceAll(text, tripleSpace, singleSpace)
+	text = strings.ReplaceAll(text, doubleSpace, singleSpace)
+
+	return text
 }
