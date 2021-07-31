@@ -103,10 +103,10 @@ func ConvertFractions(text string) string {
 	text = replaceWhitespaceSeparatedToken(text, "3/5", "⅗")
 	text = replaceWhitespaceSeparatedToken(text, "4/5", "⅘")
 	text = replaceWhitespaceSeparatedToken(text, "1/6", "⅙")
-	text = replaceWhitespaceSeparatedToken(text, "1/10", "⅒")
+	text = replaceWhitespaceSeparatedToken(text, "1/10", "⅒ ")
 
-	text = strings.ReplaceAll(text, "1/5th", "⅕ th")
-	text = strings.ReplaceAll(text, "1/6th", "⅙ th")
+	text = strings.ReplaceAll(text, "1/5th", "⅕th")
+	text = strings.ReplaceAll(text, "1/6th", "⅙th")
 	text = strings.ReplaceAll(text, "1/10th", "⅒ th")
 
 	return text
