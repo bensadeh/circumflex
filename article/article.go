@@ -12,6 +12,7 @@ import (
 
 const (
 	newLine      = "\n"
+	newParagraph = "\n\n"
 	indentBlock  = "   "
 	link1        = "\033]8;;"
 	link2        = "\a"
@@ -24,11 +25,11 @@ func Parse(title, domain, article, references string) string {
 	wrappedTitle, _ := text.Wrap(title, articleWidth)
 	truncatedDomain := text.TruncateMax(domain, articleWidth)
 
-	wrappedTitle += newLine
+	wrappedTitle += newParagraph
 	wrappedTitle += Faint(truncatedDomain).String() + newLine
 	wrappedTitle += Faint(messages.LessScreenInfo).String() + newLine
 	separator := messages.GetSeparator(articleWidth)
-	wrappedTitle += separator + newLine + newLine
+	wrappedTitle += separator + newParagraph
 
 	if strings.Contains(domain, "https://en.wikipedia.org") {
 		article = preFormatWikipediaArticle(article)
