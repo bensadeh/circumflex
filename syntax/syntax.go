@@ -91,6 +91,7 @@ func ConvertSmileys(text string) string {
 	text = replaceWhitespaceSeparatedToken(text, `\:\-\(`, "😔")
 	text = replaceWhitespaceSeparatedToken(text, `\:\/`, "😕")
 	text = replaceWhitespaceSeparatedToken(text, `\:\-\/`, "😕")
+	text = replaceWhitespaceSeparatedToken(text, `-_-`, "😑")
 
 	return text
 }
