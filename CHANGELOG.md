@@ -12,6 +12,7 @@ _2021-07-28
 
 **Cosmetic**
 - Bump goreadability
+- Bump cobra
 
 ## 1.17
 _2021-07-28_
