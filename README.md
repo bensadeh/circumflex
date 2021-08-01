@@ -107,9 +107,14 @@ pager `less`. To present a nice and readable comment section, `circumflex` featu
 * Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
 * Adjustable margins and comment width
 
+
+**Tip**: use <kbd>d</kbd> and <kbd>u</kbd> to scroll the comment section by half a screen.
+Then use <kbd>j</kbd>/<kbd>k</kbd> or the arrow keys to scroll one line at a time.
+
 <p align="center">
   <img src="screenshots/comments.png" width="600" alt="^"/>
 </p>
+
 
 ### Jumping between top-level comments
 `circumflex` prints every top-level comment with the string `::`. Using `less`'s search,
