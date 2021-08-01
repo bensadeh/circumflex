@@ -26,8 +26,8 @@ func Parse(title, domain, article, references string) string {
 	truncatedDomain := text.TruncateMax(domain, articleWidth)
 
 	wrappedTitle += newParagraph
-	wrappedTitle += Faint(truncatedDomain).String() + newLine
 	wrappedTitle += Faint(messages.LessScreenInfo).String() + newLine
+	wrappedTitle += Faint(truncatedDomain).String() + newLine
 	separator := messages.GetSeparator(articleWidth)
 	wrappedTitle += separator + newParagraph
 
