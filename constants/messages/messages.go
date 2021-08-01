@@ -23,7 +23,7 @@ const (
 )
 
 func GetCircumflexStatusMessage() string {
-	return "[::d]github.com/bensadeh/circumflex • version " + clx.Version
+	return "[::d]press ?/i to return • github.com/bensadeh/circumflex • version " + clx.Version
 }
 
 func GetSeparator(width int) string {
