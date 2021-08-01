@@ -10,6 +10,9 @@ _2021-07-28
 - Better handling of fractions through regexp
 - Better smiley substitution through regexp
 
+**Cosmetic**
+- Bump goreadability
+
 ## 1.17
 _2021-07-28_
 

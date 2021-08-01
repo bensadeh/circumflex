@@ -4,6 +4,7 @@ import (
 	"clx/article"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os/exec"
 	"strings"
 	"time"
@@ -27,21 +28,26 @@ func Get(url string) (string, error) {
 	return parsedArticle, nil
 }
 
-func fetch(url string) (readability.Article, error) {
+func fetch(rawURL string) (readability.Article, error) {
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
 
-	response, err := client.Get(url)
+	response, err := client.Get(rawURL)
 	if err != nil {
-		return readability.Article{}, fmt.Errorf("could not fetch url: %w", err)
+		return readability.Article{}, fmt.Errorf("could not fetch rawURL: %w", err)
 	}
 
 	defer response.Body.Close()
 
-	art, readabilityErr := readability.FromReader(response.Body, url)
+	pageURL, urlErr := url.Parse(rawURL)
+	if urlErr != nil {
+		panic(urlErr)
+	}
+
+	art, readabilityErr := readability.FromReader(response.Body, pageURL)
 	if readabilityErr != nil {
-		return readability.Article{}, fmt.Errorf("could not fetch url: %w", readabilityErr)
+		return readability.Article{}, fmt.Errorf("could not fetch rawURL: %w", readabilityErr)
 	}
 
 	return art, nil
