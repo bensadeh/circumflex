@@ -1637,9 +1637,9 @@ Senate run-off elections in Georgia to be held on January 5
         [0m[33m▎[0mThat's common ground. It may not look like it, but it's there.
 
          [1mmarkvdb[0m [2m9 months ago[0m
-        [0m[33m▎[0m[2m ▎[3m[2mIs there really any common ground?[0m
-        [0m[33m▎[0m[2m ▎[2;3mThere can be. On an individual level, where there's mutual trust. At the right[0m
-        [0m[33m▎[0m[2m ▎[2;3mtime, better not in the heat of this moment.[0m
+        [0m[33m▎[0m[2m ▎[3m[2mIs there really any common ground? There can be. On an individual level, where[0m
+        [0m[33m▎[0m[2m ▎[2;3mthere's mutual trust. At the right time, better not in the heat of this[0m
+        [0m[33m▎[0m[2m ▎[2;3mmoment.[0m
         [0m[33m▎[0m
         [0m[33m▎[0mI remember having a very fruitful discussion with a Trump/Pence supporting
         [0m[33m▎[0mfriend, somewhere in the middle of Trump's presidential term.
@@ -1707,12 +1707,10 @@ Senate run-off elections in Georgia to be held on January 5
         [0m[33m▎[0m[34myoutu.be/MAbab8aP4_A[0m
         [0m[33m▎[0m
         [0m[33m▎[0mWhen you need to expand your knowledge beyond YouTube videos I’d recommend this
-        [0m[33m▎[0mbook:
-        [0m[33m▎[0m[34mwww.amazon.com/Reactionary-Mind-Conservatism-Edmund-…[0m
+        [0m[33m▎[0mbook: [34mwww.amazon.com/Reactionary-Mind-Conservatism-Edmund-…[0m
         [0m[33m▎[0m
         [0m[33m▎[0mA conservative plea for “common ground” is very similar to a mind game explained
-        [0m[33m▎[0mhere:
-        [0m[33m▎[0m[34myoutu.be/YOqJ4sc9TAc[0m
+        [0m[33m▎[0mhere: [34myoutu.be/YOqJ4sc9TAc[0m
 
          [1mtomrod[0m [2m9 months ago[0m
         [0m[33m▎[0mRegarding common ground, I believe so. Just as several people were shy to admit
@@ -2469,9 +2467,9 @@ and conquer us.
 
              [1modessacubbage[0m [2m9 months ago[0m
             [0m[32m▎[0mmaybe it has something to do with career war-mongers and sanctioneers
-            [0m[32m▎[0mcampaigning on their 'decency'
-            [0m[32m▎[0mor pathological liars who waged a vindictive, no holds barred war against
-            [0m[32m▎[0mwhistleblowers espousing themselves to be defenders of the 'truth'
+            [0m[32m▎[0mcampaigning on their 'decency' or pathological liars who waged a vindictive, no
+            [0m[32m▎[0mholds barred war against whistleblowers espousing themselves to be defenders of
+            [0m[32m▎[0mthe 'truth'
             [0m[32m▎[0m
             [0m[32m▎[0mi do not have to like or support trump to think that joe biden is a lifelong
             [0m[32m▎[0mrobber barron and his return to normalcy will be marked by suffering around the
@@ -3119,9 +3117,9 @@ and conquer us.
     [0m[31m▎[0mare behind the past week's events.
 
          [1modessacubbage[0m [2m9 months ago[0m
-        [0m[33m▎[0mwas al gore utterly shameful when he contested florida?
-        [0m[33m▎[0mthe prevailing attitude among liberals ever since is that he never should've
-        [0m[33m▎[0mconceded, that the bushes and the courts stole the election.
+        [0m[33m▎[0mwas al gore utterly shameful when he contested florida? the prevailing attitude
+        [0m[33m▎[0mamong liberals ever since is that he never should've conceded, that the bushes
+        [0m[33m▎[0mand the courts stole the election.
 
      [1mlvs[0m [2m9 months ago[0m
     [0m[31m▎[0mThis divide is a business plan, not an organic phenomenon. If you want
@@ -5265,10 +5263,9 @@ broader tendency here?
             [0m[32m▎[0m
             [0m[32m▎[0mSince America exists, you've always had people commenting and criticizing what
             [0m[32m▎[0melected officials are doing and saying. Do you want to shut twitter's right to
-            [0m[32m▎[0mfree speech? Do you realize that you are taking a position of:
-            [0m[32m▎[0m"A member of government should not be questioned by a private party". Do you
-            [0m[32m▎[0mrealized how fearful people who disagrees with you can be by hearing this
-            [0m[32m▎[0margument?
+            [0m[32m▎[0mfree speech? Do you realize that you are taking a position of: "A member of
+            [0m[32m▎[0mgovernment should not be questioned by a private party". Do you realized how
+            [0m[32m▎[0mfearful people who disagrees with you can be by hearing this argument?
             [0m[32m▎[0m
             [0m[32m▎[0mThe guy is literally going for a power grab. "Stand up and stand by"… I really
             [0m[32m▎[0mthink that those who are worried about democracy because of what Twitter is
@@ -5648,10 +5645,7 @@ yet, also interesting that wikipedia already marked Biden as president-elect
     [0m[31m▎[0mThere will be three, no, four living ex-presidents younger than the current
     [0m[31m▎[0mpresident, Biden (77).
     [0m[31m▎[0m
-    [0m[31m▎[0mBarak Obama (59)
-    [0m[31m▎[0mBill Clinton (74)
-    [0m[31m▎[0mGeorge W. Bush (74)
-    [0m[31m▎[0medit: Donald Trump (74)
+    [0m[31m▎[0mBarak Obama (59) Bill Clinton (74) George W. Bush (74) edit: Donald Trump (74)
 
          [1mrufus_foreman[0m [2m9 months ago[0m
         [0m[33m▎[0mThree US presidents born in a 4 month period in 1946.
@@ -11456,8 +11450,7 @@ rooting for the same things here.
         [0m[33m▎[0m4) Repeat as necessary
         [0m[33m▎[0m
         [0m[33m▎[0m"Trump Is Losing Ground With White Voters But Gaining Among Black And Hispanic
-        [0m[33m▎[0mAmericans"
-        [0m[33m▎[0m[34mfivethirtyeight.com/features/trump-is-losing-ground-…[0m
+        [0m[33m▎[0mAmericans" [34mfivethirtyeight.com/features/trump-is-losing-ground-…[0m
 
              [1marcticbull[0m [2m9 months ago[0m
             [0m[32m▎[0mYes he now has 8% of the African American vote up from 6%. It’s remarkable you
@@ -13725,12 +13718,12 @@ What will likely not happen:
         [0m[33m▎[0mDo you have some information the runoff? I wasn't aware about that.
 
 [1mmedium_burrito[0m [2m[4m9 months ago                                               1 ⤶ ::[0m
-In an ideal world, I think we should do either:
-A) Random selection a la the Venetian Doge (political leader, not meme-canine).
-The house should definitely be random selection- preferably all citizens over 18
-and under say 70 filing a tax return. B) Allow indefinite run-offs with
-None-of-the-above options. Basically, if None-of-the-above wins, the election is
-redone but nobody on the ballot is allowed to run for the run-off.
+In an ideal world, I think we should do either: A) Random selection a la the
+Venetian Doge (political leader, not meme-canine). The house should definitely
+be random selection- preferably all citizens over 18 and under say 70 filing a
+tax return. B) Allow indefinite run-offs with None-of-the-above options.
+Basically, if None-of-the-above wins, the election is redone but nobody on the
+ballot is allowed to run for the run-off.
 
      [1mcblconfederate[0m [2m9 months ago[0m
     [0m[31m▎[0mThe Doge wasn't selected randomly, but via a series of randomized election
@@ -14923,8 +14916,7 @@ IOW, Biden is significantly more popular among Blacks than Obama was in 2008 (or
 
      [1mTgXYTFZd9Nrx[0m [2m9 months ago[0m
     [0m[31m▎[0mAmericans: "we made up our mind about racism, color doesn't matter, all citizens
-    [0m[31m▎[0mare equal"
-    [0m[31m▎[0mAlso Americans: "omg look at how the BLACKS are voting!"
+    [0m[31m▎[0mare equal" Also Americans: "omg look at how the BLACKS are voting!"
 
 [1mffggvv[0m [2m[4m9 months ago                                                           ::[0m
 this election was a huge win for republicans, despite trump losing. they (in all
@@ -15742,8 +15734,8 @@ repoublican leaders are more based in reality.
     [0m[31m▎[0mWe detached this subthread from [34mnews.ycombinator.com/item?id=25023021.[0m
 
          [1m0xB31B1B[0m[35m PP[0m [2m9 months ago[0m
-        [0m[33m▎[0mnot arguing, just curious why? Did I violate something?
-        [0m[33m▎[0mSomething I can do better next time?
+        [0m[33m▎[0mnot arguing, just curious why? Did I violate something? Something I can do
+        [0m[33m▎[0mbetter next time?
         [0m[33m▎[0m
         [0m[33m▎[0mI'm highly supportive of the content moderation procedures here.
 
@@ -19027,9 +19019,8 @@ used to beat Gore with the current Supreme Court justices?
 
 [1mhereme888[0m [2m[4m9 months ago                                                        ::[0m
 What would ya'll do if the courts rule in Trump's favor re: ballots arriving
-after Nov 3?
-I'm just saying, wait for the decisive victory, and be careful of the
-possibility of civil war.
+after Nov 3? I'm just saying, wait for the decisive victory, and be careful of
+the possibility of civil war.
 
 [1masdfk-12[0m [2m[4m9 months ago                                                     1 ⤶ ::[0m
 Media and political institutions have been attempting to bury the current
