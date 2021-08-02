@@ -1,7 +1,6 @@
 package comment
 
 import (
-	"clx/colors"
 	"clx/constants/messages"
 	"clx/core"
 	"clx/endpoints"
@@ -10,7 +9,14 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/logrusorgru/aurora/v3"
+
 	text "github.com/MichaelMure/go-term-text"
+)
+
+const (
+	newLine      = "\n"
+	newParagraph = "\n\n"
 )
 
 func ToString(comments endpoints.Comments, config *core.Config, screenWidth int) string {
@@ -32,19 +38,19 @@ func getHeader(c endpoints.Comments, config *core.Config, screenWidth int) strin
 
 	headline := getHeadline(c.Title, c.User, config)
 	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
-	helpMessage := colors.ToDimmed(messages.LessScreenInfo) + colors.NewLine
+	helpMessage := aurora.Faint(messages.LessScreenInfo).Faint().String() + newLine
 	url := getURL(c.URL, c.Domain, config)
 	rootComment := parseRootComment(c.Content, config)
 	separator := messages.GetSeparator(config.CommentWidth)
 
-	return headline + infoLine + helpMessage + url + rootComment + separator + colors.NewParagraph
+	return headline + infoLine + helpMessage + url + rootComment + separator + newParagraph
 }
 
 func getHeadline(title string, author string, config *core.Config) string {
 	formattedTitle := highlightTitle(title, author, config.HighlightHeadlines)
 	wrappedHeadline, _ := text.Wrap(formattedTitle, config.CommentWidth)
 
-	return wrappedHeadline + colors.NewParagraph
+	return wrappedHeadline + newParagraph
 }
 
 func getURL(url string, domain string, config *core.Config) string {
@@ -53,7 +59,7 @@ func getURL(url string, domain string, config *core.Config) string {
 	}
 
 	truncatedURL := text.TruncateMax(url, config.CommentWidth)
-	formattedURL := colors.ToDimmed(truncatedURL) + colors.NewLine
+	formattedURL := aurora.Faint(truncatedURL).String() + newLine
 
 	return formattedURL
 }
@@ -77,7 +83,10 @@ func getInfoLine(points int, user string, timeAgo string, numberOfComments int, 
 	c := strconv.Itoa(numberOfComments)
 	i := strconv.Itoa(id)
 
-	return colors.ToDimmed(p+" points by "+user+" "+timeAgo+" • "+c+" comments"+" • "+"ID "+i) + colors.NewLine
+	formattedInfoLine := aurora.Faint(p + " points by " + user + " " + timeAgo +
+		" • " + c + " comments" + " • " + "ID " + i).String()
+
+	return formattedInfoLine + newLine
 }
 
 func parseRootComment(c string, config *core.Config) string {
@@ -88,7 +97,7 @@ func parseRootComment(c string, config *core.Config) string {
 	comment := ParseComment(c, config, config.CommentWidth, config.CommentWidth)
 	wrappedComment, _ := text.Wrap(comment, config.CommentWidth)
 
-	return colors.NewLine + wrappedComment + colors.NewLine
+	return newLine + wrappedComment + newLine
 }
 
 func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, originalPoster string,
@@ -114,7 +123,7 @@ func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, or
 
 	author := getCommentHeading(c, c.Level, config.CommentWidth, originalPoster, parentPoster)
 	paddedAuthor, _ := text.Wrap(author, usableScreenSize, paddingWithNoBlock)
-	fullComment := paddedAuthor + wrappedAndPaddedComment + colors.NewParagraph
+	fullComment := paddedAuthor + wrappedAndPaddedComment + newParagraph
 
 	if c.Level == 0 {
 		parentPoster = c.User
@@ -130,7 +139,7 @@ func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, or
 func getCommentHeading(c endpoints.Comments, level int, commentWidth int, originalPoster string,
 	parentPoster string) string {
 	timeAgo := c.TimeAgo
-	author := colors.ToBold(c.User)
+	author := aurora.Bold(c.User).String()
 	label := getAuthorLabel(c.User, originalPoster, parentPoster) + " "
 
 	if level == 0 {
@@ -138,11 +147,11 @@ func getCommentHeading(c endpoints.Comments, level int, commentWidth int, origin
 		anchor := " ::"
 		lengthOfUnderline := commentWidth - text.Len(author+label+anchor+timeAgo+replies)
 		headerLine := strings.Repeat(" ", lengthOfUnderline)
-
-		return author + label + colors.ToDimmedAndUnderlined(timeAgo+headerLine+replies+anchor) + colors.NewLine
+		info := aurora.Faint(timeAgo + headerLine + replies + anchor).Underline().String()
+		return author + label + info + newLine
 	}
 
-	return author + label + colors.ToDimmed(timeAgo) + colors.NewLine
+	return author + label + aurora.Faint(timeAgo).String() + newLine
 }
 
 func getRepliesTag(numberOfReplies int) string {
@@ -186,11 +195,14 @@ func getCommentWidthForLevel(currentIndentSize int, usableScreenSize int, commen
 func getAuthorLabel(author, originalPoster, parentPoster string) string {
 	switch author {
 	case "dang":
-		return colors.ToGreen(" mod")
+		return aurora.Green(" mod").String()
+
 	case originalPoster:
-		return colors.ToRed(" OP")
+		return aurora.Red(" OP").String()
+
 	case parentPoster:
-		return colors.ToMagenta(" PP")
+		return aurora.Magenta(" PP").String()
+
 	default:
 		return ""
 	}
@@ -209,7 +221,8 @@ func getIndentBlock(indentSymbol string, level int, indentSize int) string {
 		return ""
 	}
 
-	indentation := colors.Normal + colors.GetIndentBlockColor(level) + indentSymbol + colors.Normal
+	// indentation := colors.Normal + colors.GetIndentBlockColor(level) + indentSymbol + colors.Normal
+	indentation := syntax.ColorizeIndentSymbol(indentSymbol, level)
 	whitespace := strings.Repeat(" ", indentSize*level)
 
 	return whitespace + indentation

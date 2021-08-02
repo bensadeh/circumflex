@@ -21,12 +21,6 @@ type section struct {
 	Text        string
 }
 
-const (
-	singleSpace = " "
-	doubleSpace = "  "
-	tripleSpace = "   "
-)
-
 func ParseComment(c string, config *core.Config, availableCommentWidth int, availableScreenWidth int) string {
 	if c == "[deleted]" {
 		return colors.Dimmed + "[deleted]" + colors.Normal
@@ -87,7 +81,7 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 			paddingWithBlock := text.WrapPad("")
 			wrappedAndPaddedComment, _ := text.Wrap(paragraph, availableScreenWidth, paddingWithBlock)
 
-			codeLines := strings.Split(wrappedAndPaddedComment, colors.NewLine)
+			codeLines := strings.Split(wrappedAndPaddedComment, newLine)
 			formattedCodeLines := ""
 
 			for j, codeLine := range codeLines {
@@ -99,7 +93,7 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 					break
 				}
 
-				formattedCodeLines += colors.Dimmed + codeLine + colors.Normal + colors.NewLine
+				formattedCodeLines += colors.Dimmed + codeLine + colors.Normal + newLine
 			}
 
 			paragraph = formattedCodeLines
@@ -129,8 +123,6 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 }
 
 func replaceSymbols(paragraph string) string {
-	// paragraph = strings.ReplaceAll(paragraph, tripleSpace, singleSpace)
-	// paragraph = strings.ReplaceAll(paragraph, doubleSpace, singleSpace)
 	paragraph = strings.ReplaceAll(paragraph, "...", "…")
 	paragraph = replaceDoubleDashes(paragraph)
 	paragraph = strings.ReplaceAll(paragraph, "CO2", "CO₂")
@@ -173,7 +165,7 @@ func getParagraphSeparator(index int, sliceLength int) string {
 		return ""
 	}
 
-	return colors.NewParagraph
+	return newParagraph
 }
 
 func replaceCharacters(input string) string {
@@ -190,7 +182,7 @@ func replaceCharacters(input string) string {
 func replaceHTML(input string) string {
 	input = strings.Replace(input, "<p>", "", 1)
 
-	input = strings.ReplaceAll(input, "<p>", colors.NewParagraph)
+	input = strings.ReplaceAll(input, "<p>", newParagraph)
 	input = strings.ReplaceAll(input, "<i>", colors.Italic)
 	input = strings.ReplaceAll(input, "</i>", colors.Normal)
 	input = strings.ReplaceAll(input, "</a>", "")
@@ -209,24 +201,8 @@ func highlightCommentSyntax(input string, commentHighlighting bool) string {
 	input = highlightMentions(input)
 	input = highlightVariables(input)
 	input = highlightAbbreviations(input)
-	input = highlightReferences(input)
+	input = syntax.HighlightReferences(input)
 	input = syntax.HighlightYCStartups(input)
-
-	return input
-}
-
-func highlightReferences(input string) string {
-	input = strings.ReplaceAll(input, "[0]", "["+colors.ToWhite("0")+"]")
-	input = strings.ReplaceAll(input, "[1]", "["+colors.ToRed("1")+"]")
-	input = strings.ReplaceAll(input, "[2]", "["+colors.ToYellow("2")+"]")
-	input = strings.ReplaceAll(input, "[3]", "["+colors.ToGreen("3")+"]")
-	input = strings.ReplaceAll(input, "[4]", "["+colors.ToBlue("4")+"]")
-	input = strings.ReplaceAll(input, "[5]", "["+colors.ToCyan("5")+"]")
-	input = strings.ReplaceAll(input, "[6]", "["+colors.ToMagenta("6")+"]")
-	input = strings.ReplaceAll(input, "[7]", "["+colors.ToBrightWhite("7")+"]")
-	input = strings.ReplaceAll(input, "[8]", "["+colors.ToBrightRed("8")+"]")
-	input = strings.ReplaceAll(input, "[9]", "["+colors.ToBrightYellow("9")+"]")
-	input = strings.ReplaceAll(input, "[10]", "["+colors.ToBrightGreen("10")+"]")
 
 	return input
 }
