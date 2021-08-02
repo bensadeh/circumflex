@@ -9,13 +9,15 @@ import (
 )
 
 const (
-	askHN       = "Ask HN:"
-	showHN      = "Show HN:"
-	tellHN      = "Tell HN:"
-	launchHN    = "Launch HN:"
-	singleSpace = " "
-	doubleSpace = "  "
-	tripleSpace = "   "
+	askHN        = "Ask HN:"
+	showHN       = "Show HN:"
+	tellHN       = "Tell HN:"
+	launchHN     = "Launch HN:"
+	singleSpace  = " "
+	doubleSpace  = "  "
+	tripleSpace  = "   "
+	newLine      = "\n"
+	newParagraph = "\n\n"
 )
 
 func HighlightYCStartups(comment string) string {
@@ -187,4 +189,105 @@ func ColorizeIndentSymbol(indentSymbol string, level int) string {
 	resetColor := "\033[0m"
 
 	return resetColor + indentSymbol
+}
+
+func TrimURLs(comment string, highlightComment bool) string {
+	expression := regexp.MustCompile(`<a href=".*?" rel="nofollow">`)
+
+	if !highlightComment {
+		return expression.ReplaceAllString(comment, "")
+	}
+
+	comment = expression.ReplaceAllString(comment, "")
+
+	e := regexp.MustCompile(`https?://([^,"\) \n]+)`)
+	comment = e.ReplaceAllString(comment, colors.Blue+`$1`+colors.Normal)
+
+	comment = strings.ReplaceAll(comment, "."+colors.Normal+" ", colors.Normal+"."+" ")
+
+	return comment
+}
+
+func HighlightBackticks(input string) string {
+	backtick := "`"
+	numberOfBackticks := strings.Count(input, backtick)
+	numberOfBackticksIsOdd := numberOfBackticks%2 != 0
+
+	if numberOfBackticks == 0 || numberOfBackticksIsOdd {
+		return input
+	}
+
+	isOnFirstBacktick := true
+
+	for i := 0; i < numberOfBackticks+1; i++ {
+		if isOnFirstBacktick {
+			input = strings.Replace(input, backtick, colors.Italic+colors.Magenta, 1)
+		} else {
+			input = strings.Replace(input, backtick, colors.Normal, 1)
+		}
+
+		isOnFirstBacktick = !isOnFirstBacktick
+	}
+
+	return input
+}
+
+func HighlightMentions(input string) string {
+	exp := regexp.MustCompile(`((?:^| )\B@[\w.]+)`)
+	input = exp.ReplaceAllString(input, colors.Yellow+`$1`+colors.Normal)
+
+	input = strings.ReplaceAll(input, colors.Yellow+"@dang", colors.Green+"@dang")
+	input = strings.ReplaceAll(input, colors.Yellow+" @dang", colors.Green+" @dang")
+
+	return input
+}
+
+func HighlightVariables(input string) string {
+	backtick := "`"
+	numberOfBackticks := strings.Count(input, backtick)
+
+	// Highlighting variables inside commands marked with backticks
+	// messes with the formatting. If there are both backticks and variables
+	// in the comment, we give priority to the backticks.
+	if numberOfBackticks > 0 {
+		return input
+	}
+
+	exp := regexp.MustCompile(`(\$+[a-zA-Z_\-]+)`)
+
+	return exp.ReplaceAllString(input, colors.Cyan+`$1`+colors.Normal)
+}
+
+func HighlightAbbreviations(input string) string {
+	iAmNotALawyer := "IANAL"
+	iAmALawyer := "IAAL"
+
+	input = strings.ReplaceAll(input, iAmNotALawyer, colors.Red+iAmNotALawyer+colors.Normal)
+	input = strings.ReplaceAll(input, iAmALawyer, colors.Green+iAmALawyer+colors.Normal)
+
+	return input
+}
+
+func ReplaceCharacters(input string) string {
+	input = strings.ReplaceAll(input, "&#x27;", "'")
+	input = strings.ReplaceAll(input, "&gt;", ">")
+	input = strings.ReplaceAll(input, "&lt;", "<")
+	input = strings.ReplaceAll(input, "&#x2F;", "/")
+	input = strings.ReplaceAll(input, "&quot;", `"`)
+	input = strings.ReplaceAll(input, "&amp;", "&")
+
+	return input
+}
+
+func ReplaceHTML(input string) string {
+	input = strings.Replace(input, "<p>", "", 1)
+
+	input = strings.ReplaceAll(input, "<p>", newParagraph)
+	input = strings.ReplaceAll(input, "<i>", colors.Italic)
+	input = strings.ReplaceAll(input, "</i>", colors.Normal)
+	input = strings.ReplaceAll(input, "</a>", "")
+	input = strings.ReplaceAll(input, "<pre><code>", "")
+	input = strings.ReplaceAll(input, "</code></pre>", "")
+
+	return input
 }
