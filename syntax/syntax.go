@@ -79,32 +79,34 @@ func HighlightWhoIsHiring(title string, author string) string {
 }
 
 func ConvertSmileys(text string) string {
-	text = replaceWhitespaceSeparatedToken(text, `\:\)`, "😊")
-	text = replaceWhitespaceSeparatedToken(text, `\(\:`, "😊")
-	text = replaceWhitespaceSeparatedToken(text, `\:\-\)`, "😊")
-	text = replaceWhitespaceSeparatedToken(text, `\:D`, "😄")
-	text = replaceWhitespaceSeparatedToken(text, `\=\)`, "😃")
-	text = replaceWhitespaceSeparatedToken(text, `\=D`, "😃")
-	text = replaceWhitespaceSeparatedToken(text, `\;\)`, "😉")
-	text = replaceWhitespaceSeparatedToken(text, `\;\-\)`, "😉")
-	text = replaceWhitespaceSeparatedToken(text, `\:P`, "😜")
-	text = replaceWhitespaceSeparatedToken(text, `\;P`, "😜")
-	text = replaceWhitespaceSeparatedToken(text, `\:o`, "😮")
-	text = replaceWhitespaceSeparatedToken(text, `\:O`, "😮")
-	text = replaceWhitespaceSeparatedToken(text, `\:\(`, "😔")
-	text = replaceWhitespaceSeparatedToken(text, `\:\-\(`, "😔")
-	text = replaceWhitespaceSeparatedToken(text, `\:\/`, "😕")
-	text = replaceWhitespaceSeparatedToken(text, `\:\-\/`, "😕")
-	text = replaceWhitespaceSeparatedToken(text, `-_-`, "😑")
-	text = replaceWhitespaceSeparatedToken(text, `:\|`, "😐")
+	text = replace(text, `:)`, "😊")
+	text = replace(text, `(:`, "😊")
+	text = replace(text, `:-)`, "😊")
+	text = replace(text, `:D`, "😄")
+	text = replace(text, `=)`, "😃")
+	text = replace(text, `=D`, "😃")
+	text = replace(text, `;)`, "😉")
+	text = replace(text, `;-)`, "😉")
+	text = replace(text, `:P`, "😜")
+	text = replace(text, `;P`, "😜")
+	text = replace(text, `:o`, "😮")
+	text = replace(text, `:O`, "😮")
+	text = replace(text, `:(`, "😔")
+	text = replace(text, `:-(`, "😔")
+	text = replace(text, `:/`, "😕")
+	text = replace(text, `:-/`, "😕")
+	text = replace(text, `-_-`, "😑")
+	text = replace(text, `:|`, "😐")
 
 	return text
 }
 
-func replaceWhitespaceSeparatedToken(text, targetToken, replacementToken string) string {
-	exp := regexp.MustCompile(`((?:^| ))(` + targetToken + `)((?:$| |\.|\,)|\))`)
+func replace(text string, target string, replacement string) string {
+	if text == target {
+		return replacement
+	}
 
-	return exp.ReplaceAllString(text, `$1`+replacementToken+`$3`)
+	return strings.ReplaceAll(text, " "+target, " "+replacement)
 }
 
 func RemoveUnwantedNewLines(text string) string {
@@ -291,17 +293,17 @@ func replaceDoubleDashes(paragraph string) string {
 }
 
 func convertFractions(text string) string {
-	text = replaceWhitespaceSeparatedToken(text, "1/2", "½")
-	text = replaceWhitespaceSeparatedToken(text, "1/3", "⅓")
-	text = replaceWhitespaceSeparatedToken(text, "2/3", "⅔")
-	text = replaceWhitespaceSeparatedToken(text, "1/4", "¼")
-	text = replaceWhitespaceSeparatedToken(text, "3/4", "¾")
-	text = replaceWhitespaceSeparatedToken(text, "1/5", "⅕")
-	text = replaceWhitespaceSeparatedToken(text, "2/5", "⅖")
-	text = replaceWhitespaceSeparatedToken(text, "3/5", "⅗")
-	text = replaceWhitespaceSeparatedToken(text, "4/5", "⅘")
-	text = replaceWhitespaceSeparatedToken(text, "1/6", "⅙")
-	text = replaceWhitespaceSeparatedToken(text, "1/10", "⅒ ")
+	text = strings.ReplaceAll(text, " 1/2", " ½")
+	text = strings.ReplaceAll(text, " 1/3", " ⅓")
+	text = strings.ReplaceAll(text, " 2/3", " ⅔")
+	text = strings.ReplaceAll(text, " 1/4", " ¼")
+	text = strings.ReplaceAll(text, " 3/4", " ¾")
+	text = strings.ReplaceAll(text, " 1/5", " ⅕")
+	text = strings.ReplaceAll(text, " 2/5", " ⅖")
+	text = strings.ReplaceAll(text, " 3/5", " ⅗")
+	text = strings.ReplaceAll(text, " 4/5", " ⅘")
+	text = strings.ReplaceAll(text, " 1/6", " ⅙")
+	text = strings.ReplaceAll(text, " 1/10", " ⅒ ")
 
 	text = strings.ReplaceAll(text, "1/5th", "⅕th")
 	text = strings.ReplaceAll(text, "1/6th", "⅙th")
