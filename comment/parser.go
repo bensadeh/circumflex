@@ -1,14 +1,21 @@
 package comment
 
 import (
-	"clx/colors"
 	"clx/core"
 	"clx/indent"
 	"clx/syntax"
 	"regexp"
 	"strings"
 
+	"github.com/logrusorgru/aurora/v3"
+
 	text "github.com/MichaelMure/go-term-text"
+)
+
+const (
+	reset  = "\033[0m"
+	dimmed = "\033[2m"
+	italic = "\033[3m"
 )
 
 type Comment struct {
@@ -23,7 +30,7 @@ type section struct {
 
 func ParseComment(c string, config *core.Config, availableCommentWidth int, availableScreenWidth int) string {
 	if c == "[deleted]" {
-		return colors.Dimmed + c + colors.Normal
+		return aurora.Faint(c).String()
 	}
 
 	c = strings.Replace(c, "<p>", "", 1)
@@ -57,7 +64,7 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 		case s.IsQuote:
 			paragraph = strings.ReplaceAll(paragraph, "<i>", "")
 			paragraph = strings.ReplaceAll(paragraph, "</i>", "")
-			paragraph = strings.ReplaceAll(paragraph, "</a>", colors.Normal+colors.Dimmed+colors.Italic)
+			paragraph = strings.ReplaceAll(paragraph, "</a>", reset+dimmed+italic)
 			paragraph = replaceSymbols(paragraph)
 			paragraph = replaceSmileys(paragraph, config.EmojiSmileys)
 
@@ -68,10 +75,10 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 			paragraph = syntax.RemoveUnwantedNewLines(paragraph)
 			paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
 
-			paragraph = colors.Italic + colors.Dimmed + paragraph + colors.Normal
+			paragraph = italic + dimmed + paragraph + reset
 
 			quoteIndent := " " + indent.GetIndentSymbol(false, config.AltIndentBlock)
-			padding := text.WrapPad(colors.Dimmed + quoteIndent)
+			padding := text.WrapPad(dimmed + quoteIndent)
 			wrappedAndPaddedComment, _ := text.Wrap(paragraph, availableCommentWidth, padding)
 			paragraph = wrappedAndPaddedComment
 
@@ -88,12 +95,12 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 				isOnLastLine := j == len(codeLines)-1
 
 				if isOnLastLine {
-					formattedCodeLines += colors.Dimmed + codeLine + colors.Normal
+					formattedCodeLines += dimmed + codeLine + reset
 
 					break
 				}
 
-				formattedCodeLines += colors.Dimmed + codeLine + colors.Normal + newLine
+				formattedCodeLines += dimmed + codeLine + reset + newLine
 			}
 
 			paragraph = formattedCodeLines

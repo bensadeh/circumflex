@@ -2,10 +2,6 @@ package colors
 
 // ANSI escape codes
 const (
-	Normal           = "\033[0m"
-	Bold             = "\033[1m"
-	Dimmed           = "\033[2m"
-	Italic           = "\033[3m"
 	Underline        = "\033[4m"
 	Reversed         = "\033[7m"
 	Red              = "\033[31m"
