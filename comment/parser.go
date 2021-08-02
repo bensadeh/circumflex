@@ -72,6 +72,7 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 			paragraph = strings.TrimLeft(paragraph, " ")
 			paragraph = trimURLs(paragraph, false)
 			paragraph = syntax.RemoveUnwantedNewLines(paragraph)
+			paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
 
 			paragraph = colors.Italic + colors.Dimmed + paragraph + colors.Normal
 
@@ -113,6 +114,7 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 
 			paragraph = trimURLs(paragraph, config.HighlightComments)
 			paragraph = syntax.RemoveUnwantedNewLines(paragraph)
+			paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
 
 			padding := text.WrapPad("")
 			wrappedAndPaddedComment, _ := text.Wrap(paragraph, availableCommentWidth, padding)
@@ -127,8 +129,8 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 }
 
 func replaceSymbols(paragraph string) string {
-	paragraph = strings.ReplaceAll(paragraph, tripleSpace, singleSpace)
-	paragraph = strings.ReplaceAll(paragraph, doubleSpace, singleSpace)
+	// paragraph = strings.ReplaceAll(paragraph, tripleSpace, singleSpace)
+	// paragraph = strings.ReplaceAll(paragraph, doubleSpace, singleSpace)
 	paragraph = strings.ReplaceAll(paragraph, "...", "…")
 	paragraph = replaceDoubleDashes(paragraph)
 	paragraph = strings.ReplaceAll(paragraph, "CO2", "CO₂")

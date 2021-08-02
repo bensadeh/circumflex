@@ -126,8 +126,10 @@ func replaceWhitespaceSeparatedToken(text, targetToken, replacementToken string)
 func RemoveUnwantedNewLines(text string) string {
 	exp := regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z" <[:cntrl:]…])`)
 
-	text = exp.ReplaceAllString(text, `$1`+" "+`$3`)
+	return exp.ReplaceAllString(text, `$1`+" "+`$3`)
+}
 
+func RemoveUnwantedWhitespace(text string) string {
 	text = strings.ReplaceAll(text, tripleSpace, singleSpace)
 	text = strings.ReplaceAll(text, doubleSpace, singleSpace)
 
