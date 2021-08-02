@@ -4,7 +4,6 @@ import (
 	"clx/core"
 	"clx/indent"
 	"clx/syntax"
-	"regexp"
 	"strings"
 
 	"github.com/logrusorgru/aurora/v3"
@@ -65,7 +64,7 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 			paragraph = strings.ReplaceAll(paragraph, "<i>", "")
 			paragraph = strings.ReplaceAll(paragraph, "</i>", "")
 			paragraph = strings.ReplaceAll(paragraph, "</a>", reset+dimmed+italic)
-			paragraph = replaceSymbols(paragraph)
+			paragraph = syntax.ReplaceSymbols(paragraph)
 			paragraph = replaceSmileys(paragraph, config.EmojiSmileys)
 
 			paragraph = strings.Replace(paragraph, ">>", "", 1)
@@ -106,7 +105,7 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 			paragraph = formattedCodeLines
 
 		default:
-			paragraph = replaceSymbols(paragraph)
+			paragraph = syntax.ReplaceSymbols(paragraph)
 			paragraph = replaceSmileys(paragraph, config.EmojiSmileys)
 
 			paragraph = syntax.ReplaceHTML(paragraph)
@@ -127,23 +126,6 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 	}
 
 	return output
-}
-
-func replaceSymbols(paragraph string) string {
-	paragraph = strings.ReplaceAll(paragraph, "...", "…")
-	paragraph = replaceDoubleDashes(paragraph)
-	paragraph = strings.ReplaceAll(paragraph, "CO2", "CO₂")
-	paragraph = syntax.ConvertFractions(paragraph)
-
-	return paragraph
-}
-
-func replaceDoubleDashes(paragraph string) string {
-	paragraph = strings.ReplaceAll(paragraph, " -- ", " — ")
-
-	exp := regexp.MustCompile(`([a-zA-Z])--([a-zA-Z])`)
-
-	return exp.ReplaceAllString(paragraph, `$1`+"—"+`$2`)
 }
 
 func replaceSmileys(paragraph string, emojiSmiley bool) string {

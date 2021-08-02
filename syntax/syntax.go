@@ -101,26 +101,6 @@ func ConvertSmileys(text string) string {
 	return text
 }
 
-func ConvertFractions(text string) string {
-	text = replaceWhitespaceSeparatedToken(text, "1/2", "½")
-	text = replaceWhitespaceSeparatedToken(text, "1/3", "⅓")
-	text = replaceWhitespaceSeparatedToken(text, "2/3", "⅔")
-	text = replaceWhitespaceSeparatedToken(text, "1/4", "¼")
-	text = replaceWhitespaceSeparatedToken(text, "3/4", "¾")
-	text = replaceWhitespaceSeparatedToken(text, "1/5", "⅕")
-	text = replaceWhitespaceSeparatedToken(text, "2/5", "⅖")
-	text = replaceWhitespaceSeparatedToken(text, "3/5", "⅗")
-	text = replaceWhitespaceSeparatedToken(text, "4/5", "⅘")
-	text = replaceWhitespaceSeparatedToken(text, "1/6", "⅙")
-	text = replaceWhitespaceSeparatedToken(text, "1/10", "⅒ ")
-
-	text = strings.ReplaceAll(text, "1/5th", "⅕th")
-	text = strings.ReplaceAll(text, "1/6th", "⅙th")
-	text = strings.ReplaceAll(text, "1/10th", "⅒ th")
-
-	return text
-}
-
 func replaceWhitespaceSeparatedToken(text, targetToken, replacementToken string) string {
 	exp := regexp.MustCompile(`((?:^| ))(` + targetToken + `)((?:$| |\.|\,)|\))`)
 
@@ -290,4 +270,42 @@ func ReplaceHTML(input string) string {
 	input = strings.ReplaceAll(input, "</code></pre>", "")
 
 	return input
+}
+
+func ReplaceSymbols(paragraph string) string {
+	paragraph = strings.ReplaceAll(paragraph, "...", "…")
+	paragraph = strings.ReplaceAll(paragraph, "CO2", "CO₂")
+
+	paragraph = replaceDoubleDashes(paragraph)
+	paragraph = convertFractions(paragraph)
+
+	return paragraph
+}
+
+func replaceDoubleDashes(paragraph string) string {
+	paragraph = strings.ReplaceAll(paragraph, " -- ", " — ")
+
+	exp := regexp.MustCompile(`([a-zA-Z])--([a-zA-Z])`)
+
+	return exp.ReplaceAllString(paragraph, `$1`+"—"+`$2`)
+}
+
+func convertFractions(text string) string {
+	text = replaceWhitespaceSeparatedToken(text, "1/2", "½")
+	text = replaceWhitespaceSeparatedToken(text, "1/3", "⅓")
+	text = replaceWhitespaceSeparatedToken(text, "2/3", "⅔")
+	text = replaceWhitespaceSeparatedToken(text, "1/4", "¼")
+	text = replaceWhitespaceSeparatedToken(text, "3/4", "¾")
+	text = replaceWhitespaceSeparatedToken(text, "1/5", "⅕")
+	text = replaceWhitespaceSeparatedToken(text, "2/5", "⅖")
+	text = replaceWhitespaceSeparatedToken(text, "3/5", "⅗")
+	text = replaceWhitespaceSeparatedToken(text, "4/5", "⅘")
+	text = replaceWhitespaceSeparatedToken(text, "1/6", "⅙")
+	text = replaceWhitespaceSeparatedToken(text, "1/10", "⅒ ")
+
+	text = strings.ReplaceAll(text, "1/5th", "⅕th")
+	text = strings.ReplaceAll(text, "1/6th", "⅙th")
+	text = strings.ReplaceAll(text, "1/10th", "⅒ th")
+
+	return text
 }
