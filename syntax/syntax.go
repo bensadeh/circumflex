@@ -250,13 +250,13 @@ func ReplaceSymbols(paragraph string) string {
 	paragraph = strings.ReplaceAll(paragraph, "...", "…")
 	paragraph = strings.ReplaceAll(paragraph, "CO2", "CO₂")
 
-	paragraph = replaceDoubleDashes(paragraph)
+	paragraph = replaceDoubleDashesWithEmDash(paragraph)
 	paragraph = convertFractions(paragraph)
 
 	return paragraph
 }
 
-func replaceDoubleDashes(paragraph string) string {
+func replaceDoubleDashesWithEmDash(paragraph string) string {
 	paragraph = strings.ReplaceAll(paragraph, " -- ", " — ")
 
 	exp := regexp.MustCompile(`([a-zA-Z])--([a-zA-Z])`)
