@@ -113,11 +113,9 @@ func HighlightReferences(input string) string {
 }
 
 func ColorizeIndentSymbol(indentSymbol string, level int) string {
-	if level == 0 {
-		return ""
-	}
-
 	switch level {
+	case 0:
+		indentSymbol = ""
 	case 1:
 		indentSymbol = Red(indentSymbol).String()
 	case 2:
