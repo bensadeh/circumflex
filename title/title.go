@@ -20,23 +20,19 @@ const (
 	singleSpace = " "
 )
 
-func FormatMain(title string, domain string, author string, highlightHeadlines bool, markAsRead bool) string {
+func FormatMain(title string, domain string, highlightHeadlines bool, markAsRead bool) string {
 	readModifier := ""
 
 	if markAsRead {
 		readModifier = "[::di]"
 	}
 
-	return readModifier + formatTitle(title, author, highlightHeadlines) + formatDomain(domain, markAsRead)
+	return readModifier + formatTitle(title, highlightHeadlines) + formatDomain(domain, markAsRead)
 }
 
-func formatTitle(title string, author string, highlightHeadlines bool) string {
+func formatTitle(title string, highlightHeadlines bool) string {
 	if title == messages.EnterCommentSectionToUpdate {
 		return formatter.Yellow(title)
-	}
-
-	if author == "whoishiring" {
-		return highlightWhoIsHiring(title)
 	}
 
 	title = strings.ReplaceAll(title, tripleSpace, singleSpace)
@@ -76,24 +72,6 @@ func highlightSpecialContent(title string) string {
 	title = strings.ReplaceAll(title, "[pdf[]", formatter.Yellow("pdf"))
 	title = strings.ReplaceAll(title, "[PDF[]", formatter.Yellow("PDF"))
 	title = strings.ReplaceAll(title, "[flagged[]", formatter.Red("flagged"))
-
-	return title
-}
-
-func highlightWhoIsHiring(title string) string {
-	title = strings.ReplaceAll(title, " (", "[-:-:] (")
-
-	if strings.Contains(title, "Who is hiring?") {
-		return formatter.BlackOnBlue(title)
-	}
-
-	if strings.Contains(title, "Freelancer?") {
-		return formatter.BlackOnRed(title)
-	}
-
-	if strings.Contains(title, "Who wants to be hired?") {
-		return formatter.BlackOnYellow(title)
-	}
 
 	return title
 }

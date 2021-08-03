@@ -8,6 +8,7 @@ _2021-07-28
 
 **Cosmetic**
 - Better handling of stray newlines
+- Monthly Who is hiring posts now have normal syntax highlighting
 
 **Backend**
 - Bump goreadability

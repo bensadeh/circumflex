@@ -136,7 +136,7 @@ func convert(subs []*endpoints.Story, his *history.History, highlightHeadlines b
 	for i, s := range subs {
 		markAsRead := his.Contains(s.ID) && !isOnFavorites
 
-		main := formatter.FormatMain(s.Title, s.Domain, s.Author, highlightHeadlines, markAsRead)
+		main := formatter.FormatMain(s.Title, s.Domain, highlightHeadlines, markAsRead)
 		secondary := formatter.FormatSecondary(s.Points, s.Author, s.Time, s.CommentsCount, highlightHeadlines)
 
 		item := cview.NewListItem(main)

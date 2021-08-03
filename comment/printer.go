@@ -36,7 +36,7 @@ func getHeader(c endpoints.Comments, config *core.Config, screenWidth int) strin
 		config.CommentWidth = screenWidth
 	}
 
-	headline := getHeadline(c.Title, c.User, config)
+	headline := getHeadline(c.Title, config)
 	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
 	helpMessage := aurora.Faint(messages.LessScreenInfo).Faint().String() + newLine
 	url := getURL(c.URL, c.Domain, config)
@@ -46,8 +46,8 @@ func getHeader(c endpoints.Comments, config *core.Config, screenWidth int) strin
 	return headline + infoLine + helpMessage + url + rootComment + separator + newParagraph
 }
 
-func getHeadline(title string, author string, config *core.Config) string {
-	formattedTitle := highlightTitle(title, author, config.HighlightHeadlines)
+func getHeadline(title string, config *core.Config) string {
+	formattedTitle := highlightTitle(title, config.HighlightHeadlines)
 	wrappedHeadline, _ := text.Wrap(formattedTitle, config.CommentWidth)
 
 	return wrappedHeadline + newParagraph
@@ -64,11 +64,7 @@ func getURL(url string, domain string, config *core.Config) string {
 	return formattedURL
 }
 
-func highlightTitle(title, author string, highlightHeadlines bool) string {
-	if author == "whoishiring" {
-		return syntax.HighlightWhoIsHiring(title, author)
-	}
-
+func highlightTitle(title string, highlightHeadlines bool) string {
 	if highlightHeadlines {
 		title = syntax.HighlightYCStartups(title)
 		title = syntax.HighlightHackerNewsHeadlines(title)

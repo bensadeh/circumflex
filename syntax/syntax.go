@@ -48,34 +48,6 @@ func HighlightSpecialContent(title string) string {
 	return title
 }
 
-func HighlightWhoIsHiring(title string, author string) string {
-	if author != "whoishiring" {
-		return title
-	}
-
-	title = strings.ReplaceAll(title, " (", reset+" (")
-
-	if strings.Contains(title, "Who is hiring?") {
-		title = Index(232, title).String()
-
-		return BgBlue(title).String()
-	}
-
-	if strings.Contains(title, "Freelancer?") {
-		title = Index(232, title).String()
-
-		return BgRed(title).String()
-	}
-
-	if strings.Contains(title, "Who wants to be hired?") {
-		title = Index(232, title).String()
-
-		return BgYellow(title).String()
-	}
-
-	return title
-}
-
 func ConvertSmileys(text string) string {
 	text = replaceBetweenWhitespace(text, `:)`, "😊")
 	text = replaceBetweenWhitespace(text, `(:`, "😊")
