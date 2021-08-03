@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.18
-_2021-07-28
+_2021-08-03_
 
 **New features**
 - Added an option to remove indentation symbols from the comment section
