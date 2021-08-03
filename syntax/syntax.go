@@ -277,6 +277,18 @@ func convertFractions(text string) string {
 	text = strings.ReplaceAll(text, " 1/6", " ⅙")
 	text = strings.ReplaceAll(text, " 1/10", " ⅒ ")
 
+	text = strings.ReplaceAll(text, "1/2 ", "½ ")
+	text = strings.ReplaceAll(text, "1/3 ", "⅓ ")
+	text = strings.ReplaceAll(text, "2/3 ", "⅔ ")
+	text = strings.ReplaceAll(text, "1/4 ", "¼ ")
+	text = strings.ReplaceAll(text, "3/4 ", "¾ ")
+	text = strings.ReplaceAll(text, "1/5 ", "⅕ ")
+	text = strings.ReplaceAll(text, "2/5 ", "⅖ ")
+	text = strings.ReplaceAll(text, "3/5 ", "⅗ ")
+	text = strings.ReplaceAll(text, "4/5 ", "⅘ ")
+	text = strings.ReplaceAll(text, "1/6 ", "⅙ ")
+	text = strings.ReplaceAll(text, "1/10 ", "⅒  ")
+
 	text = strings.ReplaceAll(text, "1/5th", "⅕th")
 	text = strings.ReplaceAll(text, "1/6th", "⅙th")
 	text = strings.ReplaceAll(text, "1/10th", "⅒ th")
