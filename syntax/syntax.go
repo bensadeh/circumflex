@@ -8,13 +8,6 @@ import (
 )
 
 const (
-	askHN        = "Ask HN:"
-	showHN       = "Show HN:"
-	tellHN       = "Tell HN:"
-	launchHN     = "Launch HN:"
-	singleSpace  = " "
-	doubleSpace  = "  "
-	tripleSpace  = "   "
 	newParagraph = "\n\n"
 	reset        = "\033[0m"
 	italic       = "\033[3m"
@@ -24,14 +17,19 @@ const (
 func HighlightYCStartups(comment string) string {
 	expression := regexp.MustCompile(`\((YC [SW]\d{2})\)`)
 
-	orange := 214
-	black := 232
-	highlightedStartup := Index(uint8(black), ` $1 `).BgIndex(uint8(orange)).String()
+	orange := uint8(214)
+	black := uint8(232)
+	highlightedStartup := Index(black, ` $1 `).BgIndex(orange).String()
 
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
 
 func HighlightHackerNewsHeadlines(title string) string {
+	askHN := "Ask HN:"
+	showHN := "Show HN:"
+	tellHN := "Tell HN:"
+	launchHN := "Launch HN:"
+
 	title = strings.ReplaceAll(title, askHN, Blue(askHN).String())
 	title = strings.ReplaceAll(title, showHN, Red(showHN).String())
 	title = strings.ReplaceAll(title, tellHN, Magenta(tellHN).String())
@@ -79,29 +77,29 @@ func HighlightWhoIsHiring(title string, author string) string {
 }
 
 func ConvertSmileys(text string) string {
-	text = replace(text, `:)`, "😊")
-	text = replace(text, `(:`, "😊")
-	text = replace(text, `:-)`, "😊")
-	text = replace(text, `:D`, "😄")
-	text = replace(text, `=)`, "😃")
-	text = replace(text, `=D`, "😃")
-	text = replace(text, `;)`, "😉")
-	text = replace(text, `;-)`, "😉")
-	text = replace(text, `:P`, "😜")
-	text = replace(text, `;P`, "😜")
-	text = replace(text, `:o`, "😮")
-	text = replace(text, `:O`, "😮")
-	text = replace(text, `:(`, "😔")
-	text = replace(text, `:-(`, "😔")
-	text = replace(text, `:/`, "😕")
-	text = replace(text, `:-/`, "😕")
-	text = replace(text, `-_-`, "😑")
-	text = replace(text, `:|`, "😐")
+	text = replaceBetweenWhitespace(text, `:)`, "😊")
+	text = replaceBetweenWhitespace(text, `(:`, "😊")
+	text = replaceBetweenWhitespace(text, `:-)`, "😊")
+	text = replaceBetweenWhitespace(text, `:D`, "😄")
+	text = replaceBetweenWhitespace(text, `=)`, "😃")
+	text = replaceBetweenWhitespace(text, `=D`, "😃")
+	text = replaceBetweenWhitespace(text, `;)`, "😉")
+	text = replaceBetweenWhitespace(text, `;-)`, "😉")
+	text = replaceBetweenWhitespace(text, `:P`, "😜")
+	text = replaceBetweenWhitespace(text, `;P`, "😜")
+	text = replaceBetweenWhitespace(text, `:o`, "😮")
+	text = replaceBetweenWhitespace(text, `:O`, "😮")
+	text = replaceBetweenWhitespace(text, `:(`, "😔")
+	text = replaceBetweenWhitespace(text, `:-(`, "😔")
+	text = replaceBetweenWhitespace(text, `:/`, "😕")
+	text = replaceBetweenWhitespace(text, `:-/`, "😕")
+	text = replaceBetweenWhitespace(text, `-_-`, "😑")
+	text = replaceBetweenWhitespace(text, `:|`, "😐")
 
 	return text
 }
 
-func replace(text string, target string, replacement string) string {
+func replaceBetweenWhitespace(text string, target string, replacement string) string {
 	if text == target {
 		return replacement
 	}
@@ -116,6 +114,10 @@ func RemoveUnwantedNewLines(text string) string {
 }
 
 func RemoveUnwantedWhitespace(text string) string {
+	singleSpace := " "
+	doubleSpace := "  "
+	tripleSpace := "   "
+
 	text = strings.ReplaceAll(text, tripleSpace, singleSpace)
 	text = strings.ReplaceAll(text, doubleSpace, singleSpace)
 
