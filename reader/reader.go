@@ -1,13 +1,15 @@
 package reader
 
 import (
-	"clx/article"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"os/exec"
 	"strings"
 	"time"
+
+	md "github.com/JohannesKaufmann/html-to-markdown"
 
 	"github.com/go-shiori/go-readability"
 )
@@ -22,10 +24,19 @@ func Get(url string) (string, error) {
 		return "", fmt.Errorf("could not fetch url: %w", httpErr)
 	}
 
-	content, references := parseWithLynx(art.Content)
-	parsedArticle := article.Parse(art.Title, url, content, references)
+	// content, references := parseWithLynx(art.Content)
+	// parsedArticle := article.Parse(art.Title, url, content, references)
 
-	return parsedArticle, nil
+	opt := &md.Options{}
+	converter := md.NewConverter("", true, opt)
+
+	markdown, err := converter.ConvertString(art.Content)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// fmt.Println("md ->", markdown)
+
+	return markdown, nil
 }
 
 func fetch(rawURL string) (readability.Article, error) {

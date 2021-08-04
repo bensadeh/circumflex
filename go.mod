@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	code.rocketnine.space/tslocum/cview v1.5.6
+	github.com/JohannesKaufmann/html-to-markdown v1.3.0 // indirect
 	github.com/MichaelMure/go-term-text v0.2.9
 	github.com/emirpasic/gods v1.12.0
 	github.com/gdamore/tcell/v2 v2.3.11
