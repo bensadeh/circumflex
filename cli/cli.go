@@ -16,6 +16,16 @@ func Less(input string) {
 	}
 }
 
+func Glow(input string) {
+	command := exec.Command("glow", "-", "-p")
+	command.Stdin = strings.NewReader(input)
+	command.Stdout = os.Stdout
+
+	if err := command.Run(); err != nil {
+		panic(err)
+	}
+}
+
 func ClearScreen() {
 	c := exec.Command("clear")
 	c.Stdout = os.Stdout

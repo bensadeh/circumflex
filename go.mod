@@ -4,14 +4,17 @@ go 1.16
 
 require (
 	code.rocketnine.space/tslocum/cview v1.5.6
-	github.com/JohannesKaufmann/html-to-markdown v1.3.0 // indirect
+	github.com/JohannesKaufmann/html-to-markdown v1.3.0
 	github.com/MichaelMure/go-term-text v0.2.9
+	github.com/PuerkitoBio/goquery v1.5.1 // indirect
+	github.com/charmbracelet/glamour v0.3.0
 	github.com/emirpasic/gods v1.12.0
 	github.com/gdamore/tcell/v2 v2.3.11
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/go-shiori/go-readability v0.0.0-20210627123243-82cc33435520
 	github.com/jedib0t/go-pretty/v6 v6.2.2
 	github.com/logrusorgru/aurora/v3 v3.0.0
+	github.com/microcosm-cc/bluemonday v1.0.6 // indirect
 	github.com/nleeper/goment v1.4.0
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.8.1

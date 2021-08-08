@@ -1,6 +1,7 @@
 package reader
 
 import (
+	"clx/article"
 	"fmt"
 	"log"
 	"net/http"
@@ -8,6 +9,8 @@ import (
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/PuerkitoBio/goquery"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
 
@@ -24,17 +27,69 @@ func Get(url string) (string, error) {
 		return "", fmt.Errorf("could not fetch url: %w", httpErr)
 	}
 
-	// content, references := parseWithLynx(art.Content)
-	// parsedArticle := article.Parse(art.Title, url, content, references)
+	content, references := parseWithLynx(art.Content)
+	parsedArticle := article.Parse(art.Title, url, content, references)
+
+	return parsedArticle, nil
+}
+
+func GetNew(url string) (string, error) {
+	art, httpErr := fetch(url)
+	if httpErr != nil {
+		return "", fmt.Errorf("could not fetch url: %w", httpErr)
+	}
+
+	href := md.Rule{
+		Filter: []string{"a"},
+		Replacement: func(content string, selec *goquery.Selection, opt *md.Options) *string {
+			// If the span element has not the classname `bb_strike` return nil.
+			// That way the next rules will apply. In this case the commonmark rules.
+			// -> return nil -> next rule applies
+			//if !selec.HasClass("href") {
+			//	return nil
+			//}
+
+			// Trim spaces so that the following does NOT happen: `~ and cake~`.
+			// Because of the space it is not recognized as strikethrough.
+			// -> trim spaces at begin&end of string when inside strong/italic/...
+			content = strings.TrimSpace(content)
+			// return md.String("[" + content + "]")
+			return md.String(content)
+		},
+	}
+
+	span := md.Rule{
+		Filter: []string{"span"},
+		Replacement: func(content string, selec *goquery.Selection, opt *md.Options) *string {
+			// If the span element has not the classname `bb_strike` return nil.
+			// That way the next rules will apply. In this case the commonmark rules.
+			// -> return nil -> next rule applies
+			//if !selec.HasClass("href") {
+			//	return nil
+			//}
+
+			// Trim spaces so that the following does NOT happen: `~ and cake~`.
+			// Because of the space it is not recognized as strikethrough.
+			// -> trim spaces at begin&end of string when inside strong/italic/...
+			content = strings.TrimSpace(content)
+			// return md.String("[" + content + "]")
+			return md.String(content)
+		},
+	}
 
 	opt := &md.Options{}
 	converter := md.NewConverter("", true, opt)
+	converter.AddRules(href)
+	converter.AddRules(span)
 
 	markdown, err := converter.ConvertString(art.Content)
 	if err != nil {
 		log.Fatal(err)
 	}
 	// fmt.Println("md ->", markdown)
+
+	markdown = strings.ReplaceAll(markdown, "<span>", "")
+	markdown = strings.ReplaceAll(markdown, "</span>", "")
 
 	return markdown, nil
 }

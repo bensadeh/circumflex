@@ -21,6 +21,8 @@ import (
 	"strconv"
 	"time"
 
+	text "github.com/MichaelMure/go-term-text"
+
 	"code.rocketnine.space/tslocum/cview"
 	"github.com/gdamore/tcell/v2"
 )
@@ -129,6 +131,14 @@ func ForceReadSubmissionContent(app *cview.Application, main *core.MainView, lis
 	enterReaderMode(app, main, list, appState, config, r, reg, story)
 }
 
+func ForceReadSubmissionContentNew(app *cview.Application, main *core.MainView, list *cview.List,
+	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
+	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
+		appState.CurrentPage)
+
+	enterReaderModeNew(app, main, list, appState, config, r, reg, story)
+}
+
 func ReadSubmissionContent(app *cview.Application, main *core.MainView, list *cview.List,
 	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
 	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
@@ -157,6 +167,34 @@ func enterReaderMode(app *cview.Application, main *core.MainView, list *cview.Li
 
 			return
 		}
+
+		cli.Less(article)
+	})
+
+	if fetchTimeout {
+		view.SetPermanentStatusBar(main, message.Error(messages.ArticleNotFetched), cview.AlignCenter)
+
+		return
+	}
+
+	changePage(app, list, main, appState, config, r, reg, 0)
+}
+
+func enterReaderModeNew(app *cview.Application, main *core.MainView, list *cview.List, appState *core.ApplicationState,
+	config *core.Config, r *handler.StoryHandler, reg *vim.Register, story *endpoints.Story) {
+	fetchTimeout := false
+
+	app.Suspend(func() {
+		url := story.URL
+
+		article, err := reader.GetNew(url)
+		if err != nil {
+			fetchTimeout = true
+
+			return
+		}
+
+		article, _ = text.Wrap(article, 80)
 
 		cli.Less(article)
 	})
