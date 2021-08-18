@@ -121,6 +121,9 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 		case event.Rune() == 'u':
 			model.ForceReadSubmissionContentNew(app, main, list, appState, config, ret, reg)
 
+		case event.Rune() == 'e':
+			model.ForceReadSubmissionContentParser(app, main, list, appState, config, ret, reg)
+
 		case event.Rune() == 'o':
 			model.OpenLinkInBrowser(list, appState, ret)
 

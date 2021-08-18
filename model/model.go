@@ -11,6 +11,8 @@ import (
 	"clx/endpoints"
 	"clx/handler"
 	"clx/info"
+	"clx/markdown/parser"
+	"clx/markdown/renderer"
 	"clx/reader"
 	"clx/screen"
 	"clx/utils/message"
@@ -139,6 +141,14 @@ func ForceReadSubmissionContentNew(app *cview.Application, main *core.MainView, 
 	enterReaderModeNew(app, main, list, appState, config, r, reg, story)
 }
 
+func ForceReadSubmissionContentParser(app *cview.Application, main *core.MainView, list *cview.List,
+	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
+	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
+		appState.CurrentPage)
+
+	enterReaderModeParser(app, main, list, appState, config, r, reg, story)
+}
+
 func ReadSubmissionContent(app *cview.Application, main *core.MainView, list *cview.List,
 	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
 	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
@@ -197,6 +207,37 @@ func enterReaderModeNew(app *cview.Application, main *core.MainView, list *cview
 		article, _ = text.Wrap(article, 80)
 
 		cli.Less(article)
+	})
+
+	if fetchTimeout {
+		view.SetPermanentStatusBar(main, message.Error(messages.ArticleNotFetched), cview.AlignCenter)
+
+		return
+	}
+
+	changePage(app, list, main, appState, config, r, reg, 0)
+}
+
+func enterReaderModeParser(app *cview.Application, main *core.MainView, list *cview.List, appState *core.ApplicationState,
+	config *core.Config, r *handler.StoryHandler, reg *vim.Register, story *endpoints.Story) {
+	fetchTimeout := false
+
+	app.Suspend(func() {
+		url := story.URL
+
+		article, err := reader.GetNew(url)
+		if err != nil {
+			fetchTimeout = true
+
+			return
+		}
+
+		blocks := parser.Parse(article)
+		renderedArticle := renderer.ToString(blocks)
+
+		renderedArticle, _ = text.Wrap(renderedArticle, 80)
+
+		cli.Less(renderedArticle)
 	})
 
 	if fetchTimeout {
