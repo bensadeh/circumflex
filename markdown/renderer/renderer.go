@@ -19,6 +19,9 @@ func ToString(blocks []*markdown.Block) string {
 		case block.Kind == markdown.Image:
 			output += renderImage(block.Text) + "\n\n"
 
+		case block.Kind == markdown.Code:
+			output += renderCode(block.Text) + "\n\n"
+
 		default:
 			output += renderText(block.Text) + "\n\n"
 		}
@@ -56,4 +59,11 @@ func renderImage(text string) string {
 	output = strings.TrimSuffix(output, "\n\n")
 
 	return output
+}
+
+func renderCode(text string) string {
+	text = strings.TrimSuffix(text, "\n")
+	text = strings.TrimPrefix(text, "\n")
+
+	return text
 }

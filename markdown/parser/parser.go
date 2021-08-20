@@ -6,14 +6,36 @@ import (
 )
 
 func Parse(text string) []*markdown.Block {
-	lines := strings.Split(text, "\n")
-
 	var blocks []*markdown.Block
+
+	lines := strings.Split(text, "\n")
 	temp := new(tempBuffer)
+
 	isInsideQuote := false
+	isInsideCode := false
 	isInsideText := false
 
 	for _, line := range lines {
+		if isInsideCode {
+			if strings.HasPrefix(line, "```") {
+				isInsideCode = false
+
+				b := markdown.Block{
+					Kind: temp.kind,
+					Text: temp.text,
+				}
+
+				blocks = append(blocks, &b)
+				temp.reset()
+
+				continue
+			}
+
+			temp.append("\n" + line)
+
+			continue
+		}
+
 		if line == "" {
 			b := markdown.Block{
 				Kind: temp.kind,
@@ -52,6 +74,12 @@ func Parse(text string) []*markdown.Block {
 			temp.text = line
 
 			isInsideQuote = true
+
+		case strings.HasPrefix(line, "```"):
+			temp.kind = markdown.Code
+			temp.text = ""
+
+			isInsideCode = true
 
 		default:
 			temp.kind = markdown.Text
