@@ -10,7 +10,6 @@ func Parse(text string) []*markdown.Block {
 
 	var blocks []*markdown.Block
 	temp := new(tempBuffer)
-
 	isInsideQuote := false
 	isInsideText := false
 
