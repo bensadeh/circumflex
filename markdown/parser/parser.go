@@ -2,6 +2,7 @@ package parser
 
 import (
 	"clx/markdown"
+	"errors"
 	"strings"
 )
 
@@ -20,12 +21,11 @@ func Parse(text string) []*markdown.Block {
 			if strings.HasPrefix(line, "```") {
 				isInsideCode = false
 
-				b := markdown.Block{
-					Kind: temp.kind,
-					Text: temp.text,
+				appendedBlocks, err := appendNonEmptyBuffer(temp, blocks)
+				if err == nil {
+					blocks = appendedBlocks
 				}
 
-				blocks = append(blocks, &b)
 				temp.reset()
 
 				continue
@@ -37,12 +37,10 @@ func Parse(text string) []*markdown.Block {
 		}
 
 		if line == "" {
-			b := markdown.Block{
-				Kind: temp.kind,
-				Text: temp.text,
+			appendedBlocks, err := appendNonEmptyBuffer(temp, blocks)
+			if err == nil {
+				blocks = appendedBlocks
 			}
-
-			blocks = append(blocks, &b)
 
 			temp.reset()
 
@@ -90,6 +88,19 @@ func Parse(text string) []*markdown.Block {
 	}
 
 	return blocks
+}
+
+func appendNonEmptyBuffer(temp *tempBuffer, blocks []*markdown.Block) ([]*markdown.Block, error) {
+	if temp.kind == markdown.Text && temp.text == "" {
+		return nil, errors.New("buffer is empty")
+	}
+
+	b := markdown.Block{
+		Kind: temp.kind,
+		Text: temp.text,
+	}
+
+	return append(blocks, &b), nil
 }
 
 type tempBuffer struct {
