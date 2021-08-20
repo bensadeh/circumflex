@@ -10,7 +10,7 @@ const (
 	H5    = 6
 	H6    = 7
 	Quote = 8
-	Code  = 8
+	Code  = 9
 )
 
 type Block struct {

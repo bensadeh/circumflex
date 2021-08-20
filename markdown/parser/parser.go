@@ -63,7 +63,7 @@ func Parse(text string) []*markdown.Block {
 		}
 
 		switch {
-		case strings.HasPrefix(line, "!["):
+		case strings.HasPrefix(line, `![`):
 			temp.kind = markdown.Image
 			temp.text = line
 
