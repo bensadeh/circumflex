@@ -35,7 +35,7 @@ func renderImage(text string) string {
 	exp := regexp.MustCompile(`!\[(.*?)\]\(.*?\)`)
 	imageLabel := Magenta("Image: %%%").Faint().String()
 
-	text = exp.ReplaceAllString(text, imageLabel+Italic(`$1`).String()+"###")
+	text = exp.ReplaceAllString(text, imageLabel+Italic(`$1.`).Faint().String()+"### ")
 
 	lines := strings.Split(text, imageLabel)
 	output := ""
@@ -49,8 +49,10 @@ func renderImage(text string) string {
 	}
 
 	// Remove ': ' if there is no image caption
-	output = strings.ReplaceAll(output, ": %%%\u001B[0m\u001B[3m\u001B[0m###", "\u001B[0m ")
+	output = strings.ReplaceAll(output, ": %%%\u001B[0m\u001B[3m.\u001B[0m###", "\u001B[0m ")
 
+	output = strings.ReplaceAll(output, "###", "")
+	output = strings.ReplaceAll(output, "%%%", "")
 	output = strings.TrimSuffix(output, "\n\n")
 
 	return output

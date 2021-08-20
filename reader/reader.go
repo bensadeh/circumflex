@@ -91,8 +91,8 @@ func GetNew(url string) (string, error) {
 	}
 	// fmt.Println("md ->", markdown)
 
-	// markdown = strings.ReplaceAll(markdown, "<span>", "")
-	// markdown = strings.ReplaceAll(markdown, "</span>", "")
+	markdown = strings.ReplaceAll(markdown, "<span>", "")
+	markdown = strings.ReplaceAll(markdown, "</span>", "")
 
 	return markdown, nil
 }
