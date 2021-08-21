@@ -22,16 +22,16 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 	for _, block := range blocks {
 		switch block.Kind {
 		case markdown.Text:
-			output += renderText(block.Text, indentLevel1) + "\n\n"
+			output += renderText(block.Text, lineWidth, indentLevel1) + "\n\n"
 
 		case markdown.Image:
-			output += renderImage(block.Text) + "\n\n"
+			output += renderImage(block.Text, lineWidth) + "\n\n"
 
 		case markdown.Code:
 			output += renderCode(block.Text) + "\n\n"
 
 		case markdown.Quote:
-			output += renderQuote(block.Text, 80, altIndentBlock) + "\n\n"
+			output += renderQuote(block.Text, lineWidth, altIndentBlock) + "\n\n"
 
 		case markdown.H1:
 			output += h1(block.Text) + "\n\n"
@@ -52,17 +52,17 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 			output += h6(block.Text) + "\n\n"
 
 		case markdown.List:
-			output += renderText(block.Text, indentLevel2) + "\n\n"
+			output += renderText(block.Text, lineWidth, indentLevel2) + "\n\n"
 
 		default:
-			output += renderText(block.Text, indentLevel1) + "\n\n"
+			output += renderText(block.Text, lineWidth, indentLevel1) + "\n\n"
 		}
 	}
 
 	return output
 }
 
-func renderText(text string, indentLevel string) string {
+func renderText(text string, lineWidth int, indentLevel string) string {
 	text = it(text)
 	text = bld(text)
 
@@ -70,12 +70,12 @@ func renderText(text string, indentLevel string) string {
 	text = syntax.HighlightBackticks(text)
 
 	padding := termtext.WrapPad(indentLevel)
-	text, _ = termtext.Wrap(text, 80, padding)
+	text, _ = termtext.Wrap(text, lineWidth, padding)
 
 	return text
 }
 
-func renderImage(text string) string {
+func renderImage(text string, lineWidth int) string {
 	magenta := "\u001B[35m"
 	italic := "\u001B[3m"
 	faint := "\u001B[2m"
@@ -111,7 +111,7 @@ func renderImage(text string) string {
 	output = bld(output)
 
 	padding := termtext.WrapPad(indentLevel2)
-	output, _ = termtext.Wrap(output, 80, padding)
+	output, _ = termtext.Wrap(output, lineWidth, padding)
 
 	return output
 }

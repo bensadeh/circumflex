@@ -233,7 +233,7 @@ func enterReaderModeParser(app *cview.Application, main *core.MainView, list *cv
 		}
 
 		blocks := parser.Parse(article)
-		renderedArticle := renderer.ToString(blocks, 80, false)
+		renderedArticle := renderer.ToString(blocks, 70, false)
 
 		// renderedArticle, _ = text.Wrap(renderedArticle, 80)
 
