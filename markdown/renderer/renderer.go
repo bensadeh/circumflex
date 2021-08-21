@@ -256,13 +256,13 @@ func h4(text string) string {
 }
 
 func h5(text string) string {
-	text = strings.TrimPrefix(text, "#### ")
+	text = strings.TrimPrefix(text, "##### ")
 
 	return indentLevel1 + Bold(text).Underline().Green().String()
 }
 
 func h6(text string) string {
-	text = strings.TrimPrefix(text, "#### ")
+	text = strings.TrimPrefix(text, "###### ")
 
 	return indentLevel1 + Bold(text).Underline().Cyan().String()
 }
