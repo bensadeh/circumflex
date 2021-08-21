@@ -9,7 +9,7 @@ import (
 func Parse(text string) []*markdown.Block {
 	var blocks []*markdown.Block
 
-	lines := strings.Split(text, "\n")
+	lines := strings.Split(text+"\n", "\n")
 	temp := new(tempBuffer)
 
 	isInsideQuote := false
@@ -17,7 +17,7 @@ func Parse(text string) []*markdown.Block {
 	isInsideText := false
 	isInsideList := false
 
-	for i, line := range lines {
+	for _, line := range lines {
 		if isInsideCode {
 			if strings.HasPrefix(line, "```") {
 				isInsideCode = false
@@ -37,9 +37,9 @@ func Parse(text string) []*markdown.Block {
 			continue
 		}
 
-		isAtLastLine := i == len(lines)-1
+		// isAtLastLine := i == len(lines)-1
 
-		if line == "" || isAtLastLine {
+		if line == "" {
 			appendedBlocks, err := appendNonEmptyBuffer(temp, blocks)
 			if err == nil {
 				blocks = appendedBlocks
