@@ -47,22 +47,22 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 			output += renderDivider(lineWidth) + "\n\n"
 
 		case markdown.H1:
-			output += h1(block.Text) + "\n\n"
+			output += h1(block.Text, lineWidth) + "\n\n"
 
 		case markdown.H2:
-			output += h2(block.Text) + "\n\n"
+			output += h2(block.Text, lineWidth) + "\n\n"
 
 		case markdown.H3:
-			output += h3(block.Text) + "\n\n"
+			output += h3(block.Text, lineWidth) + "\n\n"
 
 		case markdown.H4:
-			output += h4(block.Text) + "\n\n"
+			output += h4(block.Text, lineWidth) + "\n\n"
 
 		case markdown.H5:
-			output += h5(block.Text) + "\n\n"
+			output += h5(block.Text, lineWidth) + "\n\n"
 
 		case markdown.H6:
-			output += h6(block.Text) + "\n\n"
+			output += h6(block.Text, lineWidth) + "\n\n"
 
 		default:
 			output += renderText(block.Text, lineWidth, indentLevel1) + "\n\n"
@@ -280,57 +280,78 @@ func bldInQuote(text string) string {
 	return text
 }
 
-func h1(text string) string {
-	text = it(text)
-	text = unescapeNumbersWithDot(text)
-	text = strings.TrimPrefix(text, "# ")
+func h1(text string, lineWidth int) string {
+	text = preFormatHeader(text)
+	text = Bold(text).String()
 
-	return Bold(text).String()
+	padding := termtext.WrapPad("")
+	text, _ = termtext.Wrap(text, lineWidth, padding)
+
+	return text
 }
 
-func h2(text string) string {
-	text = it(text)
-	text = unescapeNumbersWithDot(text)
-	text = strings.TrimPrefix(text, "## ")
+func h2(text string, lineWidth int) string {
+	text = preFormatHeader(text)
+	text = Bold(text).String()
 
-	return Bold(text).String()
+	padding := termtext.WrapPad("")
+	text, _ = termtext.Wrap(text, lineWidth, padding)
+
+	return text
 }
 
-func h3(text string) string {
-	text = it(text)
-	text = unescapeNumbersWithDot(text)
-	text = strings.TrimPrefix(text, "### ")
+func h3(text string, lineWidth int) string {
+	text = preFormatHeader(text)
+	text = Bold(text).Underline().Cyan().String()
 
-	return indentLevel1 + Bold(text).Underline().Yellow().String()
+	padding := termtext.WrapPad(indentLevel1)
+	text, _ = termtext.Wrap(text, lineWidth, padding)
+
+	return text
 }
 
-func h4(text string) string {
-	text = it(text)
-	text = unescapeNumbersWithDot(text)
-	text = strings.TrimPrefix(text, "#### ")
+func h4(text string, lineWidth int) string {
+	text = preFormatHeader(text)
+	text = Bold(text).Underline().Blue().String()
 
-	return indentLevel1 + Bold(text).Underline().Blue().String()
+	padding := termtext.WrapPad(indentLevel1)
+	text, _ = termtext.Wrap(text, lineWidth, padding)
+
+	return text
 }
 
-func h5(text string) string {
-	text = it(text)
-	text = unescapeNumbersWithDot(text)
-	text = strings.TrimPrefix(text, "##### ")
+func h5(text string, lineWidth int) string {
+	text = preFormatHeader(text)
+	text = Bold(text).Underline().Green().String()
 
-	return indentLevel1 + Bold(text).Underline().Green().String()
+	padding := termtext.WrapPad(indentLevel1)
+	text, _ = termtext.Wrap(text, lineWidth, padding)
+
+	return text
 }
 
-func h6(text string) string {
-	text = it(text)
-	text = unescapeNumbersWithDot(text)
-	text = strings.TrimPrefix(text, "###### ")
+func h6(text string, lineWidth int) string {
+	text = preFormatHeader(text)
+	text = Bold(text).Underline().Cyan().String()
 
-	return indentLevel1 + Bold(text).Underline().Cyan().String()
+	padding := termtext.WrapPad(indentLevel1)
+	text, _ = termtext.Wrap(text, lineWidth, padding)
+
+	return text
 }
 
 func removeHrefs(text string) string {
 	exp := regexp.MustCompile(`<a href=.+>(.+)</a>`)
 	text = exp.ReplaceAllString(text, `$1`)
+
+	return text
+}
+
+func preFormatHeader(text string) string {
+	text = it(text)
+	text = unescapeNumbersWithDot(text)
+	text = removeBoldAndItalicTags(text)
+	text = strings.TrimLeft(text, "# ")
 
 	return text
 }
@@ -355,6 +376,16 @@ func unescapeCharacters(text string) string {
 	text = strings.ReplaceAll(text, `\-`, "-")
 	text = strings.ReplaceAll(text, `\_`, "_")
 	text = strings.ReplaceAll(text, `\*`, "*")
+
+	return text
+}
+
+func removeBoldAndItalicTags(text string) string {
+	text = strings.ReplaceAll(text, markdown.BoldStart, "")
+	text = strings.ReplaceAll(text, markdown.BoldStop, "")
+
+	text = strings.ReplaceAll(text, markdown.ItalicStart, "")
+	text = strings.ReplaceAll(text, markdown.ItalicStop, "")
 
 	return text
 }
