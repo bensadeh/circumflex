@@ -11,6 +11,9 @@ const (
 	H6    = 7
 	Quote = 8
 	Code  = 9
+
+	ItalicStart = "[CLX-ITALIC]"
+	ItalicStop  = "[CLX-ITALIC-STOP]"
 )
 
 type Block struct {

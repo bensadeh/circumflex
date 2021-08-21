@@ -36,6 +36,12 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 }
 
 func renderText(text string) string {
+	text = it(text)
+	text = bld(text)
+
+	padding := termtext.WrapPad("")
+	text, _ = termtext.Wrap(text, 80, padding)
+
 	return text
 }
 
@@ -63,6 +69,9 @@ func renderImage(text string) string {
 	output = strings.ReplaceAll(output, "%%%", "")
 	output = strings.TrimSuffix(output, "\n\n")
 
+	output = it(output)
+	output = bld(output)
+
 	return output
 }
 
@@ -80,6 +89,35 @@ func renderQuote(text string, lineWidth int, altIndentBlock bool) string {
 
 	// text = strings.TrimSuffix(text, "\n")
 	// text = strings.TrimPrefix(text, "\n")
+
+	return text
+}
+
+func it(text string) string {
+	italic := "\u001B[3m"
+	noItalic := "\u001B[23m"
+	//
+	//expStart := regexp.MustCompile(`_(\w{1})`)
+	//text = expStart.ReplaceAllString(text, italic+`$1`)
+	//
+	//expEnd := regexp.MustCompile(`(\w{1})_`)
+	//text = expEnd.ReplaceAllString(text, `$1`+noItalic)
+
+	text = strings.ReplaceAll(text, markdown.ItalicStart, italic)
+	text = strings.ReplaceAll(text, markdown.ItalicStop, noItalic)
+
+	return text
+}
+
+func bld(text string) string {
+	bold := "\033[31m"
+	noBold := "\033[0m"
+
+	expStart := regexp.MustCompile(`\*\*(\w{1})`)
+	text = expStart.ReplaceAllString(text, bold+`$1`)
+
+	expEnd := regexp.MustCompile(`([a-zA-Z0-9.)%])\*\*`)
+	text = expEnd.ReplaceAllString(text, `$1`+noBold)
 
 	return text
 }

@@ -2,6 +2,7 @@ package reader
 
 import (
 	"clx/article"
+	"clx/markdown/preprocessor"
 	"fmt"
 	"log"
 	"net/http"
@@ -84,6 +85,8 @@ func GetNew(url string) (string, error) {
 	converter.AddRules(href)
 	converter.Use(plugin.Table())
 	// converter.AddRules(span)
+
+	art.Content = preprocessor.ConvertItalicTags(art.Content)
 
 	markdown, err := converter.ConvertString(art.Content)
 	if err != nil {
