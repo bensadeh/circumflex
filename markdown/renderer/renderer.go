@@ -54,7 +54,7 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 			output += h6(block.Text) + "\n\n"
 
 		case markdown.List:
-			output += renderText(block.Text, lineWidth, indentLevel2) + "\n\n"
+			output += renderList(block.Text, lineWidth, indentLevel2) + "\n\n"
 
 		default:
 			output += renderText(block.Text, lineWidth, indentLevel1) + "\n\n"
@@ -69,6 +69,23 @@ func renderText(text string, lineWidth int, indentLevel string) string {
 	text = bld(text)
 
 	text = syntax.RemoveUnwantedNewLines(text)
+	text = syntax.HighlightBackticks(text)
+
+	padding := termtext.WrapPad(indentLevel)
+	text, _ = termtext.Wrap(text, lineWidth, padding)
+
+	return text
+}
+
+func renderList(text string, lineWidth int, indentLevel string) string {
+	text = it(text)
+	text = bld(text)
+
+	// Remove unwanted newlines
+	exp := regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z])`)
+	text = exp.ReplaceAllString(text, `$1`+" "+`$3`)
+
+	// text = syntax.RemoveUnwantedNewLines(text)
 	text = syntax.HighlightBackticks(text)
 
 	padding := termtext.WrapPad(indentLevel)
