@@ -72,16 +72,17 @@ func renderText(text string) string {
 }
 
 func renderImage(text string) string {
-	exp := regexp.MustCompile(`!\[(.*?)\]\(.*?\)`)
-	image := Magenta("Image").Faint().String()
-
-	// magenta := "\u001B[35m"
+	magenta := "\u001B[35m"
 	italic := "\u001B[3m"
 	faint := "\u001B[2m"
+	normal := "\u001B[0m"
+
+	exp := regexp.MustCompile(`!\[(.*?)\]\(.*?\)`)
+	image := magenta + faint + "Image: " + normal + faint + italic
 
 	// imageLabel := image+italic+faint+`$1.`+"### "
 
-	text = exp.ReplaceAllString(text, image+italic+faint+`: $1.`)
+	text = exp.ReplaceAllString(text, image+`$1.`)
 
 	lines := strings.Split(text, image)
 	output := ""
@@ -95,11 +96,12 @@ func renderImage(text string) string {
 	}
 
 	// Remove 'Image: .' for images without captions
-	output = strings.ReplaceAll(output, image+italic+faint+": .", image)
+	output = strings.ReplaceAll(output, image+".", magenta+faint+"Image ")
 
 	// output = strings.ReplaceAll(output, "###", "")
 	// output = strings.ReplaceAll(output, "%%%", "")
 	output = strings.TrimSuffix(output, "\n\n")
+	output += normal
 
 	output = it(output)
 	output = bld(output)
