@@ -11,6 +11,7 @@ const (
 	H6    = 7
 	Quote = 8
 	Code  = 9
+	List  = 10
 
 	ItalicStart = "[CLX-ITALIC]"
 	ItalicStop  = "[CLX-ITALIC-STOP]"

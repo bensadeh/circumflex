@@ -22,7 +22,7 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 	for _, block := range blocks {
 		switch block.Kind {
 		case markdown.Text:
-			output += renderText(block.Text) + "\n\n"
+			output += renderText(block.Text, indentLevel1) + "\n\n"
 
 		case markdown.Image:
 			output += renderImage(block.Text) + "\n\n"
@@ -46,26 +46,30 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 			output += h4(block.Text) + "\n\n"
 
 		case markdown.H5:
-			output += h1(block.Text) + "\n\n"
+			output += h5(block.Text) + "\n\n"
 
 		case markdown.H6:
-			output += h1(block.Text) + "\n\n"
+			output += h6(block.Text) + "\n\n"
+
+		case markdown.List:
+			output += renderText(block.Text, indentLevel2) + "\n\n"
 
 		default:
-			output += renderText(block.Text) + "\n\n"
+			output += renderText(block.Text, indentLevel1) + "\n\n"
 		}
 	}
 
 	return output
 }
 
-func renderText(text string) string {
+func renderText(text string, indentLevel string) string {
 	text = it(text)
 	text = bld(text)
 
+	text = syntax.RemoveUnwantedNewLines(text)
 	text = syntax.HighlightBackticks(text)
 
-	padding := termtext.WrapPad(indentLevel1)
+	padding := termtext.WrapPad(indentLevel)
 	text, _ = termtext.Wrap(text, 80, padding)
 
 	return text
@@ -120,7 +124,9 @@ func renderCode(text string) string {
 }
 
 func renderQuote(text string, lineWidth int, altIndentBlock bool) string {
-	text = Italic(text).String()
+	text = Italic(text).Faint().String()
+
+	text = removeUnwantedNewLines(text)
 
 	indentSymbol := " " + indent.GetIndentSymbol(false, altIndentBlock)
 	text = itReversed(text)
@@ -133,6 +139,23 @@ func renderQuote(text string, lineWidth int, altIndentBlock bool) string {
 	// text = strings.TrimPrefix(text, "\n")
 
 	return text
+}
+
+func removeUnwantedNewLines(text string) string {
+	paragraphSeparator := "\n\n"
+	paragraphs := strings.Split(text, paragraphSeparator)
+	output := ""
+
+	for _, paragraph := range paragraphs {
+		paragraph = syntax.RemoveUnwantedNewLines(paragraph)
+
+		output += paragraph + paragraphSeparator
+
+	}
+
+	output = strings.TrimSuffix(output, paragraphSeparator)
+
+	return output
 }
 
 func it(text string) string {
@@ -197,4 +220,16 @@ func h4(text string) string {
 	text = strings.TrimPrefix(text, "#### ")
 
 	return Bold(text).Green().String()
+}
+
+func h5(text string) string {
+	text = strings.TrimPrefix(text, "#### ")
+
+	return Bold(text).Cyan().String()
+}
+
+func h6(text string) string {
+	text = strings.TrimPrefix(text, "#### ")
+
+	return Bold(text).Blue().String()
 }

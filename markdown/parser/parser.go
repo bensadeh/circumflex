@@ -15,6 +15,7 @@ func Parse(text string) []*markdown.Block {
 	isInsideQuote := false
 	isInsideCode := false
 	isInsideText := false
+	isInsideList := false
 
 	for _, line := range lines {
 		if isInsideCode {
@@ -46,6 +47,7 @@ func Parse(text string) []*markdown.Block {
 
 			isInsideQuote = false
 			isInsideText = false
+			isInsideList = false
 
 			continue
 		}
@@ -56,7 +58,7 @@ func Parse(text string) []*markdown.Block {
 			continue
 		}
 
-		if isInsideQuote {
+		if isInsideQuote || isInsideList {
 			line = strings.TrimPrefix(line, ">")
 			line = strings.TrimPrefix(line, " ")
 
@@ -118,6 +120,12 @@ func Parse(text string) []*markdown.Block {
 
 			isInsideText = true
 
+		case isListItem(line):
+			temp.kind = markdown.List
+			temp.text = line
+
+			isInsideList = true
+
 		default:
 			temp.kind = markdown.Text
 			temp.text = line
@@ -127,6 +135,14 @@ func Parse(text string) []*markdown.Block {
 	}
 
 	return blocks
+}
+
+func isListItem(text string) bool {
+	if strings.HasPrefix(text, "- ") || strings.HasPrefix(text, "1. ") {
+		return true
+	}
+
+	return false
 }
 
 func appendNonEmptyBuffer(temp *tempBuffer, blocks []*markdown.Block) ([]*markdown.Block, error) {
