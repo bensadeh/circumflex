@@ -70,6 +70,7 @@ func renderText(text string, lineWidth int, indentLevel string) string {
 
 	text = syntax.RemoveUnwantedNewLines(text)
 	text = syntax.HighlightBackticks(text)
+	text = syntax.HighlightMentions(text)
 
 	text = strings.ReplaceAll(text, `\_`, "_")
 
