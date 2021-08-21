@@ -339,7 +339,7 @@ func h4(text string, lineWidth int) string {
 
 func h5(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Bold(text).Underline().Red().String()
+	text = Bold(text).Underline().Green().String()
 
 	padding := termtext.WrapPad(indentLevel1)
 	text, _ = termtext.Wrap(text, lineWidth, padding)
