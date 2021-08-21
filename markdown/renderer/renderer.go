@@ -99,6 +99,7 @@ func renderText(text string, lineWidth int, indentLevel string) string {
 	text = bld(text)
 	text = removeHrefs(text)
 	text = unescapeCharacters(text)
+	text = removeImageReference(text)
 
 	text = syntax.RemoveUnwantedNewLines(text)
 	text = syntax.HighlightBackticks(text)
