@@ -72,6 +72,7 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 func renderText(text string, lineWidth int, indentLevel string) string {
 	text = it(text)
 	text = bld(text)
+	text = removeHrefs(text)
 
 	text = syntax.RemoveUnwantedNewLines(text)
 	text = syntax.HighlightBackticks(text)
@@ -293,4 +294,11 @@ func h6(text string) string {
 	text = strings.TrimPrefix(text, "###### ")
 
 	return indentLevel1 + Bold(text).Underline().Cyan().String()
+}
+
+func removeHrefs(text string) string {
+	exp := regexp.MustCompile(`<a href=.+>(.+)</a>`)
+	text = exp.ReplaceAllString(text, `$1`)
+
+	return text
 }
