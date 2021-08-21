@@ -83,8 +83,11 @@ func renderCode(text string) string {
 }
 
 func renderQuote(text string, lineWidth int, altIndentBlock bool) string {
+	text = Italic(text).String()
+
 	indentSymbol := " " + indent.GetIndentSymbol(false, altIndentBlock)
 	padding := termtext.WrapPad(Faint(indentSymbol).String())
+	text = itReversed(text)
 	text, _ = termtext.Wrap(text, 70, padding)
 
 	// text = strings.TrimSuffix(text, "\n")
@@ -96,15 +99,19 @@ func renderQuote(text string, lineWidth int, altIndentBlock bool) string {
 func it(text string) string {
 	italic := "\u001B[3m"
 	noItalic := "\u001B[23m"
-	//
-	//expStart := regexp.MustCompile(`_(\w{1})`)
-	//text = expStart.ReplaceAllString(text, italic+`$1`)
-	//
-	//expEnd := regexp.MustCompile(`(\w{1})_`)
-	//text = expEnd.ReplaceAllString(text, `$1`+noItalic)
 
 	text = strings.ReplaceAll(text, markdown.ItalicStart, italic)
 	text = strings.ReplaceAll(text, markdown.ItalicStop, noItalic)
+
+	return text
+}
+
+func itReversed(text string) string {
+	italic := "\u001B[3m"
+	noItalic := "\u001B[23m"
+
+	text = strings.ReplaceAll(text, markdown.ItalicStart, noItalic)
+	text = strings.ReplaceAll(text, markdown.ItalicStop, italic)
 
 	return text
 }
