@@ -348,25 +348,10 @@ func removeHrefs(text string) string {
 }
 
 func preFormatHeader(text string) string {
-	text = it(text)
-	text = unescapeNumbersWithDot(text)
-	text = removeBoldAndItalicTags(text)
 	text = strings.TrimLeft(text, "# ")
-
-	return text
-}
-
-func unescapeNumbersWithDot(text string) string {
-	text = strings.ReplaceAll(text, `0\.`, "0.")
-	text = strings.ReplaceAll(text, `1\.`, "1.")
-	text = strings.ReplaceAll(text, `2\.`, "2.")
-	text = strings.ReplaceAll(text, `3\.`, "3.")
-	text = strings.ReplaceAll(text, `4\.`, "4.")
-	text = strings.ReplaceAll(text, `5\.`, "5.")
-	text = strings.ReplaceAll(text, `6\.`, "6.")
-	text = strings.ReplaceAll(text, `7\.`, "7.")
-	text = strings.ReplaceAll(text, `8\.`, "8.")
-	text = strings.ReplaceAll(text, `9\.`, "9.")
+	text = removeBoldAndItalicTags(text)
+	text = unescapeCharacters(text)
+	text = it(text)
 
 	return text
 }
@@ -376,6 +361,9 @@ func unescapeCharacters(text string) string {
 	text = strings.ReplaceAll(text, `\-`, "-")
 	text = strings.ReplaceAll(text, `\_`, "_")
 	text = strings.ReplaceAll(text, `\*`, "*")
+	text = strings.ReplaceAll(text, `\\`, `\`)
+	text = strings.ReplaceAll(text, `\#`, "#")
+	text = strings.ReplaceAll(text, `\.`, ".")
 
 	return text
 }
