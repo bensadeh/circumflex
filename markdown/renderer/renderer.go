@@ -172,6 +172,7 @@ func renderImage(text string, lineWidth int) string {
 
 	output = it(output)
 	output = bld(output)
+	output = removeDoubleWhitespace(output)
 
 	padding := termtext.WrapPad(indentLevel2)
 	output, _ = termtext.Wrap(output, lineWidth, padding)
@@ -381,6 +382,12 @@ func unescapeCharacters(text string) string {
 	text = strings.ReplaceAll(text, `\\`, `\`)
 	text = strings.ReplaceAll(text, `\#`, "#")
 	text = strings.ReplaceAll(text, `\.`, ".")
+
+	return text
+}
+
+func removeDoubleWhitespace(text string) string {
+	text = strings.ReplaceAll(text, "  ", " ")
 
 	return text
 }
