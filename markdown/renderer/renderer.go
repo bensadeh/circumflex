@@ -7,8 +7,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/microcosm-cc/bluemonday"
-
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 
 	termtext "github.com/MichaelMure/go-term-text"
@@ -72,6 +70,8 @@ func renderText(text string, lineWidth int, indentLevel string) string {
 
 	text = syntax.RemoveUnwantedNewLines(text)
 	text = syntax.HighlightBackticks(text)
+
+	text = strings.ReplaceAll(text, `\_`, "_")
 
 	padding := termtext.WrapPad(indentLevel)
 	text, _ = termtext.Wrap(text, lineWidth, padding)
@@ -151,13 +151,6 @@ func renderCode(text string) string {
 
 	text = Faint(text).String()
 
-	// Do this once for each unique policy, and use the policy for the life of the program
-	// Policy creation/editing is not safe to use in multiple goroutines
-	p := bluemonday.StrictPolicy()
-
-	// The policy can then be used to sanitize lots of input and it is safe to use the policy in multiple goroutines
-	text = p.Sanitize(text)
-
 	padding := termtext.WrapPad(indentLevel2)
 	text, _ = termtext.Wrap(text, int(screenWidth), padding)
 
@@ -191,7 +184,6 @@ func removeUnwantedNewLines(text string) string {
 		paragraph = syntax.RemoveUnwantedNewLines(paragraph)
 
 		output += paragraph + paragraphSeparator
-
 	}
 
 	output = strings.TrimSuffix(output, paragraphSeparator)
