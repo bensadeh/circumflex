@@ -245,13 +245,13 @@ func h2(text string) string {
 func h3(text string) string {
 	text = strings.TrimPrefix(text, "### ")
 
-	return indentLevel1 + Bold(text).Yellow().String()
+	return indentLevel1 + Bold(text).Underline().Yellow().String()
 }
 
 func h4(text string) string {
 	text = strings.TrimPrefix(text, "#### ")
 
-	return indentLevel1 + Bold(text).Blue().String()
+	return indentLevel2 + Bold(text).Blue().String()
 }
 
 func h5(text string) string {
