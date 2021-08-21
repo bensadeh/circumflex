@@ -97,6 +97,7 @@ func renderText(text string, lineWidth int, indentLevel string) string {
 func renderList(text string, lineWidth int, indentLevel string) string {
 	text = it(text)
 	text = bld(text)
+	text = removeImageReference(text)
 
 	// Remove unwanted newlines
 	exp := regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z])`)
@@ -227,6 +228,12 @@ func renderTable(text string, indentLevel string) string {
 	out = strings.TrimSuffix(out, "\n\n")
 
 	return out
+}
+
+func removeImageReference(text string) string {
+	exp := regexp.MustCompile(`!\[(.*?)\]\(.*?\)`)
+
+	return exp.ReplaceAllString(text, `$1`)
 }
 
 func it(text string) string {
