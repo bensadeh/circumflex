@@ -28,6 +28,24 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 		case markdown.Quote:
 			output += renderQuote(block.Text, 80, altIndentBlock) + "\n\n"
 
+		case markdown.H1:
+			output += h1(block.Text) + "\n\n"
+
+		case markdown.H2:
+			output += h2(block.Text) + "\n\n"
+
+		case markdown.H3:
+			output += h3(block.Text) + "\n\n"
+
+		case markdown.H4:
+			output += h4(block.Text) + "\n\n"
+
+		case markdown.H5:
+			output += h1(block.Text) + "\n\n"
+
+		case markdown.H6:
+			output += h1(block.Text) + "\n\n"
+
 		default:
 			output += renderText(block.Text) + "\n\n"
 		}
@@ -126,8 +144,32 @@ func bld(text string) string {
 	expStart := regexp.MustCompile(`\*\*(\w{1})`)
 	text = expStart.ReplaceAllString(text, bold+`$1`)
 
-	expEnd := regexp.MustCompile(`([a-zA-Z0-9.)%])\*\*`)
+	expEnd := regexp.MustCompile(`([a-zA-Z0-9.)%:])\*\*`)
 	text = expEnd.ReplaceAllString(text, `$1`+noBold)
 
 	return text
+}
+
+func h1(text string) string {
+	text = strings.TrimPrefix(text, "# ")
+
+	return Bold(text).String()
+}
+
+func h2(text string) string {
+	text = strings.TrimPrefix(text, "## ")
+
+	return Bold(text).Blue().String()
+}
+
+func h3(text string) string {
+	text = strings.TrimPrefix(text, "### ")
+
+	return Bold(text).Yellow().String()
+}
+
+func h4(text string) string {
+	text = strings.TrimPrefix(text, "#### ")
+
+	return Bold(text).Green().String()
 }

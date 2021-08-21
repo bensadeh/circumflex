@@ -79,6 +79,42 @@ func Parse(text string) []*markdown.Block {
 
 			isInsideCode = true
 
+		case strings.HasPrefix(line, "# "):
+			temp.kind = markdown.H1
+			temp.text = line
+
+			isInsideText = true
+
+		case strings.HasPrefix(line, "## "):
+			temp.kind = markdown.H2
+			temp.text = line
+
+			isInsideText = true
+
+		case strings.HasPrefix(line, "### "):
+			temp.kind = markdown.H3
+			temp.text = line
+
+			isInsideText = true
+
+		case strings.HasPrefix(line, "#### "):
+			temp.kind = markdown.H4
+			temp.text = line
+
+			isInsideText = true
+
+		case strings.HasPrefix(line, "##### "):
+			temp.kind = markdown.H5
+			temp.text = line
+
+			isInsideText = true
+
+		case strings.HasPrefix(line, "###### "):
+			temp.kind = markdown.H6
+			temp.text = line
+
+			isInsideText = true
+
 		default:
 			temp.kind = markdown.Text
 			temp.text = line
