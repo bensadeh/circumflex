@@ -142,7 +142,7 @@ func renderQuote(text string, lineWidth int, altIndentBlock bool) string {
 	text = bldInQuote(text)
 
 	padding := termtext.WrapPad(indentLevel2 + Faint(indentSymbol).String())
-	text, _ = termtext.Wrap(text, 70, padding)
+	text, _ = termtext.Wrap(text, lineWidth, padding)
 
 	// text = strings.TrimSuffix(text, "\n")
 	// text = strings.TrimPrefix(text, "\n")
