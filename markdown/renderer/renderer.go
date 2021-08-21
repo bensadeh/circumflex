@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"strings"
 
+	terminal "github.com/wayneashleyberry/terminal-dimensions"
+
 	termtext "github.com/MichaelMure/go-term-text"
 	. "github.com/logrusorgru/aurora/v3"
 )
@@ -117,8 +119,15 @@ func renderImage(text string, lineWidth int) string {
 }
 
 func renderCode(text string) string {
+	screenWidth, _ := terminal.Width()
+
 	text = strings.TrimSuffix(text, "\n")
 	text = strings.TrimPrefix(text, "\n")
+
+	text = Faint(text).String()
+
+	padding := termtext.WrapPad(indentLevel2)
+	text, _ = termtext.Wrap(text, int(screenWidth), padding)
 
 	return text
 }
