@@ -11,6 +11,11 @@ import (
 	. "github.com/logrusorgru/aurora/v3"
 )
 
+const (
+	indentLevel1 = "  "
+	indentLevel2 = "    "
+)
+
 func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) string {
 	output := ""
 
@@ -60,7 +65,7 @@ func renderText(text string) string {
 
 	text = syntax.HighlightBackticks(text)
 
-	padding := termtext.WrapPad("")
+	padding := termtext.WrapPad(indentLevel1)
 	text, _ = termtext.Wrap(text, 80, padding)
 
 	return text
@@ -68,11 +73,17 @@ func renderText(text string) string {
 
 func renderImage(text string) string {
 	exp := regexp.MustCompile(`!\[(.*?)\]\(.*?\)`)
-	imageLabel := Magenta("Image: %%%").Faint().String()
+	image := Magenta("Image").Faint().String()
 
-	text = exp.ReplaceAllString(text, imageLabel+Italic(`$1.`).Faint().String()+"### ")
+	// magenta := "\u001B[35m"
+	italic := "\u001B[3m"
+	faint := "\u001B[2m"
 
-	lines := strings.Split(text, imageLabel)
+	// imageLabel := image+italic+faint+`$1.`+"### "
+
+	text = exp.ReplaceAllString(text, image+italic+faint+`: $1.`)
+
+	lines := strings.Split(text, image)
 	output := ""
 
 	for i, line := range lines {
@@ -80,18 +91,21 @@ func renderImage(text string) string {
 			continue
 		}
 
-		output += imageLabel + line + "\n\n"
+		output += image + line + "\n\n"
 	}
 
-	// Remove ': ' if there is no image caption
-	output = strings.ReplaceAll(output, ": %%%\u001B[0m\u001B[3m.\u001B[0m###", "\u001B[0m ")
+	// Remove 'Image: .' for images without captions
+	output = strings.ReplaceAll(output, image+italic+faint+": .", image)
 
-	output = strings.ReplaceAll(output, "###", "")
-	output = strings.ReplaceAll(output, "%%%", "")
+	// output = strings.ReplaceAll(output, "###", "")
+	// output = strings.ReplaceAll(output, "%%%", "")
 	output = strings.TrimSuffix(output, "\n\n")
 
 	output = it(output)
 	output = bld(output)
+
+	padding := termtext.WrapPad(indentLevel2)
+	output, _ = termtext.Wrap(output, 80, padding)
 
 	return output
 }
@@ -107,9 +121,10 @@ func renderQuote(text string, lineWidth int, altIndentBlock bool) string {
 	text = Italic(text).String()
 
 	indentSymbol := " " + indent.GetIndentSymbol(false, altIndentBlock)
-	padding := termtext.WrapPad(Faint(indentSymbol).String())
 	text = itReversed(text)
 	text = bldInQuote(text)
+
+	padding := termtext.WrapPad(indentLevel2 + Faint(indentSymbol).String())
 	text, _ = termtext.Wrap(text, 70, padding)
 
 	// text = strings.TrimSuffix(text, "\n")
