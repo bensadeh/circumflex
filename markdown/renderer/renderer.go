@@ -75,7 +75,7 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 func renderDivider(lineWidth int) string {
 	divider := strings.Repeat("-", lineWidth-len(indentLevel2)*2)
 
-	return indentLevel2 + divider
+	return Faint(indentLevel2 + divider).String()
 }
 
 func renderText(text string, lineWidth int, indentLevel string) string {
