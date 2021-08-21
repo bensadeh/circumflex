@@ -271,6 +271,7 @@ func bldInQuote(text string) string {
 
 func h1(text string) string {
 	text = it(text)
+	text = restoreNumbersWithDot(text)
 	text = strings.TrimPrefix(text, "# ")
 
 	return Bold(text).String()
@@ -278,6 +279,7 @@ func h1(text string) string {
 
 func h2(text string) string {
 	text = it(text)
+	text = restoreNumbersWithDot(text)
 	text = strings.TrimPrefix(text, "## ")
 
 	return Bold(text).String()
@@ -285,6 +287,7 @@ func h2(text string) string {
 
 func h3(text string) string {
 	text = it(text)
+	text = restoreNumbersWithDot(text)
 	text = strings.TrimPrefix(text, "### ")
 
 	return indentLevel1 + Bold(text).Underline().Yellow().String()
@@ -292,6 +295,7 @@ func h3(text string) string {
 
 func h4(text string) string {
 	text = it(text)
+	text = restoreNumbersWithDot(text)
 	text = strings.TrimPrefix(text, "#### ")
 
 	return indentLevel1 + Bold(text).Underline().Blue().String()
@@ -299,6 +303,7 @@ func h4(text string) string {
 
 func h5(text string) string {
 	text = it(text)
+	text = restoreNumbersWithDot(text)
 	text = strings.TrimPrefix(text, "##### ")
 
 	return indentLevel1 + Bold(text).Underline().Green().String()
@@ -306,6 +311,7 @@ func h5(text string) string {
 
 func h6(text string) string {
 	text = it(text)
+	text = restoreNumbersWithDot(text)
 	text = strings.TrimPrefix(text, "###### ")
 
 	return indentLevel1 + Bold(text).Underline().Cyan().String()
@@ -314,6 +320,21 @@ func h6(text string) string {
 func removeHrefs(text string) string {
 	exp := regexp.MustCompile(`<a href=.+>(.+)</a>`)
 	text = exp.ReplaceAllString(text, `$1`)
+
+	return text
+}
+
+func restoreNumbersWithDot(text string) string {
+	text = strings.ReplaceAll(text, `0\.`, "0.")
+	text = strings.ReplaceAll(text, `1\.`, "1.")
+	text = strings.ReplaceAll(text, `2\.`, "2.")
+	text = strings.ReplaceAll(text, `3\.`, "3.")
+	text = strings.ReplaceAll(text, `4\.`, "4.")
+	text = strings.ReplaceAll(text, `5\.`, "5.")
+	text = strings.ReplaceAll(text, `6\.`, "6.")
+	text = strings.ReplaceAll(text, `7\.`, "7.")
+	text = strings.ReplaceAll(text, `8\.`, "8.")
+	text = strings.ReplaceAll(text, `9\.`, "9.")
 
 	return text
 }
