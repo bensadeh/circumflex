@@ -180,6 +180,7 @@ func renderCode(text string) string {
 
 func renderQuote(text string, lineWidth int, altIndentBlock bool) string {
 	text = Italic(text).Faint().String()
+	text = unescapeCharacters(text)
 
 	text = removeUnwantedNewLines(text)
 
@@ -261,11 +262,11 @@ func itReversed(text string) string {
 }
 
 func bld(text string) string {
-	bold := "\033[31m"
-	noBold := "\033[0m"
+	// bold := "\033[31m"
+	// noBold := "\033[0m"
 
-	text = strings.ReplaceAll(text, markdown.BoldStart, bold)
-	text = strings.ReplaceAll(text, markdown.BoldStop, noBold)
+	text = strings.ReplaceAll(text, markdown.BoldStart, "")
+	text = strings.ReplaceAll(text, markdown.BoldStop, "")
 
 	return text
 }
@@ -302,7 +303,7 @@ func h2(text string, lineWidth int) string {
 
 func h3(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Bold(text).Underline().Cyan().String()
+	text = Bold(text).Underline().Blue().String()
 
 	padding := termtext.WrapPad(indentLevel1)
 	text, _ = termtext.Wrap(text, lineWidth, padding)
@@ -312,7 +313,7 @@ func h3(text string, lineWidth int) string {
 
 func h4(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Bold(text).Underline().Blue().String()
+	text = Bold(text).Underline().Yellow().String()
 
 	padding := termtext.WrapPad(indentLevel1)
 	text, _ = termtext.Wrap(text, lineWidth, padding)
@@ -322,7 +323,7 @@ func h4(text string, lineWidth int) string {
 
 func h5(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Bold(text).Underline().Green().String()
+	text = Bold(text).Underline().Red().String()
 
 	padding := termtext.WrapPad(indentLevel1)
 	text, _ = termtext.Wrap(text, lineWidth, padding)
