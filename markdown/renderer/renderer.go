@@ -3,6 +3,7 @@ package renderer
 import (
 	"clx/indent"
 	"clx/markdown"
+	"clx/syntax"
 	"regexp"
 	"strings"
 
@@ -38,6 +39,8 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 func renderText(text string) string {
 	text = it(text)
 	text = bld(text)
+
+	text = syntax.HighlightBackticks(text)
 
 	padding := termtext.WrapPad("")
 	text, _ = termtext.Wrap(text, 80, padding)
