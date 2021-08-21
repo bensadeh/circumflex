@@ -43,6 +43,9 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 		case markdown.List:
 			output += renderList(block.Text, lineWidth, indentLevel2) + "\n\n"
 
+		case markdown.Divider:
+			output += renderDivider(lineWidth) + "\n\n"
+
 		case markdown.H1:
 			output += h1(block.Text) + "\n\n"
 
@@ -67,6 +70,11 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 	}
 
 	return output
+}
+
+func renderDivider(lineWidth int) string {
+	divider := strings.Repeat("-", lineWidth-len(indentLevel2)*2)
+	return indentLevel2 + divider
 }
 
 func renderText(text string, lineWidth int, indentLevel string) string {

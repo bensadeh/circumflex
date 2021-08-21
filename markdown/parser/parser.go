@@ -106,6 +106,10 @@ func Parse(text string) []*markdown.Block {
 
 			isInsideTable = true
 
+		case strings.HasPrefix(line, "* * *"):
+			temp.kind = markdown.Divider
+			temp.text = line
+
 		case strings.HasPrefix(line, "# "):
 			temp.kind = markdown.H1
 			temp.text = line
