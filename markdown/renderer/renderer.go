@@ -128,7 +128,7 @@ func renderImage(text string, lineWidth int) string {
 
 	// imageLabel := image+italic+faint+`$1.`+"### "
 
-	text = exp.ReplaceAllString(text, image+`$1.`)
+	text = exp.ReplaceAllString(text, image+`$1. `)
 
 	lines := strings.Split(text, image)
 	output := ""
@@ -142,10 +142,10 @@ func renderImage(text string, lineWidth int) string {
 	}
 
 	// Remove 'Image: .' for images without captions
-	output = strings.ReplaceAll(output, image+".", magenta+faint+"Image ")
+	output = strings.ReplaceAll(output, image+". ", magenta+faint+"Image "+normal+faint+italic)
 
 	// output = strings.ReplaceAll(output, "###", "")
-	// output = strings.ReplaceAll(output, "%%%", "")
+	output = strings.ReplaceAll(output, "..", ".")
 	output = strings.TrimSuffix(output, "\n\n")
 	output += normal
 
@@ -165,6 +165,7 @@ func renderCode(text string) string {
 	text = strings.TrimPrefix(text, "\n")
 
 	text = Faint(text).String()
+	text = removeHrefs(text)
 
 	padding := termtext.WrapPad(indentLevel2)
 	text, _ = termtext.Wrap(text, int(screenWidth), padding)
@@ -269,36 +270,42 @@ func bldInQuote(text string) string {
 }
 
 func h1(text string) string {
+	text = it(text)
 	text = strings.TrimPrefix(text, "# ")
 
 	return Bold(text).String()
 }
 
 func h2(text string) string {
+	text = it(text)
 	text = strings.TrimPrefix(text, "## ")
 
 	return Bold(text).String()
 }
 
 func h3(text string) string {
+	text = it(text)
 	text = strings.TrimPrefix(text, "### ")
 
 	return indentLevel1 + Bold(text).Underline().Yellow().String()
 }
 
 func h4(text string) string {
+	text = it(text)
 	text = strings.TrimPrefix(text, "#### ")
 
 	return indentLevel1 + Bold(text).Underline().Blue().String()
 }
 
 func h5(text string) string {
+	text = it(text)
 	text = strings.TrimPrefix(text, "##### ")
 
 	return indentLevel1 + Bold(text).Underline().Green().String()
 }
 
 func h6(text string) string {
+	text = it(text)
 	text = strings.TrimPrefix(text, "###### ")
 
 	return indentLevel1 + Bold(text).Underline().Cyan().String()
