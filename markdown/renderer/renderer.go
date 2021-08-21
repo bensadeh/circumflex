@@ -95,6 +95,8 @@ func renderList(text string, lineWidth int, indentLevel string) string {
 	expIndent := regexp.MustCompile(`\n` + indentLevel + `([a-zA-Z])`)
 	text = expIndent.ReplaceAllString(text, "\n"+indentation+`$1`)
 
+	text = strings.ReplaceAll(text, ` \- `, " - ")
+
 	return text
 }
 
