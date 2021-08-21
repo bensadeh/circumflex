@@ -239,29 +239,29 @@ func h1(text string) string {
 func h2(text string) string {
 	text = strings.TrimPrefix(text, "## ")
 
-	return Bold(text).Blue().String()
+	return Bold(text).String()
 }
 
 func h3(text string) string {
 	text = strings.TrimPrefix(text, "### ")
 
-	return Bold(text).Yellow().String()
+	return indentLevel1 + Bold(text).Yellow().String()
 }
 
 func h4(text string) string {
 	text = strings.TrimPrefix(text, "#### ")
 
-	return Bold(text).Green().String()
+	return indentLevel1 + Bold(text).Blue().String()
 }
 
 func h5(text string) string {
 	text = strings.TrimPrefix(text, "#### ")
 
-	return Bold(text).Cyan().String()
+	return indentLevel1 + Bold(text).Green().String()
 }
 
 func h6(text string) string {
 	text = strings.TrimPrefix(text, "#### ")
 
-	return Bold(text).Blue().String()
+	return indentLevel1 + Bold(text).Cyan().String()
 }
