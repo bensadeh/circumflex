@@ -333,7 +333,7 @@ func h4(text string, lineWidth int) string {
 	text = preFormatHeader(text)
 	text = Bold(text).Underline().Yellow().String()
 
-	padding := termtext.WrapPad(indentLevel1)
+	padding := termtext.WrapPad(indentLevel1 + "  ")
 	text, _ = termtext.Wrap(text, lineWidth, padding)
 
 	return text
@@ -343,7 +343,7 @@ func h5(text string, lineWidth int) string {
 	text = preFormatHeader(text)
 	text = Bold(text).Underline().Green().String()
 
-	padding := termtext.WrapPad(indentLevel1)
+	padding := termtext.WrapPad(indentLevel1 + "    ")
 	text, _ = termtext.Wrap(text, lineWidth, padding)
 
 	return text
@@ -353,7 +353,7 @@ func h6(text string, lineWidth int) string {
 	text = preFormatHeader(text)
 	text = Bold(text).Underline().Cyan().String()
 
-	padding := termtext.WrapPad(indentLevel1)
+	padding := termtext.WrapPad(indentLevel1 + "      ")
 	text, _ = termtext.Wrap(text, lineWidth, padding)
 
 	return text
@@ -383,6 +383,8 @@ func unescapeCharacters(text string) string {
 	text = strings.ReplaceAll(text, `\\`, `\`)
 	text = strings.ReplaceAll(text, `\#`, "#")
 	text = strings.ReplaceAll(text, `\.`, ".")
+
+	text = strings.ReplaceAll(text, "...", "…")
 
 	return text
 }
