@@ -146,7 +146,7 @@ func ForceReadSubmissionContentParser(app *cview.Application, main *core.MainVie
 	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 
-	enterReaderModeParser(app, main, list, appState, config, r, reg, story)
+	enterReaderModeBuiltInParser(app, main, list, appState, config, r, reg, story)
 }
 
 func ReadSubmissionContent(app *cview.Application, main *core.MainView, list *cview.List,
@@ -218,7 +218,7 @@ func enterReaderModeNew(app *cview.Application, main *core.MainView, list *cview
 	changePage(app, list, main, appState, config, r, reg, 0)
 }
 
-func enterReaderModeParser(app *cview.Application, main *core.MainView, list *cview.List, appState *core.ApplicationState,
+func enterReaderModeBuiltInParser(app *cview.Application, main *core.MainView, list *cview.List, appState *core.ApplicationState,
 	config *core.Config, r *handler.StoryHandler, reg *vim.Register, story *endpoints.Story) {
 	fetchTimeout := false
 
@@ -233,11 +233,10 @@ func enterReaderModeParser(app *cview.Application, main *core.MainView, list *cv
 		}
 
 		blocks := parser.Parse(article)
+		header := renderer.CreateHeader(story.Title, story.URL, 70)
 		renderedArticle := renderer.ToString(blocks, 70, false)
 
-		// renderedArticle, _ = text.Wrap(renderedArticle, 80)
-
-		cli.Less(renderedArticle)
+		cli.Less(header + renderedArticle)
 	})
 
 	if fetchTimeout {

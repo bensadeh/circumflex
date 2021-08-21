@@ -1,6 +1,7 @@
 package renderer
 
 import (
+	"clx/constants/messages"
 	"clx/indent"
 	"clx/markdown"
 	"clx/syntax"
@@ -18,7 +19,22 @@ import (
 const (
 	indentLevel1 = "  "
 	indentLevel2 = "    "
+	newLine      = "\n"
+	newParagraph = "\n\n"
 )
+
+func CreateHeader(title string, domain string, lineWidth int) string {
+	wrappedTitle, _ := termtext.Wrap(title, lineWidth)
+	truncatedDomain := termtext.TruncateMax(domain, lineWidth)
+
+	wrappedTitle += newParagraph
+	wrappedTitle += Faint(messages.LessScreenInfo).String() + newLine
+	wrappedTitle += Faint(truncatedDomain).String() + newLine
+	separator := messages.GetSeparator(lineWidth)
+	wrappedTitle += separator + newParagraph
+
+	return wrappedTitle
+}
 
 func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) string {
 	output := ""
