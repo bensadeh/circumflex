@@ -74,6 +74,7 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 
 func renderDivider(lineWidth int) string {
 	divider := strings.Repeat("-", lineWidth-len(indentLevel2)*2)
+
 	return indentLevel2 + divider
 }
 
@@ -81,6 +82,7 @@ func renderText(text string, lineWidth int, indentLevel string) string {
 	text = it(text)
 	text = bld(text)
 	text = removeHrefs(text)
+	text = unescapeCharacters(text)
 
 	text = syntax.RemoveUnwantedNewLines(text)
 	text = syntax.HighlightBackticks(text)
@@ -98,6 +100,8 @@ func renderList(text string, lineWidth int, indentLevel string) string {
 	text = it(text)
 	text = bld(text)
 	text = removeImageReference(text)
+	text = removeHrefs(text)
+	text = unescapeCharacters(text)
 
 	// Remove unwanted newlines
 	exp := regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z])`)
@@ -342,6 +346,15 @@ func unescapeNumbersWithDot(text string) string {
 	text = strings.ReplaceAll(text, `7\.`, "7.")
 	text = strings.ReplaceAll(text, `8\.`, "8.")
 	text = strings.ReplaceAll(text, `9\.`, "9.")
+
+	return text
+}
+
+func unescapeCharacters(text string) string {
+	text = strings.ReplaceAll(text, `\|`, "|")
+	text = strings.ReplaceAll(text, `\-`, "-")
+	text = strings.ReplaceAll(text, `\_`, "_")
+	text = strings.ReplaceAll(text, `\*`, "*")
 
 	return text
 }
