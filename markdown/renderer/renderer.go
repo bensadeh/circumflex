@@ -109,6 +109,7 @@ func renderQuote(text string, lineWidth int, altIndentBlock bool) string {
 	indentSymbol := " " + indent.GetIndentSymbol(false, altIndentBlock)
 	padding := termtext.WrapPad(Faint(indentSymbol).String())
 	text = itReversed(text)
+	text = bldInQuote(text)
 	text, _ = termtext.Wrap(text, 70, padding)
 
 	// text = strings.TrimSuffix(text, "\n")
@@ -141,11 +142,18 @@ func bld(text string) string {
 	bold := "\033[31m"
 	noBold := "\033[0m"
 
-	expStart := regexp.MustCompile(`\*\*(\w{1})`)
-	text = expStart.ReplaceAllString(text, bold+`$1`)
+	text = strings.ReplaceAll(text, markdown.BoldStart, bold)
+	text = strings.ReplaceAll(text, markdown.BoldStop, noBold)
 
-	expEnd := regexp.MustCompile(`([a-zA-Z0-9.)%:])\*\*`)
-	text = expEnd.ReplaceAllString(text, `$1`+noBold)
+	return text
+}
+
+func bldInQuote(text string) string {
+	// bold := "\033[31m"
+	// noBold := "\033[0m"
+
+	text = strings.ReplaceAll(text, markdown.BoldStart, "")
+	text = strings.ReplaceAll(text, markdown.BoldStop, "")
 
 	return text
 }

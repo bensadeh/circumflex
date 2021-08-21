@@ -14,6 +14,8 @@ const (
 
 	ItalicStart = "[CLX-ITALIC]"
 	ItalicStop  = "[CLX-ITALIC-STOP]"
+	BoldStart   = "[CLX-BOLD]"
+	BoldStop    = "[CLX-BOLD-STOP]"
 )
 
 type Block struct {
