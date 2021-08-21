@@ -12,6 +12,7 @@ const (
 	Quote = 8
 	Code  = 9
 	List  = 10
+	Table = 11
 
 	ItalicStart = "[CLX-ITALIC]"
 	ItalicStop  = "[CLX-ITALIC-STOP]"

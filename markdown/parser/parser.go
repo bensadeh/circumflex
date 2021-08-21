@@ -16,6 +16,7 @@ func Parse(text string) []*markdown.Block {
 	isInsideCode := false
 	isInsideText := false
 	isInsideList := false
+	isInsideTable := false
 
 	for _, line := range lines {
 		if isInsideCode {
@@ -50,6 +51,13 @@ func Parse(text string) []*markdown.Block {
 			isInsideQuote = false
 			isInsideText = false
 			isInsideList = false
+			isInsideTable = false
+
+			continue
+		}
+
+		if isInsideTable {
+			temp.append("\n" + line)
 
 			continue
 		}
@@ -86,6 +94,18 @@ func Parse(text string) []*markdown.Block {
 
 			isInsideCode = true
 
+		case isListItem(line):
+			temp.kind = markdown.List
+			temp.text = line
+
+			isInsideList = true
+
+		case strings.HasPrefix(line, "|"):
+			temp.kind = markdown.Table
+			temp.text = line
+
+			isInsideTable = true
+
 		case strings.HasPrefix(line, "# "):
 			temp.kind = markdown.H1
 			temp.text = line
@@ -121,12 +141,6 @@ func Parse(text string) []*markdown.Block {
 			temp.text = line
 
 			isInsideText = true
-
-		case isListItem(line):
-			temp.kind = markdown.List
-			temp.text = line
-
-			isInsideList = true
 
 		default:
 			temp.kind = markdown.Text

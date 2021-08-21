@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/charmbracelet/glamour"
+
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 
 	termtext "github.com/MichaelMure/go-term-text"
@@ -35,6 +37,12 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 		case markdown.Quote:
 			output += renderQuote(block.Text, lineWidth, altIndentBlock) + "\n\n"
 
+		case markdown.Table:
+			output += renderTable(block.Text, indentLevel2) + "\n\n"
+
+		case markdown.List:
+			output += renderList(block.Text, lineWidth, indentLevel2) + "\n\n"
+
 		case markdown.H1:
 			output += h1(block.Text) + "\n\n"
 
@@ -52,9 +60,6 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 
 		case markdown.H6:
 			output += h6(block.Text) + "\n\n"
-
-		case markdown.List:
-			output += renderList(block.Text, lineWidth, indentLevel2) + "\n\n"
 
 		default:
 			output += renderText(block.Text, lineWidth, indentLevel1) + "\n\n"
@@ -190,6 +195,28 @@ func removeUnwantedNewLines(text string) string {
 	output = strings.TrimSuffix(output, paragraphSeparator)
 
 	return output
+}
+
+func renderTable(text string, indentLevel string) string {
+	text = strings.ReplaceAll(text, markdown.ItalicStart, "")
+	text = strings.ReplaceAll(text, markdown.ItalicStop, "")
+
+	text = strings.ReplaceAll(text, markdown.BoldStart, "")
+	text = strings.ReplaceAll(text, markdown.BoldStop, "")
+
+	text = strings.ReplaceAll(text, `\*`, "*")
+
+	r, _ := glamour.NewTermRenderer(glamour.WithStyles(glamour.NoTTYStyleConfig), glamour.WithWordWrap(80))
+
+	out, _ := r.Render(text)
+
+	out = strings.ReplaceAll(out, " --- ", "     ")
+	out = strings.TrimPrefix(out, "\n")
+	out = strings.TrimLeft(out, " ")
+	out = strings.TrimPrefix(out, "\n")
+	out = strings.TrimSuffix(out, "\n\n")
+
+	return out
 }
 
 func it(text string) string {
