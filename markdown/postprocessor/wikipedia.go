@@ -25,6 +25,8 @@ func processWikipedia(text string) string {
 		isBeforeReferences := isOnLineBeforeReferencesOrFootnotes(lines, i)
 
 		if isBeforeReferences {
+			output += "\n"
+
 			break
 		}
 
