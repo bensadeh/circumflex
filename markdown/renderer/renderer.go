@@ -104,6 +104,7 @@ func renderText(text string, lineWidth int, indentLevel string) string {
 	text = removeImageReference(text)
 
 	text = syntax.RemoveUnwantedNewLines(text)
+	text = restoreSpacingForLeadingBackticks(text)
 	text = syntax.HighlightBackticks(text)
 	text = syntax.HighlightMentions(text)
 
@@ -125,7 +126,7 @@ func renderList(text string, lineWidth int, indentLevel string) string {
 	text = removeImageReference(text)
 	text = removeHrefs(text)
 	text = unescapeCharacters(text)
-
+	text = restoreSpacingForLeadingBackticks(text)
 	text = syntax.HighlightBackticks(text)
 
 	output := ""
@@ -385,6 +386,13 @@ func h6(text string, lineWidth int) string {
 func removeHrefs(text string) string {
 	exp := regexp.MustCompile(`<a href=.+>(.+)</a>`)
 	text = exp.ReplaceAllString(text, `$1`)
+
+	return text
+}
+
+func restoreSpacingForLeadingBackticks(text string) string {
+	exp := regexp.MustCompile(`(\w)(\x60[^ .,\/\)?])`)
+	text = exp.ReplaceAllString(text, `$1 $2`)
 
 	return text
 }
