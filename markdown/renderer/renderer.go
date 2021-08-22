@@ -391,7 +391,7 @@ func removeHrefs(text string) string {
 }
 
 func restoreSpacingForLeadingBackticks(text string) string {
-	exp := regexp.MustCompile(`(\w)(\x60[^ .,\/?:;'])`)
+	exp := regexp.MustCompile(`([\w:])(\x60[^ .,\/?:;'])`)
 	text = exp.ReplaceAllString(text, `$1 $2`)
 
 	return text
