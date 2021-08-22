@@ -117,7 +117,7 @@ func renderText(text string, lineWidth int, indentLevel string) string {
 
 func renderList(text string, lineWidth int, indentLevel string) string {
 	// Remove unwanted newlines
-	exp := regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z\x60])`)
+	exp := regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z\x60-])`)
 	text = exp.ReplaceAllString(text, `$1`+" "+`$3`)
 
 	text = it(text)
