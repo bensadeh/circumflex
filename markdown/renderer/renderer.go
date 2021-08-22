@@ -144,12 +144,15 @@ func renderImage(text string, lineWidth int) string {
 	italic := "\u001B[3m"
 	faint := "\u001B[2m"
 	normal := "\u001B[0m"
-
-	exp := regexp.MustCompile(`!\[(.*?)\]\(.*?\)`)
 	image := normal + magenta + faint + "Image: " + normal + faint + italic
 
-	// imageLabel := image+italic+faint+`$1.`+"### "
+	exp := regexp.MustCompile(`!\[(.*?)\]\(.*?\)$`)
+	text = exp.ReplaceAllString(text, image+`$1. `)
 
+	exp = regexp.MustCompile(`!\[(.*?)\]\(.*?\)\s`)
+	text = exp.ReplaceAllString(text, image+`$1. `)
+
+	exp = regexp.MustCompile(`!\[(.*?)\]\(.*?\)`)
 	text = exp.ReplaceAllString(text, image+`$1. `)
 
 	lines := strings.Split(text, image)
