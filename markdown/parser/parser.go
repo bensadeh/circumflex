@@ -10,6 +10,11 @@ import (
 func Parse(text string) []*markdown.Block {
 	var blocks []*markdown.Block
 
+	enDash := "–"
+	normalDash := "-"
+
+	text = strings.ReplaceAll(text, enDash, normalDash)
+
 	lines := strings.Split(text+"\n", "\n")
 	temp := new(tempBuffer)
 
