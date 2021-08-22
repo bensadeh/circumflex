@@ -68,7 +68,13 @@ func Parse(text string) []*markdown.Block {
 			continue
 		}
 
-		if isInsideQuote || isInsideList {
+		if isInsideList {
+			temp.append("\n" + line)
+
+			continue
+		}
+
+		if isInsideQuote {
 			line = strings.TrimPrefix(line, ">")
 			line = strings.TrimPrefix(line, " ")
 
