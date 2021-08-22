@@ -2,6 +2,8 @@ package postprocessor
 
 import (
 	"strings"
+
+	. "github.com/logrusorgru/aurora/v3"
 )
 
 func processBBC(text string) string {
@@ -26,11 +28,18 @@ func processBBC(text string) string {
 			continue
 		}
 
-		if isOnLineBeforeTarget("--", lines, i) {
+		if isOnLineBeforeTarget("--", lines, i) ||
+			isOnLineBeforeTarget("You may also be interested in:", lines, i) {
 			output += "\n"
 
 			break
 		}
+
+		image := Magenta("Image: ").Faint().String()
+		line = strings.ReplaceAll(line, "image source", image)
+
+		caption := Yellow("Caption: ").Faint().String()
+		line = strings.ReplaceAll(line, "image caption", caption)
 
 		output += line + "\n"
 	}
