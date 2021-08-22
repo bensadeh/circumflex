@@ -85,6 +85,8 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 		}
 	}
 
+	output = strings.TrimLeft(output, "\n")
+
 	return output
 }
 
