@@ -243,7 +243,8 @@ func renderTable(text string, indentLevel string) string {
 	text = strings.ReplaceAll(text, markdown.BoldStart, "")
 	text = strings.ReplaceAll(text, markdown.BoldStop, "")
 
-	text = strings.ReplaceAll(text, `\*`, "*")
+	text = unescapeCharacters(text)
+	text = removeImageReference(text)
 
 	r, _ := glamour.NewTermRenderer(glamour.WithStyles(glamour.NoTTYStyleConfig), glamour.WithWordWrap(80))
 

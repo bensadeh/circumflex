@@ -4,6 +4,7 @@ import (
 	"clx/markdown"
 	"errors"
 	"strings"
+	"unicode"
 )
 
 func Parse(text string) []*markdown.Block {
@@ -101,6 +102,18 @@ func Parse(text string) []*markdown.Block {
 			isInsideCode = true
 
 		case isListItem(line):
+			if isSameTypeAsPreviousItem(markdown.List, blocks) {
+				lastItem := len(blocks) - 1
+
+				temp.kind = markdown.List
+				temp.text = blocks[lastItem].Text + "\n" + line
+
+				blocks = RemoveIndex(blocks, lastItem)
+				isInsideList = true
+
+				continue
+			}
+
 			temp.kind = markdown.List
 			temp.text = line
 
@@ -163,12 +176,31 @@ func Parse(text string) []*markdown.Block {
 	return blocks
 }
 
+func RemoveIndex(s []*markdown.Block, index int) []*markdown.Block {
+	return append(s[:index], s[index+1:]...)
+}
+
 func isListItem(text string) bool {
-	if strings.HasPrefix(text, "- ") || strings.HasPrefix(text, "1. ") {
+	if text == "" {
+		return false
+	}
+
+	firstDigit := text[0]
+	if strings.HasPrefix(text, "- ") || unicode.IsDigit(rune(firstDigit)) {
 		return true
 	}
 
 	return false
+}
+
+func isSameTypeAsPreviousItem(itemType int, blocks []*markdown.Block) bool {
+	if len(blocks) == 0 {
+		return false
+	}
+
+	previousItem := len(blocks) - 1
+
+	return blocks[previousItem].Kind == itemType
 }
 
 func appendNonEmptyBuffer(temp *tempBuffer, blocks []*markdown.Block) ([]*markdown.Block, error) {
