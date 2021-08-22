@@ -1,7 +1,6 @@
 package postprocessor
 
 import (
-	ansi "clx/utils/strip-ansi"
 	"strconv"
 	"strings"
 )
@@ -22,9 +21,7 @@ func processWikipedia(text string) string {
 			continue
 		}
 
-		isBeforeReferences := isOnLineBeforeReferencesOrFootnotes(lines, i)
-
-		if isBeforeReferences {
+		if isOnLineBeforeTarget("References", lines, i) || isOnLineBeforeTarget("Footnotes", lines, i) {
 			output += "\n"
 
 			break
@@ -45,12 +42,4 @@ func removeReferences(input string) string {
 	}
 
 	return inputWithoutReferences
-}
-
-func isOnLineBeforeReferencesOrFootnotes(lines []string, i int) bool {
-	nextLine := lines[i+1]
-	nextLine = ansi.Strip(nextLine)
-	nextLineLineIsReferences := nextLine == "References" || nextLine == "Footnotes"
-
-	return nextLineLineIsReferences
 }
