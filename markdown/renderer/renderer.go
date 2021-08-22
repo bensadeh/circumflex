@@ -131,7 +131,7 @@ func renderList(text string, lineWidth int, indentLevel string) string {
 
 	// Indent lists that span over two lines
 	indentation := indentLevel + "  "
-	expIndent := regexp.MustCompile(`\n` + indentLevel + `([a-zA-Z])`)
+	expIndent := regexp.MustCompile(`\n` + indentLevel + `([a-zA-Z\(\)"0-9])`)
 	text = expIndent.ReplaceAllString(text, "\n"+indentation+`$1`)
 
 	text = strings.ReplaceAll(text, ` \- `, " - ")
