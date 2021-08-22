@@ -20,9 +20,10 @@ func Parse(text string) []*markdown.Block {
 	isInsideTable := false
 
 	for _, line := range lines {
-		if isInsideCode {
+		lineWithoutLeadingWhitespace := strings.TrimLeft(line, " ")
 
-			if strings.HasPrefix(strings.TrimLeft(line, " "), "```") {
+		if isInsideCode {
+			if strings.HasPrefix(lineWithoutLeadingWhitespace, "```") {
 				isInsideCode = false
 
 				appendedBlocks, err := appendNonEmptyBuffer(temp, blocks)
@@ -39,8 +40,6 @@ func Parse(text string) []*markdown.Block {
 
 			continue
 		}
-
-		// isAtLastLine := i == len(lines)-1
 
 		if line == "" {
 			appendedBlocks, err := appendNonEmptyBuffer(temp, blocks)
@@ -86,23 +85,23 @@ func Parse(text string) []*markdown.Block {
 		}
 
 		switch {
-		case strings.HasPrefix(line, `![`):
+		case strings.HasPrefix(lineWithoutLeadingWhitespace, `![`):
 			temp.kind = markdown.Image
 			temp.text = line
 
-		case strings.HasPrefix(line, "> "):
+		case strings.HasPrefix(lineWithoutLeadingWhitespace, "> "):
 			temp.kind = markdown.Quote
 			temp.text = strings.TrimPrefix(line, "> ")
 
 			isInsideQuote = true
 
-		case strings.HasPrefix(strings.TrimLeft(line, " "), "```"):
+		case strings.HasPrefix(lineWithoutLeadingWhitespace, "```"):
 			temp.kind = markdown.Code
 			temp.text = ""
 
 			isInsideCode = true
 
-		case isListItem(line):
+		case isListItem(lineWithoutLeadingWhitespace):
 			if isSameTypeAsPreviousItem(markdown.List, blocks) {
 				lastItem := len(blocks) - 1
 
@@ -120,47 +119,47 @@ func Parse(text string) []*markdown.Block {
 
 			isInsideList = true
 
-		case strings.HasPrefix(line, "|"):
+		case strings.HasPrefix(lineWithoutLeadingWhitespace, "|"):
 			temp.kind = markdown.Table
 			temp.text = line
 
 			isInsideTable = true
 
-		case strings.HasPrefix(line, "* * *"):
+		case strings.HasPrefix(lineWithoutLeadingWhitespace, "* * *"):
 			temp.kind = markdown.Divider
 			temp.text = line
 
-		case strings.HasPrefix(line, "# "):
+		case strings.HasPrefix(lineWithoutLeadingWhitespace, "# "):
 			temp.kind = markdown.H1
 			temp.text = line
 
 			isInsideText = true
 
-		case strings.HasPrefix(line, "## "):
+		case strings.HasPrefix(lineWithoutLeadingWhitespace, "## "):
 			temp.kind = markdown.H2
 			temp.text = line
 
 			isInsideText = true
 
-		case strings.HasPrefix(line, "### "):
+		case strings.HasPrefix(lineWithoutLeadingWhitespace, "### "):
 			temp.kind = markdown.H3
 			temp.text = line
 
 			isInsideText = true
 
-		case strings.HasPrefix(line, "#### "):
+		case strings.HasPrefix(lineWithoutLeadingWhitespace, "#### "):
 			temp.kind = markdown.H4
 			temp.text = line
 
 			isInsideText = true
 
-		case strings.HasPrefix(line, "##### "):
+		case strings.HasPrefix(lineWithoutLeadingWhitespace, "##### "):
 			temp.kind = markdown.H5
 			temp.text = line
 
 			isInsideText = true
 
-		case strings.HasPrefix(line, "###### "):
+		case strings.HasPrefix(lineWithoutLeadingWhitespace, "###### "):
 			temp.kind = markdown.H6
 			temp.text = line
 
