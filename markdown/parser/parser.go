@@ -21,7 +21,8 @@ func Parse(text string) []*markdown.Block {
 
 	for _, line := range lines {
 		if isInsideCode {
-			if strings.HasPrefix(line, "```") {
+
+			if strings.HasPrefix(strings.TrimLeft(line, " "), "```") {
 				isInsideCode = false
 
 				appendedBlocks, err := appendNonEmptyBuffer(temp, blocks)
@@ -95,7 +96,7 @@ func Parse(text string) []*markdown.Block {
 
 			isInsideQuote = true
 
-		case strings.HasPrefix(line, "```"):
+		case strings.HasPrefix(strings.TrimLeft(line, " "), "```"):
 			temp.kind = markdown.Code
 			temp.text = ""
 
