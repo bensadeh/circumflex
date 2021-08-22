@@ -134,7 +134,7 @@ func ForceReadSubmissionContent(app *cview.Application, main *core.MainView, lis
 	enterReaderMode(app, main, list, appState, config, r, reg, story)
 }
 
-func ForceReadSubmissionContentNew(app *cview.Application, main *core.MainView, list *cview.List,
+func ForceReadSubmissionContentNoFormatting(app *cview.Application, main *core.MainView, list *cview.List,
 	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
 	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
@@ -146,11 +146,18 @@ func ForceReadSubmissionContentParser(app *cview.Application, main *core.MainVie
 	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
 	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
+	errorMessage := validator.GetErrorMessage(story.Title, story.Domain)
 
-	enterReaderModeBuiltInParser(app, main, list, appState, config, r, reg, story)
+	if errorMessage == "" {
+		enterReaderModeBuiltInParser(app, main, list, appState, config, r, reg, story)
+
+		return
+	}
+
+	view.SetPermanentStatusBar(main, message.Warning(errorMessage), cview.AlignCenter)
 }
 
-func ReadSubmissionContent(app *cview.Application, main *core.MainView, list *cview.List,
+func ReadSubmissionContentInLynx(app *cview.Application, main *core.MainView, list *cview.List,
 	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
 	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
