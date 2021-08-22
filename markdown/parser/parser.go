@@ -125,6 +125,18 @@ func Parse(text string) []*markdown.Block {
 			isInsideList = true
 
 		case strings.HasPrefix(lineWithoutLeadingWhitespace, "|"):
+			if isSameTypeAsPreviousItem(markdown.Table, blocks) {
+				lastItem := len(blocks) - 1
+
+				temp.kind = markdown.Table
+				temp.text = blocks[lastItem].Text + "\n" + line
+
+				blocks = RemoveIndex(blocks, lastItem)
+				isInsideTable = true
+
+				continue
+			}
+
 			temp.kind = markdown.Table
 			temp.text = line
 
