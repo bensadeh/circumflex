@@ -191,7 +191,7 @@ func isListItem(text string) bool {
 	}
 
 	firstDigit := text[0]
-	if strings.HasPrefix(text, "- ") || unicode.IsDigit(rune(firstDigit)) {
+	if strings.HasPrefix(text, "-") || unicode.IsDigit(rune(firstDigit)) {
 		return true
 	}
 
