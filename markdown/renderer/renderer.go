@@ -204,7 +204,7 @@ func renderCode(text string) string {
 func renderQuote(text string, lineWidth int, altIndentBlock bool) string {
 	text = Italic(text).Faint().String()
 	text = unescapeCharacters(text)
-
+	text = removeHrefs(text)
 	text = removeUnwantedNewLines(text)
 
 	indentSymbol := " " + indent.GetIndentSymbol(false, altIndentBlock)
