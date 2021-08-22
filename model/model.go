@@ -12,6 +12,7 @@ import (
 	"clx/handler"
 	"clx/info"
 	"clx/markdown/parser"
+	"clx/markdown/postprocessor"
 	"clx/markdown/renderer"
 	"clx/reader"
 	"clx/screen"
@@ -235,6 +236,7 @@ func enterReaderModeBuiltInParser(app *cview.Application, main *core.MainView, l
 		blocks := parser.Parse(article)
 		header := renderer.CreateHeader(story.Title, story.URL, 70)
 		renderedArticle := renderer.ToString(blocks, 70, false)
+		renderedArticle = postprocessor.Process(renderedArticle, url)
 
 		cli.Less(header + renderedArticle)
 	})
