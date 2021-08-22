@@ -127,6 +127,7 @@ func renderList(text string, lineWidth int, indentLevel string) string {
 	text = removeHrefs(text)
 	text = unescapeCharacters(text)
 	text = restoreSpacingForLeadingBackticks(text)
+
 	text = syntax.HighlightBackticks(text)
 
 	output := ""
@@ -141,6 +142,7 @@ func renderList(text string, lineWidth int, indentLevel string) string {
 		padding := indentLevel2 + paddingBuffer + " "
 
 		wrappedIndentedItem, _ := termtext.WrapWithPadIndent(listToken+listText, lineWidth, indentLevel2, padding)
+		wrappedIndentedItem = insertSpaceAfterItemListSeparator(wrappedIndentedItem)
 
 		output += wrappedIndentedItem + "\n"
 	}
@@ -384,6 +386,12 @@ func restoreSpacingForLeadingBackticks(text string) string {
 	text = exp.ReplaceAllString(text, `$1 $2`)
 
 	return text
+}
+
+func insertSpaceAfterItemListSeparator(text string) string {
+	exp := regexp.MustCompile(`(^\s*-)(\S)`)
+
+	return exp.ReplaceAllString(text, `$1 $2`)
 }
 
 func preFormatHeader(text string) string {
