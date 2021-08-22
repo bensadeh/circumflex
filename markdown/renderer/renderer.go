@@ -146,7 +146,7 @@ func renderImage(text string, lineWidth int) string {
 	normal := "\u001B[0m"
 
 	exp := regexp.MustCompile(`!\[(.*?)\]\(.*?\)`)
-	image := magenta + faint + "Image: " + normal + faint + italic
+	image := normal + magenta + faint + "Image: " + normal + faint + italic
 
 	// imageLabel := image+italic+faint+`$1.`+"### "
 
@@ -164,7 +164,7 @@ func renderImage(text string, lineWidth int) string {
 	}
 
 	// Remove 'Image: .' for images without captions
-	output = strings.ReplaceAll(output, image+". ", magenta+faint+"Image "+normal+faint+italic)
+	output = strings.ReplaceAll(output, image+". ", normal+magenta+faint+"Image "+normal+faint+italic)
 
 	// output = strings.ReplaceAll(output, "###", "")
 	output = strings.ReplaceAll(output, "..", ".")
