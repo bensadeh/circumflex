@@ -24,7 +24,7 @@
 
 ### Main features
 
-- 🛋 **Everything in one place** — browse submissions, read articles or view the comment section
+- 🛋 **Everything in one place** — read both the comment section and articles in Reader Mode
 - 🌈 **Syntax highlighting** — syntax-aware formatting for comments and headlines
 - ⚡️ **Familiar tools** — content is piped to the pager `less` 
 
@@ -66,9 +66,6 @@ clx
 ```
 
 ### From source
-
-Make sure the dependencies [`less`](http://greenwoodsoftware.com/less/) and 
-[`lynx`](https://lynx.invisible-island.net/lynx.html) are installed on your system.
 
 ```console
 # Compile and run
@@ -319,7 +316,6 @@ The following table shows the different ways in which `circumflex` can be config
 * [cobra](https://github.com/spf13/cobra) and [viper](https://github.com/spf13/viper) for the CLI
 * [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) for providing stories and comments
 * [`less`](http://greenwoodsoftware.com/less/) for viewing comments
-* [`lynx`](https://lynx.invisible-island.net/) for parsing HTML
 * [go-term-text](https://github.com/MichaelMure/go-term-text) for text formatting
 
 Screenshots use:
