@@ -98,7 +98,6 @@ func renderDivider(lineWidth int) string {
 
 func renderText(text string, lineWidth int, indentLevel string) string {
 	text = it(text)
-	text = bld(text)
 	text = removeHrefs(text)
 	text = unescapeCharacters(text)
 	text = removeImageReference(text)
@@ -116,17 +115,16 @@ func renderText(text string, lineWidth int, indentLevel string) string {
 }
 
 func renderList(text string, lineWidth int, indentLevel string) string {
-	// Remove unwanted newlines
-	exp := regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z\x60-])`)
-	text = exp.ReplaceAllString(text, `$1`+" "+`$3`)
-
 	text = it(text)
-	text = bld(text)
 	text = removeImageReference(text)
 	text = removeHrefs(text)
 	text = unescapeCharacters(text)
 
 	text = syntax.HighlightBackticks(text)
+
+	// Remove unwanted newlines
+	exp := regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z\x60])`)
+	text = exp.ReplaceAllString(text, `$1`+" "+`$3`)
 
 	output := ""
 	lines := strings.Split(text, "\n")
@@ -194,7 +192,6 @@ func renderImage(text string, lineWidth int) string {
 	output += normal
 
 	output = it(output)
-	output = bld(output)
 	output = removeDoubleWhitespace(output)
 
 	padding := termtext.WrapPad(indentLevel2)
@@ -226,7 +223,6 @@ func renderQuote(text string, lineWidth int, altIndentBlock bool) string {
 
 	indentSymbol := " " + indent.GetIndentSymbol(false, altIndentBlock)
 	text = itReversed(text)
-	text = bldInQuote(text)
 
 	padding := termtext.WrapPad(indentLevel2 + Faint(indentSymbol).String())
 	text, _ = termtext.Wrap(text, lineWidth, padding)
@@ -256,9 +252,6 @@ func removeUnwantedNewLines(text string) string {
 func renderTable(text string, indentLevel string) string {
 	text = strings.ReplaceAll(text, markdown.ItalicStart, "")
 	text = strings.ReplaceAll(text, markdown.ItalicStop, "")
-
-	text = strings.ReplaceAll(text, markdown.BoldStart, "")
-	text = strings.ReplaceAll(text, markdown.BoldStop, "")
 
 	text = unescapeCharacters(text)
 	text = removeImageReference(text)
@@ -298,26 +291,6 @@ func itReversed(text string) string {
 
 	text = strings.ReplaceAll(text, markdown.ItalicStart, noItalic)
 	text = strings.ReplaceAll(text, markdown.ItalicStop, italic)
-
-	return text
-}
-
-func bld(text string) string {
-	// bold := "\033[31m"
-	// noBold := "\033[0m"
-
-	text = strings.ReplaceAll(text, markdown.BoldStart, "")
-	text = strings.ReplaceAll(text, markdown.BoldStop, "")
-
-	return text
-}
-
-func bldInQuote(text string) string {
-	// bold := "\033[31m"
-	// noBold := "\033[0m"
-
-	text = strings.ReplaceAll(text, markdown.BoldStart, "")
-	text = strings.ReplaceAll(text, markdown.BoldStop, "")
 
 	return text
 }
@@ -392,7 +365,7 @@ func removeHrefs(text string) string {
 func preFormatHeader(text string) string {
 	text = removeImageReference(text)
 	text = strings.TrimLeft(text, "# ")
-	text = removeBoldAndItalicTags(text)
+	text = removeItalicTags(text)
 	text = unescapeCharacters(text)
 	text = it(text)
 
@@ -419,10 +392,7 @@ func removeDoubleWhitespace(text string) string {
 	return text
 }
 
-func removeBoldAndItalicTags(text string) string {
-	text = strings.ReplaceAll(text, markdown.BoldStart, "")
-	text = strings.ReplaceAll(text, markdown.BoldStop, "")
-
+func removeItalicTags(text string) string {
 	text = strings.ReplaceAll(text, markdown.ItalicStart, "")
 	text = strings.ReplaceAll(text, markdown.ItalicStop, "")
 

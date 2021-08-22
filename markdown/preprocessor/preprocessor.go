@@ -13,13 +13,3 @@ func ConvertItalicTags(text string) string {
 
 	return text
 }
-
-func ConvertBoldTags(text string) string {
-	text = strings.ReplaceAll(text, "<b>", markdown.BoldStart)
-	text = strings.ReplaceAll(text, "</b>", markdown.BoldStop)
-
-	text = strings.ReplaceAll(text, "<strong>", markdown.BoldStart)
-	text = strings.ReplaceAll(text, "</strong>", markdown.BoldStop)
-
-	return text
-}

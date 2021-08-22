@@ -87,7 +87,6 @@ func GetNew(url string) (string, error) {
 	// converter.AddRules(span)
 
 	art.Content = preprocessor.ConvertItalicTags(art.Content)
-	art.Content = preprocessor.ConvertBoldTags(art.Content)
 
 	markdown, err := converter.ConvertString(art.Content)
 	if err != nil {
