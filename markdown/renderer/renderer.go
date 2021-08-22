@@ -116,29 +116,46 @@ func renderText(text string, lineWidth int, indentLevel string) string {
 }
 
 func renderList(text string, lineWidth int, indentLevel string) string {
+	// Remove unwanted newlines
+	exp := regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z\x60])`)
+	text = exp.ReplaceAllString(text, `$1`+" "+`$3`)
+
 	text = it(text)
 	text = bld(text)
 	text = removeImageReference(text)
 	text = removeHrefs(text)
 	text = unescapeCharacters(text)
 
-	// Remove unwanted newlines
-	exp := regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z])`)
-	text = exp.ReplaceAllString(text, `$1`+" "+`$3`)
-
 	text = syntax.HighlightBackticks(text)
 
-	padding := termtext.WrapPad(indentLevel)
-	text, _ = termtext.Wrap(text, lineWidth, padding)
+	output := ""
+	lines := strings.Split(text, "\n")
+
+	for _, line := range lines {
+		exp := regexp.MustCompile(`^\s*[0-9-.]+`)
+		listToken := exp.FindString(line)
+		listText := strings.TrimLeft(line, listToken)
+
+		paddingBuffer := strings.Repeat(" ", len(listToken))
+		padding := indentLevel2 + paddingBuffer + " "
+
+		wrappedIndentedItem, _ := termtext.WrapWithPadIndent(listToken+listText, lineWidth, indentLevel2, padding)
+
+		// output += listToken + listText + "\n"
+		output += wrappedIndentedItem + "\n"
+	}
+
+	// padding := termtext.WrapPad(indentLevel)
+	// output, _ = termtext.Wrap(output, lineWidth, padding)
 
 	// Indent lists that span over two lines
-	indentation := indentLevel + "  "
-	expIndent := regexp.MustCompile(`\n` + indentLevel + `([a-zA-Z\(\)"0-9])`)
-	text = expIndent.ReplaceAllString(text, "\n"+indentation+`$1`)
+	// indentation := indentLevel + "  "
+	// expIndent := regexp.MustCompile(`\n` + indentLevel + `([a-zA-Z\(\)"0-9])`)
+	// text = expIndent.ReplaceAllString(text, "\n"+indentation+`$1`)
 
-	text = strings.ReplaceAll(text, ` \- `, " - ")
+	// text = strings.ReplaceAll(text, ` \- `, " - ")
 
-	return text
+	return strings.TrimRight(output, "\n")
 }
 
 func renderImage(text string, lineWidth int) string {
