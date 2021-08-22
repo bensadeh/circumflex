@@ -35,7 +35,7 @@ func processBBC(text string) string {
 			break
 		}
 
-		image := Magenta("Image: ").Faint().String()
+		image := Cyan("Image: ").Faint().String()
 		line = strings.ReplaceAll(line, "image source", image)
 
 		caption := Yellow("Caption: ").Faint().String()
