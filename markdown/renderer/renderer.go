@@ -372,6 +372,7 @@ func removeHrefs(text string) string {
 }
 
 func preFormatHeader(text string) string {
+	text = removeImageReference(text)
 	text = strings.TrimLeft(text, "# ")
 	text = removeBoldAndItalicTags(text)
 	text = unescapeCharacters(text)
