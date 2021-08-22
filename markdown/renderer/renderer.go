@@ -142,19 +142,8 @@ func renderList(text string, lineWidth int, indentLevel string) string {
 
 		wrappedIndentedItem, _ := termtext.WrapWithPadIndent(listToken+listText, lineWidth, indentLevel2, padding)
 
-		// output += listToken + listText + "\n"
 		output += wrappedIndentedItem + "\n"
 	}
-
-	// padding := termtext.WrapPad(indentLevel)
-	// output, _ = termtext.Wrap(output, lineWidth, padding)
-
-	// Indent lists that span over two lines
-	// indentation := indentLevel + "  "
-	// expIndent := regexp.MustCompile(`\n` + indentLevel + `([a-zA-Z\(\)"0-9])`)
-	// text = expIndent.ReplaceAllString(text, "\n"+indentation+`$1`)
-
-	// text = strings.ReplaceAll(text, ` \- `, " - ")
 
 	return strings.TrimRight(output, "\n")
 }
