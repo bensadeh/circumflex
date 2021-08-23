@@ -19,6 +19,9 @@ func Parse(text string) []*markdown.Block {
 	text = strings.ReplaceAll(text, enDash, normalDash)
 	text = strings.ReplaceAll(text, emDash, normalDash)
 
+	text = strings.ReplaceAll(text, markdown.BoldStart, "")
+	text = strings.ReplaceAll(text, markdown.BoldStop, "")
+
 	lines := strings.Split(text+"\n", "\n")
 	temp := new(tempBuffer)
 
