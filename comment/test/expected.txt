@@ -2027,8 +2027,8 @@ Senate run-off elections in Georgia to be held on January 5
             [0m[32m▎[0mpeople can decide what they want from there.
 
              [1mtamaharbor[0m [2m9 months ago[0m
-            [0m[32m▎[0m10. Eliminate Facebook and Twitter.
-            [0m[32m▎[0m11. Establish National Voter ID and consistent voting rules.
+            [0m[32m▎[0m10. Eliminate Facebook and Twitter. 11. Establish National Voter ID and
+            [0m[32m▎[0mconsistent voting rules.
 
          [1mpzone[0m [2m9 months ago[0m
         [0m[33m▎[0mI don’t think this can be done without altering social media algorithms to
@@ -5256,10 +5256,9 @@ broader tendency here?
              [1mskywal_l[0m [2m9 months ago[0m
             [0m[32m▎[0mThese companies are as important as we consider them to be.
             [0m[32m▎[0m
-            [0m[32m▎[0mAnd just a few reminders:
-            [0m[32m▎[0m1. His messages are still visible.
-            [0m[32m▎[0m2. Even if they were not, he could still deliver his message in a thousand
-            [0m[32m▎[0mdifferent ways, I mean he's constantly over the phone with Fox'n'Friends.
+            [0m[32m▎[0mAnd just a few reminders: 1. His messages are still visible. 2. Even if they
+            [0m[32m▎[0mwere not, he could still deliver his message in a thousand different ways, I
+            [0m[32m▎[0mmean he's constantly over the phone with Fox'n'Friends.
             [0m[32m▎[0m
             [0m[32m▎[0mSince America exists, you've always had people commenting and criticizing what
             [0m[32m▎[0melected officials are doing and saying. Do you want to shut twitter's right to
@@ -5562,8 +5561,8 @@ yet, also interesting that wikipedia already marked Biden as president-elect
     [0m[31m▎[0mAlso, of course, Kamala Harris makes history as first woman of color elected US
     [0m[31m▎[0mvicepresident.-
     [0m[31m▎[0m
-    [0m[31m▎[0mBiden has already changed his Twitter bio to "president-elect":
-    [0m[31m▎[0m- [34mtwitter.com/joebiden[0m
+    [0m[31m▎[0mBiden has already changed his Twitter bio to "president-elect": -
+    [0m[31m▎[0m[34mtwitter.com/joebiden[0m
 
          [1mDuskStar[0m [2m9 months ago[0m
         [0m[33m▎[0mFirst woman of color, but not first "person of color" -
@@ -12520,12 +12519,11 @@ actually need to be: preventing the apocalypse
         [0m[33m▎[0mRegulation levels the playing field. Otherwise, we would still have child
         [0m[33m▎[0mlabour, weekend work, dangerous working conditions, etc.
         [0m[33m▎[0m
-        [0m[33m▎[0mAs for the argument that other countries will ignore this:
-        [0m[33m▎[0m1: other countries AREN'T ignoring this. The US is the one that pulled out of
-        [0m[33m▎[0mParis
-        [0m[33m▎[0m2: The US is the still the biggest economy in the world. If the US government
-        [0m[33m▎[0mimposed regulations that all business must act in a sustainable fashion
-        [0m[33m▎[0m(including the supply chain) the rest of the world would have to follow through.
+        [0m[33m▎[0mAs for the argument that other countries will ignore this: 1: other countries
+        [0m[33m▎[0mAREN'T ignoring this. The US is the one that pulled out of Paris 2: The US is
+        [0m[33m▎[0mthe still the biggest economy in the world. If the US government imposed
+        [0m[33m▎[0mregulations that all business must act in a sustainable fashion (including the
+        [0m[33m▎[0msupply chain) the rest of the world would have to follow through.
 
      [1mSnowProblem[0m [2m9 months ago[0m
     [0m[31m▎[0mHere's a dark thought. If Trump really did win the election legimately, and
@@ -13819,11 +13817,10 @@ US. Your new President has a terrific amount of work to do to undo this damage�
          [1mzapnuk[0m [2m9 months ago[0m
         [0m[33m▎[0mTrump still lied about it.
         [0m[33m▎[0m
-        [0m[33m▎[0m1. The 2% target is a non-binding guideline.
-        [0m[33m▎[0m2. Germany has (for some time) a plan in place to increase the defense budget to
-        [0m[33m▎[0mmeet the 2% target. It will increase on a year-by-year basis.
-        [0m[33m▎[0m3. Germany spends quite a lot on foreign aid, which 'could' be understood as a
-        [0m[33m▎[0mrisk preventing defense spending.
+        [0m[33m▎[0m1. The 2% target is a non-binding guideline. 2. Germany has (for some time) a
+        [0m[33m▎[0mplan in place to increase the defense budget to meet the 2% target. It will
+        [0m[33m▎[0mincrease on a year-by-year basis. 3. Germany spends quite a lot on foreign aid,
+        [0m[33m▎[0mwhich 'could' be understood as a risk preventing defense spending.
 
          [1malkonaut[0m [2m9 months ago[0m
         [0m[33m▎[0mThere is a silent understanding (silent, because it isn't raised) that the US
@@ -14543,11 +14540,9 @@ an official announcement.
 [1mmjfl[0m [2;4m9 months ago                                                         2 ⤶ ::[0m
 what do people think about the voting irregularities in this election
 
-- the delays in Nevada
-- the early calls in Arizona
-- the delayed, large swing in pennsylvania
-- the glitches in Wisconsin and Michigan
-- the military vote coming in 4:1 Biden in Georgia
+- the delays in Nevada - the early calls in Arizona - the delayed, large swing
+in pennsylvania - the glitches in Wisconsin and Michigan - the military vote
+coming in 4:1 Biden in Georgia
 
 Are we allowed to talk about that here or is it verboten?
 
@@ -18006,15 +18001,14 @@ about. I’m very interested in this nuance that you claim will move us away fro
     [0m[31m▎[0m[34mwww.reuters.com/article/us-usa-missing-children/miss…[0m).
     [0m[31m▎[0m
     [0m[31m▎[0mI'm not really interested in debating these specific policies, because the
-    [0m[31m▎[0mlarger issue is that you can look at things one of two ways:
-    [0m[31m▎[0m1) There are 70 million people who voted for an idiot. By extension, they must
-    [0m[31m▎[0mbe terrible to some degree or another too.
-    [0m[31m▎[0m2) The solution to any "interesting" problem - especially social problems -
-    [0m[31m▎[0minvolves tradeoffs, conflicting objectives, pros and cons. If the solution
-    [0m[31m▎[0mreally were trivial and simple, we wouldn't argue about it. The debate is
-    [0m[31m▎[0mbecause it's so complex, and with any really complex problem, you can have very
-    [0m[31m▎[0mreasonable and intelligent people draw different conclusions on how best to
-    [0m[31m▎[0mproceed.
+    [0m[31m▎[0mlarger issue is that you can look at things one of two ways: 1) There are 70
+    [0m[31m▎[0mmillion people who voted for an idiot. By extension, they must be terrible to
+    [0m[31m▎[0msome degree or another too. 2) The solution to any "interesting" problem -
+    [0m[31m▎[0mespecially social problems - involves tradeoffs, conflicting objectives, pros
+    [0m[31m▎[0mand cons. If the solution really were trivial and simple, we wouldn't argue
+    [0m[31m▎[0mabout it. The debate is because it's so complex, and with any really complex
+    [0m[31m▎[0mproblem, you can have very reasonable and intelligent people draw different
+    [0m[31m▎[0mconclusions on how best to proceed.
     [0m[31m▎[0m
     [0m[31m▎[0mIf you choose to see the U.S through the lens of #1, you may as well give up
     [0m[31m▎[0mnow, because it's hopeless - those people are barely people and are separated

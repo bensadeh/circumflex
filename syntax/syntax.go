@@ -80,7 +80,7 @@ func replaceBetweenWhitespace(text string, target string, replacement string) st
 }
 
 func RemoveUnwantedNewLines(text string) string {
-	exp := regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z" <[:cntrl:]…])`)
+	exp := regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z" -<[:cntrl:]…])`)
 
 	return exp.ReplaceAllString(text, `$1`+" "+`$3`)
 }
