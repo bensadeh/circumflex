@@ -107,8 +107,7 @@ func renderText(text string, lineWidth int, indentLevel string) string {
 	text = restoreSpacingForLeadingBackticks(text)
 	text = syntax.HighlightBackticks(text)
 	text = syntax.HighlightMentions(text)
-
-	text = strings.ReplaceAll(text, `\_`, "_")
+	text = syntax.TrimURLs(text, true)
 
 	padding := termtext.WrapPad(indentLevel)
 	text, _ = termtext.Wrap(text, lineWidth, padding)
@@ -414,7 +413,7 @@ func unescapeCharacters(text string) string {
 	text = strings.ReplaceAll(text, `\.`, ".")
 	text = strings.ReplaceAll(text, `\>`, ">")
 	text = strings.ReplaceAll(text, `\<`, "<")
-
+	text = strings.ReplaceAll(text, "\\`", "`")
 	text = strings.ReplaceAll(text, "...", "…")
 
 	return text
