@@ -11,9 +11,13 @@ func Parse(text string) []*markdown.Block {
 	var blocks []*markdown.Block
 
 	enDash := "–"
+	emDash := "—"
 	normalDash := "-"
 
+	// en- and em-dashes are occasionally used or list items.
+	// converting them to normal dashes lets us parse more list items.
 	text = strings.ReplaceAll(text, enDash, normalDash)
+	text = strings.ReplaceAll(text, emDash, normalDash)
 
 	lines := strings.Split(text+"\n", "\n")
 	temp := new(tempBuffer)
