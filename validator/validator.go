@@ -44,7 +44,6 @@ func isInvalidDomain(domain string) bool {
 		"reddit.com",
 		"sciencedirect.com",
 		"security.googleblog.com",
-		"spectrum.ieee.org",
 		"twitter.com",
 		"washingtonpost.com",
 		"wsj.com",
