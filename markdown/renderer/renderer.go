@@ -21,6 +21,8 @@ const (
 	indentLevel2 = "    "
 	newLine      = "\n"
 	newParagraph = "\n\n"
+	codeStart    = "[CLX_CODE_START]"
+	codeEnd      = "[CLX_CODE_END]"
 )
 
 func CreateHeader(title string, domain string, lineWidth int) string {
@@ -104,8 +106,7 @@ func renderText(text string, lineWidth int, indentLevel string) string {
 	text = removeImageReference(text)
 
 	text = syntax.RemoveUnwantedNewLines(text)
-	text = restoreSpacingForLeadingBackticks(text)
-	text = syntax.HighlightBackticks(text)
+	text = highlightBackticks(text)
 	text = syntax.HighlightMentions(text)
 	text = syntax.TrimURLs(text, true)
 
@@ -118,16 +119,14 @@ func renderText(text string, lineWidth int, indentLevel string) string {
 func renderList(text string, lineWidth int, indentLevel string) string {
 	// Remove unwanted newlines
 	exp := regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z\x60])`)
-	text = exp.ReplaceAllString(text, `$1`+" "+`$3`)
+	text = exp.ReplaceAllString(text, `$1 $3`)
 
 	text = it(text)
 	text = bld(text)
 	text = removeImageReference(text)
 	text = removeHrefs(text)
 	text = unescapeCharacters(text)
-	text = restoreSpacingForLeadingBackticks(text)
-
-	text = syntax.HighlightBackticks(text)
+	text = highlightBackticks(text)
 
 	output := ""
 	lines := strings.Split(text, "\n")
@@ -380,13 +379,6 @@ func removeHrefs(text string) string {
 	return text
 }
 
-func restoreSpacingForLeadingBackticks(text string) string {
-	exp := regexp.MustCompile(`([\w:])(\x60[^ .,\/?!:;'])`)
-	text = exp.ReplaceAllString(text, `$1 $2`)
-
-	return text
-}
-
 func insertSpaceAfterItemListSeparator(text string) string {
 	exp := regexp.MustCompile(`(^\s*-)(\S)`)
 
@@ -432,6 +424,40 @@ func removeBoldAndItalicTags(text string) string {
 
 	text = strings.ReplaceAll(text, markdown.ItalicStart, "")
 	text = strings.ReplaceAll(text, markdown.ItalicStop, "")
+
+	return text
+}
+
+func highlightBackticks(text string) string {
+	magenta := "\u001B[35m"
+	italic := "\u001B[3m"
+	normal := "\u001B[0m"
+
+	backtick := "`"
+	numberOfBackticks := strings.Count(text, backtick)
+	numberOfBackticksIsOdd := numberOfBackticks%2 != 0
+
+	if numberOfBackticks == 0 || numberOfBackticksIsOdd {
+		return text
+	}
+
+	isOnFirstBacktick := true
+
+	for i := 0; i < numberOfBackticks+1; i++ {
+		if isOnFirstBacktick {
+			text = strings.Replace(text, backtick, codeStart, 1)
+		} else {
+			text = strings.Replace(text, backtick, codeEnd, 1)
+		}
+
+		isOnFirstBacktick = !isOnFirstBacktick
+	}
+
+	exp := regexp.MustCompile(`([\S])(\[CLX_CODE_START\])`)
+	text = exp.ReplaceAllString(text, `$1 $2`)
+
+	text = strings.ReplaceAll(text, codeStart, normal+magenta+italic)
+	text = strings.ReplaceAll(text, codeEnd, normal)
 
 	return text
 }
