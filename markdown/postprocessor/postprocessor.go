@@ -10,8 +10,12 @@ func Process(text string, URL string) string {
 		return processWikipedia(text)
 	}
 
-	if strings.Contains(URL, "www.bbc.com/") {
+	if strings.Contains(URL, "www.bbc.com") {
 		return processBBC(text)
+	}
+
+	if strings.Contains(URL, "www.nytimes.com") {
+		return processNYTimes(text)
 	}
 
 	return text
