@@ -6,11 +6,11 @@ import (
 )
 
 func Process(text string, URL string) string {
-	if strings.Contains(URL, "https://en.wikipedia.org") {
+	if strings.Contains(URL, "en.wikipedia.org") {
 		return processWikipedia(text)
 	}
 
-	if strings.Contains(URL, "https://www.bbc.com/") {
+	if strings.Contains(URL, "www.bbc.com/") {
 		return processBBC(text)
 	}
 
