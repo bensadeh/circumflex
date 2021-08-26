@@ -149,11 +149,11 @@ func renderList(text string, lineWidth int, indentLevel string) string {
 }
 
 func renderImage(text string, lineWidth int) string {
-	magenta := "\u001B[35m"
+	red := "\u001B[31m"
 	italic := "\u001B[3m"
 	faint := "\u001B[2m"
 	normal := "\u001B[0m"
-	image := normal + magenta + faint + "Image: " + normal + faint + italic
+	image := normal + red + faint + "Image: " + normal + faint + italic
 
 	exp := regexp.MustCompile(`!\[(.*?)\]\(.*?\)$`)
 	text = exp.ReplaceAllString(text, image+`$1. `)
@@ -176,9 +176,9 @@ func renderImage(text string, lineWidth int) string {
 	}
 
 	// Remove 'Image: .' for images without captions
-	output = strings.ReplaceAll(output, image+". ", normal+magenta+faint+"Image "+normal+faint+italic)
+	imageLabelNoCaption := normal + red + faint + "Image " + normal + faint + italic
+	output = strings.ReplaceAll(output, image+". ", imageLabelNoCaption)
 
-	// output = strings.ReplaceAll(output, "###", "")
 	output = strings.ReplaceAll(output, "..", ".")
 	output = strings.TrimSuffix(output, "\n\n")
 	output += normal
@@ -220,9 +220,6 @@ func renderQuote(text string, lineWidth int, altIndentBlock bool) string {
 
 	padding := termtext.WrapPad(indentLevel2 + Faint(indentSymbol).String())
 	text, _ = termtext.Wrap(text, lineWidth, padding)
-
-	// text = strings.TrimSuffix(text, "\n")
-	// text = strings.TrimPrefix(text, "\n")
 
 	return text
 }
