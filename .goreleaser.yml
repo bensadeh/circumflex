@@ -29,6 +29,5 @@ brews:
     license: "AGPL-3.0-only"
     dependencies:
       - name: less
-      - name: lynx
     install: |
       bin.install "circumflex" => "clx"
