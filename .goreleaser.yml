@@ -24,7 +24,7 @@ brews:
     tap:
       owner: bensadeh
       name: homebrew-circumflex
-    description: "circumflex is Hacker News in your terminal"
+    description: "circumflex is a command line tool for browsing Hacker News in your terminal"
     homepage: "https://github.com/bensadeh/circumflex/"
     license: "AGPL-3.0-only"
     dependencies:
