@@ -21,7 +21,7 @@ func processWikipedia(text string) string {
 			continue
 		}
 
-		if isOnLineBeforeTarget("References", lines, i) || isOnLineBeforeTarget("Footnotes", lines, i) {
+		if isOnLineBeforeTargetEquals("References", lines, i) || isOnLineBeforeTargetEquals("Footnotes", lines, i) {
 			output += "\n"
 
 			break
