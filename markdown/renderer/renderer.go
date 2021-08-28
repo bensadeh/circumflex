@@ -169,8 +169,14 @@ func renderImage(text string, lineWidth int) string {
 	lines := strings.Split(text, imageLabel)
 	output := ""
 
-	for i, line := range lines {
-		if i == 0 || line == "" {
+	for _, line := range lines {
+		if len(lines) == 1 {
+			output += imageLabel + line + "\n\n"
+
+			break
+		}
+
+		if line == "" {
 			continue
 		}
 
