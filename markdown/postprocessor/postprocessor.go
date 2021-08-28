@@ -1,6 +1,7 @@
 package postprocessor
 
 import (
+	"clx/markdown/postprocessor/filter"
 	"strconv"
 	"strings"
 )
@@ -11,50 +12,47 @@ func Process(text string, URL string) string {
 		text = strings.ReplaceAll(text, "[edit]", "")
 		text = removeWikipediaReferences(text)
 
-		rs := ruleSet{
-			skipContains: nil,
-			skipEquals:   nil,
-			endContains:  nil,
-			endEquals:    []string{"References", "Footnotes"},
-		}
+		ruleSet := filter.RuleSet{}
 
-		return rs.process(text)
+		ruleSet.EndBeforeLineEquals("References")
+		ruleSet.EndBeforeLineEquals("Footnotes")
+
+		return ruleSet.Filter(text)
 
 	case strings.Contains(URL, "www.bbc.com") || strings.Contains(URL, "www.bbc.co.uk"):
 		return processBBC(text)
 
 	case strings.Contains(URL, "www.nytimes.com"):
-		rs := ruleSet{
-			skipContains: []string{"Credit…", "This is a developing story. Check back for updates."},
-			skipEquals:   []string{"Credit"},
-			endContains:  nil,
-			endEquals:    nil,
-		}
+		ruleSet := filter.RuleSet{}
 
-		return rs.process(text)
+		ruleSet.SkipLineContains("Credit…")
+		ruleSet.SkipLineContains("This is a developing story. Check back for updates.")
+
+		ruleSet.SkipLineEquals("Credit")
+
+		return ruleSet.Filter(text)
 
 	case strings.Contains(URL, "www.economist.com"):
-		rs := ruleSet{
-			skipContains: []string{
-				"Listen to this story", "Your browser does not support the ", "Listen on the go",
-				"Get The Economist app and play articles", "Play in app",
-			},
-			skipEquals:  nil,
-			endContains: []string{"This article appeared in the", "For more coverage of "},
-			endEquals:   nil,
-		}
+		ruleSet := filter.RuleSet{}
 
-		return rs.process(text)
+		ruleSet.SkipLineContains("Listen to this story")
+		ruleSet.SkipLineContains("Your browser does not support the ")
+		ruleSet.SkipLineContains("Your browser does not support the ")
+		ruleSet.SkipLineContains("Listen on the go")
+		ruleSet.SkipLineContains("Get The Economist app and play articles")
+		ruleSet.SkipLineContains("Play in app")
+
+		ruleSet.EndBeforeLineContains("This article appeared in the")
+		ruleSet.EndBeforeLineContains("For more coverage of ")
+
+		return ruleSet.Filter(text)
 
 	case strings.Contains(URL, "www.tomshardware.com"):
-		rs := ruleSet{
-			skipContains: []string{"(Image credit: "},
-			skipEquals:   nil,
-			endContains:  nil,
-			endEquals:    nil,
-		}
+		ruleSet := filter.RuleSet{}
 
-		return rs.process(text)
+		ruleSet.SkipLineContains("(Image credit: ")
+
+		return ruleSet.Filter(text)
 
 	default:
 		return text
