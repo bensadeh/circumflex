@@ -29,6 +29,7 @@ func Process(text string, url string) string {
 		ruleSet.SkipLineContains("This is a developing story. Check back for updates.")
 
 		ruleSet.SkipLineEquals("Credit")
+		ruleSet.SkipLineEquals("Image")
 
 		return ruleSet.Filter(text)
 
