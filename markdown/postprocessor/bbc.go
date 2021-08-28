@@ -28,8 +28,8 @@ func processBBC(text string) string {
 			continue
 		}
 
-		if isOnLineBeforeTargetEquals("--", lines, i) ||
-			isOnLineBeforeTargetEquals("You may also be interested in:", lines, i) {
+		if isOnLineBeforeTargetEquals([]string{"--"}, lines, i) ||
+			isOnLineBeforeTargetEquals([]string{"You may also be interested in:"}, lines, i) {
 			output += "\n"
 
 			break
