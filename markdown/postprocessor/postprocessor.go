@@ -2,7 +2,6 @@ package postprocessor
 
 import (
 	"clx/markdown/postprocessor/filter"
-	"strconv"
 	"strings"
 )
 
@@ -95,15 +94,4 @@ func Process(text string, url string) string {
 	default:
 		return text
 	}
-}
-
-func removeWikipediaReferences(input string) string {
-	inputWithoutReferences := input
-
-	for i := 1; i < 256; i++ {
-		number := strconv.Itoa(i)
-		inputWithoutReferences = strings.ReplaceAll(inputWithoutReferences, "["+number+"]", "")
-	}
-
-	return inputWithoutReferences
 }
