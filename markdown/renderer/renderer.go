@@ -468,11 +468,17 @@ func replaceListPrefixes(text string) string {
 	output := ""
 
 	for _, line := range lines {
-		line = regexp.MustCompile(`^`+indentLevel1+indentLevel1+"-").
-			ReplaceAllString(line, indentLevel1+indentLevel1+"•")
+		line = regexp.MustCompile(`^`+strings.Repeat(indentLevel1, 2)+"-").
+			ReplaceAllString(line, strings.Repeat(indentLevel1, 2)+"•")
 
-		line = regexp.MustCompile(`^`+indentLevel1+indentLevel2+"-").
-			ReplaceAllString(line, indentLevel1+indentLevel2+"◦")
+		line = regexp.MustCompile(`^`+strings.Repeat(indentLevel1, 3)+"-").
+			ReplaceAllString(line, strings.Repeat(indentLevel1, 3)+"◦")
+
+		line = regexp.MustCompile(`^`+strings.Repeat(indentLevel1, 4)+"-").
+			ReplaceAllString(line, strings.Repeat(indentLevel1, 4)+"▪")
+
+		line = regexp.MustCompile(`^`+strings.Repeat(indentLevel1, 5)+"-").
+			ReplaceAllString(line, strings.Repeat(indentLevel1, 5)+"▫")
 
 		output += line + "\n"
 	}
