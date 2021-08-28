@@ -56,7 +56,7 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 			output += renderQuote(block.Text, lineWidth, altIndentBlock) + "\n\n"
 
 		case markdown.Table:
-			output += renderTable(block.Text, indentLevel2) + "\n\n"
+			output += renderTable(block.Text) + "\n\n"
 
 		case markdown.List:
 			output += renderList(block.Text, lineWidth, indentLevel2) + "\n\n"
@@ -243,7 +243,7 @@ func removeUnwantedNewLines(text string) string {
 	return output
 }
 
-func renderTable(text string, indentLevel string) string {
+func renderTable(text string) string {
 	screenWidth, _ := terminal.Width()
 	text = strings.ReplaceAll(text, markdown.ItalicStart, "")
 	text = strings.ReplaceAll(text, markdown.ItalicStop, "")
