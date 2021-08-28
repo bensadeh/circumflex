@@ -166,11 +166,15 @@ func renderImage(text string, lineWidth int) string {
 	text = regexp.MustCompile(`!\[(.*?)\]\(.*?\)`).
 		ReplaceAllString(text, imageLabel+`$1`)
 
+	if text == imageLabel {
+		return indentLevel2 + text + normal
+	}
+
 	lines := strings.Split(text, imageLabel)
 	output := ""
 
 	for _, line := range lines {
-		if len(lines) == 1 {
+		if len(lines) == 1 || len(lines) == 0 {
 			output += imageLabel + line + "\n\n"
 
 			break
