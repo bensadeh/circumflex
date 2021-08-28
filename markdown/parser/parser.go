@@ -3,8 +3,8 @@ package parser
 import (
 	"clx/markdown"
 	"errors"
+	"regexp"
 	"strings"
-	"unicode"
 )
 
 func Parse(text string) []*markdown.Block {
@@ -209,12 +209,10 @@ func isListItem(text string) bool {
 		return false
 	}
 
-	firstDigit := text[0]
-	if strings.HasPrefix(text, "-") || unicode.IsDigit(rune(firstDigit)) {
-		return true
-	}
+	exp := regexp.MustCompile(`^\s*(-|\d+\. )`)
+	listToken := exp.FindString(text)
 
-	return false
+	return listToken != ""
 }
 
 func isSameTypeAsPreviousItem(itemType int, blocks []*markdown.Block) bool {

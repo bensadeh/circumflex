@@ -59,7 +59,7 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 			output += renderTable(block.Text) + "\n\n"
 
 		case markdown.List:
-			output += renderList(block.Text, lineWidth, indentLevel2) + "\n\n"
+			output += renderList(block.Text, lineWidth) + "\n\n"
 
 		case markdown.Divider:
 			output += renderDivider(lineWidth) + "\n\n"
@@ -116,7 +116,7 @@ func renderText(text string, lineWidth int, indentLevel string) string {
 	return text
 }
 
-func renderList(text string, lineWidth int, indentLevel string) string {
+func renderList(text string, lineWidth int) string {
 	// Remove unwanted newlines
 	exp := regexp.MustCompile(`([\w\W[:cntrl:]])(\n)\s*([a-zA-Z\x60(])`)
 	text = exp.ReplaceAllString(text, `$1 $3`)
@@ -132,7 +132,8 @@ func renderList(text string, lineWidth int, indentLevel string) string {
 	lines := strings.Split(text, "\n")
 
 	for _, line := range lines {
-		exp := regexp.MustCompile(`^\s*[0-9-.]+`)
+		exp := regexp.MustCompile(`^\s*(-|\d+\.) `)
+
 		listToken := exp.FindString(line)
 		listText := strings.TrimLeft(line, listToken)
 
