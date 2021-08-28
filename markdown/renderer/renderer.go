@@ -453,6 +453,8 @@ func highlightBackticks(text string) string {
 	exp := regexp.MustCompile(`([\S])(\[CLX_CODE_START\])`)
 	text = exp.ReplaceAllString(text, `$1 $2`)
 
+	text = strings.ReplaceAll(text, "( "+codeStart, "("+codeStart)
+
 	text = strings.ReplaceAll(text, codeStart, normal+magenta+italic)
 	text = strings.ReplaceAll(text, codeEnd, normal)
 
