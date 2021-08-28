@@ -56,6 +56,13 @@ func Process(text string, URL string) string {
 
 		return ruleSet.Filter(text)
 
+	case strings.Contains(URL, "cnn.com"):
+		ruleSet := filter.RuleSet{}
+
+		ruleSet.SkipParContains("Credit: ")
+
+		return ruleSet.Filter(text)
+
 	default:
 		return text
 	}
