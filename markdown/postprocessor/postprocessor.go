@@ -50,6 +50,8 @@ func Process(text string, URL string) string {
 	case strings.Contains(URL, "www.tomshardware.com"):
 		ruleSet := filter.RuleSet{}
 
+		ruleSet.SkipLineContains("1. Home")
+		ruleSet.SkipLineContains("2. News")
 		ruleSet.SkipLineContains("(Image credit: ")
 
 		return ruleSet.Filter(text)

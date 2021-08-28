@@ -42,14 +42,14 @@ func filterByLine(lines []string, output string, rs *RuleSet) string {
 			continue
 		}
 
-		if isOnFirstOrLastLine {
-			output += line + "\n"
-
+		if equals(rs.skipLineEquals, line) ||
+			contains(rs.skipLineContains, line) {
 			continue
 		}
 
-		if equals(rs.skipLineEquals, line) ||
-			contains(rs.skipLineContains, line) {
+		if isOnFirstOrLastLine {
+			output += line + "\n"
+
 			continue
 		}
 
@@ -75,14 +75,14 @@ func filterByParagraph(paragraphs []string, output string, rs *RuleSet) string {
 			continue
 		}
 
-		if isOnFirstOrLastParagraph {
-			output += paragraph + "\n\n"
-
+		if equals(rs.skipLineEquals, paragraph) ||
+			contains(rs.skipLineContains, paragraph) {
 			continue
 		}
 
-		if equals(rs.skipLineEquals, paragraph) ||
-			contains(rs.skipLineContains, paragraph) {
+		if isOnFirstOrLastParagraph {
+			output += paragraph + "\n\n"
+
 			continue
 		}
 
