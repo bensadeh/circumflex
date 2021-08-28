@@ -314,9 +314,10 @@ The following table shows the different ways in which `circumflex` can be config
 
 * [tcell](https://github.com/gdamore/tcell) and [cview](https://code.rocketnine.space/tslocum/cview) for the TUI
 * [cobra](https://github.com/spf13/cobra) and [viper](https://github.com/spf13/viper) for the CLI
-* [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) for providing stories and comments
-* [`less`](http://greenwoodsoftware.com/less/) for viewing comments
+* [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) for providing submissions and comments
+* [`less`](http://greenwoodsoftware.com/less/) for viewing comments and articles
 * [go-term-text](https://github.com/MichaelMure/go-term-text) for text formatting
+* [go-readability](https://github.com/go-shiori/go-readability) and [html-to-markdown](https://github.com/JohannesKaufmann/html-to-markdown) for providing articles in Reader Mode
 
 Screenshots use:
 
