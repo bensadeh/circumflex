@@ -244,6 +244,7 @@ func removeUnwantedNewLines(text string) string {
 }
 
 func renderTable(text string, indentLevel string) string {
+	screenWidth, _ := terminal.Width()
 	text = strings.ReplaceAll(text, markdown.ItalicStart, "")
 	text = strings.ReplaceAll(text, markdown.ItalicStop, "")
 
@@ -253,7 +254,8 @@ func renderTable(text string, indentLevel string) string {
 	text = unescapeCharacters(text)
 	text = removeImageReference(text)
 
-	r, _ := glamour.NewTermRenderer(glamour.WithStyles(glamour.NoTTYStyleConfig), glamour.WithWordWrap(80))
+	r, _ := glamour.NewTermRenderer(glamour.WithStyles(glamour.NoTTYStyleConfig),
+		glamour.WithWordWrap(int(screenWidth)))
 
 	out, _ := r.Render(text)
 
