@@ -78,6 +78,13 @@ func Process(text string, url string) string {
 
 		return ruleSet.Filter(text)
 
+	case strings.Contains(url, "wired.com"):
+		ruleSet := filter.RuleSet{}
+
+		ruleSet.EndBeforeLineEquals("More Great WIRED Stories")
+
+		return ruleSet.Filter(text)
+
 	default:
 		return text
 	}
