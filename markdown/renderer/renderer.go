@@ -145,6 +145,8 @@ func renderList(text string, lineWidth int, indentLevel string) string {
 		output += wrappedIndentedItem + "\n"
 	}
 
+	output = replaceListPrefixes(output)
+
 	return strings.TrimRight(output, "\n")
 }
 
@@ -459,4 +461,21 @@ func highlightBackticks(text string) string {
 	text = strings.ReplaceAll(text, codeEnd, normal)
 
 	return text
+}
+
+func replaceListPrefixes(text string) string {
+	lines := strings.Split(text, "\n")
+	output := ""
+
+	for _, line := range lines {
+		line = regexp.MustCompile(`^`+indentLevel1+indentLevel1+"-").
+			ReplaceAllString(line, indentLevel1+indentLevel1+"•")
+
+		line = regexp.MustCompile(`^`+indentLevel1+indentLevel2+"-").
+			ReplaceAllString(line, indentLevel1+indentLevel2+"◦")
+
+		output += line + "\n"
+	}
+
+	return output
 }
