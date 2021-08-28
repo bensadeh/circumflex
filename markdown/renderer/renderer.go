@@ -18,7 +18,7 @@ import (
 
 const (
 	indentLevel1 = "  "
-	indentLevel2 = "    "
+	indentLevel2 = indentLevel1 + indentLevel1
 	newLine      = "\n"
 	newParagraph = "\n\n"
 	codeStart    = "[CLX_CODE_START]"
@@ -155,18 +155,18 @@ func renderImage(text string, lineWidth int) string {
 	italic := "\u001B[3m"
 	faint := "\u001B[2m"
 	normal := "\u001B[0m"
-	image := normal + red + faint + "Image: " + normal + faint + italic
+	imageLabel := normal + red + faint + "Image " + normal + faint + italic
 
-	exp := regexp.MustCompile(`!\[(.*?)\]\(.*?\)$`)
-	text = exp.ReplaceAllString(text, image+`$1. `)
+	text = regexp.MustCompile(`!\[(.*?)\]\(.*?\)$`).
+		ReplaceAllString(text, imageLabel+`$1`)
 
-	exp = regexp.MustCompile(`!\[(.*?)\]\(.*?\)\s`)
-	text = exp.ReplaceAllString(text, image+`$1. `)
+	text = regexp.MustCompile(`!\[(.*?)\]\(.*?\)\s`).
+		ReplaceAllString(text, imageLabel+`$1`)
 
-	exp = regexp.MustCompile(`!\[(.*?)\]\(.*?\)`)
-	text = exp.ReplaceAllString(text, image+`$1. `)
+	text = regexp.MustCompile(`!\[(.*?)\]\(.*?\)`).
+		ReplaceAllString(text, imageLabel+`$1`)
 
-	lines := strings.Split(text, image)
+	lines := strings.Split(text, imageLabel)
 	output := ""
 
 	for i, line := range lines {
@@ -174,14 +174,9 @@ func renderImage(text string, lineWidth int) string {
 			continue
 		}
 
-		output += image + line + "\n\n"
+		output += imageLabel + line + "\n\n"
 	}
 
-	// Remove 'Image: .' for images without captions
-	imageLabelNoCaption := normal + red + faint + "Image " + normal + faint + italic
-	output = strings.ReplaceAll(output, image+". ", imageLabelNoCaption)
-
-	output = strings.ReplaceAll(output, "..", ".")
 	output = strings.TrimSuffix(output, "\n\n")
 	output += normal
 
