@@ -132,7 +132,7 @@ func renderList(text string, lineWidth int) string {
 	lines := strings.Split(text, "\n")
 
 	for _, line := range lines {
-		exp := regexp.MustCompile(`^\s*(-|\d+\.) `)
+		exp := regexp.MustCompile(`^\s*(-|\d+\.)`)
 
 		listToken := exp.FindString(line)
 		listText := strings.TrimLeft(line, listToken)
