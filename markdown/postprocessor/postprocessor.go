@@ -19,10 +19,10 @@ func Process(text string, url string) string {
 
 		return ruleSet.Filter(text)
 
-	case strings.Contains(url, "www.bbc.com") || strings.Contains(url, "www.bbc.co.uk"):
+	case strings.Contains(url, "bbc.com") || strings.Contains(url, "bbc.co.uk"):
 		return processBBC(text)
 
-	case strings.Contains(url, "www.nytimes.com"):
+	case strings.Contains(url, "nytimes.com"):
 		ruleSet := filter.RuleSet{}
 
 		ruleSet.SkipLineContains("Credit…")
@@ -33,7 +33,7 @@ func Process(text string, url string) string {
 
 		return ruleSet.Filter(text)
 
-	case strings.Contains(url, "www.economist.com"):
+	case strings.Contains(url, "economist.com"):
 		ruleSet := filter.RuleSet{}
 
 		ruleSet.SkipLineContains("Listen to this story")
@@ -48,7 +48,7 @@ func Process(text string, url string) string {
 
 		return ruleSet.Filter(text)
 
-	case strings.Contains(url, "www.tomshardware.com"):
+	case strings.Contains(url, "tomshardware.com"):
 		ruleSet := filter.RuleSet{}
 
 		ruleSet.SkipLineContains("1. Home")
@@ -82,6 +82,13 @@ func Process(text string, url string) string {
 		ruleSet := filter.RuleSet{}
 
 		ruleSet.EndBeforeLineEquals("More Great WIRED Stories")
+
+		return ruleSet.Filter(text)
+
+	case strings.Contains(url, "theguardian.com"):
+		ruleSet := filter.RuleSet{}
+
+		ruleSet.SkipParContains("Photograph:")
 
 		return ruleSet.Filter(text)
 
