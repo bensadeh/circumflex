@@ -63,6 +63,13 @@ func Process(text string, URL string) string {
 
 		return ruleSet.Filter(text)
 
+	case strings.Contains(URL, "arstechnica.com"):
+		ruleSet := filter.RuleSet{}
+
+		ruleSet.SkipParContains("Enlarge/ ")
+
+		return ruleSet.Filter(text)
+
 	default:
 		return text
 	}
