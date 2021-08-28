@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.19
-_WIP_
+_2021-08-28_
 
 This release replaces `lynx` for rendering `HTML` in favour of handling the rendering logic directly in `circumflex`.
 
