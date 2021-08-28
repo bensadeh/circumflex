@@ -75,8 +75,8 @@ func filterByParagraph(paragraphs []string, output string, rs *RuleSet) string {
 			continue
 		}
 
-		if equals(rs.skipLineEquals, paragraph) ||
-			contains(rs.skipLineContains, paragraph) {
+		if equals(rs.skipParEquals, paragraph) ||
+			contains(rs.skipParContains, paragraph) {
 			continue
 		}
 
