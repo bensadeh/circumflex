@@ -70,6 +70,13 @@ func Process(text string, url string) string {
 
 		return ruleSet.Filter(text)
 
+	case strings.Contains(url, "macrumors.com"):
+		ruleSet := filter.RuleSet{}
+
+		ruleSet.EndBeforeLineEquals("Top Stories")
+
+		return ruleSet.Filter(text)
+
 	default:
 		return text
 	}
