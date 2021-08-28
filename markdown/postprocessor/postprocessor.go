@@ -6,9 +6,9 @@ import (
 	"strings"
 )
 
-func Process(text string, URL string) string {
+func Process(text string, url string) string {
 	switch {
-	case strings.Contains(URL, "en.wikipedia.org"):
+	case strings.Contains(url, "en.wikipedia.org"):
 		text = strings.ReplaceAll(text, "[edit]", "")
 		text = removeWikipediaReferences(text)
 
@@ -19,10 +19,10 @@ func Process(text string, URL string) string {
 
 		return ruleSet.Filter(text)
 
-	case strings.Contains(URL, "www.bbc.com") || strings.Contains(URL, "www.bbc.co.uk"):
+	case strings.Contains(url, "www.bbc.com") || strings.Contains(url, "www.bbc.co.uk"):
 		return processBBC(text)
 
-	case strings.Contains(URL, "www.nytimes.com"):
+	case strings.Contains(url, "www.nytimes.com"):
 		ruleSet := filter.RuleSet{}
 
 		ruleSet.SkipLineContains("Credit…")
@@ -32,7 +32,7 @@ func Process(text string, URL string) string {
 
 		return ruleSet.Filter(text)
 
-	case strings.Contains(URL, "www.economist.com"):
+	case strings.Contains(url, "www.economist.com"):
 		ruleSet := filter.RuleSet{}
 
 		ruleSet.SkipLineContains("Listen to this story")
@@ -47,7 +47,7 @@ func Process(text string, URL string) string {
 
 		return ruleSet.Filter(text)
 
-	case strings.Contains(URL, "www.tomshardware.com"):
+	case strings.Contains(url, "www.tomshardware.com"):
 		ruleSet := filter.RuleSet{}
 
 		ruleSet.SkipLineContains("1. Home")
@@ -56,14 +56,14 @@ func Process(text string, URL string) string {
 
 		return ruleSet.Filter(text)
 
-	case strings.Contains(URL, "cnn.com"):
+	case strings.Contains(url, "cnn.com"):
 		ruleSet := filter.RuleSet{}
 
 		ruleSet.SkipParContains("Credit: ")
 
 		return ruleSet.Filter(text)
 
-	case strings.Contains(URL, "arstechnica.com"):
+	case strings.Contains(url, "arstechnica.com"):
 		ruleSet := filter.RuleSet{}
 
 		ruleSet.SkipParContains("Enlarge/ ")
