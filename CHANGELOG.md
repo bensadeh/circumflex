@@ -3,6 +3,15 @@
 ## 1.19
 _WIP_
 
+This release replaces `lynx` for rendering `HTML` in favour of handling the rendering logic directly in `circumflex`.
+
+**Backend**
+- Bump Go to 1.17
+- Reader Mode: Removed `lynx` as a dependency
+   - Added support for code blocks and in-line code highlighting
+   - Added support for prettier tables
+   - Added support for rendering different headers (`h1` - `h6`)
+   - Added support for well-formatted lists and sub-lists
 
 
 ## 1.18
