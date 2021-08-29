@@ -82,6 +82,7 @@ func Process(text string, url string) string {
 		ruleSet := filter.RuleSet{}
 
 		ruleSet.SkipParContains("Read more: ")
+		ruleSet.SkipParContains("Do you use social media regularly? Take our short survey.")
 
 		ruleSet.EndBeforeLineEquals("More Great WIRED Stories")
 
