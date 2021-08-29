@@ -2,6 +2,7 @@ package reader
 
 import (
 	"clx/article"
+	"clx/markdown"
 	"clx/markdown/preprocessor"
 	"fmt"
 	"log"
@@ -61,28 +62,28 @@ func GetNew(url string) (string, error) {
 		},
 	}
 
-	//span := md.Rule{
-	//	Filter: []string{"span"},
-	//	Replacement: func(content string, selec *goquery.Selection, opt *md.Options) *string {
-	//		// If the span element has not the classname `bb_strike` return nil.
-	//		// That way the next rules will apply. In this case the commonmark rules.
-	//		// -> return nil -> next rule applies
-	//		//if !selec.HasClass("href") {
-	//		//	return nil
-	//		//}
-	//
-	//		// Trim spaces so that the following does NOT happen: `~ and cake~`.
-	//		// Because of the space it is not recognized as strikethrough.
-	//		// -> trim spaces at begin&end of string when inside strong/italic/...
-	//		content = strings.TrimSpace(content)
-	//		// return md.String("[" + content + "]")
-	//		return md.String(content)
-	//	},
-	//}
+	italic := md.Rule{
+		Filter: []string{"i"},
+		Replacement: func(content string, selec *goquery.Selection, opt *md.Options) *string {
+			// If the span element has not the classname `bb_strike` return nil.
+			// That way the next rules will apply. In this case the commonmark rules.
+			// -> return nil -> next rule applies
+			//if !selec.HasClass("href") {
+			//	return nil
+			//}
+
+			// Trim spaces so that the following does NOT happen: `~ and cake~`.
+			// Because of the space it is not recognized as strikethrough.
+			// -> trim spaces at begin&end of string when inside strong/italic/...
+			content = strings.TrimSpace(content)
+			return md.String(markdown.ItalicStart + content + markdown.ItalicStop)
+		},
+	}
 
 	opt := &md.Options{}
 	converter := md.NewConverter("", true, opt)
 	converter.AddRules(href)
+	converter.AddRules(italic)
 	converter.Use(plugin.Table())
 	// converter.AddRules(span)
 
