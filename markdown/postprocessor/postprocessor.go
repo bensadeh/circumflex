@@ -24,8 +24,8 @@ func Process(text string, url string) string {
 	case strings.Contains(url, "nytimes.com"):
 		ruleSet := filter.RuleSet{}
 
-		ruleSet.SkipLineContains("Credit…")
-		ruleSet.SkipLineContains("This is a developing story. Check back for updates.")
+		ruleSet.SkipParContains("Credit…")
+		ruleSet.SkipParContains("This is a developing story. Check back for updates.")
 
 		ruleSet.SkipLineEquals("Credit")
 		ruleSet.SkipLineEquals("Image")
@@ -35,12 +35,12 @@ func Process(text string, url string) string {
 	case strings.Contains(url, "economist.com"):
 		ruleSet := filter.RuleSet{}
 
-		ruleSet.SkipLineContains("Listen to this story")
-		ruleSet.SkipLineContains("Your browser does not support the ")
-		ruleSet.SkipLineContains("Your browser does not support the ")
-		ruleSet.SkipLineContains("Listen on the go")
-		ruleSet.SkipLineContains("Get The Economist app and play articles")
-		ruleSet.SkipLineContains("Play in app")
+		ruleSet.SkipParContains("Listen to this story")
+		ruleSet.SkipParContains("Your browser does not support the ")
+		ruleSet.SkipParContains("Your browser does not support the ")
+		ruleSet.SkipParContains("Listen on the go")
+		ruleSet.SkipParContains("Get The Economist app and play articles")
+		ruleSet.SkipParContains("Play in app")
 
 		ruleSet.EndBeforeLineContains("This article appeared in the")
 		ruleSet.EndBeforeLineContains("For more coverage of ")
@@ -50,9 +50,9 @@ func Process(text string, url string) string {
 	case strings.Contains(url, "tomshardware.com"):
 		ruleSet := filter.RuleSet{}
 
-		ruleSet.SkipLineContains("1. Home")
-		ruleSet.SkipLineContains("2. News")
-		ruleSet.SkipLineContains("(Image credit: ")
+		ruleSet.SkipParContains("1. Home")
+		ruleSet.SkipParContains("2. News")
+		ruleSet.SkipParContains("(Image credit: ")
 
 		return ruleSet.Filter(text)
 
