@@ -118,6 +118,16 @@ func Process(text string, url string) string {
 
 		return ruleSet.Filter(text)
 
+	case strings.Contains(url, "9to5mac.com"):
+		ruleSet := filter.RuleSet{}
+
+		ruleSet.SkipParContains("We use income earning auto affiliate links.")
+		ruleSet.SkipParContains("Check out 9to5Mac on YouTube for more Apple news:")
+
+		ruleSet.EndBeforeLineEquals("About the Author")
+
+		return ruleSet.Filter(text)
+
 	default:
 		return text
 	}

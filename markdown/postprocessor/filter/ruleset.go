@@ -119,7 +119,7 @@ func (rs *RuleSet) EndBeforeLineEquals(text string) {
 func equals(targets []string, line string) bool {
 	for _, target := range targets {
 		line = ansi.Strip(line)
-		line = strings.TrimLeft(line, " ")
+		line = strings.TrimSpace(line)
 
 		if line == target {
 			return true
@@ -131,6 +131,7 @@ func equals(targets []string, line string) bool {
 
 func contains(targets []string, line string) bool {
 	for _, target := range targets {
+		target = ansi.Strip(target)
 		if strings.Contains(line, target) {
 			return true
 		}
