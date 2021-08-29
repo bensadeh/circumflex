@@ -91,6 +91,29 @@ func Process(text string, url string) string {
 
 		return ruleSet.Filter(text)
 
+	case strings.Contains(url, "axios.com"):
+		ruleSet := filter.RuleSet{}
+
+		ruleSet.SkipParContains("Sign up for our daily briefing")
+		ruleSet.SkipParContains("Catch up on the day's biggest business stories")
+		ruleSet.SkipParContains("Stay on top of the latest market trends")
+		ruleSet.SkipParContains("Sports news worthy of your time")
+		ruleSet.SkipParContains("Tech news worthy of your time")
+		ruleSet.SkipParContains("Get the inside stories")
+		ruleSet.SkipParContains("Axios on your phone")
+		ruleSet.SkipParContains("Catch up on coronavirus stories and special reports")
+		ruleSet.SkipParContains("Want a daily digest of the top ")
+		ruleSet.SkipParContains("Get a daily digest of the most important stories ")
+		ruleSet.SkipParContains("Download for free.")
+		ruleSet.SkipParContains("Sign up for free.")
+		ruleSet.SkipParContains("Make your busy days simpler with Axios AM/PM")
+		ruleSet.SkipParContains("Subscribe to Axios Closer")
+		ruleSet.SkipParContains("Get breaking news")
+		ruleSet.SkipParContains("Sign up for Axios")
+		ruleSet.SkipParContains("Stay up-to-date on the most important and interesting")
+
+		return ruleSet.Filter(text)
+
 	default:
 		return text
 	}
