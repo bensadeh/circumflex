@@ -67,6 +67,7 @@ func Process(text string, url string) string {
 		ruleSet := filter.RuleSet{}
 
 		ruleSet.SkipParContains("Enlarge/ ")
+		ruleSet.SkipParContains("This story originally appeared on ")
 
 		return ruleSet.Filter(text)
 
