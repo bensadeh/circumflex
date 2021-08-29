@@ -77,8 +77,10 @@ func Process(text string, url string) string {
 
 		return ruleSet.Filter(text)
 
-	case strings.Contains(url, "wired.com"):
+	case strings.Contains(url, "wired.com") || strings.Contains(url, "wired.co.uk"):
 		ruleSet := filter.RuleSet{}
+
+		ruleSet.SkipParContains("Read more: ")
 
 		ruleSet.EndBeforeLineEquals("More Great WIRED Stories")
 
