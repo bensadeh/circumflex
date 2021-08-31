@@ -104,32 +104,18 @@ pager `less`. To present a nice and readable comment section, `circumflex` featu
 * Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
 * Adjustable margins and comment width
 
-
-**Tip**: use <kbd>d</kbd> and <kbd>u</kbd> to scroll the comment section by half a screen.
-Then use <kbd>j</kbd>/<kbd>k</kbd> or the arrow keys to scroll one line at a time.
-
 <p align="center">
   <img src="screenshots/comments.png" width="600" alt="^"/>
 </p>
 
+### Navigation
+The following pair of shortcuts are recommended for browsing and navigating the 
+comment section.
 
-### Jumping between top-level comments
-`circumflex` prints every top-level comment with the string `::`. Using `less`'s search,
-you can move between top-level posts by searching for `::`.
+- <kbd>d</kbd>/<kbd>u</kbd> to scroll half a screen
+- <kbd>j</kbd>/<kbd>k</kbd> to scroll one line at a time 
+- <kbd>n</kbd>/<kbd>N</kbd> to jump to the **next top-level comment**
 
-To navigate between top-level comments, press <kbd>/</kbd> to search for `::`. Then, press <kbd>n</kbd> or <kbd>N</kbd> 
-to jump forwards or backwards, respectively.
-
-<pre>  
-  <kbd>/</kbd>: search
-  <kbd>n</kbd>: repeat search forwards
-  <kbd>N</kbd>: repeat search backward
-</pre>
-
-`less` remembers your search term between sessions. This means that once you have searched for the string `::` once, 
-you can use <kbd>n</kbd>/<kbd>N</kbd> directly (without pressing <kbd>/</kbd> first).
-
-In practice, <kbd>n</kbd>/<kbd>N</kbd> becomes another shortcut for navigating the comment section.
 
 ## 👓 Reader Mode
 Press <kbd>Space</kbd> to read the submission link in Reader Mode in the pager `less`. 

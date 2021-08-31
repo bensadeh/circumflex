@@ -2,6 +2,7 @@ package comment
 
 import (
 	"clx/constants/messages"
+	"clx/constants/unicode"
 	"clx/core"
 	"clx/endpoints"
 	"clx/indent"
@@ -39,15 +40,16 @@ func getHeader(c endpoints.Comments, config *core.Config, screenWidth int) strin
 	headline := getHeadline(c.Title, config)
 	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
 	helpMessage := aurora.Faint(messages.LessScreenInfo).Faint().String() + newLine
+	helpMessage += aurora.Faint(messages.LessCommentInfo).Faint().String() + newLine
 	url := getURL(c.URL, c.Domain, config)
 	rootComment := parseRootComment(c.Content, config)
 	separator := messages.GetSeparator(config.CommentWidth)
 
-	return headline + infoLine + helpMessage + url + rootComment + separator + newParagraph
+	return headline + helpMessage + newLine + infoLine + url + rootComment + separator + newParagraph
 }
 
 func getHeadline(title string, config *core.Config) string {
-	formattedTitle := highlightTitle(title, config.HighlightHeadlines)
+	formattedTitle := highlightTitle(unicode.ZeroWidthSpace+title, config.HighlightHeadlines)
 	wrappedHeadline, _ := text.Wrap(formattedTitle, config.CommentWidth)
 
 	return wrappedHeadline + newParagraph
@@ -140,10 +142,11 @@ func getCommentHeading(c endpoints.Comments, level int, commentWidth int, origin
 
 	if level == 0 {
 		replies := getRepliesTag(getReplyCount(c))
-		anchor := " ::"
+		anchor := unicode.ZeroWidthSpace
 		lengthOfUnderline := commentWidth - text.Len(author+label+anchor+timeAgo+replies)
 		headerLine := strings.Repeat(" ", lengthOfUnderline)
 		info := aurora.Faint(timeAgo + headerLine + replies + anchor).Underline().String()
+
 		return author + label + info + newLine
 	}
 

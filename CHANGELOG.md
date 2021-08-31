@@ -3,6 +3,24 @@
 ## 1.20
 _WIP_
 
+**New features**
+- New keybinding: press <kbd>n</kbd>/<kbd>N</kbd> to jump to the next top-level comment
+or headline
+
+**Cosmetic**
+- Added custom filtering rules for the following sites:
+  - `nytimes.com`
+  - `economist.com`
+  - `tomshardware.com`
+  - `cnn.com`
+  - `arstechnica.com`
+  - `macrumors.com`
+  - `wired.com`
+  - `wired.co.uk`
+  - `theguardian.com`
+  - `axios.com`
+  - `9to5mac.com`
+
 ## 1.19
 _2021-08-28_
 
@@ -15,7 +33,6 @@ This release replaces `lynx` for rendering `HTML` in favour of handling the rend
    - Added support for prettier tables
    - Added support for rendering different headers (`h1` - `h6`)
    - Added support for well-formatted lists and sub-lists
-
 
 ## 1.18
 _2021-08-03_

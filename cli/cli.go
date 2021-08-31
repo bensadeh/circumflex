@@ -1,13 +1,18 @@
 package cli
 
 import (
+	"clx/constants/unicode"
 	"os"
 	"os/exec"
 	"strings"
 )
 
 func Less(input string) {
-	command := exec.Command("less", "-r")
+	command := exec.Command("less",
+		"--RAW-CONTROL-CHARS",
+		"--pattern="+unicode.ZeroWidthSpace,
+		"--ignore-case")
+
 	command.Stdin = strings.NewReader(input)
 	command.Stdout = os.Stdout
 

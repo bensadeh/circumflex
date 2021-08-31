@@ -2,6 +2,7 @@ package renderer
 
 import (
 	"clx/constants/messages"
+	"clx/constants/unicode"
 	"clx/indent"
 	"clx/markdown"
 	"clx/syntax"
@@ -26,11 +27,12 @@ const (
 )
 
 func CreateHeader(title string, domain string, lineWidth int) string {
-	wrappedTitle, _ := termtext.Wrap(title, lineWidth)
+	wrappedTitle, _ := termtext.Wrap(unicode.ZeroWidthSpace+title, lineWidth)
 	truncatedDomain := termtext.TruncateMax(domain, lineWidth)
 
 	wrappedTitle += newParagraph
 	wrappedTitle += Faint(messages.LessScreenInfo).String() + newLine
+	wrappedTitle += Faint(messages.LessArticleInfo).String() + newLine + newLine
 	wrappedTitle += Faint(truncatedDomain).String() + newLine
 	separator := messages.GetSeparator(lineWidth)
 	wrappedTitle += separator + newParagraph
@@ -398,6 +400,7 @@ func preFormatHeader(text string) string {
 	text = removeBoldAndItalicTags(text)
 	text = unescapeCharacters(text)
 	text = it(text)
+	text = unicode.ZeroWidthSpace + text
 
 	return text
 }
