@@ -37,7 +37,7 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 		app.SetRoot(main.Grid, true)
 
 		resetStates(appState, ret)
-		initializeView(appState, main, ret)
+		initializeView(appState, main, ret, config)
 
 		listItems, err := ret.GetStories(appState.CurrentCategory, appState.CurrentPage,
 			appState.StoriesToShow, config.HighlightHeadlines, config.HideYCJobs)
@@ -82,13 +82,15 @@ func resetApplicationState(appState *core.ApplicationState) {
 	appState.IsOffline = false
 }
 
-func initializeView(appState *core.ApplicationState, main *core.MainView, ret *handler.StoryHandler) {
-	header := ret.GetHackerNewsHeader(appState.CurrentCategory)
+func initializeView(appState *core.ApplicationState, main *core.MainView, ret *handler.StoryHandler,
+	config *core.Config) {
+	header := ret.GetHackerNewsHeader(appState.CurrentCategory, config.OrangeHeader)
 
 	view.SetPanelToMainView(main)
 	view.SetHackerNewsHeader(main, header)
-	view.SetPageCounter(main, appState.CurrentPage, ret.GetMaxPages(appState.CurrentCategory,
-		appState.StoriesToShow))
+	view.SetPageCounter(main,
+		appState.CurrentPage,
+		ret.GetMaxPages(appState.CurrentCategory, appState.StoriesToShow))
 }
 
 func Refresh(app *cview.Application, main *core.MainView, appState *core.ApplicationState) {
@@ -310,7 +312,7 @@ func changePage(app *cview.Application, list *cview.List, main *core.MainView, a
 
 	marginText := ranking.GetRankings(config.RelativeNumbering, appState.StoriesToShow, len(listItems),
 		list.GetCurrentItemIndex(), appState.CurrentPage)
-	header := ret.GetHackerNewsHeader(appState.CurrentCategory)
+	header := ret.GetHackerNewsHeader(appState.CurrentCategory, config.OrangeHeader)
 	maxPages := ret.GetMaxPages(appState.CurrentCategory, appState.StoriesToShow)
 
 	view.SetLeftMarginText(main, marginText)
@@ -336,7 +338,7 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	view.SelectItem(list, currentItem)
 	ClearVimRegister(main, reg)
 
-	header := ret.GetHackerNewsHeader(appState.CurrentCategory)
+	header := ret.GetHackerNewsHeader(appState.CurrentCategory, config.OrangeHeader)
 	marginText := ranking.GetRankings(config.RelativeNumbering, appState.StoriesToShow, len(listItems),
 		list.GetCurrentItemIndex(), appState.CurrentPage)
 	maxPages := ret.GetMaxPages(appState.CurrentCategory, appState.StoriesToShow)
@@ -433,7 +435,7 @@ func ExitInfoScreen(main *core.MainView, appState *core.ApplicationState, config
 
 	marginText := ranking.GetRankings(config.RelativeNumbering, appState.StoriesToShow, list.GetItemCount(),
 		list.GetCurrentItemIndex(), appState.CurrentPage)
-	header := ret.GetHackerNewsHeader(appState.CurrentCategory)
+	header := ret.GetHackerNewsHeader(appState.CurrentCategory, config.OrangeHeader)
 	maxPages := ret.GetMaxPages(appState.CurrentCategory, appState.StoriesToShow)
 
 	view.SetLeftMarginText(main, marginText)

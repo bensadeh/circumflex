@@ -39,4 +39,5 @@ func setDefaultValues() {
 	viper.SetDefault(settings.EmojiSmileysKey, settings.EmojiSmileysDefault)
 	viper.SetDefault(settings.MarkAsReadKey, settings.MarkAsReadDefault)
 	viper.SetDefault(settings.HideIndentSymbolKey, settings.HideIndentSymbolDefault)
+	viper.SetDefault(settings.OrangeHeaderKey, settings.OrangeHeaderDefault)
 }

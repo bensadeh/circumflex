@@ -51,4 +51,5 @@ type Config struct {
 	EmojiSmileys        bool `mapstructure:"CLX_EMOJI_SMILEYS"`
 	MarkAsRead          bool `mapstructure:"CLX_MARK_AS_READ"`
 	HideIndentSymbol    bool `mapstructure:"CLX_HIDE_INDENT_SYMBOL"`
+	OrangeHeader        bool `mapstructure:"CLX_ORANGE_HEADER"`
 }

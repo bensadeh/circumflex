@@ -20,6 +20,7 @@ var (
 	showYCJobs          bool
 	preserveRightMargin bool
 	hideIndentSymbol    bool
+	orangeHeader        bool
 )
 
 var rootCmd = &cobra.Command{
@@ -63,6 +64,10 @@ var rootCmd = &cobra.Command{
 			viper.Set(settings.HideIndentSymbolKey, true)
 		}
 
+		if orangeHeader {
+			viper.Set(settings.OrangeHeaderKey, true)
+		}
+
 		clx.Run()
 	},
 }
@@ -87,6 +92,8 @@ func Execute() error {
 		"preserve right margin at the cost of comment width")
 	rootCmd.PersistentFlags().BoolVarP(&hideIndentSymbol, "hide-indent", "t", false,
 		"hide the indentation symbol")
+	rootCmd.PersistentFlags().BoolVarP(&orangeHeader, "orange-header", "n", false,
+		"set the header to black on orange")
 
 	rootCmd.PersistentFlags().IntP("comment-width", "c", settings.CommentWidthDefault,
 		"set the comment width")

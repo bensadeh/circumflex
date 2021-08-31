@@ -6,6 +6,7 @@ _WIP_
 **New features**
 - New keybinding: press <kbd>n</kbd>/<kbd>N</kbd> to jump to the next top-level comment
 or headline
+- Added an option to set the header to orange
 
 **Cosmetic**
 - Added custom filtering rules for the following sites:

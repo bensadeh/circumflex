@@ -237,11 +237,11 @@ func (r *StoryHandler) UpdateFavoriteStoryAndWriteToDisk(newStory *endpoints.Com
 	}
 }
 
-func (r *StoryHandler) GetHackerNewsHeader(currentCategory int) string {
+func (r *StoryHandler) GetHackerNewsHeader(currentCategory int, orangeHeader bool) string {
 	fav := r.sc[categories.Favorites].stories
 	showFavorites := len(fav) != 0
 
-	return header.GetHackerNewsHeader(currentCategory, showFavorites)
+	return header.GetHackerNewsHeader(currentCategory, showFavorites, orangeHeader)
 }
 
 func (r *StoryHandler) GetNewCategory(event *tcell.EventKey, currentCategory int) int {

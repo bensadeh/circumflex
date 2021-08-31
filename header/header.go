@@ -11,20 +11,22 @@ const (
 	symbolHeaderSpacing = "  "
 )
 
-func GetHackerNewsHeader(selectedSubHeader int, showFavorites bool) string {
+func GetHackerNewsHeader(selectedSubHeader int, showFavorites bool, orangeHeader bool) string {
 	if showFavorites {
-		return header("🆈", "Hacker News   ", []string{"new", "ask", "show", "favorites"}, selectedSubHeader)
+		return header("🆈", "Hacker News   ", []string{"new", "ask", "show", "favorites"},
+			selectedSubHeader, orangeHeader)
 	}
 
-	return header("🆈", "Hacker News   ", []string{"new", "ask", "show"}, selectedSubHeader)
+	return header("🆈", "Hacker News   ", []string{"new", "ask", "show"},
+		selectedSubHeader, orangeHeader)
 }
 
 func GetCircumflexHeader() string {
 	return ""
 }
 
-func header(symbol string, title string, subHeaders []string, selectedSubHeader int) string {
-	background := "[-::bu]"
+func header(symbol string, title string, subHeaders []string, selectedSubHeader int, orangeHeader bool) string {
+	background := getBackground(orangeHeader)
 	screenWidth := screen.GetTerminalWidth()
 
 	titleHeader := background + leftPadding + symbol + symbolHeaderSpacing + title
@@ -32,6 +34,14 @@ func header(symbol string, title string, subHeaders []string, selectedSubHeader 
 	whitespaceFiller := getWhitespaceFiller(titleHeader+categoryHeader, screenWidth)
 
 	return titleHeader + categoryHeader + whitespaceFiller
+}
+
+func getBackground(orangeHeader bool) string {
+	if orangeHeader {
+		return "[#0c0c0c:#FFA500:bu]"
+	}
+
+	return "[::bu]"
 }
 
 func getWhitespaceFiller(base string, screenWidth int) string {

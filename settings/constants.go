@@ -42,4 +42,7 @@ const (
 	HideIndentSymbolKey         = "CLX_HIDE_INDENT_SYMBOL"
 	HideIndentSymbolDefault     = false
 	HideIndentSymbolDescription = "Hides the indent symbol from the comment section"
+	OrangeHeaderKey             = "CLX_ORANGE_HEADER"
+	OrangeHeaderDefault         = false
+	OrangeHeaderDescription     = "Sets the background color of the header to orange"
 )
