@@ -30,7 +30,7 @@ func header(symbol string, title string, subHeaders []string, selectedSubHeader 
 	screenWidth := screen.GetTerminalWidth()
 
 	titleHeader := background + leftPadding + symbol + symbolHeaderSpacing + title
-	categoryHeader := getCategoryHeader(subHeaders, selectedSubHeader)
+	categoryHeader := getCategoryHeader(subHeaders, selectedSubHeader, orangeHeader)
 	whitespaceFiller := getWhitespaceFiller(titleHeader+categoryHeader, screenWidth)
 
 	return titleHeader + categoryHeader + whitespaceFiller
@@ -38,7 +38,7 @@ func header(symbol string, title string, subHeaders []string, selectedSubHeader 
 
 func getBackground(orangeHeader bool) string {
 	if orangeHeader {
-		return "[#0c0c0c:#FFA500:bu]"
+		return "[#0c0c0c:#FFA500]"
 	}
 
 	return "[::bu]"
@@ -54,11 +54,11 @@ func getWhitespaceFiller(base string, screenWidth int) string {
 	return strings.Repeat(" ", availableScreenSpace)
 }
 
-func getCategoryHeader(subHeaders []string, selectedSubHeader int) string {
+func getCategoryHeader(subHeaders []string, selectedSubHeader int, orangeHeader bool) string {
 	formattedCategory := ""
 	itemsTotal := len(subHeaders)
-	selectedOpen := "[::rb]"
-	selectedClose := "[::bu]"
+	selectedOpen := getSelectedCategoryOpenTag(orangeHeader)
+	selectedClose := getSelectedCategoryCloseTag(orangeHeader)
 
 	for i, subHeader := range subHeaders {
 		isOnLastItem := i == itemsTotal-1
@@ -72,6 +72,22 @@ func getCategoryHeader(subHeaders []string, selectedSubHeader int) string {
 	}
 
 	return formattedCategory
+}
+
+func getSelectedCategoryOpenTag(orangeHeader bool) string {
+	if orangeHeader {
+		return "[::r]"
+	}
+
+	return "[::rb]"
+}
+
+func getSelectedCategoryCloseTag(orangeHeader bool) string {
+	if orangeHeader {
+		return "[::-]"
+	}
+
+	return "[::bu]"
 }
 
 func getSeparator(isOnLastItem bool) string {
