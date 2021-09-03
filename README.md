@@ -146,7 +146,7 @@ References on Hacker News are formatted as numbers inside brackets. `circumflex`
 for easier cross-referencing.
 
 <p align="center">
-  <img src="screenshots/linkHighlights.png" width="700" alt="^"/>
+  <img src="screenshots/linkHighlights.png" width="500" alt="^"/>
 </p>
 
 ### Categories
