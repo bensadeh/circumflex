@@ -144,7 +144,7 @@ func IsOnLineBeforeTargetEquals(targets []string, lines []string, i int) bool {
 	for _, target := range targets {
 		nextLine := lines[i+1]
 		nextLine = ansi.Strip(nextLine)
-		nextLine = strings.TrimLeft(nextLine, " ")
+		nextLine = strings.TrimSpace(nextLine)
 
 		if nextLine == target {
 			return true
