@@ -280,20 +280,20 @@ set -x CLX_COMMENT_WIDTH "65"
 
 The following table shows the different ways in which `circumflex` can be configured:
 
-| Flag                    | Default | Description |
-| :--------------------   | :-----: |---|
-| `comment-width`         | `65`    | Set the number of characters on each line for comments, replies and descriptions in settings. Set to 0 to use the whole screen. |
-| `indent-size`           | `4`     | Set the number of whitespaces prepended to each reply multiplied by the indent level. |
-| `plain-headlines`       | `false` | Disables syntax highlighting for the headlines. |
-| `plain-comments`        | `false` | Disables syntax highlighting in the comment section. |
-| `smiley-emojis`         | `false` | Convert smileys emojis. |
-| `disable-history`       | `false` | Do not mark submissions as read after entering the comment section. |
-| `relative-numbering`    | `false` | Show each line with a number relative to the currently selected element. Similar to Vim's hybrid line number mode. |
-| `preserve-right-margin` | `false` | Shorten replies so that the total length, including indentation, is the same as the comment width. Best used when Indent Size is small to avoid deep replies being too short. |
-| `use-alt-indent-block`  | `false` | Use an alternate indent block if the normal one does not appear as one connected line. |
-| `show-jobs`             | `false` | Show `X is hiring` posts from YC-funded startups. Does not affect the monthly `Who is Hiring?` posts. |
-| `hide-indent`           | `false` | Hide the indentation symbol from the comment section. Does not affect quotes. |
-| `orange-header`         | `false` | Set the header to orange |
+| Flag  | Description |
+| :---- | :---------- |
+| `-c`  | Set the number of characters on each line for comments, replies and descriptions in settings. Set to 0 to use the whole screen. |
+| `-i`  | Set the number of whitespaces prepended to each reply multiplied by the indent level. |
+| `-l`  | Disables syntax highlighting for the headlines. |
+| `-o`  | Disables syntax highlighting in the comment section. |
+| `-s`  | Convert smileys emojis. |
+| `-d`  | Do not mark submissions as read after entering the comment section. |
+| `-r`  | Show each line with a number relative to the currently selected element. Similar to Vim's hybrid line number mode. |
+| `-p`  | Shorten replies so that the total length, including indentation, is the same as the comment width. Best used when Indent Size is small to avoid deep replies being too short. |
+| `-a`  | Use an alternate indent block if the normal one does not appear as one connected line. |
+| `-j`  | Show `X is hiring` posts from YC-funded startups. Does not affect the monthly `Who is Hiring?` posts. |
+| `-t`  | Hide the indentation symbol from the comment section. Does not affect quotes. |
+| `-n`  | Set the header to orange |
 
 ## 🚗 Under the hood
 
