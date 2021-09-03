@@ -12,13 +12,23 @@ const (
 )
 
 func GetHackerNewsHeader(selectedSubHeader int, showFavorites bool, orangeHeader bool) string {
+	symbol := getSymbol(orangeHeader)
+
 	if showFavorites {
-		return header("🆈", "Hacker News   ", []string{"new", "ask", "show", "favorites"},
+		return header(symbol, "Hacker News   ", []string{"new", "ask", "show", "favorites"},
 			selectedSubHeader, orangeHeader)
 	}
 
-	return header("🆈", "Hacker News   ", []string{"new", "ask", "show"},
+	return header(symbol, "Hacker News   ", []string{"new", "ask", "show"},
 		selectedSubHeader, orangeHeader)
+}
+
+func getSymbol(orangeHeader bool) string {
+	if orangeHeader {
+		return "🅈"
+	}
+
+	return "🆈"
 }
 
 func GetCircumflexHeader() string {
@@ -29,7 +39,15 @@ func header(symbol string, title string, subHeaders []string, selectedSubHeader 
 	background := getBackground(orangeHeader)
 	screenWidth := screen.GetTerminalWidth()
 
-	titleHeader := background + leftPadding + symbol + symbolHeaderSpacing + title
+	symbolOpenTag := getSymbolOpenTag(orangeHeader)
+	symbolCloseTag := background
+	formattedSymbol := symbolOpenTag + symbol + symbolCloseTag
+
+	titleOpenTag := getTitleOpenTag(orangeHeader)
+	titleCloseTag := getTitleCloseTag(orangeHeader)
+	formattedTitle := titleOpenTag + title + titleCloseTag
+
+	titleHeader := background + leftPadding + formattedSymbol + symbolHeaderSpacing + formattedTitle + background
 	categoryHeader := getCategoryHeader(subHeaders, selectedSubHeader, orangeHeader)
 	whitespaceFiller := getWhitespaceFiller(titleHeader+categoryHeader, screenWidth)
 
@@ -38,7 +56,15 @@ func header(symbol string, title string, subHeaders []string, selectedSubHeader 
 
 func getBackground(orangeHeader bool) string {
 	if orangeHeader {
-		return "[#0c0c0c:#FFA500]"
+		return "[#0c0c0c:#ff6600:-]"
+	}
+
+	return "[::bu]"
+}
+
+func getSymbolOpenTag(orangeHeader bool) string {
+	if orangeHeader {
+		return "[#FFFFFF:#ff6600:b]"
 	}
 
 	return "[::bu]"
@@ -72,6 +98,22 @@ func getCategoryHeader(subHeaders []string, selectedSubHeader int, orangeHeader 
 	}
 
 	return formattedCategory
+}
+
+func getTitleOpenTag(orangeHeader bool) string {
+	if orangeHeader {
+		return "[::b]"
+	}
+
+	return "[::bu]"
+}
+
+func getTitleCloseTag(orangeHeader bool) string {
+	if orangeHeader {
+		return "[::-]"
+	}
+
+	return "[::bu]"
 }
 
 func getSelectedCategoryOpenTag(orangeHeader bool) string {
