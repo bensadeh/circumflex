@@ -216,20 +216,27 @@ contrast author name) of terminal output which does not brighted bold fonts.
 
 Below are a few examples of how to enable bold text in bright colors in different terminals.
 
-#### Alacritty
+##### Alacritty
 
 - Set `draw_bold_text_with_bright_colors` to `true`
 - Define `bright_foreground` and set it to a brighter value than `foreground`
 - (See [alacritty/alacritty/pull/1026](https://github.com/alacritty/alacritty/pull/1026) for 
 more info)
 
-#### Terminal (macOS)
+##### Terminal (macOS)
 
 - Check `Use bright colors for bold text` under Profiles
 
-#### iTerm (macOS)
+##### iTerm (macOS)
 
 - Check `Brighten bold text` under Profiles → Colors
+
+#### Classic Hacker News header
+You can enable the classic Hacker News header with the `-n` flag.
+
+<p align="center">
+  <img src="screenshots/orangeHeader.png" width="500" alt="^"/>
+</p>
 
 ## ⚙️ Settings
 
