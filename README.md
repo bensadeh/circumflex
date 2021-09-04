@@ -271,7 +271,7 @@ Uncomment and set the values of the settings you want to change.
 #### Changing settings with environment variables
 You can configure `circumflex` by setting 
 [environment variables](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables).
-Below are a couple of examples on how to set the variables in different shells. 
+Below are a couple of examples on how to set the variables in different shells. They can go in your dotfiles.
 
 Bash and Zsh:
 ```bash
