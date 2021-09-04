@@ -6,12 +6,12 @@ import (
 )
 
 func Process(text string, url string) string {
+	ruleSet := filter.RuleSet{}
+
 	switch {
 	case strings.Contains(url, "en.wikipedia.org"):
 		text = strings.ReplaceAll(text, "[edit]", "")
 		text = removeWikipediaReferences(text)
-
-		ruleSet := filter.RuleSet{}
 
 		ruleSet.EndBeforeLineEquals("References")
 		ruleSet.EndBeforeLineEquals("Footnotes")
@@ -22,8 +22,6 @@ func Process(text string, url string) string {
 		return processBBC(text)
 
 	case strings.Contains(url, "nytimes.com"):
-		ruleSet := filter.RuleSet{}
-
 		ruleSet.SkipParContains("Credit…")
 		ruleSet.SkipParContains("This is a developing story. Check back for updates.")
 
@@ -33,8 +31,6 @@ func Process(text string, url string) string {
 		return ruleSet.Filter(text)
 
 	case strings.Contains(url, "economist.com"):
-		ruleSet := filter.RuleSet{}
-
 		ruleSet.SkipParContains("Listen to this story")
 		ruleSet.SkipParContains("Your browser does not support the ")
 		ruleSet.SkipParContains("Your browser does not support the ")
@@ -48,8 +44,6 @@ func Process(text string, url string) string {
 		return ruleSet.Filter(text)
 
 	case strings.Contains(url, "tomshardware.com"):
-		ruleSet := filter.RuleSet{}
-
 		ruleSet.SkipParContains("1. Home")
 		ruleSet.SkipParContains("2. News")
 		ruleSet.SkipParContains("(Image credit: ")
@@ -57,30 +51,22 @@ func Process(text string, url string) string {
 		return ruleSet.Filter(text)
 
 	case strings.Contains(url, "cnn.com"):
-		ruleSet := filter.RuleSet{}
-
 		ruleSet.SkipParContains("Credit: ")
 
 		return ruleSet.Filter(text)
 
 	case strings.Contains(url, "arstechnica.com"):
-		ruleSet := filter.RuleSet{}
-
 		ruleSet.SkipParContains("Enlarge/ ")
 		ruleSet.SkipParContains("This story originally appeared on ")
 
 		return ruleSet.Filter(text)
 
 	case strings.Contains(url, "macrumors.com"):
-		ruleSet := filter.RuleSet{}
-
 		ruleSet.EndBeforeLineEquals("Top Stories")
 
 		return ruleSet.Filter(text)
 
 	case strings.Contains(url, "wired.com") || strings.Contains(url, "wired.co.uk"):
-		ruleSet := filter.RuleSet{}
-
 		ruleSet.SkipParContains("Read more: ")
 		ruleSet.SkipParContains("Do you use social media regularly? Take our short survey.")
 
@@ -89,15 +75,11 @@ func Process(text string, url string) string {
 		return ruleSet.Filter(text)
 
 	case strings.Contains(url, "theguardian.com"):
-		ruleSet := filter.RuleSet{}
-
 		ruleSet.SkipParContains("Photograph:")
 
 		return ruleSet.Filter(text)
 
 	case strings.Contains(url, "axios.com"):
-		ruleSet := filter.RuleSet{}
-
 		ruleSet.SkipParContains("Sign up for our daily briefing")
 		ruleSet.SkipParContains("Catch up on the day's biggest business stories")
 		ruleSet.SkipParContains("Stay on top of the latest market trends")
@@ -119,8 +101,6 @@ func Process(text string, url string) string {
 		return ruleSet.Filter(text)
 
 	case strings.Contains(url, "9to5mac.com"):
-		ruleSet := filter.RuleSet{}
-
 		ruleSet.SkipParContains("We use income earning auto affiliate links.")
 		ruleSet.SkipParContains("Check out 9to5Mac on YouTube for more Apple news:")
 
