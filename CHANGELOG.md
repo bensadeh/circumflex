@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.20
-_WIP_
+_2021-09-04_
 
 **New features**
 - New keybinding: press <kbd>n</kbd>/<kbd>N</kbd> to jump to the next top-level comment
