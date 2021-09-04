@@ -235,7 +235,7 @@ more info)
 You can enable the classic Hacker News header with the `-n` flag.
 
 <p align="center">
-  <img src="screenshots/orangeHeader.png" width="500" alt="^"/>
+  <img src="screenshots/orangeHeader.png" width="700" alt="^"/>
 </p>
 
 ## ⚙️ Settings
