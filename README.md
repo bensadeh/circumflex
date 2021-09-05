@@ -198,8 +198,7 @@ might appear disconnected.
   <img src="screenshots/disconnected_indentations.png" width="700" alt="^"/>
 </p>
 
-Set `CLX_ALT_INDENT_BLOCK` to `true` to use a different indent block character which will
-appear as one connected line.
+Run `circumflex` with the `-a` flag to use a somewhat thinner, but more compatible indentation block.
 
 ### Low contrast headers
 #### Overview
