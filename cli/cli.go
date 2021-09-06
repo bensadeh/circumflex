@@ -11,18 +11,11 @@ func Less(input string) {
 	command := exec.Command("less",
 		"--RAW-CONTROL-CHARS",
 		"--pattern="+unicode.ZeroWidthSpace,
-		"--ignore-case")
+		"--ignore-case",
+		"--use-color",
+		"-DSy",
+		"-DP-")
 
-	command.Stdin = strings.NewReader(input)
-	command.Stdout = os.Stdout
-
-	if err := command.Run(); err != nil {
-		panic(err)
-	}
-}
-
-func Glow(input string) {
-	command := exec.Command("glow", "-", "-p")
 	command.Stdin = strings.NewReader(input)
 	command.Stdout = os.Stdout
 

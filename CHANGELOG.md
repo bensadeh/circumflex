@@ -2,6 +2,8 @@
 ## 1.21
 _WIP_
 
+**Bugfixes**
+- Fixed a bug where the invisible anchors would be visible on some terminals
 
 ## 1.20
 _2021-09-04_
