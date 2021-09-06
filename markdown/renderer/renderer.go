@@ -149,6 +149,7 @@ func renderList(text string, lineWidth int) string {
 	}
 
 	output = replaceListPrefixes(output)
+	output = trimLeadingZero(output)
 
 	return strings.TrimRight(output, "\n")
 }
@@ -434,6 +435,20 @@ func removeBoldAndItalicTags(text string) string {
 
 	text = strings.ReplaceAll(text, markdown.ItalicStart, "")
 	text = strings.ReplaceAll(text, markdown.ItalicStop, "")
+
+	return text
+}
+
+func trimLeadingZero(text string) string {
+	text = strings.ReplaceAll(text, indentLevel2+"01", indentLevel2+" 1")
+	text = strings.ReplaceAll(text, indentLevel2+"02", indentLevel2+" 2")
+	text = strings.ReplaceAll(text, indentLevel2+"03", indentLevel2+" 3")
+	text = strings.ReplaceAll(text, indentLevel2+"04", indentLevel2+" 4")
+	text = strings.ReplaceAll(text, indentLevel2+"05", indentLevel2+" 5")
+	text = strings.ReplaceAll(text, indentLevel2+"06", indentLevel2+" 6")
+	text = strings.ReplaceAll(text, indentLevel2+"07", indentLevel2+" 7")
+	text = strings.ReplaceAll(text, indentLevel2+"08", indentLevel2+" 8")
+	text = strings.ReplaceAll(text, indentLevel2+"09", indentLevel2+" 9")
 
 	return text
 }
