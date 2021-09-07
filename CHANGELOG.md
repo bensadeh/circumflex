@@ -3,7 +3,8 @@
 _WIP_
 
 **Bugfixes**
-- Fixed a bug where the invisible anchors would be visible on some terminals
+- Invisible anchors are now longer properly hidden on all terminals
+- The filtering logic now works with zero width spaces
 
 ## 1.20
 _2021-09-04_

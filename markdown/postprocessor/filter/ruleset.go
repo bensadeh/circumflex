@@ -1,6 +1,7 @@
 package filter
 
 import (
+	"clx/constants/unicode"
 	ansi "clx/utils/strip-ansi"
 	"strings"
 )
@@ -120,6 +121,7 @@ func equals(targets []string, line string) bool {
 	for _, target := range targets {
 		line = ansi.Strip(line)
 		line = strings.TrimSpace(line)
+		line = strings.TrimLeft(line, unicode.ZeroWidthSpace)
 
 		if line == target {
 			return true
@@ -145,6 +147,7 @@ func IsOnLineBeforeTargetEquals(targets []string, lines []string, i int) bool {
 		nextLine := lines[i+1]
 		nextLine = ansi.Strip(nextLine)
 		nextLine = strings.TrimSpace(nextLine)
+		nextLine = strings.TrimLeft(nextLine, unicode.ZeroWidthSpace)
 
 		if nextLine == target {
 			return true
