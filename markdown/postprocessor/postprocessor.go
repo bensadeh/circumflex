@@ -33,7 +33,6 @@ func Process(text string, url string) string {
 	case strings.Contains(url, "economist.com"):
 		ruleSet.SkipParContains("Listen to this story")
 		ruleSet.SkipParContains("Your browser does not support the ")
-		ruleSet.SkipParContains("Your browser does not support the ")
 		ruleSet.SkipParContains("Listen on the go")
 		ruleSet.SkipParContains("Get The Economist app and play articles")
 		ruleSet.SkipParContains("Play in app")
