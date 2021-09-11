@@ -5,6 +5,8 @@ _WIP_
 **Bugfixes**
 - Invisible anchors are now longer properly hidden on all terminals
 - The filtering logic now works with zero width spaces
+- Fixed a bug where the root comment headline was one character
+longer than the comment width
 
 **Cosmetic**
 - Viewing articles in Reader Mode now updates 'mark as read' indicator
