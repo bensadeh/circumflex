@@ -36,6 +36,7 @@ func Process(text string, url string) string {
 		ruleSet.SkipParContains("Listen on the go")
 		ruleSet.SkipParContains("Get The Economist app and play articles")
 		ruleSet.SkipParContains("Play in app")
+		ruleSet.SkipParContains("Enjoy more audio and podcasts on iOS or Android")
 
 		ruleSet.EndBeforeLineContains("This article appeared in the")
 		ruleSet.EndBeforeLineContains("For more coverage of ")
