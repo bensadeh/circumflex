@@ -142,7 +142,7 @@ func getCommentHeading(c endpoints.Comments, level int, commentWidth int, origin
 
 	if level == 0 {
 		replies := getRepliesTag(getReplyCount(c))
-		repliesLengthOffset := 3
+		repliesLengthOffset := 4
 		anchor := unicode.ZeroWidthSpace
 		lengthOfUnderline := commentWidth - text.Len(author+label+anchor+timeAgo) - repliesLengthOffset
 		headerLine := strings.Repeat(" ", lengthOfUnderline)
