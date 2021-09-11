@@ -104,7 +104,7 @@ func Refresh(app *cview.Application, main *core.MainView, appState *core.Applica
 
 func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *cview.List,
 	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
-	story := r.GetStoryAndMarkAsNew(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
+	story := r.GetStoryAndMarkAsRead(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 
 	app.Suspend(func() {
@@ -150,13 +150,14 @@ func ForceReadSubmissionContentParser(app *cview.Application, main *core.MainVie
 		appState.CurrentPage)
 	errorMessage := validator.GetErrorMessage(story.Title, story.Domain)
 
-	if errorMessage == "" {
-		enterReaderModeBuiltInParser(app, main, list, appState, config, r, reg, story)
+	if errorMessage != "" {
+		view.SetPermanentStatusBar(main, message.Warning(errorMessage), cview.AlignCenter)
 
 		return
 	}
 
-	view.SetPermanentStatusBar(main, message.Warning(errorMessage), cview.AlignCenter)
+	r.MarkAsRead(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow, appState.CurrentPage)
+	enterReaderModeBuiltInParser(app, main, list, appState, config, r, reg, story)
 }
 
 func ReadSubmissionContentInLynx(app *cview.Application, main *core.MainView, list *cview.List,

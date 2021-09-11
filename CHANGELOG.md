@@ -6,6 +6,9 @@ _WIP_
 - Invisible anchors are now longer properly hidden on all terminals
 - The filtering logic now works with zero width spaces
 
+**Cosmetic**
+- Viewing articles in Reader Mode now updates 'mark as read' indicator
+
 ## 1.20
 _2021-09-04_
 

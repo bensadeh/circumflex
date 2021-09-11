@@ -148,14 +148,22 @@ func convert(subs []*endpoints.Story, his *history.History, highlightHeadlines b
 	return listItems
 }
 
-func (r *StoryHandler) GetStory(category, currentItemIndex, storiesToShow,
-	currentPage int) *endpoints.Story {
+func (r *StoryHandler) GetStory(category, currentItemIndex, storiesToShow, currentPage int) *endpoints.Story {
 	index := getIndex(currentItemIndex, storiesToShow, currentPage)
 
 	return r.sc[category].stories[index]
 }
 
-func (r *StoryHandler) GetStoryAndMarkAsNew(category, currentItemIndex, storiesToShow,
+func (r *StoryHandler) MarkAsRead(category, currentItemIndex, storiesToShow, currentPage int) {
+	index := getIndex(currentItemIndex, storiesToShow, currentPage)
+	id := r.sc[category].stories[index].ID
+
+	r.history.AddStoryAndWriteToDisk(id)
+
+	return
+}
+
+func (r *StoryHandler) GetStoryAndMarkAsRead(category, currentItemIndex, storiesToShow,
 	currentPage int) *endpoints.Story {
 	index := getIndex(currentItemIndex, storiesToShow, currentPage)
 	id := r.sc[category].stories[index].ID
