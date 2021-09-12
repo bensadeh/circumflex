@@ -142,9 +142,8 @@ func getCommentHeading(c endpoints.Comments, level int, commentWidth int, origin
 
 	if level == 0 {
 		replies := getRepliesTag(getReplyCount(c))
-		repliesLengthOffset := 4
 		anchor := unicode.ZeroWidthSpace
-		lengthOfUnderline := commentWidth - text.Len(author+label+anchor+timeAgo) - repliesLengthOffset
+		lengthOfUnderline := commentWidth - text.Len(author+label+anchor+timeAgo+replies)
 		headerLine := strings.Repeat(" ", lengthOfUnderline)
 		info := aurora.Faint(timeAgo + headerLine + replies + anchor).Underline().String()
 
@@ -156,10 +155,10 @@ func getCommentHeading(c endpoints.Comments, level int, commentWidth int, origin
 
 func getRepliesTag(numberOfReplies int) string {
 	if numberOfReplies == 0 {
-		return "    "
+		return ""
 	}
 
-	return strconv.Itoa(numberOfReplies) + " ⤶"
+	return strconv.Itoa(numberOfReplies) + " ↩"
 }
 
 func getReplyCount(comments endpoints.Comments) int {
