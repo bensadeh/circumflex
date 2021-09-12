@@ -1,6 +1,6 @@
 # Changelog
 ## 1.21
-_WIP_
+_2021-09-12_
 
 **Bugfixes**
 - Invisible anchors are now longer properly hidden on all terminals
