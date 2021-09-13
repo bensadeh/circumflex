@@ -108,6 +108,13 @@ func Process(text string, url string) string {
 
 		return ruleSet.Filter(text)
 
+	case strings.Contains(url, "smithsonianmag.com"):
+		ruleSet.SkipParContains("smithsonianmag.com")
+
+		ruleSet.EndBeforeLineEquals("Like this article?")
+
+		return ruleSet.Filter(text)
+
 	default:
 		return text
 	}
