@@ -115,6 +115,12 @@ func Process(text string, url string) string {
 
 		return ruleSet.Filter(text)
 
+	case strings.Contains(url, "cnet.com"):
+		ruleSet.SkipParContains("Read more: ")
+		ruleSet.SkipParContains("Stay up-to-date on the latest news")
+
+		return ruleSet.Filter(text)
+
 	default:
 		return text
 	}
