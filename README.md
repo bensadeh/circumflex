@@ -68,7 +68,7 @@ clx
 ### From source
 
 ```console
-# Compile and run
+# Run
 go run main.go
 ```
 
@@ -118,13 +118,11 @@ comment section.
 
 
 ## 👓 Reader Mode
-Press <kbd>Space</kbd> to read the submission link in Reader Mode in the pager `less`. 
+Press <kbd>Space</kbd> to read the submission link in Reader Mode. 
 
 **Note**: some websites do not work well with Reader Mode. If the submission URL points to
-a domain with known Reader Mode incompatibility, the link cannot be opened in Reader Mode. See [validator.go](/validator/validator.go) for a full list of incompatible sites.
-
-If you suspect that Reader Mode might work on incompatible domain, and you want to bypass the validation step, 
-press <kbd>t</kbd> to open the article. If the validation list is inaccurate, please let me know.
+a domain with known Reader Mode incompatibility, the link cannot be opened in Reader Mode. 
+See [validator.go](/validator/validator.go) for a full list of incompatible sites.
 
 ## 🌈 Syntax highlighting
 ### Quotes
@@ -135,7 +133,7 @@ Quotes are indented, italicized and dimmed in order to distinguish them from the
 </p>
 
 ### Hacker News and forum idiosyncrasies
-Code snippets, `@username` mentions, `$variables` and URLs are highlighted.
+\`Code snippets\`, `@username` mentions, `$variables` and `URLs` are highlighted.
 
 <p align="center">
   <img src="screenshots/commentSyntax.png" width="700" alt="^"/>
@@ -166,9 +164,8 @@ Headlines containing the text `Ask HN`, `Tell HN`, `Show HN` and `Launch HN` are
 
 
 ## ❤️ Favorites
-Save submissions you'd like to revisit by adding them to Favorites. Press <kbd>f</kbd> to add the
-currently highlighted submission to your list of favorites. Remove submissions from the Favorites 
-page with <kbd>x</kbd>.
+Press <kbd>f</kbd> to add the currently highlighted submission to your list of favorites. Remove submissions from the 
+Favorites page with <kbd>x</kbd>.
 
 You can add any submission by its ID from the command line:
 ```console
@@ -181,17 +178,9 @@ Favorites are stored in `~/.config/circumflex/favorites.json`. `circumflex` pret
 
 ## 📐 Fine-tuning
 
-### Different standards
-`circumflex` aims to be as compatible in as many setups as possible by following standard
-terminal conventions. However, not all conventions are agreed upon and not everything is 
-standardized. 
-
-Because terminal emulators implementations vary, some adjustment might 
-be beneficial for getting most of out of `circumflex`. 
-
 ### Disconnected indentation blocks
 
-In some terminals and configurations, the indentation block (the bar to the left of the comment)
+Depending on the terminal emulator and the current font, the indentation block (the bar to the left of each reply)
 might appear disconnected.
 
 <p align="center">
@@ -202,18 +191,18 @@ Run `circumflex` with the `-a` flag to use a somewhat thinner, but more compatib
 
 ### Low contrast headers
 #### Overview
-Terminals can brighten text in bold in order to give them better contrast in dark color 
+Some terminals brighten text in bold in order to give them stronger contrast in dark color 
 schemes. `circumflex` uses bold text to give headers and authors names additional contrast 
 for better legibility. 
 
 See example screenshots below (low contrast header) and above (low 
-contrast author name) of terminal output which does not brighted bold fonts.
+contrast author name) of terminal output which does not brighten bold fonts.
 
 <p align="center">
   <img src="screenshots/low_contrast.png" width="500" alt="^"/>
 </p>
 
-Below are a few examples of how to enable bold text in bright colors in different terminals.
+Below are a few examples on how to enable bold text in bright colors in different terminals.
 
 ##### Alacritty
 
@@ -288,17 +277,17 @@ The following table shows the different ways in which `circumflex` can be config
 
 | Flag  | Description |
 | :---- | :---------- |
-| `-c`  | Set the number of characters on each line for comments, replies and descriptions in settings. Set to 0 to use the whole screen. |
-| `-i`  | Set the number of whitespaces prepended to each reply multiplied by the indent level. |
-| `-l`  | Disables syntax highlighting for the headlines. |
-| `-o`  | Disables syntax highlighting in the comment section. |
-| `-s`  | Convert smileys emojis. |
-| `-d`  | Do not mark submissions as read after entering the comment section. |
-| `-r`  | Show each line with a number relative to the currently selected element. Similar to Vim's hybrid line number mode. |
-| `-p`  | Shorten replies so that the total length, including indentation, is the same as the comment width. Best used when Indent Size is small to avoid deep replies being too short. |
-| `-a`  | Use an alternate indent block if the normal one does not appear as one connected line. |
-| `-j`  | Show `X is hiring` posts from YC-funded startups. Does not affect the monthly `Who is Hiring?` posts. |
-| `-t`  | Hide the indentation symbol from the comment section. Does not affect quotes. |
+| `-c`  | Set the comment width |
+| `-i`  | Set the indentation size |
+| `-l`  | Disable syntax highlighting for the headlines |
+| `-o`  | Disable syntax highlighting in the comment section. |
+| `-s`  | Convert smileys (`:)`) to emojis (😊)|
+| `-d`  | Disable history |
+| `-r`  | Show each line with a number relative to the currently selected element (similar to Vim's hybrid line number mode) |
+| `-p`  | Shorten replies so that the total length, including indentation, is the same as the comment width (best used when Indent Size is small to avoid deep replies being too short) |
+| `-a`  | Use an alternate indent block if the normal one does not appear as one connected line |
+| `-j`  | Show `X is hiring` posts from YC-funded startups (does not affect the monthly `Who is Hiring?` posts) |
+| `-t`  | Hide the indentation symbol from the comment section (does not affect quotes) |
 | `-n`  | Set the header to orange |
 
 ## 🚗 Under the hood
