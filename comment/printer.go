@@ -180,7 +180,7 @@ func incrementReplyCount(comments endpoints.Comments, repliesSoFar *int) int {
 // is smaller than the size of the commentWidth.
 func getCommentWidthForLevel(currentIndentSize int, usableScreenSize int, commentWidth int,
 	preserveRightMargin bool) int {
-	if usableScreenSize < commentWidth || commentWidth == 0 {
+	if usableScreenSize < commentWidth {
 		return usableScreenSize
 	}
 
