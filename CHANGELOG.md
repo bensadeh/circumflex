@@ -5,6 +5,9 @@ _WIP_
 **Backend**
 - Bump cview to 1.5.7
 
+**Bugfixes**
+- Fixed a bug where headers would occasionally be improperly formatted
+
 ## 1.21
 _2021-09-12_
 
