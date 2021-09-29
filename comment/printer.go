@@ -29,7 +29,13 @@ func ToString(comments endpoints.Comments, config *core.Config, screenWidth int)
 		replies += printReplies(reply, config, screenWidth, comments.User, "")
 	}
 
-	return header + replies
+	commentSection := header + replies
+	indentBlock := strings.Repeat(" ", config.IndentSize)
+
+	commentSection = strings.ReplaceAll(commentSection, newLine+indentBlock+unicode.ZeroWidthSpace,
+		unicode.ZeroWidthSpace+newLine+indentBlock)
+
+	return commentSection
 }
 
 func getHeader(c endpoints.Comments, config *core.Config, screenWidth int) string {
@@ -155,11 +161,12 @@ func getCommentHeading(c endpoints.Comments, level int, commentWidth int, origin
 	label := getAuthorLabel(c.User, originalPoster, parentPoster) + " "
 
 	if level == 0 {
+		author = unicode.ZeroWidthSpace + author
+
 		replies := getRepliesTag(getReplyCount(c))
-		anchor := unicode.ZeroWidthSpace
-		lengthOfUnderline := commentWidth - text.Len(author+label+anchor+timeAgo+replies)
+		lengthOfUnderline := commentWidth - text.Len(author+label+timeAgo+replies)
 		headerLine := strings.Repeat(" ", lengthOfUnderline)
-		info := aurora.Faint(timeAgo + headerLine + replies + anchor).Underline().String()
+		info := aurora.Faint(timeAgo + headerLine + replies).Underline().String()
 
 		return author + label + info + newLine
 	}
