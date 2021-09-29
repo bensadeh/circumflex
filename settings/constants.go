@@ -8,7 +8,7 @@ const (
 	CommentWidthDescription = "Sets the maximum number of characters on each line for comments, replies and " +
 		"descriptions in settings. Set to \u001B[1m0\u001B[0m to use the whole screen."
 	IndentSizeKey         = "CLX_INDENT_SIZE"
-	IndentSizeDefault     = 4
+	IndentSizeDefault     = 2
 	IndentSizeDescription = "The number of whitespaces prepended to each reply, " +
 		"not including the color bar."
 	PreserveRightMarginKey         = "CLX_PRESERVE_RIGHT_MARGIN"

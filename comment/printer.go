@@ -45,11 +45,17 @@ func getHeader(c endpoints.Comments, config *core.Config, screenWidth int) strin
 	rootComment := parseRootComment(c.Content, config)
 	separator := messages.GetSeparator(config.CommentWidth)
 
-	return headline + helpMessage + newLine + infoLine + url + rootComment + separator + newParagraph
+	indentation := "  "
+	padding := text.WrapPad(indentation)
+
+	header := headline + helpMessage + newLine + infoLine + url + rootComment + separator + newParagraph
+	indentedHeader, _ := text.Wrap(header, screenWidth+len(indentation), padding)
+
+	return indentedHeader
 }
 
 func getHeadline(title string, config *core.Config) string {
-	formattedTitle := highlightTitle(unicode.ZeroWidthSpace+title, config.HighlightHeadlines)
+	formattedTitle := highlightTitle(unicode.ZeroWidthSpace+newLine+title, config.HighlightHeadlines)
 	wrappedHeadline, _ := text.Wrap(formattedTitle, config.CommentWidth)
 
 	return wrappedHeadline + newParagraph
@@ -67,13 +73,21 @@ func getURL(url string, domain string, config *core.Config) string {
 }
 
 func highlightTitle(title string, highlightHeadlines bool) string {
+	highlightedTitle := ""
+
 	if highlightHeadlines {
-		title = syntax.HighlightYCStartups(title)
-		title = syntax.HighlightHackerNewsHeadlines(title)
-		title = syntax.HighlightSpecialContent(title)
+		highlightedTitle = syntax.HighlightYCStartups(title)
+		highlightedTitle = syntax.HighlightHackerNewsHeadlines(highlightedTitle)
+		highlightedTitle = syntax.HighlightSpecialContent(highlightedTitle)
 	}
 
-	return title
+	titleHasChanged := highlightedTitle != title
+
+	if titleHasChanged {
+		return highlightedTitle
+	}
+
+	return aurora.Bold(title).String()
 }
 
 func getInfoLine(points int, user string, timeAgo string, numberOfComments int, id int) string {
@@ -113,7 +127,7 @@ func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, or
 	comment := ParseComment(c.Content, config, adjustedCommentWidth, usableScreenSize)
 
 	indentSymbol := indent.GetIndentSymbol(config.HideIndentSymbol, config.AltIndentBlock)
-	indentBlock := getIndentBlock(indentSymbol, c.Level, config.IndentSize)
+	indentBlock := getIndentBlockForLevel(indentSymbol, c.Level, config.IndentSize)
 	paddingWithBlock := text.WrapPad(indentBlock)
 	wrappedAndPaddedComment, _ := text.Wrap(comment, screenWidth, paddingWithBlock)
 
@@ -209,20 +223,21 @@ func getAuthorLabel(author, originalPoster, parentPoster string) string {
 
 func getIndentBlockWithoutBar(level int, indentSize int) string {
 	if level == 0 {
-		return ""
+		return "  "
 	}
 
-	return strings.Repeat(" ", indentSize*level+1)
+	return strings.Repeat(" ", indentSize*level+3)
 }
 
-func getIndentBlock(indentSymbol string, level int, indentSize int) string {
+func getIndentBlockForLevel(indentSymbol string, level int, indentSize int) string {
 	if level == 0 {
-		return ""
+		return "  "
 	}
 
-	// indentation := colors.Normal + colors.GetIndentBlockColor(level) + indentSymbol + colors.Normal
-	indentation := syntax.ColorizeIndentSymbol(indentSymbol, level)
-	whitespace := strings.Repeat(" ", indentSize*level)
+	symbol := syntax.ColorizeIndentSymbol(indentSymbol, level)
 
-	return whitespace + indentation
+	indentBlock := strings.Repeat(" ", indentSize)
+	indentForLevel := strings.Repeat(indentBlock, level+1)
+
+	return indentForLevel + symbol
 }
