@@ -336,7 +336,7 @@ func h2(text string, lineWidth int) string {
 	text = preFormatHeader(text)
 	text = Bold(text).String()
 
-	padding := termtext.WrapPad("")
+	padding := termtext.WrapPad("  ")
 	text, _ = termtext.Wrap(text, lineWidth, padding)
 
 	return text
