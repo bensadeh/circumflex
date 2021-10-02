@@ -246,9 +246,9 @@ func enterReaderModeBuiltInParser(app *cview.Application, main *core.MainView, l
 		blocks := parser.Parse(article)
 		header := renderer.CreateHeader(story.Title, story.URL, 70)
 		renderedArticle := renderer.ToString(blocks, 70, false)
-		renderedArticle = postprocessor.Process(renderedArticle, url)
+		renderedArticle = postprocessor.Process(header+renderedArticle, url)
 
-		cli.Less(header + renderedArticle)
+		cli.Less(renderedArticle)
 	})
 
 	if fetchTimeout {

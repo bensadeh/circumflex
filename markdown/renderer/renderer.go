@@ -20,6 +20,8 @@ import (
 const (
 	indentLevel1 = "  "
 	indentLevel2 = indentLevel1 + indentLevel1
+	indentLevel3 = indentLevel2 + indentLevel1
+	indentLevel4 = indentLevel3 + indentLevel1
 	newLine      = "\n"
 	newParagraph = "\n\n"
 	codeStart    = "[CLX_CODE_START]"
@@ -27,7 +29,8 @@ const (
 )
 
 func CreateHeader(title string, domain string, lineWidth int) string {
-	wrappedTitle, _ := termtext.Wrap(unicode.ZeroWidthSpace+title, lineWidth)
+	wrappedTitle, _ := termtext.Wrap(Bold(title).String(), lineWidth)
+	wrappedTitle = unicode.ZeroWidthSpace + newLine + wrappedTitle
 	truncatedDomain := termtext.TruncateMax(domain, lineWidth)
 
 	wrappedTitle += newParagraph
@@ -46,7 +49,7 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 	for _, block := range blocks {
 		switch block.Kind {
 		case markdown.Text:
-			output += renderText(block.Text, lineWidth, indentLevel1) + "\n\n"
+			output += renderText(block.Text, lineWidth) + "\n\n"
 
 		case markdown.Image:
 			output += renderImage(block.Text, lineWidth) + "\n\n"
@@ -85,7 +88,7 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 			output += h6(block.Text, lineWidth) + "\n\n"
 
 		default:
-			output += renderText(block.Text, lineWidth, indentLevel1) + "\n\n"
+			output += renderText(block.Text, lineWidth) + "\n\n"
 		}
 	}
 
@@ -95,12 +98,12 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 }
 
 func renderDivider(lineWidth int) string {
-	divider := strings.Repeat("-", lineWidth-len(indentLevel2)*2)
+	divider := strings.Repeat("-", lineWidth-len(indentLevel1)*2)
 
-	return Faint(indentLevel2 + divider).String()
+	return Faint(indentLevel1 + divider).String()
 }
 
-func renderText(text string, lineWidth int, indentLevel string) string {
+func renderText(text string, lineWidth int) string {
 	text = it(text)
 	text = bld(text)
 	text = removeHrefs(text)
@@ -112,8 +115,7 @@ func renderText(text string, lineWidth int, indentLevel string) string {
 	text = syntax.HighlightMentions(text)
 	text = syntax.TrimURLs(text, true)
 
-	padding := termtext.WrapPad(indentLevel)
-	text, _ = termtext.Wrap(text, lineWidth, padding)
+	text, _ = termtext.Wrap(text, lineWidth)
 
 	return text
 }
@@ -140,9 +142,9 @@ func renderList(text string, lineWidth int) string {
 		listText := strings.TrimLeft(line, listToken)
 
 		paddingBuffer := strings.Repeat(" ", len(listToken))
-		padding := indentLevel2 + paddingBuffer + " "
+		padding := indentLevel1 + paddingBuffer + " "
 
-		wrappedIndentedItem, _ := termtext.WrapWithPadIndent(listToken+listText, lineWidth, indentLevel2, padding)
+		wrappedIndentedItem, _ := termtext.WrapWithPadIndent(listToken+listText, lineWidth, indentLevel1, padding)
 		wrappedIndentedItem = insertSpaceAfterItemListSeparator(wrappedIndentedItem)
 
 		output += wrappedIndentedItem + "\n"
@@ -198,7 +200,7 @@ func renderImage(text string, lineWidth int) string {
 	output = bld(output)
 	output = removeDoubleWhitespace(output)
 
-	padding := termtext.WrapPad(indentLevel2)
+	padding := termtext.WrapPad(indentLevel1)
 	output, _ = termtext.Wrap(output, lineWidth, padding)
 
 	return output
@@ -213,7 +215,7 @@ func renderCode(text string) string {
 	text = Faint(text).String()
 	text = removeHrefs(text)
 
-	padding := termtext.WrapPad(indentLevel2)
+	padding := termtext.WrapPad(indentLevel1)
 	text, _ = termtext.Wrap(text, int(screenWidth), padding)
 
 	return text
@@ -229,7 +231,7 @@ func renderQuote(text string, lineWidth int, altIndentBlock bool) string {
 	text = itReversed(text)
 	text = bldInQuote(text)
 
-	padding := termtext.WrapPad(indentLevel2 + Faint(indentSymbol).String())
+	padding := termtext.WrapPad(indentLevel1 + Faint(indentSymbol).String())
 	text, _ = termtext.Wrap(text, lineWidth, padding)
 
 	return text
@@ -326,60 +328,54 @@ func h1(text string, lineWidth int) string {
 	text = preFormatHeader(text)
 	text = Bold(text).String()
 
-	padding := termtext.WrapPad("")
-	text, _ = termtext.Wrap(text, lineWidth, padding)
+	text, _ = termtext.Wrap(text, lineWidth)
 
-	return text
+	return unicode.ZeroWidthSpace + text
 }
 
 func h2(text string, lineWidth int) string {
 	text = preFormatHeader(text)
 	text = Bold(text).String()
 
-	padding := termtext.WrapPad("  ")
-	text, _ = termtext.Wrap(text, lineWidth, padding)
+	text, _ = termtext.Wrap(text, lineWidth)
 
-	return text
+	return unicode.ZeroWidthSpace + text
 }
 
 func h3(text string, lineWidth int) string {
 	text = preFormatHeader(text)
 	text = Bold(text).Underline().Blue().String()
 
-	padding := termtext.WrapPad(indentLevel1)
-	text, _ = termtext.Wrap(text, lineWidth, padding)
+	text, _ = termtext.WrapWithPad(text, lineWidth, indentLevel2)
 
-	return text
+	return unicode.ZeroWidthSpace + text
 }
 
 func h4(text string, lineWidth int) string {
 	text = preFormatHeader(text)
 	text = Bold(text).Underline().Yellow().String()
 
-	padding := termtext.WrapPad(indentLevel1 + "  ")
-	text, _ = termtext.Wrap(text, lineWidth, padding)
+	text, _ = termtext.WrapWithPad(text, lineWidth, indentLevel2)
 
-	return text
+	return unicode.ZeroWidthSpace + text
 }
 
 func h5(text string, lineWidth int) string {
 	text = preFormatHeader(text)
 	text = Bold(text).Underline().Green().String()
 
-	padding := termtext.WrapPad(indentLevel1 + "    ")
-	text, _ = termtext.Wrap(text, lineWidth, padding)
+	text, _ = termtext.WrapWithPad(text, lineWidth, indentLevel3)
 
-	return text
+	return unicode.ZeroWidthSpace + text
 }
 
 func h6(text string, lineWidth int) string {
 	text = preFormatHeader(text)
 	text = Bold(text).Underline().Cyan().String()
 
-	padding := termtext.WrapPad(indentLevel1 + "      ")
-	text, _ = termtext.Wrap(text, lineWidth, padding)
+	text, _ = termtext.WrapWithPad(text, lineWidth, indentLevel4)
 
-	return text
+	return unicode.ZeroWidthSpace + text
 }
 
 func removeHrefs(text string) string {
@@ -401,7 +397,6 @@ func preFormatHeader(text string) string {
 	text = removeBoldAndItalicTags(text)
 	text = unescapeCharacters(text)
 	text = it(text)
-	text = unicode.ZeroWidthSpace + text
 
 	return text
 }
