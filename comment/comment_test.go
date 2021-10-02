@@ -30,7 +30,7 @@ func TestRootComment(t *testing.T) {
 	expected, _ := ioutil.ReadFile("test/root_comment_expected.txt")
 
 	comments := unmarshal(commentJSON)
-	actual := comment.ToString(*comments, getConfig(), 80)
+	actual := comment.ToString(*comments, getConfig(), 100)
 
 	assert.Equal(t, string(expected), actual)
 }

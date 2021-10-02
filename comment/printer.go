@@ -1,6 +1,8 @@
 package comment
 
 import (
+	"clx/comment/postprocessor"
+	"clx/constants/margins"
 	"clx/constants/messages"
 	"clx/constants/unicode"
 	"clx/core"
@@ -21,28 +23,22 @@ const (
 )
 
 func ToString(comments endpoints.Comments, config *core.Config, screenWidth int) string {
-	header := getHeader(comments, config, screenWidth)
+	commentSectionScreenWidth := screenWidth - margins.CommentSectionLeftMargin
+
+	header := getHeader(comments, config)
 
 	replies := ""
 
 	for _, reply := range comments.Comments {
-		replies += printReplies(reply, config, screenWidth, comments.User, "")
+		replies += printReplies(reply, config, commentSectionScreenWidth, comments.User, "")
 	}
 
-	commentSection := header + replies
-	indentBlock := strings.Repeat(" ", config.IndentSize)
-
-	commentSection = strings.ReplaceAll(commentSection, newLine+indentBlock+unicode.ZeroWidthSpace,
-		unicode.ZeroWidthSpace+newLine+indentBlock)
+	commentSection := postprocessor.Process(header+replies, screenWidth)
 
 	return commentSection
 }
 
-func getHeader(c endpoints.Comments, config *core.Config, screenWidth int) string {
-	if config.CommentWidth == 0 {
-		config.CommentWidth = screenWidth
-	}
-
+func getHeader(c endpoints.Comments, config *core.Config) string {
 	headline := getHeadline(c.Title, config)
 	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
 	helpMessage := aurora.Faint(messages.LessScreenInfo).Faint().String() + newLine
@@ -51,13 +47,7 @@ func getHeader(c endpoints.Comments, config *core.Config, screenWidth int) strin
 	rootComment := parseRootComment(c.Content, config)
 	separator := messages.GetSeparator(config.CommentWidth)
 
-	indentation := "  "
-	padding := text.WrapPad(indentation)
-
-	header := headline + helpMessage + newLine + infoLine + url + rootComment + separator + newParagraph
-	indentedHeader, _ := text.Wrap(header, screenWidth+len(indentation), padding)
-
-	return indentedHeader
+	return headline + helpMessage + newLine + infoLine + url + rootComment + separator + newParagraph
 }
 
 func getHeadline(title string, config *core.Config) string {
@@ -224,21 +214,21 @@ func getAuthorLabel(author, originalPoster, parentPoster string) string {
 
 func getIndentBlockWithoutBar(level int, indentSize int) string {
 	if level == 0 {
-		return "  "
+		return ""
 	}
 
-	return strings.Repeat(" ", indentSize*level+3)
+	return strings.Repeat(" ", indentSize*level+1)
 }
 
 func getIndentBlockForLevel(indentSymbol string, level int, indentSize int) string {
 	if level == 0 {
-		return "  "
+		return ""
 	}
 
 	symbol := syntax.ColorizeIndentSymbol(indentSymbol, level)
 
 	indentBlock := strings.Repeat(" ", indentSize)
-	indentForLevel := strings.Repeat(indentBlock, level+1)
+	indentForLevel := strings.Repeat(indentBlock, level)
 
 	return indentForLevel + symbol
 }
