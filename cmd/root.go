@@ -25,6 +25,7 @@ var (
 
 func Root() *cobra.Command {
 	rootCmd := &cobra.Command{
+		Use:     "clx [add id|clear|config|view id]",
 		Short:   "It's Hacker News in your terminal",
 		Long:    "circumflex is a command line tool for browsing Hacker News in your terminal",
 		Version: clx2.Version,
