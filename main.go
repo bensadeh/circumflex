@@ -5,5 +5,8 @@ import (
 )
 
 func main() {
-	_ = cmd.Execute()
+	rootCmd := cmd.Root()
+	if err := rootCmd.Execute(); err != nil {
+		println(err)
+	}
 }

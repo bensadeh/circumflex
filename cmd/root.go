@@ -23,58 +23,32 @@ var (
 	orangeHeader        bool
 )
 
-var rootCmd = &cobra.Command{
-	Use:   "clx",
-	Short: "It's Hacker News in your terminal",
-	Long:  "circumflex " + clx2.Version,
-	Run: func(cmd *cobra.Command, args []string) {
-		if plainHeadlines {
-			viper.Set(settings.HighlightHeadlinesKey, false)
-		}
+func Root() *cobra.Command {
+	rootCmd := &cobra.Command{
+		Short:   "It's Hacker News in your terminal",
+		Long:    "circumflex is a command line tool for browsing Hacker News in your terminal",
+		Version: clx2.Version,
+		Run: func(cmd *cobra.Command, args []string) {
+			overrideConfig()
 
-		if plainComments {
-			viper.Set(settings.HighlightCommentsKey, false)
-		}
+			clx.Run()
+		},
+	}
 
-		if disableHistory {
-			viper.Set(settings.MarkAsReadKey, false)
-		}
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
 
-		if altIndentBlock {
-			viper.Set(settings.UseAltIndentBlockKey, true)
-		}
+	configureFlags(rootCmd)
 
-		if smileyEmojis {
-			viper.Set(settings.EmojiSmileysKey, true)
-		}
+	rootCmd.AddCommand(addCmd())
+	rootCmd.AddCommand(clearCmd())
+	rootCmd.AddCommand(configCmd())
+	rootCmd.AddCommand(viewCmd())
 
-		if relativeNumbering {
-			viper.Set(settings.RelativeNumberingKey, true)
-		}
-
-		if showYCJobs {
-			viper.Set(settings.HideYCJobsKey, false)
-		}
-
-		if preserveRightMargin {
-			viper.Set(settings.PreserveRightMarginKey, true)
-		}
-
-		if hideIndentSymbol {
-			viper.Set(settings.HideIndentSymbolKey, true)
-		}
-
-		if orangeHeader {
-			viper.Set(settings.OrangeHeaderKey, true)
-		}
-
-		clx.Run()
-	},
+	return rootCmd
 }
 
-func Execute() error {
-	rootCmd.CompletionOptions.DisableDefaultCmd = true
-	rootCmd.PersistentFlags().BoolVarP(&plainHeadlines, "plain-headlines", "l", false,
+func configureFlags(rootCmd *cobra.Command) {
+	rootCmd.PersistentFlags().BoolVarP(&plainHeadlines, "plain-headlines", "p", false,
 		"disable syntax highlighting for headlines")
 	rootCmd.PersistentFlags().BoolVarP(&plainComments, "plain-comments", "o", false,
 		"disable syntax highlighting for comments")
@@ -88,7 +62,7 @@ func Execute() error {
 		"use relative numbering for submissions")
 	rootCmd.PersistentFlags().BoolVarP(&showYCJobs, "show-jobs", "j", false,
 		"show submissions of the type 'X is hiring'")
-	rootCmd.PersistentFlags().BoolVarP(&preserveRightMargin, "preserve-right-margin", "p", false,
+	rootCmd.PersistentFlags().BoolVarP(&preserveRightMargin, "preserve-right-margin", "m", false,
 		"preserve right margin at the cost of comment width")
 	rootCmd.PersistentFlags().BoolVarP(&hideIndentSymbol, "hide-indent", "t", false,
 		"hide the indentation symbol")
@@ -102,6 +76,46 @@ func Execute() error {
 	rootCmd.PersistentFlags().IntP("indent-size", "i", settings.IndentSizeDefault,
 		"set the indent size")
 	_ = viper.BindPFlag(settings.IndentSizeKey, rootCmd.PersistentFlags().Lookup("indent-size"))
+}
 
-	return rootCmd.Execute()
+func overrideConfig() {
+	if plainHeadlines {
+		viper.Set(settings.HighlightHeadlinesKey, false)
+	}
+
+	if plainComments {
+		viper.Set(settings.HighlightCommentsKey, false)
+	}
+
+	if disableHistory {
+		viper.Set(settings.MarkAsReadKey, false)
+	}
+
+	if altIndentBlock {
+		viper.Set(settings.UseAltIndentBlockKey, true)
+	}
+
+	if smileyEmojis {
+		viper.Set(settings.EmojiSmileysKey, true)
+	}
+
+	if relativeNumbering {
+		viper.Set(settings.RelativeNumberingKey, true)
+	}
+
+	if showYCJobs {
+		viper.Set(settings.HideYCJobsKey, false)
+	}
+
+	if preserveRightMargin {
+		viper.Set(settings.PreserveRightMarginKey, true)
+	}
+
+	if hideIndentSymbol {
+		viper.Set(settings.HideIndentSymbolKey, true)
+	}
+
+	if orangeHeader {
+		viper.Set(settings.OrangeHeaderKey, true)
+	}
 }
