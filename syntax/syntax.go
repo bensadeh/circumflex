@@ -10,6 +10,7 @@ import (
 const (
 	newParagraph = "\n\n"
 	reset        = "\033[0m"
+	bold         = "\033[1m"
 	italic       = "\033[3m"
 	magenta      = "\033[35m"
 )
@@ -24,16 +25,26 @@ func HighlightYCStartups(comment string) string {
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
 
+func HighlightYCStartupsInHeadlines(comment string) string {
+	expression := regexp.MustCompile(`\((YC [SW]\d{2})\)`)
+
+	orange := uint8(214)
+	black := uint8(232)
+	highlightedStartup := Index(black, ` $1 `).BgIndex(orange).String() + bold
+
+	return expression.ReplaceAllString(comment, highlightedStartup)
+}
+
 func HighlightHackerNewsHeadlines(title string) string {
 	askHN := "Ask HN:"
 	showHN := "Show HN:"
 	tellHN := "Tell HN:"
 	launchHN := "Launch HN:"
 
-	title = strings.ReplaceAll(title, askHN, Blue(askHN).String())
-	title = strings.ReplaceAll(title, showHN, Red(showHN).String())
-	title = strings.ReplaceAll(title, tellHN, Magenta(tellHN).String())
-	title = strings.ReplaceAll(title, launchHN, Green(launchHN).String())
+	title = strings.ReplaceAll(title, askHN, Blue(askHN).String()+bold)
+	title = strings.ReplaceAll(title, showHN, Red(showHN).String()+bold)
+	title = strings.ReplaceAll(title, tellHN, Magenta(tellHN).String()+bold)
+	title = strings.ReplaceAll(title, launchHN, Green(launchHN).String()+bold)
 
 	return title
 }

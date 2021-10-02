@@ -1,5 +1,5 @@
-  ​
-  [34mAsk HN:[0m Is there an IDE for computer vision?
+  [1m​[0m
+  [1m[34mAsk HN:[0m[1m Is there an IDE for computer vision?[0m
 
   [2mYou are now in 'less' • Press q to return or h for help[0m
   [2md/u to scroll half page • n/N to move between top-level comments[0m

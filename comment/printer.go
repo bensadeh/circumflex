@@ -82,18 +82,12 @@ func highlightTitle(title string, highlightHeadlines bool) string {
 	highlightedTitle := ""
 
 	if highlightHeadlines {
-		highlightedTitle = syntax.HighlightYCStartups(title)
+		highlightedTitle = syntax.HighlightYCStartupsInHeadlines(title)
 		highlightedTitle = syntax.HighlightHackerNewsHeadlines(highlightedTitle)
 		highlightedTitle = syntax.HighlightSpecialContent(highlightedTitle)
 	}
 
-	titleHasChanged := highlightedTitle != title
-
-	if titleHasChanged {
-		return highlightedTitle
-	}
-
-	return aurora.Bold(title).String()
+	return aurora.Bold(highlightedTitle).String()
 }
 
 func getInfoLine(points int, user string, timeAgo string, numberOfComments int, id int) string {
