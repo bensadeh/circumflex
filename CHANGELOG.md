@@ -2,6 +2,9 @@
 ## 1.22
 _WIP_
 
+**New features**
+- `circumflex` now has `man` pages
+
 **Backend**
 - Bump cview to 1.5.7
 
