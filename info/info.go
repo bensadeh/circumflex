@@ -54,7 +54,7 @@ func GetText(screenWidth int) string {
 }
 
 func alignCenter(input string, screenWidth int, keymapsWidth int) string {
-	padding := screenWidth/2 - keymapsWidth/2 - margins.LeftMargin
+	padding := screenWidth/2 - keymapsWidth/2 - margins.MainViewLeftMargin
 
 	if padding < 0 {
 		return input

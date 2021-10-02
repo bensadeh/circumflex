@@ -73,7 +73,7 @@ func NewMainView() *core.MainView {
 
 	main.Grid.SetBorder(false)
 	main.Grid.SetRows(2, 0, 1)
-	main.Grid.SetColumns(margins.LeftMargin, 0, margins.RightMarginPageCounter)
+	main.Grid.SetColumns(margins.MainViewLeftMargin, 0, margins.MainViewRightMarginPageCounter)
 	main.Grid.SetBackgroundColor(tcell.ColorDefault)
 	main.Grid.AddItem(main.Header, 0, 0, 1, 3, 0, 0, true)
 	main.Grid.AddItem(main.LeftMargin, 1, 0, 1, 1, 0, 0, false)
