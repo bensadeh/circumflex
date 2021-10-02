@@ -12,6 +12,7 @@ func Less(input string) {
 		"--RAW-CONTROL-CHARS",
 		"--pattern="+unicode.ZeroWidthSpace,
 		"--ignore-case",
+		"--tilde",
 		"--use-color",
 		"-DSy",
 		"-DP-")
