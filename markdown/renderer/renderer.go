@@ -22,6 +22,7 @@ const (
 	indentLevel2 = indentLevel1 + indentLevel1
 	indentLevel3 = indentLevel2 + indentLevel1
 	indentLevel4 = indentLevel3 + indentLevel1
+	indentLevel5 = indentLevel4 + indentLevel1
 	newLine      = "\n"
 	newParagraph = "\n\n"
 	codeStart    = "[CLX_CODE_START]"
@@ -356,7 +357,7 @@ func h4(text string, lineWidth int) string {
 	text = preFormatHeader(text)
 	text = Bold(text).Underline().Yellow().String()
 
-	text, _ = termtext.WrapWithPad(text, lineWidth, indentLevel2)
+	text, _ = termtext.WrapWithPad(text, lineWidth, indentLevel3)
 
 	return unicode.ZeroWidthSpace + text
 }
@@ -365,7 +366,7 @@ func h5(text string, lineWidth int) string {
 	text = preFormatHeader(text)
 	text = Bold(text).Underline().Green().String()
 
-	text, _ = termtext.WrapWithPad(text, lineWidth, indentLevel3)
+	text, _ = termtext.WrapWithPad(text, lineWidth, indentLevel4)
 
 	return unicode.ZeroWidthSpace + text
 }
@@ -374,7 +375,7 @@ func h6(text string, lineWidth int) string {
 	text = preFormatHeader(text)
 	text = Bold(text).Underline().Cyan().String()
 
-	text, _ = termtext.WrapWithPad(text, lineWidth, indentLevel4)
+	text, _ = termtext.WrapWithPad(text, lineWidth, indentLevel5)
 
 	return unicode.ZeroWidthSpace + text
 }
