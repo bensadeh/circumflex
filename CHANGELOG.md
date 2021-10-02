@@ -5,6 +5,9 @@ _WIP_
 **New features**
 - `circumflex` now has `man` pages
 
+**Cosmetic**
+- Slightly redesigned headers in headlines and comment section
+
 **Backend**
 - Bump cview to 1.5.7
 

@@ -29,15 +29,16 @@ const (
 )
 
 func CreateHeader(title string, domain string, lineWidth int) string {
+	separator := Green(messages.GetSeparator(lineWidth)).Faint().String()
 	wrappedTitle, _ := termtext.Wrap(Bold(title).String(), lineWidth)
 	wrappedTitle = unicode.ZeroWidthSpace + newLine + wrappedTitle
 	truncatedDomain := termtext.TruncateMax(domain, lineWidth)
 
 	wrappedTitle += newParagraph
+	wrappedTitle += separator + newLine
 	wrappedTitle += Faint(messages.LessScreenInfo).String() + newLine
 	wrappedTitle += Faint(messages.LessArticleInfo).String() + newLine + newLine
 	wrappedTitle += Faint(truncatedDomain).String() + newLine
-	separator := messages.GetSeparator(lineWidth)
 	wrappedTitle += separator + newParagraph
 
 	return wrappedTitle

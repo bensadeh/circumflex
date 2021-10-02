@@ -1,6 +1,7 @@
   [1m​[0m
   [1m[34mAsk HN:[0m[1m Is there an IDE for computer vision?[0m
 
+  [2;33m================================================================================[0m
   [2mYou are now in 'less' • Press q to return or h for help[0m
   [2md/u to scroll half page • n/N to move between top-level comments[0m
 
@@ -10,5 +11,5 @@
   How are people running their detection pipelines on video and overlaying the
   results? Is every project writing its own scaffolding for this? Is it mostly
   'run command, generate new video'? Or is there a GUI / toolkit that's standard?
-  --------------------------------------------------------------------------------
+  [2;33m================================================================================[0m
 

@@ -45,9 +45,9 @@ func getHeader(c endpoints.Comments, config *core.Config) string {
 	helpMessage += aurora.Faint(messages.LessCommentInfo).Faint().String() + newLine
 	url := getURL(c.URL, c.Domain, config)
 	rootComment := parseRootComment(c.Content, config)
-	separator := messages.GetSeparator(config.CommentWidth)
+	separator := aurora.Yellow(messages.GetSeparator(config.CommentWidth)).Faint().String()
 
-	return headline + helpMessage + newLine + infoLine + url + rootComment + separator + newParagraph
+	return headline + separator + newLine + helpMessage + newLine + infoLine + url + rootComment + separator + newParagraph
 }
 
 func getHeadline(title string, config *core.Config) string {

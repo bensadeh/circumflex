@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	separator = "-"
+	separator = "="
 
 	Refreshed                   = "Refreshed"
 	Cancelled                   = "[::d]Cancelled"
