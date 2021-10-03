@@ -7,6 +7,7 @@ _WIP_
 
 **Cosmetic**
 - Slightly redesigned headers in headlines and comment section
+- Comment section now has a left margin
 
 **Backend**
 - Bump cview to 1.5.7
