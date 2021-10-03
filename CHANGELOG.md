@@ -2,8 +2,8 @@
 ## 1.23
 _WIP_
 
-**New features**
-- `circumflex` now has `man` pages
+**Bugfixes**
+- Fix correct indentation for headers in Reader Mode 
 
 
 ## 1.22
