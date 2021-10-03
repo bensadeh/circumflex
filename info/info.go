@@ -21,7 +21,6 @@ func GetText(screenWidth int) string {
 	keys.AddSeparator()
 	keys.AddKeymap("Read comment section (less)", "Enter")
 	keys.AddKeymap("Read article in Reader Mode (less)", "Space")
-	keys.AddKeymap("Force Read article in Reader Mode (less)", "t")
 	keys.AddSeparator()
 	keys.AddKeymap("Refresh", "r")
 	keys.AddKeymap("Change category", "Tab")

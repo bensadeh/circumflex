@@ -112,17 +112,11 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 		case event.Key() == tcell.KeyEnter:
 			model.ReadSubmissionComments(app, main, list, appState, config, ret, reg)
 
-		case event.Rune() == 'E':
-			model.ReadSubmissionContentInLynx(app, main, list, appState, config, ret, reg)
-
-		case event.Rune() == 't':
-			model.ForceReadSubmissionContent(app, main, list, appState, config, ret, reg)
-
 		case event.Rune() == 'U':
-			model.ForceReadSubmissionContentNoFormatting(app, main, list, appState, config, ret, reg)
+			model.ReadContentInReaderViewDebug(app, main, list, appState, config, ret, reg)
 
 		case event.Rune() == ' ':
-			model.ForceReadSubmissionContentParser(app, main, list, appState, config, ret, reg)
+			model.ReadContentInReaderView(app, main, list, appState, config, ret, reg)
 
 		case event.Rune() == 'o':
 			model.OpenLinkInBrowser(list, appState, ret)

@@ -128,23 +128,15 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 	changePage(app, list, main, appState, config, r, reg, 0)
 }
 
-func ForceReadSubmissionContent(app *cview.Application, main *core.MainView, list *cview.List,
+func ReadContentInReaderViewDebug(app *cview.Application, main *core.MainView, list *cview.List,
 	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
 	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 
-	enterReaderMode(app, main, list, appState, config, r, reg, story)
+	enterReaderModeDebug(app, main, list, appState, config, r, reg, story)
 }
 
-func ForceReadSubmissionContentNoFormatting(app *cview.Application, main *core.MainView, list *cview.List,
-	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
-	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
-		appState.CurrentPage)
-
-	enterReaderModeNew(app, main, list, appState, config, r, reg, story)
-}
-
-func ForceReadSubmissionContentParser(app *cview.Application, main *core.MainView, list *cview.List,
+func ReadContentInReaderView(app *cview.Application, main *core.MainView, list *cview.List,
 	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
 	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
@@ -160,48 +152,7 @@ func ForceReadSubmissionContentParser(app *cview.Application, main *core.MainVie
 	enterReaderModeBuiltInParser(app, main, list, appState, config, r, reg, story)
 }
 
-func ReadSubmissionContentInLynx(app *cview.Application, main *core.MainView, list *cview.List,
-	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
-	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
-		appState.CurrentPage)
-	errorMessage := validator.GetErrorMessage(story.Title, story.Domain)
-
-	if errorMessage == "" {
-		enterReaderMode(app, main, list, appState, config, r, reg, story)
-
-		return
-	}
-
-	view.SetPermanentStatusBar(main, message.Warning(errorMessage), cview.AlignCenter)
-}
-
-func enterReaderMode(app *cview.Application, main *core.MainView, list *cview.List, appState *core.ApplicationState,
-	config *core.Config, r *handler.StoryHandler, reg *vim.Register, story *endpoints.Story) {
-	fetchTimeout := false
-
-	app.Suspend(func() {
-		url := story.URL
-
-		article, err := reader.Get(url)
-		if err != nil {
-			fetchTimeout = true
-
-			return
-		}
-
-		cli.Less(article)
-	})
-
-	if fetchTimeout {
-		view.SetPermanentStatusBar(main, message.Error(messages.ArticleNotFetched), cview.AlignCenter)
-
-		return
-	}
-
-	changePage(app, list, main, appState, config, r, reg, 0)
-}
-
-func enterReaderModeNew(app *cview.Application, main *core.MainView, list *cview.List, appState *core.ApplicationState,
+func enterReaderModeDebug(app *cview.Application, main *core.MainView, list *cview.List, appState *core.ApplicationState,
 	config *core.Config, r *handler.StoryHandler, reg *vim.Register, story *endpoints.Story) {
 	fetchTimeout := false
 
@@ -229,8 +180,9 @@ func enterReaderModeNew(app *cview.Application, main *core.MainView, list *cview
 	changePage(app, list, main, appState, config, r, reg, 0)
 }
 
-func enterReaderModeBuiltInParser(app *cview.Application, main *core.MainView, list *cview.List, appState *core.ApplicationState,
-	config *core.Config, r *handler.StoryHandler, reg *vim.Register, story *endpoints.Story) {
+func enterReaderModeBuiltInParser(app *cview.Application, main *core.MainView, list *cview.List,
+	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register,
+	story *endpoints.Story) {
 	fetchTimeout := false
 
 	app.Suspend(func() {
