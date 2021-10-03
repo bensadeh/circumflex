@@ -1,9 +1,13 @@
 # Changelog
-## 1.22
-_2021-10-03_
+## 1.23
+_WIP_
 
 **New features**
 - `circumflex` now has `man` pages
+
+
+## 1.22
+_2021-10-03_
 
 **Cosmetic**
 - Slightly redesigned headers in headlines and comment section
