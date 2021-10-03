@@ -1,6 +1,6 @@
 # Changelog
 ## 1.22
-_WIP_
+_2021-10-03_
 
 **New features**
 - `circumflex` now has `man` pages
