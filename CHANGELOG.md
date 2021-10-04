@@ -1,10 +1,9 @@
 # Changelog
-## 1.23
-_WIP_
+## 1.22.1
+_2021-10-04_
 
 **Bugfixes**
 - Fix correct indentation for headers in Reader Mode 
-
 
 ## 1.22
 _2021-10-03_
