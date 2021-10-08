@@ -40,16 +40,16 @@ type MainView struct {
 }
 
 type Config struct {
-	CommentWidth        int  `mapstructure:"CLX_COMMENT_WIDTH"`
-	IndentSize          int  `mapstructure:"CLX_INDENT_SIZE"`
-	HighlightHeadlines  bool `mapstructure:"CLX_HIGHLIGHT_HEADLINES"`
-	HighlightComments   bool `mapstructure:"CLX_HIGHLIGHT_COMMENTS"`
-	PreserveRightMargin bool `mapstructure:"CLX_PRESERVE_RIGHT_MARGIN"`
-	RelativeNumbering   bool `mapstructure:"CLX_RELATIVE_NUMBERING"`
-	HideYCJobs          bool `mapstructure:"CLX_HIDE_YC_JOBS"`
-	AltIndentBlock      bool `mapstructure:"CLX_ALT_INDENT_BLOCK"`
-	EmojiSmileys        bool `mapstructure:"CLX_EMOJI_SMILEYS"`
-	MarkAsRead          bool `mapstructure:"CLX_MARK_AS_READ"`
-	HideIndentSymbol    bool `mapstructure:"CLX_HIDE_INDENT_SYMBOL"`
-	OrangeHeader        bool `mapstructure:"CLX_ORANGE_HEADER"`
+	CommentWidth         int  `mapstructure:"CLX_COMMENT_WIDTH"`
+	IndentSize           int  `mapstructure:"CLX_INDENT_SIZE"`
+	HighlightHeadlines   bool `mapstructure:"CLX_HIGHLIGHT_HEADLINES"`
+	HighlightComments    bool `mapstructure:"CLX_HIGHLIGHT_COMMENTS"`
+	PreserveCommentWidth bool `mapstructure:"CLX_PRESERVE_COMMENT_WIDTH"`
+	RelativeNumbering    bool `mapstructure:"CLX_RELATIVE_NUMBERING"`
+	HideYCJobs           bool `mapstructure:"CLX_HIDE_YC_JOBS"`
+	AltIndentBlock       bool `mapstructure:"CLX_ALT_INDENT_BLOCK"`
+	EmojiSmileys         bool `mapstructure:"CLX_EMOJI_SMILEYS"`
+	MarkAsRead           bool `mapstructure:"CLX_MARK_AS_READ"`
+	HideIndentSymbol     bool `mapstructure:"CLX_HIDE_INDENT_SYMBOL"`
+	OrangeHeader         bool `mapstructure:"CLX_ORANGE_HEADER"`
 }

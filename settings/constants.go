@@ -4,16 +4,16 @@ const (
 	ConfigFileNameAbbreviated = "config"
 
 	CommentWidthKey         = "CLX_COMMENT_WIDTH"
-	CommentWidthDefault     = 65
+	CommentWidthDefault     = 70
 	CommentWidthDescription = "Sets the maximum number of characters on each line for comments, replies and " +
 		"descriptions in settings. Set to \u001B[1m0\u001B[0m to use the whole screen."
 	IndentSizeKey         = "CLX_INDENT_SIZE"
-	IndentSizeDefault     = 2
+	IndentSizeDefault     = 1
 	IndentSizeDescription = "The number of whitespaces prepended to each reply, " +
 		"not including the color bar."
-	PreserveRightMarginKey         = "CLX_PRESERVE_RIGHT_MARGIN"
-	PreserveRightMarginDefault     = false
-	PreserveRightMarginDescription = "Shortens replies so that the total length, including indentation, is the same " +
+	PreserveCommentWidthKey         = "CLX_PRESERVE_COMMENT_WIDTH"
+	PreserveCommentWidthDefault     = false
+	PreserveCommentWidthDescription = "Shortens replies so that the total length, including indentation, is the same " +
 		"as the comment width. Best used when Indent Size is small to avoid deep replies being too short."
 	HighlightHeadlinesKey         = "CLX_HIGHLIGHT_HEADLINES"
 	HighlightHeadlinesDefault     = true

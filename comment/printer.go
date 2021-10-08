@@ -112,7 +112,7 @@ func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, or
 	currentIndentSize := config.IndentSize * c.Level
 	usableScreenSize := screenWidth - currentIndentSize - 1
 	adjustedCommentWidth := getCommentWidthForLevel(currentIndentSize, usableScreenSize, config.CommentWidth,
-		config.PreserveRightMargin)
+		config.PreserveCommentWidth)
 
 	comment := ParseComment(c.Content, config, adjustedCommentWidth, usableScreenSize)
 
@@ -181,19 +181,17 @@ func incrementReplyCount(comments endpoints.Comments, repliesSoFar *int) int {
 	return *repliesSoFar
 }
 
-// Adjusted comment width shortens the commentWidth if the available screen size
-// is smaller than the size of the commentWidth.
 func getCommentWidthForLevel(currentIndentSize int, usableScreenSize int, commentWidth int,
-	preserveRightMargin bool) int {
+	preserveCommentWidth bool) int {
 	if usableScreenSize < commentWidth {
 		return usableScreenSize
 	}
 
-	if preserveRightMargin {
-		return commentWidth - currentIndentSize
+	if preserveCommentWidth {
+		return commentWidth
 	}
 
-	return commentWidth
+	return commentWidth - currentIndentSize
 }
 
 func getAuthorLabel(author, originalPoster, parentPoster string) string {

@@ -228,53 +228,6 @@ You can enable the classic Hacker News header with the `-n` flag.
 
 ## ⚙️ Settings
 
-### Overview
-#### Configuration options
-
-There are three ways to configure `circumflex`:
-
-1. run `clx` with flags
-2. create a config file in `~/.config/circumflex/config.env`
-3. set environment variables in your shell
-
-#### Flags
-The easiest and quickest way to configure `circumflex` is by running `clx` with flags.
-To see a list of available flags, run the following:
-
-```console
-clx help
-```
-
-#### Changing settings through `config.env`
-
-The following command will create a config file in  `~/.config/circumflex/config.env`:
-
-```console
-clx config
-```
-
-The example config contains all the available options. All fields are commented out and set to their default values.
-Uncomment and set the values of the settings you want to change.
-
-#### Changing settings with environment variables
-You can configure `circumflex` by setting 
-[environment variables](https://unix.stackexchange.com/questions/117467/how-to-permanently-set-environmental-variables).
-Below are a couple of examples on how to set the variables in different shells. They can go in your dotfiles.
-
-Bash and Zsh:
-```bash
-export CLX_COMMENT_WIDTH=65
-```
-
-Fish:
-```fish
-set -x CLX_COMMENT_WIDTH "65"
-```
-
-### Available settings
-
-The following table shows the different ways in which `circumflex` can be configured:
-
 | Flag  | Description |
 | :---- | :---------- |
 | `-c`  | Set the comment width |
@@ -282,10 +235,10 @@ The following table shows the different ways in which `circumflex` can be config
 | `-l`  | Disable syntax highlighting for the headlines |
 | `-o`  | Disable syntax highlighting in the comment section. |
 | `-s`  | Convert smileys (`:)`) to emojis (😊)|
-| `-d`  | Disable history |
+| `-d`  | Disable marking submissions as read |
 | `-r`  | Show each line with a number relative to the currently selected element (similar to Vim's hybrid line number mode) |
-| `-p`  | Shorten replies so that the total length, including indentation, is the same as the comment width (best used when Indent Size is small to avoid deep replies being too short) |
-| `-a`  | Use an alternate indent block if the normal one does not appear as one connected line |
+| `-m`  | Do not shorten the comment width for replies |
+| `-a`  | Use a thinner, but slightly taller indent block (use if the default one does not appear as one connected line) |
 | `-j`  | Show `X is hiring` posts from YC-funded startups (does not affect the monthly `Who is Hiring?` posts) |
 | `-t`  | Hide the indentation symbol from the comment section (does not affect quotes) |
 | `-n`  | Set the header to orange |

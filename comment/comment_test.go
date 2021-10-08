@@ -58,15 +58,15 @@ func TestParsing(t *testing.T) {
 
 func getConfig() *core.Config {
 	return &core.Config{
-		CommentWidth:        80,
-		IndentSize:          4,
-		HighlightHeadlines:  true,
-		PreserveRightMargin: false,
-		RelativeNumbering:   false,
-		HideYCJobs:          false,
-		AltIndentBlock:      false,
-		HighlightComments:   true,
-		EmojiSmileys:        true,
-		MarkAsRead:          false,
+		CommentWidth:         80,
+		IndentSize:           4,
+		HighlightHeadlines:   true,
+		PreserveCommentWidth: false,
+		RelativeNumbering:    false,
+		HideYCJobs:           false,
+		AltIndentBlock:       false,
+		HighlightComments:    true,
+		EmojiSmileys:         true,
+		MarkAsRead:           false,
 	}
 }

@@ -11,16 +11,16 @@ import (
 )
 
 var (
-	plainHeadlines      bool
-	plainComments       bool
-	disableHistory      bool
-	altIndentBlock      bool
-	smileyEmojis        bool
-	relativeNumbering   bool
-	showYCJobs          bool
-	preserveRightMargin bool
-	hideIndentSymbol    bool
-	orangeHeader        bool
+	plainHeadlines       bool
+	plainComments        bool
+	disableHistory       bool
+	altIndentBlock       bool
+	smileyEmojis         bool
+	relativeNumbering    bool
+	showYCJobs           bool
+	preserveCommentWidth bool
+	hideIndentSymbol     bool
+	orangeHeader         bool
 )
 
 func Root() *cobra.Command {
@@ -63,12 +63,12 @@ func configureFlags(rootCmd *cobra.Command) {
 		"use relative numbering for submissions")
 	rootCmd.PersistentFlags().BoolVarP(&showYCJobs, "show-jobs", "j", false,
 		"show submissions of the type 'X is hiring'")
-	rootCmd.PersistentFlags().BoolVarP(&preserveRightMargin, "preserve-right-margin", "m", false,
-		"preserve right margin at the cost of comment width")
+	rootCmd.PersistentFlags().BoolVarP(&preserveCommentWidth, "preserve-comment-width", "m", false,
+		"do not shorten the comment width for replies")
 	rootCmd.PersistentFlags().BoolVarP(&hideIndentSymbol, "hide-indent", "t", false,
-		"hide the indentation symbol")
+		"hide the indentation bar to the left of the reply")
 	rootCmd.PersistentFlags().BoolVarP(&orangeHeader, "orange-header", "n", false,
-		"set the header to black on orange")
+		"set the header on orange")
 
 	rootCmd.PersistentFlags().IntP("comment-width", "c", settings.CommentWidthDefault,
 		"set the comment width")
@@ -108,8 +108,8 @@ func overrideConfig() {
 		viper.Set(settings.HideYCJobsKey, false)
 	}
 
-	if preserveRightMargin {
-		viper.Set(settings.PreserveRightMarginKey, true)
+	if preserveCommentWidth {
+		viper.Set(settings.PreserveCommentWidthKey, true)
 	}
 
 	if hideIndentSymbol {
