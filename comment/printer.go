@@ -191,7 +191,7 @@ func getCommentWidthForLevel(currentIndentSize int, usableScreenSize int, commen
 		return commentWidth
 	}
 
-	return commentWidth - currentIndentSize
+	return commentWidth - currentIndentSize - 1
 }
 
 func getAuthorLabel(author, originalPoster, parentPoster string) string {
