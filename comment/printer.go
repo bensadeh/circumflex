@@ -109,23 +109,16 @@ func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, or
 		return ""
 	}
 
-	currentIndentSize := config.IndentSize * c.Level
-	usableScreenSize := screenWidth - currentIndentSize - 1
-	adjustedCommentWidth := getCommentWidthForLevel(currentIndentSize, usableScreenSize, config.CommentWidth,
-		config.PreserveCommentWidth)
+	indentation := strings.Repeat(" ", c.Level*config.IndentSize)
+	indentSize := len(indentation)
+	availableScreenWidth := screenWidth - len(indentation)
 
-	comment := ParseComment(c.Content, config, adjustedCommentWidth, usableScreenSize)
+	comment := formatComment(c, config, originalPoster, parentPoster, config.CommentWidth, availableScreenWidth,
+		indentSize)
 
-	indentSymbol := indent.GetIndentSymbol(config.HideIndentSymbol, config.AltIndentBlock)
-	indentBlock := getIndentBlockForLevel(indentSymbol, c.Level, config.IndentSize)
-	paddingWithBlock := text.WrapPad(indentBlock)
-	wrappedAndPaddedComment, _ := text.Wrap(comment, screenWidth, paddingWithBlock)
+	indentedComment, _ := text.WrapWithPad(comment, availableScreenWidth, indentation)
 
-	paddingWithNoBlock := text.WrapPad(getIndentBlockWithoutBar(c.Level, config.IndentSize))
-
-	author := getCommentHeading(c, c.Level, config.CommentWidth, originalPoster, parentPoster)
-	paddedAuthor, _ := text.Wrap(author, usableScreenSize, paddingWithNoBlock)
-	fullComment := paddedAuthor + wrappedAndPaddedComment + newParagraph
+	fullComment := indentedComment + newParagraph
 
 	if c.Level == 0 {
 		parentPoster = c.User
@@ -138,24 +131,62 @@ func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, or
 	return fullComment
 }
 
-func getCommentHeading(c endpoints.Comments, level int, commentWidth int, originalPoster string,
-	parentPoster string) string {
-	timeAgo := c.TimeAgo
-	author := aurora.Bold(c.User).String()
-	label := getAuthorLabel(c.User, originalPoster, parentPoster) + " "
+func formatComment(c endpoints.Comments, config *core.Config, originalPoster string, parentPoster string,
+	commentWidth int, availableScreenWidth int, indentSize int) string {
+	indentSymbol := indent.GetIndentSymbol(config.HideIndentSymbol, config.AltIndentBlock)
+	coloredIndentSymbol := syntax.ColorizeIndentSymbol(indentSymbol, c.Level)
+	commentOffset := text.Len(coloredIndentSymbol) + indentSize
 
-	if level == 0 {
-		author = unicode.ZeroWidthSpace + author
+	header := getCommentHeader(c, originalPoster, parentPoster, commentWidth)
+	comment := ParseComment(c.Content, config, commentWidth-commentOffset, availableScreenWidth)
 
-		replies := getRepliesTag(getReplyCount(c))
-		lengthOfUnderline := commentWidth - text.Len(author+label+timeAgo+replies)
-		headerLine := strings.Repeat(" ", lengthOfUnderline)
-		info := aurora.Faint(timeAgo + headerLine + replies).Underline().String()
+	paddedComment, _ := text.WrapWithPad(comment, commentWidth, coloredIndentSymbol)
 
-		return author + label + info + newLine
+	return header + paddedComment
+}
+
+func getCommentHeader(c endpoints.Comments, originalPoster string, parentPoster string, commentWidth int) string {
+	if c.Level == 0 {
+		return formatHeader(c, originalPoster, parentPoster, true, true, true,
+			commentWidth, 0)
 	}
 
-	return author + label + aurora.Faint(timeAgo).String() + newLine
+	return formatHeader(c, originalPoster, parentPoster, false, false, false,
+		commentWidth, 1)
+}
+
+func formatHeader(c endpoints.Comments, originalPoster string, parentPoster string, underlineHeader bool,
+	showReplies bool, enableZeroWidthSpace bool, commentWidth int, indentSize int) string {
+	authorInBold := aurora.Bold(c.User).String() + " "
+	authorLabel := getAuthorLabel(c.User, originalPoster, parentPoster)
+	zeroWidthSpace := getZeroWidthSpace(enableZeroWidthSpace)
+	repliesTag := getReplies(showReplies, c)
+	indentation := strings.Repeat(" ", indentSize)
+
+	spacingLength := commentWidth - text.Len(indentation+authorInBold+authorLabel+c.TimeAgo+repliesTag)
+	spacing := strings.Repeat(" ", spacingLength)
+
+	return zeroWidthSpace + indentation + authorInBold + authorLabel +
+		underlineAndDim(underlineHeader, c.TimeAgo, spacing, repliesTag) + newLine
+}
+
+func underlineAndDim(enabled bool, timeAgo, spacing, replies string) string {
+	if enabled {
+		return aurora.Underline(timeAgo + spacing + replies).Faint().String()
+	}
+
+	return aurora.Faint(timeAgo).String()
+}
+
+func getReplies(showReplies bool, children endpoints.Comments) string {
+	if !showReplies {
+		return ""
+	}
+
+	numberOfReplies := getReplyCount(children)
+	replyTag := getRepliesTag(numberOfReplies)
+
+	return replyTag
 }
 
 func getRepliesTag(numberOfReplies int) string {
@@ -164,6 +195,14 @@ func getRepliesTag(numberOfReplies int) string {
 	}
 
 	return strconv.Itoa(numberOfReplies) + " ↩"
+}
+
+func getZeroWidthSpace(enabled bool) string {
+	if enabled {
+		return unicode.ZeroWidthSpace
+	}
+
+	return ""
 }
 
 func getReplyCount(comments endpoints.Comments) int {
@@ -181,52 +220,18 @@ func incrementReplyCount(comments endpoints.Comments, repliesSoFar *int) int {
 	return *repliesSoFar
 }
 
-func getCommentWidthForLevel(currentIndentSize int, usableScreenSize int, commentWidth int,
-	preserveCommentWidth bool) int {
-	if usableScreenSize < commentWidth {
-		return usableScreenSize
-	}
-
-	if preserveCommentWidth {
-		return commentWidth
-	}
-
-	return commentWidth - currentIndentSize - 1
-}
-
 func getAuthorLabel(author, originalPoster, parentPoster string) string {
 	switch author {
 	case "dang":
-		return aurora.Green(" mod").String()
+		return aurora.Green("mod ").String()
 
 	case originalPoster:
-		return aurora.Red(" OP").String()
+		return aurora.Red("OP ").String()
 
 	case parentPoster:
-		return aurora.Magenta(" PP").String()
+		return aurora.Magenta("PP ").String()
 
 	default:
 		return ""
 	}
-}
-
-func getIndentBlockWithoutBar(level int, indentSize int) string {
-	if level == 0 {
-		return ""
-	}
-
-	return strings.Repeat(" ", indentSize*level+1)
-}
-
-func getIndentBlockForLevel(indentSymbol string, level int, indentSize int) string {
-	if level == 0 {
-		return ""
-	}
-
-	symbol := syntax.ColorizeIndentSymbol(indentSymbol, level)
-
-	indentBlock := strings.Repeat(" ", indentSize)
-	indentForLevel := strings.Repeat(indentBlock, level)
-
-	return indentForLevel + symbol
 }

@@ -27,7 +27,7 @@ type section struct {
 	Text        string
 }
 
-func ParseComment(c string, config *core.Config, availableCommentWidth int, availableScreenWidth int) string {
+func ParseComment(c string, config *core.Config, commentWidth int, availableScreenWidth int) string {
 	if c == "[deleted]" {
 		return aurora.Faint(c).String()
 	}
@@ -78,7 +78,7 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 
 			quoteIndent := " " + indent.GetIndentSymbol(false, config.AltIndentBlock)
 			padding := text.WrapPad(dimmed + quoteIndent)
-			wrappedAndPaddedComment, _ := text.Wrap(paragraph, availableCommentWidth, padding)
+			wrappedAndPaddedComment, _ := text.Wrap(paragraph, commentWidth, padding)
 			paragraph = wrappedAndPaddedComment
 
 		case s.IsCodeBlock:
@@ -117,7 +117,7 @@ func ParseComment(c string, config *core.Config, availableCommentWidth int, avai
 			paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
 
 			padding := text.WrapPad("")
-			wrappedAndPaddedComment, _ := text.Wrap(paragraph, availableCommentWidth, padding)
+			wrappedAndPaddedComment, _ := text.Wrap(paragraph, commentWidth, padding)
 			paragraph = wrappedAndPaddedComment
 		}
 
