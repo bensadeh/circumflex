@@ -1,13 +1,13 @@
   [1m​[0m
   [1mBiden wins White House, vowing new direction for divided U.S.[0m
 
-  [2;33m================================================================================[0m
+  [33m================================================================================[0m
   [2mYou are now in 'less' • Press q to return or h for help[0m
   [2md/u to scroll half page • n/N to move between top-level comments[0m
 
   [2m3089 points by granzymes 9 months ago • 2170 comments • ID 25015967[0m
   [2mhttps://apnews.com/article/joe-biden-wins-white-house-ap-fd58df73aa677acb74fce2…[0m
-  [2;33m================================================================================[0m
+  [33m================================================================================[0m
 ​
   [1mdang[0m [32mmod [0m[2;4m9 months ago                                                           [0m
   [0mAll: before reading further, make sure you're up on the site guidelines and
