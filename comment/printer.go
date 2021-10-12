@@ -109,15 +109,13 @@ func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, or
 		return ""
 	}
 
-	indentation := strings.Repeat(" ", c.Level*config.IndentSize)
+	indentation := getIndentString(c.Level)
 	indentSize := len(indentation)
-	availableScreenWidth := screenWidth - len(indentation)
+	availableScreenWidth := screenWidth - indentSize - margins.CommentSectionLeftMargin
+	adjustedCommentWidth := config.CommentWidth - c.Level
 
-	comment := formatComment(c, config, originalPoster, parentPoster, config.CommentWidth, availableScreenWidth,
-		indentSize)
-
+	comment := formatComment(c, config, originalPoster, parentPoster, adjustedCommentWidth, availableScreenWidth)
 	indentedComment, _ := text.WrapWithPad(comment, availableScreenWidth, indentation)
-
 	fullComment := indentedComment + newParagraph
 
 	if c.Level == 0 {
@@ -132,17 +130,24 @@ func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, or
 }
 
 func formatComment(c endpoints.Comments, config *core.Config, originalPoster string, parentPoster string,
-	commentWidth int, availableScreenWidth int, indentSize int) string {
+	commentWidth int, availableScreenWidth int) string {
 	indentSymbol := indent.GetIndentSymbol(config.HideIndentSymbol, config.AltIndentBlock)
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(indentSymbol, c.Level)
-	commentOffset := text.Len(coloredIndentSymbol) + indentSize
 
 	header := getCommentHeader(c, originalPoster, parentPoster, commentWidth)
-	comment := ParseComment(c.Content, config, commentWidth-commentOffset, availableScreenWidth)
+	comment := ParseComment(c.Content, config, commentWidth, availableScreenWidth)
 
-	paddedComment, _ := text.WrapWithPad(comment, commentWidth, coloredIndentSymbol)
+	paddedComment, _ := text.WrapWithPad(comment, availableScreenWidth, coloredIndentSymbol)
 
 	return header + paddedComment
+}
+
+func getIndentString(level int) string {
+	if level == 0 {
+		return ""
+	}
+
+	return strings.Repeat(" ", level-1)
 }
 
 func getCommentHeader(c endpoints.Comments, originalPoster string, parentPoster string, commentWidth int) string {
