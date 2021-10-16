@@ -42,20 +42,6 @@ func unmarshal(data []byte) *endpoints.Comments {
 	return root
 }
 
-func TestParsing(t *testing.T) {
-	t.Parallel()
-
-	input := "<p>Not a code Block: " +
-		"<p><pre><code>  CODE BLOCK CODE BLOCK \n" +
-		"CODE BLOCK CODE BLOCK</code></pre>"
-
-	expected := "Not a code Block:\n\n\x1b[2m80  CODE BLOCK CODE BLOCK\x1b[0m\n\x1b[2m80CODE BLOCK CODE BLOCK\x1b[0m"
-
-	actual := comment.ParseComment(input, getConfig(), 80, 80)
-
-	assert.Equal(t, expected, actual)
-}
-
 func getConfig() *core.Config {
 	return &core.Config{
 		CommentWidth:         80,
