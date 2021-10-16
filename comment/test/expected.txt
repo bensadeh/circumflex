@@ -7930,8 +7930,8 @@
   [0m[31m▎[0mthink he got some good ideas through the conventional “wisdom”. His execution
   [0m[31m▎[0mon everything was poor.
   [0m[31m▎[0m
-  [0m[31m▎[0m[2m96  Good new ideas:[0m
-  [0m[31m▎[0m[2m96Focus on China as an existential threat to US hegemony.[0m
+  [0m[31m▎[0m[2m  Good new ideas:[0m
+  [0m[31m▎[0m[2mFocus on China as an existential threat to US hegemony.[0m
   [0m[31m▎[0m
   [0m[31m▎[0mJust freaking get out of the Middle East already.
   [0m[31m▎[0m
@@ -13852,26 +13852,26 @@
   [0m
   [0mWhat do I see changing? Not much:
   [0m
-  [0m[2m96  - foreign policy: policy changes with Syria and Iran[0m
-  [0m[2m96[0m
-  [0m[2m96  - China: An end to tariffs[0m
-  [0m[2m96[0m
-  [0m[2m96  - local changes: No more federal opposition to safe injection sites in San Francisco[0m
-  [0m[2m96[0m
-  [0m[2m96  - federal taxes could still go up, the Senate has two liberal Republicans who could deliver[0m
-  [0m[2m96tax increases to Joe[0m
-  [0m[2m96[0m
-  [0m[2m96  - expanded federal regulations that do not require changes to the law[0m
+  [0m[2m  - foreign policy: policy changes with Syria and Iran[0m
+  [0m[2m[0m
+  [0m[2m  - China: An end to tariffs[0m
+  [0m[2m[0m
+  [0m[2m  - local changes: No more federal opposition to safe injection sites in San Francisco[0m
+  [0m[2m[0m
+  [0m[2m  - federal taxes could still go up, the Senate has two liberal Republicans who could deliver[0m
+  [0m[2mtax increases to Joe[0m
+  [0m[2m[0m
+  [0m[2m  - expanded federal regulations that do not require changes to the law[0m
   [0m
   [0mWhat will likely not happen:
   [0m
-  [0m[2m96  - PR and DC becoming states is no longer plausible[0m
-  [0m[2m96[0m
-  [0m[2m96  - packing the Supreme Court is no longer plausible[0m
-  [0m[2m96[0m
-  [0m[2m96  - a green new deal or expansions to entitlements are no longer plausible[0m
-  [0m[2m96[0m
-  [0m[2m96  - state bailouts are now in question, which could force major structural reforms[0m
+  [0m[2m  - PR and DC becoming states is no longer plausible[0m
+  [0m[2m[0m
+  [0m[2m  - packing the Supreme Court is no longer plausible[0m
+  [0m[2m[0m
+  [0m[2m  - a green new deal or expansions to entitlements are no longer plausible[0m
+  [0m[2m[0m
+  [0m[2m  - state bailouts are now in question, which could force major structural reforms[0m
 
    [1mzamadatix[0m [2m9 months ago[0m
   [0m[31m▎[0mI wouldn't rule the GA senator red absolutely until the runoff but it does seem
