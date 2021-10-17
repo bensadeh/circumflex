@@ -151,6 +151,18 @@ func ColorizeIndentSymbol(indentSymbol string, level int) string {
 		indentSymbol = BrightBlue(indentSymbol).String()
 	case 12:
 		indentSymbol = BrightMagenta(indentSymbol).String()
+	case 13:
+		indentSymbol = Red(indentSymbol).String()
+	case 14:
+		indentSymbol = Yellow(indentSymbol).String()
+	case 15:
+		indentSymbol = Green(indentSymbol).String()
+	case 16:
+		indentSymbol = Cyan(indentSymbol).String()
+	case 17:
+		indentSymbol = Blue(indentSymbol).String()
+	case 18:
+		indentSymbol = Magenta(indentSymbol).String()
 	}
 
 	return reset + indentSymbol
