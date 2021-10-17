@@ -5,6 +5,7 @@
   "user": "granzymes",
   "time": 1604766347,
   "time_ago": "9 months ago",
+  "content": "<p>How are people running their detection pipelines on video and overlaying the results? Is every project writing its own scaffolding for this? Is it mostly &#x27;run command, generate new video&#x27;? Or is there a GUI &#x2F; toolkit that&#x27;s standard?",
   "type": "link",
   "url": "https://apnews.com/article/joe-biden-wins-white-house-ap-fd58df73aa677acb74fce2a69adb71f9",
   "domain": "apnews.com",

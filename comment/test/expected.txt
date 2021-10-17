@@ -7,6 +7,10 @@
 
   [2m3089 points by granzymes 9 months ago • 2170 comments • ID 25015967[0m
   [2mhttps://apnews.com/article/joe-biden-wins-white-house-ap-fd58df73aa677acb74fce2…[0m
+
+  How are people running their detection pipelines on video and overlaying the
+  results? Is every project writing its own scaffolding for this? Is it mostly
+  'run command, generate new video'? Or is there a GUI / toolkit that's standard?
   [33m================================================================================[0m
 ​
   [1mdang[0m [32mmod [0m[2;4m9 months ago                                                           [0m

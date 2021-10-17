@@ -11,23 +11,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIntegration(t *testing.T) {
+func TestFullParse(t *testing.T) {
 	t.Parallel()
 
 	commentJSON, _ := ioutil.ReadFile("test/comments.json")
 	expected, _ := ioutil.ReadFile("test/expected.txt")
-
-	comments := unmarshal(commentJSON)
-	actual := comment.ToString(*comments, getConfig(), 100)
-
-	assert.Equal(t, string(expected), actual)
-}
-
-func TestRootComment(t *testing.T) {
-	t.Parallel()
-
-	commentJSON, _ := ioutil.ReadFile("test/root_comment.json")
-	expected, _ := ioutil.ReadFile("test/root_comment_expected.txt")
 
 	comments := unmarshal(commentJSON)
 	actual := comment.ToString(*comments, getConfig(), 100)
