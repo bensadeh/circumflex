@@ -30,7 +30,7 @@
 
 **You might also like:**
 - 🤹 **Native terminal colors** — you bring your own color scheme, `circumflex` does the rest
-- 🛠 **Easy customization** — change settings with flags, environmental variables or config files
+- 🛠 **Easy customization** — quickly enable or disable features  
 - ❤️ **Add to favorites** — save interesting submissions for later
 
 #
@@ -66,6 +66,8 @@ clx
 ```
 
 ### From source
+
+You can also build `circumflex` from source:
 
 ```console
 # Run
@@ -228,16 +230,18 @@ You can enable the classic Hacker News header with the `-n` flag.
 
 ## ⚙️ Settings
 
+Run `clx help` for a list of available commands and settings.
+
+A table of available flags is provided below:
+
 | Flag  | Description |
 | :---- | :---------- |
 | `-c`  | Set the comment width |
-| `-i`  | Set the indentation size |
 | `-l`  | Disable syntax highlighting for the headlines |
 | `-o`  | Disable syntax highlighting in the comment section. |
-| `-s`  | Convert smileys (`:)`) to emojis (😊)|
+| `-s`  | Disable conversion of smileys (`:)`) to emojis (😊)|
 | `-d`  | Disable marking submissions as read |
 | `-r`  | Show each line with a number relative to the currently selected element (similar to Vim's hybrid line number mode) |
-| `-m`  | Do not shorten the comment width for replies |
 | `-a`  | Use a thinner, but slightly taller indent block (use if the default one does not appear as one connected line) |
 | `-j`  | Show `X is hiring` posts from YC-funded startups (does not affect the monthly `Who is Hiring?` posts) |
 | `-t`  | Hide the indentation symbol from the comment section (does not affect quotes) |
