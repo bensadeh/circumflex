@@ -31,4 +31,3 @@ brews:
       - name: less
     install: |
       bin.install "circumflex" => "clx"
-      man.install "share/man/"
