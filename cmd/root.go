@@ -3,36 +3,34 @@ package cmd
 import (
 	"clx/clx"
 	clx2 "clx/constants/clx"
-	"clx/settings"
-
-	"github.com/spf13/viper"
+	"clx/core"
 
 	"github.com/spf13/cobra"
 )
 
 var (
 	plainHeadlines       bool
+	commentWidth         int
 	plainComments        bool
 	disableHistory       bool
 	altIndentBlock       bool
-	smileyEmojis         bool
-	relativeNumbering    bool
+	disableEmojis        bool
+	useRelativeNumbering bool
 	showYCJobs           bool
-	preserveCommentWidth bool
 	hideIndentSymbol     bool
 	orangeHeader         bool
 )
 
 func Root() *cobra.Command {
 	rootCmd := &cobra.Command{
-		Use:     "clx [add id|clear|config|view id]",
-		Short:   "It's Hacker News in your terminal",
+		Use:     "clx",
+		Short:   "circumflex is a command line tool for browsing Hacker News in your terminal",
 		Long:    "circumflex is a command line tool for browsing Hacker News in your terminal",
 		Version: clx2.Version,
 		Run: func(cmd *cobra.Command, args []string) {
-			overrideConfig()
+			config := getConfig()
 
-			clx.Run()
+			clx.Run(config)
 		},
 	}
 
@@ -42,7 +40,6 @@ func Root() *cobra.Command {
 
 	rootCmd.AddCommand(addCmd())
 	rootCmd.AddCommand(clearCmd())
-	rootCmd.AddCommand(configCmd())
 	rootCmd.AddCommand(viewCmd())
 
 	return rootCmd
@@ -57,58 +54,60 @@ func configureFlags(rootCmd *cobra.Command) {
 		"disable marking stories as read")
 	rootCmd.PersistentFlags().BoolVarP(&altIndentBlock, "use-alt-indent-block", "a", false,
 		"use alternate indentation block")
-	rootCmd.PersistentFlags().BoolVarP(&smileyEmojis, "smiley-emojis", "s", false,
-		"convert smileys to emojis")
-	rootCmd.PersistentFlags().BoolVarP(&relativeNumbering, "relative-numbering", "r", false,
+	rootCmd.PersistentFlags().BoolVarP(&disableEmojis, "disable-emojis", "s", false,
+		"disable conversion of smileys to emojis")
+	rootCmd.PersistentFlags().BoolVarP(&useRelativeNumbering, "relative-numbering", "r", false,
 		"use relative numbering for submissions")
 	rootCmd.PersistentFlags().BoolVarP(&showYCJobs, "show-jobs", "j", false,
 		"show submissions of the type 'X is hiring'")
-	rootCmd.PersistentFlags().BoolVarP(&preserveCommentWidth, "preserve-comment-width", "m", false,
-		"do not shorten the comment width for replies")
 	rootCmd.PersistentFlags().BoolVarP(&hideIndentSymbol, "hide-indent", "t", false,
 		"hide the indentation bar to the left of the reply")
 	rootCmd.PersistentFlags().BoolVarP(&orangeHeader, "orange-header", "n", false,
 		"set the header on orange")
-
-	rootCmd.PersistentFlags().IntP("comment-width", "c", settings.CommentWidthDefault,
+	rootCmd.PersistentFlags().IntVarP(&commentWidth, "comment-width", "c", core.GetConfigWithDefaults().CommentWidth,
 		"set the comment width")
-	_ = viper.BindPFlag(settings.CommentWidthKey, rootCmd.PersistentFlags().Lookup("comment-width"))
 }
 
-func overrideConfig() {
+func getConfig() *core.Config {
+	config := core.GetConfigWithDefaults()
+
+	config.CommentWidth = commentWidth
+
 	if plainHeadlines {
-		viper.Set(settings.HighlightHeadlinesKey, false)
+		config.HighlightHeadlines = false
 	}
 
 	if plainComments {
-		viper.Set(settings.HighlightCommentsKey, false)
+		config.HighlightComments = false
 	}
 
 	if disableHistory {
-		viper.Set(settings.MarkAsReadKey, false)
+		config.MarkAsRead = false
 	}
 
 	if altIndentBlock {
-		viper.Set(settings.UseAltIndentBlockKey, true)
+		config.AltIndentBlock = true
 	}
 
-	if smileyEmojis {
-		viper.Set(settings.EmojiSmileysKey, true)
+	if disableEmojis {
+		config.EmojiSmileys = false
 	}
 
-	if relativeNumbering {
-		viper.Set(settings.RelativeNumberingKey, true)
+	if useRelativeNumbering {
+		config.RelativeNumbering = true
 	}
 
 	if showYCJobs {
-		viper.Set(settings.HideYCJobsKey, false)
+		config.HideYCJobs = false
 	}
 
 	if hideIndentSymbol {
-		viper.Set(settings.HideIndentSymbolKey, true)
+		config.HideIndentSymbol = true
 	}
 
 	if orangeHeader {
-		viper.Set(settings.OrangeHeaderKey, true)
+		config.OrangeHeader = true
 	}
+
+	return config
 }

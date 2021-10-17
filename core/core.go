@@ -40,14 +40,29 @@ type MainView struct {
 }
 
 type Config struct {
-	CommentWidth       int  `mapstructure:"CLX_COMMENT_WIDTH"`
-	HighlightHeadlines bool `mapstructure:"CLX_HIGHLIGHT_HEADLINES"`
-	HighlightComments  bool `mapstructure:"CLX_HIGHLIGHT_COMMENTS"`
-	RelativeNumbering  bool `mapstructure:"CLX_RELATIVE_NUMBERING"`
-	HideYCJobs         bool `mapstructure:"CLX_HIDE_YC_JOBS"`
-	AltIndentBlock     bool `mapstructure:"CLX_ALT_INDENT_BLOCK"`
-	EmojiSmileys       bool `mapstructure:"CLX_EMOJI_SMILEYS"`
-	MarkAsRead         bool `mapstructure:"CLX_MARK_AS_READ"`
-	HideIndentSymbol   bool `mapstructure:"CLX_HIDE_INDENT_SYMBOL"`
-	OrangeHeader       bool `mapstructure:"CLX_ORANGE_HEADER"`
+	CommentWidth       int
+	HighlightHeadlines bool
+	HighlightComments  bool
+	RelativeNumbering  bool
+	HideYCJobs         bool
+	AltIndentBlock     bool
+	EmojiSmileys       bool
+	MarkAsRead         bool
+	HideIndentSymbol   bool
+	OrangeHeader       bool
+}
+
+func GetConfigWithDefaults() *Config {
+	return &Config{
+		CommentWidth:       70,
+		HighlightHeadlines: true,
+		HighlightComments:  true,
+		RelativeNumbering:  false,
+		HideYCJobs:         true,
+		AltIndentBlock:     false,
+		EmojiSmileys:       true,
+		MarkAsRead:         true,
+		HideIndentSymbol:   false,
+		OrangeHeader:       false,
+	}
 }

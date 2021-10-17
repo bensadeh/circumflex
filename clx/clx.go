@@ -2,19 +2,18 @@ package clx
 
 import (
 	"clx/cli"
-	"clx/config"
 	constructor "clx/constructors"
 	"clx/controller"
+	"clx/core"
 )
 
-func Run() {
-	configuration := config.GetConfig()
-	sc := constructor.NewScreenController(configuration.MarkAsRead)
+func Run(config *core.Config) {
+	sc := constructor.NewScreenController(config.MarkAsRead)
 
 	controller.SetAfterInitializationAndAfterResizeFunctions(sc.StoryHandler, sc.Application, sc.Articles, sc.MainView,
-		sc.ApplicationState, configuration)
+		sc.ApplicationState, config)
 	controller.SetApplicationShortcuts(sc.StoryHandler, sc.VimRegister, sc.Application, sc.Articles, sc.MainView,
-		sc.ApplicationState, configuration)
+		sc.ApplicationState, config)
 
 	cli.ClearScreen()
 	sc.Application.SetRoot(sc.MainView.Grid, true)
