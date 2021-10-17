@@ -29,8 +29,6 @@ func GetConfig() *core.Config {
 
 func setDefaultValues() {
 	viper.SetDefault(settings.CommentWidthKey, settings.CommentWidthDefault)
-	viper.SetDefault(settings.IndentSizeKey, settings.IndentSizeDefault)
-	viper.SetDefault(settings.PreserveCommentWidthKey, settings.PreserveCommentWidthDefault)
 	viper.SetDefault(settings.HighlightHeadlinesKey, settings.HighlightHeadlinesDefault)
 	viper.SetDefault(settings.RelativeNumberingKey, settings.RelativeNumberingDefault)
 	viper.SetDefault(settings.HideYCJobsKey, settings.HideYCJobsDefault)

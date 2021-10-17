@@ -60,8 +60,6 @@ func initializeOptions() *options {
 
 	o.addOption(HighlightHeadlinesKey, strconv.FormatBool(HighlightHeadlinesDefault), HighlightHeadlinesDescription)
 	o.addOption(CommentWidthKey, strconv.Itoa(CommentWidthDefault), CommentWidthDescription)
-	o.addOption(PreserveCommentWidthKey, strconv.FormatBool(PreserveCommentWidthDefault), PreserveCommentWidthDescription)
-	o.addOption(IndentSizeKey, strconv.Itoa(IndentSizeDefault), IndentSizeDescription)
 	o.addOption(RelativeNumberingKey, strconv.FormatBool(RelativeNumberingDefault), RelativeNumberingDescription)
 	o.addOption(HideYCJobsKey, strconv.FormatBool(HideYCJobsDefault), HideYCJobsDescription)
 	o.addOption(UseAltIndentBlockKey, strconv.FormatBool(UseAltIndentBlockDefault), UseAltIndentBlockDescription)

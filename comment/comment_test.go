@@ -33,7 +33,6 @@ func unmarshal(data []byte) *endpoints.Comments {
 func getConfig() *core.Config {
 	return &core.Config{
 		CommentWidth:       80,
-		IndentSize:         4,
 		HighlightHeadlines: true,
 		RelativeNumbering:  false,
 		HideYCJobs:         false,

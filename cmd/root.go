@@ -73,10 +73,6 @@ func configureFlags(rootCmd *cobra.Command) {
 	rootCmd.PersistentFlags().IntP("comment-width", "c", settings.CommentWidthDefault,
 		"set the comment width")
 	_ = viper.BindPFlag(settings.CommentWidthKey, rootCmd.PersistentFlags().Lookup("comment-width"))
-
-	rootCmd.PersistentFlags().IntP("indent-size", "i", settings.IndentSizeDefault,
-		"set the indent size")
-	_ = viper.BindPFlag(settings.IndentSizeKey, rootCmd.PersistentFlags().Lookup("indent-size"))
 }
 
 func overrideConfig() {
@@ -106,10 +102,6 @@ func overrideConfig() {
 
 	if showYCJobs {
 		viper.Set(settings.HideYCJobsKey, false)
-	}
-
-	if preserveCommentWidth {
-		viper.Set(settings.PreserveCommentWidthKey, true)
 	}
 
 	if hideIndentSymbol {

@@ -18,7 +18,7 @@ circumflex is a command line tool for browsing Hacker News in your terminal
 
 .SH OPTIONS
 .PP
-\fB\-c\fP, \fB\-\-comment\-width\fP=65
+\fB\-c\fP, \fB\-\-comment\-width\fP=70
 	set the comment width
 
 .PP
@@ -31,15 +31,11 @@ circumflex is a command line tool for browsing Hacker News in your terminal
 
 .PP
 \fB\-t\fP, \fB\-\-hide\-indent\fP[=false]
-	hide the indentation symbol
-
-.PP
-\fB\-i\fP, \fB\-\-indent\-size\fP=2
-	set the indent size
+	hide the indentation bar to the left of the reply
 
 .PP
 \fB\-n\fP, \fB\-\-orange\-header\fP[=false]
-	set the header to black on orange
+	set the header on orange
 
 .PP
 \fB\-o\fP, \fB\-\-plain\-comments\fP[=false]
@@ -50,8 +46,8 @@ circumflex is a command line tool for browsing Hacker News in your terminal
 	disable syntax highlighting for headlines
 
 .PP
-\fB\-m\fP, \fB\-\-preserve\-right\-margin\fP[=false]
-	preserve right margin at the cost of comment width
+\fB\-m\fP, \fB\-\-preserve\-comment\-width\fP[=false]
+	do not shorten the comment width for replies
 
 .PP
 \fB\-r\fP, \fB\-\-relative\-numbering\fP[=false]
