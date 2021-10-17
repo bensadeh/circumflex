@@ -3,20 +3,26 @@
 
 .SH NAME
 .PP
-clx \- It's Hacker News in your terminal
+clx\-view \- Go directly to the comment section by ID
 
 
 .SH SYNOPSIS
 .PP
-\fBclx [add id|clear|config|view id] [flags]\fP
+\fBclx view\fP
 
 
 .SH DESCRIPTION
 .PP
-circumflex is a command line tool for browsing Hacker News in your terminal
+Directly enter the comment section for a given item without going through the main view first
 
 
 .SH OPTIONS
+.PP
+\fB\-h\fP, \fB\-\-help\fP[=false]
+	help for view
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
 .PP
 \fB\-c\fP, \fB\-\-comment\-width\fP=70
 	set the comment width
@@ -28,10 +34,6 @@ circumflex is a command line tool for browsing Hacker News in your terminal
 .PP
 \fB\-d\fP, \fB\-\-disable\-history\fP[=false]
 	disable marking stories as read
-
-.PP
-\fB\-h\fP, \fB\-\-help\fP[=false]
-	help for clx
 
 .PP
 \fB\-t\fP, \fB\-\-hide\-indent\fP[=false]
@@ -64,4 +66,4 @@ circumflex is a command line tool for browsing Hacker News in your terminal
 
 .SH SEE ALSO
 .PP
-\fBclx\-add(1)\fP, \fBclx\-clear(1)\fP, \fBclx\-view(1)\fP
+\fBclx(1)\fP

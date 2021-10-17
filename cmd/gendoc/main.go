@@ -18,7 +18,7 @@ func main() {
 
 	rootCmd.DisableAutoGenTag = true
 
-	if err := doc.GenManTree(rootCmd, header, "./share/man"); err != nil {
+	if err := doc.GenManTree(rootCmd, header, "./man/"); err != nil {
 		panic(err)
 	}
 }
