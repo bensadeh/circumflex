@@ -83,7 +83,6 @@ func ParseComment(c string, config *core.Config, commentWidth int, availableScre
 
 		case s.IsCodeBlock:
 			paragraph = syntax.ReplaceHTML(paragraph)
-			// swString := strconv.Itoa(availableScreenWidth)
 			wrappedComment, _ := text.Wrap(paragraph, availableScreenWidth)
 
 			codeLines := strings.Split(wrappedComment, newLine)
