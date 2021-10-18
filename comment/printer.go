@@ -33,7 +33,7 @@ func ToString(comments endpoints.Comments, config *core.Config, screenWidth int)
 		replies += printReplies(reply, config, commentSectionScreenWidth, comments.User, "")
 	}
 
-	commentSection := postprocessor.Process(header + replies)
+	commentSection := postprocessor.Process(header+replies, screenWidth)
 
 	return commentSection
 }
