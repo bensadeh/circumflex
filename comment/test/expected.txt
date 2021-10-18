@@ -13862,8 +13862,8 @@
   [0m[2m[0m
   [0m[2m  - local changes: No more federal opposition to safe injection sites in San Francisco[0m
   [0m[2m[0m
-  [0m[2m  - federal taxes could still go up, the Senate has two liberal Republicans who could deliver[0m
-  [0m[2mtax increases to Joe[0m
+  [0m[2m  - federal taxes could still go up, the Senate has two liberal Republicans who could[0m
+  [0m[2mdeliver tax increases to Joe[0m
   [0m[2m[0m
   [0m[2m  - expanded federal regulations that do not require changes to the law[0m
   [0m
