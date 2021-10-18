@@ -115,7 +115,7 @@ func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, or
 	adjustedCommentWidth := config.CommentWidth - c.Level
 
 	comment := formatComment(c, config, originalPoster, parentPoster, adjustedCommentWidth, availableScreenWidth)
-	indentedComment, _ := text.WrapWithPad(comment, availableScreenWidth, indentation)
+	indentedComment, _ := text.WrapWithPad(comment, screenWidth, indentation)
 	fullComment := indentedComment + newParagraph
 
 	if c.Level == 0 {
