@@ -164,19 +164,28 @@ Headlines containing the text `Ask HN`, `Tell HN`, `Show HN` and `Launch HN` are
   <img src="screenshots/yc.png" width="350" alt="^"/>
 </p>
 
+### Mark submissions as read
+
+Submissions are marked as read after viewing the comment section or entering Reader Mode. Visited stories 
+(by ID) are stored in `~/.history/circumflex/history.json`. Disable marking submissions as read by 
+running `clx` with the `-d` or `--disable-history` flag.
+
+You can delete your browsing history with the following command:
+```console
+clx clear
+```
 
 ## ❤️ Favorites
 Press <kbd>f</kbd> to add the currently highlighted submission to your list of favorites. Remove submissions from the 
 Favorites page with <kbd>x</kbd>.
 
-You can add any submission by its ID from the command line:
+You can add any submission by its `ID` from the command line:
 ```console
 clx add [id]
 ```
 
 Favorites are stored in `~/.config/circumflex/favorites.json`. `circumflex` pretty-prints 
 `favorites.json` to make it both human-readable and VCS-friendly.
-
 
 ## 📐 Fine-tuning
 
