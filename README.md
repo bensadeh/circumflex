@@ -165,12 +165,12 @@ Headlines containing the text `Ask HN`, `Tell HN`, `Show HN` and `Launch HN` are
 </p>
 
 ### Mark submissions as read
+Visited submissions are marked as read. 
 
-Submissions are marked as read after viewing the comment section or entering Reader Mode. Visited stories 
-(by ID) are stored in `~/.history/circumflex/history.json`. Disable marking submissions as read by 
+A list of submissions (by `ID`) are stored in `~/.cache/circumflex/history.json`. Disable marking submissions as read by 
 running `clx` with the `-d` or `--disable-history` flag.
 
-You can delete your browsing history with the following command:
+You can delete your browsing history from the command line:
 ```console
 clx clear
 ```
@@ -198,7 +198,8 @@ might appear disconnected.
   <img src="screenshots/disconnected_indentations.png" width="700" alt="^"/>
 </p>
 
-Run `circumflex` with the `-a` flag to use a somewhat thinner, but more compatible indentation block.
+Run `circumflex` with the `-a` flag to use a somewhat thinner, but more compatible indentation block that will look
+better in some terminals.
 
 ### Low contrast headers
 #### Overview
