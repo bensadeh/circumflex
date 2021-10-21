@@ -37,21 +37,21 @@
 
 ### Table of Contents
 
-* [Installing](#-installing)
-* [Keymaps](#%EF%B8%8F-keymaps)
-* [Comment section](#-comment-section)
+* [Installing](#installing)
+* [Keymaps](#keymaps)
+* [Comment section](#comment-section)
 ###
-* [Reader mode](#-reader-mode)
-* [Syntax highlighting](#-syntax-highlighting)
-* [Favorites](#%EF%B8%8F-favorites)
+* [Reader mode](#reader-mode)
+* [Syntax highlighting](#syntax-highlighting)
+* [Favorites](#favorites)
 ###
-* [Fine tuning](#-fine-tuning)
-* [Settings](#%EF%B8%8F-settings)
-* [Under the hood](#-under-the-hood)
+* [Fine tuning](#fine-tuning)
+* [Settings](#settings)
+* [Under the hood](#under-the-hood)
 
 ***
 
-## 📦 Installing
+## Installing
 
 ### Via Homebrew
 
@@ -74,7 +74,7 @@ You can also build `circumflex` from source:
 go run main.go
 ```
 
-## ⌨️ Keymaps
+## Keymaps
 
 Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of available keymaps:
 
@@ -94,7 +94,7 @@ Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of available keymaps:
 <kbd>q</kbd>: Quit
 </pre>
 
-## 💬 Comment section
+## Comment section
 
 ### Overview
 Press <kbd>Enter</kbd> to read the comment section. 
@@ -119,14 +119,14 @@ comment section.
 - <kbd>n</kbd>/<kbd>N</kbd> to jump to the **next top-level comment**
 
 
-## 👓 Reader Mode
+## Reader Mode
 Press <kbd>Space</kbd> to read the submission link in Reader Mode. 
 
 **Note**: some websites do not work well with Reader Mode. If the submission URL points to
 a domain with known Reader Mode incompatibility, the link cannot be opened in Reader Mode. 
 See [validator.go](/validator/validator.go) for a full list of incompatible sites.
 
-## 🌈 Syntax highlighting
+## Syntax highlighting
 ### Quotes
 Quotes are indented, italicized and dimmed in order to distinguish them from the rest of the comment.
 
@@ -175,7 +175,7 @@ You can delete your browsing history from the command line:
 clx clear
 ```
 
-## ❤️ Favorites
+## Favorites
 Press <kbd>f</kbd> to add the currently highlighted submission to your list of favorites. Remove submissions from the 
 Favorites page with <kbd>x</kbd>.
 
@@ -187,7 +187,7 @@ clx add [id]
 Favorites are stored in `~/.config/circumflex/favorites.json`. `circumflex` pretty-prints 
 `favorites.json` to make it both human-readable and VCS-friendly.
 
-## 📐 Fine-tuning
+## Fine-tuning
 
 ### Disconnected indentation blocks
 
@@ -238,7 +238,7 @@ You can enable the classic Hacker News header with the `-n` flag.
   <img src="screenshots/orangeHeader.png" width="700" alt="^"/>
 </p>
 
-## ⚙️ Settings
+## Settings
 
 Run `clx help` for a list of available commands and settings.
 
@@ -257,7 +257,7 @@ A table of available flags is provided below:
 | `-t`  | Hide the indentation symbol from the comment section (does not affect quotes) |
 | `-n`  | Set the header to orange |
 
-## 🚗 Under the hood
+## Under the hood
 
 `circumflex` uses:
 
