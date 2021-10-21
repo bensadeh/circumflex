@@ -2,6 +2,12 @@
 ## 1.23
 _WIP_
 
+**Cosmetic**
+- Comment section is now fixed-width
+
+**Backend**
+- Refactored the rendering logic for the comment section
+
 
 ## 1.22.1
 _2021-10-04_
