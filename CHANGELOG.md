@@ -1,9 +1,9 @@
 # Changelog
 ## 1.23
-_WIP_
+_2021-10-21_
 
 **Cosmetic**
-- Comment section is now fixed-width
+- Slightly reformatted the comment section
 
 **Backend**
 - Refactored the rendering logic for the comment section
