@@ -13,6 +13,8 @@ archives:
       linux: Linux
       386: 32-bit
       amd64: 64-bit
+    files:
+      - man/*
 checksum:
   name_template: 'checksums.txt'
 snapshot:
