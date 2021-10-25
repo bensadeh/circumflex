@@ -31,10 +31,6 @@ func getSymbol(orangeHeader bool) string {
 	return "🆈"
 }
 
-func GetCircumflexHeader() string {
-	return ""
-}
-
 func header(symbol string, title string, subHeaders []string, selectedSubHeader int, orangeHeader bool) string {
 	background := getBackground(orangeHeader)
 	screenWidth := screen.GetTerminalWidth()

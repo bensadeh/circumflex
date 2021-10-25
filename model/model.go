@@ -377,7 +377,7 @@ func updateInfoScreenView(main *core.MainView, appState *core.ApplicationState) 
 	view.SetInfoScreenText(main, infoScreenText)
 	view.SetPermanentStatusBar(main, statusBarText, cview.AlignCenter)
 	view.HidePageCounter(main)
-	view.SetHelpScreenHeader(main)
+	view.ClearHelpScreenHeader(main)
 	view.HideLeftMarginRanks(main)
 	view.SetPanelToInfoView(main)
 }

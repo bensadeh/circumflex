@@ -3,7 +3,6 @@ package view
 import (
 	"clx/constants/panels"
 	"clx/core"
-	"clx/header"
 	"clx/pages"
 	"time"
 
@@ -14,9 +13,8 @@ func SetHackerNewsHeader(m *core.MainView, header string) {
 	m.Header.SetText(header)
 }
 
-func SetHelpScreenHeader(m *core.MainView) {
-	h := header.GetCircumflexHeader()
-	m.Header.SetText(h)
+func ClearHelpScreenHeader(m *core.MainView) {
+	m.Header.SetText("")
 }
 
 func SetPanelToMainView(m *core.MainView) {
