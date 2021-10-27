@@ -1,11 +1,15 @@
 
-<h1 align="center">circumflex</h1>
+<p align="center">
+  <img src="screenshots/clx.png" width="150" alt="circumflex"/>
+</p>
 
 <p align="center">
 <a href="https://github.com/bensadeh/circumflex/releases" target="__blank"><img src="https://img.shields.io/github/v/release/bensadeh/circumflex?style=flat&label=&color=293452"></a>
 <a href="/LICENSE" target="__blank"><img src="https://img.shields.io/github/license/bensadeh/circumflex?style=flat&color=89ddff&label=" alt="License"></a>
 <a href="/CHANGELOG.md" target="__blank"><img src="https://img.shields.io/badge/docs-changelog-9cc4ff?style=flat&label=" alt="Changelog"></a>
 <a href="/go.mod" target="__blank"><img src="https://img.shields.io/static/v1?label=&message=1.17&color=e1acff&logo=go&logoColor=black" alt="Go Version"></a>
+     
+#
      
 <p align="center">
   <code>circumflex</code> is a command line tool for browsing Hacker News in your terminal
