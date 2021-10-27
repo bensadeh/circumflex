@@ -36,9 +36,9 @@ func getConfig() *core.Config {
 		HighlightHeadlines: true,
 		RelativeNumbering:  false,
 		HideYCJobs:         false,
-		AltIndentBlock:     false,
 		HighlightComments:  true,
 		EmojiSmileys:       true,
 		MarkAsRead:         false,
+		IndentationSymbol:  "▎",
 	}
 }

@@ -1,4 +1,10 @@
 # Changelog
+## 1.24
+_WIP_
+
+**Cosmetic**
+- Fixed a bug where some terminals would have the indentation symbol appear as a disconnected line
+
 ## 1.23
 _2021-10-21_
 
@@ -7,7 +13,6 @@ _2021-10-21_
 
 **Backend**
 - Refactored the rendering logic for the comment section
-
 
 ## 1.22.1
 _2021-10-04_

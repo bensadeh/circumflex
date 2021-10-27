@@ -1,19 +1,23 @@
 package indent
 
+import "os"
+
 const (
-	noIndent     = " "
-	altIndent    = "┃"
-	normalIndent = "▎"
+	noIndent      = " "
+	itermIndent   = "▎"
+	regularIndent = "┃"
 )
 
-func GetIndentSymbol(hideIndentSymbol bool, useAlternateIndent bool) string {
+func GetIndentSymbol(hideIndentSymbol bool) string {
 	if hideIndentSymbol {
 		return noIndent
 	}
 
-	if useAlternateIndent {
-		return altIndent
+	terminal := os.Getenv("LC_TERMINAL")
+
+	if terminal == "iTerm2" {
+		return itermIndent
 	}
 
-	return normalIndent
+	return regularIndent
 }

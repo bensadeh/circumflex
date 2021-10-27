@@ -45,11 +45,11 @@ type Config struct {
 	HighlightComments  bool
 	RelativeNumbering  bool
 	HideYCJobs         bool
-	AltIndentBlock     bool
 	EmojiSmileys       bool
 	MarkAsRead         bool
 	HideIndentSymbol   bool
 	OrangeHeader       bool
+	IndentationSymbol  string
 }
 
 func GetConfigWithDefaults() *Config {
@@ -59,10 +59,10 @@ func GetConfigWithDefaults() *Config {
 		HighlightComments:  true,
 		RelativeNumbering:  false,
 		HideYCJobs:         true,
-		AltIndentBlock:     false,
 		EmojiSmileys:       true,
 		MarkAsRead:         true,
 		HideIndentSymbol:   false,
 		OrangeHeader:       false,
+		IndentationSymbol:  " ▎",
 	}
 }

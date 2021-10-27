@@ -2,7 +2,6 @@ package comment
 
 import (
 	"clx/core"
-	"clx/indent"
 	"clx/syntax"
 	"strings"
 
@@ -76,7 +75,7 @@ func ParseComment(c string, config *core.Config, commentWidth int, availableScre
 
 			paragraph = italic + dimmed + paragraph + reset
 
-			quoteIndent := " " + indent.GetIndentSymbol(false, config.AltIndentBlock)
+			quoteIndent := " " + config.IndentationSymbol
 			padding := text.WrapPad(dimmed + quoteIndent)
 			wrappedAndPaddedComment, _ := text.Wrap(paragraph, commentWidth, padding)
 			paragraph = wrappedAndPaddedComment

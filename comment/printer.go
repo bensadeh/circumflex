@@ -7,7 +7,6 @@ import (
 	"clx/constants/unicode"
 	"clx/core"
 	"clx/endpoints"
-	"clx/indent"
 	"clx/syntax"
 	"strconv"
 	"strings"
@@ -131,8 +130,7 @@ func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, or
 
 func formatComment(c endpoints.Comments, config *core.Config, originalPoster string, parentPoster string,
 	commentWidth int, availableScreenWidth int) string {
-	indentSymbol := indent.GetIndentSymbol(config.HideIndentSymbol, config.AltIndentBlock)
-	coloredIndentSymbol := syntax.ColorizeIndentSymbol(indentSymbol, c.Level)
+	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, c.Level)
 
 	header := getCommentHeader(c, originalPoster, parentPoster, commentWidth)
 	comment := ParseComment(c.Content, config, commentWidth, availableScreenWidth)

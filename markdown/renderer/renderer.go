@@ -3,7 +3,6 @@ package renderer
 import (
 	"clx/constants/messages"
 	"clx/constants/unicode"
-	"clx/indent"
 	"clx/markdown"
 	"clx/syntax"
 	"regexp"
@@ -43,7 +42,7 @@ func CreateHeader(title string, domain string, lineWidth int) string {
 	return wrappedTitle
 }
 
-func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) string {
+func ToString(blocks []*markdown.Block, lineWidth int, indentBlock string) string {
 	output := ""
 
 	for _, block := range blocks {
@@ -58,7 +57,7 @@ func ToString(blocks []*markdown.Block, lineWidth int, altIndentBlock bool) stri
 			output += renderCode(block.Text) + "\n\n"
 
 		case markdown.Quote:
-			output += renderQuote(block.Text, lineWidth, altIndentBlock) + "\n\n"
+			output += renderQuote(block.Text, lineWidth, indentBlock) + "\n\n"
 
 		case markdown.Table:
 			output += renderTable(block.Text) + "\n\n"
@@ -221,17 +220,17 @@ func renderCode(text string) string {
 	return text
 }
 
-func renderQuote(text string, lineWidth int, altIndentBlock bool) string {
+func renderQuote(text string, lineWidth int, indentSymbol string) string {
 	text = Italic(text).Faint().String()
 	text = unescapeCharacters(text)
 	text = removeHrefs(text)
 	text = removeUnwantedNewLines(text)
 
-	indentSymbol := " " + indent.GetIndentSymbol(false, altIndentBlock)
+	indentBlock := " " + indentSymbol
 	text = itReversed(text)
 	text = bldInQuote(text)
 
-	padding := termtext.WrapPad(indentLevel1 + Faint(indentSymbol).String())
+	padding := termtext.WrapPad(indentLevel1 + Faint(indentBlock).String())
 	text, _ = termtext.Wrap(text, lineWidth, padding)
 
 	return text

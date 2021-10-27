@@ -197,7 +197,7 @@ func enterReaderModeBuiltInParser(app *cview.Application, main *core.MainView, l
 
 		blocks := parser.Parse(article)
 		header := renderer.CreateHeader(story.Title, story.URL, 70)
-		renderedArticle := renderer.ToString(blocks, 70, false)
+		renderedArticle := renderer.ToString(blocks, 70, config.IndentationSymbol)
 		renderedArticle = postprocessor.Process(header+renderedArticle, url)
 
 		cli.Less(renderedArticle)

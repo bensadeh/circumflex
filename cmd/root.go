@@ -4,6 +4,7 @@ import (
 	"clx/clx"
 	clx2 "clx/constants/clx"
 	"clx/core"
+	"clx/indent"
 
 	"github.com/spf13/cobra"
 )
@@ -13,7 +14,6 @@ var (
 	commentWidth         int
 	plainComments        bool
 	disableHistory       bool
-	altIndentBlock       bool
 	disableEmojis        bool
 	useRelativeNumbering bool
 	showYCJobs           bool
@@ -29,6 +29,7 @@ func Root() *cobra.Command {
 		Version: clx2.Version,
 		Run: func(cmd *cobra.Command, args []string) {
 			config := getConfig()
+			config.IndentationSymbol = indent.GetIndentSymbol(hideIndentSymbol)
 
 			clx.Run(config)
 		},
@@ -52,8 +53,6 @@ func configureFlags(rootCmd *cobra.Command) {
 		"disable syntax highlighting for comments")
 	rootCmd.PersistentFlags().BoolVarP(&disableHistory, "disable-history", "d", false,
 		"disable marking stories as read")
-	rootCmd.PersistentFlags().BoolVarP(&altIndentBlock, "use-alt-indent-block", "a", false,
-		"use alternate indentation block")
 	rootCmd.PersistentFlags().BoolVarP(&disableEmojis, "disable-emojis", "s", false,
 		"disable conversion of smileys to emojis")
 	rootCmd.PersistentFlags().BoolVarP(&useRelativeNumbering, "relative-numbering", "r", false,
@@ -83,10 +82,6 @@ func getConfig() *core.Config {
 
 	if disableHistory {
 		config.MarkAsRead = false
-	}
-
-	if altIndentBlock {
-		config.AltIndentBlock = true
 	}
 
 	if disableEmojis {

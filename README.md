@@ -182,19 +182,7 @@ clx add [id]
 Favorites are stored in `~/.config/circumflex/favorites.json`. `circumflex` pretty-prints 
 `favorites.json` to make it both human-readable and VCS-friendly.
 
-## Fine-tuning
-
-### Disconnected indentation blocks
-
-Depending on the terminal emulator and the current font, the indentation block (the bar to the left of each reply)
-might appear disconnected.
-
-<p align="center">
-  <img src="screenshots/disconnected_indentations.png" width="700" alt="^"/>
-</p>
-
-Run `circumflex` with the `-a` flag to use a somewhat thinner, but more compatible indentation block that will look
-better in some terminals.
+## Tweaks
 
 ### Low contrast headers
 #### Overview
@@ -202,8 +190,8 @@ Some terminals brighten text in bold in order to give them stronger contrast in 
 schemes. `circumflex` uses bold text to give headers and authors names additional contrast 
 for better legibility. 
 
-See example screenshots below (low contrast header) and above (low 
-contrast author name) of terminal output which does not brighten bold fonts.
+See example screenshots below (low contrast header) of terminal output which does not 
+brighten bold fonts.
 
 <p align="center">
   <img src="screenshots/low_contrast.png" width="500" alt="^"/>
@@ -247,7 +235,6 @@ A table of available flags is provided below:
 | `-s`  | Disable conversion of smileys (`:)`) to emojis (😊)|
 | `-d`  | Disable marking submissions as read |
 | `-r`  | Show each line with a number relative to the currently selected element (similar to Vim's hybrid line number mode) |
-| `-a`  | Use a thinner, but slightly taller indent block (use if the default one does not appear as one connected line) |
 | `-j`  | Show `X is hiring` posts from YC-funded startups (does not affect the monthly `Who is Hiring?` posts) |
 | `-t`  | Hide the indentation symbol from the comment section (does not affect quotes) |
 | `-n`  | Set the header to orange |
