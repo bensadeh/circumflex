@@ -12,15 +12,23 @@ const (
 )
 
 func GetHackerNewsHeader(selectedSubHeader int, showFavorites bool, orangeHeader bool) string {
-	symbol := getSymbol(orangeHeader)
+	// symbol := getSymbol(orangeHeader)
+
+	//if showFavorites {
+	//	return header(symbol, "Hacker News   ", []string{"new", "ask", "show", "favorites"},
+	//		selectedSubHeader, orangeHeader)
+	//}
+	//
+	//return header(symbol, "Hacker News   ", []string{"new", "ask", "show"},
+	//	selectedSubHeader, orangeHeader)
 
 	if showFavorites {
-		return header(symbol, "Hacker News   ", []string{"new", "ask", "show", "favorites"},
-			selectedSubHeader, orangeHeader)
+		return headerNew([]string{"new", "ask", "show", "favorites"},
+			selectedSubHeader)
 	}
 
-	return header(symbol, "Hacker News   ", []string{"new", "ask", "show"},
-		selectedSubHeader, orangeHeader)
+	return headerNew([]string{"new", "ask", "show"},
+		selectedSubHeader)
 }
 
 func getSymbol(orangeHeader bool) string {
