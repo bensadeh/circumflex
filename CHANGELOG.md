@@ -1,6 +1,6 @@
 # Changelog
 ## 1.24
-_WIP_
+_2021-10-30_
 
 **Cosmetic**
 - Fixed a bug where some terminals would have the indentation symbol appear as a disconnected line
