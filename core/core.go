@@ -48,8 +48,8 @@ type Config struct {
 	EmojiSmileys       bool
 	MarkAsRead         bool
 	HideIndentSymbol   bool
-	OrangeHeader       bool
 	IndentationSymbol  string
+	HeaderType         int
 }
 
 func GetConfigWithDefaults() *Config {
@@ -62,7 +62,7 @@ func GetConfigWithDefaults() *Config {
 		EmojiSmileys:       true,
 		MarkAsRead:         true,
 		HideIndentSymbol:   false,
-		OrangeHeader:       false,
 		IndentationSymbol:  " ▎",
+		HeaderType:         0,
 	}
 }

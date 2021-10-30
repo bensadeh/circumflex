@@ -11,24 +11,19 @@ const (
 	symbolHeaderSpacing = "  "
 )
 
-func GetHackerNewsHeader(selectedSubHeader int, showFavorites bool, orangeHeader bool) string {
-	// symbol := getSymbol(orangeHeader)
+func GetHackerNewsHeader(selectedSubHeader int, showFavorites bool, headerType int) string {
+	categories := getCategories(showFavorites)
 
-	//if showFavorites {
-	//	return header(symbol, "Hacker News   ", []string{"new", "ask", "show", "favorites"},
-	//		selectedSubHeader, orangeHeader)
-	//}
-	//
-	//return header(symbol, "Hacker News   ", []string{"new", "ask", "show"},
-	//	selectedSubHeader, orangeHeader)
+	switch headerType {
+	case 1:
+		return header(getSymbol(false), "Hacker News   ", categories, selectedSubHeader, false)
 
-	if showFavorites {
-		return headerNew([]string{"new", "ask", "show", "favorites"},
-			selectedSubHeader)
+	case 2:
+		return header(getSymbol(true), "Hacker News   ", categories, selectedSubHeader, true)
+
+	default:
+		return headerNew(categories, selectedSubHeader)
 	}
-
-	return headerNew([]string{"new", "ask", "show"},
-		selectedSubHeader)
 }
 
 func getSymbol(orangeHeader bool) string {
@@ -37,6 +32,14 @@ func getSymbol(orangeHeader bool) string {
 	}
 
 	return "🆈"
+}
+
+func getCategories(showFavorites bool) []string {
+	if showFavorites {
+		return []string{"new", "ask", "show", "favorites"}
+	}
+
+	return []string{"new", "ask", "show"}
 }
 
 func header(symbol string, title string, subHeaders []string, selectedSubHeader int, orangeHeader bool) string {

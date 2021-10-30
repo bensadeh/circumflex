@@ -18,7 +18,7 @@ var (
 	useRelativeNumbering bool
 	showYCJobs           bool
 	hideIndentSymbol     bool
-	orangeHeader         bool
+	headerType           int
 )
 
 func Root() *cobra.Command {
@@ -61,16 +61,17 @@ func configureFlags(rootCmd *cobra.Command) {
 		"show submissions of the type 'X is hiring'")
 	rootCmd.PersistentFlags().BoolVarP(&hideIndentSymbol, "hide-indent", "t", false,
 		"hide the indentation bar to the left of the reply")
-	rootCmd.PersistentFlags().BoolVarP(&orangeHeader, "orange-header", "n", false,
-		"set the header on orange")
 	rootCmd.PersistentFlags().IntVarP(&commentWidth, "comment-width", "c", core.GetConfigWithDefaults().CommentWidth,
 		"set the comment width")
+	rootCmd.PersistentFlags().IntVarP(&headerType, "header-type", "e", 0,
+		"set the header type on the main screen")
 }
 
 func getConfig() *core.Config {
 	config := core.GetConfigWithDefaults()
 
 	config.CommentWidth = commentWidth
+	config.HeaderType = headerType
 
 	if plainHeadlines {
 		config.HighlightHeadlines = false
@@ -98,10 +99,6 @@ func getConfig() *core.Config {
 
 	if hideIndentSymbol {
 		config.HideIndentSymbol = true
-	}
-
-	if orangeHeader {
-		config.OrangeHeader = true
 	}
 
 	return config

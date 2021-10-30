@@ -84,7 +84,7 @@ func resetApplicationState(appState *core.ApplicationState) {
 
 func initializeView(appState *core.ApplicationState, main *core.MainView, ret *handler.StoryHandler,
 	config *core.Config) {
-	header := ret.GetHackerNewsHeader(appState.CurrentCategory, config.OrangeHeader)
+	header := ret.GetHackerNewsHeader(appState.CurrentCategory, config.HeaderType)
 
 	view.SetPanelToMainView(main)
 	view.SetHackerNewsHeader(main, header)
@@ -265,7 +265,7 @@ func changePage(app *cview.Application, list *cview.List, main *core.MainView, a
 
 	marginText := ranking.GetRankings(config.RelativeNumbering, appState.StoriesToShow, len(listItems),
 		list.GetCurrentItemIndex(), appState.CurrentPage)
-	header := ret.GetHackerNewsHeader(appState.CurrentCategory, config.OrangeHeader)
+	header := ret.GetHackerNewsHeader(appState.CurrentCategory, config.HeaderType)
 	maxPages := ret.GetMaxPages(appState.CurrentCategory, appState.StoriesToShow)
 
 	view.SetLeftMarginText(main, marginText)
@@ -291,7 +291,7 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	view.SelectItem(list, currentItem)
 	ClearVimRegister(main, reg)
 
-	header := ret.GetHackerNewsHeader(appState.CurrentCategory, config.OrangeHeader)
+	header := ret.GetHackerNewsHeader(appState.CurrentCategory, config.HeaderType)
 	marginText := ranking.GetRankings(config.RelativeNumbering, appState.StoriesToShow, len(listItems),
 		list.GetCurrentItemIndex(), appState.CurrentPage)
 	maxPages := ret.GetMaxPages(appState.CurrentCategory, appState.StoriesToShow)
@@ -388,7 +388,7 @@ func ExitInfoScreen(main *core.MainView, appState *core.ApplicationState, config
 
 	marginText := ranking.GetRankings(config.RelativeNumbering, appState.StoriesToShow, list.GetItemCount(),
 		list.GetCurrentItemIndex(), appState.CurrentPage)
-	header := ret.GetHackerNewsHeader(appState.CurrentCategory, config.OrangeHeader)
+	header := ret.GetHackerNewsHeader(appState.CurrentCategory, config.HeaderType)
 	maxPages := ret.GetMaxPages(appState.CurrentCategory, appState.StoriesToShow)
 
 	view.SetLeftMarginText(main, marginText)

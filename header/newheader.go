@@ -24,7 +24,7 @@ func red() string {
 	return cview.TranslateANSI("\u001B[38;5;219m")
 }
 
-func categories() string {
+func categoriesColor() string {
 	return cview.TranslateANSI("\u001B[38;5;250m")
 }
 
@@ -40,7 +40,7 @@ func headerNew(subHeaders []string, selectedSubHeader int) string {
 	title := background1() + "  " + magenta() + "c" + yellow() + "l" + blue() + "x  "
 
 	background := "[#0c0c0c:navy:-]"
-	black := background2() + categories()
+	black := background2() + categoriesColor()
 	screenWidth := screen.GetTerminalWidth()
 
 	titleOpenTag := "[:navy:]"
@@ -68,7 +68,7 @@ func getCategoryHeaderNew(subHeaders []string, selectedSubHeader int) string {
 	formattedCategory := ""
 	itemsTotal := len(subHeaders)
 	selectedOpen := getSelectedCategoryOpenTagNew(selectedSubHeader)
-	selectedClose := categories()
+	selectedClose := categoriesColor()
 
 	for i, subHeader := range subHeaders {
 		isOnLastItem := i == itemsTotal-1
@@ -95,7 +95,7 @@ func getSelectedCategoryOpenTagNew(selectedSubHeader int) string {
 	case 4:
 		return red()
 	default:
-		return categories()
+		return categoriesColor()
 	}
 }
 
