@@ -1,4 +1,10 @@
 # Changelog
+## 1.25
+_2021-10-31_
+
+**Cosmetic**
+- Changed the default header and added options to choose between different options
+
 ## 1.24
 _2021-10-30_
 
