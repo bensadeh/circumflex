@@ -44,8 +44,10 @@
 * [Syntax highlighting](#syntax-highlighting)
 * [Favorites](#favorites)
 ###
-* [Fine tuning](#fine-tuning)
+* [Headers](#headers)
+* [Tweaks](#tweaks)
 * [Settings](#settings)
+###
 * [Under the hood](#under-the-hood)
 
 ***
@@ -96,18 +98,17 @@ Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of available keymaps:
 ## Comment section
 
 ### Overview
+
+<img align="right" width="50%" src="screenshots/comments.png">
+
 Press <kbd>Enter</kbd> to read the comment section. 
 
 Comments are pretty-printed and piped to the
 pager `less`. To present a nice and readable comment section, `circumflex` features:
 
+* Rainbow-colored indentation blocks
 * Text formatting in **bold**, _italics_ and `code` where available
 * Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
-* Adjustable margins and comment width
-
-<p align="center">
-  <img src="screenshots/comments.png" width="600" alt="^"/>
-</p>
 
 ### Navigation
 The following pair of shortcuts are recommended for browsing and navigating the 
@@ -186,10 +187,49 @@ clx add [id]
 Favorites are stored in `~/.config/circumflex/favorites.json`. `circumflex` pretty-prints 
 `favorites.json` to make it both human-readable and VCS-friendly.
 
-## Tweaks
+## Headers
 
-### Low contrast headers
-#### Overview
+Run `circumflex` with the `-e`/`header-type` flag and a number to set the header on the main screen:
+
+```console
+clx -e [1-3]
+```
+
+<p align="center">
+  <img src="screenshots/header0.png" width="700"/>
+</p>
+
+<p align="center">
+ Stock dark mode (default)
+</p>
+
+
+<p align="center">
+  <img src="screenshots/header1.png" width="700"/>
+</p>
+
+<p align="center">
+ Stock light mode (1)
+</p>
+
+<p align="center">
+  <img src="screenshots/header2.png" width="700"/>
+</p>
+
+<p align="center">
+ No colors (2)
+</p>
+
+<p align="center">
+  <img src="screenshots/header3.png" width="700"/>
+</p>
+
+<p align="center">
+ Orange header (3)
+</p>
+
+## Tweaks
+#### Low contrast headers
 Some terminals brighten text in bold in order to give them stronger contrast in dark color 
 schemes. `circumflex` uses bold text to give headers and authors names additional contrast 
 for better legibility. 
@@ -218,13 +258,6 @@ more info)
 
 - Check `Brighten bold text` under Profiles → Colors
 
-#### Classic Hacker News header
-You can enable the classic Hacker News header with the `-n` flag.
-
-<p align="center">
-  <img src="screenshots/orangeHeader.png" width="700" alt="^"/>
-</p>
-
 ## Settings
 
 Run `clx help` for a list of available commands and settings.
@@ -241,7 +274,7 @@ A table of available flags is provided below:
 | `-r`  | Show each line with a number relative to the currently selected element (similar to Vim's hybrid line number mode) |
 | `-j`  | Show `X is hiring` posts from YC-funded startups (does not affect the monthly `Who is Hiring?` posts) |
 | `-t`  | Hide the indentation symbol from the comment section (does not affect quotes) |
-| `-n`  | Set the header to orange |
+| `-e`  | Set the header type |
 
 ## Under the hood
 
