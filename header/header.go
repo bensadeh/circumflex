@@ -16,13 +16,16 @@ func GetHackerNewsHeader(selectedSubHeader int, showFavorites bool, headerType i
 
 	switch headerType {
 	case 1:
-		return header(getSymbol(false), "Hacker News   ", categories, selectedSubHeader, false)
+		return headerNewLight(categories, selectedSubHeader)
 
 	case 2:
+		return header(getSymbol(false), "Hacker News   ", categories, selectedSubHeader, false)
+
+	case 3:
 		return header(getSymbol(true), "Hacker News   ", categories, selectedSubHeader, true)
 
 	default:
-		return headerNew(categories, selectedSubHeader)
+		return headerNewDark(categories, selectedSubHeader)
 	}
 }
 

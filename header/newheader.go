@@ -36,7 +36,19 @@ func background2() string {
 	return cview.TranslateANSI("\u001b[48;5;238m")
 }
 
-func headerNew(subHeaders []string, selectedSubHeader int) string {
+func background1Light() string {
+	return cview.TranslateANSI("\u001b[48;5;251m")
+}
+
+func background2Light() string {
+	return cview.TranslateANSI("\u001b[48;5;250m")
+}
+
+func categoriesColorLight() string {
+	return cview.TranslateANSI("\u001B[38;5;232m")
+}
+
+func headerNewDark(subHeaders []string, selectedSubHeader int) string {
 	title := background1() + "  " + magenta() + "c" + yellow() + "l" + blue() + "x  "
 
 	background := "[#0c0c0c:navy:-]"
@@ -48,7 +60,25 @@ func headerNew(subHeaders []string, selectedSubHeader int) string {
 	formattedTitle := titleOpenTag + title + titleCloseTag
 
 	titleHeader := background + formattedTitle + black + "  "
-	categoryHeader := getCategoryHeaderNew(subHeaders, selectedSubHeader)
+	categoryHeader := getCategoryHeaderDark(subHeaders, selectedSubHeader)
+	whitespaceFiller := getWhitespaceFillerNew(titleHeader+categoryHeader, screenWidth)
+
+	return titleHeader + categoryHeader + whitespaceFiller
+}
+
+func headerNewLight(subHeaders []string, selectedSubHeader int) string {
+	title := background1Light() + "  " + magenta() + "c" + yellow() + "l" + blue() + "x  "
+
+	background := "[#0c0c0c:navy:-]"
+	black := background2Light() + categoriesColorLight()
+	screenWidth := screen.GetTerminalWidth()
+
+	titleOpenTag := "[:navy:]"
+	titleCloseTag := "[:navy:-]"
+	formattedTitle := titleOpenTag + title + titleCloseTag
+
+	titleHeader := background + formattedTitle + black + "  "
+	categoryHeader := getCategoryHeaderLight(subHeaders, selectedSubHeader)
 	whitespaceFiller := getWhitespaceFillerNew(titleHeader+categoryHeader, screenWidth)
 
 	return titleHeader + categoryHeader + whitespaceFiller
@@ -64,11 +94,31 @@ func getWhitespaceFillerNew(base string, screenWidth int) string {
 	return strings.Repeat(" ", availableScreenSpace)
 }
 
-func getCategoryHeaderNew(subHeaders []string, selectedSubHeader int) string {
+func getCategoryHeaderDark(subHeaders []string, selectedSubHeader int) string {
 	formattedCategory := ""
 	itemsTotal := len(subHeaders)
 	selectedOpen := getSelectedCategoryOpenTagNew(selectedSubHeader)
 	selectedClose := categoriesColor()
+
+	for i, subHeader := range subHeaders {
+		isOnLastItem := i == itemsTotal-1
+		separator := getSeparatorNew(isOnLastItem)
+
+		if i+1 == selectedSubHeader {
+			formattedCategory += selectedOpen + subHeader + selectedClose + separator
+		} else {
+			formattedCategory += subHeader + separator
+		}
+	}
+
+	return formattedCategory
+}
+
+func getCategoryHeaderLight(subHeaders []string, selectedSubHeader int) string {
+	formattedCategory := ""
+	itemsTotal := len(subHeaders)
+	selectedOpen := getSelectedCategoryOpenTagNew(selectedSubHeader)
+	selectedClose := categoriesColorLight()
 
 	for i, subHeader := range subHeaders {
 		isOnLastItem := i == itemsTotal-1
