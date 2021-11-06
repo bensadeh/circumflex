@@ -1,4 +1,10 @@
 # Changelog
+## 1.26
+_WIP_
+
+**Cosmetic**
+- Top-level comments are now more clearly separated from other top-level comments
+
 ## 1.25
 _2021-10-31_
 

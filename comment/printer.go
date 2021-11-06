@@ -25,14 +25,15 @@ func ToString(comments endpoints.Comments, config *core.Config, screenWidth int)
 	commentSectionScreenWidth := screenWidth - margins.CommentSectionLeftMargin
 
 	header := getHeader(comments, config)
+	firstCommentID := comments.Comments[0].ID
 
 	replies := ""
 
 	for _, reply := range comments.Comments {
-		replies += printReplies(reply, config, commentSectionScreenWidth, comments.User, "")
+		replies += printReplies(reply, config, commentSectionScreenWidth, comments.User, "", firstCommentID)
 	}
 
-	commentSection := postprocessor.Process(header+replies, screenWidth)
+	commentSection := postprocessor.Process(header+replies+newLine, screenWidth)
 
 	return commentSection
 }
@@ -102,7 +103,7 @@ func parseRootComment(c string, config *core.Config) string {
 }
 
 func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, originalPoster string,
-	parentPoster string) string {
+	parentPoster string, firstCommentID int) string {
 	isDeletedAndHasNoReplies := c.Content == "[deleted]" && len(c.Comments) == 0
 	if isDeletedAndHasNoReplies {
 		return ""
@@ -115,14 +116,14 @@ func printReplies(c endpoints.Comments, config *core.Config, screenWidth int, or
 
 	comment := formatComment(c, config, originalPoster, parentPoster, adjustedCommentWidth, availableScreenWidth)
 	indentedComment, _ := text.WrapWithPad(comment, screenWidth, indentation)
-	fullComment := indentedComment + newParagraph
+	fullComment := getSeparator(c.Level, config.CommentWidth, c.ID, firstCommentID) + indentedComment + newLine
 
 	if c.Level == 0 {
 		parentPoster = c.User
 	}
 
 	for _, reply := range c.Comments {
-		fullComment += printReplies(reply, config, screenWidth, originalPoster, parentPoster)
+		fullComment += printReplies(reply, config, screenWidth, originalPoster, parentPoster, firstCommentID)
 	}
 
 	return fullComment
@@ -138,6 +139,18 @@ func formatComment(c endpoints.Comments, config *core.Config, originalPoster str
 	paddedComment, _ := text.WrapWithPad(comment, availableScreenWidth, coloredIndentSymbol)
 
 	return header + paddedComment
+}
+
+func getSeparator(level int, commentWidth int, currentCommentID int, firstCommentID int) string {
+	if currentCommentID == firstCommentID {
+		return ""
+	}
+
+	if level != 0 || currentCommentID == firstCommentID {
+		return newLine
+	}
+
+	return aurora.Faint(strings.Repeat(" ", commentWidth)).Underline().String() + newLine + newLine
 }
 
 func getIndentString(level int) string {
@@ -175,7 +188,7 @@ func formatHeader(c endpoints.Comments, originalPoster string, parentPoster stri
 
 func underlineAndDim(enabled bool, timeAgo, spacing, replies string) string {
 	if enabled {
-		return aurora.Underline(timeAgo + spacing + replies).Faint().String()
+		return aurora.Faint(timeAgo + spacing + replies).String()
 	}
 
 	return aurora.Faint(timeAgo).String()

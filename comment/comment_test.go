@@ -18,7 +18,7 @@ func TestFullParse(t *testing.T) {
 	expected, _ := ioutil.ReadFile("test/expected.txt")
 
 	comments := unmarshal(commentJSON)
-	actual := comment.ToString(*comments, getConfig(), 90)
+	actual := comment.ToString(*comments, getConfig(), 85)
 
 	assert.Equal(t, string(expected), actual)
 }
