@@ -1,6 +1,6 @@
 # Changelog
 ## 1.26
-_WIP_
+_2021-11-06_
 
 **Cosmetic**
 - Top-level comments are now more clearly separated from other top-level comments
