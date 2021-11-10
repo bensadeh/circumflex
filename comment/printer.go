@@ -25,7 +25,7 @@ func ToString(comments endpoints.Comments, config *core.Config, screenWidth int)
 	commentSectionScreenWidth := screenWidth - margins.CommentSectionLeftMargin
 
 	header := getHeader(comments, config)
-	firstCommentID := comments.Comments[0].ID
+	firstCommentID := getFirstCommentID(comments.Comments)
 
 	replies := ""
 
@@ -36,6 +36,14 @@ func ToString(comments endpoints.Comments, config *core.Config, screenWidth int)
 	commentSection := postprocessor.Process(header+replies+newLine, screenWidth)
 
 	return commentSection
+}
+
+func getFirstCommentID(comments []endpoints.Comments) int {
+	if len(comments) == 0 {
+		return 0
+	}
+
+	return comments[0].ID
 }
 
 func getHeader(c endpoints.Comments, config *core.Config) string {

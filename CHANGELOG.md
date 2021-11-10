@@ -1,7 +1,9 @@
 # Changelog
 ## 1.27
-_WIP_
+_2021-11-10_
 
+**Bugfix**
+- Fixed a bug where parsing of the comment section with 0 comments would cause a panic
 
 ## 1.26
 _2021-11-06_
