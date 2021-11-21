@@ -5,13 +5,19 @@ import (
 )
 
 func GetTerminalHeight() int {
-	height, _ := terminal.Height()
+	height, err := terminal.Height()
+	if err != nil {
+		panic("Could not determine terminal height")
+	}
 
 	return int(height)
 }
 
 func GetTerminalWidth() int {
-	width, _ := terminal.Width()
+	width, err := terminal.Width()
+	if err != nil {
+		panic("Could not determine terminal width")
+	}
 
 	return int(width)
 }
