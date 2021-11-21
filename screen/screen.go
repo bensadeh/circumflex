@@ -37,19 +37,3 @@ func min(x, y int) int {
 
 	return x
 }
-
-func GetOffsetForLeftAlignedTextBlock(textWidth int) int {
-	screenWidth := GetTerminalWidth()
-	halfScreenWidth := screenWidth / 2
-	halfTextWidth := textWidth / 2
-
-	return screenWidth - halfScreenWidth - halfTextWidth
-}
-
-func GetOffsetToCenterText(textHeight int) int {
-	screenHeight := GetTerminalHeight()
-	halfScreenHeight := screenHeight / 2
-	halfTextHeight := textHeight / 2
-
-	return screenHeight - halfScreenHeight - halfTextHeight
-}
