@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.28
+_WIP_
+
+**Bugfix**
+- Fixed a bug where tables would be improperly formatted
+
 ## 1.27
 _2021-11-10_
 
