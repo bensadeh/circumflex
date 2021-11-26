@@ -82,6 +82,10 @@ func getOnlineStories(category int, page int, visibleStories int, highlightHeadl
 		return nil, fmt.Errorf("could not fetch storyCategory: %w", err)
 	}
 
+	if len(newStories) != 30 {
+		panic(fmt.Sprintf("Wrong number of submissions received: expected 30, got %d", len(newStories)))
+	}
+
 	filteredStories := filter.Filter(newStories, overriddenYCJobsStatus)
 	sc.stories = append(sc.stories, filteredStories...)
 
