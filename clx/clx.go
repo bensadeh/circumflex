@@ -11,9 +11,9 @@ func Run(config *core.Config) {
 	sc := constructor.NewScreenController(config.MarkAsRead)
 
 	controller.SetAfterInitializationAndAfterResizeFunctions(sc.StoryHandler, sc.Application, sc.Articles, sc.MainView,
-		sc.ApplicationState, config)
+		sc.ApplicationState, config, sc.Service)
 	controller.SetApplicationShortcuts(sc.StoryHandler, sc.VimRegister, sc.Application, sc.Articles, sc.MainView,
-		sc.ApplicationState, config)
+		sc.ApplicationState, config, sc.Service)
 
 	cli.ClearScreen()
 	sc.Application.SetRoot(sc.MainView.Grid, true)

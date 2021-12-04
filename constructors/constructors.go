@@ -7,6 +7,7 @@ import (
 	"clx/favorites"
 	"clx/handler"
 	"clx/history"
+	"clx/hn"
 	"clx/screen"
 	"clx/utils/vim"
 
@@ -40,6 +41,8 @@ func NewScreenController(markAsRead bool) *core.ScreenController {
 	sc.StoryHandler.Init(fav, his)
 
 	sc.VimRegister = new(vim.Register)
+
+	sc.Service = new(hn.Cheeaun)
 
 	return sc
 }

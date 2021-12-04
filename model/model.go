@@ -8,9 +8,10 @@ import (
 	"clx/constants/messages"
 	"clx/constants/state"
 	"clx/core"
-	"clx/endpoints"
 	"clx/handler"
+	"clx/hn"
 	"clx/info"
+	"clx/item"
 	"clx/markdown/parser"
 	"clx/markdown/postprocessor"
 	"clx/markdown/renderer"
@@ -32,7 +33,7 @@ import (
 
 func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list *cview.List,
 	main *core.MainView, appState *core.ApplicationState, config *core.Config,
-	ret *handler.StoryHandler) {
+	ret *handler.StoryHandler, service hn.Service) {
 	app.SetAfterResizeFunc(func(_ int, _ int) {
 		app.SetRoot(main.Grid, true)
 
@@ -40,7 +41,7 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 		initializeView(appState, main, ret, config)
 
 		listItems, err := ret.GetStories(appState.CurrentCategory, appState.CurrentPage,
-			appState.StoriesToShow, config.HighlightHeadlines, config.HideYCJobs)
+			appState.StoriesToShow, config.HighlightHeadlines, config.HideYCJobs, service)
 		if err != nil {
 			setToErrorState(appState, main, list, app)
 
@@ -103,20 +104,21 @@ func Refresh(app *cview.Application, main *core.MainView, appState *core.Applica
 }
 
 func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *cview.List,
-	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
+	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register, service hn.Service) {
 	story := r.GetStoryAndMarkAsRead(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 
 	app.Suspend(func() {
-		id := strconv.Itoa(story.ID)
+		// id := strconv.Itoa(story.ID)
 
-		comments, err := comment.FetchComments(id)
-		if err != nil {
-			errorMessage := message.Error(messages.CommentsNotFetched)
-			view.SetTemporaryStatusBar(app, main, errorMessage, 4*time.Second)
-
-			return
-		}
+		comments := service.FetchStory(story.ID)
+		//comments, err := comment.FetchComments(id)
+		//if err != nil {
+		//	errorMessage := message.Error(messages.CommentsNotFetched)
+		//	view.SetTemporaryStatusBar(app, main, errorMessage, 4*time.Second)
+		//
+		//	return
+		//}
 
 		r.UpdateFavoriteStoryAndWriteToDisk(comments)
 		screenWidth := screen.GetTerminalWidth()
@@ -125,19 +127,19 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 		cli.Less(commentTree)
 	})
 
-	changePage(app, list, main, appState, config, r, reg, 0)
+	changePage(app, list, main, appState, config, r, reg, 0, service)
 }
 
 func ReadContentInReaderViewDebug(app *cview.Application, main *core.MainView, list *cview.List,
-	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
+	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register, service hn.Service) {
 	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 
-	enterReaderModeDebug(app, main, list, appState, config, r, reg, story)
+	enterReaderModeDebug(app, main, list, appState, config, r, reg, story, service)
 }
 
 func ReadContentInReaderView(app *cview.Application, main *core.MainView, list *cview.List,
-	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register) {
+	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register, service hn.Service) {
 	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
 	errorMessage := validator.GetErrorMessage(story.Title, story.Domain)
@@ -149,11 +151,12 @@ func ReadContentInReaderView(app *cview.Application, main *core.MainView, list *
 	}
 
 	r.MarkAsRead(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow, appState.CurrentPage)
-	enterReaderModeBuiltInParser(app, main, list, appState, config, r, reg, story)
+	enterReaderModeBuiltInParser(app, main, list, appState, config, r, reg, story, service)
 }
 
-func enterReaderModeDebug(app *cview.Application, main *core.MainView, list *cview.List, appState *core.ApplicationState,
-	config *core.Config, r *handler.StoryHandler, reg *vim.Register, story *endpoints.Story) {
+func enterReaderModeDebug(app *cview.Application, main *core.MainView, list *cview.List,
+	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register,
+	story *item.Item, service hn.Service) {
 	fetchTimeout := false
 
 	app.Suspend(func() {
@@ -177,12 +180,12 @@ func enterReaderModeDebug(app *cview.Application, main *core.MainView, list *cvi
 		return
 	}
 
-	changePage(app, list, main, appState, config, r, reg, 0)
+	changePage(app, list, main, appState, config, r, reg, 0, service)
 }
 
 func enterReaderModeBuiltInParser(app *cview.Application, main *core.MainView, list *cview.List,
 	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register,
-	story *endpoints.Story) {
+	story *item.Item, service hn.Service) {
 	fetchTimeout := false
 
 	app.Suspend(func() {
@@ -209,7 +212,7 @@ func enterReaderModeBuiltInParser(app *cview.Application, main *core.MainView, l
 		return
 	}
 
-	changePage(app, list, main, appState, config, r, reg, 0)
+	changePage(app, list, main, appState, config, r, reg, 0, service)
 }
 
 func OpenCommentsInBrowser(list *cview.List, appState *core.ApplicationState, r *handler.StoryHandler) {
@@ -226,32 +229,32 @@ func OpenLinkInBrowser(list *cview.List, appState *core.ApplicationState, r *han
 }
 
 func NextPage(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config, ret *handler.StoryHandler, reg *vim.Register) {
+	config *core.Config, ret *handler.StoryHandler, reg *vim.Register, service hn.Service) {
 	isOnLastPage := appState.CurrentPage+1 > ret.GetMaxPages(appState.CurrentCategory, appState.StoriesToShow)
 	if isOnLastPage {
 		return
 	}
 
-	changePage(app, list, main, appState, config, ret, reg, 1)
+	changePage(app, list, main, appState, config, ret, reg, 1, service)
 }
 
 func PreviousPage(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config, ret *handler.StoryHandler, reg *vim.Register) {
+	config *core.Config, ret *handler.StoryHandler, reg *vim.Register, service hn.Service) {
 	isOnFirstPage := appState.CurrentPage-1 < 0
 	if isOnFirstPage {
 		return
 	}
 
-	changePage(app, list, main, appState, config, ret, reg, -1)
+	changePage(app, list, main, appState, config, ret, reg, -1, service)
 }
 
 func changePage(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config, ret *handler.StoryHandler, reg *vim.Register, delta int) {
+	config *core.Config, ret *handler.StoryHandler, reg *vim.Register, delta int, service hn.Service) {
 	currentlySelectedItem := list.GetCurrentItemIndex()
 	appState.CurrentPage += delta
 
 	listItems, err := ret.GetStories(appState.CurrentCategory, appState.CurrentPage,
-		appState.StoriesToShow, config.HighlightHeadlines, config.HideYCJobs)
+		appState.StoriesToShow, config.HighlightHeadlines, config.HideYCJobs, service)
 	if err != nil {
 		setToErrorState(appState, main, list, app)
 
@@ -274,13 +277,13 @@ func changePage(app *cview.Application, list *cview.List, main *core.MainView, a
 }
 
 func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.List, appState *core.ApplicationState,
-	main *core.MainView, config *core.Config, ret *handler.StoryHandler, reg *vim.Register) {
+	main *core.MainView, config *core.Config, ret *handler.StoryHandler, reg *vim.Register, service hn.Service) {
 	currentItem := list.GetCurrentItemIndex()
 	appState.CurrentCategory = ret.GetNewCategory(event, appState.CurrentCategory)
 	appState.CurrentPage = 0
 
 	listItems, err := ret.GetStories(appState.CurrentCategory, appState.CurrentPage,
-		appState.StoriesToShow, config.HighlightHeadlines, config.HideYCJobs)
+		appState.StoriesToShow, config.HighlightHeadlines, config.HideYCJobs, service)
 	if err != nil {
 		setToErrorState(appState, main, list, app)
 
@@ -412,9 +415,9 @@ func LowerCaseG(main *core.MainView, appState *core.ApplicationState, list *cvie
 }
 
 func UpperCaseG(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config,
-	reg *vim.Register, ret *handler.StoryHandler) {
+	reg *vim.Register, ret *handler.StoryHandler, service hn.Service) {
 	stories, _ := ret.GetStories(appState.CurrentCategory, appState.CurrentPage,
-		appState.StoriesToShow, config.HighlightHeadlines, config.HideYCJobs)
+		appState.StoriesToShow, config.HighlightHeadlines, config.HideYCJobs, service)
 	storiesToShow := len(stories)
 	currentItem := list.GetCurrentItemIndex()
 	itemToJumpTo := reg.UpperCaseG(currentItem, storiesToShow, appState.CurrentPage)
@@ -456,7 +459,7 @@ func DeleteFavoriteConfirmationDialogue(main *core.MainView, appState *core.Appl
 }
 
 func AddToFavorites(app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState,
-	config *core.Config, ret *handler.StoryHandler, reg *vim.Register) {
+	config *core.Config, ret *handler.StoryHandler, reg *vim.Register, service hn.Service) {
 	statusBarMessage := ""
 	appState.IsOnAddFavoriteConfirmationMessage = false
 	story := ret.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
@@ -469,12 +472,12 @@ func AddToFavorites(app *cview.Application, list *cview.List, main *core.MainVie
 		statusBarMessage = message.Success(messages.FavoriteAdded)
 	}
 
-	changePage(app, list, main, appState, config, ret, reg, 0)
+	changePage(app, list, main, appState, config, ret, reg, 0, service)
 	view.SetPermanentStatusBar(main, statusBarMessage, cview.AlignCenter)
 }
 
 func DeleteItem(app *cview.Application, list *cview.List, appState *core.ApplicationState,
-	main *core.MainView, config *core.Config, ret *handler.StoryHandler, reg *vim.Register) {
+	main *core.MainView, config *core.Config, ret *handler.StoryHandler, reg *vim.Register, service hn.Service) {
 	appState.IsOnDeleteFavoriteConfirmationMessage = false
 
 	ret.DeleteStoryAndWriteToFile(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
@@ -487,15 +490,15 @@ func DeleteItem(app *cview.Application, list *cview.List, appState *core.Applica
 
 	switch {
 	case hasDeletedLastItemOnSecondOrThirdPage:
-		changePage(app, list, main, appState, config, ret, reg, -1)
+		changePage(app, list, main, appState, config, ret, reg, -1, service)
 
 	case hasDeletedLastItemOnFirstPage:
 		appState.CurrentCategory = categories.Show
 		keyTab := tcell.NewEventKey(tcell.KeyTab, ' ', tcell.ModNone)
-		ChangeCategory(app, keyTab, list, appState, main, config, ret, reg)
+		ChangeCategory(app, keyTab, list, appState, main, config, ret, reg, service)
 
 	default:
-		changePage(app, list, main, appState, config, ret, reg, 0)
+		changePage(app, list, main, appState, config, ret, reg, 0, service)
 	}
 
 	m := message.Success(messages.ItemDeleted)

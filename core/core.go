@@ -2,6 +2,7 @@ package core
 
 import (
 	"clx/handler"
+	"clx/hn"
 	"clx/utils/vim"
 
 	"code.rocketnine.space/tslocum/cview"
@@ -14,6 +15,7 @@ type ScreenController struct {
 	ApplicationState *ApplicationState
 	StoryHandler     *handler.StoryHandler
 	VimRegister      *vim.Register
+	Service          hn.Service
 }
 
 type ApplicationState struct {

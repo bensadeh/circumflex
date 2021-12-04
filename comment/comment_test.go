@@ -3,7 +3,7 @@ package comment_test
 import (
 	"clx/comment"
 	"clx/core"
-	"clx/endpoints"
+	"clx/hn"
 	"encoding/json"
 	"io/ioutil"
 	"testing"
@@ -23,8 +23,8 @@ func TestFullParse(t *testing.T) {
 	assert.Equal(t, string(expected), actual)
 }
 
-func unmarshal(data []byte) *endpoints.Comments {
-	root := new(endpoints.Comments)
+func unmarshal(data []byte) *hn.Item {
+	root := new(hn.Item)
 	_ = json.Unmarshal(data, &root)
 
 	return root

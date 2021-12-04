@@ -5,6 +5,7 @@ import (
 	"clx/constants/state"
 	"clx/core"
 	"clx/handler"
+	"clx/hn"
 	"clx/model"
 	"clx/utils/vim"
 	"unicode"
@@ -14,12 +15,13 @@ import (
 )
 
 func SetAfterInitializationAndAfterResizeFunctions(ret *handler.StoryHandler,
-	app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState, config *core.Config) {
-	model.SetAfterInitializationAndAfterResizeFunctions(app, list, main, appState, config, ret)
+	app *cview.Application, list *cview.List, main *core.MainView, appState *core.ApplicationState, config *core.Config,
+	service hn.Service) {
+	model.SetAfterInitializationAndAfterResizeFunctions(app, list, main, appState, config, ret, service)
 }
 
 func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *cview.Application, list *cview.List,
-	main *core.MainView, appState *core.ApplicationState, config *core.Config) {
+	main *core.MainView, appState *core.ApplicationState, config *core.Config, service hn.Service) {
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		isOnHelpScreen := appState.State == state.OnHelpScreen
 
@@ -62,10 +64,10 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 
 		// Main View
 		case appState.IsOnAddFavoriteConfirmationMessage && event.Rune() == 'y':
-			model.AddToFavorites(app, list, main, appState, config, ret, reg)
+			model.AddToFavorites(app, list, main, appState, config, ret, reg, service)
 
 		case appState.IsOnDeleteFavoriteConfirmationMessage && event.Rune() == 'y':
-			model.DeleteItem(app, list, appState, main, config, ret, reg)
+			model.DeleteItem(app, list, appState, main, config, ret, reg, service)
 
 		case appState.IsOnAddFavoriteConfirmationMessage || appState.IsOnDeleteFavoriteConfirmationMessage:
 			model.CancelConfirmation(appState, main)
@@ -77,13 +79,13 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 			model.DeleteFavoriteConfirmationDialogue(main, appState)
 
 		case event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab:
-			model.ChangeCategory(app, event, list, appState, main, config, ret, reg)
+			model.ChangeCategory(app, event, list, appState, main, config, ret, reg, service)
 
 		case event.Rune() == 'l' || event.Key() == tcell.KeyRight:
-			model.NextPage(app, list, main, appState, config, ret, reg)
+			model.NextPage(app, list, main, appState, config, ret, reg, service)
 
 		case event.Rune() == 'h' || event.Key() == tcell.KeyLeft:
-			model.PreviousPage(app, list, main, appState, config, ret, reg)
+			model.PreviousPage(app, list, main, appState, config, ret, reg, service)
 
 		case event.Rune() == 'k' || event.Key() == tcell.KeyUp:
 			model.SelectItemUp(main, list, appState, config, reg)
@@ -104,19 +106,19 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 			model.LowerCaseG(main, appState, list, config, reg)
 
 		case event.Rune() == 'G':
-			model.UpperCaseG(main, appState, list, config, reg, ret)
+			model.UpperCaseG(main, appState, list, config, reg, ret, service)
 
 		case event.Rune() == 'r':
 			model.Refresh(app, main, appState)
 
 		case event.Key() == tcell.KeyEnter:
-			model.ReadSubmissionComments(app, main, list, appState, config, ret, reg)
+			model.ReadSubmissionComments(app, main, list, appState, config, ret, reg, service)
 
 		case event.Rune() == 'U':
-			model.ReadContentInReaderViewDebug(app, main, list, appState, config, ret, reg)
+			model.ReadContentInReaderViewDebug(app, main, list, appState, config, ret, reg, service)
 
 		case event.Rune() == ' ':
-			model.ReadContentInReaderView(app, main, list, appState, config, ret, reg)
+			model.ReadContentInReaderView(app, main, list, appState, config, ret, reg, service)
 
 		case event.Rune() == 'o':
 			model.OpenLinkInBrowser(list, appState, ret)

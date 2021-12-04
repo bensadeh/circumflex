@@ -2,14 +2,13 @@ package handler
 
 import (
 	"clx/constants/categories"
-	"clx/endpoints"
 	"clx/favorites"
 	"clx/file"
 	"clx/header"
 	"clx/history"
+	"clx/hn"
+	"clx/item"
 	formatter "clx/title"
-	"clx/utils/filter"
-	"clx/utils/http"
 	"encoding/json"
 	"fmt"
 
@@ -36,16 +35,17 @@ type StoryHandler struct {
 type storyCategory struct {
 	maxPages           int
 	pageToFetchFromAPI int
-	stories            []*endpoints.Story
+	stories            []*item.Item
 }
 
 func (r *StoryHandler) GetStories(category int, page int, visibleStories int, highlightHeadlines bool,
-	hideYCJobs bool) ([]*cview.ListItem, error) {
+	hideYCJobs bool, service hn.Service) ([]*cview.ListItem, error) {
 	if category == categories.Favorites {
 		return getFavoritesStories(page, visibleStories, highlightHeadlines, r.sc[category], r.history)
 	}
 
-	return getOnlineStories(category, page, visibleStories, highlightHeadlines, hideYCJobs, r.sc[category], r.history)
+	return getOnlineStories(category, page, visibleStories, highlightHeadlines, hideYCJobs, r.sc[category], r.history,
+		service)
 }
 
 func getFavoritesStories(page int, visibleStories int, highlightHeadlines bool, sc *storyCategory,
@@ -61,8 +61,8 @@ func getFavoritesStories(page int, visibleStories int, highlightHeadlines bool, 
 }
 
 func getOnlineStories(category int, page int, visibleStories int, highlightHeadlines bool, hideYCJobs bool,
-	sc *storyCategory, his *history.History) ([]*cview.ListItem, error) {
-	overriddenYCJobsStatus := getOverriddenYCJobsStatus(visibleStories, hideYCJobs)
+	sc *storyCategory, his *history.History, service hn.Service) ([]*cview.ListItem, error) {
+	// overriddenYCJobsStatus := getOverriddenYCJobsStatus(visibleStories, hideYCJobs)
 	smallestItemToDisplay := page * visibleStories
 	largestItemToDisplay := (page * visibleStories) + visibleStories
 
@@ -77,17 +77,20 @@ func getOnlineStories(category int, page int, visibleStories int, highlightHeadl
 
 	sc.pageToFetchFromAPI++
 
-	newStories, err := http.FetchStories(sc.pageToFetchFromAPI, category)
-	if err != nil {
-		return nil, fmt.Errorf("could not fetch storyCategory: %w", err)
-	}
-
-	if len(newStories) != 30 {
-		panic(fmt.Sprintf("Wrong number of submissions received: expected 30, got %d", len(newStories)))
-	}
-
-	filteredStories := filter.Filter(newStories, overriddenYCJobsStatus)
-	sc.stories = append(sc.stories, filteredStories...)
+	stories := service.FetchStories(sc.pageToFetchFromAPI, category)
+	//service.FetchStories(sc.pageToFetchFromAPI, category))
+	//newStories, err := http.FetchStories(sc.pageToFetchFromAPI, category)
+	//if err != nil {
+	//	return nil, fmt.Errorf("could not fetch storyCategory: %w", err)
+	//}
+	//
+	//if len(newStories) != 30 {
+	//	panic(fmt.Sprintf("Wrong number of submissions received: expected 30, got %d", len(newStories)))
+	//}
+	//
+	//filteredStories := filter.Filter(newStories, overriddenYCJobsStatus)
+	//sc.stories = append(sc.stories, filteredStories...)
+	sc.stories = append(sc.stories, stories...)
 
 	listItems := convert(sc.stories[smallestItemToDisplay:largestItemToDisplay], his, highlightHeadlines, false)
 
@@ -133,7 +136,7 @@ func (r *StoryHandler) Reset() {
 	r.sc[categories.Show].stories = nil
 }
 
-func convert(subs []*endpoints.Story, his *history.History, highlightHeadlines bool,
+func convert(subs []*item.Item, his *history.History, highlightHeadlines bool,
 	isOnFavorites bool) []*cview.ListItem {
 	listItems := make([]*cview.ListItem, len(subs))
 
@@ -141,7 +144,7 @@ func convert(subs []*endpoints.Story, his *history.History, highlightHeadlines b
 		markAsRead := his.Contains(s.ID) && !isOnFavorites
 
 		main := formatter.FormatMain(s.Title, s.Domain, highlightHeadlines, markAsRead)
-		secondary := formatter.FormatSecondary(s.Points, s.Author, s.Time, s.CommentsCount, highlightHeadlines)
+		secondary := formatter.FormatSecondary(s.Points, s.User, s.Time, s.CommentsCount, highlightHeadlines)
 
 		item := cview.NewListItem(main)
 		item.SetSecondaryText(secondary)
@@ -152,7 +155,7 @@ func convert(subs []*endpoints.Story, his *history.History, highlightHeadlines b
 	return listItems
 }
 
-func (r *StoryHandler) GetStory(category, currentItemIndex, storiesToShow, currentPage int) *endpoints.Story {
+func (r *StoryHandler) GetStory(category, currentItemIndex, storiesToShow, currentPage int) *item.Item {
 	index := getIndex(currentItemIndex, storiesToShow, currentPage)
 
 	return r.sc[category].stories[index]
@@ -168,7 +171,7 @@ func (r *StoryHandler) MarkAsRead(category, currentItemIndex, storiesToShow, cur
 }
 
 func (r *StoryHandler) GetStoryAndMarkAsRead(category, currentItemIndex, storiesToShow,
-	currentPage int) *endpoints.Story {
+	currentPage int) *item.Item {
 	index := getIndex(currentItemIndex, storiesToShow, currentPage)
 	id := r.sc[category].stories[index].ID
 
@@ -187,7 +190,7 @@ func getIndex(currentItemIndex, storiesToShow, currentPage int) int {
 	return currentItemIndex + storiesToShow*(currentPage)
 }
 
-func removeIndex(s []*endpoints.Story, index int) []*endpoints.Story {
+func removeIndex(s []*item.Item, index int) []*item.Item {
 	return append(s[:index], s[index+1:]...)
 }
 
@@ -203,7 +206,7 @@ func (r *StoryHandler) GetMaxPages(category int, storiesToShow int) int {
 	return r.sc[category].maxPages
 }
 
-func (r *StoryHandler) AddItemToFavoritesAndWriteToFile(story *endpoints.Story) error {
+func (r *StoryHandler) AddItemToFavoritesAndWriteToFile(story *item.Item) error {
 	r.sc[categories.Favorites].stories = append(r.sc[categories.Favorites].stories, story)
 
 	bytes, _ := r.GetFavoritesJSON()
@@ -226,11 +229,11 @@ func (r *StoryHandler) GetFavoritesJSON() ([]byte, error) {
 	return b, nil
 }
 
-func (r *StoryHandler) UpdateFavoriteStoryAndWriteToDisk(newStory *endpoints.Comments) {
+func (r *StoryHandler) UpdateFavoriteStoryAndWriteToDisk(newStory *item.Item) {
 	for i, s := range r.sc[categories.Favorites].stories {
 		if s.ID == newStory.ID {
 			isFieldsUpdated := s.Title != newStory.Title || s.Points != newStory.Points ||
-				s.Time != newStory.Time || s.Author != newStory.User ||
+				s.Time != newStory.Time || s.User != newStory.User ||
 				s.CommentsCount != newStory.CommentsCount || s.URL != newStory.URL ||
 				s.Domain != newStory.Domain
 
@@ -238,7 +241,7 @@ func (r *StoryHandler) UpdateFavoriteStoryAndWriteToDisk(newStory *endpoints.Com
 				r.sc[categories.Favorites].stories[i].Title = newStory.Title
 				r.sc[categories.Favorites].stories[i].Points = newStory.Points
 				r.sc[categories.Favorites].stories[i].Time = newStory.Time
-				r.sc[categories.Favorites].stories[i].Author = newStory.User
+				r.sc[categories.Favorites].stories[i].User = newStory.User
 				r.sc[categories.Favorites].stories[i].CommentsCount = newStory.CommentsCount
 				r.sc[categories.Favorites].stories[i].URL = newStory.URL
 				r.sc[categories.Favorites].stories[i].Domain = newStory.Domain
