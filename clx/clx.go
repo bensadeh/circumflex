@@ -8,7 +8,7 @@ import (
 )
 
 func Run(config *core.Config) {
-	sc := constructor.NewScreenController(config.MarkAsRead)
+	sc := constructor.NewScreenController(config)
 
 	controller.SetAfterInitializationAndAfterResizeFunctions(sc.StoryHandler, sc.Application, sc.Articles, sc.MainView,
 		sc.ApplicationState, config, sc.Service)
