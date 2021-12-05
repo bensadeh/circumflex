@@ -43,6 +43,7 @@ func NewScreenController(config *core.Config) *core.ScreenController {
 	sc.VimRegister = new(vim.Register)
 
 	sc.Service = new(algolia.Service)
+	sc.Service.Init(sc.ApplicationState.StoriesToShow)
 
 	return sc
 }

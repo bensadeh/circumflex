@@ -13,7 +13,7 @@ import (
 
 type Service struct{}
 
-func (s Service) Init() {
+func (s Service) Init(_ int) {
 }
 
 func (s Service) FetchStories(page int, category int) []*item.Item {
