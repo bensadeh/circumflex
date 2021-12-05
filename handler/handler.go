@@ -67,7 +67,7 @@ func getOnlineStories(category int, page int, visibleStories int, highlightHeadl
 	largestItemToDisplay := (page * visibleStories) + visibleStories
 
 	downloadedStories := len(sc.stories)
-	pageHasEnoughStoriesToView := downloadedStories > largestItemToDisplay
+	pageHasEnoughStoriesToView := downloadedStories >= largestItemToDisplay
 
 	if pageHasEnoughStoriesToView {
 		listItems := convert(sc.stories[smallestItemToDisplay:largestItemToDisplay], his, highlightHeadlines, false)
