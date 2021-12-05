@@ -48,3 +48,19 @@ type algolia struct {
 	RenderingContent struct{} `json:"renderingContent"`
 	ProcessingTimeMS int      `json:"processingTimeMS"`
 }
+
+type comment struct {
+	ID         int           `json:"id"`
+	CreatedAt  time.Time     `json:"created_at"`
+	CreatedAtI int           `json:"created_at_i"`
+	Type       string        `json:"type"`
+	Author     string        `json:"author"`
+	Title      string        `json:"title"`
+	URL        string        `json:"url"`
+	Text       string        `json:"text"`
+	Points     int           `json:"points"`
+	ParentID   interface{}   `json:"parent_id"`
+	StoryID    interface{}   `json:"story_id"`
+	Children   []*comment    `json:"children"`
+	Options    []interface{} `json:"options"`
+}

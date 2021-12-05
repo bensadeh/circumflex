@@ -84,6 +84,7 @@ func fetchStoriesList(category int) []int {
 
 func getStoryListURIParam(ids []int, numberOfItemsToShow int, page int) string {
 	var sb strings.Builder
+	page = page - 1
 
 	start := numberOfItemsToShow * page
 	end := start + numberOfItemsToShow + 1
@@ -145,5 +146,41 @@ func mapStories(stories *algolia) []*item.Item {
 }
 
 func (s *Service) FetchStory(id int) *item.Item {
-	return nil
+	comments := new(comment)
+
+	client := resty.New()
+	_, _ = client.R().
+		SetHeader("User-Agent", clx.Name+"/"+clx.Version).
+		SetResult(&comments).
+		Get("https://hn.algolia.com/api/v1/items/" + strconv.Itoa(id))
+
+	//if err != nil {
+	//	return stories, fmt.Errorf("could not fetch stories: %w", err)
+	//}
+
+	return mapComments(comments, -1)
+}
+
+func mapComments(comments *comment, level int) *item.Item {
+	items := make([]*item.Item, 0, len(comments.Children))
+
+	for i := range comments.Children {
+		items = append(items, mapComments(comments.Children[i], level+1))
+	}
+
+	return &item.Item{
+		ID:            comments.ID,
+		Title:         comments.Title,
+		Points:        comments.Points,
+		User:          comments.Author,
+		Time:          int64(comments.CreatedAtI),
+		TimeAgo:       "",
+		Type:          comments.Type,
+		URL:           comments.URL,
+		Level:         level,
+		Domain:        "",
+		Comments:      items,
+		Content:       comments.Text,
+		CommentsCount: 0,
+	}
 }
