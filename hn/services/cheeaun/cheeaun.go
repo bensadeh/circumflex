@@ -1,4 +1,4 @@
-package services
+package cheeaun
 
 import (
 	"clx/constants/clx"
@@ -11,12 +11,12 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-type Cheeaun struct{}
+type Service struct{}
 
-func (r Cheeaun) Init() {
+func (s Service) Init() {
 }
 
-func (r Cheeaun) FetchStories(page int, category int) []*item.Item {
+func (s Service) FetchStories(page int, category int) []*item.Item {
 	stories, _ := http.FetchStories(page, category)
 
 	return mapStories(stories)
@@ -48,7 +48,7 @@ func mapStories(stories []*endpoints.Story) []*item.Item {
 	return items
 }
 
-func (r Cheeaun) FetchStory(id int) *item.Item {
+func (s Service) FetchStory(id int) *item.Item {
 	comments := new(endpoints.Comments)
 
 	client := resty.New()
