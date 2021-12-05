@@ -21,7 +21,7 @@ const (
 	newParagraph = "\n\n"
 )
 
-func ToString(comments item.Item, config *core.Config, screenWidth int) string {
+func ToString(comments *item.Item, config *core.Config, screenWidth int) string {
 	commentSectionScreenWidth := screenWidth - margins.CommentSectionLeftMargin
 
 	header := getHeader(comments, config)
@@ -38,7 +38,7 @@ func ToString(comments item.Item, config *core.Config, screenWidth int) string {
 	return commentSection
 }
 
-func getFirstCommentID(comments []item.Item) int {
+func getFirstCommentID(comments []*item.Item) int {
 	if len(comments) == 0 {
 		return 0
 	}
@@ -46,7 +46,7 @@ func getFirstCommentID(comments []item.Item) int {
 	return comments[0].ID
 }
 
-func getHeader(c item.Item, config *core.Config) string {
+func getHeader(c *item.Item, config *core.Config) string {
 	headline := getHeadline(c.Title, config)
 	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
 	helpMessage := aurora.Faint(messages.LessScreenInfo).Faint().String() + newLine
@@ -110,7 +110,7 @@ func parseRootComment(c string, config *core.Config) string {
 	return newLine + wrappedComment + newLine
 }
 
-func printReplies(c item.Item, config *core.Config, screenWidth int, originalPoster string,
+func printReplies(c *item.Item, config *core.Config, screenWidth int, originalPoster string,
 	parentPoster string, firstCommentID int) string {
 	isDeletedAndHasNoReplies := c.Content == "[deleted]" && len(c.Comments) == 0
 	if isDeletedAndHasNoReplies {
@@ -137,7 +137,7 @@ func printReplies(c item.Item, config *core.Config, screenWidth int, originalPos
 	return fullComment
 }
 
-func formatComment(c item.Item, config *core.Config, originalPoster string, parentPoster string,
+func formatComment(c *item.Item, config *core.Config, originalPoster string, parentPoster string,
 	commentWidth int, availableScreenWidth int) string {
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, c.Level)
 
@@ -169,7 +169,7 @@ func getIndentString(level int) string {
 	return strings.Repeat(" ", level-1)
 }
 
-func getCommentHeader(c item.Item, originalPoster string, parentPoster string, commentWidth int) string {
+func getCommentHeader(c *item.Item, originalPoster string, parentPoster string, commentWidth int) string {
 	if c.Level == 0 {
 		return formatHeader(c, originalPoster, parentPoster, true, true, true,
 			commentWidth, 0)
@@ -179,7 +179,7 @@ func getCommentHeader(c item.Item, originalPoster string, parentPoster string, c
 		commentWidth, 1)
 }
 
-func formatHeader(c item.Item, originalPoster string, parentPoster string, underlineHeader bool,
+func formatHeader(c *item.Item, originalPoster string, parentPoster string, underlineHeader bool,
 	showReplies bool, enableZeroWidthSpace bool, commentWidth int, indentSize int) string {
 	authorInBold := aurora.Bold(c.User).String() + " "
 	authorLabel := getAuthorLabel(c.User, originalPoster, parentPoster)
@@ -202,7 +202,7 @@ func underlineAndDim(enabled bool, timeAgo, spacing, replies string) string {
 	return aurora.Faint(timeAgo).String()
 }
 
-func getReplies(showReplies bool, children item.Item) string {
+func getReplies(showReplies bool, children *item.Item) string {
 	if !showReplies {
 		return ""
 	}
@@ -229,13 +229,13 @@ func getZeroWidthSpace(enabled bool) string {
 	return ""
 }
 
-func getReplyCount(comments item.Item) int {
+func getReplyCount(comments *item.Item) int {
 	numberOfReplies := 0
 
 	return incrementReplyCount(comments, &numberOfReplies)
 }
 
-func incrementReplyCount(comments item.Item, repliesSoFar *int) int {
+func incrementReplyCount(comments *item.Item, repliesSoFar *int) int {
 	for _, reply := range comments.Comments {
 		*repliesSoFar++
 		incrementReplyCount(reply, repliesSoFar)

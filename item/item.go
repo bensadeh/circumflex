@@ -11,7 +11,7 @@ type Item struct {
 	URL           string
 	Level         int
 	Domain        string
-	Comments      []Item
+	Comments      []*Item
 	Content       string
 	CommentsCount int
 }

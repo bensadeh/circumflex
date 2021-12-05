@@ -67,13 +67,13 @@ func (r Cheeaun) FetchStory(id int) *item.Item {
 }
 
 func mapComments(comments *endpoints.Comments) *item.Item {
-	var items []item.Item
+	var items []*item.Item
 
 	for _, comment := range comments.Comments {
-		items = append(items, *mapComments(&comment))
+		items = append(items, mapComments(&comment))
 	}
 
-	item := item.Item{
+	return &item.Item{
 		ID:            comments.ID,
 		Title:         comments.Title,
 		Points:        comments.Points,
@@ -88,6 +88,4 @@ func mapComments(comments *endpoints.Comments) *item.Item {
 		Content:       comments.Content,
 		CommentsCount: comments.CommentsCount,
 	}
-
-	return &item
 }
