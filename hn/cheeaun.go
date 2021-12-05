@@ -23,7 +23,7 @@ func (r Cheeaun) FetchStories(page int, category int) []*item.Item {
 }
 
 func mapStories(stories []*endpoints.Story) []*item.Item {
-	var items []*item.Item
+	items := make([]*item.Item, 0, len(stories))
 
 	for _, story := range stories {
 		item := item.Item{
@@ -67,7 +67,7 @@ func (r Cheeaun) FetchStory(id int) *item.Item {
 }
 
 func mapComments(comments *endpoints.Comments) *item.Item {
-	var items []*item.Item
+	items := make([]*item.Item, 0, len(comments.Comments))
 
 	for _, comment := range comments.Comments {
 		items = append(items, mapComments(&comment))
