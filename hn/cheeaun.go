@@ -75,7 +75,7 @@ func mapComments(comments *endpoints.Comments) *item.Item {
 
 	item := item.Item{
 		ID:            comments.ID,
-		Title:         "",
+		Title:         comments.Title,
 		Points:        comments.Points,
 		User:          comments.User,
 		Time:          comments.Time,
