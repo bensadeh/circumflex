@@ -7,7 +7,7 @@ import (
 	"clx/favorites"
 	"clx/handler"
 	"clx/history"
-	"clx/hn"
+	"clx/hn/services"
 	"clx/screen"
 	"clx/utils/vim"
 
@@ -42,7 +42,7 @@ func NewScreenController(config *core.Config) *core.ScreenController {
 
 	sc.VimRegister = new(vim.Register)
 
-	sc.Service = new(hn.Cheeaun)
+	sc.Service = new(services.Cheeaun)
 
 	return sc
 }

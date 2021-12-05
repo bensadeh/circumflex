@@ -1,4 +1,4 @@
-package hn
+package services
 
 import (
 	"clx/constants/clx"
