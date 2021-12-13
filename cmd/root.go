@@ -38,9 +38,9 @@ func Root() *cobra.Command {
 
 	configureFlags(rootCmd)
 
-	// rootCmd.AddCommand(addCmd())
+	rootCmd.AddCommand(addCmd())
 	rootCmd.AddCommand(clearCmd())
-	// rootCmd.AddCommand(viewCmd())
+	rootCmd.AddCommand(viewCmd())
 
 	return rootCmd
 }

@@ -3,6 +3,8 @@
 ## 1.29
 _WIP_
 
+**Bugfix**
+- Re-enable `view` and `add` commands
 
 ## 1.28
 _2021-12-13_
