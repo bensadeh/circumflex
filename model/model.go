@@ -37,7 +37,7 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 	app.SetAfterResizeFunc(func(_ int, _ int) {
 		app.SetRoot(main.Grid, true)
 
-		resetStates(appState, ret)
+		resetStates(appState, ret, service)
 		initializeView(appState, main, ret, config)
 
 		listItems, err := ret.GetStories(appState.CurrentCategory, appState.CurrentPage,
@@ -69,9 +69,10 @@ func setToErrorState(appState *core.ApplicationState, main *core.MainView, list 
 	app.Draw()
 }
 
-func resetStates(appState *core.ApplicationState, ret *handler.StoryHandler) {
+func resetStates(appState *core.ApplicationState, ret *handler.StoryHandler, service hn.Service) {
 	resetApplicationState(appState)
 	ret.Reset()
+	service.Init(appState.StoriesToShow)
 }
 
 func resetApplicationState(appState *core.ApplicationState) {

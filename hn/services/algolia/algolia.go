@@ -27,18 +27,16 @@ type category struct {
 }
 
 func (s *Service) Init(itemsToShow int) {
-	s.numberOfItemsToShow = (itemsToShow * 3) + 1
+	buffer := 5
+	s.numberOfItemsToShow = (itemsToShow * 3) + buffer
 	s.categories = make([]category, numberOfCategories)
 }
 
 func (s *Service) FetchStories(_ int, category int) []*item.Item {
 	initializeStoriesList(s, category)
 
-	// url := fmt.Sprintf("https://hn.algolia.com/api/v1/search?"+
-	//	"tags=front_page"+
-	//	"&hitsPerPage=%d"+
-	//	"&page=%d", s.numberOfItemsToShow, page-1)
-	ids := getStoryListURIParam(s.categories[category].items)
+	orderedIds := s.categories[category].items
+	ids := getStoryListURIParam(orderedIds)
 
 	toShow := strconv.Itoa(s.numberOfItemsToShow)
 	url := "https://hn.algolia.com/api/v1/search?tags=story," +
@@ -54,7 +52,10 @@ func (s *Service) FetchStories(_ int, category int) []*item.Item {
 		SetResult(&a).
 		Get(url)
 
-	return mapStories(a)
+	stories := mapStories(a)
+	orderedStories := joinStories(orderedIds, stories)
+
+	return orderedStories
 }
 
 func initializeStoriesList(s *Service, category int) {
@@ -86,7 +87,7 @@ func fetchStoriesList(category int) []int {
 }
 
 func shortenStories(stories []int, storiesToShow int) []int {
-	return stories[0:storiesToShow]
+	return stories[0 : storiesToShow-1]
 }
 
 func getStoryListURIParam(ids []int) string {
@@ -118,15 +119,13 @@ func getCategory(category int) string {
 	}
 }
 
-func mapStories(stories *algolia) []*item.Item {
-	// items := make([]*item.Item, 0, len(stories.Hits))
-
-	var items []*item.Item
+func mapStories(stories *algolia) map[int]*item.Item {
+	m := make(map[int]*item.Item)
 
 	for _, story := range stories.Hits {
 		id, _ := strconv.Atoi(story.ObjectID)
 
-		item := item.Item{
+		it := &item.Item{
 			ID:            id,
 			Title:         story.Title,
 			Points:        story.Points,
@@ -142,10 +141,24 @@ func mapStories(stories *algolia) []*item.Item {
 			CommentsCount: story.NumComments,
 		}
 
-		items = append(items, &item)
+		m[id] = it
 	}
 
-	return items
+	return m
+}
+
+func joinStories(orderedIds []int, stories map[int]*item.Item) []*item.Item {
+	var orderedStories []*item.Item
+
+	for _, id := range orderedIds {
+		if stories[id] == nil {
+			continue
+		}
+
+		orderedStories = append(orderedStories, stories[id])
+	}
+
+	return orderedStories
 }
 
 func (s *Service) FetchStory(id int) *item.Item {
