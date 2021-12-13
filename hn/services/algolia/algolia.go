@@ -14,31 +14,39 @@ import (
 
 const (
 	uri                = "https://hacker-news.firebaseio.com/v0/"
-	numberOfCategories = 3
+	numberOfCategories = 4
 )
 
 type Service struct {
-	numberOfItemsToShow int
-	categories          []category
+	categories []category
 }
 
 type category struct {
-	items []int
+	items               []int
+	numberOfItemsToShow int
 }
 
 func (s *Service) Init(itemsToShow int) {
 	buffer := 5
-	s.numberOfItemsToShow = (itemsToShow * 3) + buffer
+	threePages := (itemsToShow * 3) + buffer
+	onePage := itemsToShow + 1
+
 	s.categories = make([]category, numberOfCategories)
+
+	s.categories[categories.FrontPage].numberOfItemsToShow = threePages
+	s.categories[categories.New].numberOfItemsToShow = threePages
+	s.categories[categories.Ask].numberOfItemsToShow = onePage
+	s.categories[categories.Show].numberOfItemsToShow = onePage
 }
 
 func (s *Service) FetchStories(_ int, category int) []*item.Item {
 	initializeStoriesList(s, category)
 
 	orderedIds := s.categories[category].items
+	itemsToShow := s.categories[category].numberOfItemsToShow
 	ids := getStoryListURIParam(orderedIds)
 
-	toShow := strconv.Itoa(s.numberOfItemsToShow)
+	toShow := strconv.Itoa(itemsToShow)
 	url := "https://hn.algolia.com/api/v1/search?tags=story," +
 		"(" + ids + ")&hitsPerPage=" + toShow
 
@@ -64,7 +72,7 @@ func initializeStoriesList(s *Service, category int) {
 	}
 
 	stories := fetchStoriesList(category)
-	storiesSubset := shortenStories(stories, s.numberOfItemsToShow)
+	storiesSubset := shortenStories(stories, s.categories[category].numberOfItemsToShow)
 
 	s.categories[category].items = storiesSubset
 }
