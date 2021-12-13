@@ -39,12 +39,12 @@ type storyCategory struct {
 }
 
 func (r *StoryHandler) GetStories(category int, page int, visibleStories int, highlightHeadlines bool,
-	hideYCJobs bool, service hn.Service) ([]*cview.ListItem, error) {
+	service hn.Service) ([]*cview.ListItem, error) {
 	if category == categories.Favorites {
 		return getFavoritesStories(page, visibleStories, highlightHeadlines, r.sc[category], r.history)
 	}
 
-	return getOnlineStories(category, page, visibleStories, highlightHeadlines, hideYCJobs, r.sc[category], r.history,
+	return getOnlineStories(category, page, visibleStories, highlightHeadlines, r.sc[category], r.history,
 		service)
 }
 
@@ -60,7 +60,7 @@ func getFavoritesStories(page int, visibleStories int, highlightHeadlines bool, 
 	return listItems, nil
 }
 
-func getOnlineStories(category int, page int, visibleStories int, highlightHeadlines bool, hideYCJobs bool,
+func getOnlineStories(category int, page int, visibleStories int, highlightHeadlines bool,
 	sc *storyCategory, his *history.History, service hn.Service) ([]*cview.ListItem, error) {
 	// overriddenYCJobsStatus := getOverriddenYCJobsStatus(visibleStories, hideYCJobs)
 	smallestItemToDisplay := page * visibleStories

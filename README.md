@@ -272,7 +272,6 @@ A table of available flags is provided below:
 | `-s`  | Disable conversion of smileys (`:)`) to emojis (😊)|
 | `-d`  | Disable marking submissions as read |
 | `-r`  | Show each line with a number relative to the currently selected element (similar to Vim's hybrid line number mode) |
-| `-j`  | Show `X is hiring` posts from YC-funded startups (does not affect the monthly `Who is Hiring?` posts) |
 | `-t`  | Hide the indentation symbol from the comment section (does not affect quotes) |
 | `-e`  | Set the header type |
 

@@ -16,7 +16,6 @@ var (
 	disableHistory       bool
 	disableEmojis        bool
 	useRelativeNumbering bool
-	showYCJobs           bool
 	hideIndentSymbol     bool
 	headerType           int
 )
@@ -57,8 +56,6 @@ func configureFlags(rootCmd *cobra.Command) {
 		"disable conversion of smileys to emojis")
 	rootCmd.PersistentFlags().BoolVarP(&useRelativeNumbering, "relative-numbering", "r", false,
 		"use relative numbering for submissions")
-	rootCmd.PersistentFlags().BoolVarP(&showYCJobs, "show-jobs", "j", false,
-		"show submissions of the type 'X is hiring'")
 	rootCmd.PersistentFlags().BoolVarP(&hideIndentSymbol, "hide-indent", "t", false,
 		"hide the indentation bar to the left of the reply")
 	rootCmd.PersistentFlags().IntVarP(&commentWidth, "comment-width", "c", core.GetConfigWithDefaults().CommentWidth,
@@ -91,10 +88,6 @@ func getConfig() *core.Config {
 
 	if useRelativeNumbering {
 		config.RelativeNumbering = true
-	}
-
-	if showYCJobs {
-		config.HideYCJobs = false
 	}
 
 	if hideIndentSymbol {

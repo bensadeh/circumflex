@@ -46,7 +46,6 @@ type Config struct {
 	HighlightHeadlines bool
 	HighlightComments  bool
 	RelativeNumbering  bool
-	HideYCJobs         bool
 	EmojiSmileys       bool
 	MarkAsRead         bool
 	HideIndentSymbol   bool
@@ -60,7 +59,6 @@ func GetConfigWithDefaults() *Config {
 		HighlightHeadlines: true,
 		HighlightComments:  true,
 		RelativeNumbering:  false,
-		HideYCJobs:         true,
 		EmojiSmileys:       true,
 		MarkAsRead:         true,
 		HideIndentSymbol:   false,

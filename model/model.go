@@ -41,7 +41,7 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 		initializeView(appState, main, ret, config)
 
 		listItems, err := ret.GetStories(appState.CurrentCategory, appState.CurrentPage,
-			appState.StoriesToShow, config.HighlightHeadlines, config.HideYCJobs, service)
+			appState.StoriesToShow, config.HighlightHeadlines, service)
 		if err != nil {
 			setToErrorState(appState, main, list, app)
 
@@ -255,7 +255,7 @@ func changePage(app *cview.Application, list *cview.List, main *core.MainView, a
 	appState.CurrentPage += delta
 
 	listItems, err := ret.GetStories(appState.CurrentCategory, appState.CurrentPage,
-		appState.StoriesToShow, config.HighlightHeadlines, config.HideYCJobs, service)
+		appState.StoriesToShow, config.HighlightHeadlines, service)
 	if err != nil {
 		setToErrorState(appState, main, list, app)
 
@@ -284,7 +284,7 @@ func ChangeCategory(app *cview.Application, event *tcell.EventKey, list *cview.L
 	appState.CurrentPage = 0
 
 	listItems, err := ret.GetStories(appState.CurrentCategory, appState.CurrentPage,
-		appState.StoriesToShow, config.HighlightHeadlines, config.HideYCJobs, service)
+		appState.StoriesToShow, config.HighlightHeadlines, service)
 	if err != nil {
 		setToErrorState(appState, main, list, app)
 
@@ -418,7 +418,7 @@ func LowerCaseG(main *core.MainView, appState *core.ApplicationState, list *cvie
 func UpperCaseG(main *core.MainView, appState *core.ApplicationState, list *cview.List, config *core.Config,
 	reg *vim.Register, ret *handler.StoryHandler, service hn.Service) {
 	stories, _ := ret.GetStories(appState.CurrentCategory, appState.CurrentPage,
-		appState.StoriesToShow, config.HighlightHeadlines, config.HideYCJobs, service)
+		appState.StoriesToShow, config.HighlightHeadlines, service)
 	storiesToShow := len(stories)
 	currentItem := list.GetCurrentItemIndex()
 	itemToJumpTo := reg.UpperCaseG(currentItem, storiesToShow, appState.CurrentPage)
