@@ -1,7 +1,10 @@
 # Changelog
 
 ## 1.28
-_WIP_
+_2021-12-13_
+
+**Backend**
+- `clx` now uses Algolia + the official Hacker News firebase API to fetch submissions
 
 **Bugfix**
 - Fixed a bug where tables would be improperly formatted
