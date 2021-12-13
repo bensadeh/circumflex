@@ -35,7 +35,6 @@ func getConfig() *core.Config {
 		CommentWidth:       80,
 		HighlightHeadlines: true,
 		RelativeNumbering:  false,
-		HideYCJobs:         false,
 		HighlightComments:  true,
 		EmojiSmileys:       true,
 		MarkAsRead:         false,
