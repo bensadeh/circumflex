@@ -7,7 +7,7 @@ import (
 	"clx/favorites"
 	"clx/handler"
 	"clx/history"
-	"clx/hn/services/algolia"
+	"clx/hn/services/hybrid"
 	"clx/screen"
 	"clx/utils/vim"
 
@@ -42,7 +42,7 @@ func NewScreenController(config *core.Config) *core.ScreenController {
 
 	sc.VimRegister = new(vim.Register)
 
-	sc.Service = new(algolia.Service)
+	sc.Service = new(hybrid.Service)
 	sc.Service.Init(sc.ApplicationState.StoriesToShow)
 
 	return sc

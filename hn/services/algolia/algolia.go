@@ -27,18 +27,18 @@ type category struct {
 }
 
 func (s *Service) Init(itemsToShow int) {
-	s.numberOfItemsToShow = itemsToShow
+	s.numberOfItemsToShow = (itemsToShow * 3) + 1
 	s.categories = make([]category, numberOfCategories)
 }
 
-func (s *Service) FetchStories(page int, category int) []*item.Item {
+func (s *Service) FetchStories(_ int, category int) []*item.Item {
 	initializeStoriesList(s, category)
 
 	// url := fmt.Sprintf("https://hn.algolia.com/api/v1/search?"+
 	//	"tags=front_page"+
 	//	"&hitsPerPage=%d"+
 	//	"&page=%d", s.numberOfItemsToShow, page-1)
-	ids := getStoryListURIParam(s.categories[category].items, s.numberOfItemsToShow, page)
+	ids := getStoryListURIParam(s.categories[category].items)
 
 	toShow := strconv.Itoa(s.numberOfItemsToShow)
 	url := "https://hn.algolia.com/api/v1/search?tags=story," +
@@ -62,7 +62,10 @@ func initializeStoriesList(s *Service, category int) {
 		return
 	}
 
-	s.categories[category].items = fetchStoriesList(category)
+	stories := fetchStoriesList(category)
+	storiesSubset := shortenStories(stories, s.numberOfItemsToShow)
+
+	s.categories[category].items = storiesSubset
 }
 
 func fetchStoriesList(category int) []int {
@@ -82,15 +85,15 @@ func fetchStoriesList(category int) []int {
 	return stories
 }
 
-func getStoryListURIParam(ids []int, numberOfItemsToShow int, page int) string {
+func shortenStories(stories []int, storiesToShow int) []int {
+	return stories[0:storiesToShow]
+}
+
+func getStoryListURIParam(ids []int) string {
 	var sb strings.Builder
-	page = page - 1
 
-	start := numberOfItemsToShow * page
-	end := start + numberOfItemsToShow + 1
-
-	for i := start; i < end; i++ {
-		sb.WriteString(fmt.Sprintf("story_%d,", ids[i]))
+	for _, id := range ids {
+		sb.WriteString(fmt.Sprintf("story_%d,", id))
 	}
 
 	return sb.String()
