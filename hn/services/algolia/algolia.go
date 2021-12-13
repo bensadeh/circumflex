@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bobesa/go-domain-util/domainutil"
+
 	"github.com/go-resty/resty/v2"
 )
 
@@ -142,7 +144,7 @@ func mapStories(stories *algolia) map[int]*item.Item {
 			TimeAgo:       "",
 			Type:          "",
 			URL:           story.URL,
-			Domain:        "",
+			Domain:        domainutil.Domain(story.URL),
 			Comments:      nil,
 			Content:       "",
 			Level:         0,
