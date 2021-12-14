@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.29
-_WIP_
+_2021-12-14_
 
 **Bugfix**
 - Re-enable `view` and `add` commands
