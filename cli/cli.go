@@ -14,6 +14,7 @@ func Less(input string) {
 		"--ignore-case",
 		"--tilde",
 		"--use-color",
+		"-P?e"+"\u001B[48;5;237m "+"\u001B[38;5;200m"+"e"+"\u001B[38;5;214m"+"n"+"\u001B[38;5;69m"+"d "+"\033[0m",
 		"-DSy",
 		"-DP-")
 
