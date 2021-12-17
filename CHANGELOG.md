@@ -5,6 +5,7 @@ _WIP_
 
 **Cosmetic**
 - Stylized `less` prompt
+- Renamed headers in the keymaps view
 
 ## 1.29
 _2021-12-14_

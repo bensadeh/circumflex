@@ -17,7 +17,7 @@ func GetText(screenWidth int) string {
 	keys := new(keymaps.List)
 	keys.Init()
 
-	keys.AddHeader("circumflex")
+	keys.AddHeader("Main view")
 	keys.AddSeparator()
 	keys.AddKeymap("Read comment section (less)", "Enter")
 	keys.AddKeymap("Read article in Reader Mode (less)", "Space")
@@ -34,7 +34,7 @@ func GetText(screenWidth int) string {
 	keys.AddKeymap("Bring up this screen", "i, ?")
 	keys.AddKeymap("Quit to prompt", "q")
 	keys.AddSeparator()
-	keys.AddHeader("less")
+	keys.AddHeader("Comment section / Reader Mode")
 	keys.AddSeparator()
 	keys.AddKeymap("Down one half-window", "d")
 	keys.AddKeymap("Up one half-window", "u")
