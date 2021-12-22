@@ -42,6 +42,7 @@ func formatTitle(title string, highlightHeadlines bool) string {
 	if highlightHeadlines {
 		title = highlightShowAndTell(title)
 		title = highlightYCStartups(title)
+		title = highlightYear(title)
 		title = highlightSpecialContent(title)
 	}
 
@@ -62,6 +63,15 @@ func highlightYCStartups(title string) string {
 
 	firstHighlightGroup := `$1`
 	highlightedStartup := formatter.BlackOnOrange(" " + firstHighlightGroup + " ")
+
+	return expression.ReplaceAllString(title, highlightedStartup)
+}
+
+func highlightYear(title string) string {
+	expression := regexp.MustCompile(`\((\d{4})\)`)
+
+	firstHighlightGroup := `$1`
+	highlightedStartup := formatter.Magenta("" + firstHighlightGroup + "")
 
 	return expression.ReplaceAllString(title, highlightedStartup)
 }

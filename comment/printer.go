@@ -81,6 +81,7 @@ func highlightTitle(title string, highlightHeadlines bool) string {
 
 	if highlightHeadlines {
 		highlightedTitle = syntax.HighlightYCStartupsInHeadlines(title)
+		highlightedTitle = syntax.HighlightYearsInHeadlines(title)
 		highlightedTitle = syntax.HighlightHackerNewsHeadlines(highlightedTitle)
 		highlightedTitle = syntax.HighlightSpecialContent(highlightedTitle)
 	}

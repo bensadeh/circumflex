@@ -35,6 +35,14 @@ func HighlightYCStartupsInHeadlines(comment string) string {
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
 
+func HighlightYearsInHeadlines(comment string) string {
+	expression := regexp.MustCompile(`\((\d{4})\)`)
+
+	highlightedStartup := Magenta(`$1`).String() + bold
+
+	return expression.ReplaceAllString(comment, highlightedStartup)
+}
+
 func HighlightHackerNewsHeadlines(title string) string {
 	askHN := "Ask HN:"
 	showHN := "Show HN:"
