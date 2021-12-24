@@ -35,12 +35,14 @@ func HighlightYCStartupsInHeadlines(comment string) string {
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
 
-func HighlightYearsInHeadlines(comment string) string {
+func HighlightYearInHeadlines(comment string) string {
 	expression := regexp.MustCompile(`\((\d{4})\)`)
 
-	highlightedStartup := Magenta(`$1`).String() + bold
+	background := uint8(238)
+	foreground := uint8(3)
+	highlightedYear := Index(foreground, ` $1 `).BgIndex(background).String() + bold
 
-	return expression.ReplaceAllString(comment, highlightedStartup)
+	return expression.ReplaceAllString(comment, highlightedYear)
 }
 
 func HighlightHackerNewsHeadlines(title string) string {
@@ -58,10 +60,10 @@ func HighlightHackerNewsHeadlines(title string) string {
 }
 
 func HighlightSpecialContent(title string) string {
-	title = strings.ReplaceAll(title, "[audio]", Yellow("audio").String())
-	title = strings.ReplaceAll(title, "[video]", Yellow("video").String())
-	title = strings.ReplaceAll(title, "[pdf]", Yellow("pdf").String())
-	title = strings.ReplaceAll(title, "[PDF]", Yellow("PDF").String())
+	title = strings.ReplaceAll(title, "[audio]", Cyan("audio").String())
+	title = strings.ReplaceAll(title, "[video]", Cyan("video").String())
+	title = strings.ReplaceAll(title, "[pdf]", Cyan("pdf").String())
+	title = strings.ReplaceAll(title, "[PDF]", Cyan("PDF").String())
 	title = strings.ReplaceAll(title, "[flagged]", Red("flagged").String())
 
 	return title

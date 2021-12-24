@@ -71,16 +71,16 @@ func highlightYear(title string) string {
 	expression := regexp.MustCompile(`\((\d{4})\)`)
 
 	firstHighlightGroup := `$1`
-	highlightedStartup := formatter.Magenta("" + firstHighlightGroup + "")
+	highlightedYear := formatter.Year(" " + firstHighlightGroup + " ")
 
-	return expression.ReplaceAllString(title, highlightedStartup)
+	return expression.ReplaceAllString(title, highlightedYear)
 }
 
 func highlightSpecialContent(title string) string {
-	title = strings.ReplaceAll(title, "[audio[]", formatter.Yellow("audio"))
-	title = strings.ReplaceAll(title, "[video[]", formatter.Yellow("video"))
-	title = strings.ReplaceAll(title, "[pdf[]", formatter.Yellow("pdf"))
-	title = strings.ReplaceAll(title, "[PDF[]", formatter.Yellow("PDF"))
+	title = strings.ReplaceAll(title, "[audio[]", formatter.Cyan("audio"))
+	title = strings.ReplaceAll(title, "[video[]", formatter.Cyan("video"))
+	title = strings.ReplaceAll(title, "[pdf[]", formatter.Cyan("pdf"))
+	title = strings.ReplaceAll(title, "[PDF[]", formatter.Cyan("PDF"))
 	title = strings.ReplaceAll(title, "[flagged[]", formatter.Red("flagged"))
 
 	return title
