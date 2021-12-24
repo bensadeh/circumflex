@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.30
-_WIP_
+_2021-12-24_
 
 **Cosmetic**
 - Stylized `less` prompt
