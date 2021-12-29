@@ -48,9 +48,9 @@ func Reverse(text string) string {
 }
 
 func Year(text string) string {
-	return cview.TranslateANSI("\u001b[48;5;238m") + 
-    cview.TranslateANSI("\u001B[38;5;3m") +
-    text + resetForegroundAndBackground
+	return cview.TranslateANSI("\u001b[48;5;238m") +
+		cview.TranslateANSI("\u001B[38;5;3m") +
+		text + resetForegroundAndBackground
 }
 
 func BlackOnOrange(text string) string {
