@@ -3,6 +3,10 @@
 ## 1.31
 _WIP_
 
+**Backend**
+- Only fetch more submissions on resize where the height of the window
+has changed
+
 **Cosmetic**
 - Updated filter list for macrumors.com
 
