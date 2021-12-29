@@ -3,6 +3,8 @@
 ## 1.31
 _WIP_
 
+**Cosmetic**
+- Updated filter list for macrumors.com
 
 ## 1.30
 _2021-12-24_

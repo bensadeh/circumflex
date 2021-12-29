@@ -63,6 +63,7 @@ func filterSite(text string, url string) string {
 
 	case strings.Contains(url, "macrumors.com"):
 		ruleSet.EndBeforeLineEquals("Top Stories")
+		ruleSet.EndBeforeLineEquals("Related Stories")
 
 		return ruleSet.Filter(text)
 
