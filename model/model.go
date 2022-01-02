@@ -42,7 +42,6 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 		if screenHeightHasNotChanged && appState.State == state.OnSubmissionPage {
 			header := ret.GetHackerNewsHeader(appState.CurrentCategory, config.HeaderType)
 
-			view.SetPanelToMainView(main)
 			view.SetHackerNewsHeader(main, header)
 
 			return
