@@ -37,6 +37,17 @@ func SetAfterInitializationAndAfterResizeFunctions(app *cview.Application, list 
 	app.SetAfterResizeFunc(func(_ int, _ int) {
 		app.SetRoot(main.Grid, true)
 
+		screenHeightHasNotChanged := appState.ScreenHeight == screen.GetTerminalHeight()
+
+		if screenHeightHasNotChanged && appState.State == state.OnSubmissionPage {
+			header := ret.GetHackerNewsHeader(appState.CurrentCategory, config.HeaderType)
+
+			view.SetPanelToMainView(main)
+			view.SetHackerNewsHeader(main, header)
+
+			return
+		}
+
 		resetStates(appState, ret, service)
 		initializeView(appState, main, ret, config)
 
@@ -96,6 +107,9 @@ func initializeView(appState *core.ApplicationState, main *core.MainView, ret *h
 }
 
 func Refresh(app *cview.Application, main *core.MainView, appState *core.ApplicationState) {
+	// Hack: Set screen height to 0 to trigger draw function
+	appState.ScreenHeight = 0
+
 	afterResizeFunc := app.GetAfterResizeFunc()
 	afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
 

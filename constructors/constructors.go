@@ -24,10 +24,8 @@ func NewScreenController(config *core.Config) *core.ScreenController {
 	sc.Application = cview.NewApplication()
 
 	sc.ApplicationState = new(core.ApplicationState)
-	sc.ApplicationState.ScreenWidth = screen.GetTerminalWidth()
-	sc.ApplicationState.ScreenHeight = screen.GetTerminalHeight()
 	sc.ApplicationState.StoriesToShow = screen.GetSubmissionsToShow(
-		sc.ApplicationState.ScreenHeight,
+		screen.GetTerminalHeight(),
 		maximumStoriesToDisplay)
 
 	sc.Articles = NewList()
