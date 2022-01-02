@@ -70,15 +70,8 @@ func setToErrorState(appState *core.ApplicationState, main *core.MainView, list 
 }
 
 func resetStates(appState *core.ApplicationState, ret *handler.StoryHandler, service hn.Service) {
-	lastScreenHeight := appState.ScreenHeight
-	currentScreenHeight := screen.GetTerminalHeight()
-
 	resetApplicationState(appState)
-
-	if lastScreenHeight != currentScreenHeight {
-		ret.Reset()
-	}
-
+	ret.Reset()
 	service.Init(appState.StoriesToShow)
 }
 
@@ -103,9 +96,6 @@ func initializeView(appState *core.ApplicationState, main *core.MainView, ret *h
 }
 
 func Refresh(app *cview.Application, main *core.MainView, appState *core.ApplicationState) {
-	// Hack: Set screenHeight to 0 in order to trigger a full fetch of the submissions
-	appState.ScreenHeight = 0
-
 	afterResizeFunc := app.GetAfterResizeFunc()
 	afterResizeFunc(appState.ScreenWidth, appState.ScreenHeight)
 
