@@ -17,6 +17,7 @@ var (
 	disableEmojis        bool
 	useRelativeNumbering bool
 	hideIndentSymbol     bool
+	debugMode            bool
 	headerType           int
 )
 
@@ -62,6 +63,10 @@ func configureFlags(rootCmd *cobra.Command) {
 		"set the comment width")
 	rootCmd.PersistentFlags().IntVarP(&headerType, "header-type", "e", 0,
 		"set the header type on the main screen")
+	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
+		"mock endpoints")
+
+	rootCmd.Flag("debug-mode").Hidden = true
 }
 
 func getConfig() *core.Config {
@@ -92,6 +97,10 @@ func getConfig() *core.Config {
 
 	if hideIndentSymbol {
 		config.HideIndentSymbol = true
+	}
+
+	if debugMode {
+		config.DebugMode = true
 	}
 
 	return config

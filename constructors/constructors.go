@@ -8,6 +8,7 @@ import (
 	"clx/handler"
 	"clx/history"
 	"clx/hn/services/hybrid"
+	"clx/hn/services/mock"
 	"clx/screen"
 	"clx/utils/vim"
 
@@ -40,8 +41,12 @@ func NewScreenController(config *core.Config) *core.ScreenController {
 
 	sc.VimRegister = new(vim.Register)
 
-	sc.Service = new(hybrid.Service)
-	sc.Service.Init(sc.ApplicationState.StoriesToShow)
+	if config.DebugMode {
+		sc.Service = new(mock.Service)
+	} else {
+		sc.Service = new(hybrid.Service)
+		sc.Service.Init(sc.ApplicationState.StoriesToShow)
+	}
 
 	return sc
 }

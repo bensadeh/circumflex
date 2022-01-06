@@ -6,6 +6,7 @@ _WIP_
 **Backend**
 - Do not re-fetch submissions on terminal screen resize events when screen height 
 remains the same
+- Add debug mode for offline testing and development
 
 **Cosmetic**
 - Updated filter list for macrumors.com

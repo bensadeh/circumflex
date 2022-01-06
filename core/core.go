@@ -51,6 +51,7 @@ type Config struct {
 	HideIndentSymbol   bool
 	IndentationSymbol  string
 	HeaderType         int
+	DebugMode          bool
 }
 
 func GetConfigWithDefaults() *Config {
