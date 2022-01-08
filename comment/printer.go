@@ -3,10 +3,11 @@ package comment
 import (
 	"clx/comment/postprocessor"
 	"clx/constants/margins"
-	"clx/constants/messages"
 	"clx/constants/unicode"
 	"clx/core"
 	"clx/item"
+	"clx/meta"
+	"clx/parser"
 	"clx/syntax"
 	"strconv"
 	"strings"
@@ -47,15 +48,17 @@ func getFirstCommentID(comments []*item.Item) int {
 }
 
 func getHeader(c *item.Item, config *core.Config) string {
-	headline := getHeadline(c.Title, config)
-	infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
-	helpMessage := aurora.Faint(messages.LessScreenInfo).Faint().String() + newLine
-	helpMessage += aurora.Faint(messages.LessCommentInfo).Faint().String() + newLine
-	url := getURL(c.URL, c.Domain, config)
-	rootComment := parseRootComment(c.Content, config)
-	separator := aurora.Yellow(messages.GetSeparator(config.CommentWidth)).String()
-
-	return headline + separator + newLine + helpMessage + newLine + infoLine + url + rootComment + separator + newParagraph
+	return meta.GetMetaBlock(c, config) + newParagraph
+	//
+	//headline := getHeadline(c.Title, config)
+	//infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
+	//helpMessage := aurora.Faint(messages.LessScreenInfo).Faint().String() + newLine
+	//helpMessage += aurora.Faint(messages.LessCommentInfo).Faint().String() + newLine
+	//url := getURL(c.URL, c.Domain, config)
+	//rootComment := parseRootComment(c.Content, config)
+	//separator := aurora.Yellow(messages.GetSeparator(config.CommentWidth)).String()
+	//
+	//return headline + separator + newLine + helpMessage + newLine + infoLine + url + rootComment + separator + newParagraph
 }
 
 func getHeadline(title string, config *core.Config) string {
@@ -105,7 +108,7 @@ func parseRootComment(c string, config *core.Config) string {
 		return ""
 	}
 
-	comment := ParseComment(c, config, config.CommentWidth, config.CommentWidth)
+	comment := parser.ParseComment(c, config, config.CommentWidth, config.CommentWidth)
 	wrappedComment, _ := text.Wrap(comment, config.CommentWidth)
 
 	return newLine + wrappedComment + newLine
@@ -143,7 +146,7 @@ func formatComment(c *item.Item, config *core.Config, originalPoster string, par
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, c.Level)
 
 	header := getCommentHeader(c, originalPoster, parentPoster, commentWidth)
-	comment := ParseComment(c.Content, config, commentWidth, availableScreenWidth)
+	comment := parser.ParseComment(c.Content, config, commentWidth, availableScreenWidth)
 
 	paddedComment, _ := text.WrapWithPad(comment, availableScreenWidth, coloredIndentSymbol)
 

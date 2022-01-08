@@ -1,4 +1,4 @@
-package comment
+package parser
 
 import (
 	"clx/core"
@@ -85,7 +85,7 @@ func ParseComment(c string, config *core.Config, commentWidth int, availableScre
 			// swString := strconv.Itoa(availableScreenWidth)
 			wrappedComment, _ := text.Wrap(paragraph, availableScreenWidth)
 
-			codeLines := strings.Split(wrappedComment, newLine)
+			codeLines := strings.Split(wrappedComment, "\n")
 			formattedCodeLines := ""
 
 			for j, codeLine := range codeLines {
@@ -97,7 +97,7 @@ func ParseComment(c string, config *core.Config, commentWidth int, availableScre
 					break
 				}
 
-				formattedCodeLines += dimmed + codeLine + reset + newLine
+				formattedCodeLines += dimmed + codeLine + reset + "\n"
 			}
 
 			paragraph = formattedCodeLines
@@ -151,7 +151,7 @@ func getParagraphSeparator(index int, sliceLength int) string {
 		return ""
 	}
 
-	return newParagraph
+	return "\n\n"
 }
 
 func highlightCommentSyntax(input string, commentHighlighting bool) string {

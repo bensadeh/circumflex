@@ -13,8 +13,9 @@ const (
 )
 
 func Process(commentSection string, screenWidth int) string {
-	commentSection = indent(commentSection, screenWidth)
+	commentSection = indentCommentSection(commentSection, screenWidth)
 	commentSection = moveZeroWidthSpaceUpOneLine(commentSection)
+	commentSection = deIndentInfoSection(commentSection)
 
 	return commentSection
 }
@@ -26,12 +27,35 @@ func moveZeroWidthSpaceUpOneLine(commentSection string) string {
 		unicode.ZeroWidthSpace+newLine+indentBlock)
 }
 
-func indent(commentSection string, screenWidth int) string {
+func indentCommentSection(commentSection string, screenWidth int) string {
 	indentBlock := getIndentBlock()
 
 	indentedCommentSection, _ := text.WrapWithPad(commentSection, screenWidth, indentBlock)
 
 	return indentedCommentSection
+}
+
+func deIndentInfoSection(commentSection string) string {
+	var sb strings.Builder
+
+	lines := strings.Split(commentSection, "\n")
+
+	for _, line := range lines {
+		isInfoSection := strings.Contains(line, "╭") || strings.Contains(line, "│") ||
+			strings.Contains(line, "╰")
+
+		if isInfoSection {
+			deIndentedLine := strings.TrimPrefix(line, " ")
+
+			sb.WriteString(deIndentedLine + "\n")
+
+			continue
+		}
+
+		sb.WriteString(line + "\n")
+	}
+
+	return sb.String()
 }
 
 func getIndentBlock() string {

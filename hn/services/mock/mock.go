@@ -421,16 +421,16 @@ func (s Service) FetchStories(_ int, _ int) []*item.Item {
 
 func (s Service) FetchStory(_ int) *item.Item {
 	return &item.Item{
-		ID:      0,
-		Title:   "asdf asdf asdf ",
-		Points:  0,
-		User:    "asdf asdf asdf ",
+		ID:      32145667,
+		Title:   "Launch HN: Homestead (YC W20) – Lot-splitting to build new housing supply",
+		Points:  543,
+		User:    "alfred",
 		Time:    0,
-		TimeAgo: "",
+		TimeAgo: "1 hour ago",
 		Type:    "",
-		URL:     "",
+		URL:     "https://moxie.org/2022/01/07/web3-first-impressions.htmlasdfasdflksdfjlkasdjflksdafj",
 		Level:   0,
-		Domain:  "",
+		Domain:  "google.com",
 		Comments: []*item.Item{
 			{
 				ID:            0,
@@ -463,7 +463,8 @@ func (s Service) FetchStory(_ int) *item.Item {
 				CommentsCount: 0,
 			},
 		},
-		Content:       "",
-		CommentsCount: 0,
+		Content: "<p>Lorem ipsum<p>",
+		// Content:       "",
+		CommentsCount: 57,
 	}
 }

@@ -3,12 +3,16 @@
 ## 1.31
 _WIP_
 
+**Bugfix**
+- YC-startups and year of publication in headlines are now properly formatted
+
 **Backend**
 - Do not re-fetch submissions on terminal screen resize events when screen height 
 remains the same
 - Add debug mode for offline testing and development
 
 **Cosmetic**
+- Reworked the info section under the headline in the comment section
 - Updated filter list for macrumors.com
 
 ## 1.30
