@@ -20,7 +20,7 @@ const (
 	newParagraph = "\n\n"
 )
 
-func GetMetaBlock(c *item.Item, config *core.Config) string {
+func GetCommentSectionMetaBlock(c *item.Item, config *core.Config) string {
 	columnWidth := config.CommentWidth/2 - 1
 	url := getURL(c.URL, c.Domain, config)
 	rootComment := parseRootComment(c.Content, config)

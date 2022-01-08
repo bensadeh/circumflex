@@ -48,7 +48,7 @@ func getFirstCommentID(comments []*item.Item) int {
 }
 
 func getHeader(c *item.Item, config *core.Config) string {
-	return meta.GetMetaBlock(c, config) + newParagraph
+	return meta.GetCommentSectionMetaBlock(c, config) + newParagraph
 	//
 	//headline := getHeadline(c.Title, config)
 	//infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
