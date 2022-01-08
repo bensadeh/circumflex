@@ -3,11 +3,11 @@ package messages
 import (
 	"clx/constants/clx"
 	"strings"
+
+	"github.com/logrusorgru/aurora/v3"
 )
 
 const (
-	separator = "="
-
 	Refreshed                   = "Refreshed"
 	Cancelled                   = "[::d]Cancelled"
 	OfflineMessage              = "Could not fetch stories • Press [::b]r[::-] to retry or [::b]q[::-] to quit"
@@ -29,5 +29,5 @@ func GetCircumflexStatusMessage() string {
 }
 
 func GetSeparator(width int) string {
-	return strings.Repeat(separator, width)
+	return aurora.Faint(strings.Repeat(" ", width)).Underline().String()
 }
