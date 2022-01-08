@@ -12,7 +12,7 @@ remains the same
 - Add debug mode for offline testing and development
 
 **Cosmetic**
-- Reworked the info section under the headline in the comment section
+- Reworked the info section
 - Updated filter list for macrumors.com
 
 ## 1.30

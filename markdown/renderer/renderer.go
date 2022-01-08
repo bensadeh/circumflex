@@ -1,9 +1,9 @@
 package renderer
 
 import (
-	"clx/constants/messages"
 	"clx/constants/unicode"
 	"clx/markdown"
+	"clx/meta"
 	"clx/syntax"
 	"regexp"
 	"strings"
@@ -20,26 +20,13 @@ const (
 	indentLevel1 = "  "
 	indentLevel2 = indentLevel1 + indentLevel1
 	indentLevel3 = indentLevel2 + indentLevel1
-	newLine      = "\n"
-	newParagraph = "\n\n"
-	codeStart    = "[CLX_CODE_START]"
-	codeEnd      = "[CLX_CODE_END]"
+
+	codeStart = "[CLX_CODE_START]"
+	codeEnd   = "[CLX_CODE_END]"
 )
 
 func CreateHeader(title string, domain string, lineWidth int) string {
-	separator := Green(messages.GetSeparator(lineWidth)).String()
-	wrappedTitle, _ := termtext.Wrap(Bold(title).String(), lineWidth)
-	wrappedTitle = unicode.ZeroWidthSpace + newLine + wrappedTitle
-	truncatedDomain := termtext.TruncateMax(domain, lineWidth)
-
-	wrappedTitle += newParagraph
-	wrappedTitle += separator + newLine
-	wrappedTitle += Faint(messages.LessScreenInfo).String() + newLine
-	wrappedTitle += Faint(messages.LessArticleInfo).String() + newLine + newLine
-	wrappedTitle += Faint(truncatedDomain).String() + newLine
-	wrappedTitle += separator + newParagraph
-
-	return wrappedTitle
+	return meta.GetReaderModeMetaBlock(title, domain, lineWidth)
 }
 
 func ToString(blocks []*markdown.Block, lineWidth int, indentBlock string) string {
