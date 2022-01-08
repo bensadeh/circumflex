@@ -420,5 +420,50 @@ func (s Service) FetchStories(_ int, _ int) []*item.Item {
 }
 
 func (s Service) FetchStory(_ int) *item.Item {
-	return nil
+	return &item.Item{
+		ID:      0,
+		Title:   "asdf asdf asdf ",
+		Points:  0,
+		User:    "asdf asdf asdf ",
+		Time:    0,
+		TimeAgo: "",
+		Type:    "",
+		URL:     "",
+		Level:   0,
+		Domain:  "",
+		Comments: []*item.Item{
+			{
+				ID:            0,
+				Title:         "",
+				Points:        0,
+				User:          "asdf asdf ",
+				Time:          0,
+				TimeAgo:       "1 minute ago",
+				Type:          "",
+				URL:           "",
+				Level:         0,
+				Domain:        "",
+				Comments:      nil,
+				Content:       "asd fasdf asdf økljasødklfj ",
+				CommentsCount: 0,
+			},
+			{
+				ID:            1,
+				Title:         "",
+				Points:        0,
+				User:          "asdf asdf ",
+				Time:          0,
+				TimeAgo:       "1 minute ago",
+				Type:          "",
+				URL:           "",
+				Level:         0,
+				Domain:        "",
+				Comments:      nil,
+				Content:       "asd fasdf asdf økljasødklfj ",
+				CommentsCount: 0,
+			},
+		},
+		Content:       "",
+		CommentsCount: 0,
+	}
 }
