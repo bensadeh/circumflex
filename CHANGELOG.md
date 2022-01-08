@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.31
-_WIP_
+_08.01.2022_
 
 **Bugfix**
 - YC-startups and year of publication in headlines are now properly formatted
@@ -14,6 +14,9 @@ remains the same
 **Cosmetic**
 - Reworked the info section
 - Updated filter list for macrumors.com
+
+**Meta**
+- Changed changelog date format from YYYY-MM-DD to DD.MM.YYYY
 
 ## 1.30
 _2021-12-24_
