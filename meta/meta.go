@@ -29,13 +29,10 @@ func GetReaderModeMetaBlock(title string, url string, lineWidth int) string {
 
 	formattedTitle, _ := text.Wrap(Bold(title).String(), lineWidth)
 	formattedTitle = unicode.ZeroWidthSpace + newLine + formattedTitle
-	formattedUrl := Blue(text.TruncateMax(url, lineWidth-2)).String()
+	formattedURL := Blue(text.TruncateMax(url, lineWidth-2)).String()
 	info := newParagraph + Green("Reader Mode").String()
 
-	// formattedTitle := Bold(title).String()
-	// formattedUrl := getURL(url, "_", lineWidth)
-
-	return formattedTitle + newParagraph + style.Render(formattedUrl+info) + newParagraph
+	return formattedTitle + newParagraph + style.Render(formattedURL+info) + newParagraph
 }
 
 func GetCommentSectionMetaBlock(c *item.Item, config *core.Config) string {
