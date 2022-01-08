@@ -463,7 +463,7 @@ func (s Service) FetchStory(_ int) *item.Item {
 				CommentsCount: 0,
 			},
 		},
-		Content: "<p>Lorem ipsum<p>",
+		Content: "<p>Lorem ipsum",
 		// Content:       "",
 		CommentsCount: 57,
 	}
