@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.32
+_WIP_
+
+**Cosmetic**
+- Added a separator between info block and the rest of the comment section / article
+
+
 ## 1.31
 _08.01.2022_
 
