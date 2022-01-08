@@ -40,7 +40,8 @@ func deIndentInfoSection(commentSection string) string {
 
 	lines := strings.Split(commentSection, "\n")
 
-	for _, line := range lines {
+	for i, line := range lines {
+		isOnLastLine := i == len(lines)-1
 		isInfoSection := strings.Contains(line, "╭") || strings.Contains(line, "│") ||
 			strings.Contains(line, "╰")
 
@@ -49,6 +50,10 @@ func deIndentInfoSection(commentSection string) string {
 
 			sb.WriteString(deIndentedLine + "\n")
 
+			continue
+		}
+
+		if isOnLastLine {
 			continue
 		}
 
