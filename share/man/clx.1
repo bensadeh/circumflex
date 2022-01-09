@@ -1,67 +1,140 @@
+'\" t
+.\"     Title: clx
+.\"    Author: [see the "AUTHOR(S)" section]
+.\" Generator: Asciidoctor 2.0.17
+.\"      Date: 2022-01-09
+.\"    Manual: circumflex
+.\"    Source: circumflex 1.32
+.\"  Language: English
+.\"
+.TH "CLX" "1" "2022-01-09" "circumflex 1.32" "circumflex"
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.ss \n[.ss] 0
 .nh
-.TH "clx" "1" "Oct 2021" "Ben Sadeh" "circumflex"
-
-.SH NAME
-.PP
-clx \- circumflex is a command line tool for browsing Hacker News in your terminal
-
-
-.SH SYNOPSIS
-.PP
-\fBclx [flags]\fP
-
-
-.SH DESCRIPTION
-.PP
-circumflex is a command line tool for browsing Hacker News in your terminal
-
-
-.SH OPTIONS
-.PP
-\fB\-c\fP, \fB\-\-comment\-width\fP=70
-	set the comment width
-
-.PP
-\fB\-s\fP, \fB\-\-disable\-emojis\fP[=false]
-	disable conversion of smileys to emojis
-
-.PP
-\fB\-d\fP, \fB\-\-disable\-history\fP[=false]
-	disable marking stories as read
-
-.PP
-\fB\-h\fP, \fB\-\-help\fP[=false]
-	help for clx
-
-.PP
-\fB\-t\fP, \fB\-\-hide\-indent\fP[=false]
-	hide the indentation bar to the left of the reply
-
-.PP
-\fB\-n\fP, \fB\-\-orange\-header\fP[=false]
-	set the header on orange
-
-.PP
-\fB\-o\fP, \fB\-\-plain\-comments\fP[=false]
-	disable syntax highlighting for comments
-
-.PP
-\fB\-p\fP, \fB\-\-plain\-headlines\fP[=false]
-	disable syntax highlighting for headlines
-
-.PP
-\fB\-r\fP, \fB\-\-relative\-numbering\fP[=false]
-	use relative numbering for submissions
-
-.PP
-\fB\-j\fP, \fB\-\-show\-jobs\fP[=false]
-	show submissions of the type 'X is hiring'
-
-.PP
-\fB\-a\fP, \fB\-\-use\-alt\-indent\-block\fP[=false]
-	use alternate indentation block
-
-
-.SH SEE ALSO
-.PP
-\fBclx\-add(1)\fP, \fBclx\-clear(1)\fP, \fBclx\-view(1)\fP
+.ad l
+.de URL
+\fI\\$2\fP <\\$1>\\$3
+..
+.als MTO URL
+.if \n[.g] \{\
+.  mso www.tmac
+.  am URL
+.    ad l
+.  .
+.  am MTO
+.    ad l
+.  .
+.  LINKSTYLE blue R < >
+.\}
+.SH "NAME"
+clx \- it\*(Aqs Hacker News in your terminal
+.SH "SYNOPSIS"
+.sp
+\fBclx\fP [\fIOPTION\fP]...
+.SH "DESCRIPTION"
+.sp
+\fBclx\fP lets you browse Hacker News from the comfort of your own terminal. Visit the comment section or read the linked article in Reader Mode.
+.sp
+Moving between items in \fBclx\fP is influenced by \fBVim\fP keybindings. See \fINavigation\fP for more info.
+.SH "USAGE"
+.sp
+When a submission is highlighted, you have two options:
+.sp
+\fBEnter\fP
+.RS 4
+Read the Comment section
+.RE
+.sp
+\fBSpace\fP
+.RS 4
+Read the article in Reader Mode
+.RE
+.SH "NAVIGATION"
+.sp
+\fBclx\fP pipes all its content to the pager \fBless\fP. To enjoy and use clx effectively, it is recommended to use the following shortcuts for navigation:
+.sp
+\fBj, k\fP
+.RS 4
+Scroll up/down one line
+.RE
+.sp
+\fBd, u\fP
+.RS 4
+Scroll up/down one half\-page
+.RE
+.sp
+\fBn, N\fP
+.RS 4
+Scroll between the next/previous \fItop\-level\fP comment (comment section) or \fIheadline\fP (Reader Mode)
+.RE
+.SH "COMMANDS"
+.sp
+\fBclx add\fP [\fIID\fP]
+.RS 4
+Add item to list of favorites by \fIID\fP. Enter the comment section from inside \fBclx\fP to update fields.
+.RE
+.sp
+\fBclx view\fP [\fIID\fP]
+.RS 4
+Directly go to the comment section for a given item \fIID\fP without going through the main view.
+.RE
+.sp
+\fBclx clear\fP
+.RS 4
+Clear the history of visited \fIID\fPs from ~/.cache/circumflex/history.json.
+.RE
+.SH "OPTIONS"
+.sp
+\fB\-c\fP \fIn\fP, \fB\-\-comment\-width\fP=\fIn\fP
+.RS 4
+Set the comment width to \fIn\fP columns
+.RE
+.sp
+\fB\-p, \-\-plain\-headlines\fP
+.RS 4
+Disable syntax highlighting for headlines
+.RE
+.sp
+\fB\-o, \-\-plain\-comments\fP
+.RS 4
+Disable syntax highlighting for comments
+.RE
+.sp
+\fB\-s, \-\-disable\-emojis\fP
+.RS 4
+Disable conversion of smileys to emojis
+.RE
+.sp
+\fB\-r, \-\-relative\-numbering\fP
+.RS 4
+Use relative numbering for submissions
+.RE
+.sp
+\fB\-t, \-\-hide\-indent\fP
+.RS 4
+Hide the indentation bar to the left of the reply
+.RE
+.sp
+\fB\-e\fP \fIn\fP, \fB\-\-header\-type=\fP\fIn\fP
+.RS 4
+Set the header type on the main screen
+.RE
+.sp
+\fB\-q, \-\-debug\-mode\fP
+.RS 4
+Mock all endpoints and use dummy data for the submissions screen and comment section
+.RE
+.SH "FAVORITES"
+.sp
+Press \fBf\fP to add the currently highlighted submission to your list of favorites. Remove submissions from the Favorites page with \fBx\fP.
+.sp
+Favorites are stored in ~/.config/circumflex/favorites.json. The entries in favorites.json are pretty\-printed to make them both human\-readable and VCS\-friendly.
+.SH "SEE ALSO"
+.sp
+\fBless\fP(1), \fBvim\fP(1)
+.SH "ABOUT"
+.sp
+Ben Sadeh (github.com/bensadeh/circumflex)
+.sp
+Released under the GNU Affero General Public License v3.0

@@ -1,0 +1,105 @@
+= clx(1)
+:doctype: manpage
+:manmanual: circumflex
+//:mansource: clx
+:release-version: 1.32
+//:man version:  {revnumber}
+:man source: circumflex {release-version}
+
+ifdef::env-github[]
+:toc:
+:toc-title:
+:toc-placement!:
+:numbered:
+endif::[]
+
+
+== Name
+
+clx - it's Hacker News in your terminal
+
+== Synopsis
+
+*clx* [_OPTION_]...
+
+== Description
+
+*clx* lets you browse Hacker News from the comfort of your own terminal. Visit the comment section or read the linked article in Reader Mode.
+
+Moving between items in *clx* is influenced by *Vim* keybindings. See _Navigation_ for more info.
+
+== Usage
+
+When a submission is highlighted, you have two options:
+
+*Enter*::
+  Read the Comment section
+
+*Space*::
+  Read the article in Reader Mode
+
+== Navigation
+*clx* pipes all its content to the pager *less*. To enjoy and use clx effectively, it is recommended to use the following shortcuts for navigation:
+
+*j, k*::
+  Scroll up/down one line
+
+*d, u*::
+  Scroll up/down one half-page
+
+*n, N*::
+  Scroll between the next/previous _top-level_ comment (comment section) or _headline_ (Reader Mode)
+
+== Commands
+
+*clx add* [_ID_]::
+  Add item to list of favorites by _ID_. Enter the comment section from inside *clx* to update fields.
+
+*clx view* [_ID_]::
+  Directly go to the comment section for a given item _ID_ without going through the main view.
+
+*clx clear*::
+  Clear the history of visited __ID__s from ~/.cache/circumflex/history.json.
+
+== Options
+
+*-c* _n_, *--comment-width*=_n_::
+  Set the comment width to _n_ columns
+
+*-p, --plain-headlines*::
+  Disable syntax highlighting for headlines
+
+*-o, --plain-comments*::
+  Disable syntax highlighting for comments
+
+*-s, --disable-emojis*::
+  Disable conversion of smileys to emojis
+
+*-r, --relative-numbering*::
+  Use relative numbering for submissions
+
+*-t, --hide-indent*::
+  Hide the indentation bar to the left of the reply
+
+*-e* _n_, **--header-type=**_n_::
+  Set the header type on the main screen
+
+*-q, --debug-mode*::
+  Mock all endpoints and use dummy data for the submissions screen and comment section
+
+== Favorites
+
+Press *f* to add the currently highlighted submission to your list of favorites. Remove submissions from the Favorites page with *x*.
+
+Favorites are stored in ~/.config/circumflex/favorites.json. The entries in favorites.json are pretty-printed to make them both human-readable and VCS-friendly.
+
+== See also
+
+*less*(1), *vim*(1)
+
+== About
+
+Ben Sadeh (github.com/bensadeh/circumflex)
+
+Released under the GNU Affero General Public License v3.0
+
