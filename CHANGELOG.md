@@ -3,6 +3,9 @@
 ## 1.32
 _WIP_
 
+**New features**
+- Added clx `man` pages
+
 **Backend**
 - Bump cobra to 1.3.0
 

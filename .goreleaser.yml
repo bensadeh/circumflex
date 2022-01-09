@@ -14,7 +14,7 @@ archives:
       386: 32-bit
       amd64: 64-bit
     files:
-      - man/*
+      - share/man/*
 checksum:
   name_template: 'checksums.txt'
 snapshot:
@@ -33,3 +33,4 @@ brews:
       - name: less
     install: |
       bin.install "circumflex" => "clx"
+      man1.install "#{buildpath}/share/man/clx.1"
