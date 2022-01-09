@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.32
-_WIP_
+_09.01.2022_
 
 **New features**
 - Added clx `man` pages
