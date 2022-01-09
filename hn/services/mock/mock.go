@@ -37,7 +37,7 @@ func (s Service) FetchStories(_ int, _ int) []*item.Item {
 			CommentsCount: 145,
 		},
 		{
-			Title:         "Interdum et malesuada fames ac ante",
+			Title:         "Interdum et malesuada fames ac ante [PDF]",
 			Points:        40,
 			User:          "delta",
 			Time:          time.Now().Add(-time.Hour * 5).Unix(),
