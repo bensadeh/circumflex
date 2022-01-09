@@ -7,6 +7,7 @@ require (
 	github.com/JohannesKaufmann/html-to-markdown v1.3.0
 	github.com/MichaelMure/go-term-text v0.2.9
 	github.com/PuerkitoBio/goquery v1.5.1
+	github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89
 	github.com/charmbracelet/glamour v0.3.0
 	github.com/charmbracelet/lipgloss v0.4.0
 	github.com/emirpasic/gods v1.12.0
@@ -19,10 +20,7 @@ require (
 	github.com/spf13/cobra v1.3.0
 	github.com/stretchr/testify v1.7.0
 	github.com/wayneashleyberry/terminal-dimensions v1.0.0
-	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d // indirect
 )
-
-require github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89
 
 require (
 	code.rocketnine.space/tslocum/cbind v0.1.5 // indirect
@@ -48,12 +46,12 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tkuchiki/go-timezone v0.2.0 // indirect
 	github.com/yuin/goldmark v1.3.5 // indirect
 	github.com/yuin/goldmark-emoji v1.0.1 // indirect
+	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d // indirect
 	golang.org/x/sys v0.0.0-20211205182925-97ca703d548d // indirect
 	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b // indirect
 	golang.org/x/text v0.3.7 // indirect
