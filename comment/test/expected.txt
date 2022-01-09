@@ -12,7 +12,6 @@
  │ 'run command, generate new video'? Or is there a GUI / toolkit that's          │
  │ standard?                                                                      │
  ╰────────────────────────────────────────────────────────────────────────────────╯
-  [2;4m                                                                                [0m
 ​
   [1mdang[0m [32mmod [0m[2m9 months ago                                                           [0m
   [0mAll: before reading further, make sure you're up on the site guidelines and

@@ -1,7 +1,6 @@
 package meta
 
 import (
-	"clx/constants/messages"
 	"clx/constants/unicode"
 	"clx/core"
 	"clx/item"
@@ -33,8 +32,7 @@ func GetReaderModeMetaBlock(title string, url string, lineWidth int) string {
 	formattedURL := Blue(text.TruncateMax(url, lineWidth-2)).String()
 	info := newParagraph + Green("Reader Mode").String()
 
-	return formattedTitle + newParagraph + style.Render(formattedURL+info) + newLine +
-		messages.GetSeparator(lineWidth) + newParagraph
+	return formattedTitle + newParagraph + style.Render(formattedURL+info) + newParagraph
 }
 
 func GetCommentSectionMetaBlock(c *item.Item, config *core.Config) string {
@@ -67,8 +65,7 @@ func GetCommentSectionMetaBlock(c *item.Item, config *core.Config) string {
 	joined := lipgloss.JoinHorizontal(lipgloss.Left, leftColumn.Render(leftColumnText),
 		rightColumn.Render(rightColumnText))
 
-	return getHeadline(c.Title, config) + newParagraph + style.Render(url+joined+rootComment) + newLine +
-		messages.GetSeparator(config.CommentWidth)
+	return getHeadline(c.Title, config) + newParagraph + style.Render(url+joined+rootComment)
 }
 
 func getHeadline(title string, config *core.Config) string {

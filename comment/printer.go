@@ -3,7 +3,6 @@ package comment
 import (
 	"clx/comment/postprocessor"
 	"clx/constants/margins"
-	"clx/constants/messages"
 	"clx/constants/unicode"
 	"clx/core"
 	"clx/item"
@@ -50,6 +49,69 @@ func getFirstCommentID(comments []*item.Item) int {
 
 func getHeader(c *item.Item, config *core.Config) string {
 	return meta.GetCommentSectionMetaBlock(c, config) + newParagraph
+	//
+	//headline := getHeadline(c.Title, config)
+	//infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
+	//helpMessage := aurora.Faint(messages.LessScreenInfo).Faint().String() + newLine
+	//helpMessage += aurora.Faint(messages.LessCommentInfo).Faint().String() + newLine
+	//url := getURL(c.URL, c.Domain, config)
+	//rootComment := parseRootComment(c.Content, config)
+	//separator := aurora.Yellow(messages.GetSeparator(config.CommentWidth)).String()
+	//
+	//return headline + separator + newLine + helpMessage + newLine + infoLine + url + rootComment + separator + newParagraph
+}
+
+func getHeadline(title string, config *core.Config) string {
+	formattedTitle := highlightTitle(unicode.ZeroWidthSpace+newLine+title, config.HighlightHeadlines)
+	wrappedHeadline, _ := text.Wrap(formattedTitle, config.CommentWidth)
+
+	return wrappedHeadline + newParagraph
+}
+
+func getURL(url string, domain string, config *core.Config) string {
+	if domain == "" {
+		url = "https://news.ycombinator.com/" + url
+	}
+
+	truncatedURL := text.TruncateMax(url, config.CommentWidth)
+	formattedURL := aurora.Faint(truncatedURL).String() + newLine
+
+	return formattedURL
+}
+
+func highlightTitle(title string, highlightHeadlines bool) string {
+	highlightedTitle := ""
+
+	if highlightHeadlines {
+		highlightedTitle = syntax.HighlightYCStartupsInHeadlines(title)
+		highlightedTitle = syntax.HighlightYearInHeadlines(title)
+		highlightedTitle = syntax.HighlightHackerNewsHeadlines(highlightedTitle)
+		highlightedTitle = syntax.HighlightSpecialContent(highlightedTitle)
+	}
+
+	return aurora.Bold(highlightedTitle).String()
+}
+
+func getInfoLine(points int, user string, timeAgo string, numberOfComments int, id int) string {
+	p := strconv.Itoa(points)
+	c := strconv.Itoa(numberOfComments)
+	i := strconv.Itoa(id)
+
+	formattedInfoLine := aurora.Faint(p + " points by " + user + " " + timeAgo +
+		" • " + c + " comments" + " • " + "ID " + i).String()
+
+	return formattedInfoLine + newLine
+}
+
+func parseRootComment(c string, config *core.Config) string {
+	if c == "" {
+		return ""
+	}
+
+	comment := parser.ParseComment(c, config, config.CommentWidth, config.CommentWidth)
+	wrappedComment, _ := text.Wrap(comment, config.CommentWidth)
+
+	return newLine + wrappedComment + newLine
 }
 
 func printReplies(c *item.Item, config *core.Config, screenWidth int, originalPoster string,
@@ -100,7 +162,7 @@ func getSeparator(level int, commentWidth int, currentCommentID int, firstCommen
 		return newLine
 	}
 
-	return messages.GetSeparator(commentWidth) + newLine + newLine
+	return aurora.Faint(strings.Repeat(" ", commentWidth)).Underline().String() + newLine + newLine
 }
 
 func getIndentString(level int) string {
