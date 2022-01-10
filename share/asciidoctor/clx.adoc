@@ -2,7 +2,7 @@
 :doctype: manpage
 :manmanual: circumflex
 //:mansource: clx
-:release-version: 1.32
+:release-version: 1.33
 //:man version:  {revnumber}
 :man source: circumflex {release-version}
 
