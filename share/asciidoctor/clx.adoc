@@ -26,28 +26,45 @@ clx - it's Hacker News in your terminal
 
 *clx* lets you browse Hacker News from the comfort of your own terminal. Visit the comment section or read the linked article in Reader Mode.
 
-Moving between items in *clx* is influenced by *Vim* keybindings. See _Navigation_ for more info.
+== Keybindings
 
-== Usage
-
-When a submission is highlighted, you have two options:
-
-*Enter*::
+_Enter_::
   Read the Comment section
 
-*Space*::
+_Space_::
   Read the article in Reader Mode
 
-== Navigation
-*clx* pipes all its content to the pager *less*. To enjoy and use clx effectively, it is recommended to use the following shortcuts for navigation:
+_r_::
+  Refresh
 
-*j, k*::
+_Tab_::
+  Change category
+
+_o_::
+  Open link to article in browser
+
+_c_::
+  Open comment section in browser
+
+_f_::
+  Add to favorites
+
+_x_::
+  Remove from favorites
+
+_q_::
+  Quit
+
+== Navigation
+*clx* pipes all its content to the pager *less*. To enjoy and use clx effectively, it is recommended to use the following keybindings for moving around:
+
+_j_, _k_::
   Scroll up/down one line
 
-*d, u*::
+_d_, _u_::
   Scroll up/down one half-page
 
-*n, N*::
+_n_, _N_::
   Scroll between the next/previous _top-level_ comment (comment section) or _headline_ (Reader Mode)
 
 == Commands
@@ -84,12 +101,15 @@ When a submission is highlighted, you have two options:
 *-e* _n_, **--header-type=**_n_::
   Set the header type on the main screen
 
+*-v, --version*::
+  Show the current version of *clx*
+
 *-q, --debug-mode*::
   Mock all endpoints and use dummy data for the submissions screen and comment section
 
 == Favorites
 
-Press *f* to add the currently highlighted submission to your list of favorites. Remove submissions from the Favorites page with *x*.
+Press _f_ to add the currently highlighted submission to your list of favorites. Remove submissions from the Favorites page with _x_.
 
 Favorites are stored in ~/.config/circumflex/favorites.json. The entries in favorites.json are pretty-printed to make them both human-readable and VCS-friendly.
 

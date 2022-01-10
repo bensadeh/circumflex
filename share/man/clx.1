@@ -2,12 +2,12 @@
 .\"     Title: clx
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.17
-.\"      Date: 2022-01-09
+.\"      Date: 2022-01-10
 .\"    Manual: circumflex
 .\"    Source: circumflex 1.32
 .\"  Language: English
 .\"
-.TH "CLX" "1" "2022-01-09" "circumflex 1.32" "circumflex"
+.TH "CLX" "1" "2022-01-10" "circumflex 1.32" "circumflex"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -35,36 +35,67 @@ clx \- it\*(Aqs Hacker News in your terminal
 .SH "DESCRIPTION"
 .sp
 \fBclx\fP lets you browse Hacker News from the comfort of your own terminal. Visit the comment section or read the linked article in Reader Mode.
+.SH "KEYBINDINGS"
 .sp
-Moving between items in \fBclx\fP is influenced by \fBVim\fP keybindings. See \fINavigation\fP for more info.
-.SH "USAGE"
-.sp
-When a submission is highlighted, you have two options:
-.sp
-\fBEnter\fP
+\fIEnter\fP
 .RS 4
 Read the Comment section
 .RE
 .sp
-\fBSpace\fP
+\fISpace\fP
 .RS 4
 Read the article in Reader Mode
 .RE
+.sp
+\fIr\fP
+.RS 4
+Refresh
+.RE
+.sp
+\fITab\fP
+.RS 4
+Change category
+.RE
+.sp
+\fIo\fP
+.RS 4
+Open link to article in browser
+.RE
+.sp
+\fIc\fP
+.RS 4
+Open comment section in browser
+.RE
+.sp
+\fIf\fP
+.RS 4
+Add to favorites
+.RE
+.sp
+\fIx\fP
+.RS 4
+Remove from favorites
+.RE
+.sp
+\fIq\fP
+.RS 4
+Quit
+.RE
 .SH "NAVIGATION"
 .sp
-\fBclx\fP pipes all its content to the pager \fBless\fP. To enjoy and use clx effectively, it is recommended to use the following shortcuts for navigation:
+\fBclx\fP pipes all its content to the pager \fBless\fP. To enjoy and use clx effectively, it is recommended to use the following keybindings for moving around:
 .sp
-\fBj, k\fP
+\fIj\fP, \fIk\fP
 .RS 4
 Scroll up/down one line
 .RE
 .sp
-\fBd, u\fP
+\fId\fP, \fIu\fP
 .RS 4
 Scroll up/down one half\-page
 .RE
 .sp
-\fBn, N\fP
+\fIn\fP, \fIN\fP
 .RS 4
 Scroll between the next/previous \fItop\-level\fP comment (comment section) or \fIheadline\fP (Reader Mode)
 .RE
@@ -121,13 +152,18 @@ Hide the indentation bar to the left of the reply
 Set the header type on the main screen
 .RE
 .sp
+\fB\-v, \-\-version\fP
+.RS 4
+Show the current version of \fBclx\fP
+.RE
+.sp
 \fB\-q, \-\-debug\-mode\fP
 .RS 4
 Mock all endpoints and use dummy data for the submissions screen and comment section
 .RE
 .SH "FAVORITES"
 .sp
-Press \fBf\fP to add the currently highlighted submission to your list of favorites. Remove submissions from the Favorites page with \fBx\fP.
+Press \fIf\fP to add the currently highlighted submission to your list of favorites. Remove submissions from the Favorites page with \fIx\fP.
 .sp
 Favorites are stored in ~/.config/circumflex/favorites.json. The entries in favorites.json are pretty\-printed to make them both human\-readable and VCS\-friendly.
 .SH "SEE ALSO"
