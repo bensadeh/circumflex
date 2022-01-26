@@ -40,6 +40,18 @@ func (his *History) GetLastVisited(id int) int64 {
 	return time.Now().Unix()
 }
 
+func (his *History) GetLastCommentCount(id int) int {
+	if !his.markAsRead {
+		return 0
+	}
+
+	if item, contains := his.VisitedStories[id]; contains {
+		return item.CommentsOnLastVisit
+	}
+
+	return 0
+}
+
 func (his *History) ClearAndWriteToDisk() {
 	his.VisitedStories = make(map[int]Data)
 

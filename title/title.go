@@ -103,11 +103,11 @@ func formatDomain(domain string, markAsRead bool) string {
 	return domainInParenthesisAndDimmed
 }
 
-func FormatSecondary(points int, author string, unixTime int64, comments int, highlightHeadlines bool) string {
+func FormatSecondary(points int, author string, unixTime int64, comments int, commentsOld int, highlightHeadlines bool) string {
 	parsedPoints := parsePoints(points)
 	parsedAuthor := parseAuthor(author, highlightHeadlines)
 	parsedTime := parseTime(unixTime)
-	parsedComments := parseComments(comments, author)
+	parsedComments := parseComments(comments, commentsOld, author)
 
 	return "[::d]" + parsedPoints + parsedAuthor + parsedTime + parsedComments
 }
@@ -139,12 +139,18 @@ func parseTime(unixTime int64) string {
 	return moment.From(now)
 }
 
-func parseComments(comments int, author string) string {
+func parseComments(comments int, commentsOld int, author string) string {
 	if author == "" {
 		return ""
 	}
 
 	c := strconv.Itoa(comments)
+
+	commentsDiff := comments - commentsOld
+
+	if commentsDiff > 0 && commentsOld != 0 {
+		return " | " + c + " comments [yellow](" + strconv.Itoa(commentsDiff) + " new)"
+	}
 
 	return " | " + c + " comments"
 }
