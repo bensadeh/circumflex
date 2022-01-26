@@ -149,7 +149,7 @@ func parseComments(comments int, commentsOld int, author string) string {
 	commentsDiff := comments - commentsOld
 
 	if commentsDiff > 0 && commentsOld != 0 {
-		return " | " + c + " comments [yellow](" + strconv.Itoa(commentsDiff) + " new)"
+		return " | " + c + " comments • [yellow]" + strconv.Itoa(commentsDiff) + " new"
 	}
 
 	return " | " + c + " comments"

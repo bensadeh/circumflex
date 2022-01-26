@@ -143,7 +143,7 @@ func getNewCommentIndicator(lastVisited, timePosted int64) string {
 	commentIsNew := lastVisited < timePosted
 
 	if commentIsNew {
-		return aurora.Blue("• ").String()
+		return aurora.BgYellow(" new ").Black().String() + " "
 	}
 
 	return ""
