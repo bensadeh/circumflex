@@ -124,25 +124,18 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 	var comments *item.Item
 
 	app.Suspend(func() {
-		// id := strconv.Itoa(story.ID)
-
 		comments = service.FetchStory(story.ID)
-		//comments, err := comment.FetchComments(id)
-		//if err != nil {
-		//	errorMessage := message.Error(messages.CommentsNotFetched)
-		//	view.SetTemporaryStatusBar(app, main, errorMessage, 4*time.Second)
-		//
-		//	return
-		//}
+
+		lastVisited := r.GetLastVisited(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
+			appState.CurrentPage)
+		screenWidth := screen.GetTerminalWidth()
+		commentTree := comment.ToString(comments, config, screenWidth, lastVisited)
 
 		r.MarkAsRead(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow, appState.CurrentPage,
 			comments.CommentsCount)
 		r.UpdateCommentCount(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow, appState.CurrentPage,
 			comments.CommentsCount)
 		r.UpdateFavoriteStoryAndWriteToDisk(comments)
-
-		screenWidth := screen.GetTerminalWidth()
-		commentTree := comment.ToString(comments, config, screenWidth)
 
 		cli.Less(commentTree)
 	})

@@ -173,6 +173,13 @@ func (r *StoryHandler) UpdateCommentCount(category, currentItemIndex, storiesToS
 	r.sc[category].stories[index].CommentsCount = commentCount
 }
 
+func (r *StoryHandler) GetLastVisited(category, currentItemIndex, storiesToShow, currentPage int) int64 {
+	index := getIndex(currentItemIndex, storiesToShow, currentPage)
+	id := r.sc[category].stories[index].ID
+
+	return r.history.GetLastVisited(id)
+}
+
 //func (r *StoryHandler) GetStoryAndMarkAsRead(category, currentItemIndex, storiesToShow,
 //	currentPage int) *item.Item {
 //	index := getIndex(currentItemIndex, storiesToShow, currentPage)

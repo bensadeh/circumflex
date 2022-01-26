@@ -22,7 +22,7 @@ const (
 	newParagraph = "\n\n"
 )
 
-func ToString(comments *item.Item, config *core.Config, screenWidth int) string {
+func ToString(comments *item.Item, config *core.Config, screenWidth int, lastVisited int64) string {
 	commentSectionScreenWidth := screenWidth - margins.CommentSectionLeftMargin
 
 	header := getHeader(comments, config)
@@ -31,7 +31,8 @@ func ToString(comments *item.Item, config *core.Config, screenWidth int) string 
 	replies := ""
 
 	for _, reply := range comments.Comments {
-		replies += printReplies(reply, config, commentSectionScreenWidth, comments.User, "", firstCommentID)
+		replies += printReplies(reply, config, commentSectionScreenWidth, comments.User, "", firstCommentID,
+			lastVisited)
 	}
 
 	commentSection := postprocessor.Process(header+replies+newLine, screenWidth)
@@ -49,73 +50,10 @@ func getFirstCommentID(comments []*item.Item) int {
 
 func getHeader(c *item.Item, config *core.Config) string {
 	return meta.GetCommentSectionMetaBlock(c, config) + newParagraph
-	//
-	//headline := getHeadline(c.Title, config)
-	//infoLine := getInfoLine(c.Points, c.User, c.TimeAgo, c.CommentsCount, c.ID)
-	//helpMessage := aurora.Faint(messages.LessScreenInfo).Faint().String() + newLine
-	//helpMessage += aurora.Faint(messages.LessCommentInfo).Faint().String() + newLine
-	//url := getURL(c.URL, c.Domain, config)
-	//rootComment := parseRootComment(c.Content, config)
-	//separator := aurora.Yellow(messages.GetSeparator(config.CommentWidth)).String()
-	//
-	//return headline + separator + newLine + helpMessage + newLine + infoLine + url + rootComment + separator + newParagraph
-}
-
-func getHeadline(title string, config *core.Config) string {
-	formattedTitle := highlightTitle(unicode.ZeroWidthSpace+newLine+title, config.HighlightHeadlines)
-	wrappedHeadline, _ := text.Wrap(formattedTitle, config.CommentWidth)
-
-	return wrappedHeadline + newParagraph
-}
-
-func getURL(url string, domain string, config *core.Config) string {
-	if domain == "" {
-		url = "https://news.ycombinator.com/" + url
-	}
-
-	truncatedURL := text.TruncateMax(url, config.CommentWidth)
-	formattedURL := aurora.Faint(truncatedURL).String() + newLine
-
-	return formattedURL
-}
-
-func highlightTitle(title string, highlightHeadlines bool) string {
-	highlightedTitle := ""
-
-	if highlightHeadlines {
-		highlightedTitle = syntax.HighlightYCStartupsInHeadlines(title)
-		highlightedTitle = syntax.HighlightYearInHeadlines(title)
-		highlightedTitle = syntax.HighlightHackerNewsHeadlines(highlightedTitle)
-		highlightedTitle = syntax.HighlightSpecialContent(highlightedTitle)
-	}
-
-	return aurora.Bold(highlightedTitle).String()
-}
-
-func getInfoLine(points int, user string, timeAgo string, numberOfComments int, id int) string {
-	p := strconv.Itoa(points)
-	c := strconv.Itoa(numberOfComments)
-	i := strconv.Itoa(id)
-
-	formattedInfoLine := aurora.Faint(p + " points by " + user + " " + timeAgo +
-		" • " + c + " comments" + " • " + "ID " + i).String()
-
-	return formattedInfoLine + newLine
-}
-
-func parseRootComment(c string, config *core.Config) string {
-	if c == "" {
-		return ""
-	}
-
-	comment := parser.ParseComment(c, config, config.CommentWidth, config.CommentWidth)
-	wrappedComment, _ := text.Wrap(comment, config.CommentWidth)
-
-	return newLine + wrappedComment + newLine
 }
 
 func printReplies(c *item.Item, config *core.Config, screenWidth int, originalPoster string,
-	parentPoster string, firstCommentID int) string {
+	parentPoster string, firstCommentID int, lastVisited int64) string {
 	isDeletedAndHasNoReplies := c.Content == "[deleted]" && len(c.Comments) == 0
 	if isDeletedAndHasNoReplies {
 		return ""
@@ -126,7 +64,8 @@ func printReplies(c *item.Item, config *core.Config, screenWidth int, originalPo
 	availableScreenWidth := screenWidth - indentSize - margins.CommentSectionLeftMargin
 	adjustedCommentWidth := config.CommentWidth - c.Level
 
-	comment := formatComment(c, config, originalPoster, parentPoster, adjustedCommentWidth, availableScreenWidth)
+	comment := formatComment(c, config, originalPoster, parentPoster, adjustedCommentWidth, availableScreenWidth,
+		lastVisited)
 	indentedComment, _ := text.WrapWithPad(comment, screenWidth, indentation)
 	fullComment := getSeparator(c.Level, config.CommentWidth, c.ID, firstCommentID) + indentedComment + newLine
 
@@ -135,17 +74,18 @@ func printReplies(c *item.Item, config *core.Config, screenWidth int, originalPo
 	}
 
 	for _, reply := range c.Comments {
-		fullComment += printReplies(reply, config, screenWidth, originalPoster, parentPoster, firstCommentID)
+		fullComment += printReplies(reply, config, screenWidth, originalPoster, parentPoster, firstCommentID,
+			lastVisited)
 	}
 
 	return fullComment
 }
 
-func formatComment(c *item.Item, config *core.Config, originalPoster string, parentPoster string,
-	commentWidth int, availableScreenWidth int) string {
+func formatComment(c *item.Item, config *core.Config, originalPoster string, parentPoster string, commentWidth int,
+	availableScreenWidth int, lastVisited int64) string {
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, c.Level)
 
-	header := getCommentHeader(c, originalPoster, parentPoster, commentWidth)
+	header := getCommentHeader(c, originalPoster, parentPoster, commentWidth, lastVisited)
 	comment := parser.ParseComment(c.Content, config, commentWidth, availableScreenWidth)
 
 	paddedComment, _ := text.WrapWithPad(comment, availableScreenWidth, coloredIndentSymbol)
@@ -173,19 +113,20 @@ func getIndentString(level int) string {
 	return strings.Repeat(" ", level-1)
 }
 
-func getCommentHeader(c *item.Item, originalPoster string, parentPoster string, commentWidth int) string {
+func getCommentHeader(c *item.Item, originalPoster string, parentPoster string, commentWidth int, lastVisited int64) string {
 	if c.Level == 0 {
 		return formatHeader(c, originalPoster, parentPoster, true, true, true,
-			commentWidth, 0)
+			commentWidth, 0, lastVisited)
 	}
 
 	return formatHeader(c, originalPoster, parentPoster, false, false, false,
-		commentWidth, 1)
+		commentWidth, 1, lastVisited)
 }
 
-func formatHeader(c *item.Item, originalPoster string, parentPoster string, underlineHeader bool,
-	showReplies bool, enableZeroWidthSpace bool, commentWidth int, indentSize int) string {
+func formatHeader(c *item.Item, originalPoster string, parentPoster string, underlineHeader bool, showReplies bool,
+	enableZeroWidthSpace bool, commentWidth int, indentSize int, lastVisited int64) string {
 	authorInBold := aurora.Bold(c.User).String() + " "
+	newCommentIndicator := getNewCommentIndicator(lastVisited, c.Time)
 	authorLabel := getAuthorLabel(c.User, originalPoster, parentPoster)
 	zeroWidthSpace := getZeroWidthSpace(enableZeroWidthSpace)
 	repliesTag := getReplies(showReplies, c)
@@ -194,8 +135,18 @@ func formatHeader(c *item.Item, originalPoster string, parentPoster string, unde
 	spacingLength := commentWidth - text.Len(indentation+authorInBold+authorLabel+c.TimeAgo+repliesTag)
 	spacing := strings.Repeat(" ", spacingLength)
 
-	return zeroWidthSpace + indentation + authorInBold + authorLabel +
+	return zeroWidthSpace + indentation + authorInBold + newCommentIndicator + authorLabel +
 		underlineAndDim(underlineHeader, c.TimeAgo, spacing, repliesTag) + newLine
+}
+
+func getNewCommentIndicator(lastVisited, timePosted int64) string {
+	commentIsNew := lastVisited < timePosted
+
+	if commentIsNew {
+		return aurora.Blue("• ").String()
+	}
+
+	return ""
 }
 
 func underlineAndDim(enabled bool, timeAgo, spacing, replies string) string {

@@ -7,6 +7,7 @@ import (
 	"clx/hn/services/hybrid"
 	"clx/screen"
 	"strconv"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -34,7 +35,7 @@ func viewCmd() *cobra.Command {
 			config := core.GetConfigWithDefaults()
 
 			screenWidth := screen.GetTerminalWidth()
-			commentTree := comment.ToString(comments, config, screenWidth)
+			commentTree := comment.ToString(comments, config, screenWidth, time.Now().Unix())
 
 			cli.Less(commentTree)
 		},

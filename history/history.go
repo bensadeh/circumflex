@@ -28,6 +28,18 @@ func (his *History) Contains(id int) bool {
 	return contains
 }
 
+func (his *History) GetLastVisited(id int) int64 {
+	if !his.markAsRead {
+		return time.Now().Unix()
+	}
+
+	if item, contains := his.VisitedStories[id]; contains {
+		return item.LastVisited
+	}
+
+	return time.Now().Unix()
+}
+
 func (his *History) ClearAndWriteToDisk() {
 	his.VisitedStories = make(map[int]Data)
 
@@ -40,14 +52,10 @@ func (his *History) AddToHistoryAndWriteToDisk(id int, commentsOnLastVisit int) 
 		return
 	}
 
-	// if _, contains := his.VisitedStories[id]; contains {
 	his.VisitedStories[id] = Data{
 		LastVisited:         time.Now().Unix(),
 		CommentsOnLastVisit: commentsOnLastVisit,
 	}
-	//}
-
-	// his.VisitedStories.Add(strconv.Itoa(id))
 
 	_, dirPath, fileName := getCacheFilePaths()
 	writeToDisk(his, dirPath, fileName)
