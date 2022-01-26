@@ -161,24 +161,27 @@ func (r *StoryHandler) GetStory(category, currentItemIndex, storiesToShow, curre
 	return r.sc[category].stories[index]
 }
 
-func (r *StoryHandler) MarkAsRead(category, currentItemIndex, storiesToShow, currentPage int) {
+func (r *StoryHandler) MarkAsRead(category, currentItemIndex, storiesToShow, currentPage, commentCount int) {
 	index := getIndex(currentItemIndex, storiesToShow, currentPage)
 	id := r.sc[category].stories[index].ID
 
-	r.history.AddStoryAndWriteToDisk(id)
-
-	return
+	r.history.AddToHistoryAndWriteToDisk(id, commentCount)
 }
 
-func (r *StoryHandler) GetStoryAndMarkAsRead(category, currentItemIndex, storiesToShow,
-	currentPage int) *item.Item {
+func (r *StoryHandler) UpdateCommentCount(category, currentItemIndex, storiesToShow, currentPage, commentCount int) {
 	index := getIndex(currentItemIndex, storiesToShow, currentPage)
-	id := r.sc[category].stories[index].ID
-
-	r.history.AddStoryAndWriteToDisk(id)
-
-	return r.sc[category].stories[index]
+	r.sc[category].stories[index].CommentsCount = commentCount
 }
+
+//func (r *StoryHandler) GetStoryAndMarkAsRead(category, currentItemIndex, storiesToShow,
+//	currentPage int) *item.Item {
+//	index := getIndex(currentItemIndex, storiesToShow, currentPage)
+//	id := r.sc[category].stories[index].ID
+//
+//	r.history.AddToHistoryAndWriteToDisk(id)
+//
+//	return r.sc[category].stories[index]
+//}
 
 func (r *StoryHandler) DeleteStoryAndWriteToFile(category, currentItemIndex, storiesToShow, currentPage int) {
 	index := getIndex(currentItemIndex, storiesToShow, currentPage)

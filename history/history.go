@@ -2,16 +2,20 @@ package history
 
 import (
 	"clx/file"
+	"encoding/json"
 	"os"
 	"path"
-	"strconv"
-
-	"github.com/emirpasic/gods/sets/hashset"
+	"time"
 )
 
 type History struct {
-	visitedStories *hashset.Set
+	VisitedStories map[int]Data
 	markAsRead     bool
+}
+
+type Data struct {
+	LastVisited         int64
+	CommentsOnLastVisit int
 }
 
 func (his *History) Contains(id int) bool {
@@ -19,22 +23,31 @@ func (his *History) Contains(id int) bool {
 		return false
 	}
 
-	return his.visitedStories.Contains(strconv.Itoa(id))
+	_, contains := his.VisitedStories[id]
+
+	return contains
 }
 
 func (his *History) ClearAndWriteToDisk() {
-	his.visitedStories.Clear()
+	his.VisitedStories = make(map[int]Data)
 
 	_, dirPath, fileName := getCacheFilePaths()
 	writeToDisk(his, dirPath, fileName)
 }
 
-func (his *History) AddStoryAndWriteToDisk(id int) {
+func (his *History) AddToHistoryAndWriteToDisk(id int, commentsOnLastVisit int) {
 	if !his.markAsRead {
 		return
 	}
 
-	his.visitedStories.Add(strconv.Itoa(id))
+	// if _, contains := his.VisitedStories[id]; contains {
+	his.VisitedStories[id] = Data{
+		LastVisited:         time.Now().Unix(),
+		CommentsOnLastVisit: commentsOnLastVisit,
+	}
+	//}
+
+	// his.VisitedStories.Add(strconv.Itoa(id))
 
 	_, dirPath, fileName := getCacheFilePaths()
 	writeToDisk(his, dirPath, fileName)
@@ -42,7 +55,7 @@ func (his *History) AddStoryAndWriteToDisk(id int) {
 
 func Initialize(markAsRead bool) *History {
 	h := &History{
-		visitedStories: hashset.New(),
+		VisitedStories: make(map[int]Data),
 		markAsRead:     markAsRead,
 	}
 
@@ -63,16 +76,17 @@ func Initialize(markAsRead bool) *History {
 		panic(readErr)
 	}
 
-	deserializationErr := h.visitedStories.FromJSON(historyFileContent)
+	deserializationErr := json.Unmarshal(historyFileContent, &h.VisitedStories)
 	if deserializationErr != nil {
-		panic(deserializationErr)
+		h.ClearAndWriteToDisk()
+		_ = json.Unmarshal(historyFileContent, &h.VisitedStories)
 	}
 
 	return h
 }
 
 func writeToDisk(h *History, dirPath string, fileName string) {
-	visitedStoriesJSON, _ := h.visitedStories.ToJSON()
+	visitedStoriesJSON, _ := json.Marshal(h.VisitedStories)
 
 	err := file.WriteToFileNew(dirPath, fileName, string(visitedStoriesJSON))
 	if err != nil {

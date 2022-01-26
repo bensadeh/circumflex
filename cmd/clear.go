@@ -14,7 +14,7 @@ func clearCmd() *cobra.Command {
 		Args:                  cobra.NoArgs,
 		DisableFlagsInUseLine: true,
 		Run: func(cmd *cobra.Command, args []string) {
-			his := history.Initialize(true)
+			his := history.History{}
 			his.ClearAndWriteToDisk()
 
 			println("List of visited IDs cleared")

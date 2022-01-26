@@ -119,13 +119,14 @@ func Refresh(app *cview.Application, main *core.MainView, appState *core.Applica
 
 func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *cview.List,
 	appState *core.ApplicationState, config *core.Config, r *handler.StoryHandler, reg *vim.Register, service hn.Service) {
-	story := r.GetStoryAndMarkAsRead(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
+	story := r.GetStory(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow,
 		appState.CurrentPage)
+	var comments *item.Item
 
 	app.Suspend(func() {
 		// id := strconv.Itoa(story.ID)
 
-		comments := service.FetchStory(story.ID)
+		comments = service.FetchStory(story.ID)
 		//comments, err := comment.FetchComments(id)
 		//if err != nil {
 		//	errorMessage := message.Error(messages.CommentsNotFetched)
@@ -134,7 +135,12 @@ func ReadSubmissionComments(app *cview.Application, main *core.MainView, list *c
 		//	return
 		//}
 
+		r.MarkAsRead(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow, appState.CurrentPage,
+			comments.CommentsCount)
+		r.UpdateCommentCount(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow, appState.CurrentPage,
+			comments.CommentsCount)
 		r.UpdateFavoriteStoryAndWriteToDisk(comments)
+
 		screenWidth := screen.GetTerminalWidth()
 		commentTree := comment.ToString(comments, config, screenWidth)
 
@@ -164,7 +170,7 @@ func ReadContentInReaderView(app *cview.Application, main *core.MainView, list *
 		return
 	}
 
-	r.MarkAsRead(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow, appState.CurrentPage)
+	// r.MarkAsRead(appState.CurrentCategory, list.GetCurrentItemIndex(), appState.StoriesToShow, appState.CurrentPage)
 	enterReaderModeBuiltInParser(app, main, list, appState, config, r, reg, story, service)
 }
 
