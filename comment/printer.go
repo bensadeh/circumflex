@@ -25,7 +25,7 @@ const (
 func ToString(comments *item.Item, config *core.Config, screenWidth int, lastVisited int64) string {
 	commentSectionScreenWidth := screenWidth - margins.CommentSectionLeftMargin
 
-	header := getHeader(comments, config)
+	header := getHeader(comments, config, lastVisited)
 	firstCommentID := getFirstCommentID(comments.Comments)
 
 	replies := ""
@@ -48,8 +48,9 @@ func getFirstCommentID(comments []*item.Item) int {
 	return comments[0].ID
 }
 
-func getHeader(c *item.Item, config *core.Config) string {
-	return meta.GetCommentSectionMetaBlock(c, config) + newParagraph
+func getHeader(c *item.Item, config *core.Config, lastVisited int64) string {
+	newComments := getNewCommentsCount(c, lastVisited)
+	return meta.GetCommentSectionMetaBlock(c, config, newComments) + newParagraph
 }
 
 func printReplies(c *item.Item, config *core.Config, screenWidth int, originalPoster string,
@@ -197,6 +198,25 @@ func incrementReplyCount(comments *item.Item, repliesSoFar *int) int {
 	}
 
 	return *repliesSoFar
+}
+
+func getNewCommentsCount(comments *item.Item, lastVisited int64) int {
+	numberOfReplies := 0
+
+	return incrementNewCommentsCount(comments, &numberOfReplies, lastVisited)
+}
+
+func incrementNewCommentsCount(comments *item.Item, newCommentsSoFar *int, lastVisited int64) int {
+	for _, reply := range comments.Comments {
+		commentIsNew := lastVisited < reply.Time
+		if commentIsNew {
+			*newCommentsSoFar++
+		}
+
+		incrementNewCommentsCount(reply, newCommentsSoFar, lastVisited)
+	}
+
+	return *newCommentsSoFar
 }
 
 func getAuthorLabel(author, originalPoster, parentPoster string) string {

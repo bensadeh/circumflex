@@ -35,7 +35,7 @@ func GetReaderModeMetaBlock(title string, url string, lineWidth int) string {
 	return formattedTitle + newParagraph + style.Render(formattedURL+info) + newParagraph
 }
 
-func GetCommentSectionMetaBlock(c *item.Item, config *core.Config) string {
+func GetCommentSectionMetaBlock(c *item.Item, config *core.Config, newComments int) string {
 	columnWidth := config.CommentWidth/2 - 1
 	url := getURL(c.URL, c.Domain, config.CommentWidth)
 	rootComment := parseRootComment(c.Content, config)
@@ -54,18 +54,32 @@ func GetCommentSectionMetaBlock(c *item.Item, config *core.Config) string {
 		Width(columnWidth).
 		Align(lipgloss.Left)
 	leftColumnText := "by " + Red(c.User).String() + " " + Faint(c.TimeAgo).String() + newLine +
-		Yellow(points).String() + " points"
+		Magenta(numberOfComments).String() + " comments" + getNewCommentsInfo(newComments)
 
 	rightColumn := lipgloss.NewStyle().
 		Width(columnWidth).
 		Align(lipgloss.Right)
 	rightColumnText := Green("ID "+id).Faint().String() + newLine +
-		Magenta(numberOfComments).String() + " comments"
+		Yellow(points).String() + " points"
 
 	joined := lipgloss.JoinHorizontal(lipgloss.Left, leftColumn.Render(leftColumnText),
 		rightColumn.Render(rightColumnText))
 
 	return getHeadline(c.Title, config) + newParagraph + style.Render(url+joined+rootComment)
+}
+
+func getNewCommentsInfo(newComments int) string {
+	if newComments == 0 {
+		return ""
+	}
+
+	c := strconv.Itoa(newComments)
+
+	if newComments == 1 {
+		return newParagraph + Blue(c).String() + " new comment since last visit"
+	}
+
+	return newParagraph + Blue(c).String() + " new comments since last visit"
 }
 
 func getHeadline(title string, config *core.Config) string {
