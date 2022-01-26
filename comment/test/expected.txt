@@ -5,7 +5,7 @@
  │ [34mhttps://apnews.com/article/joe-biden-wins-white-house-ap-fd58df73aa677acb74fc…[0m │
  │                                                                                │
  │ by [31mgranzymes[0m [2m9 months ago[0m                                          [2;32mID 25015967[0m │
- │ [33m3089[0m points                                                      [35m2170[0m comments │
+ │ [35m2170[0m comments                                                      [33m3089[0m points │
  │                                                                                │
  │ How are people running their detection pipelines on video and overlaying the   │
  │ results? Is every project writing its own scaffolding for this? Is it mostly   │
