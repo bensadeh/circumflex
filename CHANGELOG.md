@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.33
-_WIP_
+_05.02.22_
 
 **New features**
 - New comment indicator: Highlight new comments since your last visit
@@ -17,7 +17,7 @@ _09.01.2022_
 - Bump cobra to 1.3.0
 
 ## 1.31
-_08.01.2022_
+_08.01.22_
 
 **Bugfix**
 - YC-startups and year of publication in headlines are now properly formatted
@@ -32,7 +32,7 @@ remains the same
 - Updated filter list for macrumors.com
 
 **Meta**
-- Changed changelog date format from YYYY-MM-DD to DD.MM.YYYY
+- Changed changelog date format from YYYY-MM-DD to DD.MM.YY
 
 ## 1.30
 _2021-12-24_
