@@ -37,16 +37,16 @@
 ### Table of Contents
 
 * [Installing](#installing)
-* [Keymaps](#keymaps)
 * [Comment section](#comment-section)
-###
 * [Reader mode](#reader-mode)
+###
 * [Syntax highlighting](#syntax-highlighting)
 * [History](#history)
-###
 * [Favorites](#favorites)
+###
 * [Headers](#headers)
 * [Tweaks](#tweaks)
+* [Keymaps](#keymaps)
 ###
 * [Settings](#settings)
 * [Under the hood](#under-the-hood)
@@ -75,26 +75,6 @@ You can also build `circumflex` from source:
 # Run
 go run main.go
 ```
-
-## Keymaps
-
-Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of available keymaps:
-
-<pre>
-<kbd>Enter</kbd>: Read comments
-<kbd>Space</kbd>: Read article in Reader Mode
-
-<kbd>r</kbd>: Refresh
-<kbd>Tab</kbd>: Change category
-
-<kbd>o</kbd>: Open link to article in browser
-<kbd>c</kbd>: Open comment section in browser
-
-<kbd>f</kbd>: Add to favorites
-<kbd>x</kbd>: Remove from favorites
-
-<kbd>q</kbd>: Quit
-</pre>
 
 ## Comment section
 
@@ -277,6 +257,26 @@ more info)
 ##### iTerm (macOS)
 
 - Check `Brighten bold text` under Profiles → Colors
+
+## Keymaps
+
+Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of available keymaps:
+
+<pre>
+<kbd>Enter</kbd>: Read comments
+<kbd>Space</kbd>: Read article in Reader Mode
+
+<kbd>r</kbd>: Refresh
+<kbd>Tab</kbd>: Change category
+
+<kbd>o</kbd>: Open link to article in browser
+<kbd>c</kbd>: Open comment section in browser
+
+<kbd>f</kbd>: Add to favorites
+<kbd>x</kbd>: Remove from favorites
+
+<kbd>q</kbd>: Quit
+</pre>
 
 ## Settings
 
