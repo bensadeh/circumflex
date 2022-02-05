@@ -292,12 +292,14 @@ func (s Service) FetchStory(_ int) *item.Item {
 										Comments: []*item.Item{
 											{
 												ID:      33,
+												Time:    time.Now().Add(time.Minute).Unix(),
 												User:    "cantor",
 												TimeAgo: "10 minutes ago",
 												Level:   4,
 												Comments: []*item.Item{
 													{
 														ID:      33,
+														Time:    time.Now().Add(time.Minute).Unix(),
 														User:    "euler",
 														TimeAgo: "4 minutes ago",
 														Level:   5,
