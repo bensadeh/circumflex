@@ -42,12 +42,13 @@
 ###
 * [Reader mode](#reader-mode)
 * [Syntax highlighting](#syntax-highlighting)
-* [Favorites](#favorites)
+* [History](#history)
 ###
+* [Favorites](#favorites)
 * [Headers](#headers)
 * [Tweaks](#tweaks)
-* [Settings](#settings)
 ###
+* [Settings](#settings)
 * [Under the hood](#under-the-hood)
 
 ***
@@ -99,7 +100,10 @@ Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of available keymaps:
 
 ### Overview
 
-<img align="right" width="50%" src="screenshots/comments.png">
+<p align="center">
+  <img src="screenshots/comment_view.png" width="600" alt="^"/>
+</p>
+
 
 Press <kbd>Enter</kbd> to read the comment section. 
 
@@ -164,10 +168,23 @@ Headlines containing the text `Ask HN`, `Tell HN`, `Show HN` and `Launch HN` are
   <img src="screenshots/yc.png" width="350" alt="^"/>
 </p>
 
+## History
 ### Mark submissions as read
 Visited submissions are marked as read. 
 
-A list of submissions (by `ID`) are stored in `~/.cache/circumflex/history.json`. Disable marking submissions as read by 
+<p align="center">
+  <img src="screenshots/mark_article_as_read.png" width="800"/>
+</p>
+
+### Highlight new comments
+Comments that are new since the last visit are highlighted.
+
+<p align="center">
+  <img src="screenshots/mark_new_comments.png" width="400"/>
+</p>
+
+### Disabling history
+A list of submissions (by `ID` and last time visited) are stored in `~/.cache/circumflex/history.json`. Disable marking submissions as read by 
 running `clx` with the `-d` or `--disable-history` flag.
 
 You can delete your browsing history from the command line:
