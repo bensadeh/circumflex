@@ -50,6 +50,7 @@ func getFirstCommentID(comments []*item.Item) int {
 
 func getHeader(c *item.Item, config *core.Config, lastVisited int64) string {
 	newComments := getNewCommentsCount(c, lastVisited)
+
 	return meta.GetCommentSectionMetaBlock(c, config, newComments) + newParagraph
 }
 

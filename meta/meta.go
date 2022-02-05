@@ -75,18 +75,12 @@ func getNewCommentsInfo(newComments int) string {
 
 	c := strconv.Itoa(newComments)
 
-	if newComments == 1 {
-		return newParagraph + Blue(c).String() + " new comment since last visit"
-	}
-
-	return newParagraph + Blue(c).String() + " new comments since last visit"
+	return " (" + Cyan(c).String() + " new)"
 }
 
 func getHeadline(title string, config *core.Config) string {
 	formattedTitle := highlightTitle(unicode.ZeroWidthSpace+" "+newLine+title, config.HighlightHeadlines)
 	wrappedHeadline, _ := text.Wrap(formattedTitle, config.CommentWidth)
-
-	// wrappedHeadline := wordwrap.String(formattedTitle, config.CommentWidth)
 
 	return wrappedHeadline
 }
