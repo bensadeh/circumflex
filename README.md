@@ -45,10 +45,10 @@
 * [Favorites](#favorites)
 ###
 * [Headers](#headers)
-* [Tweaks](#tweaks)
-* [Keymaps](#keymaps)
-###
 * [Settings](#settings)
+* [Tweaks](#tweaks)
+###
+* [Keymaps](#keymaps)
 * [Under the hood](#under-the-hood)
 
 ***
@@ -228,6 +228,23 @@ clx -e [1-3]
  Orange header (3)
 </p>
 
+## Settings
+
+Run `clx help` for a list of available commands and settings.
+
+A table of available flags is provided below:
+
+| Flag  | Description |
+| :---- | :---------- |
+| `-c`  | Set the comment width |
+| `-l`  | Disable syntax highlighting for the headlines |
+| `-o`  | Disable syntax highlighting in the comment section. |
+| `-s`  | Disable conversion of smileys (`:)`) to emojis (😊)|
+| `-d`  | Disable marking submissions as read |
+| `-r`  | Show each line with a number relative to the currently selected element (similar to Vim's hybrid line number mode) |
+| `-t`  | Hide the indentation symbol from the comment section (does not affect quotes) |
+| `-e`  | Set the header type |
+
 ## Tweaks
 #### Low contrast headers
 Some terminals brighten text in bold in order to give them stronger contrast in dark color 
@@ -262,38 +279,19 @@ more info)
 
 Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of available keymaps:
 
-<pre>
-<kbd>Enter</kbd>: Read comments
-<kbd>Space</kbd>: Read article in Reader Mode
-
-<kbd>r</kbd>: Refresh
-<kbd>Tab</kbd>: Change category
-
-<kbd>o</kbd>: Open link to article in browser
-<kbd>c</kbd>: Open comment section in browser
-
-<kbd>f</kbd>: Add to favorites
-<kbd>x</kbd>: Remove from favorites
-
-<kbd>q</kbd>: Quit
-</pre>
-
-## Settings
-
-Run `clx help` for a list of available commands and settings.
-
-A table of available flags is provided below:
-
-| Flag  | Description |
+| Key  | Description |
 | :---- | :---------- |
-| `-c`  | Set the comment width |
-| `-l`  | Disable syntax highlighting for the headlines |
-| `-o`  | Disable syntax highlighting in the comment section. |
-| `-s`  | Disable conversion of smileys (`:)`) to emojis (😊)|
-| `-d`  | Disable marking submissions as read |
-| `-r`  | Show each line with a number relative to the currently selected element (similar to Vim's hybrid line number mode) |
-| `-t`  | Hide the indentation symbol from the comment section (does not affect quotes) |
-| `-e`  | Set the header type |
+| <kbd>Enter</kbd>  | Read comments |
+| <kbd>Space</kbd>  | Read article in Reader Mode |
+| <kbd>r</kbd>  | Refresh |
+| <kbd>Tab</kbd>  | Change category|
+| <kbd>o</kbd>  | Open link to article in browser |
+| <kbd>c</kbd>  | Open comment section in browser |
+| <kbd>f</kbd>  | Add to favorites |
+| <kbd>x</kbd> | Remove from favorites |
+| <kbd>q</kbd> | Quit |
+
+
 
 ## Under the hood
 
