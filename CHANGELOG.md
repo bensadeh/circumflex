@@ -3,7 +3,9 @@
 ## 1.33
 _WIP_
 
-- Update man pages
+**New features**
+- New comment indicator: Highlight new comments since your last visit
+
 
 ## 1.32
 _09.01.2022_
@@ -13,7 +15,6 @@ _09.01.2022_
 
 **Backend**
 - Bump cobra to 1.3.0
-
 
 ## 1.31
 _08.01.2022_
