@@ -100,12 +100,11 @@ Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of available keymaps:
 
 ### Overview
 
-<p align="center">
-  <img src="screenshots/comment_view.png" width="600" alt="^"/>
-</p>
-
-
 Press <kbd>Enter</kbd> to read the comment section. 
+
+<p align="center">
+  <img src="screenshots/comment_view.png" width="500" alt="^"/>
+</p>
 
 Comments are pretty-printed and piped to the
 pager `less`. To present a nice and readable comment section, `circumflex` features:
@@ -125,6 +124,10 @@ comment section.
 
 ## Reader Mode
 Press <kbd>Space</kbd> to read the submission link in Reader Mode. 
+
+<p align="center">
+  <img src="screenshots/reader_mode.png" width="500" alt="^"/>
+</p>
 
 **Note**: some websites do not work well with Reader Mode. If the submission URL points to
 a domain with known Reader Mode incompatibility, the link cannot be opened in Reader Mode. 
