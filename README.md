@@ -230,7 +230,7 @@ clx -e [1-3]
 
 ## Settings
 
-Run `clx help` for a list of available commands and settings.
+Run `clx help` or `man clx` for a list of available commands and settings.
 
 A table of available flags is provided below:
 
@@ -260,7 +260,7 @@ brighten bold fonts.
 
 Below are a few examples on how to enable bold text in bright colors in different terminals.
 
-##### Alacritty
+##### Alacritty (cross-platform)
 
 - Set `draw_bold_text_with_bright_colors` to `true`
 - Define `bright_foreground` and set it to a brighter value than `foreground`
@@ -290,7 +290,6 @@ Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of available keymaps:
 | <kbd>f</kbd>  | Add to favorites |
 | <kbd>x</kbd> | Remove from favorites |
 | <kbd>q</kbd> | Quit |
-
 
 
 ## Under the hood
