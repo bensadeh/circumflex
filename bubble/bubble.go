@@ -10,7 +10,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-var docStyle = lipgloss.NewStyle().Margin(1, 2)
+var docStyle = lipgloss.NewStyle().Margin(0, 0)
 
 type item struct {
 	title, desc string
@@ -100,7 +100,8 @@ func Run() {
 	m := model{list: list.New(items, d, 0, 0)}
 
 	m.list.Title = "My Fave Things"
-	m.list.SelectedItem()
+	m.list.SetFilteringEnabled(false)
+	m.list.SetShowStatusBar(false)
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
 
