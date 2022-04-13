@@ -103,6 +103,8 @@ github.com/charmbracelet/bubbles v0.10.3/go.mod h1:jOA+DUF1rjZm7gZHcNyIVW+YrBPAL
 github.com/charmbracelet/bubbletea v0.19.3/go.mod h1:VuXF2pToRxDUHcBUcPmCRUHRvFATM4Ckb/ql1rBl3KA=
 github.com/charmbracelet/bubbletea v0.20.1-0.20220407003955-f5ff931834c7 h1:2YKaGzGerC+tPRMZz4ga4rbkuOcaTR5kgkkXV362j68=
 github.com/charmbracelet/bubbletea v0.20.1-0.20220407003955-f5ff931834c7/go.mod h1:GgmJMec61d08zXsOhqRC/AiOx4K4pmz+VIcRIm1FKr4=
+github.com/charmbracelet/bubbletea v0.20.1-0.20220412151435-14e58aa1f92f h1:/6cBUPF3UlMueuKtQay4IepufjiMfwHwLyVfU9UDFWo=
+github.com/charmbracelet/bubbletea v0.20.1-0.20220412151435-14e58aa1f92f/go.mod h1:GgmJMec61d08zXsOhqRC/AiOx4K4pmz+VIcRIm1FKr4=
 github.com/charmbracelet/glamour v0.3.0 h1:3H+ZrKlSg8s+WU6V7eF2eRVYt8lCueffbi7r2+ffGkc=
 github.com/charmbracelet/glamour v0.3.0/go.mod h1:TzF0koPZhqq0YVBNL100cPHznAAjVj7fksX2RInwjGw=
 github.com/charmbracelet/harmonica v0.1.0/go.mod h1:KSri/1RMQOZLbw7AHqgcBycp8pgJnQMYYT8QZRqZ1Ao=
