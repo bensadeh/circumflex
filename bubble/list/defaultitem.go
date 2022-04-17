@@ -66,6 +66,7 @@ type DefaultItem interface {
 	Title() string
 	Description() string
 	URL() string
+	ID() int
 }
 
 // DefaultDelegate is a standard delegate designed to work in lists. It's

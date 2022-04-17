@@ -15,6 +15,7 @@ func (s Service) FetchStories(_ int, _ int) []*item.Item {
 		{
 			Title:         "Lorem ipsum dolor sit amet",
 			Points:        31,
+			ID:            31060183,
 			User:          "alfa",
 			Time:          time.Now().Add(-time.Minute * 2).Unix(),
 			Domain:        "stackoverflow.com",
@@ -23,6 +24,7 @@ func (s Service) FetchStories(_ int, _ int) []*item.Item {
 		{
 			Title:         "Aliquam mauris massa, rhoncus nec lectus eu",
 			Points:        17,
+			ID:            31060183,
 			User:          "beta",
 			Time:          time.Now().Add(-time.Minute * 46).Unix(),
 			Domain:        "pkg.go.dev",
