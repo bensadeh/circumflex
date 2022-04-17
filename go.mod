@@ -1,6 +1,6 @@
 module clx
 
-go 1.17
+go 1.18
 
 require (
 	code.rocketnine.space/tslocum/cview v1.5.7
