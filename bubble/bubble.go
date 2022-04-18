@@ -5,7 +5,6 @@ import (
 	"clx/cli"
 	"clx/comment"
 	"clx/core"
-	"clx/hn/services/cheeaun"
 	"clx/hn/services/mock"
 	"clx/screen"
 	"fmt"
@@ -86,7 +85,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func openEditor(id int) tea.Cmd {
-	comments := new(cheeaun.Service).FetchStory(id)
+	comments := new(mock.Service).FetchStory(id)
 
 	screenWidth := screen.GetTerminalWidth()
 	commentTree := comment.ToString(comments, core.GetConfigWithDefaults(), screenWidth, 0)
