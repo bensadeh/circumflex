@@ -18,14 +18,19 @@ import (
 var docStyle = lipgloss.NewStyle().Margin(1, 2)
 
 type item struct {
-	title, desc, url string
-	id               int
+	title, user, domain, url  string
+	id, points, commentsCount int
+	time                      int64
 }
 
-func (i item) Title() string       { return i.title }
-func (i item) Description() string { return i.desc }
-func (i item) URL() string         { return i.url }
-func (i item) ID() int             { return i.id }
+func (i item) Title() string      { return i.title }
+func (i item) User() string       { return i.user }
+func (i item) Domain() string     { return i.domain }
+func (i item) Points() int        { return i.points }
+func (i item) CommentsCount() int { return i.commentsCount }
+func (i item) Time() int64        { return i.time }
+func (i item) URL() string        { return i.url }
+func (i item) ID() int            { return i.id }
 
 type model struct {
 	list list.Model
@@ -108,7 +113,14 @@ func Run() {
 	stories := service.FetchStories(0, 0)
 
 	for _, story := range stories {
-		items = append(items, item{title: story.Title, desc: story.User, id: story.ID})
+		items = append(items, item{
+			title:  story.Title,
+			domain: story.Domain,
+			user:   story.User,
+			url:    story.URL,
+			time:   story.Time,
+			points: story.Points,
+			id:     story.ID})
 	}
 
 	m := model{list: list.New(items, list.NewDefaultDelegate(), 0, 0)}

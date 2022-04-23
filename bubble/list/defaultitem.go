@@ -3,6 +3,7 @@ package list
 import (
 	"clx/syntax"
 	"fmt"
+	"github.com/nleeper/goment"
 	"io"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -15,49 +16,53 @@ import (
 // See DefaultItemView for when these come into play.
 type DefaultItemStyles struct {
 	// The Normal state.
-	NormalTitle lipgloss.Style
-	NormalDesc  lipgloss.Style
+	NormalTitle  lipgloss.Style
+	NormalDesc   lipgloss.Style
+	NormalDomain lipgloss.Style
 
 	// The selected item state.
-	SelectedTitle lipgloss.Style
-	SelectedDesc  lipgloss.Style
+	SelectedTitle  lipgloss.Style
+	SelectedDesc   lipgloss.Style
+	SelectedDomain lipgloss.Style
 
 	// The dimmed state, for when the filter input is initially activated.
 	DimmedTitle lipgloss.Style
 	DimmedDesc  lipgloss.Style
-
-	// Charcters matching the current filter, if any.
-	FilterMatch lipgloss.Style
 }
 
 // NewDefaultItemStyles returns style definitions for a default item. See
 // DefaultItemView for when these come into play.
 func NewDefaultItemStyles() (s DefaultItemStyles) {
-	s.NormalTitle = lipgloss.NewStyle().
-		Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"})
+	s.NormalTitle = lipgloss.NewStyle()
+	//Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"})
 	//Padding(0, 0, 0, 2)
 
-	s.NormalDesc = s.NormalTitle.Copy().
-		Foreground(lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"})
+	s.NormalDesc = s.NormalTitle.Copy()
+	//Foreground(lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"})
+
+	s.NormalDomain = lipgloss.NewStyle().
+		Faint(true)
 
 	s.SelectedTitle = lipgloss.NewStyle().
-		//Border(lipgloss.NormalBorder(), false, false, false, true).
-		//BorderForeground(lipgloss.AdaptiveColor{Light: "#F793FF", Dark: "#AD58B4"}).
-		//Foreground(lipgloss.AdaptiveColor{Light: "#EE6FF8", Dark: "#EE6FF8"}).
 		Bold(true)
+	//Border(lipgloss.NormalBorder(), false, false, false, true).
+	//BorderForeground(lipgloss.AdaptiveColor{Light: "#F793FF", Dark: "#AD58B4"}).
+	//Foreground(lipgloss.AdaptiveColor{Light: "#EE6FF8", Dark: "#EE6FF8"}).
 	//Padding(0, 0, 0, 1)
 
 	s.SelectedDesc = s.SelectedTitle.Copy().
-		Foreground(lipgloss.AdaptiveColor{Light: "#F793FF", Dark: "#AD58B4"})
+		Bold(false)
+	//Foreground(lipgloss.AdaptiveColor{Light: "#F793FF", Dark: "#AD58B4"})
 
-	s.DimmedTitle = lipgloss.NewStyle().
-		Foreground(lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"}).
-		Padding(0, 0, 0, 2)
+	s.SelectedDomain = lipgloss.NewStyle().
+		Faint(true)
 
-	s.DimmedDesc = s.DimmedTitle.Copy().
-		Foreground(lipgloss.AdaptiveColor{Light: "#C2B8C2", Dark: "#4D4D4D"})
+	s.DimmedTitle = lipgloss.NewStyle()
+	//Foreground(lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"}).
+	//Padding(0, 0, 0, 2)
 
-	s.FilterMatch = lipgloss.NewStyle().Underline(true)
+	s.DimmedDesc = s.DimmedTitle.Copy()
+	//Foreground(lipgloss.AdaptiveColor{Light: "#C2B8C2", Dark: "#4D4D4D"})
 
 	return s
 }
@@ -66,9 +71,13 @@ func NewDefaultItemStyles() (s DefaultItemStyles) {
 type DefaultItem interface {
 	Item
 	Title() string
-	Description() string
+	Points() int
+	User() string
+	Time() int64
+	Domain() string
 	URL() string
 	ID() int
+	CommentsCount() int
 }
 
 // DefaultDelegate is a standard delegate designed to work in lists. It's
@@ -131,13 +140,18 @@ func (d DefaultDelegate) Update(msg tea.Msg, m *Model) tea.Cmd {
 // Render prints an item.
 func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item Item) {
 	var (
-		title, desc string
-		s           = &d.Styles
+		title, desc, domain string
+		s                   = &d.Styles
 	)
 
 	if i, ok := item.(DefaultItem); ok {
 		title = i.Title()
-		desc = i.Description()
+		domain = i.Domain()
+		user := i.User()
+		//fmt.Sprintf("%s is %d years old", name, age)
+		desc = fmt.Sprintf("%d points by %s %s | %d comments",
+			i.Points(), user, parseTime(i.Time()), i.CommentsCount())
+
 	} else {
 		return
 	}
@@ -162,6 +176,8 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item Item) {
 		title = syntax.HighlightHackerNewsHeadlines(title)
 		title = syntax.HighlightSpecialContent(title)
 
+		title = title + " " + s.SelectedDomain.Render(domain)
+
 		//desc = s.SelectedDesc.Render(desc)
 		desc = s.SelectedDesc.Render(desc)
 	} else {
@@ -170,6 +186,7 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item Item) {
 		title = syntax.HighlightHackerNewsHeadlinesNoBold(title)
 		title = syntax.HighlightSpecialContent(title)
 
+		title = title + " " + s.NormalDomain.Render(domain)
 		//title = s.NormalTitle.Render(title)
 		desc = s.NormalDesc.Render(desc)
 	}
@@ -179,6 +196,13 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item Item) {
 		return
 	}
 	fmt.Fprintf(w, "%s", title)
+}
+
+func parseTime(unixTime int64) string {
+	moment, _ := goment.Unix(unixTime)
+	now, _ := goment.New()
+
+	return moment.From(now)
 }
 
 // ShortHelp returns the delegate's short help.
