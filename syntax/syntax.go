@@ -25,12 +25,32 @@ func HighlightYCStartups(comment string) string {
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
 
+func HighlightYCStartupsNoBold(comment string) string {
+	expression := regexp.MustCompile(`\((YC [SW]\d{2})\)`)
+
+	orange := uint8(214)
+	black := uint8(232)
+	highlightedStartup := Index(black, ` $1 `).BgIndex(orange).String()
+
+	return expression.ReplaceAllString(comment, highlightedStartup)
+}
+
 func HighlightYCStartupsInHeadlines(comment string) string {
 	expression := regexp.MustCompile(`\((YC [SW]\d{2})\)`)
 
 	orange := uint8(214)
 	black := uint8(232)
 	highlightedStartup := Index(black, ` $1 `).BgIndex(orange).String() + bold
+
+	return expression.ReplaceAllString(comment, highlightedStartup)
+}
+
+func HighlightYCStartupsInHeadlinesNoBold(comment string) string {
+	expression := regexp.MustCompile(`\((YC [SW]\d{2})\)`)
+
+	orange := uint8(214)
+	black := uint8(232)
+	highlightedStartup := Index(black, ` $1 `).BgIndex(orange).String()
 
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
@@ -45,6 +65,16 @@ func HighlightYearInHeadlines(comment string) string {
 	return expression.ReplaceAllString(comment, highlightedYear)
 }
 
+func HighlightYearInHeadlinesNoBold(comment string) string {
+	expression := regexp.MustCompile(`\((\d{4})\)`)
+
+	background := uint8(238)
+	foreground := uint8(3)
+	highlightedYear := Index(foreground, ` $1 `).BgIndex(background).String()
+
+	return expression.ReplaceAllString(comment, highlightedYear)
+}
+
 func HighlightHackerNewsHeadlines(title string) string {
 	askHN := "Ask HN:"
 	showHN := "Show HN:"
@@ -55,6 +85,20 @@ func HighlightHackerNewsHeadlines(title string) string {
 	title = strings.ReplaceAll(title, showHN, Red(showHN).String()+bold)
 	title = strings.ReplaceAll(title, tellHN, Magenta(tellHN).String()+bold)
 	title = strings.ReplaceAll(title, launchHN, Green(launchHN).String()+bold)
+
+	return title
+}
+
+func HighlightHackerNewsHeadlinesNoBold(title string) string {
+	askHN := "Ask HN:"
+	showHN := "Show HN:"
+	tellHN := "Tell HN:"
+	launchHN := "Launch HN:"
+
+	title = strings.ReplaceAll(title, askHN, Blue(askHN).String())
+	title = strings.ReplaceAll(title, showHN, Red(showHN).String())
+	title = strings.ReplaceAll(title, tellHN, Magenta(tellHN).String())
+	title = strings.ReplaceAll(title, launchHN, Green(launchHN).String())
 
 	return title
 }

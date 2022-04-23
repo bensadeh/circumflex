@@ -1,6 +1,7 @@
 package list
 
 import (
+	"clx/syntax"
 	"fmt"
 	"io"
 
@@ -33,17 +34,18 @@ type DefaultItemStyles struct {
 // DefaultItemView for when these come into play.
 func NewDefaultItemStyles() (s DefaultItemStyles) {
 	s.NormalTitle = lipgloss.NewStyle().
-		Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}).
-		Padding(0, 0, 0, 2)
+		Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"})
+	//Padding(0, 0, 0, 2)
 
 	s.NormalDesc = s.NormalTitle.Copy().
 		Foreground(lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"})
 
 	s.SelectedTitle = lipgloss.NewStyle().
-		Border(lipgloss.NormalBorder(), false, false, false, true).
-		BorderForeground(lipgloss.AdaptiveColor{Light: "#F793FF", Dark: "#AD58B4"}).
-		Foreground(lipgloss.AdaptiveColor{Light: "#EE6FF8", Dark: "#EE6FF8"}).
-		Padding(0, 0, 0, 1)
+		//Border(lipgloss.NormalBorder(), false, false, false, true).
+		//BorderForeground(lipgloss.AdaptiveColor{Light: "#F793FF", Dark: "#AD58B4"}).
+		//Foreground(lipgloss.AdaptiveColor{Light: "#EE6FF8", Dark: "#EE6FF8"}).
+		Bold(true)
+	//Padding(0, 0, 0, 1)
 
 	s.SelectedDesc = s.SelectedTitle.Copy().
 		Foreground(lipgloss.AdaptiveColor{Light: "#F793FF", Dark: "#AD58B4"})
@@ -153,10 +155,22 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item Item) {
 	)
 
 	if isSelected {
+		//title = s.SelectedTitle.Render(title)
 		title = s.SelectedTitle.Render(title)
+		title = syntax.HighlightYCStartupsInHeadlines(title)
+		title = syntax.HighlightYearInHeadlines(title)
+		title = syntax.HighlightHackerNewsHeadlines(title)
+		title = syntax.HighlightSpecialContent(title)
+
+		//desc = s.SelectedDesc.Render(desc)
 		desc = s.SelectedDesc.Render(desc)
 	} else {
-		title = s.NormalTitle.Render(title)
+		title = syntax.HighlightYCStartupsInHeadlinesNoBold(title)
+		title = syntax.HighlightYearInHeadlinesNoBold(title)
+		title = syntax.HighlightHackerNewsHeadlinesNoBold(title)
+		title = syntax.HighlightSpecialContent(title)
+
+		//title = s.NormalTitle.Render(title)
 		desc = s.NormalDesc.Render(desc)
 	}
 
