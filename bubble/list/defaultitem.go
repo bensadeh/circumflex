@@ -37,21 +37,25 @@ func NewDefaultItemStyles() (s DefaultItemStyles) {
 	//Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"})
 	//Padding(0, 0, 0, 2)
 
-	s.NormalDesc = s.NormalTitle.Copy()
+	s.NormalDesc = s.NormalTitle.Copy().
+		Faint(true)
+
 	//Foreground(lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"})
 
 	s.NormalDomain = lipgloss.NewStyle().
 		Faint(true)
 
 	s.SelectedTitle = lipgloss.NewStyle().
-		Bold(true)
+		Reverse(true)
 	//Border(lipgloss.NormalBorder(), false, false, false, true).
 	//BorderForeground(lipgloss.AdaptiveColor{Light: "#F793FF", Dark: "#AD58B4"}).
 	//Foreground(lipgloss.AdaptiveColor{Light: "#EE6FF8", Dark: "#EE6FF8"}).
 	//Padding(0, 0, 0, 1)
 
 	s.SelectedDesc = s.SelectedTitle.Copy().
-		Bold(false)
+		Bold(false).
+		Faint(true).
+		Reverse(false)
 	//Foreground(lipgloss.AdaptiveColor{Light: "#F793FF", Dark: "#AD58B4"})
 
 	s.SelectedDomain = lipgloss.NewStyle().

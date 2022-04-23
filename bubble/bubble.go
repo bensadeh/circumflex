@@ -114,13 +114,14 @@ func Run() {
 
 	for _, story := range stories {
 		items = append(items, item{
-			title:  story.Title,
-			domain: story.Domain,
-			user:   story.User,
-			url:    story.URL,
-			time:   story.Time,
-			points: story.Points,
-			id:     story.ID})
+			title:         story.Title,
+			domain:        story.Domain,
+			user:          story.User,
+			url:           story.URL,
+			time:          story.Time,
+			points:        story.Points,
+			commentsCount: story.CommentsCount,
+			id:            story.ID})
 	}
 
 	m := model{list: list.New(items, list.NewDefaultDelegate(), 0, 0)}
