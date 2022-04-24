@@ -119,11 +119,3 @@ func getSelectedCategoryColor(selectedSubHeader int) string {
 		return unselected
 	}
 }
-
-func getSeparator(isOnLastItem bool) string {
-	if isOnLastItem {
-		return ""
-	}
-
-	return " • "
-}
