@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-var docStyle = lipgloss.NewStyle().Margin(0, 0)
+var docStyle = lipgloss.NewStyle()
 
 type item struct {
 	title, user, domain, url  string
