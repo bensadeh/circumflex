@@ -4,6 +4,7 @@
 package list
 
 import (
+	"clx/bheader"
 	"clx/bubble/ranking"
 	"fmt"
 	"io"
@@ -16,7 +17,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/reflow/ansi"
-	"github.com/muesli/reflow/truncate"
 )
 
 // Item is an item that appears in the list.
@@ -505,43 +505,43 @@ func (m Model) View() string {
 }
 
 func (m Model) titleView() string {
-	var (
-		view          string
-		titleBarStyle = m.Styles.TitleBar.Copy()
+	//var (
+	//	view          string
+	//	titleBarStyle = m.Styles.TitleBar.Copy()
+	//
+	//	// We need to account for the size of the spinner, even if we don't
+	//	// render it, to reserve some space for it should we turn it on later.
+	//	spinnerView    = m.spinnerView()
+	//	spinnerWidth   = lipgloss.Width(spinnerView)
+	//	spinnerLeftGap = " "
+	//	spinnerOnLeft  = titleBarStyle.GetPaddingLeft() >= spinnerWidth+lipgloss.Width(spinnerLeftGap) && m.showSpinner
+	//)
+	//
+	//if m.showTitle {
+	//	if m.showSpinner && spinnerOnLeft {
+	//		view += spinnerView + spinnerLeftGap
+	//		titleBarGap := titleBarStyle.GetPaddingLeft()
+	//		titleBarStyle = titleBarStyle.PaddingLeft(titleBarGap - spinnerWidth - lipgloss.Width(spinnerLeftGap))
+	//	}
+	//
+	//	view += m.Styles.Title.Render(m.Title)
+	//
+	//	// Status message
+	//	view += "  " + m.statusMessage
+	//	view = truncate.StringWithTail(view, uint(m.width-spinnerWidth), ellipsis)
+	//}
+	//
+	//// Spinner
+	//if m.showSpinner && !spinnerOnLeft {
+	//	// Place spinner on the right
+	//	availSpace := m.width - lipgloss.Width(m.Styles.TitleBar.Render(view))
+	//	if availSpace > spinnerWidth {
+	//		view += strings.Repeat(" ", availSpace-spinnerWidth)
+	//		view += spinnerView
+	//	}
+	//}
 
-		// We need to account for the size of the spinner, even if we don't
-		// render it, to reserve some space for it should we turn it on later.
-		spinnerView    = m.spinnerView()
-		spinnerWidth   = lipgloss.Width(spinnerView)
-		spinnerLeftGap = " "
-		spinnerOnLeft  = titleBarStyle.GetPaddingLeft() >= spinnerWidth+lipgloss.Width(spinnerLeftGap) && m.showSpinner
-	)
-
-	if m.showTitle {
-		if m.showSpinner && spinnerOnLeft {
-			view += spinnerView + spinnerLeftGap
-			titleBarGap := titleBarStyle.GetPaddingLeft()
-			titleBarStyle = titleBarStyle.PaddingLeft(titleBarGap - spinnerWidth - lipgloss.Width(spinnerLeftGap))
-		}
-
-		view += m.Styles.Title.Render(m.Title)
-
-		// Status message
-		view += "  " + m.statusMessage
-		view = truncate.StringWithTail(view, uint(m.width-spinnerWidth), ellipsis)
-	}
-
-	// Spinner
-	if m.showSpinner && !spinnerOnLeft {
-		// Place spinner on the right
-		availSpace := m.width - lipgloss.Width(m.Styles.TitleBar.Render(view))
-		if availSpace > spinnerWidth {
-			view += strings.Repeat(" ", availSpace-spinnerWidth)
-			view += spinnerView
-		}
-	}
-
-	return titleBarStyle.Render(view)
+	return bheader.GetHeader(0, false, m.width)
 }
 
 func (m Model) statusAndPaginationView() string {
