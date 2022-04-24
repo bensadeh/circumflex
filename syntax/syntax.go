@@ -1,18 +1,22 @@
 package syntax
 
 import (
+	"github.com/logrusorgru/aurora/v3"
 	"regexp"
 	"strings"
-
-	. "github.com/logrusorgru/aurora/v3"
 )
 
 const (
 	newParagraph = "\n\n"
 	reset        = "\033[0m"
 	bold         = "\033[1m"
+	reverse      = "\033[7m"
 	italic       = "\033[3m"
 	magenta      = "\033[35m"
+
+	Normal  = -1
+	Bold    = 0
+	Reverse = 1
 )
 
 func HighlightYCStartups(comment string) string {
@@ -20,17 +24,7 @@ func HighlightYCStartups(comment string) string {
 
 	orange := uint8(214)
 	black := uint8(232)
-	highlightedStartup := Index(black, ` $1 `).BgIndex(orange).String()
-
-	return expression.ReplaceAllString(comment, highlightedStartup)
-}
-
-func HighlightYCStartupsNoBold(comment string) string {
-	expression := regexp.MustCompile(`\((YC [SW]\d{2})\)`)
-
-	orange := uint8(214)
-	black := uint8(232)
-	highlightedStartup := Index(black, ` $1 `).BgIndex(orange).String()
+	highlightedStartup := aurora.Index(black, ` $1 `).BgIndex(orange).String()
 
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
@@ -40,17 +34,18 @@ func HighlightYCStartupsInHeadlines(comment string) string {
 
 	orange := uint8(214)
 	black := uint8(232)
-	highlightedStartup := Index(black, ` $1 `).BgIndex(orange).String() + bold
+	highlightedStartup := aurora.Index(black, ` $1 `).BgIndex(orange).String() + bold
 
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
 
-func HighlightYCStartupsInHeadlinesNoBold(comment string) string {
+func HighlightYCStartupsInHeadlinesWithType(comment string, highlightType int) string {
 	expression := regexp.MustCompile(`\((YC [SW]\d{2})\)`)
+	highlight := getHighlight(highlightType)
 
 	orange := uint8(214)
 	black := uint8(232)
-	highlightedStartup := Index(black, ` $1 `).BgIndex(orange).String()
+	highlightedStartup := aurora.Index(black, ` $1 `).BgIndex(orange).String() + highlight
 
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
@@ -60,17 +55,18 @@ func HighlightYearInHeadlines(comment string) string {
 
 	background := uint8(238)
 	foreground := uint8(3)
-	highlightedYear := Index(foreground, ` $1 `).BgIndex(background).String() + bold
+	highlightedYear := aurora.Index(foreground, ` $1 `).BgIndex(background).String() + bold
 
 	return expression.ReplaceAllString(comment, highlightedYear)
 }
 
-func HighlightYearInHeadlinesNoBold(comment string) string {
+func HighlightYearInHeadlinesWithType(comment string, highlightType int) string {
 	expression := regexp.MustCompile(`\((\d{4})\)`)
+	highlight := getHighlight(highlightType)
 
 	background := uint8(238)
 	foreground := uint8(3)
-	highlightedYear := Index(foreground, ` $1 `).BgIndex(background).String()
+	highlightedYear := aurora.Index(foreground, ` $1 `).BgIndex(background).String() + highlight
 
 	return expression.ReplaceAllString(comment, highlightedYear)
 }
@@ -81,34 +77,47 @@ func HighlightHackerNewsHeadlines(title string) string {
 	tellHN := "Tell HN:"
 	launchHN := "Launch HN:"
 
-	title = strings.ReplaceAll(title, askHN, Blue(askHN).String()+bold)
-	title = strings.ReplaceAll(title, showHN, Red(showHN).String()+bold)
-	title = strings.ReplaceAll(title, tellHN, Magenta(tellHN).String()+bold)
-	title = strings.ReplaceAll(title, launchHN, Green(launchHN).String()+bold)
+	title = strings.ReplaceAll(title, askHN, aurora.Blue(askHN).String()+bold)
+	title = strings.ReplaceAll(title, showHN, aurora.Red(showHN).String()+bold)
+	title = strings.ReplaceAll(title, tellHN, aurora.Magenta(tellHN).String()+bold)
+	title = strings.ReplaceAll(title, launchHN, aurora.Green(launchHN).String()+bold)
 
 	return title
 }
 
-func HighlightHackerNewsHeadlinesNoBold(title string) string {
+func HighlightHackerNewsHeadlinesWithType(title string, highlightType int) string {
 	askHN := "Ask HN:"
 	showHN := "Show HN:"
 	tellHN := "Tell HN:"
 	launchHN := "Launch HN:"
 
-	title = strings.ReplaceAll(title, askHN, Blue(askHN).String())
-	title = strings.ReplaceAll(title, showHN, Red(showHN).String())
-	title = strings.ReplaceAll(title, tellHN, Magenta(tellHN).String())
-	title = strings.ReplaceAll(title, launchHN, Green(launchHN).String())
+	highlight := getHighlight(highlightType)
+
+	title = strings.ReplaceAll(title, askHN, aurora.Blue(askHN).String()+highlight)
+	title = strings.ReplaceAll(title, showHN, aurora.Red(showHN).String()+highlight)
+	title = strings.ReplaceAll(title, tellHN, aurora.Magenta(tellHN).String()+highlight)
+	title = strings.ReplaceAll(title, launchHN, aurora.Green(launchHN).String()+highlight)
 
 	return title
 }
 
+func getHighlight(highlightType int) string {
+	switch highlightType {
+	case Bold:
+		return bold
+	case Reverse:
+		return reverse
+	default:
+		return ""
+	}
+}
+
 func HighlightSpecialContent(title string) string {
-	title = strings.ReplaceAll(title, "[audio]", Cyan("audio").String())
-	title = strings.ReplaceAll(title, "[video]", Cyan("video").String())
-	title = strings.ReplaceAll(title, "[pdf]", Cyan("pdf").String())
-	title = strings.ReplaceAll(title, "[PDF]", Cyan("PDF").String())
-	title = strings.ReplaceAll(title, "[flagged]", Red("flagged").String())
+	title = strings.ReplaceAll(title, "[audio]", aurora.Cyan("audio").String())
+	title = strings.ReplaceAll(title, "[video]", aurora.Cyan("video").String())
+	title = strings.ReplaceAll(title, "[pdf]", aurora.Cyan("pdf").String())
+	title = strings.ReplaceAll(title, "[PDF]", aurora.Cyan("PDF").String())
+	title = strings.ReplaceAll(title, "[flagged]", aurora.Red("flagged").String())
 
 	return title
 }
@@ -162,17 +171,17 @@ func RemoveUnwantedWhitespace(text string) string {
 }
 
 func HighlightReferences(input string) string {
-	input = strings.ReplaceAll(input, "[0]", "["+White("0").String()+"]")
-	input = strings.ReplaceAll(input, "[1]", "["+Red("1").String()+"]")
-	input = strings.ReplaceAll(input, "[2]", "["+Yellow("2").String()+"]")
-	input = strings.ReplaceAll(input, "[3]", "["+Green("3").String()+"]")
-	input = strings.ReplaceAll(input, "[4]", "["+Blue("4").String()+"]")
-	input = strings.ReplaceAll(input, "[5]", "["+Cyan("5").String()+"]")
-	input = strings.ReplaceAll(input, "[6]", "["+Magenta("6").String()+"]")
-	input = strings.ReplaceAll(input, "[7]", "["+BrightWhite("7").String()+"]")
-	input = strings.ReplaceAll(input, "[8]", "["+BrightRed("8").String()+"]")
-	input = strings.ReplaceAll(input, "[9]", "["+BrightYellow("9").String()+"]")
-	input = strings.ReplaceAll(input, "[10]", "["+BrightGreen("10").String()+"]")
+	input = strings.ReplaceAll(input, "[0]", "["+aurora.White("0").String()+"]")
+	input = strings.ReplaceAll(input, "[1]", "["+aurora.Red("1").String()+"]")
+	input = strings.ReplaceAll(input, "[2]", "["+aurora.Yellow("2").String()+"]")
+	input = strings.ReplaceAll(input, "[3]", "["+aurora.Green("3").String()+"]")
+	input = strings.ReplaceAll(input, "[4]", "["+aurora.Blue("4").String()+"]")
+	input = strings.ReplaceAll(input, "[5]", "["+aurora.Cyan("5").String()+"]")
+	input = strings.ReplaceAll(input, "[6]", "["+aurora.Magenta("6").String()+"]")
+	input = strings.ReplaceAll(input, "[7]", "["+aurora.BrightWhite("7").String()+"]")
+	input = strings.ReplaceAll(input, "[8]", "["+aurora.BrightRed("8").String()+"]")
+	input = strings.ReplaceAll(input, "[9]", "["+aurora.BrightYellow("9").String()+"]")
+	input = strings.ReplaceAll(input, "[10]", "["+aurora.BrightGreen("10").String()+"]")
 
 	return input
 }
@@ -182,41 +191,41 @@ func ColorizeIndentSymbol(indentSymbol string, level int) string {
 	case 0:
 		indentSymbol = ""
 	case 1:
-		indentSymbol = Red(indentSymbol).String()
+		indentSymbol = aurora.Red(indentSymbol).String()
 	case 2:
-		indentSymbol = Yellow(indentSymbol).String()
+		indentSymbol = aurora.Yellow(indentSymbol).String()
 	case 3:
-		indentSymbol = Green(indentSymbol).String()
+		indentSymbol = aurora.Green(indentSymbol).String()
 	case 4:
-		indentSymbol = Cyan(indentSymbol).String()
+		indentSymbol = aurora.Cyan(indentSymbol).String()
 	case 5:
-		indentSymbol = Blue(indentSymbol).String()
+		indentSymbol = aurora.Blue(indentSymbol).String()
 	case 6:
-		indentSymbol = Magenta(indentSymbol).String()
+		indentSymbol = aurora.Magenta(indentSymbol).String()
 	case 7:
-		indentSymbol = BrightRed(indentSymbol).String()
+		indentSymbol = aurora.BrightRed(indentSymbol).String()
 	case 8:
-		indentSymbol = BrightYellow(indentSymbol).String()
+		indentSymbol = aurora.BrightYellow(indentSymbol).String()
 	case 9:
-		indentSymbol = BrightGreen(indentSymbol).String()
+		indentSymbol = aurora.BrightGreen(indentSymbol).String()
 	case 10:
-		indentSymbol = BrightCyan(indentSymbol).String()
+		indentSymbol = aurora.BrightCyan(indentSymbol).String()
 	case 11:
-		indentSymbol = BrightBlue(indentSymbol).String()
+		indentSymbol = aurora.BrightBlue(indentSymbol).String()
 	case 12:
-		indentSymbol = BrightMagenta(indentSymbol).String()
+		indentSymbol = aurora.BrightMagenta(indentSymbol).String()
 	case 13:
-		indentSymbol = Red(indentSymbol).String()
+		indentSymbol = aurora.Red(indentSymbol).String()
 	case 14:
-		indentSymbol = Yellow(indentSymbol).String()
+		indentSymbol = aurora.Yellow(indentSymbol).String()
 	case 15:
-		indentSymbol = Green(indentSymbol).String()
+		indentSymbol = aurora.Green(indentSymbol).String()
 	case 16:
-		indentSymbol = Cyan(indentSymbol).String()
+		indentSymbol = aurora.Cyan(indentSymbol).String()
 	case 17:
-		indentSymbol = Blue(indentSymbol).String()
+		indentSymbol = aurora.Blue(indentSymbol).String()
 	case 18:
-		indentSymbol = Magenta(indentSymbol).String()
+		indentSymbol = aurora.Magenta(indentSymbol).String()
 	}
 
 	return reset + indentSymbol
@@ -232,7 +241,7 @@ func TrimURLs(comment string, highlightComment bool) string {
 	comment = expression.ReplaceAllString(comment, "")
 
 	e := regexp.MustCompile(`https?://([^,"\) \n]+)`)
-	comment = e.ReplaceAllString(comment, Blue(`$1`).String())
+	comment = e.ReplaceAllString(comment, aurora.Blue(`$1`).String())
 
 	comment = strings.ReplaceAll(comment, "."+reset+" ", reset+". ")
 
@@ -265,12 +274,12 @@ func HighlightBackticks(input string) string {
 
 func HighlightMentions(input string) string {
 	exp := regexp.MustCompile(`((?:^| )\B@[\w.]+)`)
-	input = exp.ReplaceAllString(input, Yellow(`$1`).String())
+	input = exp.ReplaceAllString(input, aurora.Yellow(`$1`).String())
 
-	input = strings.ReplaceAll(input, Yellow("@dang").String(),
-		Green("@dang").String())
-	input = strings.ReplaceAll(input, Yellow(" @dang").String(),
-		Green(" @dang").String())
+	input = strings.ReplaceAll(input, aurora.Yellow("@dang").String(),
+		aurora.Green("@dang").String())
+	input = strings.ReplaceAll(input, aurora.Yellow(" @dang").String(),
+		aurora.Green(" @dang").String())
 
 	return input
 }
@@ -286,15 +295,15 @@ func HighlightVariables(input string) string {
 
 	exp := regexp.MustCompile(`(\$+[a-zA-Z_\-]+)`)
 
-	return exp.ReplaceAllString(input, Cyan(`$1`).String())
+	return exp.ReplaceAllString(input, aurora.Cyan(`$1`).String())
 }
 
 func HighlightAbbreviations(input string) string {
 	iAmNotALawyer := "IANAL"
 	iAmALawyer := "IAAL"
 
-	input = strings.ReplaceAll(input, iAmNotALawyer, Red(iAmNotALawyer).String())
-	input = strings.ReplaceAll(input, iAmALawyer, Green(iAmALawyer).String())
+	input = strings.ReplaceAll(input, iAmNotALawyer, aurora.Red(iAmNotALawyer).String())
+	input = strings.ReplaceAll(input, iAmALawyer, aurora.Green(iAmALawyer).String())
 
 	return input
 }

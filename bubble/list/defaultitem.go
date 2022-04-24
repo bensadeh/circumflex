@@ -175,9 +175,9 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item Item) {
 	if isSelected {
 		//title = s.SelectedTitle.Render(title)
 		title = s.SelectedTitle.Render(title)
-		title = syntax.HighlightYCStartupsInHeadlines(title)
-		title = syntax.HighlightYearInHeadlines(title)
-		title = syntax.HighlightHackerNewsHeadlines(title)
+		title = syntax.HighlightYCStartupsInHeadlinesWithType(title, syntax.Reverse)
+		title = syntax.HighlightYearInHeadlinesWithType(title, syntax.Reverse)
+		title = syntax.HighlightHackerNewsHeadlinesWithType(title, syntax.Reverse)
 		title = syntax.HighlightSpecialContent(title)
 
 		title = title + " " + s.SelectedDomain.Render(domain)
@@ -185,9 +185,9 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item Item) {
 		//desc = s.SelectedDesc.Render(desc)
 		desc = s.SelectedDesc.Render(desc)
 	} else {
-		title = syntax.HighlightYCStartupsInHeadlinesNoBold(title)
-		title = syntax.HighlightYearInHeadlinesNoBold(title)
-		title = syntax.HighlightHackerNewsHeadlinesNoBold(title)
+		title = syntax.HighlightYCStartupsInHeadlinesWithType(title, syntax.Normal)
+		title = syntax.HighlightYearInHeadlinesWithType(title, syntax.Normal)
+		title = syntax.HighlightHackerNewsHeadlinesWithType(title, syntax.Normal)
 		title = syntax.HighlightSpecialContent(title)
 
 		title = title + " " + s.NormalDomain.Render(domain)
