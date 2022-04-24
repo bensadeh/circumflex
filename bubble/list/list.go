@@ -505,7 +505,7 @@ func (m Model) View() string {
 }
 
 func (m Model) titleView() string {
-	return bheader.GetHeader(0, false, m.width)
+	return bheader.GetHeader(0, false, m.width) + "\n"
 }
 
 func (m Model) statusAndPaginationView() string {
