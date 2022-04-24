@@ -509,9 +509,9 @@ func (m Model) titleView() string {
 }
 
 func (m Model) statusAndPaginationView() string {
-	left := lipgloss.NewStyle().Inline(true).Background(lipgloss.Color("3")).Width(5).MaxWidth(5).Render("yadda yadda")
-	center := lipgloss.NewStyle().Inline(true).Foreground(lipgloss.Color("16")).Background(lipgloss.Color("4")).Width(m.width - 5 - 5).Align(lipgloss.Center).Render(m.statusMessage)
-	right := lipgloss.NewStyle().Inline(true).Background(lipgloss.Color("5")).Width(5).Align(lipgloss.Center).Render(m.Paginator.View())
+	left := lipgloss.NewStyle().Inline(true).Width(5).MaxWidth(5).Render("")
+	center := lipgloss.NewStyle().Inline(true).Foreground(lipgloss.Color("16")).Width(m.width - 5 - 5).Align(lipgloss.Center).Render(m.statusMessage)
+	right := lipgloss.NewStyle().Inline(true).Width(5).Align(lipgloss.Center).Render(m.Paginator.View())
 
 	return m.Styles.StatusBar.Render(left) + m.Styles.StatusBar.Render(center) + m.Styles.StatusBar.Render(right)
 }

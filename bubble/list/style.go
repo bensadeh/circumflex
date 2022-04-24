@@ -47,10 +47,10 @@ func DefaultStyles() (s Styles) {
 
 	s.TitleBar = lipgloss.NewStyle().Padding(0, 0, 1, 2)
 
-	s.Title = lipgloss.NewStyle().
-		Background(lipgloss.Color("62")).
-		Foreground(lipgloss.Color("230")).
-		Padding(0, 1)
+	//s.Title = lipgloss.NewStyle().
+	//	Background(lipgloss.Color("62")).
+	//	Foreground(lipgloss.Color("230")).
+	//	Padding(0, 1)
 
 	s.Spinner = lipgloss.NewStyle().
 		Foreground(lipgloss.AdaptiveColor{Light: "#8E8E8E", Dark: "#747373"})
@@ -63,9 +63,9 @@ func DefaultStyles() (s Styles) {
 
 	s.DefaultFilterCharacterMatch = lipgloss.NewStyle().Underline(true)
 
-	s.StatusBar = lipgloss.NewStyle().
-		Foreground(lipgloss.Color("16")).
-		Background(lipgloss.Color("4"))
+	//s.StatusBar = lipgloss.NewStyle().
+	//	Foreground(lipgloss.Color("16")).
+	//	Background(lipgloss.Color("4"))
 
 	s.StatusEmpty = lipgloss.NewStyle().Foreground(subduedColor)
 
@@ -85,16 +85,16 @@ func DefaultStyles() (s Styles) {
 
 	s.ActivePaginationDot = lipgloss.NewStyle().
 		Foreground(lipgloss.AdaptiveColor{Light: "#847A85", Dark: "#979797"}).
-		Background(lipgloss.Color("5")).
+		//Background(lipgloss.Color("5")).
 		SetString(bullet)
 
 	s.InactivePaginationDot = lipgloss.NewStyle().
-		Foreground(verySubduedColor).
-		Background(lipgloss.Color("5")).
+		Faint(true).
+		//Background(lipgloss.Color("5")).
 		SetString(bullet)
 
 	s.DividerDot = lipgloss.NewStyle().
-		Foreground(verySubduedColor).
+		Faint(true).
 		SetString(" " + bullet + " ")
 
 	return s

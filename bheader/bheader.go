@@ -29,7 +29,6 @@ func GetHeader(selectedSubHeader int, showFavorites bool, width int) string {
 	}
 
 	return header(categories, selectedSubHeader, width)
-
 }
 
 func header(subHeaders []string, selectedSubHeader int, width int) string {
