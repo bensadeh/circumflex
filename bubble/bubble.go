@@ -17,21 +17,6 @@ import (
 
 var docStyle = lipgloss.NewStyle()
 
-type item struct {
-	title, user, domain, url  string
-	id, points, commentsCount int
-	time                      int64
-}
-
-func (i item) Title() string      { return i.title }
-func (i item) User() string       { return i.user }
-func (i item) Domain() string     { return i.domain }
-func (i item) Points() int        { return i.points }
-func (i item) CommentsCount() int { return i.commentsCount }
-func (i item) Time() int64        { return i.time }
-func (i item) URL() string        { return i.url }
-func (i item) ID() int            { return i.id }
-
 type model struct {
 	list list.Model
 }
@@ -59,14 +44,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, cmd
 		}
 		if msg.String() == "enter" {
-			if i, ok := m.list.SelectedItem().(item); ok {
-				id := i.ID()
-				cmd := openEditor(id)
+			id := m.list.SelectedItem().ID
+			cmd := openEditor(id)
 
-				return m, cmd
-			}
-
-			return m, nil
+			return m, cmd
 		}
 		if msg.String() == "u" {
 			dot := spinner.Spinner{
@@ -107,24 +88,10 @@ func (m model) View() string {
 }
 
 func Run() {
-	var items []list.Item
-
 	service := new(mock.Service)
 	stories := service.FetchStories(0, 0)
 
-	for _, story := range stories {
-		items = append(items, item{
-			title:         story.Title,
-			domain:        story.Domain,
-			user:          story.User,
-			url:           story.URL,
-			time:          story.Time,
-			points:        story.Points,
-			commentsCount: story.CommentsCount,
-			id:            story.ID})
-	}
-
-	m := model{list: list.New(items, list.NewDefaultDelegate(), 0, 0)}
+	m := model{list: list.New(stories, list.NewDefaultDelegate(), 0, 0)}
 	m.list.Title = "My Fave Things"
 
 	p := tea.NewProgram(m, tea.WithAltScreen())

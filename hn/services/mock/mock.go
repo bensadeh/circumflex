@@ -10,8 +10,8 @@ type Service struct{}
 func (s Service) Init(_ int) {
 }
 
-func (s Service) FetchStories(_ int, _ int) []*item.Item {
-	return []*item.Item{
+func (s Service) FetchStories(_ int, _ int) []item.Item {
+	return []item.Item{
 		{
 			Title:         "Lorem ipsum dolor sit amet",
 			Points:        31,

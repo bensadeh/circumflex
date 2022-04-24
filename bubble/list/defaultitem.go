@@ -1,6 +1,7 @@
 package list
 
 import (
+	"clx/item"
 	"clx/syntax"
 	"fmt"
 	"github.com/nleeper/goment"
@@ -71,19 +72,6 @@ func NewDefaultItemStyles() (s DefaultItemStyles) {
 	return s
 }
 
-// DefaultItem describes an items designed to work with DefaultDelegate.
-type DefaultItem interface {
-	Item
-	Title() string
-	Points() int
-	User() string
-	Time() int64
-	Domain() string
-	URL() string
-	ID() int
-	CommentsCount() int
-}
-
 // DefaultDelegate is a standard delegate designed to work in lists. It's
 // styled by DefaultItemStyles, which can be customized as you like.
 //
@@ -142,23 +130,16 @@ func (d DefaultDelegate) Update(msg tea.Msg, m *Model) tea.Cmd {
 }
 
 // Render prints an item.
-func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item Item) {
+func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item item.Item) {
 	var (
 		title, desc, domain string
 		s                   = &d.Styles
 	)
 
-	if i, ok := item.(DefaultItem); ok {
-		title = i.Title()
-		domain = i.Domain()
-		user := i.User()
-		//fmt.Sprintf("%s is %d years old", name, age)
-		desc = fmt.Sprintf("%d points by %s %s | %d comments",
-			i.Points(), user, parseTime(i.Time()), i.CommentsCount())
-
-	} else {
-		return
-	}
+	title = item.Title
+	domain = item.Domain
+	desc = fmt.Sprintf("%d points by %s %s | %d comments",
+		item.Points, item.User, parseTime(item.Time), item.CommentsCount)
 
 	// Prevent text from exceeding list width
 	if m.width > 0 {

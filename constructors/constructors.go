@@ -8,7 +8,6 @@ import (
 	"clx/handler"
 	"clx/history"
 	"clx/hn/services/hybrid"
-	"clx/hn/services/mock"
 	"clx/screen"
 	"clx/utils/vim"
 
@@ -42,7 +41,8 @@ func NewScreenController(config *core.Config) *core.ScreenController {
 	sc.VimRegister = new(vim.Register)
 
 	if config.DebugMode {
-		sc.Service = new(mock.Service)
+		//sc.Service = new(mock.Service)
+		panic("debug mode unsupported on legacy clx")
 	} else {
 		sc.Service = new(hybrid.Service)
 		sc.Service.Init(sc.ApplicationState.StoriesToShow)

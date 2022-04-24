@@ -3,6 +3,8 @@ package list
 import (
 	"clx/bheader"
 	"clx/bubble/ranking"
+	"clx/hn/services/mock"
+	"clx/item"
 	"fmt"
 	"io"
 	"strings"
@@ -13,7 +15,6 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/muesli/reflow/ansi"
 )
 
 const (
@@ -25,7 +26,7 @@ const (
 )
 
 // Item is an item that appears in the list.
-type Item interface{}
+//type Item interface{}
 
 // ItemDelegate encapsulates the general functionality for all list items. The
 // benefit to separating this logic from the item itself is that you can change
@@ -35,7 +36,7 @@ type Item interface{}
 // help items will be added to the help view.
 type ItemDelegate interface {
 	// Render renders the item's view.
-	Render(w io.Writer, m Model, index int, item Item)
+	Render(w io.Writer, m Model, index int, item item.Item)
 
 	// Height is the height of the list item.
 	Height() int
@@ -86,13 +87,13 @@ type Model struct {
 	statusMessageTimer *time.Timer
 
 	category int
-	items    [][]Item
+	items    [][]item.Item
 
 	delegate ItemDelegate
 }
 
 // New returns a new model with sensible defaults.
-func New(frontPageItems []Item, delegate ItemDelegate, width, height int) Model {
+func New(frontPageItems []item.Item, delegate ItemDelegate, width, height int) Model {
 	styles := DefaultStyles()
 
 	sp := spinner.New()
@@ -104,7 +105,7 @@ func New(frontPageItems []Item, delegate ItemDelegate, width, height int) Model 
 	p.ActiveDot = styles.ActivePaginationDot.String()
 	p.InactiveDot = styles.InactivePaginationDot.String()
 
-	items := make([][]Item, favorites)
+	items := make([][]item.Item, favorites)
 	items[frontPage] = frontPageItems
 
 	m := Model{
@@ -156,14 +157,14 @@ func (m Model) ShowStatusBar() bool {
 }
 
 // Items returns the items in the list.
-func (m Model) Items() []Item {
-	return m.items[frontPage]
+func (m Model) Items() []item.Item {
+	return m.items[m.category]
 }
 
 // Set the items available in the list. This returns a command.
-func (m *Model) SetItems(i []Item) tea.Cmd {
+func (m *Model) SetItems(i []item.Item) tea.Cmd {
 	var cmd tea.Cmd
-	m.items[frontPage] = i
+	m.items[m.category] = i
 
 	m.updatePagination()
 	return cmd
@@ -180,16 +181,6 @@ func (m *Model) ResetSelected() {
 	m.Select(0)
 }
 
-// Insert an item at the given index. If index is out of the upper bound, the
-// item will be appended. This returns a command.
-func (m *Model) InsertItem(index int, item Item) tea.Cmd {
-	var cmd tea.Cmd
-	m.items[frontPage] = insertItemIntoSlice(m.items[frontPage], item, index)
-
-	m.updatePagination()
-	return cmd
-}
-
 // Set the item delegate.
 func (m *Model) SetDelegate(d ItemDelegate) {
 	m.delegate = d
@@ -197,17 +188,18 @@ func (m *Model) SetDelegate(d ItemDelegate) {
 }
 
 // VisibleItems returns the total items available to be shown.
-func (m Model) VisibleItems() []Item {
-	return m.items[frontPage]
+func (m Model) VisibleItems() []item.Item {
+	return m.items[m.category]
 }
 
 // SelectedItems returns the current selected item in the list.
-func (m Model) SelectedItem() Item {
+func (m Model) SelectedItem() item.Item {
 	i := m.Index()
 
 	items := m.VisibleItems()
 	if i < 0 || len(items) == 0 || len(items) <= i {
-		return nil
+		//return nil
+		return item.Item{}
 	}
 
 	return items[i]
@@ -253,14 +245,22 @@ func (m *Model) CursorDown() {
 	m.cursor = itemsOnPage - 1
 }
 
-// PrevPage moves to the previous page, if available.
 func (m Model) PrevPage() {
 	m.Paginator.PrevPage()
 }
 
-// NextPage moves to the next page, if available.
 func (m Model) NextPage() {
 	m.Paginator.NextPage()
+}
+
+func (m Model) NextCategory() {
+	m.category++
+
+	service := new(mock.Service)
+	stories := service.FetchStories(0, m.category)
+
+	m.items[m.category] = stories
+
 }
 
 // Width returns the current width setting.
@@ -422,7 +422,6 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
-// Updates for when a user is browsing the list.
 func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	var cmds []tea.Cmd
 	numItems := len(m.VisibleItems())
@@ -444,6 +443,9 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 		case key.Matches(msg, m.KeyMap.NextPage):
 			m.Paginator.NextPage()
+
+		case key.Matches(msg, m.KeyMap.NextCategory):
+			m.NextCategory()
 
 		case key.Matches(msg, m.KeyMap.GoToStart):
 			m.Paginator.Page = 0
@@ -487,7 +489,7 @@ func (m Model) View() string {
 	}
 
 	content := lipgloss.NewStyle().Height(availHeight).Render(m.populatedView())
-	rankings := ranking.GetRankings(false, m.Paginator.PerPage, len(m.items[frontPage]), m.cursor,
+	rankings := ranking.GetRankings(false, m.Paginator.PerPage, len(m.items[m.category]), m.cursor,
 		m.Paginator.Page, m.Paginator.TotalPages)
 
 	rankingsAndContent := lipgloss.JoinHorizontal(lipgloss.Top, rankings, content)
@@ -540,28 +542,6 @@ func (m Model) statusView() string {
 	return m.Styles.StatusBar.Render(status)
 }
 
-func (m Model) paginationView() string {
-	if m.Paginator.TotalPages < 2 { //nolint:gomnd
-		return ""
-	}
-
-	s := m.Paginator.View()
-
-	// If the dot pagination is wider than the width of the window
-	// use the arabic paginator.
-	if ansi.PrintableRuneWidth(s) > m.width {
-		m.Paginator.Type = paginator.Arabic
-		s = m.Styles.ArabicPagination.Render(m.Paginator.View())
-	}
-
-	style := m.Styles.PaginationStyle
-	if m.delegate.Spacing() == 0 && style.GetMarginTop() == 0 {
-		style = style.Copy().MarginTop(1)
-	}
-
-	return style.Render(s)
-}
-
 func (m Model) populatedView() string {
 	items := m.VisibleItems()
 
@@ -601,22 +581,6 @@ func (m Model) populatedView() string {
 
 func (m Model) spinnerView() string {
 	return m.spinner.View()
-}
-
-func insertItemIntoSlice(items []Item, item Item, index int) []Item {
-	if items == nil {
-		return []Item{item}
-	}
-	if index >= len(items) {
-		return append(items, item)
-	}
-
-	index = max(0, index)
-
-	items = append(items, nil)
-	copy(items[index+1:], items[index:])
-	items[index] = item
-	return items
 }
 
 func max(a, b int) int {
