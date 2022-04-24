@@ -1,6 +1,3 @@
-// Package list provides a feature-rich Bubble Tea component for browsing
-// a general purpose list of items. It features optional filtering, pagination,
-// help, status messages, and a spinner to indicate activity.
 package list
 
 import (
@@ -17,6 +14,14 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/reflow/ansi"
+)
+
+const (
+	frontPage = 0
+	newest    = 1
+	ask       = 2
+	show      = 3
+	favorites = 4
 )
 
 // Item is an item that appears in the list.
@@ -75,21 +80,19 @@ type Model struct {
 	Paginator   paginator.Model
 	cursor      int
 
-	// How long status messages should stay visible. By default this is
-	// 1 second.
 	StatusMessageLifetime time.Duration
 
 	statusMessage      string
 	statusMessageTimer *time.Timer
 
-	// The master set of items we're working with.
-	items []Item
+	category int
+	items    [][]Item
 
 	delegate ItemDelegate
 }
 
 // New returns a new model with sensible defaults.
-func New(items []Item, delegate ItemDelegate, width, height int) Model {
+func New(frontPageItems []Item, delegate ItemDelegate, width, height int) Model {
 	styles := DefaultStyles()
 
 	sp := spinner.New()
@@ -100,6 +103,9 @@ func New(items []Item, delegate ItemDelegate, width, height int) Model {
 	p.Type = paginator.Dots
 	p.ActiveDot = styles.ActivePaginationDot.String()
 	p.InactiveDot = styles.InactivePaginationDot.String()
+
+	items := make([][]Item, favorites)
+	items[frontPage] = frontPageItems
 
 	m := Model{
 		showTitle:             true,
@@ -151,13 +157,13 @@ func (m Model) ShowStatusBar() bool {
 
 // Items returns the items in the list.
 func (m Model) Items() []Item {
-	return m.items
+	return m.items[frontPage]
 }
 
 // Set the items available in the list. This returns a command.
 func (m *Model) SetItems(i []Item) tea.Cmd {
 	var cmd tea.Cmd
-	m.items = i
+	m.items[frontPage] = i
 
 	m.updatePagination()
 	return cmd
@@ -174,20 +180,11 @@ func (m *Model) ResetSelected() {
 	m.Select(0)
 }
 
-// Replace an item at the given index. This returns a command.
-func (m *Model) SetItem(index int, item Item) tea.Cmd {
-	var cmd tea.Cmd
-	m.items[index] = item
-
-	m.updatePagination()
-	return cmd
-}
-
 // Insert an item at the given index. If index is out of the upper bound, the
 // item will be appended. This returns a command.
 func (m *Model) InsertItem(index int, item Item) tea.Cmd {
 	var cmd tea.Cmd
-	m.items = insertItemIntoSlice(m.items, item, index)
+	m.items[frontPage] = insertItemIntoSlice(m.items[frontPage], item, index)
 
 	m.updatePagination()
 	return cmd
@@ -201,7 +198,7 @@ func (m *Model) SetDelegate(d ItemDelegate) {
 
 // VisibleItems returns the total items available to be shown.
 func (m Model) VisibleItems() []Item {
-	return m.items
+	return m.items[frontPage]
 }
 
 // SelectedItems returns the current selected item in the list.
@@ -490,7 +487,7 @@ func (m Model) View() string {
 	}
 
 	content := lipgloss.NewStyle().Height(availHeight).Render(m.populatedView())
-	rankings := ranking.GetRankings(false, m.Paginator.PerPage, len(m.items), m.cursor,
+	rankings := ranking.GetRankings(false, m.Paginator.PerPage, len(m.items[frontPage]), m.cursor,
 		m.Paginator.Page, m.Paginator.TotalPages)
 
 	rankingsAndContent := lipgloss.JoinHorizontal(lipgloss.Top, rankings, content)
