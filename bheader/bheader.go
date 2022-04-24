@@ -15,24 +15,13 @@ const (
 	red        = "219"
 	unselected = "250"
 
-	none      = 0
-	new       = 1
+	newest    = 1
 	ask       = 2
 	show      = 3
 	favorites = 4
 )
 
-func GetHeader(selectedSubHeader int, showFavorites bool, width int) string {
-	categories := []string{"new", "ask", "show"}
-
-	if showFavorites {
-		categories = append(categories, "favorites")
-	}
-
-	return header(categories, selectedSubHeader, width)
-}
-
-func header(subHeaders []string, selectedSubHeader int, width int) string {
+func GetHeader(selectedSubHeader int, width int) string {
 	p := termenv.ColorProfile()
 	c := termenv.String("  c").
 		Foreground(p.Color(magenta)).
@@ -47,9 +36,8 @@ func header(subHeaders []string, selectedSubHeader int, width int) string {
 		Background(p.Color(gray))
 
 	title := c.String() + l.String() + x.String()
-	categories := getCategories(subHeaders, selectedSubHeader)
+	categories := getCategories(selectedSubHeader)
 	filler := getFiller(title, categories, width)
-
 	return title + categories + filler
 }
 
@@ -68,7 +56,9 @@ func getFiller(title string, categories string, width int) string {
 		String()
 }
 
-func getCategories(subHeaders []string, selectedSubHeader int) string {
+func getCategories(selectedSubHeader int) string {
+	subHeaders := []string{"new", "ask", "show"}
+
 	p := termenv.ColorProfile()
 	categories := termenv.String("  ").
 		Background(p.Color(lightGray)).
@@ -107,7 +97,7 @@ func getColor(i int, selectedSubHeader int) string {
 
 func getSelectedCategoryColor(selectedSubHeader int) string {
 	switch selectedSubHeader {
-	case new:
+	case newest:
 		return magenta
 	case ask:
 		return yellow

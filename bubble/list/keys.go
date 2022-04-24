@@ -6,15 +6,16 @@ import "github.com/charmbracelet/bubbles/key"
 // is used to render the menu menu.
 type KeyMap struct {
 	// Keybindings used when browsing the list.
-	CursorUp     key.Binding
-	CursorDown   key.Binding
-	NextPage     key.Binding
-	PrevPage     key.Binding
-	NextCategory key.Binding
-	GoToStart    key.Binding
-	GoToEnd      key.Binding
-	Filter       key.Binding
-	ClearFilter  key.Binding
+	CursorUp         key.Binding
+	CursorDown       key.Binding
+	NextPage         key.Binding
+	PrevPage         key.Binding
+	NextCategory     key.Binding
+	PreviousCategory key.Binding
+	GoToStart        key.Binding
+	GoToEnd          key.Binding
+	Filter           key.Binding
+	ClearFilter      key.Binding
 
 	// Keybindings used when setting a filter.
 	CancelWhileFiltering key.Binding
@@ -53,6 +54,9 @@ func DefaultKeyMap() KeyMap {
 		),
 		NextCategory: key.NewBinding(
 			key.WithKeys("tab"),
+		),
+		PreviousCategory: key.NewBinding(
+			key.WithKeys("shift+tab"),
 		),
 		GoToStart: key.NewBinding(
 			key.WithKeys("home", "g"),

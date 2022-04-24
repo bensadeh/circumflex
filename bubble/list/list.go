@@ -264,7 +264,12 @@ func (m *Model) NextCategory() {
 	}
 
 	m.items[m.category] = stories
-	m.cursor = 0
+
+	m.updatePagination()
+}
+
+func (m *Model) PreviousCategory() {
+	m.category--
 
 	m.updatePagination()
 }
@@ -453,6 +458,9 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 		case key.Matches(msg, m.KeyMap.NextCategory):
 			m.NextCategory()
 
+		case key.Matches(msg, m.KeyMap.PreviousCategory):
+			m.PreviousCategory()
+
 		case key.Matches(msg, m.KeyMap.GoToStart):
 			m.Paginator.Page = 0
 			m.cursor = 0
@@ -510,7 +518,7 @@ func (m Model) View() string {
 }
 
 func (m Model) titleView() string {
-	return bheader.GetHeader(m.category, false, m.width) + "\n"
+	return bheader.GetHeader(m.category, m.width) + "\n"
 }
 
 func (m Model) statusAndPaginationView() string {
