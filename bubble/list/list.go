@@ -22,7 +22,8 @@ const (
 	newest    = 1
 	ask       = 2
 	show      = 3
-	favorites = 4
+	//favorites = 4
+	numberOfCategories = 4
 )
 
 // Item is an item that appears in the list.
@@ -105,7 +106,7 @@ func New(frontPageItems []item.Item, delegate ItemDelegate, width, height int) M
 	p.ActiveDot = styles.ActivePaginationDot.String()
 	p.InactiveDot = styles.InactivePaginationDot.String()
 
-	items := make([][]item.Item, favorites)
+	items := make([][]item.Item, numberOfCategories)
 	items[frontPage] = frontPageItems
 
 	m := Model{
@@ -254,18 +255,49 @@ func (m Model) NextPage() {
 }
 
 func (m *Model) NextCategory() {
+	isAtLastCategory := m.category == numberOfCategories-1
+	if isAtLastCategory {
+		m.category = frontPage
+		m.selectCategory(m.category)
+
+		return
+	}
+
 	m.category++
+	m.selectCategory(m.category)
+}
+
+func (m *Model) firstPage() {
+	for m.Paginator.Page > 0 {
+		m.Paginator.PrevPage()
+	}
+}
+
+func (m *Model) selectCategory(category int) {
+	m.category = category
+	categoryIsEmpty := len(m.items[category]) == 0
+
+	if !categoryIsEmpty {
+		m.firstPage()
+		m.updatePagination()
+
+		return
+	}
 
 	service := new(mock.Service)
 	stories := service.FetchStories(0, m.category)
 
+	// Reverse list to make debugging easier
 	for i, j := 0, len(stories)-1; i < j; i, j = i+1, j-1 {
 		stories[i], stories[j] = stories[j], stories[i]
 	}
 
-	m.items[m.category] = stories
+	m.items[category] = stories
 
+	m.firstPage()
 	m.updatePagination()
+
+	return
 }
 
 func (m *Model) PreviousCategory() {
