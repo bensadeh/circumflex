@@ -7,6 +7,7 @@ import (
 	"clx/item"
 	"fmt"
 	"io"
+	"math/rand"
 	"strings"
 	"time"
 
@@ -257,20 +258,23 @@ func (m Model) NextPage() {
 func (m *Model) NextCategory() {
 	isAtLastCategory := m.category == numberOfCategories-1
 	if isAtLastCategory {
-		m.category = frontPage
-		m.selectCategory(m.category)
+		m.selectCategory(frontPage)
 
 		return
 	}
 
-	m.category++
-	m.selectCategory(m.category)
+	m.selectCategory(m.category + 1)
 }
 
-func (m *Model) firstPage() {
-	for m.Paginator.Page > 0 {
-		m.Paginator.PrevPage()
+func (m *Model) PreviousCategory() {
+	isAtFirstCategory := m.category == frontPage
+	if isAtFirstCategory {
+		m.selectCategory(show)
+
+		return
 	}
+
+	m.selectCategory(m.category - 1)
 }
 
 func (m *Model) selectCategory(category int) {
@@ -278,7 +282,7 @@ func (m *Model) selectCategory(category int) {
 	categoryIsEmpty := len(m.items[category]) == 0
 
 	if !categoryIsEmpty {
-		m.firstPage()
+		m.Paginator.Page = 0
 		m.updatePagination()
 
 		return
@@ -287,23 +291,15 @@ func (m *Model) selectCategory(category int) {
 	service := new(mock.Service)
 	stories := service.FetchStories(0, m.category)
 
-	// Reverse list to make debugging easier
-	for i, j := 0, len(stories)-1; i < j; i, j = i+1, j-1 {
-		stories[i], stories[j] = stories[j], stories[i]
-	}
+	// Randomize list to make debugging easier
+	rand.Shuffle(len(stories), func(i, j int) { stories[i], stories[j] = stories[j], stories[i] })
 
 	m.items[category] = stories
 
-	m.firstPage()
+	m.Paginator.Page = 0
 	m.updatePagination()
 
 	return
-}
-
-func (m *Model) PreviousCategory() {
-	m.category--
-
-	m.updatePagination()
 }
 
 // Width returns the current width setting.
