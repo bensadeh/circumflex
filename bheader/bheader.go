@@ -15,6 +15,7 @@ const (
 	red        = "219"
 	unselected = "250"
 
+	none      = 0
 	new       = 1
 	ask       = 2
 	show      = 3
@@ -98,7 +99,7 @@ func getCategories(subHeaders []string, selectedSubHeader int) string {
 
 func getColor(i int, selectedSubHeader int) string {
 	if i+1 == selectedSubHeader {
-		return getSelectedCategoryColor(i)
+		return getSelectedCategoryColor(i + 1)
 	}
 
 	return unselected

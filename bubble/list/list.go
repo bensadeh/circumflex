@@ -253,14 +253,20 @@ func (m Model) NextPage() {
 	m.Paginator.NextPage()
 }
 
-func (m Model) NextCategory() {
+func (m *Model) NextCategory() {
 	m.category++
 
 	service := new(mock.Service)
 	stories := service.FetchStories(0, m.category)
 
-	m.items[m.category] = stories
+	for i, j := 0, len(stories)-1; i < j; i, j = i+1, j-1 {
+		stories[i], stories[j] = stories[j], stories[i]
+	}
 
+	m.items[m.category] = stories
+	m.cursor = 0
+
+	m.updatePagination()
 }
 
 // Width returns the current width setting.
@@ -504,7 +510,7 @@ func (m Model) View() string {
 }
 
 func (m Model) titleView() string {
-	return bheader.GetHeader(0, false, m.width) + "\n"
+	return bheader.GetHeader(m.category, false, m.width) + "\n"
 }
 
 func (m Model) statusAndPaginationView() string {
