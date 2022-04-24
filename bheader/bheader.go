@@ -1,33 +1,38 @@
 package bheader
 
 import (
+	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/termenv"
+	"strings"
 )
 
 const (
-	gray      = "237"
-	lightGray = "238"
-	magenta   = "200"
-	yellow    = "214"
-	blue      = "69"
+	gray       = "237"
+	lightGray  = "238"
+	magenta    = "200"
+	yellow     = "214"
+	blue       = "33"
+	red        = "219"
+	unselected = "250"
+
+	new       = 1
+	ask       = 2
+	show      = 3
+	favorites = 4
 )
 
 func GetHeader(selectedSubHeader int, showFavorites bool, width int) string {
-	categories := getCategories(showFavorites)
+	categories := []string{"new", "ask", "show"}
 
-	return header(categories, selectedSubHeader)
-
-}
-
-func getCategories(showFavorites bool) []string {
 	if showFavorites {
-		return []string{"new", "ask", "show", "favorites"}
+		categories = append(categories, "favorites")
 	}
 
-	return []string{"new", "ask", "show"}
+	return header(categories, selectedSubHeader, width)
+
 }
 
-func header(subHeaders []string, selectedSubHeader int) string {
+func header(subHeaders []string, selectedSubHeader int, width int) string {
 	p := termenv.ColorProfile()
 	c := termenv.String("  c").
 		Foreground(p.Color(magenta)).
@@ -42,22 +47,83 @@ func header(subHeaders []string, selectedSubHeader int) string {
 		Background(p.Color(gray))
 
 	title := c.String() + l.String() + x.String()
+	categories := getCategories(subHeaders, selectedSubHeader)
+	filler := getFiller(title, categories, width)
 
-	//titleStyle := lipgloss.NewStyle().
-	//	Background()
-	//title := background1() + "  " + magenta() + "c" + yellow() + "l" + blue() + "x  "
-	//
-	//background := "[#0c0c0c:navy:-]"
-	//black := background2() + categoriesColor()
-	//screenWidth := screen.GetTerminalWidth()
-	//
-	//titleOpenTag := "[:navy:]"
-	//titleCloseTag := "[:navy:-]"
-	//formattedTitle := titleOpenTag + title + titleCloseTag
-	//
-	//titleHeader := background + formattedTitle + black + "  "
-	//categoryHeader := getCategoryHeaderDark(subHeaders, selectedSubHeader)
-	//whitespaceFiller := getWhitespaceFillerNew(titleHeader+categoryHeader, screenWidth)
+	return title + categories + filler
+}
 
-	return title
+func getFiller(title string, categories string, width int) string {
+	p := termenv.ColorProfile()
+	availableSpace := width - lipgloss.Width(title+categories)
+
+	if availableSpace < 0 {
+		return ""
+	}
+
+	filler := strings.Repeat(" ", availableSpace)
+
+	return termenv.String(filler).
+		Background(p.Color(lightGray)).
+		String()
+}
+
+func getCategories(subHeaders []string, selectedSubHeader int) string {
+	p := termenv.ColorProfile()
+	categories := termenv.String("  ").
+		Background(p.Color(lightGray)).
+		String()
+
+	separator := termenv.String(" • ").
+		Foreground(p.Color(unselected)).
+		Background(p.Color(lightGray)).
+		String()
+
+	for i, subHeader := range subHeaders {
+		isOnLastItem := i == len(subHeaders)-1
+		selectedCatColor := getColor(i, selectedSubHeader)
+
+		categories += termenv.String(subHeader).
+			Foreground(p.Color(selectedCatColor)).
+			Background(p.Color(lightGray)).
+			String()
+
+		if !isOnLastItem {
+			categories += separator
+		}
+
+	}
+
+	return categories
+}
+
+func getColor(i int, selectedSubHeader int) string {
+	if i+1 == selectedSubHeader {
+		return getSelectedCategoryColor(i)
+	}
+
+	return unselected
+}
+
+func getSelectedCategoryColor(selectedSubHeader int) string {
+	switch selectedSubHeader {
+	case new:
+		return magenta
+	case ask:
+		return yellow
+	case show:
+		return blue
+	case favorites:
+		return red
+	default:
+		return unselected
+	}
+}
+
+func getSeparator(isOnLastItem bool) string {
+	if isOnLastItem {
+		return ""
+	}
+
+	return " • "
 }
