@@ -1,6 +1,7 @@
 package ranking
 
 import (
+	"github.com/charmbracelet/lipgloss"
 	"github.com/logrusorgru/aurora/v3"
 	"strconv"
 	"strings"
@@ -38,7 +39,8 @@ func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPa
 	}
 
 	for i := startingRank; i < endingRank; i++ {
-		rankings += strconv.Itoa(i) + "." + indentationFromRight + newParagraph
+		rank := lipgloss.NewStyle().Width(6).Align(lipgloss.Right).Render(strconv.Itoa(i)+".") + " "
+		rankings += rank + newParagraph
 	}
 
 	return strings.TrimSuffix(rankings, "\n")
