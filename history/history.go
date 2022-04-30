@@ -14,8 +14,8 @@ type History struct {
 }
 
 type storyInfo struct {
-	LastVisited         int64
-	CommentsOnLastVisit int
+	lastVisited         int64
+	commentsOnLastVisit int
 }
 
 func (his *History) Contains(id int) bool {
@@ -34,7 +34,7 @@ func (his *History) GetLastVisited(id int) int64 {
 	}
 
 	if item, contains := his.VisitedStories[id]; contains {
-		return item.LastVisited
+		return item.lastVisited
 	}
 
 	return time.Now().Unix()
@@ -46,7 +46,7 @@ func (his *History) GetLastCommentCount(id int) int {
 	}
 
 	if item, contains := his.VisitedStories[id]; contains {
-		return item.CommentsOnLastVisit
+		return item.commentsOnLastVisit
 	}
 
 	return 0
@@ -65,8 +65,8 @@ func (his *History) AddToHistoryAndWriteToDisk(id int, commentsOnLastVisit int) 
 	}
 
 	his.VisitedStories[id] = storyInfo{
-		LastVisited:         time.Now().Unix(),
-		CommentsOnLastVisit: commentsOnLastVisit,
+		lastVisited:         time.Now().Unix(),
+		commentsOnLastVisit: commentsOnLastVisit,
 	}
 
 	_, dirPath, fileName := getCacheFilePaths()
