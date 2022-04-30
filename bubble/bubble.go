@@ -12,8 +12,18 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/muesli/termenv"
 	"os"
+	"strings"
 	"time"
+)
+
+const (
+	gray      = "237"
+	lightGray = "238"
+	magenta   = "200"
+	yellow    = "214"
+	blue      = "33"
 )
 
 var docStyle = lipgloss.NewStyle()
@@ -51,9 +61,28 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, cmd
 		}
 		if msg.String() == "u" {
+			p := termenv.ColorProfile()
+			c := termenv.String(".").
+				Foreground(p.Color(magenta)).
+				Background(p.Color(lightGray))
+
+			l := termenv.String(".").
+				Foreground(p.Color(yellow)).
+				Background(p.Color(lightGray))
+
+			x := termenv.String(".").
+				Foreground(p.Color(blue)).
+				Background(p.Color(lightGray))
+
+			filler := termenv.String(" ").
+				Background(p.Color(lightGray))
+
 			dot := spinner.Spinner{
-				Frames: []string{"fetching   ", "fetching.  ", "fetching.. ", "fetching..."},
-				FPS:    600 * time.Millisecond, //nolint:gomnd
+				Frames: []string{"fetching" + strings.Repeat(filler.String(), 3),
+					"fetching" + c.String() + strings.Repeat(filler.String(), 2),
+					"fetching" + c.String() + l.String() + strings.Repeat(filler.String(), 1),
+					"fetching" + c.String() + l.String() + x.String()},
+				FPS: 600 * time.Millisecond, //nolint:gomnd
 			}
 
 			m.list.SetSpinner(dot)
