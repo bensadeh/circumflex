@@ -5,6 +5,7 @@ import (
 	"clx/cli"
 	"clx/comment"
 	"clx/core"
+	"clx/history"
 	"clx/hn/services/mock"
 	"clx/screen"
 	"fmt"
@@ -91,7 +92,7 @@ func Run() {
 	service := new(mock.Service)
 	stories := service.FetchStories(0, 0)
 
-	m := model{list: list.New(stories, list.NewDefaultDelegate(), 0, 0)}
+	m := model{list: list.New(stories, list.NewDefaultDelegate(), history.Initialize(true), 0, 0)}
 	m.list.Title = "My Fave Things"
 
 	p := tea.NewProgram(m, tea.WithAltScreen())

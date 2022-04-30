@@ -13,10 +13,12 @@ const (
 	reverse      = "\033[7m"
 	italic       = "\033[3m"
 	magenta      = "\033[35m"
+	faint        = "\033[2m"
 
-	Normal  = -1
-	Bold    = 0
-	Reverse = 1
+	Normal         = -1
+	Bold           = 0
+	Reverse        = 1
+	FaintAndItalic = 2
 )
 
 func HighlightYCStartups(comment string) string {
@@ -107,6 +109,8 @@ func getHighlight(highlightType int) string {
 		return bold
 	case Reverse:
 		return reverse
+	case FaintAndItalic:
+		return faint + italic
 	default:
 		return ""
 	}
@@ -175,7 +179,7 @@ func HighlightDomain(domain string) string {
 		return ""
 	}
 
-	return aurora.Faint("(" + domain + ")").String()
+	return reset + aurora.Faint("("+domain+")").String()
 }
 
 func HighlightReferences(input string) string {

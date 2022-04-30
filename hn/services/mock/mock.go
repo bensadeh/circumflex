@@ -24,7 +24,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Aliquam mauris massa, rhoncus nec lectus eu",
 			Points:        17,
-			ID:            31060183,
+			ID:            31206544,
 			User:          "beta",
 			Time:          time.Now().Add(-time.Minute * 46).Unix(),
 			Domain:        "pkg.go.dev",
@@ -33,6 +33,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Show HN: consectetur adipiscing elit",
 			Points:        331,
+			ID:            31206536,
 			User:          "gamma",
 			Time:          time.Now().Add(-time.Hour * 3).Unix(),
 			Domain:        "github.com",
@@ -41,6 +42,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Interdum et malesuada fames ac ante [PDF]",
 			Points:        40,
+			ID:            31206546,
 			User:          "delta",
 			Time:          time.Now().Add(-time.Hour * 5).Unix(),
 			Domain:        "objective-see.com",
@@ -49,6 +51,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Donec sed orci aliquam lorem mattis consequat",
 			Points:        417,
+			ID:            1206536,
 			User:          "epsilon",
 			Time:          time.Now().Add(-time.Minute * 68).Unix(),
 			Domain:        "bloomberg.com",
@@ -57,6 +60,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Ask HN: Vestibulum ante ipsum primis in faucibus?",
 			Points:        40,
+			ID:            3126536,
 			User:          "zeta",
 			Time:          time.Now().Add(-time.Minute * 27).Unix(),
 			Domain:        "",
@@ -65,6 +69,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Orci luctus et ultrices posuere cubilia curae",
 			Points:        37,
+			ID:            31206536,
 			User:          "eta",
 			Time:          time.Now().Add(-time.Minute * 32).Unix(),
 			Domain:        "apple.com",
@@ -73,6 +78,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Tell HN: Donec eget sapien viverra, viverra lacus in",
 			Points:        16,
+			ID:            31206536,
 			User:          "theta",
 			Time:          time.Now().Add(-time.Hour * 3).Unix(),
 			Domain:        "en.wikipedia.org",
@@ -81,6 +87,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Vivamus rhoncus sit amet tellus eget blandit",
 			Points:        7,
+			ID:            31206551,
 			User:          "iota",
 			Time:          time.Now().Add(-time.Hour * 16).Unix(),
 			Domain:        "xbox.com",
@@ -89,6 +96,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Fusce venenatis laoreet interdum (2003)",
 			Points:        503,
+			ID:            3120652,
 			User:          "kappa",
 			Time:          time.Now().Add(-time.Hour * 15).Unix(),
 			Domain:        "huffingtonpost.com",
@@ -97,6 +105,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Etiam tincidunt, ex fermentum iaculis placerat",
 			Points:        48,
+			ID:            31206547,
 			User:          "lambda",
 			Time:          time.Now().Add(-time.Hour * 8).Unix(),
 			Domain:        "bbc.co.uk",
@@ -105,6 +114,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Aenean sit amet erat eu quam vehicula fringilla",
 			Points:        110,
+			ID:            31206523,
 			User:          "mu",
 			Time:          time.Now().Add(-time.Minute * 400).Unix(),
 			Domain:        "sites.google.com",
@@ -113,6 +123,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Launch HN: Cras consectetur (YC W05) - Nam vitae massa leo",
 			Points:        9,
+			ID:            31206536,
 			User:          "nu",
 			Time:          time.Now().Add(-time.Minute * 120).Unix(),
 			Domain:        "",
@@ -121,6 +132,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Sed ut perspiciatis, unde omnis iste natus error",
 			Points:        0,
+			ID:            31206590,
 			User:          "xi",
 			Time:          time.Now().Add(-time.Minute * 17).Unix(),
 			Domain:        "wired.com",
@@ -129,6 +141,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Nemo enim ipsam voluptatem, quia voluptas sit",
 			Points:        66,
+			ID:            31206591,
 			User:          "omicron",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "macrumors.com",
@@ -137,6 +150,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos",
 			Points:        65,
+			ID:            31206593,
 			User:          "pi",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "arxiv.org",
@@ -145,6 +159,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Ut enim ad minima veniam",
 			Points:        27,
+			ID:            31206597,
 			User:          "rho",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "twitter.com",
@@ -199,7 +214,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 			CommentsCount: 107,
 		},
 		{
-			Title:         "Obcaecati cupiditate non provident,",
+			Title:         "Obcaecati cupiditate non provident",
 			Points:        68,
 			User:          "omega",
 			Time:          time.Now().Add(-time.Hour).Unix(),

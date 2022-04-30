@@ -143,6 +143,7 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item item.Item)
 	// Conditions
 	var (
 		isSelected = index == m.Index()
+		markAsRead = m.history.Contains(item.ID)
 	)
 
 	if isSelected {
@@ -158,14 +159,26 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item item.Item)
 		//desc = s.SelectedDesc.Render(desc)
 		desc = s.SelectedDesc.Render(desc)
 	} else {
-		title = syntax.HighlightYCStartupsInHeadlinesWithType(title, syntax.Normal)
-		title = syntax.HighlightYearInHeadlinesWithType(title, syntax.Normal)
-		title = syntax.HighlightHackerNewsHeadlinesWithType(title, syntax.Normal)
-		title = syntax.HighlightSpecialContent(title)
+		faint := "\033[2m"
+		italic := "\033[3m"
 
-		title = title + " " + domain
-		//title = s.NormalTitle.Render(title)
-		desc = s.NormalDesc.Render(desc)
+		if markAsRead {
+			title = syntax.HighlightYCStartupsInHeadlinesWithType(title, syntax.FaintAndItalic)
+			title = syntax.HighlightYearInHeadlinesWithType(title, syntax.FaintAndItalic)
+			title = syntax.HighlightHackerNewsHeadlinesWithType(title, syntax.FaintAndItalic)
+			title = syntax.HighlightSpecialContent(title)
+
+			title = faint + italic + title + " " + domain
+			desc = s.NormalDesc.Render(desc)
+		} else {
+			title = syntax.HighlightYCStartupsInHeadlinesWithType(title, syntax.Normal)
+			title = syntax.HighlightYearInHeadlinesWithType(title, syntax.Normal)
+			title = syntax.HighlightHackerNewsHeadlinesWithType(title, syntax.Normal)
+			title = syntax.HighlightSpecialContent(title)
+
+			title = title + " " + domain
+			desc = s.NormalDesc.Render(desc)
+		}
 	}
 
 	if d.ShowDescription {

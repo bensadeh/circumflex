@@ -73,10 +73,10 @@ func (his *History) AddToHistoryAndWriteToDisk(id int, commentsOnLastVisit int) 
 	writeToDisk(his, dirPath, fileName)
 }
 
-func Initialize(markAsRead bool) *History {
+func Initialize(isEnabled bool) *History {
 	h := &History{
 		VisitedStories: make(map[int]storyInfo),
-		isEnabled:      markAsRead,
+		isEnabled:      isEnabled,
 	}
 
 	if !h.isEnabled {

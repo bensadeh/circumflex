@@ -3,6 +3,7 @@ package list
 import (
 	"clx/bheader"
 	"clx/bubble/ranking"
+	"clx/history"
 	"clx/hn/services/mock"
 	"clx/item"
 	"fmt"
@@ -92,10 +93,11 @@ type Model struct {
 	items    [][]item.Item
 
 	delegate ItemDelegate
+	history  *history.History
 }
 
 // New returns a new model with sensible defaults.
-func New(frontPageItems []item.Item, delegate ItemDelegate, width, height int) Model {
+func New(frontPageItems []item.Item, delegate ItemDelegate, history *history.History, width, height int) Model {
 	styles := DefaultStyles()
 
 	sp := spinner.New()
@@ -121,6 +123,7 @@ func New(frontPageItems []item.Item, delegate ItemDelegate, width, height int) M
 		width:     width,
 		height:    height,
 		delegate:  delegate,
+		history:   history,
 		items:     items,
 		Paginator: p,
 		spinner:   sp,
