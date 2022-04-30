@@ -10,7 +10,7 @@ import (
 
 type History struct {
 	VisitedStories map[int]Data
-	markAsRead     bool
+	isEnabled      bool
 }
 
 type Data struct {
@@ -19,7 +19,7 @@ type Data struct {
 }
 
 func (his *History) Contains(id int) bool {
-	if !his.markAsRead {
+	if !his.isEnabled {
 		return false
 	}
 
@@ -29,7 +29,7 @@ func (his *History) Contains(id int) bool {
 }
 
 func (his *History) GetLastVisited(id int) int64 {
-	if !his.markAsRead {
+	if !his.isEnabled {
 		return time.Now().Unix()
 	}
 
@@ -41,7 +41,7 @@ func (his *History) GetLastVisited(id int) int64 {
 }
 
 func (his *History) GetLastCommentCount(id int) int {
-	if !his.markAsRead {
+	if !his.isEnabled {
 		return 0
 	}
 
@@ -60,7 +60,7 @@ func (his *History) ClearAndWriteToDisk() {
 }
 
 func (his *History) AddToHistoryAndWriteToDisk(id int, commentsOnLastVisit int) {
-	if !his.markAsRead {
+	if !his.isEnabled {
 		return
 	}
 
@@ -76,10 +76,10 @@ func (his *History) AddToHistoryAndWriteToDisk(id int, commentsOnLastVisit int) 
 func Initialize(markAsRead bool) *History {
 	h := &History{
 		VisitedStories: make(map[int]Data),
-		markAsRead:     markAsRead,
+		isEnabled:      markAsRead,
 	}
 
-	if !h.markAsRead {
+	if !h.isEnabled {
 		return h
 	}
 
