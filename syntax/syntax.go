@@ -46,6 +46,9 @@ func HighlightYCStartupsInHeadlinesWithType(comment string, highlightType int) s
 	highlight := getHighlight(highlightType)
 
 	orange := uint8(214)
+	if highlightType == FaintAndItalic {
+		orange = uint8(94)
+	}
 	black := uint8(232)
 	highlightedStartup := aurora.Index(black, ` $1 `).BgIndex(orange).String() + highlight
 

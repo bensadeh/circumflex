@@ -166,7 +166,8 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 			CommentsCount: 81,
 		},
 		{
-			Title:         "Nam libero tempore, cum soluta nobis est eligendi optio",
+			Title:         "Nam libero tempore (YC S16), cum soluta nobis est eligendi optio",
+			ID:            31206610,
 			Points:        84,
 			User:          "sigma",
 			Time:          time.Now().Add(-time.Hour).Unix(),
@@ -176,6 +177,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Cumque nihil impedit, quo minus id, quod maxime placeat",
 			Points:        6,
+			ID:            31206612,
 			User:          "tau",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "medium.com",
@@ -184,6 +186,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Emporibus autem quibusdam et aut officiis debitis aut rerum",
 			Points:        150,
+			ID:            31206614,
 			User:          "upsilon",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "npr.com",
@@ -192,6 +195,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Necessitatibus saepe eveniet, ut et voluptates repudiandae",
 			Points:        135,
+			ID:            31206615,
 			User:          "phi",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "nature.com",
