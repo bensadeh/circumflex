@@ -170,6 +170,14 @@ func RemoveUnwantedWhitespace(text string) string {
 	return text
 }
 
+func HighlightDomain(domain string) string {
+	if domain == "" {
+		return ""
+	}
+
+	return aurora.Faint("(" + domain + ")").String()
+}
+
 func HighlightReferences(input string) string {
 	input = strings.ReplaceAll(input, "[0]", "["+aurora.White("0").String()+"]")
 	input = strings.ReplaceAll(input, "[1]", "["+aurora.Red("1").String()+"]")

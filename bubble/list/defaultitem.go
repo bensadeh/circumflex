@@ -17,14 +17,12 @@ import (
 // See DefaultItemView for when these come into play.
 type DefaultItemStyles struct {
 	// The Normal state.
-	NormalTitle  lipgloss.Style
-	NormalDesc   lipgloss.Style
-	NormalDomain lipgloss.Style
+	NormalTitle lipgloss.Style
+	NormalDesc  lipgloss.Style
 
 	// The selected item state.
-	SelectedTitle  lipgloss.Style
-	SelectedDesc   lipgloss.Style
-	SelectedDomain lipgloss.Style
+	SelectedTitle lipgloss.Style
+	SelectedDesc  lipgloss.Style
 
 	// The dimmed state, for when the filter input is initially activated.
 	DimmedTitle lipgloss.Style
@@ -43,9 +41,6 @@ func NewDefaultItemStyles() (s DefaultItemStyles) {
 
 	//Foreground(lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"})
 
-	s.NormalDomain = lipgloss.NewStyle().
-		Faint(true)
-
 	s.SelectedTitle = lipgloss.NewStyle().
 		Reverse(true)
 	//Border(lipgloss.NormalBorder(), false, false, false, true).
@@ -58,9 +53,6 @@ func NewDefaultItemStyles() (s DefaultItemStyles) {
 		Faint(true).
 		Reverse(false)
 	//Foreground(lipgloss.AdaptiveColor{Light: "#F793FF", Dark: "#AD58B4"})
-
-	s.SelectedDomain = lipgloss.NewStyle().
-		Faint(true)
 
 	s.DimmedTitle = lipgloss.NewStyle()
 	//Foreground(lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"}).
@@ -137,7 +129,7 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item item.Item)
 	)
 
 	title = item.Title
-	domain = item.Domain
+	domain = syntax.HighlightDomain(item.Domain)
 	desc = fmt.Sprintf("%d points by %s %s | %d comments",
 		item.Points, item.User, parseTime(item.Time), item.CommentsCount)
 
@@ -161,7 +153,7 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item item.Item)
 		title = syntax.HighlightHackerNewsHeadlinesWithType(title, syntax.Reverse)
 		title = syntax.HighlightSpecialContent(title)
 
-		title = title + " " + s.SelectedDomain.Render(domain)
+		title = title + " " + domain
 
 		//desc = s.SelectedDesc.Render(desc)
 		desc = s.SelectedDesc.Render(desc)
@@ -171,7 +163,7 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item item.Item)
 		title = syntax.HighlightHackerNewsHeadlinesWithType(title, syntax.Normal)
 		title = syntax.HighlightSpecialContent(title)
 
-		title = title + " " + s.NormalDomain.Render(domain)
+		title = title + " " + domain
 		//title = s.NormalTitle.Render(title)
 		desc = s.NormalDesc.Render(desc)
 	}
