@@ -9,11 +9,11 @@ import (
 )
 
 type History struct {
-	VisitedStories map[int]Data
+	VisitedStories map[int]storyInfo
 	isEnabled      bool
 }
 
-type Data struct {
+type storyInfo struct {
 	LastVisited         int64
 	CommentsOnLastVisit int
 }
@@ -53,7 +53,7 @@ func (his *History) GetLastCommentCount(id int) int {
 }
 
 func (his *History) ClearAndWriteToDisk() {
-	his.VisitedStories = make(map[int]Data)
+	his.VisitedStories = make(map[int]storyInfo)
 
 	_, dirPath, fileName := getCacheFilePaths()
 	writeToDisk(his, dirPath, fileName)
@@ -64,7 +64,7 @@ func (his *History) AddToHistoryAndWriteToDisk(id int, commentsOnLastVisit int) 
 		return
 	}
 
-	his.VisitedStories[id] = Data{
+	his.VisitedStories[id] = storyInfo{
 		LastVisited:         time.Now().Unix(),
 		CommentsOnLastVisit: commentsOnLastVisit,
 	}
@@ -75,7 +75,7 @@ func (his *History) AddToHistoryAndWriteToDisk(id int, commentsOnLastVisit int) 
 
 func Initialize(markAsRead bool) *History {
 	h := &History{
-		VisitedStories: make(map[int]Data),
+		VisitedStories: make(map[int]storyInfo),
 		isEnabled:      markAsRead,
 	}
 
