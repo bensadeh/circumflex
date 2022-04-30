@@ -549,7 +549,14 @@ func (m Model) View() string {
 }
 
 func (m Model) titleView() string {
-	return bheader.GetHeader(m.category, m.width) + "\n"
+	if !m.showSpinner {
+		return bheader.GetHeader(m.category, m.width) + "\n"
+	}
+
+	spinnerView := m.spinnerView()
+	spinnerWidth := lipgloss.Width(spinnerView)
+
+	return bheader.GetHeader(m.category, m.width-spinnerWidth) + spinnerView + "\n"
 }
 
 func (m Model) statusAndPaginationView() string {

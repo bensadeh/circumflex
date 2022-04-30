@@ -52,8 +52,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		if msg.String() == "u" {
 			dot := spinner.Spinner{
-				Frames: []string{"⣾ ", "⣷ ", "⣯ ", "⣟ ", "⡿ ", "⢿ ", "⣻ ", "⣽ "},
-				FPS:    time.Second / 7, //nolint:gomnd
+				Frames: []string{"fetching   ", "fetching.  ", "fetching.. ", "fetching..."},
+				FPS:    600 * time.Millisecond, //nolint:gomnd
 			}
 
 			m.list.SetSpinner(dot)
