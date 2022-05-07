@@ -7,6 +7,7 @@ import (
 	"clx/hn/services/mock"
 	"clx/item"
 	"fmt"
+	"github.com/muesli/termenv"
 	"io"
 	"math/rand"
 	"strings"
@@ -101,7 +102,7 @@ func New(frontPageItems []item.Item, delegate ItemDelegate, history *history.His
 	styles := DefaultStyles()
 
 	sp := spinner.New()
-	sp.Spinner = spinner.Line
+	sp.Spinner = getSpinner()
 	sp.Style = styles.Spinner
 
 	p := paginator.New()
@@ -641,4 +642,35 @@ func max(a, b int) int {
 	}
 
 	return b
+}
+
+func getSpinner() spinner.Spinner {
+	lightGray := "238"
+	magenta := "200"
+	yellow := "214"
+	blue := "33"
+
+	pr := termenv.ColorProfile()
+	c := termenv.String(".").
+		Foreground(pr.Color(magenta)).
+		Background(pr.Color(lightGray))
+
+	l := termenv.String(".").
+		Foreground(pr.Color(yellow)).
+		Background(pr.Color(lightGray))
+
+	x := termenv.String(".").
+		Foreground(pr.Color(blue)).
+		Background(pr.Color(lightGray))
+
+	filler := termenv.String(" ").
+		Background(pr.Color(lightGray))
+
+	return spinner.Spinner{
+		Frames: []string{"fetching" + strings.Repeat(filler.String(), 3),
+			"fetching" + c.String() + strings.Repeat(filler.String(), 2),
+			"fetching" + c.String() + l.String() + strings.Repeat(filler.String(), 1),
+			"fetching" + c.String() + l.String() + x.String()},
+		FPS: 600 * time.Millisecond,
+	}
 }
