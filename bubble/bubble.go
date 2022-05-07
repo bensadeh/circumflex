@@ -28,6 +28,16 @@ func (m model) Init() tea.Cmd {
 type editorFinishedMsg struct{ err error }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if m.list.OnStartup() && m.list.Width() == 0 {
+		m.list.SetSize(screen.GetTerminalWidth(), screen.GetTerminalHeight())
+
+		cmd := m.list.StartSpinner()
+
+		m.list.SetOnStartup(false)
+
+		return m, cmd
+	}
+
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		if msg.String() == "ctrl+c" {

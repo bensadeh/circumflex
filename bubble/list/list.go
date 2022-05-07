@@ -84,6 +84,7 @@ type Model struct {
 	height      int
 	Paginator   paginator.Model
 	cursor      int
+	onStartup   bool
 
 	StatusMessageLifetime time.Duration
 
@@ -128,6 +129,7 @@ func New(frontPageItems []item.Item, delegate ItemDelegate, history *history.His
 		items:     items,
 		Paginator: p,
 		spinner:   sp,
+		onStartup: true,
 	}
 
 	m.updatePagination()
@@ -593,6 +595,14 @@ func (m Model) statusView() string {
 	}
 
 	return m.Styles.StatusBar.Render(status)
+}
+
+func (m Model) OnStartup() bool {
+	return m.onStartup
+}
+
+func (m *Model) SetOnStartup(value bool) {
+	m.onStartup = value
 }
 
 func (m Model) populatedView() string {
