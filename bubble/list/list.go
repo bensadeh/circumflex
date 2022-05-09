@@ -6,6 +6,7 @@ import (
 	"clx/history"
 	"clx/hn/services/mock"
 	"clx/item"
+	"clx/screen"
 	"fmt"
 	"github.com/muesli/termenv"
 	"io"
@@ -56,6 +57,7 @@ type ItemDelegate interface {
 }
 
 type statusMessageTimeoutMsg struct{}
+type fetchingFinished struct{}
 
 // Model contains the state of this component.
 type Model struct {
@@ -85,6 +87,7 @@ type Model struct {
 	Paginator   paginator.Model
 	cursor      int
 	onStartup   bool
+	onStartup2  bool
 
 	StatusMessageLifetime time.Duration
 
@@ -98,8 +101,29 @@ type Model struct {
 	history  *history.History
 }
 
+//func (m *Model) FetchFrontPageStories() {
+//	time.Sleep(time.Second * 2)
+//
+//	service := new(mock.Service)
+//	stories := service.FetchStories(0, 0)
+//
+//	m.items[frontPage] = stories
+//}
+
+func (m *Model) FetchFrontPageStories() tea.Cmd {
+	return func() tea.Msg {
+		time.Sleep(time.Second * 3)
+
+		service := new(mock.Service)
+		stories := service.FetchStories(0, 0)
+
+		m.items[frontPage] = stories
+		return fetchingFinished{}
+	}
+}
+
 // New returns a new model with sensible defaults.
-func New(frontPageItems []item.Item, delegate ItemDelegate, history *history.History, width, height int) Model {
+func New(delegate ItemDelegate, history *history.History, width, height int) Model {
 	styles := DefaultStyles()
 
 	sp := spinner.New()
@@ -112,7 +136,6 @@ func New(frontPageItems []item.Item, delegate ItemDelegate, history *history.His
 	p.InactiveDot = styles.InactivePaginationDot.String()
 
 	items := make([][]item.Item, numberOfCategories)
-	items[frontPage] = frontPageItems
 
 	m := Model{
 		showTitle:             true,
@@ -122,14 +145,15 @@ func New(frontPageItems []item.Item, delegate ItemDelegate, history *history.His
 		Title:                 "List",
 		StatusMessageLifetime: time.Second,
 
-		width:     width,
-		height:    height,
-		delegate:  delegate,
-		history:   history,
-		items:     items,
-		Paginator: p,
-		spinner:   sp,
-		onStartup: true,
+		width:      width,
+		height:     height,
+		delegate:   delegate,
+		history:    history,
+		items:      items,
+		Paginator:  p,
+		spinner:    sp,
+		onStartup:  true,
+		onStartup2: true,
 	}
 
 	m.updatePagination()
@@ -458,6 +482,13 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			cmds = append(cmds, cmd)
 		}
 
+	case fetchingFinished:
+		m.StopSpinner()
+		h, v := lipgloss.NewStyle().GetFrameSize()
+		m.setSize(screen.GetTerminalWidth()-h, screen.GetTerminalHeight()-v)
+
+		return m, nil
+
 	case statusMessageTimeoutMsg:
 		m.hideStatusMessage()
 	}
@@ -502,7 +533,6 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 		case key.Matches(msg, m.KeyMap.GoToEnd):
 			m.Paginator.Page = m.Paginator.TotalPages - 1
 			m.cursor = m.Paginator.ItemsOnPage(numItems) - 1
-
 		}
 	}
 
@@ -601,8 +631,16 @@ func (m Model) OnStartup() bool {
 	return m.onStartup
 }
 
+func (m Model) OnStartup2() bool {
+	return m.onStartup2
+}
+
 func (m *Model) SetOnStartup(value bool) {
 	m.onStartup = value
+}
+
+func (m *Model) SetOnStartup2(value bool) {
+	m.onStartup2 = value
 }
 
 func (m Model) populatedView() string {

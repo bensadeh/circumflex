@@ -28,15 +28,28 @@ func (m model) Init() tea.Cmd {
 type editorFinishedMsg struct{ err error }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if m.list.OnStartup() && m.list.Width() == 0 {
+	//if m.list.OnStartup() && m.list.Width() == 0 {
+	if m.list.OnStartup() {
+		var cmds []tea.Cmd
+
 		m.list.SetSize(screen.GetTerminalWidth(), screen.GetTerminalHeight())
 
-		cmd := m.list.StartSpinner()
+		spinnerCmd := m.list.StartSpinner()
+		cmds = append(cmds, spinnerCmd)
 
 		m.list.SetOnStartup(false)
 
-		return m, cmd
+		fetchCmd := m.list.FetchFrontPageStories()
+		cmds = append(cmds, fetchCmd)
+
+		return m, tea.Batch(cmds...)
 	}
+
+	//if m.list.OnStartup2() {
+	//	m.list.FetchFrontPageStories()
+	//	m.list.SetOnStartup2(false)
+	//	return m, nil
+	//}
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
@@ -63,6 +76,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			cmd := m.list.StartSpinner()
 
 			return m, cmd
+		}
+		if msg.String() == "i" {
+			m.list.FetchFrontPageStories()
+
+			return m, nil
 		}
 	case tea.WindowSizeMsg:
 		h, v := docStyle.GetFrameSize()
@@ -92,10 +110,7 @@ func (m model) View() string {
 }
 
 func Run() {
-	service := new(mock.Service)
-	stories := service.FetchStories(0, 0)
-
-	m := model{list: list.New(stories, list.NewDefaultDelegate(), history.Initialize(true), 0, 0)}
+	m := model{list: list.New(list.NewDefaultDelegate(), history.Initialize(true), 0, 0)}
 	m.list.Title = "My Fave Things"
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
