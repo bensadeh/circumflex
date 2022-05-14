@@ -52,10 +52,10 @@ func DefaultStyles() (s Styles) {
 	//	Foreground(lipgloss.Color("230")).
 	//	Padding(0, 1)
 
-	s.Spinner = lipgloss.NewStyle().
-		//Foreground(lipgloss.Color("250")).
-		//Background(lipgloss.Color("238")).
-		Faint(true)
+	s.Spinner = lipgloss.NewStyle()
+	//Foreground(lipgloss.Color("250")).
+	//Background(lipgloss.Color("238")).
+	//Faint(true)
 
 	s.FilterPrompt = lipgloss.NewStyle().
 		Foreground(lipgloss.AdaptiveColor{Light: "#04B575", Dark: "#ECFD65"})

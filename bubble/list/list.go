@@ -8,7 +8,7 @@ import (
 	"clx/item"
 	"clx/screen"
 	"fmt"
-	"github.com/muesli/termenv"
+	term "github.com/muesli/termenv"
 	"io"
 	"math/rand"
 	"strings"
@@ -698,24 +698,23 @@ func getSpinner() spinner.Spinner {
 	yellow := "214"
 	blue := "33"
 
-	pr := termenv.ColorProfile()
-	c := termenv.String(".").
-		Foreground(pr.Color(magenta))
-
-	l := termenv.String(".").
-		Foreground(pr.Color(yellow))
-
-	x := termenv.String(".").
-		Foreground(pr.Color(blue))
-
-	filler := termenv.String(" ").
-		Faint()
+	p := term.ColorProfile()
 
 	return spinner.Spinner{
-		Frames: []string{"fetching" + c.String() + l.String() + x.String(),
-			"fetching" + strings.Repeat(filler.String(), 3),
-			"fetching" + c.String() + strings.Repeat(filler.String(), 2),
-			"fetching" + c.String() + l.String() + strings.Repeat(filler.String(), 1)},
-		FPS: 700 * time.Millisecond,
+		Frames: []string{
+			"fetching",
+			term.String("f").Foreground(p.Color(blue)).String() + "etching",
+			term.String("f").Foreground(p.Color(yellow)).String() + term.String("e").Foreground(p.Color(blue)).String() + "tching",
+			term.String("f").Foreground(p.Color(magenta)).String() + term.String("e").Foreground(p.Color(yellow)).String() + term.String("t").Foreground(p.Color(blue)).String() + "ching",
+			"f" + term.String("e").Foreground(p.Color(magenta)).String() + term.String("t").Foreground(p.Color(yellow)).String() + term.String("c").Foreground(p.Color(blue)).String() + "hing",
+			"fe" + term.String("t").Foreground(p.Color(magenta)).String() + term.String("c").Foreground(p.Color(yellow)).String() + term.String("h").Foreground(p.Color(blue)).String() + "ing",
+			"fet" + term.String("c").Foreground(p.Color(magenta)).String() + term.String("h").Foreground(p.Color(yellow)).String() + term.String("i").Foreground(p.Color(blue)).String() + "ng",
+			"fetc" + term.String("h").Foreground(p.Color(magenta)).String() + term.String("i").Foreground(p.Color(yellow)).String() + term.String("n").Foreground(p.Color(blue)).String() + "g",
+			"fetch" + term.String("i").Foreground(p.Color(magenta)).String() + term.String("n").Foreground(p.Color(yellow)).String() + term.String("g").Foreground(p.Color(blue)).String() + "",
+			"fetchi" + term.String("n").Foreground(p.Color(magenta)).String() + term.String("g").Foreground(p.Color(yellow)).String(),
+			"fetchin" + term.String("g").Foreground(p.Color(magenta)).String(),
+			"fetching",
+		},
+		FPS: 250 * time.Millisecond,
 	}
 }
