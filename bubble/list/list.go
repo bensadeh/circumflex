@@ -582,19 +582,20 @@ func (m Model) View() string {
 }
 
 func (m Model) titleView() string {
-	if !m.showSpinner {
-		return bheader.GetHeader(m.category, m.width) + "\n"
-	}
-
-	spinnerView := m.spinnerView()
-	spinnerWidth := lipgloss.Width(spinnerView)
-
-	return bheader.GetHeader(m.category, m.width-spinnerWidth) + spinnerView + "\n"
+	return bheader.GetHeader(m.category, m.width) + "\n"
 }
 
 func (m Model) statusAndPaginationView() string {
+	centerContent := ""
+
+	if m.showSpinner {
+		centerContent = m.spinnerView()
+	} else {
+		centerContent = m.statusMessage
+	}
+
 	left := lipgloss.NewStyle().Inline(true).Width(5).MaxWidth(5).Render("")
-	center := lipgloss.NewStyle().Inline(true).Foreground(lipgloss.Color("16")).Width(m.width - 5 - 5).Align(lipgloss.Center).Render(m.statusMessage)
+	center := lipgloss.NewStyle().Inline(true).Width(m.width - 5 - 5).Align(lipgloss.Center).Render(centerContent)
 	right := lipgloss.NewStyle().Inline(true).Width(5).Align(lipgloss.Center).Render(m.Paginator.View())
 
 	return m.Styles.StatusBar.Render(left) + m.Styles.StatusBar.Render(center) + m.Styles.StatusBar.Render(right)
@@ -603,7 +604,7 @@ func (m Model) statusAndPaginationView() string {
 func (m Model) statusView() string {
 	var status string
 
-	totalItems := len(m.items)
+	//totalItems := len(m.items)
 	visibleItems := len(m.VisibleItems())
 
 	plural := ""
@@ -612,17 +613,17 @@ func (m Model) statusView() string {
 	}
 
 	if len(m.items) == 0 {
-		// Not filtering: no items.
-		status = m.Styles.StatusEmpty.Render("No items")
+		// no items.
+		status = m.Styles.StatusEmpty.Render("")
 	} else {
 		status += fmt.Sprintf("%d item%s", visibleItems, plural)
 	}
 
-	numFiltered := totalItems - visibleItems
-	if numFiltered > 0 {
-		status += m.Styles.DividerDot.String()
-		status += m.Styles.StatusBarFilterCount.Render(fmt.Sprintf("%d filtered", numFiltered))
-	}
+	//numFiltered := totalItems - visibleItems
+	//if numFiltered > 0 {
+	//	status += m.Styles.DividerDot.String()
+	//	status += m.Styles.StatusBarFilterCount.Render(fmt.Sprintf("%d filtered", numFiltered))
+	//}
 
 	return m.Styles.StatusBar.Render(status)
 }
@@ -650,7 +651,7 @@ func (m Model) populatedView() string {
 
 	// Empty states
 	if len(items) == 0 {
-		return m.Styles.NoItems.Render("No items found.")
+		return m.Styles.NoItems.Render("")
 	}
 
 	if len(items) > 0 {
@@ -693,32 +694,28 @@ func max(a, b int) int {
 }
 
 func getSpinner() spinner.Spinner {
-	lightGray := "238"
 	magenta := "200"
 	yellow := "214"
 	blue := "33"
 
 	pr := termenv.ColorProfile()
 	c := termenv.String(".").
-		Foreground(pr.Color(magenta)).
-		Background(pr.Color(lightGray))
+		Foreground(pr.Color(magenta))
 
 	l := termenv.String(".").
-		Foreground(pr.Color(yellow)).
-		Background(pr.Color(lightGray))
+		Foreground(pr.Color(yellow))
 
 	x := termenv.String(".").
-		Foreground(pr.Color(blue)).
-		Background(pr.Color(lightGray))
+		Foreground(pr.Color(blue))
 
 	filler := termenv.String(" ").
-		Background(pr.Color(lightGray))
+		Faint()
 
 	return spinner.Spinner{
-		Frames: []string{"fetching" + strings.Repeat(filler.String(), 3),
+		Frames: []string{"fetching" + c.String() + l.String() + x.String(),
+			"fetching" + strings.Repeat(filler.String(), 3),
 			"fetching" + c.String() + strings.Repeat(filler.String(), 2),
-			"fetching" + c.String() + l.String() + strings.Repeat(filler.String(), 1),
-			"fetching" + c.String() + l.String() + x.String()},
-		FPS: 600 * time.Millisecond,
+			"fetching" + c.String() + l.String() + strings.Repeat(filler.String(), 1)},
+		FPS: 700 * time.Millisecond,
 	}
 }
