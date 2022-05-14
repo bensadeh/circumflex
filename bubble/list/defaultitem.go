@@ -146,7 +146,7 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item item.Item)
 		markAsRead = m.history.Contains(item.ID)
 	)
 
-	if isSelected {
+	if isSelected && !m.disableInput {
 		//title = s.SelectedTitle.Render(title)
 		title = s.SelectedTitle.Render(title)
 		title = syntax.HighlightYCStartupsInHeadlinesWithType(title, syntax.Reverse)

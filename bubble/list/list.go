@@ -63,6 +63,7 @@ type fetchingFinished struct{}
 type Model struct {
 	showTitle     bool
 	showStatusBar bool
+	disableInput  bool
 
 	Title  string
 	Styles Styles
@@ -145,15 +146,15 @@ func New(delegate ItemDelegate, history *history.History, width, height int) Mod
 		Title:                 "List",
 		StatusMessageLifetime: time.Second,
 
-		width:      width,
-		height:     height,
-		delegate:   delegate,
-		history:    history,
-		items:      items,
-		Paginator:  p,
-		spinner:    sp,
-		onStartup:  true,
-		onStartup2: true,
+		width:        width,
+		height:       height,
+		delegate:     delegate,
+		history:      history,
+		items:        items,
+		Paginator:    p,
+		spinner:      sp,
+		onStartup:    true,
+		disableInput: true,
 	}
 
 	m.updatePagination()
@@ -486,6 +487,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.StopSpinner()
 		h, v := lipgloss.NewStyle().GetFrameSize()
 		m.setSize(screen.GetTerminalWidth()-h, screen.GetTerminalHeight()-v)
+		m.disableInput = false
 
 		return m, nil
 
@@ -604,7 +606,6 @@ func (m Model) statusAndPaginationView() string {
 func (m Model) statusView() string {
 	var status string
 
-	//totalItems := len(m.items)
 	visibleItems := len(m.VisibleItems())
 
 	plural := ""
@@ -613,17 +614,10 @@ func (m Model) statusView() string {
 	}
 
 	if len(m.items) == 0 {
-		// no items.
 		status = m.Styles.StatusEmpty.Render("")
 	} else {
 		status += fmt.Sprintf("%d item%s", visibleItems, plural)
 	}
-
-	//numFiltered := totalItems - visibleItems
-	//if numFiltered > 0 {
-	//	status += m.Styles.DividerDot.String()
-	//	status += m.Styles.StatusBarFilterCount.Render(fmt.Sprintf("%d filtered", numFiltered))
-	//}
 
 	return m.Styles.StatusBar.Render(status)
 }
@@ -632,16 +626,16 @@ func (m Model) OnStartup() bool {
 	return m.onStartup
 }
 
-func (m Model) OnStartup2() bool {
-	return m.onStartup2
+func (m *Model) IsInputDisabled() bool {
+	return m.disableInput
+}
+
+func (m *Model) SetDisabledInput(value bool) {
+	m.disableInput = value
 }
 
 func (m *Model) SetOnStartup(value bool) {
 	m.onStartup = value
-}
-
-func (m *Model) SetOnStartup2(value bool) {
-	m.onStartup2 = value
 }
 
 func (m Model) populatedView() string {

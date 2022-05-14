@@ -12,6 +12,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -28,7 +29,6 @@ func (m model) Init() tea.Cmd {
 type editorFinishedMsg struct{ err error }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	//if m.list.OnStartup() && m.list.Width() == 0 {
 	if m.list.OnStartup() {
 		var cmds []tea.Cmd
 
@@ -44,12 +44,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		return m, tea.Batch(cmds...)
 	}
-
-	//if m.list.OnStartup2() {
-	//	m.list.FetchFrontPageStories()
-	//	m.list.SetOnStartup2(false)
-	//	return m, nil
-	//}
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
@@ -78,9 +72,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, cmd
 		}
 		if msg.String() == "i" {
-			m.list.FetchFrontPageStories()
+			m.list.SetDisabledInput(!m.list.IsInputDisabled())
 
-			return m, nil
+			cmd := m.list.NewStatusMessageWithDuration("is disabled: "+strconv.FormatBool(m.list.IsInputDisabled()), 1*time.Second)
+
+			return m, cmd
 		}
 	case tea.WindowSizeMsg:
 		h, v := docStyle.GetFrameSize()
