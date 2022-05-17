@@ -1,17 +1,13 @@
 package history
 
 import (
-	"clx/file"
 	"encoding/json"
 	"os"
-	"path"
 	"time"
 )
 
 type Persistent struct {
 	visitedStories map[int]storyInfo
-	// TODO: remove this field and replace with non-persistent.go after migrating to BubbleTea
-	isEnabled bool
 }
 
 type storyInfo struct {
@@ -20,20 +16,12 @@ type storyInfo struct {
 }
 
 func (his *Persistent) Contains(id int) bool {
-	if !his.isEnabled {
-		return false
-	}
-
 	_, contains := his.visitedStories[id]
 
 	return contains
 }
 
 func (his *Persistent) GetLastVisited(id int) int64 {
-	if !his.isEnabled {
-		return time.Now().Unix()
-	}
-
 	if item, contains := his.visitedStories[id]; contains {
 		return item.lastVisited
 	}
@@ -42,10 +30,6 @@ func (his *Persistent) GetLastVisited(id int) int64 {
 }
 
 func (his *Persistent) GetLastCommentCount(id int) int {
-	if !his.isEnabled {
-		return 0
-	}
-
 	if item, contains := his.visitedStories[id]; contains {
 		return item.commentsOnLastVisit
 	}
@@ -61,10 +45,6 @@ func (his *Persistent) ClearAndWriteToDisk() {
 }
 
 func (his *Persistent) AddToHistoryAndWriteToDisk(id int, commentsOnLastVisit int) {
-	if !his.isEnabled {
-		return
-	}
-
 	his.visitedStories[id] = storyInfo{
 		lastVisited:         time.Now().Unix(),
 		commentsOnLastVisit: commentsOnLastVisit,
@@ -77,11 +57,6 @@ func (his *Persistent) AddToHistoryAndWriteToDisk(id int, commentsOnLastVisit in
 func Initialize(isEnabled bool) *Persistent {
 	h := &Persistent{
 		visitedStories: make(map[int]storyInfo),
-		isEnabled:      isEnabled,
-	}
-
-	if !h.isEnabled {
-		return h
 	}
 
 	fullPath, dirPath, fileName := getCacheFilePaths()
@@ -104,33 +79,4 @@ func Initialize(isEnabled bool) *Persistent {
 	}
 
 	return h
-}
-
-func writeToDisk(h *Persistent, dirPath string, fileName string) {
-	visitedStoriesJSON, _ := json.Marshal(h.visitedStories)
-
-	err := file.WriteToFileNew(dirPath, fileName, string(visitedStoriesJSON))
-	if err != nil {
-		panic(err)
-	}
-}
-
-func getCacheFilePaths() (string, string, string) {
-	homeDir, _ := os.UserHomeDir()
-	configDir := ".cache"
-	circumflexDir := "circumflex"
-	fileName := "history.json"
-
-	fullPath := path.Join(homeDir, configDir, circumflexDir, fileName)
-	dirPath := path.Join(homeDir, configDir, circumflexDir)
-
-	return fullPath, dirPath, fileName
-}
-
-func exists(pathToFile string) bool {
-	if _, err := os.Stat(pathToFile); os.IsNotExist(err) {
-		return false
-	}
-
-	return true
 }

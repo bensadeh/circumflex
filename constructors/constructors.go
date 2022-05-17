@@ -34,7 +34,7 @@ func NewScreenController(config *core.Config) *core.ScreenController {
 	sc.MainView.Panels.AddPanel(panels.StoriesPanel, sc.Articles, true, true)
 
 	fav := favorites.Initialize()
-	his := history.Initialize(config.MarkAsRead)
+	his := history.NewPersistentHistory()
 	sc.StoryHandler = new(handler.StoryHandler)
 	sc.StoryHandler.Init(fav, his)
 

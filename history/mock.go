@@ -4,6 +4,10 @@ import "time"
 
 type Mock struct{}
 
+func (his *Mock) NewHistory() *History {
+	return nil
+}
+
 func (Mock) Contains(id int) bool {
 	visitedStories := []int{1, 2, 3}
 

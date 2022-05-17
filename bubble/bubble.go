@@ -106,7 +106,7 @@ func (m model) View() string {
 }
 
 func Run(config *core.Config) {
-	m := model{list: list.New(list.NewDefaultDelegate(), history.Initialize(true), 0, 0)}
+	m := model{list: list.New(list.NewDefaultDelegate(), history.NewMockHistory(), 0, 0)}
 	m.list.Title = "My Fave Things"
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
