@@ -99,7 +99,7 @@ type Model struct {
 	items    [][]item.Item
 
 	delegate ItemDelegate
-	history  *history.History
+	history  *history.Persistent
 }
 
 //func (m *Model) FetchFrontPageStories() {
@@ -124,7 +124,7 @@ func (m *Model) FetchFrontPageStories() tea.Cmd {
 }
 
 // New returns a new model with sensible defaults.
-func New(delegate ItemDelegate, history *history.History, width, height int) Model {
+func New(delegate ItemDelegate, history *history.Persistent, width, height int) Model {
 	styles := DefaultStyles()
 
 	sp := spinner.New()
