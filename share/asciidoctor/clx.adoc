@@ -2,7 +2,7 @@
 :doctype: manpage
 :manmanual: circumflex
 //:mansource: clx
-:release-version: 1.33
+:release-version: 2.0
 //:man version:  {revnumber}
 :man source: circumflex {release-version}
 
@@ -24,7 +24,8 @@ clx - it's Hacker News in your terminal
 
 == Description
 
-*clx* lets you browse Hacker News from the comfort of your own terminal. Visit the comment section or read the linked article in Reader Mode.
+*clx* lets you browse Hacker News from the comfort of your own terminal. Visit the comment section or read the article
+in Reader Mode.
 
 == Keybindings
 
