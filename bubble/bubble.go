@@ -5,7 +5,6 @@ import (
 	"clx/cli"
 	"clx/comment"
 	"clx/core"
-	"clx/history"
 	"clx/hn/services/mock"
 	"clx/screen"
 	"fmt"
@@ -106,7 +105,7 @@ func (m model) View() string {
 }
 
 func Run(config *core.Config) {
-	m := model{list: list.New(list.NewDefaultDelegate(), history.NewMockHistory(), 0, 0)}
+	m := model{list: list.New(list.NewDefaultDelegate(), config, 0, 0)}
 	m.list.Title = "My Fave Things"
 
 	p := tea.NewProgram(m, tea.WithAltScreen())

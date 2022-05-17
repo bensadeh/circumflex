@@ -3,6 +3,7 @@ package list
 import (
 	"clx/bheader"
 	"clx/bubble/ranking"
+	"clx/core"
 	"clx/history"
 	"clx/hn/services/mock"
 	"clx/item"
@@ -100,6 +101,7 @@ type Model struct {
 
 	delegate ItemDelegate
 	history  history.History
+	config   *core.Config
 }
 
 //func (m *Model) FetchFrontPageStories() {
@@ -124,7 +126,7 @@ func (m *Model) FetchFrontPageStories() tea.Cmd {
 }
 
 // New returns a new model with sensible defaults.
-func New(delegate ItemDelegate, history history.History, width, height int) Model {
+func New(delegate ItemDelegate, config *core.Config, width, height int) Model {
 	styles := DefaultStyles()
 
 	sp := spinner.New()
@@ -149,16 +151,29 @@ func New(delegate ItemDelegate, history history.History, width, height int) Mode
 		width:        width,
 		height:       height,
 		delegate:     delegate,
-		history:      history,
+		history:      getHistory(config.DebugMode, config.MarkAsRead),
 		items:        items,
 		Paginator:    p,
 		spinner:      sp,
 		onStartup:    true,
 		disableInput: true,
+		config:       config,
 	}
 
 	m.updatePagination()
 	return m
+}
+
+func getHistory(debugMode bool, markAsRead bool) history.History {
+	if debugMode {
+		return history.NewMockHistory()
+	}
+
+	if markAsRead {
+		return history.NewPersistentHistory()
+	}
+
+	return history.NewNonPersistentHistory()
 }
 
 // NewModel returns a new model with sensible defaults.
