@@ -10,7 +10,9 @@ import (
 
 type Persistent struct {
 	visitedStories map[int]storyInfo
-	isEnabled      bool
+	// TODO: remove this field and replace with non-persistent.go
+	// after migrating to BubbleTea
+	isEnabled bool
 }
 
 type storyInfo struct {
