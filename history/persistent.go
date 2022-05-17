@@ -10,8 +10,7 @@ import (
 
 type Persistent struct {
 	visitedStories map[int]storyInfo
-	// TODO: remove this field and replace with non-persistent.go
-	// after migrating to BubbleTea
+	// TODO: remove this field and replace with non-persistent.go after migrating to BubbleTea
 	isEnabled bool
 }
 

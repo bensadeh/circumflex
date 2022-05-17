@@ -1,5 +1,7 @@
 package history
 
+import "time"
+
 type Mock struct{}
 
 func (Mock) Contains(id int) bool {
@@ -8,31 +10,24 @@ func (Mock) Contains(id int) bool {
 	return contains(visitedStories, id)
 }
 
-func contains(s []int, e int) bool {
-	for _, a := range s {
-		if a == e {
+func contains(slice []int, element int) bool {
+	for _, a := range slice {
+		if a == element {
 			return true
 		}
 	}
+
 	return false
 }
 
-func (Mock) GetLastVisited(id int) int64 {
-	//TODO implement me
-	panic("implement me")
+func (Mock) GetLastVisited(_ int) int64 {
+	return time.Now().Unix()
 }
 
-func (Mock) GetLastCommentCount(id int) int {
-	//TODO implement me
-	panic("implement me")
+func (Mock) GetLastCommentCount(_ int) int {
+	return 0
 }
 
-func (Mock) ClearAndWriteToDisk() {
-	//TODO implement me
-	panic("implement me")
-}
+func (Mock) ClearAndWriteToDisk() {}
 
-func (Mock) AddToHistoryAndWriteToDisk(id int, commentsOnLastVisit int) {
-	//TODO implement me
-	panic("implement me")
-}
+func (Mock) AddToHistoryAndWriteToDisk(_ int, _ int) {}
