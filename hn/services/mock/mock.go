@@ -15,7 +15,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Lorem ipsum dolor sit amet",
 			Points:        31,
-			ID:            31060183,
+			ID:            1,
 			User:          "alfa",
 			Time:          time.Now().Add(-time.Minute * 2).Unix(),
 			Domain:        "stackoverflow.com",
@@ -24,7 +24,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Aliquam mauris massa, rhoncus nec lectus eu",
 			Points:        17,
-			ID:            31206544,
+			ID:            2,
 			User:          "beta",
 			Time:          time.Now().Add(-time.Minute * 46).Unix(),
 			Domain:        "pkg.go.dev",
@@ -33,7 +33,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Show HN: consectetur adipiscing elit",
 			Points:        331,
-			ID:            31206536,
+			ID:            3,
 			User:          "gamma",
 			Time:          time.Now().Add(-time.Hour * 3).Unix(),
 			Domain:        "github.com",
@@ -42,7 +42,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Interdum et malesuada fames ac ante [PDF]",
 			Points:        40,
-			ID:            31206546,
+			ID:            4,
 			User:          "delta",
 			Time:          time.Now().Add(-time.Hour * 5).Unix(),
 			Domain:        "objective-see.com",
@@ -51,7 +51,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Donec sed orci aliquam lorem mattis consequat",
 			Points:        417,
-			ID:            1206536,
+			ID:            5,
 			User:          "epsilon",
 			Time:          time.Now().Add(-time.Minute * 68).Unix(),
 			Domain:        "bloomberg.com",
@@ -60,7 +60,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Ask HN: Vestibulum ante ipsum primis in faucibus?",
 			Points:        40,
-			ID:            3126536,
+			ID:            6,
 			User:          "zeta",
 			Time:          time.Now().Add(-time.Minute * 27).Unix(),
 			Domain:        "",
@@ -69,7 +69,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Orci luctus et ultrices posuere cubilia curae (2017)",
 			Points:        37,
-			ID:            31206536,
+			ID:            7,
 			User:          "eta",
 			Time:          time.Now().Add(-time.Minute * 32).Unix(),
 			Domain:        "apple.com",
@@ -78,7 +78,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Tell HN: Donec eget sapien viverra, viverra lacus in",
 			Points:        16,
-			ID:            31206536,
+			ID:            8,
 			User:          "theta",
 			Time:          time.Now().Add(-time.Hour * 3).Unix(),
 			Domain:        "en.wikipedia.org",
@@ -87,7 +87,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Vivamus rhoncus sit amet tellus eget blandit",
 			Points:        7,
-			ID:            31206551,
+			ID:            9,
 			User:          "iota",
 			Time:          time.Now().Add(-time.Hour * 16).Unix(),
 			Domain:        "xbox.com",
@@ -96,7 +96,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Fusce venenatis laoreet interdum (2003)",
 			Points:        503,
-			ID:            3120652,
+			ID:            10,
 			User:          "kappa",
 			Time:          time.Now().Add(-time.Hour * 15).Unix(),
 			Domain:        "huffingtonpost.com",
@@ -105,7 +105,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Etiam tincidunt, ex fermentum iaculis placerat",
 			Points:        48,
-			ID:            31206547,
+			ID:            11,
 			User:          "lambda",
 			Time:          time.Now().Add(-time.Hour * 8).Unix(),
 			Domain:        "bbc.co.uk",
@@ -114,7 +114,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Aenean sit amet erat eu quam vehicula fringilla",
 			Points:        110,
-			ID:            31206523,
+			ID:            12,
 			User:          "mu",
 			Time:          time.Now().Add(-time.Minute * 400).Unix(),
 			Domain:        "sites.google.com",
@@ -123,7 +123,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Launch HN: Cras consectetur (YC W05) - Nam vitae massa leo",
 			Points:        9,
-			ID:            31206536,
+			ID:            13,
 			User:          "nu",
 			Time:          time.Now().Add(-time.Minute * 120).Unix(),
 			Domain:        "",
@@ -132,7 +132,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Sed ut perspiciatis, unde omnis iste natus error",
 			Points:        0,
-			ID:            31206590,
+			ID:            14,
 			User:          "xi",
 			Time:          time.Now().Add(-time.Minute * 17).Unix(),
 			Domain:        "wired.com",
@@ -141,7 +141,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Nemo enim ipsam voluptatem, quia voluptas sit",
 			Points:        66,
-			ID:            31206591,
+			ID:            14,
 			User:          "omicron",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "macrumors.com",
@@ -150,7 +150,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos",
 			Points:        65,
-			ID:            31206593,
+			ID:            15,
 			User:          "pi",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "arxiv.org",
@@ -159,7 +159,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Ut enim ad minima veniam",
 			Points:        27,
-			ID:            31206597,
+			ID:            16,
 			User:          "rho",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "twitter.com",
@@ -167,7 +167,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		},
 		{
 			Title:         "Nam libero tempore (YC S16), cum soluta nobis est eligendi optio",
-			ID:            31206610,
+			ID:            17,
 			Points:        84,
 			User:          "sigma",
 			Time:          time.Now().Add(-time.Hour).Unix(),
@@ -177,7 +177,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Cumque nihil impedit, quo minus id, quod maxime placeat",
 			Points:        6,
-			ID:            31206612,
+			ID:            18,
 			User:          "tau",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "medium.com",
@@ -186,7 +186,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Emporibus autem quibusdam et aut officiis debitis aut rerum",
 			Points:        150,
-			ID:            31206614,
+			ID:            19,
 			User:          "upsilon",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "npr.com",
@@ -195,7 +195,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 		{
 			Title:         "Necessitatibus saepe eveniet, ut et voluptates repudiandae",
 			Points:        135,
-			ID:            31206615,
+			ID:            20,
 			User:          "phi",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "nature.com",
