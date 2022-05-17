@@ -88,7 +88,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func openEditor(id int) tea.Cmd {
-	comments := new(mock.Service).FetchStory(id)
+	comments := new(mock.MockService).FetchStory(id)
 
 	screenWidth := screen.GetTerminalWidth()
 	commentTree := comment.ToString(comments, core.GetConfigWithDefaults(), screenWidth, 0)
@@ -106,7 +106,6 @@ func (m model) View() string {
 
 func Run(config *core.Config) {
 	m := model{list: list.New(list.NewDefaultDelegate(), config, 0, 0)}
-	m.list.Title = "My Fave Things"
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
 

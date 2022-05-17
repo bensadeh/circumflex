@@ -5,13 +5,15 @@ import (
 	"time"
 )
 
-type Service struct{}
+type MockService struct{}
 
-func (s Service) Init(_ int) {
+func (MockService) Init(_ int) {
 }
 
-func (s Service) FetchStories(_ int, _ int) []item.Item {
-	return []item.Item{
+func (MockService) FetchStories(_ int, _ int) []*item.Item {
+	time.Sleep(time.Second * 3)
+
+	return []*item.Item{
 		{
 			Title:         "Lorem ipsum dolor sit amet",
 			Points:        31,
@@ -276,7 +278,7 @@ func (s Service) FetchStories(_ int, _ int) []item.Item {
 	}
 }
 
-func (s Service) FetchStory(_ int) *item.Item {
+func (MockService) FetchStory(_ int) *item.Item {
 	return &item.Item{
 		ID:      32145667,
 		Title:   "Mauris commodo odio quis diam fermentum, et suscipit augue pharetra",

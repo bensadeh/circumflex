@@ -122,7 +122,7 @@ func (d DefaultDelegate) Update(msg tea.Msg, m *Model) tea.Cmd {
 }
 
 // Render prints an item.
-func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item item.Item) {
+func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item) {
 	var (
 		title, desc, domain string
 		s                   = &d.Styles

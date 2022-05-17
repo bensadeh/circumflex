@@ -5,6 +5,8 @@ import (
 	"clx/bubble/ranking"
 	"clx/core"
 	"clx/history"
+	"clx/hn"
+	"clx/hn/services/hybrid"
 	"clx/hn/services/mock"
 	"clx/item"
 	"clx/screen"
@@ -42,7 +44,7 @@ const (
 // help items will be added to the help view.
 type ItemDelegate interface {
 	// Render renders the item's view.
-	Render(w io.Writer, m Model, index int, item item.Item)
+	Render(w io.Writer, m Model, index int, item *item.Item)
 
 	// Height is the height of the list item.
 	Height() int
@@ -97,35 +99,23 @@ type Model struct {
 	statusMessageTimer *time.Timer
 
 	category int
-	items    [][]item.Item
+	items    [][]*item.Item
 
 	delegate ItemDelegate
 	history  history.History
 	config   *core.Config
+	service  hn.Service
 }
-
-//func (m *Model) FetchFrontPageStories() {
-//	time.Sleep(time.Second * 2)
-//
-//	service := new(mock.Service)
-//	stories := service.FetchStories(0, 0)
-//
-//	m.items[frontPage] = stories
-//}
 
 func (m *Model) FetchFrontPageStories() tea.Cmd {
 	return func() tea.Msg {
-		time.Sleep(time.Second * 3)
-
-		service := new(mock.Service)
-		stories := service.FetchStories(0, 0)
+		stories := m.service.FetchStories(0, 0)
 
 		m.items[frontPage] = stories
 		return fetchingFinished{}
 	}
 }
 
-// New returns a new model with sensible defaults.
 func New(delegate ItemDelegate, config *core.Config, width, height int) Model {
 	styles := DefaultStyles()
 
@@ -138,7 +128,7 @@ func New(delegate ItemDelegate, config *core.Config, width, height int) Model {
 	p.ActiveDot = styles.ActivePaginationDot.String()
 	p.InactiveDot = styles.InactivePaginationDot.String()
 
-	items := make([][]item.Item, numberOfCategories)
+	items := make([][]*item.Item, numberOfCategories)
 
 	m := Model{
 		showTitle:             true,
@@ -158,7 +148,10 @@ func New(delegate ItemDelegate, config *core.Config, width, height int) Model {
 		onStartup:    true,
 		disableInput: true,
 		config:       config,
+		service:      getService(config.DebugMode),
 	}
+
+	m.service.Init(30)
 
 	m.updatePagination()
 	return m
@@ -174,6 +167,14 @@ func getHistory(debugMode bool, markAsRead bool) history.History {
 	}
 
 	return history.NewNonPersistentHistory()
+}
+
+func getService(debugMode bool) hn.Service {
+	if debugMode {
+		return mock.MockService{}
+	}
+
+	return &hybrid.Service{}
 }
 
 // NewModel returns a new model with sensible defaults.
@@ -205,12 +206,12 @@ func (m Model) ShowStatusBar() bool {
 }
 
 // Items returns the items in the list.
-func (m Model) Items() []item.Item {
+func (m Model) Items() []*item.Item {
 	return m.items[m.category]
 }
 
 // Set the items available in the list. This returns a command.
-func (m *Model) SetItems(i []item.Item) tea.Cmd {
+func (m *Model) SetItems(i []*item.Item) tea.Cmd {
 	var cmd tea.Cmd
 	m.items[m.category] = i
 
@@ -236,18 +237,18 @@ func (m *Model) SetDelegate(d ItemDelegate) {
 }
 
 // VisibleItems returns the total items available to be shown.
-func (m Model) VisibleItems() []item.Item {
+func (m Model) VisibleItems() []*item.Item {
 	return m.items[m.category]
 }
 
 // SelectedItems returns the current selected item in the list.
-func (m Model) SelectedItem() item.Item {
+func (m Model) SelectedItem() *item.Item {
 	i := m.Index()
 
 	items := m.VisibleItems()
 	if i < 0 || len(items) == 0 || len(items) <= i {
 		//return nil
-		return item.Item{}
+		return &item.Item{}
 	}
 
 	return items[i]
@@ -334,7 +335,7 @@ func (m *Model) selectCategory(category int) {
 		return
 	}
 
-	service := new(mock.Service)
+	service := new(mock.MockService)
 	stories := service.FetchStories(0, m.category)
 
 	// Randomize list to make debugging easier
