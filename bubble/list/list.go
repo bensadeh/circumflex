@@ -697,6 +697,10 @@ func getSpinner() spinner.Spinner {
 	return spinner.Spinner{
 		Frames: []string{
 			"fetching",
+			"fetching",
+			"fetching",
+			"fetching",
+			"fetching",
 			term.String("f").Foreground(p.Color(blue)).String() + "etching",
 			term.String("f").Foreground(p.Color(yellow)).String() + term.String("e").Foreground(p.Color(blue)).String() + "tching",
 			term.String("f").Foreground(p.Color(magenta)).String() + term.String("e").Foreground(p.Color(yellow)).String() + term.String("t").Foreground(p.Color(blue)).String() + "ching",
@@ -709,6 +713,6 @@ func getSpinner() spinner.Spinner {
 			"fetchin" + term.String("g").Foreground(p.Color(magenta)).String(),
 			"fetching",
 		},
-		FPS: 250 * time.Millisecond,
+		FPS: 150 * time.Millisecond,
 	}
 }
