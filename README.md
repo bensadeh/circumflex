@@ -296,14 +296,14 @@ Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of available keymaps:
 
 `circumflex` uses:
 
-* [tcell](https://github.com/gdamore/tcell) and [cview](https://code.rocketnine.space/tslocum/cview) for the TUI
-* [cobra](https://github.com/spf13/cobra) and [viper](https://github.com/spf13/viper) for the CLI
+* [BubbleTea](https://github.com/charmbracelet/bubbletea) for the TUI
+* [cobra](https://github.com/spf13/cobra) for the CLI
 * [Algolia's Search API](https://hn.algolia.com/api) and [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) 
 for providing submissions and comments
 * [`less`](http://greenwoodsoftware.com/less/) for viewing comments and articles
 * [go-term-text](https://github.com/MichaelMure/go-term-text) for text formatting
-* [go-readability](https://github.com/go-shiori/go-readability) and [html-to-markdown](https://github.com/JohannesKaufmann/html-to-markdown) 
-for formatting articles in Reader Mode
+* [go-readability](https://github.com/go-shiori/go-readability), [html-to-markdown](https://github.com/JohannesKaufmann/html-to-markdown) 
+and [Glamour](github.com/charmbracelet/glamour) for formatting and rendering articles in Reader Mode
 
 Screenshots use:
 
