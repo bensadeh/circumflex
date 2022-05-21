@@ -179,7 +179,7 @@ func RemoveUnwantedWhitespace(text string) string {
 
 func HighlightDomain(domain string) string {
 	if domain == "" {
-		return ""
+		return reset
 	}
 
 	return reset + aurora.Faint("("+domain+")").String()
