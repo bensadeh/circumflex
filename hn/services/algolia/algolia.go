@@ -1,7 +1,7 @@
 package algolia
 
 import (
-	"clx/constants/categories"
+	"clx/constants/category"
 	"clx/constants/clx"
 	"clx/item"
 	"fmt"
@@ -20,10 +20,10 @@ const (
 )
 
 type Service struct {
-	categories []category
+	categories []c
 }
 
-type category struct {
+type c struct {
 	items               []int
 	numberOfItemsToShow int
 }
@@ -33,12 +33,12 @@ func (s *Service) Init(itemsToShow int) {
 	threePages := (itemsToShow * 3) + buffer
 	onePage := itemsToShow + 1
 
-	s.categories = make([]category, numberOfCategories)
+	s.categories = make([]c, numberOfCategories)
 
-	s.categories[categories.FrontPage].numberOfItemsToShow = threePages
-	s.categories[categories.New].numberOfItemsToShow = threePages
-	s.categories[categories.Ask].numberOfItemsToShow = onePage
-	s.categories[categories.Show].numberOfItemsToShow = onePage
+	s.categories[category.FrontPage].numberOfItemsToShow = threePages
+	s.categories[category.New].numberOfItemsToShow = threePages
+	s.categories[category.Ask].numberOfItemsToShow = onePage
+	s.categories[category.Show].numberOfItemsToShow = onePage
 }
 
 func (s *Service) FetchStories(_ int, category int) []*item.Item {
@@ -110,22 +110,22 @@ func getStoryListURIParam(ids []int) string {
 	return sb.String()
 }
 
-func getCategory(category int) string {
-	switch category {
-	case categories.FrontPage:
+func getCategory(cat int) string {
+	switch cat {
+	case category.FrontPage:
 		return "topstories"
 
-	case categories.New:
+	case category.New:
 		return "newstories"
 
-	case categories.Ask:
+	case category.Ask:
 		return "askstories"
 
-	case categories.Show:
+	case category.Show:
 		return "showstories"
 
 	default:
-		panic("Unsupported category: " + strconv.Itoa(category))
+		panic("Unsupported c: " + strconv.Itoa(cat))
 	}
 }
 

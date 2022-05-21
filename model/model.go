@@ -4,7 +4,7 @@ import (
 	"clx/browser"
 	"clx/cli"
 	"clx/comment"
-	"clx/constants/categories"
+	"clx/constants/category"
 	"clx/constants/messages"
 	"clx/constants/state"
 	"clx/core"
@@ -506,7 +506,7 @@ func DeleteItem(app *cview.Application, list *cview.List, appState *core.Applica
 		changePage(app, list, main, appState, config, ret, reg, -1, service)
 
 	case hasDeletedLastItemOnFirstPage:
-		appState.CurrentCategory = categories.Show
+		appState.CurrentCategory = category.Show
 		keyTab := tcell.NewEventKey(tcell.KeyTab, ' ', tcell.ModNone)
 		ChangeCategory(app, keyTab, list, appState, main, config, ret, reg, service)
 

@@ -1,4 +1,4 @@
-package categories
+package category
 
 const (
 	FrontPage = 0

@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"clx/constants/categories"
+	"clx/constants/category"
 	"clx/favorites"
 	"clx/file"
 	"clx/header"
@@ -38,13 +38,13 @@ type storyCategory struct {
 	stories            []*item.Item
 }
 
-func (r *StoryHandler) GetStories(category int, page int, visibleStories int, highlightHeadlines bool,
+func (r *StoryHandler) GetStories(cat int, page int, visibleStories int, highlightHeadlines bool,
 	service hn.Service) ([]*cview.ListItem, error) {
-	if category == categories.Favorites {
-		return getFavoritesStories(page, visibleStories, highlightHeadlines, r.sc[category], r.history)
+	if cat == category.Favorites {
+		return getFavoritesStories(page, visibleStories, highlightHeadlines, r.sc[cat], r.history)
 	}
 
-	return getOnlineStories(category, page, visibleStories, highlightHeadlines, r.sc[category], r.history,
+	return getOnlineStories(cat, page, visibleStories, highlightHeadlines, r.sc[cat], r.history,
 		service)
 }
 
@@ -108,32 +108,32 @@ func getOverriddenYCJobsStatus(visibleStories int, hideYCJobs bool) bool {
 func (r *StoryHandler) Init(fav *favorites.Favorites, his history.History) {
 	r.sc = make([]*storyCategory, totalNumberOfCategories)
 
-	r.sc[categories.FrontPage] = new(storyCategory)
-	r.sc[categories.New] = new(storyCategory)
-	r.sc[categories.Ask] = new(storyCategory)
-	r.sc[categories.Show] = new(storyCategory)
-	r.sc[categories.Favorites] = new(storyCategory)
+	r.sc[category.FrontPage] = new(storyCategory)
+	r.sc[category.New] = new(storyCategory)
+	r.sc[category.Ask] = new(storyCategory)
+	r.sc[category.Show] = new(storyCategory)
+	r.sc[category.Favorites] = new(storyCategory)
 
-	r.sc[categories.FrontPage].maxPages = frontPageMaxPages
-	r.sc[categories.New].maxPages = newMaxPages
-	r.sc[categories.Ask].maxPages = askMaxPages
-	r.sc[categories.Show].maxPages = showMaxPages
-	r.sc[categories.Favorites].maxPages = favoritesMaxPages
+	r.sc[category.FrontPage].maxPages = frontPageMaxPages
+	r.sc[category.New].maxPages = newMaxPages
+	r.sc[category.Ask].maxPages = askMaxPages
+	r.sc[category.Show].maxPages = showMaxPages
+	r.sc[category.Favorites].maxPages = favoritesMaxPages
 
-	r.sc[categories.Favorites].stories = fav.Items
+	r.sc[category.Favorites].stories = fav.Items
 	r.history = his
 }
 
 func (r *StoryHandler) Reset() {
-	r.sc[categories.FrontPage].pageToFetchFromAPI = 0
-	r.sc[categories.New].pageToFetchFromAPI = 0
-	r.sc[categories.Ask].pageToFetchFromAPI = 0
-	r.sc[categories.Show].pageToFetchFromAPI = 0
+	r.sc[category.FrontPage].pageToFetchFromAPI = 0
+	r.sc[category.New].pageToFetchFromAPI = 0
+	r.sc[category.Ask].pageToFetchFromAPI = 0
+	r.sc[category.Show].pageToFetchFromAPI = 0
 
-	r.sc[categories.FrontPage].stories = nil
-	r.sc[categories.New].stories = nil
-	r.sc[categories.Ask].stories = nil
-	r.sc[categories.Show].stories = nil
+	r.sc[category.FrontPage].stories = nil
+	r.sc[category.New].stories = nil
+	r.sc[category.Ask].stories = nil
+	r.sc[category.Show].stories = nil
 }
 
 func convert(subs []*item.Item, his history.History, highlightHeadlines bool,
@@ -206,20 +206,20 @@ func removeIndex(s []*item.Item, index int) []*item.Item {
 	return append(s[:index], s[index+1:]...)
 }
 
-func (r *StoryHandler) GetMaxPages(category int, storiesToShow int) int {
-	if category == categories.Favorites {
-		fav := r.sc[categories.Favorites].stories
+func (r *StoryHandler) GetMaxPages(cat int, storiesToShow int) int {
+	if cat == category.Favorites {
+		fav := r.sc[category.Favorites].stories
 		favItems := len(fav) - 1
 		availablePages := favItems / storiesToShow
 
 		return min(availablePages, favoritesMaxPages)
 	}
 
-	return r.sc[category].maxPages
+	return r.sc[cat].maxPages
 }
 
 func (r *StoryHandler) AddItemToFavoritesAndWriteToFile(story *item.Item) error {
-	r.sc[categories.Favorites].stories = append(r.sc[categories.Favorites].stories, story)
+	r.sc[category.Favorites].stories = append(r.sc[category.Favorites].stories, story)
 
 	bytes, _ := r.GetFavoritesJSON()
 	filePath := file.PathToFavoritesFile()
@@ -233,7 +233,7 @@ func (r *StoryHandler) AddItemToFavoritesAndWriteToFile(story *item.Item) error 
 }
 
 func (r *StoryHandler) GetFavoritesJSON() ([]byte, error) {
-	b, err := json.MarshalIndent(r.sc[categories.Favorites].stories, "", "    ")
+	b, err := json.MarshalIndent(r.sc[category.Favorites].stories, "", "    ")
 	if err != nil {
 		return nil, fmt.Errorf("could not serialize favorites struct: %w", err)
 	}
@@ -242,7 +242,7 @@ func (r *StoryHandler) GetFavoritesJSON() ([]byte, error) {
 }
 
 func (r *StoryHandler) UpdateFavoriteStoryAndWriteToDisk(newStory *item.Item) {
-	for i, s := range r.sc[categories.Favorites].stories {
+	for i, s := range r.sc[category.Favorites].stories {
 		if s.ID == newStory.ID {
 			isFieldsUpdated := s.Title != newStory.Title || s.Points != newStory.Points ||
 				s.Time != newStory.Time || s.User != newStory.User ||
@@ -250,13 +250,13 @@ func (r *StoryHandler) UpdateFavoriteStoryAndWriteToDisk(newStory *item.Item) {
 				s.Domain != newStory.Domain
 
 			if isFieldsUpdated {
-				r.sc[categories.Favorites].stories[i].Title = newStory.Title
-				r.sc[categories.Favorites].stories[i].Points = newStory.Points
-				r.sc[categories.Favorites].stories[i].Time = newStory.Time
-				r.sc[categories.Favorites].stories[i].User = newStory.User
-				r.sc[categories.Favorites].stories[i].CommentsCount = newStory.CommentsCount
-				r.sc[categories.Favorites].stories[i].URL = newStory.URL
-				r.sc[categories.Favorites].stories[i].Domain = newStory.Domain
+				r.sc[category.Favorites].stories[i].Title = newStory.Title
+				r.sc[category.Favorites].stories[i].Points = newStory.Points
+				r.sc[category.Favorites].stories[i].Time = newStory.Time
+				r.sc[category.Favorites].stories[i].User = newStory.User
+				r.sc[category.Favorites].stories[i].CommentsCount = newStory.CommentsCount
+				r.sc[category.Favorites].stories[i].URL = newStory.URL
+				r.sc[category.Favorites].stories[i].Domain = newStory.Domain
 
 				write(r)
 			}
@@ -265,7 +265,7 @@ func (r *StoryHandler) UpdateFavoriteStoryAndWriteToDisk(newStory *item.Item) {
 }
 
 func (r *StoryHandler) GetHackerNewsHeader(currentCategory int, headerType int) string {
-	fav := r.sc[categories.Favorites].stories
+	fav := r.sc[category.Favorites].stories
 	showFavorites := len(fav) != 0
 
 	return header.GetHackerNewsHeader(currentCategory, showFavorites, headerType)
@@ -300,7 +300,7 @@ func (r *StoryHandler) getPreviousCategory(currentCategory int) int {
 }
 
 func (r *StoryHandler) getTotalNumberOfCategories() int {
-	fav := r.sc[categories.Favorites].stories
+	fav := r.sc[category.Favorites].stories
 	hasFavorites := len(fav) != 0
 
 	if hasFavorites {

@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"clx/constants/categories"
+	"clx/constants/category"
 	"clx/constants/state"
 	"clx/core"
 	"clx/handler"
@@ -75,7 +75,7 @@ func SetApplicationShortcuts(ret *handler.StoryHandler, reg *vim.Register, app *
 		case event.Rune() == 'f':
 			model.AddToFavoritesConfirmationDialogue(main, appState)
 
-		case event.Rune() == 'x' && appState.CurrentCategory == categories.Favorites:
+		case event.Rune() == 'x' && appState.CurrentCategory == category.Favorites:
 			model.DeleteFavoriteConfirmationDialogue(main, appState)
 
 		case event.Key() == tcell.KeyTAB || event.Key() == tcell.KeyBacktab:

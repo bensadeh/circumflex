@@ -1,48 +1,33 @@
 package bheader
 
 import (
+	"clx/constants/category"
+	"clx/constants/style"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/muesli/termenv"
 	"strings"
 )
 
-const (
-	gray       = "237"
-	lightGray  = "238"
-	magenta    = "200"
-	yellow     = "214"
-	blue       = "33"
-	red        = "219"
-	unselected = "250"
-
-	newest    = 1
-	ask       = 2
-	show      = 3
-	favorites = 4
-)
-
 func GetHeader(selectedSubHeader int, width int) string {
-	p := termenv.ColorProfile()
-	c := termenv.String("  c").
-		Foreground(p.Color(magenta)).
-		Background(p.Color(gray))
+	c := lipgloss.NewStyle().
+		Foreground(lipgloss.Color(style.Magenta)).
+		Background(lipgloss.AdaptiveColor{Light: style.LogoBackgroundLight, Dark: style.LogoBackgroundDark})
 
-	l := termenv.String("l").
-		Foreground(p.Color(yellow)).
-		Background(p.Color(gray))
+	l := lipgloss.NewStyle().
+		Foreground(lipgloss.Color(style.Yellow)).
+		Background(lipgloss.AdaptiveColor{Light: style.LogoBackgroundLight, Dark: style.LogoBackgroundDark})
 
-	x := termenv.String("x  ").
-		Foreground(p.Color(blue)).
-		Background(p.Color(gray))
+	x := lipgloss.NewStyle().
+		Foreground(lipgloss.Color(style.Blue)).
+		Background(lipgloss.AdaptiveColor{Light: style.LogoBackgroundLight, Dark: style.LogoBackgroundDark})
 
-	title := c.String() + l.String() + x.String()
+	title := c.Render("  c") + l.Render("l") + x.Render("x  ")
+
 	categories := getCategories(selectedSubHeader)
 	filler := getFiller(title, categories, width)
 	return title + categories + filler
 }
 
 func getFiller(title string, categories string, width int) string {
-	p := termenv.ColorProfile()
 	availableSpace := width - lipgloss.Width(title+categories)
 
 	if availableSpace < 0 {
@@ -51,32 +36,31 @@ func getFiller(title string, categories string, width int) string {
 
 	filler := strings.Repeat(" ", availableSpace)
 
-	return termenv.String(filler).
-		Background(p.Color(lightGray)).
-		String()
+	return lipgloss.NewStyle().
+		Background(lipgloss.AdaptiveColor{Light: style.HeaderBackgroundLight, Dark: style.HeaderBackgroundDark}).
+		Render(filler)
 }
 
 func getCategories(selectedSubHeader int) string {
 	subHeaders := []string{"new", "ask", "show"}
 
-	p := termenv.ColorProfile()
-	categories := termenv.String("  ").
-		Background(p.Color(lightGray)).
-		String()
+	categories := lipgloss.NewStyle().
+		Background(lipgloss.AdaptiveColor{Light: style.HeaderBackgroundLight, Dark: style.HeaderBackgroundDark}).
+		Render("   ")
 
-	separator := termenv.String(" • ").
-		Foreground(p.Color(unselected)).
-		Background(p.Color(lightGray)).
-		String()
+	separator := lipgloss.NewStyle().
+		Foreground(lipgloss.AdaptiveColor{Light: style.UnselectedItemLight, Dark: style.UnselectedItemDark}).
+		Background(lipgloss.AdaptiveColor{Light: style.HeaderBackgroundLight, Dark: style.HeaderBackgroundDark}).
+		Render(" • ")
 
 	for i, subHeader := range subHeaders {
 		isOnLastItem := i == len(subHeaders)-1
 		selectedCatColor := getColor(i, selectedSubHeader)
 
-		categories += termenv.String(subHeader).
-			Foreground(p.Color(selectedCatColor)).
-			Background(p.Color(lightGray)).
-			String()
+		categories += lipgloss.NewStyle().
+			Foreground(selectedCatColor).
+			Background(lipgloss.AdaptiveColor{Light: style.HeaderBackgroundLight, Dark: style.HeaderBackgroundDark}).
+			Render(subHeader)
 
 		if !isOnLastItem {
 			categories += separator
@@ -87,25 +71,25 @@ func getCategories(selectedSubHeader int) string {
 	return categories
 }
 
-func getColor(i int, selectedSubHeader int) string {
+func getColor(i int, selectedSubHeader int) lipgloss.TerminalColor {
 	if i+1 == selectedSubHeader {
 		return getSelectedCategoryColor(i + 1)
 	}
 
-	return unselected
+	return lipgloss.AdaptiveColor{Light: style.UnselectedItemLight, Dark: style.UnselectedItemDark}
 }
 
-func getSelectedCategoryColor(selectedSubHeader int) string {
+func getSelectedCategoryColor(selectedSubHeader int) lipgloss.TerminalColor {
 	switch selectedSubHeader {
-	case newest:
-		return magenta
-	case ask:
-		return yellow
-	case show:
-		return blue
-	case favorites:
-		return red
+	case category.New:
+		return lipgloss.Color(style.Magenta)
+	case category.Ask:
+		return lipgloss.Color(style.Yellow)
+	case category.Show:
+		return lipgloss.Color(style.Blue)
+	case category.Favorites:
+		return lipgloss.Color(style.Red)
 	default:
-		return unselected
+		return lipgloss.AdaptiveColor{Light: style.UnselectedItemLight, Dark: style.UnselectedItemDark}
 	}
 }

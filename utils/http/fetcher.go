@@ -1,7 +1,7 @@
 package http
 
 import (
-	"clx/constants/categories"
+	"clx/constants/category"
 	"clx/constants/clx"
 	"clx/endpoints"
 	"fmt"
@@ -36,18 +36,18 @@ func FetchStories(page int, category int) ([]*endpoints.Story, error) {
 	return s, nil
 }
 
-func getURL(category int) string {
-	switch category {
-	case categories.FrontPage:
+func getURL(cat int) string {
+	switch cat {
+	case category.FrontPage:
 		return baseURL + "news" + page
 
-	case categories.New:
+	case category.New:
 		return baseURL + "newest" + page
 
-	case categories.Ask:
+	case category.Ask:
 		return baseURL + "ask" + page
 
-	case categories.Show:
+	case category.Show:
 		return baseURL + "show" + page
 
 	default:
