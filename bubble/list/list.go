@@ -3,6 +3,7 @@ package list
 import (
 	"clx/bheader"
 	"clx/bubble/ranking"
+	"clx/constants/category"
 	"clx/constants/style"
 	"clx/core"
 	"clx/history"
@@ -26,11 +27,6 @@ import (
 )
 
 const (
-	frontPage = 0
-	newest    = 1
-	ask       = 2
-	show      = 3
-	//favorites = 4
 	numberOfCategories = 4
 )
 
@@ -112,7 +108,7 @@ func (m *Model) FetchFrontPageStories() tea.Cmd {
 	return func() tea.Msg {
 		stories := m.service.FetchStories(0, 0)
 
-		m.items[frontPage] = stories
+		m.items[category.FrontPage] = stories
 		return fetchingFinished{}
 	}
 }
@@ -306,7 +302,7 @@ func (m Model) NextPage() {
 func (m *Model) NextCategory() {
 	isAtLastCategory := m.category == numberOfCategories-1
 	if isAtLastCategory {
-		m.selectCategory(frontPage)
+		m.selectCategory(category.FrontPage)
 
 		return
 	}
@@ -315,9 +311,9 @@ func (m *Model) NextCategory() {
 }
 
 func (m *Model) PreviousCategory() {
-	isAtFirstCategory := m.category == frontPage
+	isAtFirstCategory := m.category == category.FrontPage
 	if isAtFirstCategory {
-		m.selectCategory(show)
+		m.selectCategory(category.Show)
 
 		return
 	}
