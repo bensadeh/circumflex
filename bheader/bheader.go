@@ -11,15 +11,15 @@ func GetHeader(selectedSubHeader int, width int) string {
 	bg := lipgloss.AdaptiveColor{Light: style.LogoBackgroundLight, Dark: style.LogoBackgroundDark}
 
 	c := lipgloss.NewStyle().
-		Foreground(lipgloss.Color(style.Magenta)).
+		Foreground(lipgloss.AdaptiveColor{Light: style.MagentaLight, Dark: style.MagentaDark}).
 		Background(bg)
 
 	l := lipgloss.NewStyle().
-		Foreground(lipgloss.Color(style.Yellow)).
+		Foreground(lipgloss.AdaptiveColor{Light: style.YellowLight, Dark: style.YellowDark}).
 		Background(bg)
 
 	x := lipgloss.NewStyle().
-		Foreground(lipgloss.Color(style.Blue)).
+		Foreground(lipgloss.AdaptiveColor{Light: style.BlueLight, Dark: style.BlueDark}).
 		Background(bg)
 
 	title := c.Render("  c") + l.Render("l") + x.Render("x  ")
@@ -86,13 +86,13 @@ func getColor(i int, selectedSubHeader int) lipgloss.TerminalColor {
 func getSelectedCategoryColor(selectedSubHeader int) lipgloss.TerminalColor {
 	switch selectedSubHeader {
 	case category.New:
-		return lipgloss.Color(style.Magenta)
+		return lipgloss.AdaptiveColor{Light: style.MagentaLight, Dark: style.MagentaDark}
 	case category.Ask:
-		return lipgloss.Color(style.Yellow)
+		return lipgloss.AdaptiveColor{Light: style.YellowLight, Dark: style.YellowDark}
 	case category.Show:
-		return lipgloss.Color(style.Blue)
+		return lipgloss.AdaptiveColor{Light: style.BlueLight, Dark: style.BlueDark}
 	case category.Favorites:
-		return lipgloss.Color(style.Red)
+		return lipgloss.AdaptiveColor{Light: style.PinkLight, Dark: style.PinkDark}
 	default:
 		return lipgloss.AdaptiveColor{Light: style.UnselectedItemLight, Dark: style.UnselectedItemDark}
 	}
