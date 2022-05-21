@@ -1,6 +1,7 @@
 package list
 
 import (
+	"clx/constants/style"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -86,13 +87,13 @@ func DefaultStyles() (s Styles) {
 	s.HelpStyle = lipgloss.NewStyle().Padding(1, 0, 0, 2)
 
 	s.ActivePaginationDot = lipgloss.NewStyle().
-		Foreground(lipgloss.AdaptiveColor{Light: "#847A85", Dark: "#979797"}).
-		//Background(lipgloss.Color("5")).
+		Foreground(lipgloss.AdaptiveColor{Light: style.SelectedPageLight, Dark: style.SelectedPageDark}).
+		Background(lipgloss.AdaptiveColor{Light: style.LogoBackgroundLight, Dark: style.LogoBackgroundDark}).
 		SetString(bullet)
 
 	s.InactivePaginationDot = lipgloss.NewStyle().
-		Faint(true).
-		//Background(lipgloss.Color("5")).
+		Foreground(lipgloss.AdaptiveColor{Light: style.UnselectedPageLight, Dark: style.UnselectedPageDark}).
+		Background(lipgloss.AdaptiveColor{Light: style.LogoBackgroundLight, Dark: style.LogoBackgroundDark}).
 		SetString(bullet)
 
 	s.DividerDot = lipgloss.NewStyle().
