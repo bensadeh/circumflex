@@ -59,11 +59,12 @@ func getCategories(selectedSubHeader int) string {
 
 	for i, subHeader := range subHeaders {
 		isOnLastItem := i == len(subHeaders)-1
-		selectedCatColor := getColor(i, selectedSubHeader)
+		selectedCatColor, isSelected := getColor(i, selectedSubHeader)
 
 		categories += lipgloss.NewStyle().
 			Foreground(selectedCatColor).
 			Background(bg).
+			Bold(isSelected).
 			Render(subHeader)
 
 		if !isOnLastItem {
@@ -75,25 +76,25 @@ func getCategories(selectedSubHeader int) string {
 	return categories
 }
 
-func getColor(i int, selectedSubHeader int) lipgloss.TerminalColor {
+func getColor(i int, selectedSubHeader int) (lipgloss.TerminalColor, bool) {
 	if i+1 == selectedSubHeader {
 		return getSelectedCategoryColor(i + 1)
 	}
 
-	return lipgloss.AdaptiveColor{Light: style.UnselectedItemLight, Dark: style.UnselectedItemDark}
+	return lipgloss.AdaptiveColor{Light: style.UnselectedItemLight, Dark: style.UnselectedItemDark}, false
 }
 
-func getSelectedCategoryColor(selectedSubHeader int) lipgloss.TerminalColor {
+func getSelectedCategoryColor(selectedSubHeader int) (lipgloss.TerminalColor, bool) {
 	switch selectedSubHeader {
 	case category.New:
-		return lipgloss.AdaptiveColor{Light: style.MagentaLight, Dark: style.MagentaDark}
+		return lipgloss.AdaptiveColor{Light: style.MagentaLight, Dark: style.MagentaDark}, true
 	case category.Ask:
-		return lipgloss.AdaptiveColor{Light: style.YellowLight, Dark: style.YellowDark}
+		return lipgloss.AdaptiveColor{Light: style.YellowLight, Dark: style.YellowDark}, true
 	case category.Show:
-		return lipgloss.AdaptiveColor{Light: style.BlueLight, Dark: style.BlueDark}
+		return lipgloss.AdaptiveColor{Light: style.BlueLight, Dark: style.BlueDark}, true
 	case category.Favorites:
-		return lipgloss.AdaptiveColor{Light: style.PinkLight, Dark: style.PinkDark}
+		return lipgloss.AdaptiveColor{Light: style.PinkLight, Dark: style.PinkDark}, true
 	default:
-		return lipgloss.AdaptiveColor{Light: style.UnselectedItemLight, Dark: style.UnselectedItemDark}
+		return lipgloss.AdaptiveColor{Light: style.UnselectedItemLight, Dark: style.UnselectedItemDark}, false
 	}
 }
