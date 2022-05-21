@@ -13,7 +13,6 @@ import (
 	"clx/item"
 	"clx/screen"
 	"fmt"
-	term "github.com/muesli/termenv"
 	"io"
 	"math/rand"
 	"strings"
@@ -709,30 +708,34 @@ func max(a, b int) int {
 }
 
 func getSpinner() spinner.Spinner {
-	magenta := "200"
-	yellow := "214"
-	blue := "33"
+	fg := lipgloss.AdaptiveColor{Light: style.UnselectedItemLight, Dark: style.UnselectedPageDark}
+	bg := lipgloss.AdaptiveColor{Light: style.HeaderBackgroundLight, Dark: style.HeaderBackgroundDark}
+	normal := lipgloss.NewStyle().Foreground(fg).Background(bg)
+	color := normal.Copy()
 
-	p := term.ColorProfile()
+	magenta := lipgloss.Color(style.Magenta)
+	yellow := lipgloss.Color(style.Yellow)
+	blue := lipgloss.Color(style.Blue)
 
 	return spinner.Spinner{
 		Frames: []string{
-			"fetching",
-			"fetching",
-			"fetching",
-			"fetching",
-			"fetching",
-			term.String("f").Foreground(p.Color(blue)).String() + "etching",
-			term.String("f").Foreground(p.Color(yellow)).String() + term.String("e").Foreground(p.Color(blue)).String() + "tching",
-			term.String("f").Foreground(p.Color(magenta)).String() + term.String("e").Foreground(p.Color(yellow)).String() + term.String("t").Foreground(p.Color(blue)).String() + "ching",
-			"f" + term.String("e").Foreground(p.Color(magenta)).String() + term.String("t").Foreground(p.Color(yellow)).String() + term.String("c").Foreground(p.Color(blue)).String() + "hing",
-			"fe" + term.String("t").Foreground(p.Color(magenta)).String() + term.String("c").Foreground(p.Color(yellow)).String() + term.String("h").Foreground(p.Color(blue)).String() + "ing",
-			"fet" + term.String("c").Foreground(p.Color(magenta)).String() + term.String("h").Foreground(p.Color(yellow)).String() + term.String("i").Foreground(p.Color(blue)).String() + "ng",
-			"fetc" + term.String("h").Foreground(p.Color(magenta)).String() + term.String("i").Foreground(p.Color(yellow)).String() + term.String("n").Foreground(p.Color(blue)).String() + "g",
-			"fetch" + term.String("i").Foreground(p.Color(magenta)).String() + term.String("n").Foreground(p.Color(yellow)).String() + term.String("g").Foreground(p.Color(blue)).String() + "",
-			"fetchi" + term.String("n").Foreground(p.Color(magenta)).String() + term.String("g").Foreground(p.Color(yellow)).String(),
-			"fetchin" + term.String("g").Foreground(p.Color(magenta)).String(),
-			"fetching",
+			normal.Render("fetching"),
+			normal.Render("fetching"),
+			normal.Render("fetching"),
+			normal.Render("fetching"),
+			normal.Render("fetching"),
+			normal.Render("fetching"),
+			color.Foreground(blue).Render("f") + lipgloss.NewStyle().Foreground(fg).Background(bg).Render("etching"),
+			color.Foreground(yellow).Render("f") + color.Foreground(blue).Render("e") + normal.Render("tching"),
+			color.Foreground(magenta).Render("f") + color.Foreground(yellow).Render("e") + color.Foreground(blue).Render("t") + normal.Render("ching"),
+			normal.Render("f") + color.Foreground(magenta).Render("e") + color.Foreground(yellow).Render("t") + color.Foreground(blue).Render("c") + normal.Render("hing"),
+			normal.Render("fe") + color.Foreground(magenta).Render("t") + color.Foreground(yellow).Render("c") + color.Foreground(blue).Render("h") + normal.Render("ing"),
+			normal.Render("fet") + color.Foreground(magenta).Render("c") + color.Foreground(yellow).Render("h") + color.Foreground(blue).Render("i") + normal.Render("ng"),
+			normal.Render("fetc") + color.Foreground(magenta).Render("h") + color.Foreground(yellow).Render("i") + color.Foreground(blue).Render("n") + normal.Render("g"),
+			normal.Render("fetch") + color.Foreground(magenta).Render("i") + color.Foreground(yellow).Render("n") + color.Foreground(blue).Render("g"),
+			normal.Render("fetchi") + color.Foreground(magenta).Render("n") + color.Foreground(yellow).Render("g"),
+			normal.Render("fetchin") + color.Foreground(magenta).Render("g"),
+			normal.Render("fetching"),
 		},
 		FPS: 150 * time.Millisecond,
 	}

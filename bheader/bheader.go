@@ -8,17 +8,19 @@ import (
 )
 
 func GetHeader(selectedSubHeader int, width int) string {
+	bg := lipgloss.AdaptiveColor{Light: style.LogoBackgroundLight, Dark: style.LogoBackgroundDark}
+
 	c := lipgloss.NewStyle().
 		Foreground(lipgloss.Color(style.Magenta)).
-		Background(lipgloss.AdaptiveColor{Light: style.LogoBackgroundLight, Dark: style.LogoBackgroundDark})
+		Background(bg)
 
 	l := lipgloss.NewStyle().
 		Foreground(lipgloss.Color(style.Yellow)).
-		Background(lipgloss.AdaptiveColor{Light: style.LogoBackgroundLight, Dark: style.LogoBackgroundDark})
+		Background(bg)
 
 	x := lipgloss.NewStyle().
 		Foreground(lipgloss.Color(style.Blue)).
-		Background(lipgloss.AdaptiveColor{Light: style.LogoBackgroundLight, Dark: style.LogoBackgroundDark})
+		Background(bg)
 
 	title := c.Render("  c") + l.Render("l") + x.Render("x  ")
 
@@ -43,14 +45,16 @@ func getFiller(title string, categories string, width int) string {
 
 func getCategories(selectedSubHeader int) string {
 	subHeaders := []string{"new", "ask", "show"}
+	fg := lipgloss.AdaptiveColor{Light: style.UnselectedItemLight, Dark: style.UnselectedItemDark}
+	bg := lipgloss.AdaptiveColor{Light: style.HeaderBackgroundLight, Dark: style.HeaderBackgroundDark}
 
 	categories := lipgloss.NewStyle().
-		Background(lipgloss.AdaptiveColor{Light: style.HeaderBackgroundLight, Dark: style.HeaderBackgroundDark}).
+		Background(bg).
 		Render("   ")
 
 	separator := lipgloss.NewStyle().
-		Foreground(lipgloss.AdaptiveColor{Light: style.UnselectedItemLight, Dark: style.UnselectedItemDark}).
-		Background(lipgloss.AdaptiveColor{Light: style.HeaderBackgroundLight, Dark: style.HeaderBackgroundDark}).
+		Foreground(fg).
+		Background(bg).
 		Render(" • ")
 
 	for i, subHeader := range subHeaders {
@@ -59,7 +63,7 @@ func getCategories(selectedSubHeader int) string {
 
 		categories += lipgloss.NewStyle().
 			Foreground(selectedCatColor).
-			Background(lipgloss.AdaptiveColor{Light: style.HeaderBackgroundLight, Dark: style.HeaderBackgroundDark}).
+			Background(bg).
 			Render(subHeader)
 
 		if !isOnLastItem {
