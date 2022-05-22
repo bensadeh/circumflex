@@ -115,6 +115,8 @@ func (m model) View() string {
 }
 
 func Run(config *core.Config) {
+	cli.ClearScreen()
+
 	m := model{list: list.New(list.NewDefaultDelegate(), config, 0, 0)}
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
@@ -124,5 +126,4 @@ func Run(config *core.Config) {
 		os.Exit(1)
 	}
 
-	cli.ClearScreen()
 }
