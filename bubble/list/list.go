@@ -710,7 +710,8 @@ func max(a, b int) int {
 func getSpinner() spinner.Spinner {
 	normal := lipgloss.NewStyle().
 		Foreground(style.GetUnselectedItemForeground()).
-		Background(style.GetHeaderBackground())
+		Background(style.GetHeaderBackground()).
+		Faint(true)
 
 	color := normal.Copy()
 
