@@ -1,5 +1,7 @@
 package style
 
+import "github.com/charmbracelet/lipgloss"
+
 const (
 	MagentaDark = "200"
 	YellowDark  = "214"
@@ -12,10 +14,10 @@ const (
 	SelectedPageDark     = UnselectedItemDark
 	UnselectedPageDark   = "239"
 
-	MagentaLight = "200"
+	MagentaLight = MagentaDark
 	YellowLight  = "208"
-	BlueLight    = "33"
-	PinkLight    = "219"
+	BlueLight    = BlueDark
+	PinkLight    = PinkDark
 
 	LogoBackgroundLight   = "254"
 	HeaderBackgroundLight = "247"
@@ -23,3 +25,39 @@ const (
 	SelectedPageLight     = UnselectedItemLight
 	UnselectedPageLight   = "247"
 )
+
+func GetMagenta() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: MagentaLight, Dark: MagentaDark}
+}
+
+func GetYellow() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: YellowLight, Dark: YellowDark}
+}
+
+func GetBlue() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: BlueLight, Dark: BlueDark}
+}
+
+func GetPink() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: PinkLight, Dark: PinkDark}
+}
+
+func GetLogoBackground() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: LogoBackgroundLight, Dark: LogoBackgroundDark}
+}
+
+func GetHeaderBackground() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: HeaderBackgroundLight, Dark: HeaderBackgroundDark}
+}
+
+func GetUnselectedItemForeground() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: UnselectedItemLight, Dark: UnselectedItemDark}
+}
+
+func GetSelectedPageForeground() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: SelectedPageLight, Dark: SelectedPageDark}
+}
+
+func GetUnselectedPageForeground() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: UnselectedPageLight, Dark: UnselectedPageDark}
+}

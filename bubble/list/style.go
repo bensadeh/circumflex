@@ -87,13 +87,13 @@ func DefaultStyles() (s Styles) {
 	s.HelpStyle = lipgloss.NewStyle().Padding(1, 0, 0, 2)
 
 	s.ActivePaginationDot = lipgloss.NewStyle().
-		Foreground(lipgloss.AdaptiveColor{Light: style.SelectedPageLight, Dark: style.SelectedPageDark}).
-		Background(lipgloss.AdaptiveColor{Light: style.LogoBackgroundLight, Dark: style.LogoBackgroundDark}).
+		Foreground(style.GetSelectedPageForeground()).
+		Background(style.GetLogoBackground()).
 		SetString(bullet)
 
 	s.InactivePaginationDot = lipgloss.NewStyle().
-		Foreground(lipgloss.AdaptiveColor{Light: style.UnselectedPageLight, Dark: style.UnselectedPageDark}).
-		Background(lipgloss.AdaptiveColor{Light: style.LogoBackgroundLight, Dark: style.LogoBackgroundDark}).
+		Foreground(style.GetUnselectedPageForeground()).
+		Background(style.GetLogoBackground()).
 		SetString(bullet)
 
 	s.DividerDot = lipgloss.NewStyle().

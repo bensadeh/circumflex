@@ -609,15 +609,15 @@ func (m Model) statusAndPaginationView() string {
 	}
 
 	left := lipgloss.NewStyle().Inline(true).
-		Background(lipgloss.AdaptiveColor{Light: style.HeaderBackgroundLight, Dark: style.HeaderBackgroundDark}).
+		Background(style.GetHeaderBackground()).
 		Width(5).MaxWidth(5).Render("")
 
 	center := lipgloss.NewStyle().Inline(true).
-		Background(lipgloss.AdaptiveColor{Light: style.HeaderBackgroundLight, Dark: style.HeaderBackgroundDark}).
+		Background(style.GetHeaderBackground()).
 		Width(m.width - 5 - 5).Align(lipgloss.Center).Render(centerContent)
 
 	right := lipgloss.NewStyle().Inline(true).
-		Background(lipgloss.AdaptiveColor{Light: style.LogoBackgroundLight, Dark: style.LogoBackgroundDark}).
+		Background(style.GetLogoBackground()).
 		Width(5).Align(lipgloss.Center).Render(m.Paginator.View())
 
 	return m.Styles.StatusBar.Render(left) + m.Styles.StatusBar.Render(center) + m.Styles.StatusBar.Render(right)
@@ -708,14 +708,15 @@ func max(a, b int) int {
 }
 
 func getSpinner() spinner.Spinner {
-	fg := lipgloss.AdaptiveColor{Light: style.UnselectedItemLight, Dark: style.UnselectedPageDark}
-	bg := lipgloss.AdaptiveColor{Light: style.HeaderBackgroundLight, Dark: style.HeaderBackgroundDark}
-	normal := lipgloss.NewStyle().Foreground(fg).Background(bg)
+	normal := lipgloss.NewStyle().
+		Foreground(style.GetUnselectedItemForeground()).
+		Background(style.GetHeaderBackground())
+
 	color := normal.Copy()
 
-	magenta := lipgloss.Color(style.MagentaDark)
-	yellow := lipgloss.Color(style.YellowDark)
-	blue := lipgloss.Color(style.BlueDark)
+	magenta := style.GetMagenta()
+	yellow := style.GetYellow()
+	blue := style.GetBlue()
 
 	return spinner.Spinner{
 		Frames: []string{
@@ -725,7 +726,7 @@ func getSpinner() spinner.Spinner {
 			normal.Render("fetching"),
 			normal.Render("fetching"),
 			normal.Render("fetching"),
-			color.Foreground(blue).Render("f") + lipgloss.NewStyle().Foreground(fg).Background(bg).Render("etching"),
+			color.Foreground(blue).Render("f") + normal.Render("etching"),
 			color.Foreground(yellow).Render("f") + color.Foreground(blue).Render("e") + normal.Render("tching"),
 			color.Foreground(magenta).Render("f") + color.Foreground(yellow).Render("e") + color.Foreground(blue).Render("t") + normal.Render("ching"),
 			normal.Render("f") + color.Foreground(magenta).Render("e") + color.Foreground(yellow).Render("t") + color.Foreground(blue).Render("c") + normal.Render("hing"),

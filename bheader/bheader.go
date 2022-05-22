@@ -8,24 +8,25 @@ import (
 )
 
 func GetHeader(selectedSubHeader int, width int) string {
-	bg := lipgloss.AdaptiveColor{Light: style.LogoBackgroundLight, Dark: style.LogoBackgroundDark}
+	bg := style.GetLogoBackground()
 
 	c := lipgloss.NewStyle().
-		Foreground(lipgloss.AdaptiveColor{Light: style.MagentaLight, Dark: style.MagentaDark}).
+		Foreground(style.GetMagenta()).
 		Background(bg)
 
 	l := lipgloss.NewStyle().
-		Foreground(lipgloss.AdaptiveColor{Light: style.YellowLight, Dark: style.YellowDark}).
+		Foreground(style.GetYellow()).
 		Background(bg)
 
 	x := lipgloss.NewStyle().
-		Foreground(lipgloss.AdaptiveColor{Light: style.BlueLight, Dark: style.BlueDark}).
+		Foreground(style.GetBlue()).
 		Background(bg)
 
 	title := c.Render("  c") + l.Render("l") + x.Render("x  ")
 
 	categories := getCategories(selectedSubHeader)
 	filler := getFiller(title, categories, width)
+
 	return title + categories + filler
 }
 
@@ -39,14 +40,14 @@ func getFiller(title string, categories string, width int) string {
 	filler := strings.Repeat(" ", availableSpace)
 
 	return lipgloss.NewStyle().
-		Background(lipgloss.AdaptiveColor{Light: style.HeaderBackgroundLight, Dark: style.HeaderBackgroundDark}).
+		Background(style.GetHeaderBackground()).
 		Render(filler)
 }
 
 func getCategories(selectedSubHeader int) string {
 	subHeaders := []string{"new", "ask", "show"}
-	fg := lipgloss.AdaptiveColor{Light: style.UnselectedItemLight, Dark: style.UnselectedItemDark}
-	bg := lipgloss.AdaptiveColor{Light: style.HeaderBackgroundLight, Dark: style.HeaderBackgroundDark}
+	fg := style.GetUnselectedItemForeground()
+	bg := style.GetHeaderBackground()
 
 	categories := lipgloss.NewStyle().
 		Background(bg).
@@ -70,7 +71,6 @@ func getCategories(selectedSubHeader int) string {
 		if !isOnLastItem {
 			categories += separator
 		}
-
 	}
 
 	return categories
@@ -81,20 +81,20 @@ func getColor(i int, selectedSubHeader int) (lipgloss.TerminalColor, bool) {
 		return getSelectedCategoryColor(i + 1)
 	}
 
-	return lipgloss.AdaptiveColor{Light: style.UnselectedItemLight, Dark: style.UnselectedItemDark}, false
+	return style.GetUnselectedItemForeground(), false
 }
 
 func getSelectedCategoryColor(selectedSubHeader int) (lipgloss.TerminalColor, bool) {
 	switch selectedSubHeader {
 	case category.New:
-		return lipgloss.AdaptiveColor{Light: style.MagentaLight, Dark: style.MagentaDark}, true
+		return style.GetMagenta(), true
 	case category.Ask:
-		return lipgloss.AdaptiveColor{Light: style.YellowLight, Dark: style.YellowDark}, true
+		return style.GetYellow(), true
 	case category.Show:
-		return lipgloss.AdaptiveColor{Light: style.BlueLight, Dark: style.BlueDark}, true
+		return style.GetBlue(), true
 	case category.Favorites:
-		return lipgloss.AdaptiveColor{Light: style.PinkLight, Dark: style.PinkDark}, true
+		return style.GetPink(), true
 	default:
-		return lipgloss.AdaptiveColor{Light: style.UnselectedItemLight, Dark: style.UnselectedItemDark}, false
+		return style.GetUnselectedItemForeground(), false
 	}
 }
