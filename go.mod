@@ -9,7 +9,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89
 	github.com/charmbracelet/bubbles v0.10.3
-	github.com/charmbracelet/bubbletea v0.20.1-0.20220412151435-14e58aa1f92f
+	github.com/charmbracelet/bubbletea v0.20.1-0.20220516164627-a5f28a3a04bb
 	github.com/charmbracelet/glamour v0.3.0
 	github.com/charmbracelet/lipgloss v0.4.0
 	github.com/gdamore/tcell/v2 v2.4.1-0.20210828201608-73703f7ed490
@@ -17,6 +17,7 @@ require (
 	github.com/go-shiori/go-readability v0.0.0-20210627123243-82cc33435520
 	github.com/jedib0t/go-pretty/v6 v6.2.2
 	github.com/logrusorgru/aurora/v3 v3.0.0
+	github.com/muesli/reflow v0.3.0
 	github.com/nleeper/goment v1.4.0
 	github.com/spf13/cobra v1.3.0
 	github.com/stretchr/testify v1.7.0
@@ -27,7 +28,6 @@ require (
 	code.rocketnine.space/tslocum/cbind v0.1.5 // indirect
 	github.com/alecthomas/chroma v0.8.2 // indirect
 	github.com/andybalholm/cascadia v1.2.0 // indirect
-	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/containerd/console v1.0.3 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
@@ -45,13 +45,11 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.16 // indirect
 	github.com/muesli/ansi v0.0.0-20211018074035-2e021307bc4b // indirect
 	github.com/muesli/cancelreader v0.2.0 // indirect
-	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.11.1-0.20220212125758-44cd13922739 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/sahilm/fuzzy v0.1.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tkuchiki/go-timezone v0.2.0 // indirect

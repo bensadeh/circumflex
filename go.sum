@@ -83,7 +83,6 @@ github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da/go.mod h1:Q73ZrmV
 github.com/armon/go-metrics v0.3.10/go.mod h1:4O98XIr/9W0sxpJ8UaYkvjk10Iff7SnFrb4QAOwNTFc=
 github.com/armon/go-radix v0.0.0-20180808171621-7fddfc383310/go.mod h1:ufUuZ+zHj4x4TnLV4JWEpy2hxWSpsRywHrMgIH9cCH8=
 github.com/armon/go-radix v1.0.0/go.mod h1:ufUuZ+zHj4x4TnLV4JWEpy2hxWSpsRywHrMgIH9cCH8=
-github.com/atotto/clipboard v0.1.4 h1:EH0zSVneZPSuFR11BlR9YppQTVDbh5+16AmcJi4g1z4=
 github.com/atotto/clipboard v0.1.4/go.mod h1:ZY9tmq7sm5xIbd9bOK4onWV4S6X0u6GY7Vn0Yu86PYI=
 github.com/aymerick/douceur v0.2.0 h1:Mv+mAeH1Q+n9Fr+oyamOlAkUNPWPlA8PPGR0QAaYuPk=
 github.com/aymerick/douceur v0.2.0/go.mod h1:wlT5vV2O3h55X9m7iVYN0TBM0NH/MmbLnd30/FjWUq4=
@@ -101,10 +100,10 @@ github.com/cespare/xxhash/v2 v2.1.2/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XL
 github.com/charmbracelet/bubbles v0.10.3 h1:fKarbRaObLn/DCsZO4Y3vKCwRUzynQD9L+gGev1E/ho=
 github.com/charmbracelet/bubbles v0.10.3/go.mod h1:jOA+DUF1rjZm7gZHcNyIVW+YrBPALKfpGVdJu8UiJsA=
 github.com/charmbracelet/bubbletea v0.19.3/go.mod h1:VuXF2pToRxDUHcBUcPmCRUHRvFATM4Ckb/ql1rBl3KA=
-github.com/charmbracelet/bubbletea v0.20.1-0.20220407003955-f5ff931834c7 h1:2YKaGzGerC+tPRMZz4ga4rbkuOcaTR5kgkkXV362j68=
-github.com/charmbracelet/bubbletea v0.20.1-0.20220407003955-f5ff931834c7/go.mod h1:GgmJMec61d08zXsOhqRC/AiOx4K4pmz+VIcRIm1FKr4=
 github.com/charmbracelet/bubbletea v0.20.1-0.20220412151435-14e58aa1f92f h1:/6cBUPF3UlMueuKtQay4IepufjiMfwHwLyVfU9UDFWo=
 github.com/charmbracelet/bubbletea v0.20.1-0.20220412151435-14e58aa1f92f/go.mod h1:GgmJMec61d08zXsOhqRC/AiOx4K4pmz+VIcRIm1FKr4=
+github.com/charmbracelet/bubbletea v0.20.1-0.20220516164627-a5f28a3a04bb h1:bRxIjkw9/Bd7ppM/w04SWLxfytUwKRvwP3TPkMooUnI=
+github.com/charmbracelet/bubbletea v0.20.1-0.20220516164627-a5f28a3a04bb/go.mod h1:GgmJMec61d08zXsOhqRC/AiOx4K4pmz+VIcRIm1FKr4=
 github.com/charmbracelet/glamour v0.3.0 h1:3H+ZrKlSg8s+WU6V7eF2eRVYt8lCueffbi7r2+ffGkc=
 github.com/charmbracelet/glamour v0.3.0/go.mod h1:TzF0koPZhqq0YVBNL100cPHznAAjVj7fksX2RInwjGw=
 github.com/charmbracelet/harmonica v0.1.0/go.mod h1:KSri/1RMQOZLbw7AHqgcBycp8pgJnQMYYT8QZRqZ1Ao=
@@ -327,7 +326,6 @@ github.com/kr/pretty v0.2.0/go.mod h1:ipq/a2n7PKx3OHsz4KJII5eveXtPO4qwEXGdVfWzfn
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0 h1:45sCR5RtlFHMR4UwH9sdQ5TC8v0qDQCHnXt+kaKSTVE=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
-github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0SNc=
 github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+fNqagV/RAw=
 github.com/logrusorgru/aurora/v3 v3.0.0 h1:R6zcoZZbvVcGMvDCKo45A9U/lzYyzl5NfYIvznmDfE4=
 github.com/logrusorgru/aurora/v3 v3.0.0/go.mod h1:vsR12bk5grlLvLXAYrBsb5Oc/N+LxAlxggSjiwMnCUc=
@@ -433,7 +431,6 @@ github.com/russross/blackfriday/v2 v2.1.0 h1:JIOH55/0cWyOuilr9/qlrm0BSXldqnqwMsf
 github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/ryanuber/columnize v0.0.0-20160712163229-9b3edd62028f/go.mod h1:sm1tb6uqfes/u+d4ooFouqFdy9/2g9QGwK3SQygK0Ts=
 github.com/sagikazarmark/crypt v0.3.0/go.mod h1:uD/D+6UF4SrIR1uGEv7bBNkNqLGqUr43MRiaGWX1Nig=
-github.com/sahilm/fuzzy v0.1.0 h1:FzWGaw2Opqyu+794ZQ9SYifWv2EIXpwP4q8dY1kDAwI=
 github.com/sahilm/fuzzy v0.1.0/go.mod h1:VFvziUEIMCrT6A6tw2RFIXPXXmzXbOsSHF0DOI8ZK9Y=
 github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529/go.mod h1:DxrIzT+xaE7yg65j358z/aeFdxmN0P9QXhEzd20vsDc=
 github.com/sebdah/goldie/v2 v2.5.1 h1:hh70HvG4n3T3MNRJN2z/baxPR8xutxo7JVxyi2svl+s=

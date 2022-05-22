@@ -26,6 +26,7 @@ func (m model) Init() tea.Cmd {
 }
 
 type editorFinishedMsg struct{ err error }
+type enteringCommentSectionMsg struct{ id int }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if m.list.OnStartup() {
@@ -60,8 +61,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, cmd
 		}
 		if msg.String() == "enter" {
-			id := m.list.SelectedItem().ID
-			cmd := openEditor(id)
+			m.list.SetIsVisible(false)
+
+			cmd := func() tea.Msg {
+				return enteringCommentSectionMsg{id: m.list.SelectedItem().ID}
+			}
 
 			return m, cmd
 		}
@@ -80,6 +84,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		h, v := docStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
+	case enteringCommentSectionMsg:
+		cmd := openEditor(msg.id)
+
+		return m, cmd
+	case editorFinishedMsg:
+		m.list.SetIsVisible(true)
 	}
 
 	var cmd tea.Cmd

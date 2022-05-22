@@ -87,7 +87,7 @@ type Model struct {
 	Paginator   paginator.Model
 	cursor      int
 	onStartup   bool
-	onStartup2  bool
+	isVisible   bool
 
 	StatusMessageLifetime time.Duration
 
@@ -142,6 +142,7 @@ func New(delegate ItemDelegate, config *core.Config, width, height int) Model {
 		Paginator:    p,
 		spinner:      sp,
 		onStartup:    true,
+		isVisible:    true,
 		disableInput: true,
 		config:       config,
 		service:      getService(config.DebugMode),
@@ -182,6 +183,10 @@ var NewModel = New
 func (m *Model) SetShowTitle(v bool) {
 	m.showTitle = v
 	m.updatePagination()
+}
+
+func (m *Model) SetIsVisible(v bool) {
+	m.isVisible = v
 }
 
 // ShowTitle returns whether or not the title bar is set to be rendered.
@@ -568,6 +573,10 @@ func (m Model) View() string {
 		sections    []string
 		availHeight = m.height
 	)
+
+	if !m.isVisible {
+		return ""
+	}
 
 	if m.showTitle {
 		v := m.titleView()
