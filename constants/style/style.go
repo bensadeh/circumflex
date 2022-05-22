@@ -3,61 +3,61 @@ package style
 import "github.com/charmbracelet/lipgloss"
 
 const (
-	MagentaDark = "200"
-	YellowDark  = "214"
-	BlueDark    = "33"
-	PinkDark    = "219"
+	magentaDark = "200"
+	yellowDark  = "214"
+	blueDark    = "33"
+	pinkDark    = "219"
 
-	LogoBackgroundDark   = "234"
-	HeaderBackgroundDark = "235"
-	UnselectedItemDark   = "250"
-	SelectedPageDark     = UnselectedItemDark
-	UnselectedPageDark   = "239"
+	logoBackgroundDark   = "234"
+	headerBackgroundDark = "235"
+	unselectedItemDark   = "250"
+	selectedPageDark     = unselectedItemDark
+	unselectedPageDark   = "239"
 
-	MagentaLight = MagentaDark
-	YellowLight  = "208"
-	BlueLight    = BlueDark
-	PinkLight    = PinkDark
+	magentaLight = magentaDark
+	yellowLight  = "208"
+	blueLight    = blueDark
+	pinkLight    = pinkDark
 
-	LogoBackgroundLight   = "254"
-	HeaderBackgroundLight = "247"
-	UnselectedItemLight   = "235"
-	SelectedPageLight     = UnselectedItemLight
-	UnselectedPageLight   = "247"
+	logoBackgroundLight   = "254"
+	headerBackgroundLight = "247"
+	unselectedItemLight   = "235"
+	selectedPageLight     = unselectedItemLight
+	unselectedPageLight   = "247"
 )
 
 func GetMagenta() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: MagentaLight, Dark: MagentaDark}
+	return lipgloss.AdaptiveColor{Light: magentaLight, Dark: magentaDark}
 }
 
 func GetYellow() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: YellowLight, Dark: YellowDark}
+	return lipgloss.AdaptiveColor{Light: yellowLight, Dark: yellowDark}
 }
 
 func GetBlue() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: BlueLight, Dark: BlueDark}
+	return lipgloss.AdaptiveColor{Light: blueLight, Dark: blueDark}
 }
 
 func GetPink() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: PinkLight, Dark: PinkDark}
+	return lipgloss.AdaptiveColor{Light: pinkLight, Dark: pinkDark}
 }
 
 func GetLogoBackground() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: LogoBackgroundLight, Dark: LogoBackgroundDark}
+	return lipgloss.AdaptiveColor{Light: logoBackgroundLight, Dark: logoBackgroundDark}
 }
 
 func GetHeaderBackground() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: HeaderBackgroundLight, Dark: HeaderBackgroundDark}
+	return lipgloss.AdaptiveColor{Light: headerBackgroundLight, Dark: headerBackgroundDark}
 }
 
 func GetUnselectedItemForeground() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: UnselectedItemLight, Dark: UnselectedItemDark}
+	return lipgloss.AdaptiveColor{Light: unselectedItemLight, Dark: unselectedItemDark}
 }
 
 func GetSelectedPageForeground() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: SelectedPageLight, Dark: SelectedPageDark}
+	return lipgloss.AdaptiveColor{Light: selectedPageLight, Dark: selectedPageDark}
 }
 
 func GetUnselectedPageForeground() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: UnselectedPageLight, Dark: UnselectedPageDark}
+	return lipgloss.AdaptiveColor{Light: unselectedPageLight, Dark: unselectedPageDark}
 }
