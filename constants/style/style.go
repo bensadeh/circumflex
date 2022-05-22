@@ -8,8 +8,8 @@ const (
 	BlueDark    = "33"
 	PinkDark    = "219"
 
-	LogoBackgroundDark   = "235"
-	HeaderBackgroundDark = "234"
+	LogoBackgroundDark   = "234"
+	HeaderBackgroundDark = "235"
 	UnselectedItemDark   = "250"
 	SelectedPageDark     = UnselectedItemDark
 	UnselectedPageDark   = "239"
