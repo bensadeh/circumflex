@@ -5,7 +5,7 @@ import (
 	"clx/cli"
 	"clx/comment"
 	"clx/core"
-	"clx/hn/services/mock"
+	"clx/hn/services/cheeaun"
 	"clx/screen"
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
@@ -88,7 +88,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func openEditor(id int) tea.Cmd {
-	comments := new(mock.MockService).FetchStory(id)
+	comments := new(cheeaun.Service).FetchStory(id)
 
 	screenWidth := screen.GetTerminalWidth()
 	commentTree := comment.ToString(comments, core.GetConfigWithDefaults(), screenWidth, 0)
