@@ -19,8 +19,8 @@ const (
 	blueLight    = blueDark
 	pinkLight    = pinkDark
 
-	logoBackgroundLight   = "254"
-	headerBackgroundLight = "247"
+	logoBackgroundLight   = "252"
+	headerBackgroundLight = "254"
 	unselectedItemLight   = "235"
 	selectedPageLight     = unselectedItemLight
 	unselectedPageLight   = "247"
