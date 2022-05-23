@@ -127,28 +127,29 @@ func getCommentHeader(c *item.Item, originalPoster string, parentPoster string, 
 
 func formatHeader(c *item.Item, originalPoster string, parentPoster string, underlineHeader bool, showReplies bool,
 	enableZeroWidthSpace bool, commentWidth int, indentSize int, lastVisited int64) string {
-	authorInBold := aurora.Bold(c.User).String() + " "
-	newCommentIndicator := getNewCommentIndicator(lastVisited, c.Time)
+	author := getAuthor(c.User, lastVisited, c.Time)
 	authorLabel := getAuthorLabel(c.User, originalPoster, parentPoster)
 	zeroWidthSpace := getZeroWidthSpace(enableZeroWidthSpace)
 	repliesTag := getReplies(showReplies, c)
 	indentation := strings.Repeat(" ", indentSize)
 
-	spacingLength := commentWidth - text.Len(indentation+authorInBold+authorLabel+c.TimeAgo+repliesTag)
+	spacingLength := commentWidth - text.Len(indentation+author+authorLabel+c.TimeAgo+repliesTag)
 	spacing := strings.Repeat(" ", spacingLength)
 
-	return zeroWidthSpace + indentation + authorInBold + newCommentIndicator + authorLabel +
+	return zeroWidthSpace + indentation + author + authorLabel +
 		underlineAndDim(underlineHeader, c.TimeAgo, spacing, repliesTag) + newLine
 }
 
-func getNewCommentIndicator(lastVisited, timePosted int64) string {
+func getAuthor(author string, lastVisited, timePosted int64) string {
+	authorInBold := aurora.Bold(author).String() + " "
+
 	commentIsNew := lastVisited < timePosted
 
 	if commentIsNew {
-		return aurora.Blue("●").String() + " "
+		return authorInBold + aurora.Blue("●").String() + " "
 	}
 
-	return ""
+	return authorInBold
 }
 
 func underlineAndDim(enabled bool, timeAgo, spacing, replies string) string {
