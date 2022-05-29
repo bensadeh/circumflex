@@ -555,9 +555,9 @@ func (m *Model) fetchCommentSectionAndPipeToLess(id int) tea.Cmd {
 	screenWidth := screen.GetTerminalWidth()
 	commentTree := comment.ToString(comments, core.GetConfigWithDefaults(), screenWidth, 0)
 
-	c := cli.WrapLess(commentTree)
+	command := cli.WrapLess(commentTree)
 
-	return tea.Exec(tea.WrapExecCommand(c), func(err error) tea.Msg {
+	return tea.Exec(tea.WrapExecCommand(command), func(err error) tea.Msg {
 		return message.EditorFinishedMsg{Err: err}
 	})
 }
