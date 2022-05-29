@@ -12,3 +12,7 @@ type EnteringCommentSection struct {
 type StatusMessageTimeout struct{}
 
 type FetchingFinished struct{}
+
+type ChangeCategory struct {
+	Category int
+}

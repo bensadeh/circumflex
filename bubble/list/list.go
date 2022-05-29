@@ -274,6 +274,15 @@ func (m *Model) NextCategory() {
 	m.selectCategory(m.category + 1)
 }
 
+func (m *Model) getNextCategory() int {
+	isAtLastCategory := m.category == numberOfCategories-1
+	if isAtLastCategory {
+		return category.FrontPage
+	}
+
+	return m.category + 1
+}
+
 func (m *Model) PreviousCategory() {
 	isAtFirstCategory := m.category == category.FrontPage
 	if isAtFirstCategory {
@@ -461,11 +470,38 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 	case message.EditorFinishedMsg:
 		m.SetIsVisible(true)
+
+	case message.ChangeCategory:
+		m.category = msg.Category
+
+		stories := m.service.FetchStories(0, m.category)
+
+		//Randomize list to make debugging easier
+		rand.Shuffle(len(stories), func(i, j int) { stories[i], stories[j] = stories[j], stories[i] })
+
+		m.items[msg.Category] = stories
+
+		m.Paginator.Page = 0
+		m.updatePagination()
+		m.SetDisabledInput(false)
+
+		return m, nil
+
 	}
 
 	cmds = append(cmds, m.handleBrowsing(msg))
 
 	return m, tea.Batch(cmds...)
+}
+
+func (m *Model) categoryHasStories(cat int) bool {
+	return len(m.items[cat]) != 0
+}
+
+func (m *Model) changeToCategory(cat int) {
+	m.category = cat
+	m.Paginator.Page = 0
+	m.updatePagination()
 }
 
 func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
@@ -491,7 +527,19 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			m.Paginator.NextPage()
 
 		case msg.String() == "tab":
-			m.NextCategory()
+			nextCat := m.getNextCategory()
+
+			if m.categoryHasStories(nextCat) {
+				m.changeToCategory(nextCat)
+
+				return nil
+			}
+
+			m.SetDisabledInput(true)
+
+			return func() tea.Msg {
+				return message.ChangeCategory{Category: m.getNextCategory()}
+			}
 
 		case msg.String() == "shift+tab":
 			m.PreviousCategory()
