@@ -149,9 +149,9 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 	if isSelected && !m.disableInput {
 		//title = s.SelectedTitle.Render(title)
 		title = s.SelectedTitle.Render(title)
-		title = syntax.HighlightYCStartupsInHeadlinesWithType(title, syntax.Reverse)
-		title = syntax.HighlightYearInHeadlinesWithType(title, syntax.Reverse)
-		title = syntax.HighlightHackerNewsHeadlinesWithType(title, syntax.Reverse)
+		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Reverse)
+		title = syntax.HighlightYearInHeadlines(title, syntax.Reverse)
+		title = syntax.HighlightHackerNewsHeadlines(title, syntax.Reverse)
 		title = syntax.HighlightSpecialContent(title)
 
 		title = title + " " + domain
@@ -163,17 +163,17 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 		italic := "\033[3m"
 
 		if markAsRead {
-			title = syntax.HighlightYCStartupsInHeadlinesWithType(title, syntax.FaintAndItalic)
-			title = syntax.HighlightYearInHeadlinesWithType(title, syntax.FaintAndItalic)
-			title = syntax.HighlightHackerNewsHeadlinesWithType(title, syntax.FaintAndItalic)
+			title = syntax.HighlightYCStartupsInHeadlines(title, syntax.FaintAndItalic)
+			title = syntax.HighlightYearInHeadlines(title, syntax.FaintAndItalic)
+			title = syntax.HighlightHackerNewsHeadlines(title, syntax.FaintAndItalic)
 			title = syntax.HighlightSpecialContent(title)
 
 			title = faint + italic + title + " " + domain
 			desc = s.NormalDesc.Render(desc)
 		} else {
-			title = syntax.HighlightYCStartupsInHeadlinesWithType(title, syntax.Normal)
-			title = syntax.HighlightYearInHeadlinesWithType(title, syntax.Normal)
-			title = syntax.HighlightHackerNewsHeadlinesWithType(title, syntax.Normal)
+			title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Normal)
+			title = syntax.HighlightYearInHeadlines(title, syntax.Normal)
+			title = syntax.HighlightHackerNewsHeadlines(title, syntax.Normal)
 			title = syntax.HighlightSpecialContent(title)
 
 			title = title + " " + domain

@@ -33,17 +33,7 @@ func HighlightYCStartups(comment string) string {
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
 
-func HighlightYCStartupsInHeadlines(comment string) string {
-	expression := regexp.MustCompile(`\((YC [SW]\d{2})\)`)
-
-	orange := uint8(214)
-	black := uint8(232)
-	highlightedStartup := aurora.Index(black, ` $1 `).BgIndex(orange).String() + bold
-
-	return expression.ReplaceAllString(comment, highlightedStartup)
-}
-
-func HighlightYCStartupsInHeadlinesWithType(comment string, highlightType int) string {
+func HighlightYCStartupsInHeadlines(comment string, highlightType int) string {
 	expression := regexp.MustCompile(`\((YC [SW]\d{2})\)`)
 	highlight := getHighlight(highlightType)
 
@@ -57,17 +47,7 @@ func HighlightYCStartupsInHeadlinesWithType(comment string, highlightType int) s
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
 
-func HighlightYearInHeadlines(comment string) string {
-	expression := regexp.MustCompile(`\((\d{4})\)`)
-
-	background := uint8(238)
-	foreground := uint8(3)
-	highlightedYear := aurora.Index(foreground, ` $1 `).BgIndex(background).String() + bold
-
-	return expression.ReplaceAllString(comment, highlightedYear)
-}
-
-func HighlightYearInHeadlinesWithType(comment string, highlightType int) string {
+func HighlightYearInHeadlines(comment string, highlightType int) string {
 	expression := regexp.MustCompile(`\((\d{4})\)`)
 	highlight := getHighlight(highlightType)
 
@@ -79,21 +59,7 @@ func HighlightYearInHeadlinesWithType(comment string, highlightType int) string 
 	return expression.ReplaceAllString(comment, highlightedYear)
 }
 
-func HighlightHackerNewsHeadlines(title string) string {
-	askHN := "Ask HN:"
-	showHN := "Show HN:"
-	tellHN := "Tell HN:"
-	launchHN := "Launch HN:"
-
-	title = strings.ReplaceAll(title, askHN, aurora.Blue(askHN).String()+bold)
-	title = strings.ReplaceAll(title, showHN, aurora.Red(showHN).String()+bold)
-	title = strings.ReplaceAll(title, tellHN, aurora.Magenta(tellHN).String()+bold)
-	title = strings.ReplaceAll(title, launchHN, aurora.Green(launchHN).String()+bold)
-
-	return title
-}
-
-func HighlightHackerNewsHeadlinesWithType(title string, highlightType int) string {
+func HighlightHackerNewsHeadlines(title string, highlightType int) string {
 	askHN := "Ask HN:"
 	showHN := "Show HN:"
 	tellHN := "Tell HN:"
