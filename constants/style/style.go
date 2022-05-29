@@ -8,9 +8,9 @@ const (
 	blueDark    = "33"
 	pinkDark    = "219"
 
-	logoBackgroundDark   = "234"
-	headerBackgroundDark = "235"
-	unselectedItemDark   = "250"
+	logoBackgroundDark   = "#222638"
+	headerBackgroundDark = "#292b33"
+	unselectedItemDark   = "247"
 	selectedPageDark     = unselectedItemDark
 	unselectedPageDark   = "239"
 
