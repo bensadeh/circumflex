@@ -4,11 +4,14 @@ import (
 	"clx/bheader"
 	"clx/bubble/list/message"
 	"clx/bubble/ranking"
+	"clx/cli"
+	"clx/comment"
 	"clx/constants/category"
 	"clx/constants/style"
 	"clx/core"
 	"clx/history"
 	"clx/hn"
+	"clx/hn/services/cheeaun"
 	"clx/hn/services/hybrid"
 	"clx/hn/services/mock"
 	"clx/item"
@@ -461,6 +464,22 @@ func (m *Model) hideStatusMessage() {
 
 // Update is the Bubble Tea update loop.
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
+	if m.OnStartup() {
+		var cmds []tea.Cmd
+
+		m.SetSize(screen.GetTerminalWidth(), screen.GetTerminalHeight())
+
+		spinnerCmd := m.StartSpinner()
+		cmds = append(cmds, spinnerCmd)
+
+		m.SetOnStartup(false)
+
+		fetchCmd := m.FetchFrontPageStories()
+		cmds = append(cmds, fetchCmd)
+
+		return m, tea.Batch(cmds...)
+	}
+
 	var cmds []tea.Cmd
 
 	switch msg := msg.(type) {
@@ -482,6 +501,18 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 	case message.StatusMessageTimeoutMsg:
 		m.hideStatusMessage()
+
+	case tea.WindowSizeMsg:
+		h, v := lipgloss.NewStyle().GetFrameSize()
+		m.SetSize(msg.Width-h, msg.Height-v)
+
+	case message.EnteringCommentSectionMsg:
+		cmd := openEditor(msg.Id)
+
+		return m, cmd
+
+	case message.EditorFinishedMsg:
+		m.SetIsVisible(true)
 	}
 
 	cmds = append(cmds, m.handleBrowsing(msg))
@@ -568,6 +599,19 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	}
 
 	return tea.Batch(cmds...)
+}
+
+func openEditor(id int) tea.Cmd {
+	comments := new(cheeaun.Service).FetchStory(id)
+
+	screenWidth := screen.GetTerminalWidth()
+	commentTree := comment.ToString(comments, core.GetConfigWithDefaults(), screenWidth, 0)
+
+	c := cli.WrapLess(commentTree)
+
+	return tea.Exec(tea.WrapExecCommand(c), func(err error) tea.Msg {
+		return message.EditorFinishedMsg{Err: err}
+	})
 }
 
 // View renders the component.
