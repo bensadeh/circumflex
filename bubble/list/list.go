@@ -11,7 +11,7 @@ import (
 	"clx/core"
 	"clx/history"
 	"clx/hn"
-	"clx/hn/services/hybrid"
+	hybrid "clx/hn/services/hybrid-bubble"
 	"clx/hn/services/mock"
 	"clx/item"
 	"clx/screen"
@@ -92,7 +92,8 @@ type Model struct {
 
 func (m *Model) FetchFrontPageStories() tea.Cmd {
 	return func() tea.Msg {
-		stories := m.service.FetchStories(0, 0)
+		firstPage := 0
+		stories := m.service.FetchStories(firstPage, category.FrontPage)
 
 		m.items[category.FrontPage] = stories
 		return message.FetchingFinished{}
@@ -139,7 +140,7 @@ func New(delegate ItemDelegate, config *core.Config, width, height int) Model {
 		service:      getService(config.DebugMode),
 	}
 
-	m.service.Init(30)
+	//m.service.Init(30)
 
 	m.updatePagination()
 	return m
@@ -403,12 +404,13 @@ func (m *Model) hideStatusMessage() {
 	}
 }
 
-// Update is the Bubble Tea update loop.
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	if m.OnStartup() {
-		var cmds []tea.Cmd
-
 		m.SetSize(screen.GetTerminalWidth(), screen.GetTerminalHeight())
+
+		m.service.Init(m.Paginator.PerPage)
+
+		var cmds []tea.Cmd
 
 		spinnerCmd := m.StartSpinner()
 		cmds = append(cmds, spinnerCmd)
@@ -594,8 +596,6 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return cmd
 		}
 		if msg.String() == "i" {
-			m.SetDisabledInput(!m.IsInputDisabled())
-
 			cmd := m.NewStatusMessageWithDuration("is disabled: "+strconv.FormatBool(m.IsInputDisabled()), 1*time.Second)
 
 			return cmd
