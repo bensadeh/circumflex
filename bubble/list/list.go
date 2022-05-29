@@ -455,7 +455,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.SetSize(msg.Width-h, msg.Height-v)
 
 	case message.EnteringCommentSection:
-		cmd := m.fetchCommentSectionAndPipeToLess(msg.Id)
+		cmd := m.fetchCommentSectionAndPipeToLess(msg.Id, msg.CommentCount)
 
 		return m, cmd
 
@@ -518,7 +518,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			m.SetIsVisible(false)
 
 			cmd := func() tea.Msg {
-				return message.EnteringCommentSection{Id: m.SelectedItem().ID}
+				return message.EnteringCommentSection{Id: m.SelectedItem().ID, CommentCount: m.SelectedItem().CommentsCount}
 			}
 
 			return cmd
@@ -549,10 +549,14 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	return tea.Batch(cmds...)
 }
 
-func (m *Model) fetchCommentSectionAndPipeToLess(id int) tea.Cmd {
+func (m *Model) fetchCommentSectionAndPipeToLess(id int, commentCount int) tea.Cmd {
+	m.history.AddToHistoryAndWriteToDisk(id, commentCount)
+
 	comments := m.service.FetchStory(id)
 
-	commentTree := comment.ToString(comments, m.config, m.width, 0)
+	lastVisited := m.history.GetLastVisited(id)
+
+	commentTree := comment.ToString(comments, m.config, m.width, lastVisited)
 
 	command := cli.WrapLess(commentTree)
 
