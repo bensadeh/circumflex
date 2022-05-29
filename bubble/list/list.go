@@ -18,7 +18,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/paginator"
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
@@ -66,19 +65,6 @@ type Model struct {
 
 	Title  string
 	Styles Styles
-
-	// Key mappings for navigating the list.
-	KeyMap KeyMap
-
-	disableQuitKeybindings bool
-
-	// Additional key mappings for the short and full help views. This allows
-	// you to add additional key mappings to the help menu without
-	// re-implementing the help component. Of course, you can also disable the
-	// list's help component and implement a new one if you need more
-	// flexibility.
-	AdditionalShortHelpKeys func() []key.Binding
-	AdditionalFullHelpKeys  func() []key.Binding
 
 	spinner     spinner.Model
 	showSpinner bool
@@ -129,7 +115,6 @@ func New(delegate ItemDelegate, config *core.Config, width, height int) Model {
 	m := Model{
 		showTitle:             true,
 		showStatusBar:         true,
-		KeyMap:                DefaultKeyMap(),
 		Styles:                styles,
 		Title:                 "List",
 		StatusMessageLifetime: time.Second,
@@ -385,14 +370,6 @@ func (m *Model) StopSpinner() {
 	m.showSpinner = false
 }
 
-// Helper for disabling the keybindings used for quitting, incase you want to
-// handle this elsewhere in your application.
-func (m *Model) DisableQuitKeybindings() {
-	m.disableQuitKeybindings = true
-	m.KeyMap.Quit.SetEnabled(false)
-	m.KeyMap.ForceQuit.SetEnabled(false)
-}
-
 // NewStatusMessage sets a new status message, which will show for a limited
 // amount of time. Note that this also returns a command.
 func (m *Model) NewStatusMessage(s string) tea.Cmd {
@@ -488,10 +465,6 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	var cmds []tea.Cmd
 
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		if key.Matches(msg, m.KeyMap.ForceQuit) {
-			return m, tea.Quit
-		}
 
 	case spinner.TickMsg:
 		newSpinnerModel, cmd := m.spinner.Update(msg)
@@ -524,32 +497,32 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-		case key.Matches(msg, m.KeyMap.Quit):
+		case msg.String() == "q" || msg.String() == "esc":
 			return tea.Quit
 
-		case key.Matches(msg, m.KeyMap.CursorUp):
+		case msg.String() == "up" || msg.String() == "k":
 			m.CursorUp()
 
-		case key.Matches(msg, m.KeyMap.CursorDown):
+		case msg.String() == "down" || msg.String() == "j":
 			m.CursorDown()
 
-		case key.Matches(msg, m.KeyMap.PrevPage):
+		case msg.String() == "left" || msg.String() == "h":
 			m.Paginator.PrevPage()
 
-		case key.Matches(msg, m.KeyMap.NextPage):
+		case msg.String() == "right" || msg.String() == "l":
 			m.Paginator.NextPage()
 
-		case key.Matches(msg, m.KeyMap.NextCategory):
+		case msg.String() == "tab":
 			m.NextCategory()
 
-		case key.Matches(msg, m.KeyMap.PreviousCategory):
+		case msg.String() == "shift+tab":
 			m.PreviousCategory()
 
-		case key.Matches(msg, m.KeyMap.GoToStart):
+		case msg.String() == "g":
 			m.Paginator.Page = 0
 			m.cursor = 0
 
-		case key.Matches(msg, m.KeyMap.GoToEnd):
+		case msg.String() == "G":
 			m.Paginator.Page = m.Paginator.TotalPages - 1
 			m.cursor = m.Paginator.ItemsOnPage(numItems) - 1
 		}
