@@ -11,7 +11,6 @@ import (
 	"clx/core"
 	"clx/history"
 	"clx/hn"
-	"clx/hn/services/cheeaun"
 	"clx/hn/services/hybrid"
 	"clx/hn/services/mock"
 	"clx/item"
@@ -456,7 +455,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.SetSize(msg.Width-h, msg.Height-v)
 
 	case message.EnteringCommentSection:
-		cmd := openEditor(msg.Id)
+		cmd := m.openEditor(msg.Id)
 
 		return m, cmd
 
@@ -550,8 +549,8 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	return tea.Batch(cmds...)
 }
 
-func openEditor(id int) tea.Cmd {
-	comments := new(cheeaun.Service).FetchStory(id)
+func (m *Model) openEditor(id int) tea.Cmd {
+	comments := m.service.FetchStory(id)
 
 	screenWidth := screen.GetTerminalWidth()
 	commentTree := comment.ToString(comments, core.GetConfigWithDefaults(), screenWidth, 0)
