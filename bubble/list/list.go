@@ -483,7 +483,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 			m.items[msg.Category] = stories
 
-			return message.CategoryFetchingFinished{Category: msg.Category}
+			return message.CategoryFetchingFinished{Category: msg.Category, Cursor: msg.Cursor}
 		}
 
 		return m, cmd
@@ -494,6 +494,9 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.SetDisabledInput(false)
 		m.StopSpinner()
 		m.category = msg.Category
+
+		itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))
+		m.cursor = min(msg.Cursor, itemsOnPage-1)
 	}
 
 	cmds = append(cmds, m.handleBrowsing(msg))
@@ -512,6 +515,10 @@ func (m *Model) changeToCategory(cat int) {
 }
 
 func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
+	if m.disableInput {
+		return nil
+	}
+
 	var cmds []tea.Cmd
 	numItems := len(m.VisibleItems())
 
@@ -547,7 +554,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			startSpinnerCmd := m.StartSpinner()
 
 			changeCatCmd := func() tea.Msg {
-				return message.ChangeCategory{Category: nextCat}
+				return message.ChangeCategory{Category: nextCat, Cursor: m.cursor}
 			}
 
 			cmds = append(cmds, startSpinnerCmd)
@@ -770,6 +777,14 @@ func (m Model) spinnerView() string {
 
 func max(a, b int) int {
 	if a > b {
+		return a
+	}
+
+	return b
+}
+
+func min(a, b int) int {
+	if a < b {
 		return a
 	}
 
