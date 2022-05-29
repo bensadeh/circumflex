@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	uri                = "https://hacker-news.firebaseio.com/v0/"
+	uri                = "https://hacker-news.firebaseio.com/v0"
 	numberOfCategories = 4
 )
 
@@ -29,7 +29,6 @@ type c struct {
 }
 
 func (s *Service) Init(itemsToShow int) {
-	//buffer := 5
 	threePages := itemsToShow * 3
 	onePage := itemsToShow
 
@@ -46,7 +45,7 @@ func (s *Service) FetchStories(_ int, category int) []*item.Item {
 
 	orderedIds := s.categories[category].items
 	itemsToShow := s.categories[category].numberOfItemsToShow
-	ids := getStoryListURIParam(orderedIds)
+	ids := getStoryListURIParam(orderedIds[0:s.categories[category].numberOfItemsToShow])
 
 	toShow := strconv.Itoa(itemsToShow)
 	url := "https://hn.algolia.com/api/v1/search?tags=story," +
