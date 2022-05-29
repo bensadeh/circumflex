@@ -16,7 +16,7 @@ type History interface {
 }
 
 func NewPersistentHistory() History {
-	h := &Persistent{visitedStories: make(map[int]storyInfo)}
+	h := &Persistent{VisitedStories: make(map[int]StoryInfo)}
 
 	fullPath, dirPath, fileName := getCacheFilePaths()
 
@@ -31,10 +31,10 @@ func NewPersistentHistory() History {
 		panic(readErr)
 	}
 
-	deserializationErr := json.Unmarshal(historyFileContent, &h.visitedStories)
+	deserializationErr := json.Unmarshal(historyFileContent, &h.VisitedStories)
 	if deserializationErr != nil {
 		h.ClearAndWriteToDisk()
-		_ = json.Unmarshal(historyFileContent, &h.visitedStories)
+		_ = json.Unmarshal(historyFileContent, &h.VisitedStories)
 	}
 
 	return h
@@ -49,7 +49,7 @@ func NewMockHistory() History {
 }
 
 func writeToDisk(h *Persistent, dirPath string, fileName string) {
-	visitedStoriesJSON, _ := json.Marshal(h.visitedStories)
+	visitedStoriesJSON, _ := json.Marshal(h.VisitedStories)
 
 	err := file.WriteToFileNew(dirPath, fileName, string(visitedStoriesJSON))
 	if err != nil {

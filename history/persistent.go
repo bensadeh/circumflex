@@ -7,47 +7,47 @@ import (
 )
 
 type Persistent struct {
-	visitedStories map[int]storyInfo
+	VisitedStories map[int]StoryInfo
 }
 
-type storyInfo struct {
-	lastVisited         int64
-	commentsOnLastVisit int
+type StoryInfo struct {
+	LastVisited         int64
+	CommentsOnLastVisit int
 }
 
 func (his *Persistent) Contains(id int) bool {
-	_, contains := his.visitedStories[id]
+	_, contains := his.VisitedStories[id]
 
 	return contains
 }
 
 func (his *Persistent) GetLastVisited(id int) int64 {
-	if item, contains := his.visitedStories[id]; contains {
-		return item.lastVisited
+	if item, contains := his.VisitedStories[id]; contains {
+		return item.LastVisited
 	}
 
 	return time.Now().Unix()
 }
 
 func (his *Persistent) GetLastCommentCount(id int) int {
-	if item, contains := his.visitedStories[id]; contains {
-		return item.commentsOnLastVisit
+	if item, contains := his.VisitedStories[id]; contains {
+		return item.CommentsOnLastVisit
 	}
 
 	return 0
 }
 
 func (his *Persistent) ClearAndWriteToDisk() {
-	his.visitedStories = make(map[int]storyInfo)
+	his.VisitedStories = make(map[int]StoryInfo)
 
 	_, dirPath, fileName := getCacheFilePaths()
 	writeToDisk(his, dirPath, fileName)
 }
 
 func (his *Persistent) AddToHistoryAndWriteToDisk(id int, commentsOnLastVisit int) {
-	his.visitedStories[id] = storyInfo{
-		lastVisited:         time.Now().Unix(),
-		commentsOnLastVisit: commentsOnLastVisit,
+	his.VisitedStories[id] = StoryInfo{
+		LastVisited:         time.Now().Unix(),
+		CommentsOnLastVisit: commentsOnLastVisit,
 	}
 
 	_, dirPath, fileName := getCacheFilePaths()
@@ -56,7 +56,7 @@ func (his *Persistent) AddToHistoryAndWriteToDisk(id int, commentsOnLastVisit in
 
 func Initialize(isEnabled bool) *Persistent {
 	h := &Persistent{
-		visitedStories: make(map[int]storyInfo),
+		VisitedStories: make(map[int]StoryInfo),
 	}
 
 	fullPath, dirPath, fileName := getCacheFilePaths()
@@ -72,10 +72,10 @@ func Initialize(isEnabled bool) *Persistent {
 		panic(readErr)
 	}
 
-	deserializationErr := json.Unmarshal(historyFileContent, &h.visitedStories)
+	deserializationErr := json.Unmarshal(historyFileContent, &h.VisitedStories)
 	if deserializationErr != nil {
 		h.ClearAndWriteToDisk()
-		_ = json.Unmarshal(historyFileContent, &h.visitedStories)
+		_ = json.Unmarshal(historyFileContent, &h.VisitedStories)
 	}
 
 	return h
