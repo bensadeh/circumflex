@@ -615,11 +615,11 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 }
 
 func (m *Model) fetchCommentSectionAndPipeToLess(id int, commentCount int) tea.Cmd {
+	lastVisited := m.history.GetLastVisited(id)
+
 	m.history.AddToHistoryAndWriteToDisk(id, commentCount)
 
 	comments := m.service.FetchStory(id)
-
-	lastVisited := m.history.GetLastVisited(id)
 
 	commentTree := comment.ToString(comments, m.config, m.width, lastVisited)
 
