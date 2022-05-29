@@ -552,8 +552,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 func (m *Model) fetchCommentSectionAndPipeToLess(id int) tea.Cmd {
 	comments := m.service.FetchStory(id)
 
-	screenWidth := screen.GetTerminalWidth()
-	commentTree := comment.ToString(comments, core.GetConfigWithDefaults(), screenWidth, 0)
+	commentTree := comment.ToString(comments, m.config, m.width, 0)
 
 	command := cli.WrapLess(commentTree)
 
