@@ -2,6 +2,7 @@ package list
 
 import (
 	"clx/bheader"
+	"clx/bubble/list/message"
 	"clx/bubble/ranking"
 	"clx/constants/category"
 	"clx/constants/style"
@@ -15,6 +16,7 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
+	"strconv"
 	"strings"
 	"time"
 
@@ -54,9 +56,6 @@ type ItemDelegate interface {
 	Update(msg tea.Msg, m *Model) tea.Cmd
 }
 
-type statusMessageTimeoutMsg struct{}
-type fetchingFinished struct{}
-
 // Model contains the state of this component.
 type Model struct {
 	showTitle     bool
@@ -94,7 +93,7 @@ func (m *Model) FetchFrontPageStories() tea.Cmd {
 		stories := m.service.FetchStories(0, 0)
 
 		m.items[category.FrontPage] = stories
-		return fetchingFinished{}
+		return message.FetchingFinished{}
 	}
 }
 
@@ -383,7 +382,7 @@ func (m *Model) NewStatusMessage(s string) tea.Cmd {
 	// Wait for timeout
 	return func() tea.Msg {
 		<-m.statusMessageTimer.C
-		return statusMessageTimeoutMsg{}
+		return message.StatusMessageTimeoutMsg{}
 	}
 }
 
@@ -398,7 +397,7 @@ func (m *Model) NewStatusMessageWithDuration(s string, d time.Duration) tea.Cmd 
 	// Wait for timeout
 	return func() tea.Msg {
 		<-m.statusMessageTimer.C
-		return statusMessageTimeoutMsg{}
+		return message.StatusMessageTimeoutMsg{}
 	}
 }
 
@@ -473,7 +472,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			cmds = append(cmds, cmd)
 		}
 
-	case fetchingFinished:
+	case message.FetchingFinished:
 		m.StopSpinner()
 		h, v := lipgloss.NewStyle().GetFrameSize()
 		m.setSize(screen.GetTerminalWidth()-h, screen.GetTerminalHeight()-v)
@@ -481,7 +480,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 		return m, nil
 
-	case statusMessageTimeoutMsg:
+	case message.StatusMessageTimeoutMsg:
 		m.hideStatusMessage()
 	}
 
@@ -497,7 +496,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-		case msg.String() == "q" || msg.String() == "esc":
+		case msg.String() == "q" || msg.String() == "esc" || msg.String() == "ctrl+c":
 			return tea.Quit
 
 		case msg.String() == "up" || msg.String() == "k":
@@ -525,6 +524,37 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 		case msg.String() == "G":
 			m.Paginator.Page = m.Paginator.TotalPages - 1
 			m.cursor = m.Paginator.ItemsOnPage(numItems) - 1
+		}
+		if msg.String() == "e" {
+			cmd := m.NewStatusMessageWithDuration("Test", 2*time.Second)
+
+			return cmd
+		}
+		if msg.String() == "f" {
+			cmd := m.NewStatusMessageWithDuration("ABCDEF", 1*time.Second)
+
+			return cmd
+		}
+		if msg.String() == "enter" {
+			m.SetIsVisible(false)
+
+			cmd := func() tea.Msg {
+				return message.EnteringCommentSectionMsg{Id: m.SelectedItem().ID}
+			}
+
+			return cmd
+		}
+		if msg.String() == "u" {
+			cmd := m.StartSpinner()
+
+			return cmd
+		}
+		if msg.String() == "i" {
+			m.SetDisabledInput(!m.IsInputDisabled())
+
+			cmd := m.NewStatusMessageWithDuration("is disabled: "+strconv.FormatBool(m.IsInputDisabled()), 1*time.Second)
+
+			return cmd
 		}
 	}
 

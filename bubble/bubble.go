@@ -11,8 +11,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"os"
-	"strconv"
-	"time"
 )
 
 var docStyle = lipgloss.NewStyle()
@@ -46,41 +44,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		if msg.String() == "ctrl+c" {
-			return m, tea.Quit
-		}
-		if msg.String() == "e" {
-			cmd := m.list.NewStatusMessageWithDuration("Test", 2*time.Second)
-
-			return m, cmd
-		}
-		if msg.String() == "f" {
-			cmd := m.list.NewStatusMessageWithDuration("ABCDEF", 1*time.Second)
-
-			return m, cmd
-		}
-		if msg.String() == "enter" {
-			m.list.SetIsVisible(false)
-
-			cmd := func() tea.Msg {
-				return enteringCommentSectionMsg{id: m.list.SelectedItem().ID}
-			}
-
-			return m, cmd
-		}
-		if msg.String() == "u" {
-			cmd := m.list.StartSpinner()
-
-			return m, cmd
-		}
-		if msg.String() == "i" {
-			m.list.SetDisabledInput(!m.list.IsInputDisabled())
-
-			cmd := m.list.NewStatusMessageWithDuration("is disabled: "+strconv.FormatBool(m.list.IsInputDisabled()), 1*time.Second)
-
-			return m, cmd
-		}
 	case tea.WindowSizeMsg:
 		h, v := docStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
