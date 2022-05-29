@@ -260,25 +260,6 @@ func (m *Model) CursorDown() {
 	m.cursor = itemsOnPage - 1
 }
 
-func (m Model) PrevPage() {
-	m.Paginator.PrevPage()
-}
-
-func (m Model) NextPage() {
-	m.Paginator.NextPage()
-}
-
-func (m *Model) NextCategory() {
-	isAtLastCategory := m.category == numberOfCategories-1
-	if isAtLastCategory {
-		m.selectCategory(category.FrontPage)
-
-		return
-	}
-
-	m.selectCategory(m.category + 1)
-}
-
 func (m *Model) getNextCategory() int {
 	isAtLastCategory := m.category == numberOfCategories-1
 	if isAtLastCategory {
@@ -288,15 +269,13 @@ func (m *Model) getNextCategory() int {
 	return m.category + 1
 }
 
-func (m *Model) PreviousCategory() {
+func (m *Model) getPrevCategory() int {
 	isAtFirstCategory := m.category == category.FrontPage
 	if isAtFirstCategory {
-		m.selectCategory(category.Show)
-
-		return
+		return category.Show
 	}
 
-	m.selectCategory(m.category - 1)
+	return m.category - 1
 }
 
 func (m *Model) selectCategory(category int) {
@@ -477,7 +456,6 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.SetIsVisible(true)
 
 	case message.ChangeCategory:
-
 		cmd := func() tea.Msg {
 			stories := m.service.FetchStories(0, msg.Category)
 
@@ -563,7 +541,25 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return tea.Batch(cmds...)
 
 		case msg.String() == "shift+tab":
-			m.PreviousCategory()
+			prevCat := m.getPrevCategory()
+
+			if m.categoryHasStories(prevCat) {
+				m.changeToCategory(prevCat)
+
+				return nil
+			}
+
+			m.SetDisabledInput(true)
+			startSpinnerCmd := m.StartSpinner()
+
+			changeCatCmd := func() tea.Msg {
+				return message.ChangeCategory{Category: prevCat, Cursor: m.cursor}
+			}
+
+			cmds = append(cmds, startSpinnerCmd)
+			cmds = append(cmds, changeCatCmd)
+
+			return tea.Batch(cmds...)
 
 		case msg.String() == "g":
 			m.Paginator.Page = 0
