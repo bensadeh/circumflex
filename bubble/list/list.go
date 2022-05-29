@@ -455,7 +455,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.SetSize(msg.Width-h, msg.Height-v)
 
 	case message.EnteringCommentSection:
-		cmd := m.openEditor(msg.Id)
+		cmd := m.fetchCommentSectionAndPipeToLess(msg.Id)
 
 		return m, cmd
 
@@ -549,7 +549,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	return tea.Batch(cmds...)
 }
 
-func (m *Model) openEditor(id int) tea.Cmd {
+func (m *Model) fetchCommentSectionAndPipeToLess(id int) tea.Cmd {
 	comments := m.service.FetchStory(id)
 
 	screenWidth := screen.GetTerminalWidth()
