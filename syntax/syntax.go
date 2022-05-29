@@ -1,6 +1,8 @@
 package syntax
 
 import (
+	"clx/constants/style"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/logrusorgru/aurora/v3"
 	"regexp"
 	"strings"
@@ -69,9 +71,10 @@ func HighlightYearInHeadlinesWithType(comment string, highlightType int) string 
 	expression := regexp.MustCompile(`\((\d{4})\)`)
 	highlight := getHighlight(highlightType)
 
-	background := uint8(238)
-	foreground := uint8(3)
-	highlightedYear := aurora.Index(foreground, ` $1 `).BgIndex(background).String() + highlight
+	highlightedYear := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("3")).
+		Background(style.GetLogoBackground()).
+		Render(` $1 `) + highlight
 
 	return expression.ReplaceAllString(comment, highlightedYear)
 }
