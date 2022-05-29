@@ -477,6 +477,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 		itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))
 		m.cursor = min(msg.Cursor, itemsOnPage-1)
+		m.updatePagination()
 	}
 
 	cmds = append(cmds, m.handleBrowsing(msg))
