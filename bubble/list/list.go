@@ -161,11 +161,6 @@ func getService(debugMode bool) hn.Service {
 	return &hybrid.Service{}
 }
 
-// NewModel returns a new model with sensible defaults.
-//
-// Deprecated. Use New instead.
-var NewModel = New
-
 // SetShowTitle shows or hides the title bar.
 func (m *Model) SetShowTitle(v bool) {
 	m.showTitle = v
@@ -174,11 +169,6 @@ func (m *Model) SetShowTitle(v bool) {
 
 func (m *Model) SetIsVisible(v bool) {
 	m.isVisible = v
-}
-
-// ShowTitle returns whether or not the title bar is set to be rendered.
-func (m Model) ShowTitle() bool {
-	return m.showTitle
 }
 
 // SetShowStatusBar shows or hides the view that displays metadata about the
@@ -191,11 +181,6 @@ func (m *Model) SetShowStatusBar(v bool) {
 // ShowStatusBar returns whether or not the status bar is set to be rendered.
 func (m Model) ShowStatusBar() bool {
 	return m.showStatusBar
-}
-
-// Items returns the items in the list.
-func (m Model) Items() []*item.Item {
-	return m.items[m.category]
 }
 
 // Set the items available in the list. This returns a command.
@@ -211,17 +196,6 @@ func (m *Model) SetItems(i []*item.Item) tea.Cmd {
 func (m *Model) Select(index int) {
 	m.Paginator.Page = index / m.Paginator.PerPage
 	m.cursor = index % m.Paginator.PerPage
-}
-
-// ResetSelected resets the selected item to the first item in the first page of the list.
-func (m *Model) ResetSelected() {
-	m.Select(0)
-}
-
-// Set the item delegate.
-func (m *Model) SetDelegate(d ItemDelegate) {
-	m.delegate = d
-	m.updatePagination()
 }
 
 // VisibleItems returns the total items available to be shown.
@@ -337,21 +311,6 @@ func (m *Model) selectCategory(category int) {
 	return
 }
 
-// Width returns the current width setting.
-func (m Model) Width() int {
-	return m.width
-}
-
-// Height returns the current height setting.
-func (m Model) Height() int {
-	return m.height
-}
-
-// SetSpinner allows to set the spinner style.
-func (m *Model) SetSpinner(spinner spinner.Spinner) {
-	m.spinner.Spinner = spinner
-}
-
 // Toggle the spinner. Note that this also returns a command.
 func (m *Model) ToggleSpinner() tea.Cmd {
 	if !m.showSpinner {
@@ -407,16 +366,6 @@ func (m *Model) NewStatusMessageWithDuration(s string, d time.Duration) tea.Cmd 
 // SetSize sets the width and height of this component.
 func (m *Model) SetSize(width, height int) {
 	m.setSize(width, height)
-}
-
-// SetWidth sets the width of this component.
-func (m *Model) SetWidth(v int) {
-	m.setSize(v, m.height)
-}
-
-// SetHeight sets the height of this component.
-func (m *Model) SetHeight(v int) {
-	m.setSize(m.width, v)
 }
 
 func (m *Model) setSize(width, height int) {
@@ -761,40 +710,4 @@ func max(a, b int) int {
 	}
 
 	return b
-}
-
-func getSpinner() spinner.Spinner {
-	normal := lipgloss.NewStyle().
-		Foreground(style.GetUnselectedItemForeground()).
-		Background(style.GetHeaderBackground()).
-		Faint(true)
-
-	color := normal.Copy()
-
-	magenta := style.GetMagenta()
-	yellow := style.GetYellow()
-	blue := style.GetBlue()
-
-	return spinner.Spinner{
-		Frames: []string{
-			normal.Render("fetching"),
-			normal.Render("fetching"),
-			normal.Render("fetching"),
-			normal.Render("fetching"),
-			normal.Render("fetching"),
-			normal.Render("fetching"),
-			color.Foreground(blue).Render("f") + normal.Render("etching"),
-			color.Foreground(yellow).Render("f") + color.Foreground(blue).Render("e") + normal.Render("tching"),
-			color.Foreground(magenta).Render("f") + color.Foreground(yellow).Render("e") + color.Foreground(blue).Render("t") + normal.Render("ching"),
-			normal.Render("f") + color.Foreground(magenta).Render("e") + color.Foreground(yellow).Render("t") + color.Foreground(blue).Render("c") + normal.Render("hing"),
-			normal.Render("fe") + color.Foreground(magenta).Render("t") + color.Foreground(yellow).Render("c") + color.Foreground(blue).Render("h") + normal.Render("ing"),
-			normal.Render("fet") + color.Foreground(magenta).Render("c") + color.Foreground(yellow).Render("h") + color.Foreground(blue).Render("i") + normal.Render("ng"),
-			normal.Render("fetc") + color.Foreground(magenta).Render("h") + color.Foreground(yellow).Render("i") + color.Foreground(blue).Render("n") + normal.Render("g"),
-			normal.Render("fetch") + color.Foreground(magenta).Render("i") + color.Foreground(yellow).Render("n") + color.Foreground(blue).Render("g"),
-			normal.Render("fetchi") + color.Foreground(magenta).Render("n") + color.Foreground(yellow).Render("g"),
-			normal.Render("fetchin") + color.Foreground(magenta).Render("g"),
-			normal.Render("fetching"),
-		},
-		FPS: 150 * time.Millisecond,
-	}
 }

@@ -2,7 +2,9 @@ package list
 
 import (
 	"clx/constants/style"
+	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/lipgloss"
+	"time"
 )
 
 const (
@@ -101,4 +103,40 @@ func DefaultStyles() (s Styles) {
 		SetString(" " + bullet + " ")
 
 	return s
+}
+
+func getSpinner() spinner.Spinner {
+	normal := lipgloss.NewStyle().
+		Foreground(style.GetUnselectedItemForeground()).
+		Background(style.GetHeaderBackground()).
+		Faint(true)
+
+	color := normal.Copy()
+
+	magenta := style.GetMagenta()
+	yellow := style.GetYellow()
+	blue := style.GetBlue()
+
+	return spinner.Spinner{
+		Frames: []string{
+			normal.Render("fetching"),
+			normal.Render("fetching"),
+			normal.Render("fetching"),
+			normal.Render("fetching"),
+			normal.Render("fetching"),
+			normal.Render("fetching"),
+			color.Foreground(blue).Render("f") + normal.Render("etching"),
+			color.Foreground(yellow).Render("f") + color.Foreground(blue).Render("e") + normal.Render("tching"),
+			color.Foreground(magenta).Render("f") + color.Foreground(yellow).Render("e") + color.Foreground(blue).Render("t") + normal.Render("ching"),
+			normal.Render("f") + color.Foreground(magenta).Render("e") + color.Foreground(yellow).Render("t") + color.Foreground(blue).Render("c") + normal.Render("hing"),
+			normal.Render("fe") + color.Foreground(magenta).Render("t") + color.Foreground(yellow).Render("c") + color.Foreground(blue).Render("h") + normal.Render("ing"),
+			normal.Render("fet") + color.Foreground(magenta).Render("c") + color.Foreground(yellow).Render("h") + color.Foreground(blue).Render("i") + normal.Render("ng"),
+			normal.Render("fetc") + color.Foreground(magenta).Render("h") + color.Foreground(yellow).Render("i") + color.Foreground(blue).Render("n") + normal.Render("g"),
+			normal.Render("fetch") + color.Foreground(magenta).Render("i") + color.Foreground(yellow).Render("n") + color.Foreground(blue).Render("g"),
+			normal.Render("fetchi") + color.Foreground(magenta).Render("n") + color.Foreground(yellow).Render("g"),
+			normal.Render("fetchin") + color.Foreground(magenta).Render("g"),
+			normal.Render("fetching"),
+		},
+		FPS: 150 * time.Millisecond,
+	}
 }
