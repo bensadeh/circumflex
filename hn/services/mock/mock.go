@@ -1,7 +1,9 @@
 package mock
 
 import (
+	"clx/constants/category"
 	"clx/item"
+	"math/rand"
 	"time"
 )
 
@@ -10,10 +12,10 @@ type MockService struct{}
 func (MockService) Init(_ int) {
 }
 
-func (MockService) FetchStories(_ int, _ int) []*item.Item {
-	time.Sleep(time.Second * 3)
+func (MockService) FetchStories(_ int, cat int) []*item.Item {
+	time.Sleep(time.Second * 2)
 
-	return []*item.Item{
+	items := []*item.Item{
 		{
 			Title:         "Lorem ipsum dolor sit amet",
 			Points:        31,
@@ -276,6 +278,13 @@ func (MockService) FetchStories(_ int, _ int) []*item.Item {
 			CommentsCount: 122,
 		},
 	}
+
+	//Randomize list to make debugging easier
+	if cat != category.FrontPage {
+		rand.Shuffle(len(items), func(i, j int) { items[i], items[j] = items[j], items[i] })
+	}
+
+	return items
 }
 
 func (MockService) FetchStory(_ int) *item.Item {

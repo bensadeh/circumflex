@@ -479,10 +479,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	case message.ChangeCategory:
 
 		cmd := func() tea.Msg {
-			stories := m.service.FetchStories(0, m.category)
-
-			//Randomize list to make debugging easier
-			rand.Shuffle(len(stories), func(i, j int) { stories[i], stories[j] = stories[j], stories[i] })
+			stories := m.service.FetchStories(0, msg.Category)
 
 			m.items[msg.Category] = stories
 
