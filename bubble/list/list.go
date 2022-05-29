@@ -385,7 +385,7 @@ func (m *Model) NewStatusMessage(s string) tea.Cmd {
 	// Wait for timeout
 	return func() tea.Msg {
 		<-m.statusMessageTimer.C
-		return message.StatusMessageTimeoutMsg{}
+		return message.StatusMessageTimeout{}
 	}
 }
 
@@ -400,7 +400,7 @@ func (m *Model) NewStatusMessageWithDuration(s string, d time.Duration) tea.Cmd 
 	// Wait for timeout
 	return func() tea.Msg {
 		<-m.statusMessageTimer.C
-		return message.StatusMessageTimeoutMsg{}
+		return message.StatusMessageTimeout{}
 	}
 }
 
@@ -499,14 +499,14 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 		return m, nil
 
-	case message.StatusMessageTimeoutMsg:
+	case message.StatusMessageTimeout:
 		m.hideStatusMessage()
 
 	case tea.WindowSizeMsg:
 		h, v := lipgloss.NewStyle().GetFrameSize()
 		m.SetSize(msg.Width-h, msg.Height-v)
 
-	case message.EnteringCommentSectionMsg:
+	case message.EnteringCommentSection:
 		cmd := openEditor(msg.Id)
 
 		return m, cmd
@@ -570,7 +570,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			m.SetIsVisible(false)
 
 			cmd := func() tea.Msg {
-				return message.EnteringCommentSectionMsg{Id: m.SelectedItem().ID}
+				return message.EnteringCommentSection{Id: m.SelectedItem().ID}
 			}
 
 			return cmd
