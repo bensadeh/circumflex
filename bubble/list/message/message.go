@@ -14,5 +14,11 @@ type StatusMessageTimeout struct{}
 type FetchingFinished struct{}
 
 type ChangeCategory struct {
-	Category int
+	Category              int
+	ItemCurrentlySelected int
+}
+
+type CategoryFetchingFinished struct {
+	Category              int
+	ItemCurrentlySelected int
 }

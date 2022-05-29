@@ -110,6 +110,11 @@ func New(delegate ItemDelegate, config *core.Config, width, height int) Model {
 	p.Type = paginator.Dots
 	p.ActiveDot = styles.ActivePaginationDot.String()
 	p.InactiveDot = styles.InactivePaginationDot.String()
+	p.UseHLKeys = false
+	p.UseJKKeys = false
+	p.UseLeftRightKeys = false
+	p.UsePgUpPgDownKeys = false
+	p.UseUpDownKeys = false
 
 	items := make([][]*item.Item, numberOfCategories)
 
@@ -472,21 +477,26 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.SetIsVisible(true)
 
 	case message.ChangeCategory:
-		m.category = msg.Category
 
-		stories := m.service.FetchStories(0, m.category)
+		cmd := func() tea.Msg {
+			stories := m.service.FetchStories(0, m.category)
 
-		//Randomize list to make debugging easier
-		rand.Shuffle(len(stories), func(i, j int) { stories[i], stories[j] = stories[j], stories[i] })
+			//Randomize list to make debugging easier
+			rand.Shuffle(len(stories), func(i, j int) { stories[i], stories[j] = stories[j], stories[i] })
 
-		m.items[msg.Category] = stories
+			m.items[msg.Category] = stories
 
+			return message.CategoryFetchingFinished{Category: msg.Category}
+		}
+
+		return m, cmd
+
+	case message.CategoryFetchingFinished:
 		m.Paginator.Page = 0
 		m.updatePagination()
 		m.SetDisabledInput(false)
-
-		return m, nil
-
+		m.StopSpinner()
+		m.category = msg.Category
 	}
 
 	cmds = append(cmds, m.handleBrowsing(msg))
@@ -511,6 +521,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
+
 		case msg.String() == "q" || msg.String() == "esc" || msg.String() == "ctrl+c":
 			return tea.Quit
 
@@ -536,10 +547,16 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			}
 
 			m.SetDisabledInput(true)
+			startSpinnerCmd := m.StartSpinner()
 
-			return func() tea.Msg {
-				return message.ChangeCategory{Category: m.getNextCategory()}
+			changeCatCmd := func() tea.Msg {
+				return message.ChangeCategory{Category: nextCat}
 			}
+
+			cmds = append(cmds, startSpinnerCmd)
+			cmds = append(cmds, changeCatCmd)
+
+			return tea.Batch(cmds...)
 
 		case msg.String() == "shift+tab":
 			m.PreviousCategory()
