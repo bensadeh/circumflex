@@ -46,30 +46,30 @@ func GetPink() lipgloss.TerminalColor {
 	return lipgloss.AdaptiveColor{Light: pinkLight, Dark: pinkDark}
 }
 
-func GetLogoBackground() lipgloss.TerminalColor {
+func GetLogoBg() lipgloss.TerminalColor {
 	return lipgloss.AdaptiveColor{Light: logoBgLight, Dark: logoBgDark}
 }
 
-func GetHeaderBackground() lipgloss.TerminalColor {
+func GetHeaderBg() lipgloss.TerminalColor {
 	return lipgloss.AdaptiveColor{Light: headerBgLight, Dark: headerBgDark}
 }
 
-func GetStatusBarBackground() lipgloss.TerminalColor {
+func GetStatusBarBg() lipgloss.TerminalColor {
 	return lipgloss.AdaptiveColor{Light: statusBarBgLight, Dark: statusBarBgDark}
 }
 
-func GetPaginatorBackground() lipgloss.TerminalColor {
+func GetPaginatorBg() lipgloss.TerminalColor {
 	return lipgloss.AdaptiveColor{Light: paginatorBgLight, Dark: paginatorBgDark}
 }
 
-func GetUnselectedItemForeground() lipgloss.TerminalColor {
+func GetUnselectedItemFg() lipgloss.TerminalColor {
 	return lipgloss.AdaptiveColor{Light: unselectedItemFgLight, Dark: unselectedItemFgDark}
 }
 
-func GetSelectedPageForeground() lipgloss.TerminalColor {
+func GetSelectedPageFg() lipgloss.TerminalColor {
 	return lipgloss.AdaptiveColor{Light: selectedPageFgLight, Dark: selectedPageFgDark}
 }
 
-func GetUnselectedPageForeground() lipgloss.TerminalColor {
+func GetUnselectedPageFg() lipgloss.TerminalColor {
 	return lipgloss.AdaptiveColor{Light: unselectedPageFgLight, Dark: unselectedPageFgDark}
 }

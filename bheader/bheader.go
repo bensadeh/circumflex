@@ -8,7 +8,7 @@ import (
 )
 
 func GetHeader(selectedSubHeader int, width int) string {
-	bg := style.GetLogoBackground()
+	bg := style.GetLogoBg()
 
 	c := lipgloss.NewStyle().
 		Foreground(style.GetMagenta()).
@@ -40,14 +40,14 @@ func getFiller(title string, categories string, width int) string {
 	filler := strings.Repeat(" ", availableSpace)
 
 	return lipgloss.NewStyle().
-		Background(style.GetHeaderBackground()).
+		Background(style.GetHeaderBg()).
 		Render(filler)
 }
 
 func getCategories(selectedSubHeader int) string {
 	subHeaders := []string{"new", "ask", "show"}
-	fg := style.GetUnselectedItemForeground()
-	bg := style.GetHeaderBackground()
+	fg := style.GetUnselectedItemFg()
+	bg := style.GetHeaderBg()
 
 	categories := lipgloss.NewStyle().
 		Background(bg).
@@ -81,7 +81,7 @@ func getColor(i int, selectedSubHeader int) (lipgloss.TerminalColor, bool) {
 		return getSelectedCategoryColor(i + 1)
 	}
 
-	return style.GetUnselectedItemForeground(), false
+	return style.GetUnselectedItemFg(), false
 }
 
 func getSelectedCategoryColor(selectedSubHeader int) (lipgloss.TerminalColor, bool) {
@@ -95,6 +95,6 @@ func getSelectedCategoryColor(selectedSubHeader int) (lipgloss.TerminalColor, bo
 	case category.Favorites:
 		return style.GetPink(), true
 	default:
-		return style.GetUnselectedItemForeground(), false
+		return style.GetUnselectedItemFg(), false
 	}
 }

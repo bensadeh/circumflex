@@ -89,13 +89,13 @@ func DefaultStyles() (s Styles) {
 	s.HelpStyle = lipgloss.NewStyle().Padding(1, 0, 0, 2)
 
 	s.ActivePaginationDot = lipgloss.NewStyle().
-		Foreground(style.GetSelectedPageForeground()).
-		Background(style.GetPaginatorBackground()).
+		Foreground(style.GetSelectedPageFg()).
+		Background(style.GetPaginatorBg()).
 		SetString(bullet)
 
 	s.InactivePaginationDot = lipgloss.NewStyle().
-		Foreground(style.GetUnselectedPageForeground()).
-		Background(style.GetPaginatorBackground()).
+		Foreground(style.GetUnselectedPageFg()).
+		Background(style.GetPaginatorBg()).
 		SetString(bullet)
 
 	s.DividerDot = lipgloss.NewStyle().
@@ -107,8 +107,8 @@ func DefaultStyles() (s Styles) {
 
 func getSpinner() spinner.Spinner {
 	normal := lipgloss.NewStyle().
-		Foreground(style.GetUnselectedItemForeground()).
-		Background(style.GetStatusBarBackground()).
+		Foreground(style.GetUnselectedItemFg()).
+		Background(style.GetStatusBarBg()).
 		Faint(true)
 
 	color := normal.Copy()
