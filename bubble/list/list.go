@@ -9,6 +9,7 @@ import (
 	"clx/constants/category"
 	"clx/constants/style"
 	"clx/core"
+	"clx/help"
 	"clx/history"
 	"clx/hn"
 	hybrid "clx/hn/services/hybrid-bubble"
@@ -450,9 +451,10 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.SetSize(msg.Width-h, msg.Height-v)
 
 	case message.EnteringCommentSection:
-		cmd := m.fetchCommentSectionAndPipeToLess(msg.Id, msg.CommentCount)
+		return m, m.fetchCommentSectionAndPipeToLess(msg.Id, msg.CommentCount)
 
-		return m, cmd
+	case message.EnterHelpScreen:
+		return m, m.showHelpScreen()
 
 	case message.EditorFinishedMsg:
 		m.SetIsVisible(true)
@@ -591,6 +593,15 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			return cmd
 		}
+		if msg.String() == "i" {
+			m.SetIsVisible(false)
+
+			cmd := func() tea.Msg {
+				return message.EnterHelpScreen{}
+			}
+
+			return cmd
+		}
 		if msg.String() == "u" {
 			cmd := m.StartSpinner()
 
@@ -625,6 +636,16 @@ func (m *Model) fetchCommentSectionAndPipeToLess(id int, commentCount int) tea.C
 	commentTree := comment.ToString(comments, m.config, m.width, lastVisited)
 
 	command := cli.WrapLess(commentTree)
+
+	return tea.Exec(tea.WrapExecCommand(command), func(err error) tea.Msg {
+		return message.EditorFinishedMsg{Err: err}
+	})
+}
+
+func (m *Model) showHelpScreen() tea.Cmd {
+	helpScreen := help.GetHelpScreen()
+
+	command := cli.WrapLess(helpScreen)
 
 	return tea.Exec(tea.WrapExecCommand(command), func(err error) tea.Msg {
 		return message.EditorFinishedMsg{Err: err}
@@ -682,15 +703,15 @@ func (m Model) statusAndPaginationView() string {
 	}
 
 	left := lipgloss.NewStyle().Inline(true).
-		Background(style.GetLogoBackground()).
+		Background(style.GetStatusBarBackground()).
 		Width(5).MaxWidth(5).Render("")
 
 	center := lipgloss.NewStyle().Inline(true).
-		Background(style.GetLogoBackground()).
+		Background(style.GetStatusBarBackground()).
 		Width(m.width - 5 - 5).Align(lipgloss.Center).Render(centerContent)
 
 	right := lipgloss.NewStyle().Inline(true).
-		Background(style.GetHeaderBackground()).
+		Background(style.GetPaginatorBackground()).
 		Width(5).Align(lipgloss.Center).Render(m.Paginator.View())
 
 	return m.Styles.StatusBar.Render(left) + m.Styles.StatusBar.Render(center) + m.Styles.StatusBar.Render(right)

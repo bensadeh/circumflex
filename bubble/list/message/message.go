@@ -9,6 +9,8 @@ type EnteringCommentSection struct {
 	CommentCount int
 }
 
+type EnterHelpScreen struct{}
+
 type StatusMessageTimeout struct{}
 
 type FetchingFinished struct{}
