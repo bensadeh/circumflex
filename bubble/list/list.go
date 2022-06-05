@@ -299,6 +299,7 @@ func (m *Model) StartSpinner() tea.Cmd {
 // StopSpinner stops the spinner.
 func (m *Model) StopSpinner() {
 	m.showSpinner = false
+	m.spinner.Finish()
 }
 
 // NewStatusMessage sets a new status message, which will show for a limited
