@@ -4,6 +4,7 @@ import (
 	"clx/file"
 	"clx/item"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 )
 
@@ -44,4 +45,20 @@ func (f Favorites) GetItems() []*item.Item {
 
 func (f Favorites) HasItems() bool {
 	return len(f.items) != 0
+}
+
+func (f Favorites) Write(favorites []*item.Item) {
+	err := file.WriteToFileInConfigDir(file.PathToFavoritesFile(), serializeToJson(favorites))
+	if err != nil {
+		panic(fmt.Errorf("could not write to file: %w", err))
+	}
+}
+
+func serializeToJson(favorites []*item.Item) string {
+	stream, err := json.MarshalIndent(favorites, "", "    ")
+	if err != nil {
+		panic(fmt.Errorf("could not serialize favorites struct: %w", err))
+	}
+
+	return string(stream)
 }
