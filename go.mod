@@ -9,7 +9,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89
 	github.com/charmbracelet/bubbles v0.10.3
-	github.com/charmbracelet/bubbletea v0.20.1-0.20220516164627-a5f28a3a04bb
+	github.com/charmbracelet/bubbletea v0.21.0
 	github.com/charmbracelet/glamour v0.3.0
 	github.com/charmbracelet/lipgloss v0.4.0
 	github.com/gdamore/tcell/v2 v2.4.1-0.20210828201608-73703f7ed490

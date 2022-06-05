@@ -616,7 +616,7 @@ func (m *Model) fetchCommentSectionAndPipeToLess(id int, commentCount int) tea.C
 
 	command := cli.WrapLess(commentTree)
 
-	return tea.Exec(tea.WrapExecCommand(command), func(err error) tea.Msg {
+	return tea.ExecProcess(command, func(err error) tea.Msg {
 		return message.EditorFinishedMsg{Err: err}
 	})
 }
@@ -626,7 +626,7 @@ func (m *Model) showHelpScreen() tea.Cmd {
 
 	command := cli.WrapLess(helpScreen)
 
-	return tea.Exec(tea.WrapExecCommand(command), func(err error) tea.Msg {
+	return tea.ExecProcess(command, func(err error) tea.Msg {
 		return message.EditorFinishedMsg{Err: err}
 	})
 }
