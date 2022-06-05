@@ -36,9 +36,7 @@ func (m model) View() string {
 func Run(config *core.Config) {
 	cli.ClearScreen()
 
-	favorites := bfavorites.New()
-
-	m := model{list: list.New(list.NewDefaultDelegate(), config, favorites, 0, 0)}
+	m := model{list: list.New(list.NewDefaultDelegate(), config, bfavorites.New(), 0, 0)}
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
 

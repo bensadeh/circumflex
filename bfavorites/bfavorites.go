@@ -42,6 +42,6 @@ func (f Favorites) GetItems() []*item.Item {
 	return f.items
 }
 
-func (f Favorites) IsEmpty() bool {
-	return len(f.items) == 0
+func (f Favorites) HasItems() bool {
+	return len(f.items) != 0
 }

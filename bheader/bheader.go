@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func GetHeader(selectedSubHeader int, width int) string {
+func GetHeader(selectedSubHeader int, favoritesHasItems bool, width int) string {
 	bg := style.GetLogoBg()
 
 	c := lipgloss.NewStyle().
@@ -23,8 +23,7 @@ func GetHeader(selectedSubHeader int, width int) string {
 		Background(bg)
 
 	title := c.Render("  c") + l.Render("l") + x.Render("x  ")
-
-	categories := getCategories(selectedSubHeader)
+	categories := getCategories(selectedSubHeader, favoritesHasItems)
 	filler := getFiller(title, categories, width)
 
 	return title + categories + filler
@@ -44,8 +43,8 @@ func getFiller(title string, categories string, width int) string {
 		Render(filler)
 }
 
-func getCategories(selectedSubHeader int) string {
-	subHeaders := []string{"new", "ask", "show"}
+func getCategories(selectedSubHeader int, favoritesHasItems bool) string {
+	subHeaders := getSubHeaders(favoritesHasItems)
 	fg := style.GetUnselectedItemFg()
 	bg := style.GetHeaderBg()
 
@@ -74,6 +73,14 @@ func getCategories(selectedSubHeader int) string {
 	}
 
 	return categories
+}
+
+func getSubHeaders(favoritesHasItems bool) []string {
+	if favoritesHasItems {
+		return []string{"new", "ask", "show", "favorites"}
+	}
+
+	return []string{"new", "ask", "show"}
 }
 
 func getColor(i int, selectedSubHeader int) (lipgloss.TerminalColor, bool) {

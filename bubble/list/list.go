@@ -144,9 +144,8 @@ func New(delegate ItemDelegate, config *core.Config, favorites *bfavorites.Favor
 		favorites:    favorites,
 	}
 
-	//m.service.Init(30)
-
 	m.updatePagination()
+
 	return m
 }
 
@@ -693,7 +692,7 @@ func (m Model) View() string {
 }
 
 func (m Model) titleView() string {
-	return bheader.GetHeader(m.category, m.width) + "\n"
+	return bheader.GetHeader(m.category, m.favorites.HasItems(), m.width) + "\n"
 }
 
 func (m Model) statusAndPaginationView() string {
