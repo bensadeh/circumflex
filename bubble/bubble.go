@@ -1,6 +1,7 @@
 package bubble
 
 import (
+	"clx/bfavorites"
 	"clx/bubble/list"
 	"clx/cli"
 	"clx/core"
@@ -35,7 +36,9 @@ func (m model) View() string {
 func Run(config *core.Config) {
 	cli.ClearScreen()
 
-	m := model{list: list.New(list.NewDefaultDelegate(), config, 0, 0)}
+	favorites := bfavorites.New()
+
+	m := model{list: list.New(list.NewDefaultDelegate(), config, favorites, 0, 0)}
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
 

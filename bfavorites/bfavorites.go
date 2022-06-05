@@ -1,4 +1,4 @@
-package favorites
+package bfavorites
 
 import (
 	"clx/file"
@@ -8,10 +8,10 @@ import (
 )
 
 type Favorites struct {
-	Items []*item.Item
+	items []*item.Item
 }
 
-func Initialize() *Favorites {
+func New() *Favorites {
 	favoritesPath := file.PathToFavoritesFile()
 
 	if file.Exists(favoritesPath) {
@@ -19,7 +19,7 @@ func Initialize() *Favorites {
 		items := unmarshal(favoritesJSON)
 
 		favoritesFromDisk := new(Favorites)
-		favoritesFromDisk.Items = items
+		favoritesFromDisk.items = items
 
 		return favoritesFromDisk
 	}
@@ -36,4 +36,12 @@ func unmarshal(data []byte) []*item.Item {
 	}
 
 	return items
+}
+
+func (f Favorites) GetItems() []*item.Item {
+	return f.items
+}
+
+func (f Favorites) IsEmpty() bool {
+	return len(f.items) == 0
 }

@@ -1,6 +1,7 @@
 package list
 
 import (
+	"clx/bfavorites"
 	"clx/bheader"
 	"clx/bubble/list/message"
 	"clx/bubble/ranking"
@@ -85,10 +86,11 @@ type Model struct {
 	category int
 	items    [][]*item.Item
 
-	delegate ItemDelegate
-	history  history.History
-	config   *core.Config
-	service  hn.Service
+	delegate  ItemDelegate
+	history   history.History
+	config    *core.Config
+	service   hn.Service
+	favorites *bfavorites.Favorites
 }
 
 func (m *Model) FetchFrontPageStories() tea.Cmd {
@@ -101,7 +103,7 @@ func (m *Model) FetchFrontPageStories() tea.Cmd {
 	}
 }
 
-func New(delegate ItemDelegate, config *core.Config, width, height int) Model {
+func New(delegate ItemDelegate, config *core.Config, favorites *bfavorites.Favorites, width, height int) Model {
 	styles := DefaultStyles()
 
 	sp := spinner.New()
@@ -139,6 +141,7 @@ func New(delegate ItemDelegate, config *core.Config, width, height int) Model {
 		disableInput: true,
 		config:       config,
 		service:      getService(config.DebugMode),
+		favorites:    favorites,
 	}
 
 	//m.service.Init(30)
