@@ -30,7 +30,7 @@ import (
 )
 
 const (
-	numberOfCategories = 4
+	numberOfCategories = 5
 )
 
 // Item is an item that appears in the list.
@@ -394,6 +394,8 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		cmds = append(cmds, spinnerCmd)
 
 		m.SetOnStartup(false)
+
+		m.items[category.Favorites] = m.favorites.GetItems()
 
 		fetchCmd := m.FetchFrontPageStories()
 		cmds = append(cmds, fetchCmd)
