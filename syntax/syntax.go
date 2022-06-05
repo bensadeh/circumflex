@@ -52,8 +52,8 @@ func HighlightYearInHeadlines(comment string, highlightType int) string {
 	highlight := getHighlight(highlightType)
 
 	highlightedYear := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("3")).
-		Background(style.GetLogoBg()).
+		Foreground(style.GetYellow()).
+		Background(style.GetLabelBg()).
 		Render(` $1 `) + highlight
 
 	return expression.ReplaceAllString(comment, highlightedYear)

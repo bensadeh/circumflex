@@ -8,7 +8,8 @@ const (
 	blueDark    = "33"
 	pinkDark    = "219"
 
-	logoBgDark           = "#292b33"
+	logoBgDark           = "#0f1429"
+	labelBgDark          = logoBgDark
 	headerBgDark         = "#222638"
 	unselectedItemFgDark = "247"
 	statusBarBgDark      = headerBgDark
@@ -22,6 +23,7 @@ const (
 	pinkLight    = pinkDark
 
 	logoBgLight           = "252"
+	labelBgLight          = headerBgLight
 	headerBgLight         = "254"
 	unselectedItemFgLight = "235"
 	statusBarBgLight      = headerBgLight
@@ -48,6 +50,10 @@ func GetPink() lipgloss.TerminalColor {
 
 func GetLogoBg() lipgloss.TerminalColor {
 	return lipgloss.AdaptiveColor{Light: logoBgLight, Dark: logoBgDark}
+}
+
+func GetLabelBg() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: labelBgLight, Dark: labelBgDark}
 }
 
 func GetHeaderBg() lipgloss.TerminalColor {
