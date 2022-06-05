@@ -13,7 +13,8 @@ func (MockService) Init(_ int) {
 }
 
 func (MockService) FetchStories(_ int, cat int) []*item.Item {
-	time.Sleep(time.Second * 2)
+	// Uncomment to test the spinner on startup
+	//time.Sleep(time.Second * 2)
 
 	items := []*item.Item{
 		{
