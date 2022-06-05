@@ -19,7 +19,6 @@ import (
 	"clx/screen"
 	"fmt"
 	"io"
-	"math/rand"
 	"strconv"
 	"strings"
 	"time"
@@ -280,31 +279,6 @@ func (m *Model) getPrevCategory() int {
 	}
 
 	return m.category - 1
-}
-
-func (m *Model) selectCategory(category int) {
-	m.category = category
-	categoryIsEmpty := len(m.items[category]) == 0
-
-	if !categoryIsEmpty {
-		m.Paginator.Page = 0
-		m.updatePagination()
-
-		return
-	}
-
-	service := new(mock.MockService)
-	stories := service.FetchStories(0, m.category)
-
-	// Randomize list to make debugging easier
-	rand.Shuffle(len(stories), func(i, j int) { stories[i], stories[j] = stories[j], stories[i] })
-
-	m.items[category] = stories
-
-	m.Paginator.Page = 0
-	m.updatePagination()
-
-	return
 }
 
 // Toggle the spinner. Note that this also returns a command.
