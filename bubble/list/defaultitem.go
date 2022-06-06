@@ -49,19 +49,6 @@ func NewDefaultItemStyles() (s DefaultItemStyles) {
 	return s
 }
 
-// DefaultDelegate is a standard delegate designed to work in lists. It's
-// styled by DefaultItemStyles, which can be customized as you like.
-//
-// The description line can be hidden by setting Description to false, which
-// renders the list as single-line-items. The spacing between items can be set
-// with the SetSpacing method.
-//
-// Setting UpdateFunc is optional. If it's set it will be called when the
-// ItemDelegate called, which is called when the list's Update function is
-// invoked.
-//
-// Settings ShortHelpFunc and FullHelpFunc is optional. They can can be set to
-// include items in the list's default short and full help menus.
 type DefaultDelegate struct {
 	ShowDescription bool
 	Styles          DefaultItemStyles
@@ -169,7 +156,7 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 		title = syntax.HighlightHackerNewsHeadlines(title, syntax.Normal)
 		title = syntax.HighlightSpecialContent(title)
 
-		title = title + " " + domain
+		title = s.NormalTitle.Render(title) + " " + domain
 		desc = s.NormalDesc.Render(desc)
 	}
 
