@@ -13,53 +13,38 @@ import (
 	"github.com/muesli/reflow/truncate"
 )
 
-// DefaultItemStyles defines styling for a default list item.
-// See DefaultItemView for when these come into play.
 type DefaultItemStyles struct {
-	// The Normal state.
 	NormalTitle lipgloss.Style
 	NormalDesc  lipgloss.Style
 
-	// The selected item state.
 	SelectedTitle lipgloss.Style
 	SelectedDesc  lipgloss.Style
 
-	// The dimmed state, for when the filter input is initially activated.
+	SelectedTitleAddToFavorites lipgloss.Style
+	SelectedDescAddToFavorites  lipgloss.Style
+
 	DimmedTitle lipgloss.Style
 	DimmedDesc  lipgloss.Style
 }
 
-// NewDefaultItemStyles returns style definitions for a default item. See
-// DefaultItemView for when these come into play.
 func NewDefaultItemStyles() (s DefaultItemStyles) {
 	s.NormalTitle = lipgloss.NewStyle()
-	//Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"})
-	//Padding(0, 0, 0, 2)
-
 	s.NormalDesc = s.NormalTitle.Copy().
 		Faint(true)
 
-	//Foreground(lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"})
-
 	s.SelectedTitle = lipgloss.NewStyle().
 		Reverse(true)
-	//Border(lipgloss.NormalBorder(), false, false, false, true).
-	//BorderForeground(lipgloss.AdaptiveColor{Light: "#F793FF", Dark: "#AD58B4"}).
-	//Foreground(lipgloss.AdaptiveColor{Light: "#EE6FF8", Dark: "#EE6FF8"}).
-	//Padding(0, 0, 0, 1)
 
 	s.SelectedDesc = s.SelectedTitle.Copy().
 		Bold(false).
 		Faint(true).
 		Reverse(false)
-	//Foreground(lipgloss.AdaptiveColor{Light: "#F793FF", Dark: "#AD58B4"})
+
+	s.SelectedTitleAddToFavorites = s.NormalTitle.Copy().Bold(true)
+	s.SelectedDescAddToFavorites = s.NormalDesc.Copy().Faint(false)
 
 	s.DimmedTitle = lipgloss.NewStyle()
-	//Foreground(lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"}).
-	//Padding(0, 0, 0, 2)
-
 	s.DimmedDesc = s.DimmedTitle.Copy()
-	//Foreground(lipgloss.AdaptiveColor{Light: "#C2B8C2", Dark: "#4D4D4D"})
 
 	return s
 }
@@ -143,11 +128,23 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 	var (
 		isSelected = index == m.Index()
 		markAsRead = m.history.Contains(item.ID)
+		bold       = "\033[1m"
 		faint      = "\033[2m"
 		italic     = "\033[3m"
 	)
 
-	if isSelected && !m.disableInput {
+	switch {
+	case isSelected && m.onAddToFavoritesPrompt:
+		title = s.SelectedTitleAddToFavorites.Render(title)
+		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Bold)
+		title = syntax.HighlightYearInHeadlines(title, syntax.Bold)
+		title = syntax.HighlightHackerNewsHeadlines(title, syntax.Bold)
+		title = syntax.HighlightSpecialContent(title)
+
+		title = bold + title + " " + domain
+		desc = s.SelectedDescAddToFavorites.Faint(false).Render(desc)
+
+	case isSelected && !m.disableInput:
 		title = s.SelectedTitle.Render(title)
 		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Reverse)
 		title = syntax.HighlightYearInHeadlines(title, syntax.Reverse)
@@ -155,26 +152,25 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 		title = syntax.HighlightSpecialContent(title)
 
 		title = title + " " + domain
-
 		desc = s.SelectedDesc.Render(desc)
-	} else {
-		if (markAsRead || m.onAddToFavoritesPrompt) && !isSelected {
-			title = syntax.HighlightYCStartupsInHeadlines(title, syntax.FaintAndItalic)
-			title = syntax.HighlightYearInHeadlines(title, syntax.FaintAndItalic)
-			title = syntax.HighlightHackerNewsHeadlines(title, syntax.FaintAndItalic)
-			title = syntax.HighlightSpecialContent(title)
 
-			title = faint + italic + title + " " + domain
-			desc = s.NormalDesc.Render(desc)
-		} else {
-			title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Normal)
-			title = syntax.HighlightYearInHeadlines(title, syntax.Normal)
-			title = syntax.HighlightHackerNewsHeadlines(title, syntax.Normal)
-			title = syntax.HighlightSpecialContent(title)
+	case (markAsRead || m.onAddToFavoritesPrompt) && !isSelected:
+		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.FaintAndItalic)
+		title = syntax.HighlightYearInHeadlines(title, syntax.FaintAndItalic)
+		title = syntax.HighlightHackerNewsHeadlines(title, syntax.FaintAndItalic)
+		title = syntax.HighlightSpecialContent(title)
 
-			title = title + " " + domain
-			desc = s.NormalDesc.Render(desc)
-		}
+		title = faint + italic + title + " " + domain
+		desc = s.NormalDesc.Render(desc)
+
+	default:
+		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Normal)
+		title = syntax.HighlightYearInHeadlines(title, syntax.Normal)
+		title = syntax.HighlightHackerNewsHeadlines(title, syntax.Normal)
+		title = syntax.HighlightSpecialContent(title)
+
+		title = title + " " + domain
+		desc = s.NormalDesc.Render(desc)
 	}
 
 	if d.ShowDescription {
