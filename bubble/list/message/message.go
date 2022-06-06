@@ -24,3 +24,5 @@ type CategoryFetchingFinished struct {
 	Category int
 	Cursor   int
 }
+
+type AddToFavorites struct{}

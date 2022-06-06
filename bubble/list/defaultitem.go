@@ -140,14 +140,14 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 		desc = truncate.StringWithTail(desc, textWidth, ellipsis)
 	}
 
-	// Conditions
 	var (
 		isSelected = index == m.Index()
 		markAsRead = m.history.Contains(item.ID)
+		faint      = "\033[2m"
+		italic     = "\033[3m"
 	)
 
 	if isSelected && !m.disableInput {
-		//title = s.SelectedTitle.Render(title)
 		title = s.SelectedTitle.Render(title)
 		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Reverse)
 		title = syntax.HighlightYearInHeadlines(title, syntax.Reverse)
@@ -156,13 +156,9 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 
 		title = title + " " + domain
 
-		//desc = s.SelectedDesc.Render(desc)
 		desc = s.SelectedDesc.Render(desc)
 	} else {
-		faint := "\033[2m"
-		italic := "\033[3m"
-
-		if markAsRead {
+		if (markAsRead || m.onAddToFavoritesPrompt) && !isSelected {
 			title = syntax.HighlightYCStartupsInHeadlines(title, syntax.FaintAndItalic)
 			title = syntax.HighlightYearInHeadlines(title, syntax.FaintAndItalic)
 			title = syntax.HighlightHackerNewsHeadlines(title, syntax.FaintAndItalic)
@@ -182,10 +178,10 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 	}
 
 	if d.ShowDescription {
-		fmt.Fprintf(w, "%s\n%s", title, desc)
+		_, _ = fmt.Fprintf(w, "%s\n%s", title, desc)
 		return
 	}
-	fmt.Fprintf(w, "%s", title)
+	_, _ = fmt.Fprintf(w, "%s", title)
 }
 
 func parseTime(unixTime int64) string {

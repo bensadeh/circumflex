@@ -68,14 +68,15 @@ type Model struct {
 	Title  string
 	Styles Styles
 
-	spinner     spinner.Model
-	showSpinner bool
-	width       int
-	height      int
-	Paginator   paginator.Model
-	cursor      int
-	onStartup   bool
-	isVisible   bool
+	spinner                spinner.Model
+	showSpinner            bool
+	width                  int
+	height                 int
+	Paginator              paginator.Model
+	cursor                 int
+	onStartup              bool
+	isVisible              bool
+	onAddToFavoritesPrompt bool
 
 	StatusMessageLifetime time.Duration
 
@@ -345,6 +346,10 @@ func (m *Model) NewStatusMessageWithDuration(s string, d time.Duration) tea.Cmd 
 	}
 }
 
+func (m *Model) SetPermanentStatusMessage(s string) {
+	m.statusMessage = s
+}
+
 // SetSize sets the width and height of this component.
 func (m *Model) SetSize(width, height int) {
 	m.setSize(width, height)
@@ -488,16 +493,15 @@ func (m *Model) changeToCategory(cat int) {
 }
 
 func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
-	if m.disableInput {
-		return nil
-	}
-
 	var cmds []tea.Cmd
 	numItems := len(m.VisibleItems())
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
+
+		case m.disableInput && msg.String() != "r":
+			return nil
 
 		case msg.String() == "q" || msg.String() == "esc" || msg.String() == "ctrl+c":
 			return tea.Quit
@@ -569,10 +573,21 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			return cmd
 		}
-		if msg.String() == "f" {
-			cmd := m.NewStatusMessageWithDuration("ABCDEF", 1*time.Second)
+		if msg.String() == "r" {
+			cmd := m.NewStatusMessageWithDuration("Input enabled", 1*time.Second)
+			m.disableInput = false
+			m.onAddToFavoritesPrompt = false
 
 			return cmd
+		}
+		if msg.String() == "f" {
+			m.SetPermanentStatusMessage("Add to favorites?")
+			m.onAddToFavoritesPrompt = true
+			m.disableInput = true
+
+			return func() tea.Msg {
+				return message.AddToFavorites{}
+			}
 		}
 		if msg.String() == "enter" {
 			m.SetIsVisible(false)
