@@ -441,6 +441,12 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	case message.StatusMessageTimeout:
 		m.hideStatusMessage()
 
+	case message.AddToFavorites:
+		m.favorites.Add(msg.Item)
+		m.items[category.Favorites] = m.favorites.GetItems()
+
+		m.favorites.Write()
+
 	case tea.WindowSizeMsg:
 		h, v := lipgloss.NewStyle().GetFrameSize()
 		m.SetSize(msg.Width-h, msg.Height-v)
@@ -585,15 +591,21 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			m.onAddToFavoritesPrompt = true
 			m.disableInput = true
 
+			return nil
+		}
+		if m.onAddToFavoritesPrompt && msg.String() == "y" {
 			return func() tea.Msg {
-				return message.AddToFavorites{}
+				return message.AddToFavorites{Item: m.SelectedItem()}
 			}
 		}
 		if msg.String() == "enter" {
 			m.SetIsVisible(false)
 
 			cmd := func() tea.Msg {
-				return message.EnteringCommentSection{Id: m.SelectedItem().ID, CommentCount: m.SelectedItem().CommentsCount}
+				return message.EnteringCommentSection{
+					Id:           m.SelectedItem().ID,
+					CommentCount: m.SelectedItem().CommentsCount,
+				}
 			}
 
 			return cmd

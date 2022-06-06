@@ -1,5 +1,7 @@
 package message
 
+import "clx/item"
+
 type EditorFinishedMsg struct {
 	Err error
 }
@@ -25,4 +27,6 @@ type CategoryFetchingFinished struct {
 	Cursor   int
 }
 
-type AddToFavorites struct{}
+type AddToFavorites struct {
+	Item *item.Item
+}
