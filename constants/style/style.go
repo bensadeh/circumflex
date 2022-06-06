@@ -8,28 +8,44 @@ const (
 	blueDark    = "33"
 	pinkDark    = "219"
 
-	logoBgDark           = "#0f1429"
-	labelBgDark          = logoBgDark
-	headerBgDark         = "#222638"
-	unselectedItemFgDark = "247"
-	statusBarBgDark      = headerBgDark
-	paginatorBgDark      = logoBgDark
-	selectedPageFgDark   = unselectedItemFgDark
-	unselectedPageFgDark = "239"
+	black       = "16"
+	orange      = "214"
+	orangeFaint = "94"
+
+	logoBgDark              = "#0f1429"
+	labelBgDark             = logoBgDark
+	headerBgDark            = "#222638"
+	unselectedItemFgDark    = "247"
+	statusBarBgDark         = headerBgDark
+	paginatorBgDark         = logoBgDark
+	selectedPageFgDark      = unselectedItemFgDark
+	unselectedPageFgDark    = "239"
+	ycLogoFgDark            = orange
+	ycLogoMarkAsReadFgDark  = orangeFaint
+	ycLabelBgDark           = logoBgDark
+	ycLabelMarkAsReadBgDark = headerBgDark
+	ycTextFgDark            = unselectedItemFgDark
+	ycTextMarkAsReadFgDark  = ycTextFgDark
 
 	magentaLight = magentaDark
 	yellowLight  = "208"
 	blueLight    = blueDark
 	pinkLight    = pinkDark
 
-	logoBgLight           = "252"
-	labelBgLight          = headerBgLight
-	headerBgLight         = "254"
-	unselectedItemFgLight = "235"
-	statusBarBgLight      = headerBgLight
-	paginatorBgLight      = logoBgLight
-	selectedPageFgLight   = unselectedItemFgLight
-	unselectedPageFgLight = "247"
+	logoBgLight              = "252"
+	labelBgLight             = headerBgLight
+	headerBgLight            = "254"
+	unselectedItemFgLight    = "235"
+	statusBarBgLight         = headerBgLight
+	paginatorBgLight         = logoBgLight
+	selectedPageFgLight      = unselectedItemFgLight
+	unselectedPageFgLight    = "247"
+	ycLogoFgLight            = black
+	ycLogoMarkAsReadFgLight  = "245"
+	ycLabelBgLight           = orange
+	ycLabelMarkAsReadBgLight = "253"
+	ycTextFgLight            = unselectedItemFgLight
+	ycTextMarkAsReadFgLight  = "245"
 )
 
 func GetMagenta() lipgloss.TerminalColor {
@@ -78,4 +94,28 @@ func GetSelectedPageFg() lipgloss.TerminalColor {
 
 func GetUnselectedPageFg() lipgloss.TerminalColor {
 	return lipgloss.AdaptiveColor{Light: unselectedPageFgLight, Dark: unselectedPageFgDark}
+}
+
+func GetYCLogoFg() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: ycLogoFgLight, Dark: ycLogoFgDark}
+}
+
+func GetYCLogoMarkAsReadFg() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: ycLogoMarkAsReadFgLight, Dark: ycLogoMarkAsReadFgDark}
+}
+
+func GetYCLabelBg() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: ycLabelBgLight, Dark: ycLabelBgDark}
+}
+
+func GetYCLabelMarkAsReadBg() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: ycLabelMarkAsReadBgLight, Dark: ycLabelMarkAsReadBgDark}
+}
+
+func GetYCTextFg() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: ycTextFgLight, Dark: ycTextFgDark}
+}
+
+func GetYCTextMarkAsReadFg() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: ycTextMarkAsReadFgLight, Dark: ycTextMarkAsReadFgDark}
 }

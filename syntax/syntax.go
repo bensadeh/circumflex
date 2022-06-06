@@ -47,6 +47,46 @@ func HighlightYCStartupsInHeadlines(comment string, highlightType int) string {
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
 
+func HighlightYCStartupsInHeadlinesWithNerdFonts(comment string, highlightType int) string {
+	expression := regexp.MustCompile(`\((YC ([SW]\d{2}))\)`)
+
+	logoFg := getYCStartupMarkAsReadColor(highlightType)
+	bg := getYCLabelBgMarkAsReadColor(highlightType)
+	fg := getYCTextMarkAsReadColor(highlightType)
+
+	content := lipgloss.NewStyle().Foreground(fg).Background(bg)
+	border := lipgloss.NewStyle().Foreground(bg)
+	yc := lipgloss.NewStyle().Foreground(logoFg).Background(bg)
+
+	highlightedStartup := reset + border.Render("") + yc.Render(" ") + content.Render(`$2`) + border.Render("") + getHighlight(highlightType)
+
+	return expression.ReplaceAllString(comment, highlightedStartup)
+}
+
+func getYCStartupMarkAsReadColor(highlightType int) lipgloss.TerminalColor {
+	if highlightType == FaintAndItalic {
+		return style.GetYCLogoMarkAsReadFg()
+	}
+
+	return style.GetYCLogoFg()
+}
+
+func getYCLabelBgMarkAsReadColor(highlightType int) lipgloss.TerminalColor {
+	if highlightType == FaintAndItalic {
+		return style.GetYCLabelMarkAsReadBg()
+	}
+
+	return style.GetYCLabelBg()
+}
+
+func getYCTextMarkAsReadColor(highlightType int) lipgloss.TerminalColor {
+	if highlightType == FaintAndItalic {
+		return style.GetYCTextMarkAsReadFg()
+	}
+
+	return style.GetYCTextFg()
+}
+
 func HighlightYearInHeadlines(comment string, highlightType int) string {
 	expression := regexp.MustCompile(`\((\d{4})\)`)
 	highlight := getHighlight(highlightType)
