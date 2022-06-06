@@ -264,16 +264,27 @@ func (m *Model) CursorDown() {
 }
 
 func (m *Model) getNextCategory() int {
-	isAtLastCategory := m.category == numberOfCategories-1
+	isAtLastCategory := m.category == m.getNumberOfCategories()-1
 	if isAtLastCategory {
 		return category.FrontPage
 	}
 
 	return m.category + 1
 }
+func (m *Model) getNumberOfCategories() int {
+	if m.favorites.HasItems() {
+		return numberOfCategories
+	}
+
+	return numberOfCategories - 1
+}
 
 func (m *Model) getPrevCategory() int {
 	isAtFirstCategory := m.category == category.FrontPage
+	if isAtFirstCategory && m.favorites.HasItems() {
+		return category.Favorites
+	}
+
 	if isAtFirstCategory {
 		return category.Show
 	}
