@@ -58,7 +58,8 @@ func HighlightYCStartupsInHeadlinesWithNerdFonts(comment string, highlightType i
 	border := lipgloss.NewStyle().Foreground(bg)
 	yc := lipgloss.NewStyle().Foreground(logoFg).Background(bg)
 
-	highlightedStartup := reset + border.Render("") + yc.Render(" ") + content.Render(`$2`) + border.Render("") + getHighlight(highlightType)
+	highlightedStartup := reset + border.Render("") + yc.Render(" ") +
+		content.Render(`$2`) + border.Render("") + getHighlight(highlightType)
 
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
@@ -92,11 +93,27 @@ func HighlightYearInHeadlines(comment string, highlightType int) string {
 	highlight := getHighlight(highlightType)
 
 	highlightedYear := lipgloss.NewStyle().
-		Foreground(style.GetYellow()).
-		Background(style.GetLabelBg()).
+		Foreground(getLabelFg(highlightType)).
+		Background(getLabelBg(highlightType)).
 		Render(` $1 `) + highlight
 
 	return expression.ReplaceAllString(comment, highlightedYear)
+}
+
+func getLabelFg(highlightType int) lipgloss.TerminalColor {
+	if highlightType == FaintAndItalic {
+		return style.GetLabelMarkAsReadFg()
+	}
+
+	return style.GetLabelFg()
+}
+
+func getLabelBg(highlightType int) lipgloss.TerminalColor {
+	if highlightType == FaintAndItalic {
+		return style.GetLabelMarkAsReadBg()
+	}
+
+	return style.GetLabelBg()
 }
 
 func HighlightHackerNewsHeadlines(title string, highlightType int) string {

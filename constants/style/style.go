@@ -13,7 +13,10 @@ const (
 	orangeFaint = "94"
 
 	logoBgDark              = "#0f1429"
+	labelFgDark             = yellowDark
+	labelMarkAsReadFgDark   = yellowDark
 	labelBgDark             = logoBgDark
+	labelMarkAsReadBgDark   = headerBgDark
 	headerBgDark            = "#222638"
 	unselectedItemFgDark    = "247"
 	statusBarBgDark         = headerBgDark
@@ -33,7 +36,10 @@ const (
 	pinkLight    = pinkDark
 
 	logoBgLight              = "252"
+	labelFgLight             = yellowLight
+	labelMarkAsReadFgLight   = yellowLight
 	labelBgLight             = headerBgLight
+	labelMarkAsReadBgLight   = headerBgLight
 	headerBgLight            = "254"
 	unselectedItemFgLight    = "235"
 	statusBarBgLight         = headerBgLight
@@ -70,6 +76,18 @@ func GetLogoBg() lipgloss.TerminalColor {
 
 func GetLabelBg() lipgloss.TerminalColor {
 	return lipgloss.AdaptiveColor{Light: labelBgLight, Dark: labelBgDark}
+}
+
+func GetLabelFg() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: labelFgLight, Dark: labelFgDark}
+}
+
+func GetLabelMarkAsReadFg() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: labelMarkAsReadFgLight, Dark: labelMarkAsReadFgDark}
+}
+
+func GetLabelMarkAsReadBg() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: labelMarkAsReadBgLight, Dark: labelMarkAsReadBgDark}
 }
 
 func GetHeaderBg() lipgloss.TerminalColor {
