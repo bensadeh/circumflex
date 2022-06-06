@@ -39,19 +39,19 @@ func unmarshal(data []byte) []*item.Item {
 	return items
 }
 
-func (f Favorites) GetItems() []*item.Item {
+func (f *Favorites) GetItems() []*item.Item {
 	return f.items
 }
 
-func (f Favorites) HasItems() bool {
+func (f *Favorites) HasItems() bool {
 	return len(f.items) != 0
 }
 
-func (f Favorites) Add(item *item.Item) {
+func (f *Favorites) Add(item *item.Item) {
 	f.items = append(f.items, item)
 }
 
-func (f Favorites) Write() {
+func (f *Favorites) Write() {
 	err := file.WriteToFile(file.PathToFavoritesFile(), serializeToJson(f.items))
 	if err != nil {
 		panic(fmt.Errorf("could not write to file: %w", err))

@@ -447,6 +447,8 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 		m.favorites.Write()
 
+		m.updatePagination()
+
 	case tea.WindowSizeMsg:
 		h, v := lipgloss.NewStyle().GetFrameSize()
 		m.SetSize(msg.Width-h, msg.Height-v)
@@ -505,6 +507,26 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
+
+		case m.onAddToFavoritesPrompt && msg.String() == "y":
+			addToFavorites := func() tea.Msg {
+				return message.AddToFavorites{Item: m.SelectedItem()}
+			}
+			m.onAddToFavoritesPrompt = false
+			m.disableInput = false
+
+			cmds = append(cmds, addToFavorites)
+			cmds = append(cmds, m.NewStatusMessageWithDuration("Item added", time.Second*2))
+
+			return tea.Batch(cmds...)
+
+		case m.onAddToFavoritesPrompt:
+			m.onAddToFavoritesPrompt = false
+			m.disableInput = false
+
+			faint := "\033[2m"
+
+			return m.NewStatusMessageWithDuration(faint+"Cancelled", time.Second*2)
 
 		case m.disableInput && msg.String() != "r":
 			return nil
@@ -593,11 +615,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			return nil
 		}
-		if m.onAddToFavoritesPrompt && msg.String() == "y" {
-			return func() tea.Msg {
-				return message.AddToFavorites{Item: m.SelectedItem()}
-			}
-		}
+
 		if msg.String() == "enter" {
 			m.SetIsVisible(false)
 
