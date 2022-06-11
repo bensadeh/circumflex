@@ -565,9 +565,9 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			m.onRemoveFromFavoritesPrompt = false
 			m.disableInput = false
 
-			faint := "\033[2m"
+			m.hideStatusMessage()
 
-			return m.NewStatusMessageWithDuration(faint+"Cancelled", time.Second*2)
+			return nil
 
 		case m.disableInput && msg.String() != "r":
 			return nil

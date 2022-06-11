@@ -16,11 +16,15 @@ const (
 	italic       = "\033[3m"
 	magenta      = "\033[35m"
 	faint        = "\033[2m"
+	green        = "\033[32m"
+	red          = "\033[31m"
 
 	Normal         = -1
 	Bold           = 0
 	Reverse        = 1
 	FaintAndItalic = 2
+	Green          = 3
+	Red            = 4
 )
 
 func HighlightYCStartups(comment string) string {
@@ -140,6 +144,10 @@ func getHighlight(highlightType int) string {
 		return reverse
 	case FaintAndItalic:
 		return faint + italic
+	case Green:
+		return green + reverse
+	case Red:
+		return red + reverse
 	default:
 		return ""
 	}

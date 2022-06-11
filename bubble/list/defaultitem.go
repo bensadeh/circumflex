@@ -23,6 +23,9 @@ type DefaultItemStyles struct {
 	SelectedTitleAddToFavorites lipgloss.Style
 	SelectedDescAddToFavorites  lipgloss.Style
 
+	SelectedTitleRemoveFromFavorites         lipgloss.Style
+	SelectedDescRemoveFromFavoritesFavorites lipgloss.Style
+
 	DimmedTitle lipgloss.Style
 	DimmedDesc  lipgloss.Style
 }
@@ -40,8 +43,11 @@ func NewDefaultItemStyles() (s DefaultItemStyles) {
 		Faint(true).
 		Reverse(false)
 
-	s.SelectedTitleAddToFavorites = s.NormalTitle.Copy().Bold(true)
-	s.SelectedDescAddToFavorites = s.NormalDesc.Copy().Faint(false)
+	s.SelectedTitleAddToFavorites = s.NormalTitle.Copy().Foreground(lipgloss.Color("2")).Reverse(true)
+	s.SelectedDescAddToFavorites = s.NormalDesc.Copy()
+
+	s.SelectedTitleRemoveFromFavorites = s.NormalTitle.Copy().Foreground(lipgloss.Color("1")).Reverse(true)
+	s.SelectedDescRemoveFromFavoritesFavorites = s.NormalDesc.Copy()
 
 	s.DimmedTitle = lipgloss.NewStyle()
 	s.DimmedDesc = s.DimmedTitle.Copy()
@@ -115,23 +121,30 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 	var (
 		isSelected = index == m.Index()
 		markAsRead = m.history.Contains(item.ID)
-		bold       = "\033[1m"
 		faint      = "\033[2m"
 		italic     = "\033[3m"
 	)
 
-	onItemPrompt := m.onAddToFavoritesPrompt || m.onRemoveFromFavoritesPrompt
-
 	switch {
-	case isSelected && onItemPrompt:
+	case isSelected && m.onAddToFavoritesPrompt:
 		title = s.SelectedTitleAddToFavorites.Render(title)
-		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Bold)
-		title = syntax.HighlightYearInHeadlines(title, syntax.Bold)
-		title = syntax.HighlightHackerNewsHeadlines(title, syntax.Bold)
+		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Green)
+		title = syntax.HighlightYearInHeadlines(title, syntax.Green)
+		title = syntax.HighlightHackerNewsHeadlines(title, syntax.Green)
 		title = syntax.HighlightSpecialContent(title)
 
-		title = bold + title + " " + domain
-		desc = s.SelectedDescAddToFavorites.Faint(false).Render(desc)
+		title = title + " " + domain
+		desc = s.SelectedDescAddToFavorites.Render(desc)
+
+	case isSelected && m.onRemoveFromFavoritesPrompt:
+		title = s.SelectedTitleRemoveFromFavorites.Render(title)
+		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Red)
+		title = syntax.HighlightYearInHeadlines(title, syntax.Red)
+		title = syntax.HighlightHackerNewsHeadlines(title, syntax.Red)
+		title = syntax.HighlightSpecialContent(title)
+
+		title = title + " " + domain
+		desc = s.SelectedDescRemoveFromFavoritesFavorites.Render(desc)
 
 	case isSelected && !m.disableInput:
 		title = s.SelectedTitle.Render(title)
@@ -143,7 +156,7 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 		title = title + " " + domain
 		desc = s.SelectedDesc.Render(desc)
 
-	case (markAsRead || onItemPrompt) && !isSelected:
+	case markAsRead:
 		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.FaintAndItalic)
 		title = syntax.HighlightYearInHeadlines(title, syntax.FaintAndItalic)
 		title = syntax.HighlightHackerNewsHeadlines(title, syntax.FaintAndItalic)
@@ -152,7 +165,7 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 		title = faint + italic + title + " " + domain
 		desc = s.NormalDesc.Render(desc)
 
-	case m.disableInput:
+	case m.disableInput && !(m.onAddToFavoritesPrompt || m.onRemoveFromFavoritesPrompt):
 		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.FaintAndItalic)
 		title = syntax.HighlightYearInHeadlines(title, syntax.FaintAndItalic)
 		title = syntax.HighlightHackerNewsHeadlines(title, syntax.FaintAndItalic)
