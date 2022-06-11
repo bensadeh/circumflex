@@ -121,7 +121,8 @@ func New(delegate ItemDelegate, config *core.Config, favorites *bfavorites.Favor
 	p.UsePgUpPgDownKeys = false
 	p.UseUpDownKeys = false
 
-	items := make([][]*item.Item, numberOfCategories)
+	bufferCategory := 1
+	items := make([][]*item.Item, numberOfCategories+bufferCategory)
 
 	m := Model{
 		showTitle:             true,
@@ -657,6 +658,14 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return cmd
 
 		case msg.String() == "r" && m.category != category.Favorites:
+			currentCategory := m.category
+
+			m.items[category.Buffer] = m.items[m.category]
+			m.category = category.Buffer
+			m.Paginator.Page = 0
+			m.cursor = min(m.cursor, len(m.items[m.category])-1)
+			m.updatePagination()
+
 			m.items[category.FrontPage] = []*item.Item{}
 			m.items[category.New] = []*item.Item{}
 			m.items[category.Ask] = []*item.Item{}
@@ -667,7 +676,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			m.Paginator.Page = 0
 
 			changeCatCmd := func() tea.Msg {
-				return message.ChangeCategory{Category: m.category, Cursor: m.cursor}
+				return message.ChangeCategory{Category: currentCategory, Cursor: m.cursor}
 			}
 
 			cmds = append(cmds, m.StartSpinner())

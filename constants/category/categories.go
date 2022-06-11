@@ -6,4 +6,5 @@ const (
 	Ask       = 2
 	Show      = 3
 	Favorites = 4
+	Buffer    = 5
 )
