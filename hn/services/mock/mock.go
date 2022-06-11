@@ -14,7 +14,7 @@ func (MockService) Init(_ int) {
 
 func (MockService) FetchStories(_ int, cat int) []*item.Item {
 	// Uncomment to test the spinner on startup
-	time.Sleep(time.Second * 3)
+	time.Sleep(time.Second * 1)
 
 	items := []*item.Item{
 		{

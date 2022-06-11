@@ -465,15 +465,13 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.SetIsVisible(true)
 
 	case message.ChangeCategory:
-		cmd := func() tea.Msg {
+		return m, func() tea.Msg {
 			stories := m.service.FetchStories(0, msg.Category)
 
 			m.items[msg.Category] = stories
 
 			return message.CategoryFetchingFinished{Category: msg.Category, Cursor: msg.Cursor}
 		}
-
-		return m, cmd
 
 	case message.CategoryFetchingFinished:
 		m.Paginator.Page = 0
@@ -651,12 +649,31 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			return cmd
 
-		case msg.String() == "r":
+		case msg.String() == "p":
 			cmd := m.NewStatusMessageWithDuration("Input enabled", 1*time.Second)
 			m.disableInput = false
 			m.onAddToFavoritesPrompt = false
 
 			return cmd
+
+		case msg.String() == "r" && m.category != category.Favorites:
+			m.items[category.FrontPage] = []*item.Item{}
+			m.items[category.New] = []*item.Item{}
+			m.items[category.Ask] = []*item.Item{}
+			m.items[category.Show] = []*item.Item{}
+
+			m.SetDisabledInput(true)
+			m.cursor = 0
+			m.Paginator.Page = 0
+
+			changeCatCmd := func() tea.Msg {
+				return message.ChangeCategory{Category: m.category, Cursor: m.cursor}
+			}
+
+			cmds = append(cmds, m.StartSpinner())
+			cmds = append(cmds, changeCatCmd)
+
+			return tea.Batch(cmds...)
 
 		case msg.String() == "f":
 			m.SetPermanentStatusMessage("Add to favorites?")
