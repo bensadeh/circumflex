@@ -645,13 +645,11 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return tea.Batch(cmds...)
 
 		case msg.String() == "g":
-			m.Paginator.Page = 0
 			m.cursor = 0
 
 			return nil
 
 		case msg.String() == "G":
-			m.Paginator.Page = m.Paginator.TotalPages - 1
 			m.cursor = m.Paginator.ItemsOnPage(numItems) - 1
 
 			return nil
