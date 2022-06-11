@@ -152,6 +152,15 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 		title = faint + italic + title + " " + domain
 		desc = s.NormalDesc.Render(desc)
 
+	case m.disableInput:
+		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.FaintAndItalic)
+		title = syntax.HighlightYearInHeadlines(title, syntax.FaintAndItalic)
+		title = syntax.HighlightHackerNewsHeadlines(title, syntax.FaintAndItalic)
+		title = syntax.HighlightSpecialContent(title)
+
+		title = faint + italic + title + " " + domain
+		desc = s.NormalDesc.Render(desc)
+
 	default:
 		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Normal)
 		title = syntax.HighlightYearInHeadlines(title, syntax.Normal)

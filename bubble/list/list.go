@@ -294,7 +294,6 @@ func (m *Model) getPrevCategory() int {
 	return m.category - 1
 }
 
-// Toggle the spinner. Note that this also returns a command.
 func (m *Model) ToggleSpinner() tea.Cmd {
 	if !m.showSpinner {
 		return m.StartSpinner()
@@ -303,20 +302,22 @@ func (m *Model) ToggleSpinner() tea.Cmd {
 	return nil
 }
 
-// StartSpinner starts the spinner. Note that this returns a command.
 func (m *Model) StartSpinner() tea.Cmd {
+	// Hack: I can't get the spinner to reset properly. As a workaround, we
+	// instantiate a new spinner each time we want to show it.
+	m.spinner = spinner.New()
+	m.spinner.Spinner = getSpinner()
+	m.spinner.Style = DefaultStyles().Spinner
+
 	m.showSpinner = true
 	return m.spinner.Tick
 }
 
-// StopSpinner stops the spinner.
 func (m *Model) StopSpinner() {
 	m.showSpinner = false
 	m.spinner.Finish()
 }
 
-// NewStatusMessage sets a new status message, which will show for a limited
-// amount of time. Note that this also returns a command.
 func (m *Model) NewStatusMessage(s string) tea.Cmd {
 	m.statusMessage = s
 	if m.statusMessageTimer != nil {
@@ -536,7 +537,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			hasOnlyOneItem := len(m.items[category.Favorites]) == 0
 
 			itemRemovedMessage := "Item removed"
-		
+
 			if hasOnlyOneItem {
 				m.cursor = 0
 

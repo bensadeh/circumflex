@@ -109,7 +109,7 @@ func getSpinner() spinner.Spinner {
 	normal := lipgloss.NewStyle().
 		Foreground(style.GetUnselectedItemFg()).
 		Background(style.GetStatusBarBg()).
-		Faint(true)
+		Faint(false)
 
 	color := normal.Copy()
 
@@ -119,24 +119,12 @@ func getSpinner() spinner.Spinner {
 
 	return spinner.Spinner{
 		Frames: []string{
-			normal.Render("fetching"),
-			normal.Render("fetching"),
-			normal.Render("fetching"),
-			normal.Render("fetching"),
-			normal.Render("fetching"),
-			normal.Render("fetching"),
-			normal.Render("fetchin") + color.Foreground(magenta).Render("g"),
-			normal.Render("fetchi") + color.Foreground(magenta).Render("n") + color.Foreground(yellow).Render("g"),
-			normal.Render("fetch") + color.Foreground(magenta).Render("i") + color.Foreground(yellow).Render("n") + color.Foreground(blue).Render("g"),
-			normal.Render("fetc") + color.Foreground(magenta).Render("h") + color.Foreground(yellow).Render("i") + color.Foreground(blue).Render("n") + normal.Render("g"),
-			normal.Render("fet") + color.Foreground(magenta).Render("c") + color.Foreground(yellow).Render("h") + color.Foreground(blue).Render("i") + normal.Render("ng"),
-			normal.Render("fe") + color.Foreground(magenta).Render("t") + color.Foreground(yellow).Render("c") + color.Foreground(blue).Render("h") + normal.Render("ing"),
-			normal.Render("f") + color.Foreground(magenta).Render("e") + color.Foreground(yellow).Render("t") + color.Foreground(blue).Render("c") + normal.Render("hing"),
-			color.Foreground(magenta).Render("f") + color.Foreground(yellow).Render("e") + color.Foreground(blue).Render("t") + normal.Render("ching"),
-			color.Foreground(yellow).Render("f") + color.Foreground(blue).Render("e") + normal.Render("tching"),
-			color.Foreground(blue).Render("f") + normal.Render("etching"),
-			normal.Render("fetching"),
+			normal.Render("fetching   "),
+			normal.Render("fetching   "),
+			normal.Render("fetching" + color.Foreground(magenta).Render(".") + normal.Render("  ")),
+			normal.Render("fetching" + color.Foreground(magenta).Render(".") + color.Foreground(yellow).Render(".") + normal.Render(" ")),
+			normal.Render("fetching" + color.Foreground(magenta).Render(".") + color.Foreground(yellow).Render(".") + color.Foreground(blue).Render(".")),
 		},
-		FPS: 150 * time.Millisecond,
+		FPS: 1 * time.Second,
 	}
 }
