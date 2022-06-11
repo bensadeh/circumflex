@@ -490,6 +490,10 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
+func (m *Model) updateCursor() {
+	m.cursor = min(m.cursor, m.Paginator.ItemsOnPage(len(m.VisibleItems()))-1)
+}
+
 func (m *Model) categoryHasStories(cat int) bool {
 	return len(m.items[cat]) != 0
 }
@@ -583,11 +587,13 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 		case msg.String() == "left" || msg.String() == "h":
 			m.Paginator.PrevPage()
+			m.updateCursor()
 
 			return nil
 
 		case msg.String() == "right" || msg.String() == "l":
 			m.Paginator.NextPage()
+			m.updateCursor()
 
 			return nil
 
