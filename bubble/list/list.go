@@ -16,7 +16,12 @@ import (
 	hybrid "clx/hn/services/hybrid-bubble"
 	"clx/hn/services/mock"
 	"clx/item"
+	"clx/markdown/parser"
+	"clx/markdown/postprocessor"
+	"clx/markdown/renderer"
+	"clx/reader"
 	"clx/screen"
+	"clx/validator"
 	"fmt"
 	"io"
 	"strconv"
@@ -464,11 +469,38 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	case message.EnteringCommentSection:
 		return m, m.fetchCommentSectionAndPipeToLess(msg.Id, msg.CommentCount)
 
+	case message.EnteringReaderMode:
+		errorMessage := validator.GetErrorMessage(msg.Title, msg.Domain)
+		if errorMessage != "" {
+			cmds = append(cmds, m.NewStatusMessageWithDuration(errorMessage, time.Second*3))
+			cmds = append(cmds, func() tea.Msg {
+				return message.EditorFinishedMsg{Err: nil}
+			})
+			return m, tea.Batch(cmds...)
+		}
+
+		article, err := reader.GetNew(msg.Url)
+		if err != nil {
+			panic(err)
+		}
+
+		blocks := parser.Parse(article)
+		header := renderer.CreateHeader(msg.Title, msg.Url, 70)
+		renderedArticle := renderer.ToString(blocks, 70, m.config.IndentationSymbol)
+		renderedArticle = postprocessor.Process(header+renderedArticle, msg.Url)
+
+		command := cli.WrapLess(renderedArticle)
+
+		return m, tea.ExecProcess(command, func(err error) tea.Msg {
+			return message.EditorFinishedMsg{Err: err}
+		})
+
 	case message.EnterHelpScreen:
 		return m, m.showHelpScreen()
 
 	case message.EditorFinishedMsg:
 		m.SetIsVisible(true)
+		m.SetDisabledInput(false)
 
 	case message.ChangeCategory:
 		return m, func() tea.Msg {
@@ -709,6 +741,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 		case msg.String() == "enter":
 			m.SetIsVisible(false)
+			m.SetDisabledInput(true)
 
 			cmd := func() tea.Msg {
 				return message.EnteringCommentSection{
@@ -718,6 +751,18 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			}
 
 			return cmd
+
+		case msg.String() == " ":
+			m.SetIsVisible(false)
+			m.SetDisabledInput(true)
+
+			return func() tea.Msg {
+				return message.EnteringReaderMode{
+					Url:    m.SelectedItem().URL,
+					Title:  m.SelectedItem().Title,
+					Domain: m.SelectedItem().Domain,
+				}
+			}
 
 		case msg.String() == "i":
 			m.SetIsVisible(false)

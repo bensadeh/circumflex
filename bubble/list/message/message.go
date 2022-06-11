@@ -11,6 +11,12 @@ type EnteringCommentSection struct {
 	CommentCount int
 }
 
+type EnteringReaderMode struct {
+	Url    string
+	Title  string
+	Domain string
+}
+
 type EnterHelpScreen struct{}
 
 type StatusMessageTimeout struct{}

@@ -16,7 +16,7 @@ func GetErrorMessage(title, domain string) string {
 	}
 
 	if isInvalidDomain(domain) {
-		return "Reader Mode not supported on " + domain
+		return "Reader Mode not supported for this domain"
 	}
 
 	if domain == "" {
