@@ -68,15 +68,16 @@ type Model struct {
 	Title  string
 	Styles Styles
 
-	spinner                spinner.Model
-	showSpinner            bool
-	width                  int
-	height                 int
-	Paginator              paginator.Model
-	cursor                 int
-	onStartup              bool
-	isVisible              bool
-	onAddToFavoritesPrompt bool
+	spinner                     spinner.Model
+	showSpinner                 bool
+	width                       int
+	height                      int
+	Paginator                   paginator.Model
+	cursor                      int
+	onStartup                   bool
+	isVisible                   bool
+	onAddToFavoritesPrompt      bool
+	onRemoveFromFavoritesPrompt bool
 
 	StatusMessageLifetime time.Duration
 
@@ -475,7 +476,6 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 	case message.CategoryFetchingFinished:
 		m.Paginator.Page = 0
-		m.updatePagination()
 		m.SetDisabledInput(false)
 		m.StopSpinner()
 		m.category = msg.Category
@@ -497,6 +497,7 @@ func (m *Model) categoryHasStories(cat int) bool {
 func (m *Model) changeToCategory(cat int) {
 	m.category = cat
 	m.Paginator.Page = 0
+	m.cursor = min(m.cursor, len(m.items[m.category])-1)
 	m.updatePagination()
 }
 
@@ -507,21 +508,57 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-
 		case m.onAddToFavoritesPrompt && msg.String() == "y":
+			m.onAddToFavoritesPrompt = false
+			m.disableInput = false
+
 			addToFavorites := func() tea.Msg {
 				return message.AddToFavorites{Item: m.SelectedItem()}
 			}
-			m.onAddToFavoritesPrompt = false
-			m.disableInput = false
 
 			cmds = append(cmds, addToFavorites)
 			cmds = append(cmds, m.NewStatusMessageWithDuration("Item added", time.Second*2))
 
 			return tea.Batch(cmds...)
 
-		case m.onAddToFavoritesPrompt:
+		case m.onRemoveFromFavoritesPrompt && msg.String() == "y":
+			m.onRemoveFromFavoritesPrompt = false
+			m.disableInput = false
+
+			//
+			m.favorites.Remove(m.Index())
+			m.items[category.Favorites] = m.favorites.GetItems()
+
+			m.favorites.Write()
+
+			//
+			isOnLastItem := m.Index() == len(m.items[category.Favorites])
+			hasOnlyOneItem := len(m.items[category.Favorites]) == 0
+
+			itemRemovedMessage := "Item removed"
+		
+			if hasOnlyOneItem {
+				m.cursor = 0
+
+				cmds = append(cmds, func() tea.Msg {
+					return message.ChangeCategory{Category: category.FrontPage, Cursor: m.cursor}
+				})
+				cmds = append(cmds, m.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2))
+
+				return tea.Batch(cmds...)
+			}
+
+			if isOnLastItem {
+				m.cursor = m.cursor - 1
+			}
+
+			m.updatePagination()
+
+			return m.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2)
+
+		case m.onAddToFavoritesPrompt || m.onRemoveFromFavoritesPrompt:
 			m.onAddToFavoritesPrompt = false
+			m.onRemoveFromFavoritesPrompt = false
 			m.disableInput = false
 
 			faint := "\033[2m"
@@ -537,14 +574,22 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 		case msg.String() == "up" || msg.String() == "k":
 			m.CursorUp()
 
+			return nil
+
 		case msg.String() == "down" || msg.String() == "j":
 			m.CursorDown()
+
+			return nil
 
 		case msg.String() == "left" || msg.String() == "h":
 			m.Paginator.PrevPage()
 
+			return nil
+
 		case msg.String() == "right" || msg.String() == "l":
 			m.Paginator.NextPage()
+
+			return nil
 
 		case msg.String() == "tab":
 			nextCat := m.getNextCategory()
@@ -592,31 +637,41 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			m.Paginator.Page = 0
 			m.cursor = 0
 
+			return nil
+
 		case msg.String() == "G":
 			m.Paginator.Page = m.Paginator.TotalPages - 1
 			m.cursor = m.Paginator.ItemsOnPage(numItems) - 1
-		}
-		if msg.String() == "e" {
+
+			return nil
+
+		case msg.String() == "e":
 			cmd := m.NewStatusMessageWithDuration("Test", 2*time.Second)
 
 			return cmd
-		}
-		if msg.String() == "r" {
+
+		case msg.String() == "r":
 			cmd := m.NewStatusMessageWithDuration("Input enabled", 1*time.Second)
 			m.disableInput = false
 			m.onAddToFavoritesPrompt = false
 
 			return cmd
-		}
-		if msg.String() == "f" {
+
+		case msg.String() == "f":
 			m.SetPermanentStatusMessage("Add to favorites?")
 			m.onAddToFavoritesPrompt = true
 			m.disableInput = true
 
 			return nil
-		}
 
-		if msg.String() == "enter" {
+		case msg.String() == "x" && m.category == category.Favorites:
+			m.SetPermanentStatusMessage("Remove from favorites?")
+			m.onRemoveFromFavoritesPrompt = true
+			m.disableInput = true
+
+			return nil
+
+		case msg.String() == "enter":
 			m.SetIsVisible(false)
 
 			cmd := func() tea.Msg {
@@ -627,8 +682,8 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			}
 
 			return cmd
-		}
-		if msg.String() == "i" {
+
+		case msg.String() == "i":
 			m.SetIsVisible(false)
 
 			cmd := func() tea.Msg {
@@ -636,13 +691,13 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			}
 
 			return cmd
-		}
-		if msg.String() == "u" {
+
+		case msg.String() == "u":
 			cmd := m.StartSpinner()
 
 			return cmd
-		}
-		if msg.String() == "i" {
+
+		case msg.String() == "i":
 			cmd := m.NewStatusMessageWithDuration("is disabled: "+strconv.FormatBool(m.IsInputDisabled()), 1*time.Second)
 
 			return cmd

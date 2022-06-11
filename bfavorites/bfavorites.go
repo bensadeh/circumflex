@@ -66,3 +66,13 @@ func serializeToJson(favorites []*item.Item) string {
 
 	return string(stream)
 }
+
+func (f *Favorites) Remove(index int) {
+	if index < 0 || index > len(f.items) {
+		errorString := fmt.Sprintf("Out of bounds access for slice. Tried to remove index of %d, but size of "+
+			"slice was %d", index, len(f.items))
+		panic(errorString)
+	}
+
+	f.items = append(f.items[:index], f.items[index+1:]...)
+}

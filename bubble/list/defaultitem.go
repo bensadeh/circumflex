@@ -120,8 +120,10 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 		italic     = "\033[3m"
 	)
 
+	onItemPrompt := m.onAddToFavoritesPrompt || m.onRemoveFromFavoritesPrompt
+
 	switch {
-	case isSelected && m.onAddToFavoritesPrompt:
+	case isSelected && onItemPrompt:
 		title = s.SelectedTitleAddToFavorites.Render(title)
 		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Bold)
 		title = syntax.HighlightYearInHeadlines(title, syntax.Bold)
@@ -141,7 +143,7 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 		title = title + " " + domain
 		desc = s.SelectedDesc.Render(desc)
 
-	case (markAsRead || m.onAddToFavoritesPrompt) && !isSelected:
+	case (markAsRead || onItemPrompt) && !isSelected:
 		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.FaintAndItalic)
 		title = syntax.HighlightYearInHeadlines(title, syntax.FaintAndItalic)
 		title = syntax.HighlightHackerNewsHeadlines(title, syntax.FaintAndItalic)
