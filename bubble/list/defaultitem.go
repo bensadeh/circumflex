@@ -1,6 +1,7 @@
 package list
 
 import (
+	"clx/constants/category"
 	"clx/item"
 	"clx/syntax"
 	"fmt"
@@ -19,6 +20,9 @@ type DefaultItemStyles struct {
 
 	SelectedTitle lipgloss.Style
 	SelectedDesc  lipgloss.Style
+
+	MarkAsReadTitle lipgloss.Style
+	MarkAsReadDesc  lipgloss.Style
 
 	SelectedTitleAddToFavorites lipgloss.Style
 	SelectedDescAddToFavorites  lipgloss.Style
@@ -42,6 +46,9 @@ func NewDefaultItemStyles() (s DefaultItemStyles) {
 		Bold(false).
 		Faint(true).
 		Reverse(false)
+
+	s.MarkAsReadTitle = s.NormalTitle.Copy().Italic(true).Faint(true)
+	s.MarkAsReadDesc = s.NormalDesc.Copy()
 
 	s.SelectedTitleAddToFavorites = s.NormalTitle.Copy().Foreground(lipgloss.Color("2")).Reverse(true)
 	s.SelectedDescAddToFavorites = s.NormalDesc.Copy()
@@ -121,67 +128,32 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 	var (
 		isSelected = index == m.Index()
 		markAsRead = m.history.Contains(item.ID)
-		faint      = "\033[2m"
-		italic     = "\033[3m"
 	)
 
 	switch {
 	case isSelected && m.onAddToFavoritesPrompt:
-		title = s.SelectedTitleAddToFavorites.Render(title)
-		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Green)
-		title = syntax.HighlightYearInHeadlines(title, syntax.Green)
-		title = syntax.HighlightHackerNewsHeadlines(title, syntax.Green)
-		title = syntax.HighlightSpecialContent(title)
-
-		title = title + " " + domain
-		desc = s.SelectedDescAddToFavorites.Render(desc)
+		title, desc = styleTitleAndDesc(title, s.SelectedTitleAddToFavorites, s.SelectedDescAddToFavorites, domain,
+			desc, syntax.Green)
 
 	case isSelected && m.onRemoveFromFavoritesPrompt:
-		title = s.SelectedTitleRemoveFromFavorites.Render(title)
-		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Red)
-		title = syntax.HighlightYearInHeadlines(title, syntax.Red)
-		title = syntax.HighlightHackerNewsHeadlines(title, syntax.Red)
-		title = syntax.HighlightSpecialContent(title)
-
-		title = title + " " + domain
-		desc = s.SelectedDescRemoveFromFavoritesFavorites.Render(desc)
+		title, desc = styleTitleAndDesc(title, s.SelectedTitleRemoveFromFavorites, s.SelectedDescRemoveFromFavoritesFavorites, domain,
+			desc, syntax.Red)
 
 	case isSelected && !m.disableInput:
-		title = s.SelectedTitle.Render(title)
-		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Reverse)
-		title = syntax.HighlightYearInHeadlines(title, syntax.Reverse)
-		title = syntax.HighlightHackerNewsHeadlines(title, syntax.Reverse)
-		title = syntax.HighlightSpecialContent(title)
+		title, desc = styleTitleAndDesc(title, s.SelectedTitle, s.SelectedDesc, domain,
+			desc, syntax.Reverse)
 
-		title = title + " " + domain
-		desc = s.SelectedDesc.Render(desc)
-
-	case markAsRead:
-		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.FaintAndItalic)
-		title = syntax.HighlightYearInHeadlines(title, syntax.FaintAndItalic)
-		title = syntax.HighlightHackerNewsHeadlines(title, syntax.FaintAndItalic)
-		title = syntax.HighlightSpecialContent(title)
-
-		title = faint + italic + title + " " + domain
-		desc = s.NormalDesc.Render(desc)
+	case markAsRead && m.category != category.Favorites:
+		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle, s.MarkAsReadDesc, domain,
+			desc, syntax.FaintAndItalic)
 
 	case m.disableInput && !(m.onAddToFavoritesPrompt || m.onRemoveFromFavoritesPrompt):
-		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.FaintAndItalic)
-		title = syntax.HighlightYearInHeadlines(title, syntax.FaintAndItalic)
-		title = syntax.HighlightHackerNewsHeadlines(title, syntax.FaintAndItalic)
-		title = syntax.HighlightSpecialContent(title)
-
-		title = faint + italic + title + " " + domain
-		desc = s.NormalDesc.Render(desc)
+		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle, s.MarkAsReadDesc, domain,
+			desc, syntax.FaintAndItalic)
 
 	default:
-		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Normal)
-		title = syntax.HighlightYearInHeadlines(title, syntax.Normal)
-		title = syntax.HighlightHackerNewsHeadlines(title, syntax.Normal)
-		title = syntax.HighlightSpecialContent(title)
-
-		title = s.NormalTitle.Render(title) + " " + domain
-		desc = s.NormalDesc.Render(desc)
+		title, desc = styleTitleAndDesc(title, s.NormalTitle, s.NormalDesc, domain,
+			desc, syntax.Normal)
 	}
 
 	if d.ShowDescription {
@@ -189,6 +161,21 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 		return
 	}
 	_, _ = fmt.Fprintf(w, "%s", title)
+}
+
+func styleTitleAndDesc(title string, titleStyle lipgloss.Style, descStyle lipgloss.Style, domain string, desc string,
+	syntaxStyle int) (string, string) {
+
+	title = titleStyle.Render(title)
+	title = syntax.HighlightYCStartupsInHeadlines(title, syntaxStyle)
+	title = syntax.HighlightYearInHeadlines(title, syntaxStyle)
+	title = syntax.HighlightHackerNewsHeadlines(title, syntaxStyle)
+	title = syntax.HighlightSpecialContent(title)
+
+	title = title + " " + domain
+	desc = descStyle.Render(desc)
+
+	return title, desc
 }
 
 func parseTime(unixTime int64) string {
