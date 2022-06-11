@@ -22,9 +22,10 @@ const (
 	Normal         = -1
 	Bold           = 0
 	Reverse        = 1
-	FaintAndItalic = 2
-	Green          = 3
-	Red            = 4
+	Faint          = 2
+	FaintAndItalic = 3
+	Green          = 4
+	Red            = 5
 )
 
 func HighlightYCStartups(comment string) string {
@@ -142,6 +143,8 @@ func getHighlight(highlightType int) string {
 		return bold
 	case Reverse:
 		return reverse
+	case Faint:
+		return faint
 	case FaintAndItalic:
 		return faint + italic
 	case Green:

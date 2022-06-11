@@ -148,8 +148,8 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 			desc, syntax.FaintAndItalic)
 
 	case m.disableInput && !(m.onAddToFavoritesPrompt || m.onRemoveFromFavoritesPrompt):
-		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle, s.MarkAsReadDesc, domain,
-			desc, syntax.FaintAndItalic)
+		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(false), s.MarkAsReadDesc, domain,
+			desc, syntax.Faint)
 
 	default:
 		title, desc = styleTitleAndDesc(title, s.NormalTitle, s.NormalDesc, domain,
