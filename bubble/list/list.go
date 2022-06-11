@@ -335,7 +335,10 @@ func (m *Model) NewStatusMessage(s string) tea.Cmd {
 }
 
 func (m *Model) NewStatusMessageWithDuration(s string, d time.Duration) tea.Cmd {
-	m.statusMessage = s
+	m.statusMessage = lipgloss.NewStyle().
+		Foreground(style.GetUnselectedItemFg()).
+		Render(s)
+
 	if m.statusMessageTimer != nil {
 		m.statusMessageTimer.Stop()
 	}
@@ -350,7 +353,9 @@ func (m *Model) NewStatusMessageWithDuration(s string, d time.Duration) tea.Cmd 
 }
 
 func (m *Model) SetPermanentStatusMessage(s string) {
-	m.statusMessage = s
+	m.statusMessage = lipgloss.NewStyle().
+		Foreground(style.GetUnselectedItemFg()).
+		Render(s)
 }
 
 // SetSize sets the width and height of this component.
