@@ -3,6 +3,7 @@ package list
 import (
 	"clx/bfavorites"
 	"clx/bheader"
+	"clx/browser"
 	"clx/bubble/list/message"
 	"clx/bubble/ranking"
 	"clx/cli"
@@ -714,6 +715,24 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			return cmd
 
+		case msg.String() == "o":
+			if m.SelectedItem().URL == "" {
+				url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(m.SelectedItem().ID)
+				browser.Open(url)
+
+				return nil
+			}
+
+			browser.Open(m.SelectedItem().URL)
+
+			return nil
+
+		case msg.String() == "c":
+			url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(m.SelectedItem().ID)
+			browser.Open(url)
+
+			return nil
+
 		case msg.String() == "r" && m.category != category.Favorites:
 			currentCategory := m.category
 
@@ -742,14 +761,14 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return tea.Batch(cmds...)
 
 		case msg.String() == "f":
-			m.SetPermanentStatusMessage("Add to favorites?")
+			m.SetPermanentStatusMessage(getAddItemConfirmationMessage())
 			m.onAddToFavoritesPrompt = true
 			m.disableInput = true
 
 			return nil
 
 		case msg.String() == "x" && m.category == category.Favorites:
-			m.SetPermanentStatusMessage("Remove from favorites?")
+			m.SetPermanentStatusMessage(getRemoveItemConfirmationMessage())
 			m.onRemoveFromFavoritesPrompt = true
 			m.disableInput = true
 
@@ -962,6 +981,34 @@ func (m Model) populatedView() string {
 
 func (m Model) spinnerView() string {
 	return m.spinner.View()
+}
+
+func getAddItemConfirmationMessage() string {
+	normal := lipgloss.NewStyle().
+		Foreground(style.GetUnselectedItemFg()).
+		Background(style.GetStatusBarBg())
+	green := normal.Copy().
+		Foreground(lipgloss.Color("2"))
+	bold := normal.Copy().
+		Foreground(style.GetBlue()).
+		Bold(true)
+
+	return green.Render("Add") + normal.Render(" to Favorites? Press ") + bold.Render("y") +
+		normal.Render(" to confirm")
+}
+
+func getRemoveItemConfirmationMessage() string {
+	normal := lipgloss.NewStyle().
+		Foreground(style.GetUnselectedItemFg()).
+		Background(style.GetStatusBarBg())
+	red := normal.Copy().
+		Foreground(lipgloss.Color("1"))
+	bold := normal.Copy().
+		Foreground(style.GetBlue()).
+		Bold(true)
+
+	return red.Render("Remove") + normal.Render(" from Favorites? Press ") + bold.Render("y") +
+		normal.Render(" to confirm")
 }
 
 func max(a, b int) int {
