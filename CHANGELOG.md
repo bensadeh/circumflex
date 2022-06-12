@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2.0
-_WIP_
+_12.06.22_
 
 **New TUI**
 - `circumflex` now uses [BubbleTea](https://github.com/charmbracelet/bubbletea) for the TUI
