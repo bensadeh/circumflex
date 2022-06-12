@@ -200,7 +200,6 @@ A table of available flags is provided below:
 | `-o` | Disable syntax highlighting in the comment section.                                                                |
 | `-s` | Disable conversion of smileys (`:)`) to emojis (😊)                                                                |
 | `-d` | Disable marking submissions as read                                                                                |
-| `-r` | Show each line with a number relative to the currently selected element (similar to Vim's hybrid line number mode) |
 | `-t` | Hide the indentation symbol from the comment section (does not affect quotes)                                      |
 
 ## Keymaps
