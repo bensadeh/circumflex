@@ -1,6 +1,7 @@
 package help
 
 import (
+	"clx/constants/clx"
 	"clx/constants/unicode"
 	"clx/info"
 	"clx/screen"
@@ -19,9 +20,11 @@ func GetHelpScreen() string {
 
 	var sb strings.Builder
 
-	sb.WriteString(unicode.ZeroWidthSpace + newLine + lipgloss.PlaceHorizontal(screenWidth, lipgloss.Center, "") + newPar)
+	sb.WriteString(unicode.ZeroWidthSpace + lipgloss.PlaceHorizontal(screenWidth, lipgloss.Center, "") + newPar)
 	//sb.WriteString(unicode.ZeroWidthSpace + lipgloss.PlaceHorizontal(screenWidth, lipgloss.Center, getSubSection(textWidth)) + newPar)
 	sb.WriteString(unicode.ZeroWidthSpace + lipgloss.PlaceHorizontal(screenWidth, lipgloss.Center, info.GetText(textWidth)) + newPar)
+
+	sb.WriteString(unicode.ZeroWidthSpace + lipgloss.PlaceHorizontal(screenWidth, lipgloss.Center, lipgloss.NewStyle().Faint(true).Render("press q to return • github.com/bensadeh/circumflex • version "+clx.Version)) + newPar)
 
 	return sb.String()
 }
