@@ -45,7 +45,7 @@ func (s *Service) FetchStories(_ int, category int) []*item.Item {
 
 	orderedIds := s.categories[category].items
 	itemsToShow := s.categories[category].numberOfItemsToShow
-	ids := getStoryListURIParam(orderedIds[0:s.categories[category].numberOfItemsToShow])
+	ids := getStoryListURIParam(orderedIds[0 : s.categories[category].numberOfItemsToShow+1])
 
 	toShow := strconv.Itoa(itemsToShow)
 	url := "https://hn.algolia.com/api/v1/search?tags=story," +
