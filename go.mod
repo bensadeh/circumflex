@@ -15,7 +15,7 @@ require (
 	github.com/gdamore/tcell/v2 v2.4.1-0.20210828201608-73703f7ed490
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/go-shiori/go-readability v0.0.0-20210627123243-82cc33435520
-	github.com/jedib0t/go-pretty/v6 v6.2.2
+	github.com/jedib0t/go-pretty/v6 v6.3.2
 	github.com/logrusorgru/aurora/v3 v3.0.0
 	github.com/muesli/reflow v0.3.0
 	github.com/nleeper/goment v1.4.0
