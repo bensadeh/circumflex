@@ -9,7 +9,7 @@ func (his *Mock) NewHistory() *History {
 }
 
 func (Mock) Contains(id int) bool {
-	visitedStories := []int{1, 2, 3, 10, 13}
+	visitedStories := []int{2, 10, 14, 18}
 
 	return contains(visitedStories, id)
 }
