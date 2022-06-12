@@ -792,7 +792,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 				}
 			}
 
-		case msg.String() == "i":
+		case msg.String() == "i" || msg.String() == "?":
 			m.SetIsVisible(false)
 
 			cmd := func() tea.Msg {

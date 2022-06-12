@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1
+_WIP_
+
+**Bugfix**
+- Re-added keybinding for entering the help screen with `?`
+
 ## 2.0
 _12.06.22_
 
