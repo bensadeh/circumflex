@@ -92,15 +92,12 @@ _n_, _N_::
 
 *-s, --disable-emojis*::
   Disable conversion of smileys to emojis
-
-*-r, --relative-numbering*::
-  Use relative numbering for submissions
+//
+//*-r, --relative-numbering*::
+//  Use relative numbering for submissions
 
 *-t, --hide-indent*::
   Hide the indentation bar to the left of the reply
-
-*-e* _n_, **--header-type=**_n_::
-  Set the header type on the main screen
 
 *-v, --version*::
   Show the current version of *clx*
