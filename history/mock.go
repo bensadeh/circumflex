@@ -34,4 +34,4 @@ func (Mock) GetLastCommentCount(_ int) int {
 
 func (Mock) ClearAndWriteToDisk() {}
 
-func (Mock) AddToHistoryAndWriteToDisk(_ int, _ int) {}
+func (Mock) MarkAsReadAndWriteToDisk(_ int, _ int) {}

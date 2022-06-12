@@ -76,3 +76,26 @@ func (f *Favorites) Remove(index int) {
 
 	f.items = append(f.items[:index], f.items[index+1:]...)
 }
+
+func (f *Favorites) UpdateStoryAndWriteToDisk(newItem *item.Item) {
+	for i, s := range f.items {
+		if s.ID == newItem.ID {
+			isFieldsUpdated := s.Title != newItem.Title || s.Points != newItem.Points ||
+				s.Time != newItem.Time || s.User != newItem.User ||
+				s.CommentsCount != newItem.CommentsCount || s.URL != newItem.URL ||
+				s.Domain != newItem.Domain
+
+			if isFieldsUpdated {
+				f.items[i].Title = newItem.Title
+				f.items[i].Points = newItem.Points
+				f.items[i].Time = newItem.Time
+				f.items[i].User = newItem.User
+				f.items[i].CommentsCount = newItem.CommentsCount
+				f.items[i].URL = newItem.URL
+				f.items[i].Domain = newItem.Domain
+
+				f.Write()
+			}
+		}
+	}
+}

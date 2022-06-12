@@ -44,7 +44,7 @@ func (his *Persistent) ClearAndWriteToDisk() {
 	writeToDisk(his, dirPath, fileName)
 }
 
-func (his *Persistent) AddToHistoryAndWriteToDisk(id int, commentsOnLastVisit int) {
+func (his *Persistent) MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int) {
 	his.VisitedStories[id] = StoryInfo{
 		LastVisited:         time.Now().Unix(),
 		CommentsOnLastVisit: commentsOnLastVisit,

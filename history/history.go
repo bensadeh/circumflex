@@ -12,7 +12,7 @@ type History interface {
 	GetLastVisited(id int) int64
 	GetLastCommentCount(id int) int
 	ClearAndWriteToDisk()
-	AddToHistoryAndWriteToDisk(id int, commentsOnLastVisit int)
+	MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int)
 }
 
 func NewPersistentHistory() History {

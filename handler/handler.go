@@ -167,7 +167,7 @@ func (r *StoryHandler) MarkAsRead(category, currentItemIndex, storiesToShow, cur
 	index := getIndex(currentItemIndex, storiesToShow, currentPage)
 	id := r.sc[category].stories[index].ID
 
-	r.history.AddToHistoryAndWriteToDisk(id, commentCount)
+	r.history.MarkAsReadAndWriteToDisk(id, commentCount)
 }
 
 func (r *StoryHandler) UpdateCommentCount(category, currentItemIndex, storiesToShow, currentPage, commentCount int) {
@@ -187,7 +187,7 @@ func (r *StoryHandler) GetLastVisited(category, currentItemIndex, storiesToShow,
 //	index := getIndex(currentItemIndex, storiesToShow, currentPage)
 //	id := r.sc[category].stories[index].ID
 //
-//	r.history.AddToHistoryAndWriteToDisk(id)
+//	r.history.MarkAsReadAndWriteToDisk(id)
 //
 //	return r.sc[category].stories[index]
 //}

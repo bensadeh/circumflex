@@ -467,7 +467,23 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.SetSize(msg.Width-h, msg.Height-v)
 
 	case message.EnteringCommentSection:
-		return m, m.fetchCommentSectionAndPipeToLess(msg.Id, msg.CommentCount)
+		lastVisited := m.history.GetLastVisited(msg.Id)
+
+		m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
+
+		story := m.service.FetchStory(msg.Id)
+
+		if m.category == category.Favorites {
+			m.favorites.UpdateStoryAndWriteToDisk(story)
+		}
+
+		commentTree := comment.ToString(story, m.config, m.width, lastVisited)
+
+		command := cli.WrapLess(commentTree)
+
+		return m, tea.ExecProcess(command, func(err error) tea.Msg {
+			return message.EditorFinishedMsg{Err: err}
+		})
 
 	case message.EnteringReaderMode:
 		errorMessage := validator.GetErrorMessage(msg.Title, msg.Domain)
@@ -795,22 +811,6 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	}
 
 	return tea.Batch(cmds...)
-}
-
-func (m *Model) fetchCommentSectionAndPipeToLess(id int, commentCount int) tea.Cmd {
-	lastVisited := m.history.GetLastVisited(id)
-
-	m.history.AddToHistoryAndWriteToDisk(id, commentCount)
-
-	comments := m.service.FetchStory(id)
-
-	commentTree := comment.ToString(comments, m.config, m.width, lastVisited)
-
-	command := cli.WrapLess(commentTree)
-
-	return tea.ExecProcess(command, func(err error) tea.Msg {
-		return message.EditorFinishedMsg{Err: err}
-	})
 }
 
 func (m *Model) showHelpScreen() tea.Cmd {

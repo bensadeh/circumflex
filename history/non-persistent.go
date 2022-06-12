@@ -18,4 +18,4 @@ func (NonPersistent) GetLastCommentCount(_ int) int {
 
 func (NonPersistent) ClearAndWriteToDisk() {}
 
-func (NonPersistent) AddToHistoryAndWriteToDisk(_ int, _ int) {}
+func (NonPersistent) MarkAsReadAndWriteToDisk(_ int, _ int) {}
