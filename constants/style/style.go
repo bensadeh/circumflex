@@ -17,7 +17,7 @@ const (
 	labelMarkAsReadFgDark   = yellowDark
 	labelBgDark             = logoBgDark
 	labelMarkAsReadBgDark   = headerBgDark
-	headerBgDark            = "#222638"
+	headerBgDark            = "#2d3454"
 	unselectedItemFgDark    = "247"
 	statusBarBgDark         = headerBgDark
 	paginatorBgDark         = logoBgDark
