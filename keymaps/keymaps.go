@@ -1,7 +1,7 @@
 package keymaps
 
 import (
-	"clx/utils/formatter"
+	"github.com/charmbracelet/lipgloss"
 	"strings"
 
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -62,13 +62,13 @@ func (k *List) Print(screenWidth int) string {
 		switch item.category {
 		case header:
 			centeredHeader := text.AlignCenter.Apply(item.header, screenWidth)
-			headerInBold := formatter.Bold(centeredHeader)
+			headerInBold := lipgloss.NewStyle().Bold(true).Render(centeredHeader)
 			output += headerInBold + newline
 		case separator:
 			output += newline
 		case keymap:
 			dots := getDotSeparators(item.description, item.key, screenWidth)
-			output += item.description + dots + item.key + newline
+			output += lipgloss.NewStyle().Bold(true).Render(item.key) + lipgloss.NewStyle().Faint(true).Render(dots) + item.description + newline
 		}
 	}
 
