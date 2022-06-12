@@ -708,13 +708,6 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			return cmd
 
-		case msg.String() == "p":
-			cmd := m.NewStatusMessageWithDuration("Input enabled", 1*time.Second)
-			m.disableInput = false
-			m.onAddToFavoritesPrompt = false
-
-			return cmd
-
 		case msg.String() == "o":
 			if m.SelectedItem().URL == "" {
 				url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(m.SelectedItem().ID)
