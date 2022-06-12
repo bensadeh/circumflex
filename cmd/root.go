@@ -9,22 +9,21 @@ import (
 )
 
 var (
-	plainHeadlines       bool
-	commentWidth         int
-	plainComments        bool
-	disableHistory       bool
-	disableEmojis        bool
-	useRelativeNumbering bool
-	hideIndentSymbol     bool
-	debugMode            bool
-	headerType           int
+	plainHeadlines bool
+	commentWidth   int
+	plainComments  bool
+	disableHistory bool
+	disableEmojis  bool
+	//useRelativeNumbering bool
+	hideIndentSymbol bool
+	debugMode        bool
 )
 
 func Root() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:     "clx",
-		Short:   "circumflex is a command line tool for browsing Hacker News",
-		Long:    "circumflex is a command line tool for browsing Hacker News",
+		Short:   "circumflex is a command line tool for browsing Hacker News in your terminal",
+		Long:    "circumflex is a command line tool for browsing Hacker News in your terminal",
 		Version: clx2.Version,
 		Run: func(cmd *cobra.Command, args []string) {
 			config := getConfig()
@@ -39,7 +38,6 @@ func Root() *cobra.Command {
 	rootCmd.AddCommand(addCmd())
 	rootCmd.AddCommand(clearCmd())
 	rootCmd.AddCommand(viewCmd())
-	rootCmd.AddCommand(legacyCmd())
 
 	configureFlags(rootCmd)
 
@@ -55,14 +53,12 @@ func configureFlags(rootCmd *cobra.Command) {
 		"disable marking stories as read")
 	rootCmd.PersistentFlags().BoolVarP(&disableEmojis, "disable-emojis", "s", false,
 		"disable conversion of smileys to emojis")
-	rootCmd.PersistentFlags().BoolVarP(&useRelativeNumbering, "relative-numbering", "r", false,
-		"use relative numbering for submissions")
+	//rootCmd.PersistentFlags().BoolVarP(&useRelativeNumbering, "relative-numbering", "r", false,
+	//	"use relative numbering for submissions")
 	rootCmd.PersistentFlags().BoolVarP(&hideIndentSymbol, "hide-indent", "t", false,
 		"hide the indentation bar to the left of the reply")
 	rootCmd.PersistentFlags().IntVarP(&commentWidth, "comment-width", "c", core.GetConfigWithDefaults().CommentWidth,
 		"set the comment width")
-	rootCmd.PersistentFlags().IntVarP(&headerType, "header-type", "e", 0,
-		"set the header type on the main screen")
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
 		"enable debug mode (offline mode) by using mock data for the endpoints")
 
@@ -73,10 +69,9 @@ func getConfig() *core.Config {
 	config := core.GetConfigWithDefaults()
 
 	config.CommentWidth = commentWidth
-	config.HeaderType = headerType
 
 	if plainHeadlines {
-		config.HighlightHeadlines = false
+		config.PlainHeadlines = true
 	}
 
 	if plainComments {
@@ -90,10 +85,10 @@ func getConfig() *core.Config {
 	if disableEmojis {
 		config.EmojiSmileys = false
 	}
-
-	if useRelativeNumbering {
-		config.RelativeNumbering = true
-	}
+	//
+	//if useRelativeNumbering {
+	//	config.RelativeNumbering = true
+	//}
 
 	if hideIndentSymbol {
 		config.HideIndentSymbol = true

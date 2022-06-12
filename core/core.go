@@ -43,6 +43,7 @@ type MainView struct {
 
 type Config struct {
 	CommentWidth       int
+	PlainHeadlines     bool
 	HighlightHeadlines bool
 	HighlightComments  bool
 	RelativeNumbering  bool
@@ -50,7 +51,6 @@ type Config struct {
 	MarkAsRead         bool
 	HideIndentSymbol   bool
 	IndentationSymbol  string
-	HeaderType         int
 	DebugMode          bool
 }
 
@@ -64,6 +64,5 @@ func GetConfigWithDefaults() *Config {
 		MarkAsRead:         true,
 		HideIndentSymbol:   false,
 		IndentationSymbol:  " ▎",
-		HeaderType:         0,
 	}
 }

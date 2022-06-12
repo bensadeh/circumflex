@@ -1,13 +1,5 @@
 package cmd
 
-import (
-	"clx/clx"
-	clx2 "clx/constants/clx"
-	"clx/indent"
-
-	"github.com/spf13/cobra"
-)
-
 //var (
 //	plainHeadlines       bool
 //	commentWidth         int
@@ -20,26 +12,26 @@ import (
 //	headerType           int
 //)
 
-func legacyCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "legacy",
-		Short:   "circumflex is a command line tool for browsing Hacker News in your terminal",
-		Long:    "circumflex is a command line tool for browsing Hacker News in your terminal",
-		Version: clx2.Version,
-		Run: func(cmd *cobra.Command, args []string) {
-			config := getConfig()
-			config.IndentationSymbol = indent.GetIndentSymbol(hideIndentSymbol)
-
-			clx.Run(config)
-		},
-	}
-
-	cmd.CompletionOptions.DisableDefaultCmd = true
-
-	configureFlags(cmd)
-
-	return cmd
-}
+//func legacyCmd() *cobra.Command {
+//	cmd := &cobra.Command{
+//		Use:     "legacy",
+//		Short:   "circumflex is a command line tool for browsing Hacker News in your terminal",
+//		Long:    "circumflex is a command line tool for browsing Hacker News in your terminal",
+//		Version: clx2.Version,
+//		Run: func(cmd *cobra.Command, args []string) {
+//			config := getConfig()
+//			config.IndentationSymbol = indent.GetIndentSymbol(hideIndentSymbol)
+//
+//			clx.Run(config)
+//		},
+//	}
+//
+//	cmd.CompletionOptions.DisableDefaultCmd = true
+//
+//	configureFlags(cmd)
+//
+//	return cmd
+//}
 
 //func configureFlags(rootCmd *cobra.Command) {
 //	rootCmd.PersistentFlags().BoolVarP(&plainHeadlines, "plain-headlines", "p", false,
