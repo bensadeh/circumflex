@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="screenshots/clx.png" width="150" alt="circumflex"/>
+  <img src="screenshots/clx.svg" height="100%" width="150" alt="circumflex"/>
 </p>
 
 <p align="center">
