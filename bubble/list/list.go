@@ -801,15 +801,6 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			return cmd
 
-		case msg.String() == "u":
-			cmd := m.StartSpinner()
-
-			return cmd
-
-		case msg.String() == "i":
-			cmd := m.NewStatusMessageWithDuration("is disabled: "+strconv.FormatBool(m.IsInputDisabled()), 1*time.Second)
-
-			return cmd
 		}
 	}
 
