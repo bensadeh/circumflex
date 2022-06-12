@@ -6,6 +6,7 @@ import (
 	"clx/handler"
 	"clx/history"
 	"clx/item"
+	"github.com/charmbracelet/lipgloss"
 	"strconv"
 	"time"
 
@@ -29,7 +30,9 @@ func addCmd() *cobra.Command {
 
 			submission := new(item.Item)
 			submission.ID, _ = strconv.Atoi(id)
-			submission.Title = messages.EnterCommentSectionToUpdate
+			submission.Title = lipgloss.NewStyle().
+				Foreground(lipgloss.Color("3")).
+				Render(messages.EnterCommentSectionToUpdate)
 			submission.Time = time.Now().Unix()
 			submission.User = "[]"
 
