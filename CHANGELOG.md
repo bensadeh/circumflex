@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.0
+_WIP_
+
+**New TUI**
+- `circumflex` now uses [BubbleTea](https://github.com/charmbracelet/bubbletea) for the TUI
+
+**New features**
+- Show a `fetching` indicator in the status line when fetching list of submissions  
+- Dark Theme / Light Theme is automatically applied based on the terminal color scheme
+- Better styling for `Add to favorites?`/`Remove from favorites?` prompts
+- Hide selected item bar on refresh or change of category to better show that application is fetching submissions
+- Added spacing between submissions for better readability
+
+
 ## 1.33
 _05.02.22_
 
