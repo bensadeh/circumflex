@@ -28,7 +28,7 @@
 - ⚡️ **Familiar tools** — content is piped to the pager `less` 
 
 **You might also like:**
-- 🤹 **Native terminal colors** — you bring your own color scheme, `circumflex` does the rest
+- 🤹 **Adaptive terminal colors** — you bring your own color scheme, `circumflex` does the rest
 - 🛠 **Easy customization** — quickly enable or disable features  
 - ❤️ **Add to favorites** — save interesting submissions for later
 
@@ -99,7 +99,7 @@ comment section.
 
 - <kbd>d</kbd>/<kbd>u</kbd> to scroll half a screen
 - <kbd>j</kbd>/<kbd>k</kbd> to scroll one line at a time 
-- <kbd>n</kbd>/<kbd>N</kbd> to jump to the **next top-level comment**
+- <kbd>n</kbd>/<kbd>N</kbd> to jump to the next top-level comment
 
 
 ## Reader Mode
@@ -187,109 +187,37 @@ clx add [id]
 Favorites are stored in `~/.config/circumflex/favorites.json`. `circumflex` pretty-prints 
 `favorites.json` to make it both human-readable and VCS-friendly.
 
-## Headers
-
-Run `circumflex` with the `-e`/`header-type` flag and a number to set the header on the main screen:
-
-```console
-clx -e [1-3]
-```
-
-<p align="center">
-  <img src="screenshots/header0.png" width="700"/>
-</p>
-
-<p align="center">
- Stock dark mode (default)
-</p>
-
-
-<p align="center">
-  <img src="screenshots/header1.png" width="700"/>
-</p>
-
-<p align="center">
- Stock light mode (1)
-</p>
-
-<p align="center">
-  <img src="screenshots/header2.png" width="700"/>
-</p>
-
-<p align="center">
- No colors (2)
-</p>
-
-<p align="center">
-  <img src="screenshots/header3.png" width="700"/>
-</p>
-
-<p align="center">
- Orange header (3)
-</p>
-
 ## Settings
 
 Run `clx help` or `man clx` for a list of available commands and settings.
 
 A table of available flags is provided below:
 
-| Flag  | Description |
-| :---- | :---------- |
-| `-c`  | Set the comment width |
-| `-l`  | Disable syntax highlighting for the headlines |
-| `-o`  | Disable syntax highlighting in the comment section. |
-| `-s`  | Disable conversion of smileys (`:)`) to emojis (😊)|
-| `-d`  | Disable marking submissions as read |
-| `-r`  | Show each line with a number relative to the currently selected element (similar to Vim's hybrid line number mode) |
-| `-t`  | Hide the indentation symbol from the comment section (does not affect quotes) |
-| `-e`  | Set the header type |
-
-## Tweaks
-#### Low contrast headers
-Some terminals brighten text in bold in order to give them stronger contrast in dark color 
-schemes. `circumflex` uses bold text to give headers and authors names additional contrast 
-for better legibility. 
-
-See example screenshots below (low contrast header) of terminal output which does not 
-brighten bold fonts.
-
-<p align="center">
-  <img src="screenshots/low_contrast.png" width="500" alt="^"/>
-</p>
-
-Below are a few examples on how to enable bold text in bright colors in different terminals.
-
-##### Alacritty (cross-platform)
-
-- Set `draw_bold_text_with_bright_colors` to `true`
-- Define `bright_foreground` and set it to a brighter value than `foreground`
-- (See [alacritty/alacritty/pull/1026](https://github.com/alacritty/alacritty/pull/1026) for 
-more info)
-
-##### Terminal (macOS)
-
-- Check `Use bright colors for bold text` under Profiles
-
-##### iTerm (macOS)
-
-- Check `Brighten bold text` under Profiles → Colors
+| Flag | Description                                                                                                        |
+|:-----|:-------------------------------------------------------------------------------------------------------------------|
+| `-c` | Set the comment width                                                                                              |
+| `-l` | Disable syntax highlighting for the headlines                                                                      |
+| `-o` | Disable syntax highlighting in the comment section.                                                                |
+| `-s` | Disable conversion of smileys (`:)`) to emojis (😊)                                                                |
+| `-d` | Disable marking submissions as read                                                                                |
+| `-r` | Show each line with a number relative to the currently selected element (similar to Vim's hybrid line number mode) |
+| `-t` | Hide the indentation symbol from the comment section (does not affect quotes)                                      |
 
 ## Keymaps
 
 Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of available keymaps:
 
-| Key  | Description |
-| :---- | :---------- |
-| <kbd>Enter</kbd>  | Read comments |
-| <kbd>Space</kbd>  | Read article in Reader Mode |
-| <kbd>r</kbd>  | Refresh |
-| <kbd>Tab</kbd>  | Change category|
-| <kbd>o</kbd>  | Open link to article in browser |
-| <kbd>c</kbd>  | Open comment section in browser |
-| <kbd>f</kbd>  | Add to favorites |
-| <kbd>x</kbd> | Remove from favorites |
-| <kbd>q</kbd> | Quit |
+| Key              | Description                     |
+|:-----------------|:--------------------------------|
+| <kbd>Enter</kbd> | Read comments                   |
+| <kbd>Space</kbd> | Read article in Reader Mode     |
+| <kbd>r</kbd>     | Refresh                         |
+| <kbd>Tab</kbd>   | Change category                 |
+| <kbd>o</kbd>     | Open link to article in browser |
+| <kbd>c</kbd>     | Open comment section in browser |
+| <kbd>f</kbd>     | Add to favorites                |
+| <kbd>x</kbd>     | Remove from favorites           |
+| <kbd>q</kbd>     | Quit                            |
 
 
 ## Under the hood
@@ -298,8 +226,8 @@ Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of available keymaps:
 
 * [BubbleTea](https://github.com/charmbracelet/bubbletea) for the TUI
 * [cobra](https://github.com/spf13/cobra) for the CLI
-* [Algolia's Search API](https://hn.algolia.com/api) and [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) 
-for providing submissions and comments
+* [Algolia's Search API](https://hn.algolia.com/api) for list of submissions and [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) 
+for providing comments
 * [`less`](http://greenwoodsoftware.com/less/) for viewing comments and articles
 * [go-term-text](https://github.com/MichaelMure/go-term-text) for text formatting
 * [go-readability](https://github.com/go-shiori/go-readability), [html-to-markdown](https://github.com/JohannesKaufmann/html-to-markdown) 
