@@ -1,4 +1,4 @@
-package core
+package settings
 
 type Config struct {
 	CommentWidth       int
@@ -13,7 +13,7 @@ type Config struct {
 	DebugMode          bool
 }
 
-func GetConfigWithDefaults() *Config {
+func New() *Config {
 	return &Config{
 		CommentWidth:       70,
 		HighlightHeadlines: true,

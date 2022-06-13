@@ -2,8 +2,8 @@ package comment_test
 
 import (
 	"clx/comment"
-	"clx/core"
 	"clx/item"
+	"clx/settings"
 	"encoding/json"
 	"io/ioutil"
 	"testing"
@@ -30,8 +30,8 @@ func unmarshal(data []byte) *item.Item {
 	return root
 }
 
-func getConfig() *core.Config {
-	return &core.Config{
+func getConfig() *settings.Config {
+	return &settings.Config{
 		CommentWidth:       80,
 		HighlightHeadlines: true,
 		RelativeNumbering:  false,

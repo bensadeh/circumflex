@@ -4,10 +4,10 @@ import (
 	"clx/comment/postprocessor"
 	"clx/constants/margins"
 	"clx/constants/unicode"
-	"clx/core"
 	"clx/item"
 	"clx/meta"
 	"clx/parser"
+	"clx/settings"
 	"clx/syntax"
 	"strconv"
 	"strings"
@@ -22,7 +22,7 @@ const (
 	newParagraph = "\n\n"
 )
 
-func ToString(comments *item.Item, config *core.Config, screenWidth int, lastVisited int64) string {
+func ToString(comments *item.Item, config *settings.Config, screenWidth int, lastVisited int64) string {
 	commentSectionScreenWidth := screenWidth - margins.CommentSectionLeftMargin
 
 	header := getHeader(comments, config, lastVisited)
@@ -48,13 +48,13 @@ func getFirstCommentID(comments []*item.Item) int {
 	return comments[0].ID
 }
 
-func getHeader(c *item.Item, config *core.Config, lastVisited int64) string {
+func getHeader(c *item.Item, config *settings.Config, lastVisited int64) string {
 	newComments := getNewCommentsCount(c, lastVisited)
 
 	return meta.GetCommentSectionMetaBlock(c, config, newComments) + newParagraph
 }
 
-func printReplies(c *item.Item, config *core.Config, screenWidth int, originalPoster string,
+func printReplies(c *item.Item, config *settings.Config, screenWidth int, originalPoster string,
 	parentPoster string, firstCommentID int, lastVisited int64) string {
 	isDeletedAndHasNoReplies := c.Content == "[deleted]" && len(c.Comments) == 0
 	if isDeletedAndHasNoReplies {
@@ -83,7 +83,7 @@ func printReplies(c *item.Item, config *core.Config, screenWidth int, originalPo
 	return fullComment
 }
 
-func formatComment(c *item.Item, config *core.Config, originalPoster string, parentPoster string, commentWidth int,
+func formatComment(c *item.Item, config *settings.Config, originalPoster string, parentPoster string, commentWidth int,
 	availableScreenWidth int, lastVisited int64) string {
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, c.Level)
 

@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"clx/core"
+	"clx/settings"
 	"clx/syntax"
 	"strings"
 
@@ -26,7 +26,7 @@ type section struct {
 	Text        string
 }
 
-func ParseComment(c string, config *core.Config, commentWidth int, availableScreenWidth int) string {
+func ParseComment(c string, config *settings.Config, commentWidth int, availableScreenWidth int) string {
 	if c == "[deleted]" {
 		return aurora.Faint(c).String()
 	}

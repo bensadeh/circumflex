@@ -2,9 +2,9 @@ package meta
 
 import (
 	"clx/constants/unicode"
-	"clx/core"
 	"clx/item"
 	"clx/parser"
+	"clx/settings"
 	"clx/syntax"
 	"strconv"
 
@@ -35,7 +35,7 @@ func GetReaderModeMetaBlock(title string, url string, lineWidth int) string {
 	return formattedTitle + newParagraph + style.Render(formattedURL+info) + newParagraph
 }
 
-func GetCommentSectionMetaBlock(c *item.Item, config *core.Config, newComments int) string {
+func GetCommentSectionMetaBlock(c *item.Item, config *settings.Config, newComments int) string {
 	columnWidth := config.CommentWidth/2 - 1
 	url := getURL(c.URL, c.Domain, config.CommentWidth)
 	rootComment := parseRootComment(c.Content, config)
@@ -78,7 +78,7 @@ func getNewCommentsInfo(newComments int) string {
 	return " (" + Cyan(c).String() + " new)"
 }
 
-func getHeadline(title string, config *core.Config) string {
+func getHeadline(title string, config *settings.Config) string {
 	formattedTitle := highlightTitle(unicode.ZeroWidthSpace+" "+newLine+title, config.HighlightHeadlines)
 	wrappedHeadline, _ := text.Wrap(formattedTitle, config.CommentWidth)
 
@@ -109,7 +109,7 @@ func getURL(url string, domain string, lineWidth int) string {
 	return formattedURL + newLine
 }
 
-func parseRootComment(c string, config *core.Config) string {
+func parseRootComment(c string, config *settings.Config) string {
 	if c == "" {
 		return ""
 	}

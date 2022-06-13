@@ -3,8 +3,8 @@ package cmd
 import (
 	"clx/bubble"
 	clx2 "clx/constants/clx"
-	"clx/core"
 	"clx/indent"
+	"clx/settings"
 	"github.com/spf13/cobra"
 )
 
@@ -57,7 +57,7 @@ func configureFlags(rootCmd *cobra.Command) {
 	//	"use relative numbering for submissions")
 	rootCmd.PersistentFlags().BoolVarP(&hideIndentSymbol, "hide-indent", "t", false,
 		"hide the indentation bar to the left of the reply")
-	rootCmd.PersistentFlags().IntVarP(&commentWidth, "comment-width", "c", core.GetConfigWithDefaults().CommentWidth,
+	rootCmd.PersistentFlags().IntVarP(&commentWidth, "comment-width", "c", settings.New().CommentWidth,
 		"set the comment width")
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
 		"enable debug mode (offline mode) by using mock data for the endpoints")
@@ -65,8 +65,8 @@ func configureFlags(rootCmd *cobra.Command) {
 	rootCmd.Flag("debug-mode").Hidden = true
 }
 
-func getConfig() *core.Config {
-	config := core.GetConfigWithDefaults()
+func getConfig() *settings.Config {
+	config := settings.New()
 
 	config.CommentWidth = commentWidth
 

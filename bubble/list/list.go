@@ -10,7 +10,6 @@ import (
 	"clx/comment"
 	"clx/constants/category"
 	"clx/constants/style"
-	"clx/core"
 	"clx/help"
 	"clx/history"
 	"clx/hn"
@@ -22,6 +21,7 @@ import (
 	"clx/markdown/renderer"
 	"clx/reader"
 	"clx/screen"
+	"clx/settings"
 	"clx/validator"
 	"fmt"
 	"io"
@@ -95,7 +95,7 @@ type Model struct {
 
 	delegate  ItemDelegate
 	history   history.History
-	config    *core.Config
+	config    *settings.Config
 	service   hn.Service
 	favorites *bfavorites.Favorites
 }
@@ -110,7 +110,7 @@ func (m *Model) FetchFrontPageStories() tea.Cmd {
 	}
 }
 
-func New(delegate ItemDelegate, config *core.Config, favorites *bfavorites.Favorites, width, height int) Model {
+func New(delegate ItemDelegate, config *settings.Config, favorites *bfavorites.Favorites, width, height int) Model {
 	styles := DefaultStyles()
 
 	sp := spinner.New()

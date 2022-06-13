@@ -3,9 +3,9 @@ package cmd
 import (
 	"clx/cli"
 	"clx/comment"
-	"clx/core"
 	"clx/hn/services/hybrid"
 	"clx/screen"
+	"clx/settings"
 	"strconv"
 	"time"
 
@@ -32,7 +32,7 @@ func viewCmd() *cobra.Command {
 			//	os.Exit(1)
 			//}
 
-			config := core.GetConfigWithDefaults()
+			config := settings.New()
 
 			screenWidth := screen.GetTerminalWidth()
 			commentTree := comment.ToString(comments, config, screenWidth, time.Now().Unix())

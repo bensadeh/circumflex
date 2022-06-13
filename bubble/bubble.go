@@ -4,7 +4,7 @@ import (
 	"clx/bfavorites"
 	"clx/bubble/list"
 	"clx/cli"
-	"clx/core"
+	"clx/settings"
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -33,7 +33,7 @@ func (m model) View() string {
 	return docStyle.Render(m.list.View())
 }
 
-func Run(config *core.Config) {
+func Run(config *settings.Config) {
 	cli.ClearScreen()
 
 	m := model{list: list.New(list.NewDefaultDelegate(), config, bfavorites.New(), 0, 0)}
