@@ -322,7 +322,6 @@ func (m *Model) StartSpinner() tea.Cmd {
 
 func (m *Model) StopSpinner() {
 	m.showSpinner = false
-	m.spinner.Finish()
 }
 
 func (m *Model) NewStatusMessage(s string) tea.Cmd {
