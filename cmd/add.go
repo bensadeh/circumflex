@@ -1,10 +1,7 @@
 package cmd
 
 import (
-	"clx/constants/messages"
-	"clx/favorites"
-	"clx/handler"
-	"clx/history"
+	"clx/bfavorites"
 	"clx/item"
 	"github.com/charmbracelet/lipgloss"
 	"strconv"
@@ -23,20 +20,18 @@ func addCmd() *cobra.Command {
 		DisableFlagsInUseLine: true,
 		Run: func(cmd *cobra.Command, args []string) {
 			id := args[0]
-			fav := favorites.Initialize()
-			his := history.NewNonPersistentHistory()
-			sh := new(handler.StoryHandler)
-			sh.Init(fav, his)
 
 			submission := new(item.Item)
 			submission.ID, _ = strconv.Atoi(id)
 			submission.Title = lipgloss.NewStyle().
 				Foreground(lipgloss.Color("3")).
-				Render(messages.EnterCommentSectionToUpdate)
+				Render("[Enter comment section to update story]")
 			submission.Time = time.Now().Unix()
 			submission.User = "[]"
 
-			_ = sh.AddItemToFavoritesAndWriteToFile(submission)
+			favorites := bfavorites.New()
+			favorites.Add(submission)
+			favorites.Write()
 
 			println("Item added to favorites")
 			println("(enter the comment section from clx to update)")

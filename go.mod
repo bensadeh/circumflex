@@ -3,7 +3,6 @@ module clx
 go 1.18
 
 require (
-	code.rocketnine.space/tslocum/cview v1.5.7
 	github.com/JohannesKaufmann/html-to-markdown v1.3.0
 	github.com/MichaelMure/go-term-text v0.2.9
 	github.com/PuerkitoBio/goquery v1.5.1

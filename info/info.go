@@ -2,7 +2,6 @@ package info
 
 import (
 	"clx/constants/margins"
-	"clx/constants/messages"
 	"clx/constants/style"
 	"clx/keymaps"
 	"github.com/charmbracelet/lipgloss"
@@ -10,10 +9,6 @@ import (
 
 	text "github.com/MichaelMure/go-term-text"
 )
-
-func GetStatusBarText() string {
-	return messages.GetCircumflexStatusMessage()
-}
 
 func GetText(screenWidth int) string {
 	keys := new(keymaps.List)
