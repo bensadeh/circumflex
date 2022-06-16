@@ -96,6 +96,9 @@ _n_, _N_::
 *-t, --hide-indent*::
   Hide the indentation bar to the left of the reply
 
+*-n, --nerdfonts*::
+  Use Nerd Fonts icons as decorators for some elements (requires a Nerd Font-patched font)
+
 *-v, --version*::
   Show the current version of *clx*
 

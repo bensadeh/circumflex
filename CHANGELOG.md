@@ -3,6 +3,9 @@
 ## 2.1
 _WIP_
 
+**New features**
+- Added support for Nerd Fonts
+
 **Bugfix**
 - Re-added keybinding for entering the help screen with `?`
 

@@ -193,14 +193,15 @@ Run `clx help` or `man clx` for a list of available commands and settings.
 
 A table of available flags is provided below:
 
-| Flag | Description                                                                                                        |
-|:-----|:-------------------------------------------------------------------------------------------------------------------|
-| `-c` | Set the comment width                                                                                              |
-| `-l` | Disable syntax highlighting for the headlines                                                                      |
-| `-o` | Disable syntax highlighting in the comment section.                                                                |
-| `-s` | Disable conversion of smileys (`:)`) to emojis (😊)                                                                |
-| `-d` | Disable marking submissions as read                                                                                |
-| `-t` | Hide the indentation symbol from the comment section (does not affect quotes)                                      |
+| Flag | Description                                                                   |
+|:-----|:------------------------------------------------------------------------------|
+| `-c` | Set the comment width                                                         |
+| `-l` | Disable syntax highlighting for the headlines                                 |
+| `-o` | Disable syntax highlighting in the comment section.                           |
+| `-s` | Disable conversion of smileys (`:)`) to emojis (😊)                           |
+| `-d` | Disable marking submissions as read                                           |
+| `-t` | Hide the indentation symbol from the comment section (does not affect quotes) |
+| `-n` | Use Nerd Fonts icons as decorators                                            |
 
 ## Keymaps
 

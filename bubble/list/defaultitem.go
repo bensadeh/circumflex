@@ -133,27 +133,27 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 	switch {
 	case isSelected && m.onAddToFavoritesPrompt:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitleAddToFavorites, s.SelectedDescAddToFavorites, domain,
-			desc, syntax.Green, m.config.PlainHeadlines)
+			desc, syntax.Green, m.config.PlainHeadlines, m.config.EnableNerdFonts)
 
 	case isSelected && m.onRemoveFromFavoritesPrompt:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitleRemoveFromFavorites, s.SelectedDescRemoveFromFavoritesFavorites, domain,
-			desc, syntax.Red, m.config.PlainHeadlines)
+			desc, syntax.Red, m.config.PlainHeadlines, m.config.EnableNerdFonts)
 
 	case isSelected && !m.disableInput:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitle, s.SelectedDesc, domain,
-			desc, syntax.Reverse, m.config.PlainHeadlines)
+			desc, syntax.Reverse, m.config.PlainHeadlines, m.config.EnableNerdFonts)
 
 	case markAsRead && m.category != category.Favorites:
 		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle, s.MarkAsReadDesc, domain,
-			desc, syntax.FaintAndItalic, m.config.PlainHeadlines)
+			desc, syntax.FaintAndItalic, m.config.PlainHeadlines, m.config.EnableNerdFonts)
 
 	case m.disableInput && !(m.onAddToFavoritesPrompt || m.onRemoveFromFavoritesPrompt):
 		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(false), s.MarkAsReadDesc, domain,
-			desc, syntax.Faint, m.config.PlainHeadlines)
+			desc, syntax.Faint, m.config.PlainHeadlines, m.config.EnableNerdFonts)
 
 	default:
 		title, desc = styleTitleAndDesc(title, s.NormalTitle, s.NormalDesc, domain,
-			desc, syntax.Normal, m.config.PlainHeadlines)
+			desc, syntax.Normal, m.config.PlainHeadlines, m.config.EnableNerdFonts)
 	}
 
 	if d.ShowDescription {
@@ -164,11 +164,11 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 }
 
 func styleTitleAndDesc(title string, titleStyle lipgloss.Style, descStyle lipgloss.Style, domain string, desc string,
-	syntaxStyle int, plainHeadlines bool) (string, string) {
+	syntaxStyle int, plainHeadlines bool, enableNerdFont bool) (string, string) {
 	title = titleStyle.Render(title)
 
 	if !plainHeadlines {
-		title = syntax.HighlightYCStartupsInHeadlines(title, syntaxStyle)
+		title = syntax.HighlightYCStartupsInHeadlines(title, syntaxStyle, enableNerdFont)
 		title = syntax.HighlightYearInHeadlines(title, syntaxStyle)
 		title = syntax.HighlightHackerNewsHeadlines(title, syntaxStyle)
 		title = syntax.HighlightSpecialContent(title)

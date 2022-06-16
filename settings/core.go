@@ -11,6 +11,7 @@ type Config struct {
 	HideIndentSymbol   bool
 	IndentationSymbol  string
 	DebugMode          bool
+	EnableNerdFonts    bool
 }
 
 func New() *Config {

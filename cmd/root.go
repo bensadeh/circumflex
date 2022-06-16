@@ -9,14 +9,14 @@ import (
 )
 
 var (
-	plainHeadlines bool
-	commentWidth   int
-	plainComments  bool
-	disableHistory bool
-	disableEmojis  bool
-	//useRelativeNumbering bool
+	plainHeadlines   bool
+	commentWidth     int
+	plainComments    bool
+	disableHistory   bool
+	disableEmojis    bool
 	hideIndentSymbol bool
 	debugMode        bool
+	enableNerdFont   bool
 )
 
 func Root() *cobra.Command {
@@ -53,15 +53,15 @@ func configureFlags(rootCmd *cobra.Command) {
 		"disable marking stories as read")
 	rootCmd.PersistentFlags().BoolVarP(&disableEmojis, "disable-emojis", "s", false,
 		"disable conversion of smileys to emojis")
-	//rootCmd.PersistentFlags().BoolVarP(&useRelativeNumbering, "relative-numbering", "r", false,
-	//	"use relative numbering for submissions")
 	rootCmd.PersistentFlags().BoolVarP(&hideIndentSymbol, "hide-indent", "t", false,
 		"hide the indentation bar to the left of the reply")
 	rootCmd.PersistentFlags().IntVarP(&commentWidth, "comment-width", "c", settings.New().CommentWidth,
 		"set the comment width")
+	rootCmd.PersistentFlags().BoolVarP(&enableNerdFont, "nerdfonts", "n", false,
+		"use nerdfonts")
+
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
 		"enable debug mode (offline mode) by using mock data for the endpoints")
-
 	rootCmd.Flag("debug-mode").Hidden = true
 }
 
@@ -85,10 +85,10 @@ func getConfig() *settings.Config {
 	if disableEmojis {
 		config.EmojiSmileys = false
 	}
-	//
-	//if useRelativeNumbering {
-	//	config.RelativeNumbering = true
-	//}
+
+	if enableNerdFont {
+		config.EnableNerdFonts = true
+	}
 
 	if hideIndentSymbol {
 		config.HideIndentSymbol = true

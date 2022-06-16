@@ -79,17 +79,18 @@ func getNewCommentsInfo(newComments int) string {
 }
 
 func getHeadline(title string, config *settings.Config) string {
-	formattedTitle := highlightTitle(unicode.ZeroWidthSpace+" "+newLine+title, config.HighlightHeadlines)
+	formattedTitle := highlightTitle(unicode.ZeroWidthSpace+" "+newLine+title, config.HighlightHeadlines,
+		config.EnableNerdFonts)
 	wrappedHeadline, _ := text.Wrap(formattedTitle, config.CommentWidth)
 
 	return wrappedHeadline
 }
 
-func highlightTitle(title string, highlightHeadlines bool) string {
+func highlightTitle(title string, highlightHeadlines bool, enableNerdFont bool) string {
 	highlightedTitle := title
 
 	if highlightHeadlines {
-		highlightedTitle = syntax.HighlightYCStartupsInHeadlines(highlightedTitle, syntax.Bold)
+		highlightedTitle = syntax.HighlightYCStartupsInHeadlines(highlightedTitle, syntax.Bold, enableNerdFont)
 		highlightedTitle = syntax.HighlightYearInHeadlines(highlightedTitle, syntax.Bold)
 		highlightedTitle = syntax.HighlightHackerNewsHeadlines(highlightedTitle, syntax.Bold)
 		highlightedTitle = syntax.HighlightSpecialContent(highlightedTitle)

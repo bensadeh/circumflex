@@ -2,7 +2,6 @@ package list
 
 import (
 	"clx/bfavorites"
-	"clx/bheader"
 	"clx/browser"
 	"clx/bubble/list/message"
 	"clx/bubble/ranking"
@@ -10,6 +9,7 @@ import (
 	"clx/comment"
 	"clx/constants/category"
 	"clx/constants/style"
+	"clx/header"
 	"clx/help"
 	"clx/history"
 	"clx/hn"
@@ -863,7 +863,7 @@ func (m Model) View() string {
 }
 
 func (m Model) titleView() string {
-	return bheader.GetHeader(m.category, m.favorites.HasItems(), m.width) + "\n"
+	return header.GetHeader(m.category, m.favorites.HasItems(), m.width) + "\n"
 }
 
 func (m Model) statusAndPaginationView() string {
