@@ -13,7 +13,7 @@ _WIP_
 _12.06.22_
 
 **New TUI**
-- `circumflex` now uses [BubbleTea](https://github.com/charmbracelet/bubbletea) for the TUI
+- `circumflex` now uses [Bubble Tea](https://github.com/charmbracelet/bubbletea) for the TUI
 
 **New features**
 - Show a `fetching` indicator in the status line when fetching list of submissions  

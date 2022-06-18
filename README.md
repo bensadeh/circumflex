@@ -231,7 +231,7 @@ for providing comments
 * [`less`](http://greenwoodsoftware.com/less/) for viewing comments and articles
 * [go-term-text](https://github.com/MichaelMure/go-term-text) for text formatting
 * [go-readability](https://github.com/go-shiori/go-readability), [html-to-markdown](https://github.com/JohannesKaufmann/html-to-markdown) 
-and [Glamour](github.com/charmbracelet/glamour) for formatting and rendering articles in Reader Mode
+and [Glamour](https://github.com/charmbracelet/glamour) for formatting and rendering articles in Reader Mode
 
 Screenshots use:
 
