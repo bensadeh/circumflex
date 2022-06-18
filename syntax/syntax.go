@@ -58,14 +58,24 @@ func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNer
 func HighlightYCStartupsInHeadlinesWithNerdFonts(comment string, highlightType int) string {
 	expression := regexp.MustCompile(`\((YC ([SW]\d{2}))\)`)
 
-	content := getYCContentStyle(highlightType)
-	border := getYCBorderStyle(highlightType)
-	yc := getYCLogoStyle(highlightType)
+	content := getYCRoundedBar(` $2`, highlightType)
 
-	highlightedStartup := reset + border.Render("") + yc.Render(" ") +
-		content.Render(`$2`) + border.Render("") + getHighlight(highlightType)
+	highlightedStartup := reset + content + getHighlight(highlightType)
 
 	return expression.ReplaceAllString(comment, highlightedStartup)
+}
+
+func getYCRoundedBar(text string, highlightType int) string {
+	switch highlightType {
+	case Reverse:
+		return rounded(text, style.GetLogoBg(), style.GetYCLogoFg(), highlightType)
+
+	case FaintAndItalic:
+		return rounded(text, style.GetYCLogoMarkAsReadFg(), getYCContentStyle(highlightType).GetBackground(), highlightType)
+
+	default:
+		return rounded(text, style.GetYCLogoFg(), getYCContentStyle(highlightType).GetBackground(), highlightType)
+	}
 }
 
 func getYCContentStyle(highlightType int) lipgloss.Style {
@@ -87,43 +97,6 @@ func getYCContentStyle(highlightType int) lipgloss.Style {
 	}
 }
 
-func getYCBorderStyle(highlightType int) lipgloss.Style {
-	switch highlightType {
-	case Reverse:
-		return lipgloss.NewStyle().
-			Background(getYCContentStyle(highlightType).GetBackground()).
-			Foreground(lipgloss.NoColor{}).
-			Reverse(true)
-
-	case FaintAndItalic:
-		return lipgloss.NewStyle().
-			Foreground(getYCContentStyle(highlightType).GetBackground())
-
-	default:
-		return lipgloss.NewStyle().
-			Foreground(getYCContentStyle(highlightType).GetBackground())
-	}
-}
-
-func getYCLogoStyle(highlightType int) lipgloss.Style {
-	switch highlightType {
-	case Reverse:
-		return lipgloss.NewStyle().
-			Foreground(style.GetLogoBg()).
-			Background(style.GetYCLogoFg())
-
-	case FaintAndItalic:
-		return lipgloss.NewStyle().
-			Foreground(style.GetYCLogoMarkAsReadFg()).
-			Background(getYCContentStyle(highlightType).GetBackground())
-
-	default:
-		return lipgloss.NewStyle().
-			Foreground(style.GetYCLogoFg()).
-			Background(getYCContentStyle(highlightType).GetBackground())
-	}
-}
-
 func HighlightYearInHeadlines(comment string, highlightType int, enableNerdFont bool) string {
 	if enableNerdFont {
 		return HighlightYearInHeadlinesWithNerdFonts(comment, highlightType)
@@ -142,13 +115,13 @@ func HighlightYearInHeadlines(comment string, highlightType int, enableNerdFont 
 func HighlightYearInHeadlinesWithNerdFonts(comment string, highlightType int) string {
 	expression := regexp.MustCompile(`\((\d{4})\)`)
 
-	content := getRoundedBar(`$1`, highlightType)
+	content := getYearRoundedBar(`$1`, highlightType)
 
 	return expression.ReplaceAllString(comment, reset+content+
 		getHighlight(highlightType))
 }
 
-func getRoundedBar(text string, highlightType int) string {
+func getYearRoundedBar(text string, highlightType int) string {
 	switch highlightType {
 	case Reverse:
 		return rounded(text, style.GetLogoBg(), style.GetYCLogoFg(), highlightType)
@@ -174,11 +147,9 @@ func rounded(text string, fg lipgloss.TerminalColor, bg lipgloss.TerminalColor, 
 			Foreground(lipgloss.NoColor{}).
 			Background(bg).
 			Reverse(true)
-
 	}
 
 	return border.Render("") + content.Render(text) + border.Render("")
-
 }
 
 func getLabelFg(highlightType int) lipgloss.TerminalColor {
