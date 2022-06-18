@@ -224,7 +224,7 @@ Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of available keymaps:
 
 `circumflex` uses:
 
-* [BubbleTea](https://github.com/charmbracelet/bubbletea) for the TUI
+* [Bubble Tea](https://github.com/charmbracelet/bubbletea) for the TUI
 * [cobra](https://github.com/spf13/cobra) for the CLI
 * [Algolia's Search API](https://hn.algolia.com/api) for list of submissions and [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) 
 for providing comments
