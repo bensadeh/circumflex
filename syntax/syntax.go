@@ -92,7 +92,8 @@ func getYCBorderStyle(highlightType int) lipgloss.Style {
 	case Reverse:
 		return lipgloss.NewStyle().
 			Background(getYCContentStyle(highlightType).GetBackground()).
-			Foreground(lipgloss.NoColor{}).Reverse(true)
+			Foreground(lipgloss.NoColor{}).
+			Reverse(true)
 
 	case FaintAndItalic:
 		return lipgloss.NewStyle().
@@ -123,23 +124,10 @@ func getYCLogoStyle(highlightType int) lipgloss.Style {
 	}
 }
 
-func getYCLabelBgMarkAsReadColor(highlightType int) lipgloss.TerminalColor {
-	if highlightType == FaintAndItalic {
-		return style.GetYCLabelMarkAsReadBg()
+func HighlightYearInHeadlines(comment string, highlightType int, enableNerdFont bool) string {
+	if enableNerdFont {
+		return HighlightYearInHeadlinesWithNerdFonts(comment, highlightType)
 	}
-
-	return style.GetYCLabelBg()
-}
-
-func getYCTextMarkAsReadColor(highlightType int) lipgloss.TerminalColor {
-	if highlightType == FaintAndItalic {
-		return style.GetYCTextMarkAsReadFg()
-	}
-
-	return style.GetYCTextFg()
-}
-
-func HighlightYearInHeadlines(comment string, highlightType int) string {
 	expression := regexp.MustCompile(`\((\d{4})\)`)
 	highlight := getHighlight(highlightType)
 
@@ -148,23 +136,47 @@ func HighlightYearInHeadlines(comment string, highlightType int) string {
 		Background(getLabelBg(highlightType)).
 		Render(` $1 `) + highlight
 
-	return expression.ReplaceAllString(comment, highlightedYear)
+	return expression.ReplaceAllString(comment, reset+highlightedYear) + getHighlight(highlightType)
+}
+
+func HighlightYearInHeadlinesWithNerdFonts(comment string, highlightType int) string {
+	expression := regexp.MustCompile(`\((\d{4})\)`)
+	highlight := getHighlight(highlightType)
+
+	highlightedYear := getYCLogoStyle(highlightType).
+		Render(`$1`) + highlight
+
+	border := getYCBorderStyle(highlightType)
+
+	return expression.ReplaceAllString(comment, reset+border.Render("")+highlightedYear+border.Render("")) +
+		getHighlight(highlightType)
 }
 
 func getLabelFg(highlightType int) lipgloss.TerminalColor {
-	if highlightType == FaintAndItalic {
-		return style.GetLabelMarkAsReadFg()
-	}
+	switch highlightType {
+	case Reverse:
+		return style.GetLabelBg()
 
-	return style.GetLabelFg()
+	case FaintAndItalic:
+		return style.GetLabelMarkAsReadFg()
+
+	default:
+		return style.GetLabelFg()
+	}
 }
 
 func getLabelBg(highlightType int) lipgloss.TerminalColor {
-	if highlightType == FaintAndItalic {
-		return style.GetLabelMarkAsReadBg()
-	}
+	switch highlightType {
+	case Reverse:
+		return style.GetLabelMarkAsReadFg()
 
-	return style.GetLabelBg()
+	case FaintAndItalic:
+		return style.GetLabelMarkAsReadBg()
+
+	default:
+		return style.GetLabelBg()
+
+	}
 }
 
 func HighlightHackerNewsHeadlines(title string, highlightType int) string {

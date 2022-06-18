@@ -91,7 +91,7 @@ func highlightTitle(title string, highlightHeadlines bool, enableNerdFont bool) 
 
 	if highlightHeadlines {
 		highlightedTitle = syntax.HighlightYCStartupsInHeadlines(highlightedTitle, syntax.Bold, enableNerdFont)
-		highlightedTitle = syntax.HighlightYearInHeadlines(highlightedTitle, syntax.Bold)
+		highlightedTitle = syntax.HighlightYearInHeadlines(highlightedTitle, syntax.Bold, enableNerdFont)
 		highlightedTitle = syntax.HighlightHackerNewsHeadlines(highlightedTitle, syntax.Bold)
 		highlightedTitle = syntax.HighlightSpecialContent(highlightedTitle)
 	}
