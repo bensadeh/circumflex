@@ -141,15 +141,44 @@ func HighlightYearInHeadlines(comment string, highlightType int, enableNerdFont 
 
 func HighlightYearInHeadlinesWithNerdFonts(comment string, highlightType int) string {
 	expression := regexp.MustCompile(`\((\d{4})\)`)
-	highlight := getHighlight(highlightType)
 
-	highlightedYear := getYCLogoStyle(highlightType).
-		Render(`$1`) + highlight
+	content := getRoundedBar(`$1`, highlightType)
 
-	border := getYCBorderStyle(highlightType)
+	return expression.ReplaceAllString(comment, reset+content+
+		getHighlight(highlightType))
+}
 
-	return expression.ReplaceAllString(comment, reset+border.Render("")+highlightedYear+border.Render("")) +
-		getHighlight(highlightType)
+func getRoundedBar(text string, highlightType int) string {
+	switch highlightType {
+	case Reverse:
+		return rounded(text, style.GetLogoBg(), style.GetYCLogoFg(), highlightType)
+
+	case FaintAndItalic:
+		return rounded(text, style.GetYCLogoMarkAsReadFg(), getYCContentStyle(highlightType).GetBackground(), highlightType)
+
+	default:
+		return rounded(text, style.GetYCLogoFg(), getYCContentStyle(highlightType).GetBackground(), highlightType)
+	}
+}
+
+func rounded(text string, fg lipgloss.TerminalColor, bg lipgloss.TerminalColor, highlightType int) string {
+	content := lipgloss.NewStyle().
+		Foreground(fg).
+		Background(bg)
+
+	border := lipgloss.NewStyle().
+		Foreground(bg)
+
+	if highlightType == Reverse {
+		border.
+			Foreground(lipgloss.NoColor{}).
+			Background(bg).
+			Reverse(true)
+
+	}
+
+	return border.Render("") + content.Render(text) + border.Render("")
+
 }
 
 func getLabelFg(highlightType int) lipgloss.TerminalColor {
@@ -214,12 +243,22 @@ func getHighlight(highlightType int) string {
 	}
 }
 
-func HighlightSpecialContent(title string) string {
-	title = strings.ReplaceAll(title, "[audio]", aurora.Cyan("audio").String())
-	title = strings.ReplaceAll(title, "[video]", aurora.Cyan("video").String())
-	title = strings.ReplaceAll(title, "[pdf]", aurora.Cyan("pdf").String())
-	title = strings.ReplaceAll(title, "[PDF]", aurora.Cyan("PDF").String())
-	title = strings.ReplaceAll(title, "[flagged]", aurora.Red("flagged").String())
+func HighlightSpecialContent(title string, highlightType int, enableNerdFont bool) string {
+	if enableNerdFont {
+		title = strings.ReplaceAll(title, "[audio]", aurora.Cyan("").String()+getHighlight(highlightType))
+		title = strings.ReplaceAll(title, "[video]", aurora.Cyan(" 辶").String()+getHighlight(highlightType))
+		title = strings.ReplaceAll(title, "[pdf]", aurora.Cyan("").String()+getHighlight(highlightType))
+		title = strings.ReplaceAll(title, "[PDF]", aurora.Cyan("").String()+getHighlight(highlightType))
+		title = strings.ReplaceAll(title, "[flagged]", aurora.Red("flagged").String()+getHighlight(highlightType))
+
+		return title
+	}
+
+	title = strings.ReplaceAll(title, "[audio]", aurora.Cyan("audio").String()+getHighlight(highlightType))
+	title = strings.ReplaceAll(title, "[video]", aurora.Cyan("video").String()+getHighlight(highlightType))
+	title = strings.ReplaceAll(title, "[pdf]", aurora.Cyan("pdf").String()+getHighlight(highlightType))
+	title = strings.ReplaceAll(title, "[PDF]", aurora.Cyan("PDF").String()+getHighlight(highlightType))
+	title = strings.ReplaceAll(title, "[flagged]", aurora.Red("flagged").String()+getHighlight(highlightType))
 
 	return title
 }

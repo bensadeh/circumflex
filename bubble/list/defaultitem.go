@@ -171,7 +171,7 @@ func styleTitleAndDesc(title string, titleStyle lipgloss.Style, descStyle lipglo
 		title = syntax.HighlightYCStartupsInHeadlines(title, syntaxStyle, enableNerdFont)
 		title = syntax.HighlightYearInHeadlines(title, syntaxStyle, enableNerdFont)
 		title = syntax.HighlightHackerNewsHeadlines(title, syntaxStyle)
-		title = syntax.HighlightSpecialContent(title)
+		title = syntax.HighlightSpecialContent(title, syntaxStyle, enableNerdFont)
 	}
 
 	title = title + " " + domain
