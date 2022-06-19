@@ -133,27 +133,27 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 	switch {
 	case isSelected && m.onAddToFavoritesPrompt:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitleAddToFavorites, s.SelectedDescAddToFavorites, domain,
-			desc, syntax.Green, m.config.PlainHeadlines, m.config.EnableNerdFonts)
+			desc, syntax.AddToFavorites, m.config.PlainHeadlines, m.config.EnableNerdFonts)
 
 	case isSelected && m.onRemoveFromFavoritesPrompt:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitleRemoveFromFavorites, s.SelectedDescRemoveFromFavoritesFavorites, domain,
-			desc, syntax.Red, m.config.PlainHeadlines, m.config.EnableNerdFonts)
+			desc, syntax.RemoveFromFavorites, m.config.PlainHeadlines, m.config.EnableNerdFonts)
 
 	case isSelected && !m.disableInput:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitle, s.SelectedDesc, domain,
-			desc, syntax.Reverse, m.config.PlainHeadlines, m.config.EnableNerdFonts)
+			desc, syntax.Selected, m.config.PlainHeadlines, m.config.EnableNerdFonts)
 
 	case markAsRead && m.category != category.Favorites:
 		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle, s.MarkAsReadDesc, domain,
-			desc, syntax.FaintAndItalic, m.config.PlainHeadlines, m.config.EnableNerdFonts)
+			desc, syntax.MarkAsRead, m.config.PlainHeadlines, m.config.EnableNerdFonts)
 
 	case m.disableInput && !(m.onAddToFavoritesPrompt || m.onRemoveFromFavoritesPrompt):
 		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(false), s.MarkAsReadDesc, domain,
-			desc, syntax.Faint, m.config.PlainHeadlines, m.config.EnableNerdFonts)
+			desc, syntax.DisableInput, m.config.PlainHeadlines, m.config.EnableNerdFonts)
 
 	default:
 		title, desc = styleTitleAndDesc(title, s.NormalTitle, s.NormalDesc, domain,
-			desc, syntax.Normal, m.config.PlainHeadlines, m.config.EnableNerdFonts)
+			desc, syntax.Unselected, m.config.PlainHeadlines, m.config.EnableNerdFonts)
 	}
 
 	if d.ShowDescription {

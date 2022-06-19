@@ -19,13 +19,13 @@ const (
 	green        = "\033[32m"
 	red          = "\033[31m"
 
-	Normal = iota
-	Bold
-	Reverse
-	Faint
-	FaintAndItalic
-	Green
-	Red
+	Unselected = iota
+	HeadlineInCommentSection
+	Selected
+	DisableInput
+	MarkAsRead
+	AddToFavorites
+	RemoveFromFavorites
 )
 
 func HighlightYCStartups(comment string) string {
@@ -58,10 +58,10 @@ func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNer
 
 func getYCBar(text string, highlightType int, enableNerdFonts bool) string {
 	switch highlightType {
-	case Reverse:
+	case Selected:
 		return label(text, style.GetOrange(), lipgloss.Color("16"), highlightType, enableNerdFonts)
 
-	case FaintAndItalic:
+	case MarkAsRead | DisableInput:
 		return label(text, lipgloss.Color("237"), style.GetOrangeFaint(), highlightType, enableNerdFonts)
 
 	default:
@@ -71,10 +71,10 @@ func getYCBar(text string, highlightType int, enableNerdFonts bool) string {
 
 func getYCBarNerdFonts(text string, highlightType int, enableNerdFonts bool) string {
 	switch highlightType {
-	case Reverse:
+	case Selected:
 		return label(text, style.GetOrange(), lipgloss.Color("16"), highlightType, enableNerdFonts)
 
-	case FaintAndItalic:
+	case MarkAsRead | DisableInput:
 		return label(text, lipgloss.Color("234"), style.GetOrangeFaint(), highlightType, enableNerdFonts)
 
 	default:
@@ -85,16 +85,16 @@ func getYCBarNerdFonts(text string, highlightType int, enableNerdFonts bool) str
 func HighlightYear(comment string, highlightType int, enableNerdFonts bool) string {
 	expression := regexp.MustCompile(`\((\d{4})\)`)
 
-	content := getYearNerdFonts(`$1`, highlightType, enableNerdFonts)
+	content := getYear(`$1`, highlightType, enableNerdFonts)
 	return expression.ReplaceAllString(comment, reset+content+getHighlight(highlightType))
 }
 
-func getYearNerdFonts(text string, highlightType int, enableNerdFont bool) string {
+func getYear(text string, highlightType int, enableNerdFont bool) string {
 	switch highlightType {
-	case Reverse:
+	case Selected:
 		return label(text, lipgloss.AdaptiveColor{Light: "16", Dark: "16"}, lipgloss.AdaptiveColor{Light: "27", Dark: "214"}, highlightType, enableNerdFont)
 
-	case FaintAndItalic:
+	case MarkAsRead | DisableInput:
 		return label(text, lipgloss.AdaptiveColor{Light: "39", Dark: "94"}, style.GetHeaderBg(), highlightType, enableNerdFont)
 
 	default:
@@ -110,18 +110,18 @@ func label(text string, fg lipgloss.TerminalColor, bg lipgloss.TerminalColor, hi
 	border := lipgloss.NewStyle().
 		Foreground(bg)
 
-	if highlightType == Reverse {
+	if highlightType == Selected {
 		border.
 			Foreground(lipgloss.NoColor{}).
 			Background(bg).
 			Reverse(true)
 	}
 
-	if highlightType == FaintAndItalic {
+	if highlightType == MarkAsRead {
 		content.Italic(true)
 	}
 
-	if highlightType == Bold {
+	if highlightType == HeadlineInCommentSection {
 		content.Bold(true)
 	}
 
@@ -157,7 +157,7 @@ func getBorderStyle(bg lipgloss.TerminalColor, highlightType int, enableNerdFont
 			Background(bg)
 	}
 
-	if highlightType == Reverse {
+	if highlightType == Selected {
 		return lipgloss.NewStyle().
 			Foreground(lipgloss.NoColor{}).
 			Background(bg).
@@ -166,33 +166,6 @@ func getBorderStyle(bg lipgloss.TerminalColor, highlightType int, enableNerdFont
 
 	return lipgloss.NewStyle().
 		Foreground(bg)
-}
-
-func getLabelFg(highlightType int) lipgloss.TerminalColor {
-	switch highlightType {
-	case Reverse:
-		return style.GetLabelBg()
-
-	case FaintAndItalic:
-		return style.GetLabelMarkAsReadFg()
-
-	default:
-		return style.GetLabelFg()
-	}
-}
-
-func getLabelBg(highlightType int) lipgloss.TerminalColor {
-	switch highlightType {
-	case Reverse:
-		return style.GetLabelMarkAsReadFg()
-
-	case FaintAndItalic:
-		return style.GetLabelMarkAsReadBg()
-
-	default:
-		return style.GetLabelBg()
-
-	}
 }
 
 func HighlightHackerNewsHeadlines(title string, highlightType int) string {
@@ -213,17 +186,17 @@ func HighlightHackerNewsHeadlines(title string, highlightType int) string {
 
 func getHighlight(highlightType int) string {
 	switch highlightType {
-	case Bold:
+	case HeadlineInCommentSection:
 		return bold
-	case Reverse:
+	case Selected:
 		return reverse
-	case Faint:
+	case DisableInput:
 		return faint
-	case FaintAndItalic:
+	case MarkAsRead:
 		return faint + italic
-	case Green:
+	case AddToFavorites:
 		return green + reverse
-	case Red:
+	case RemoveFromFavorites:
 		return red + reverse
 	default:
 		return ""
@@ -252,10 +225,10 @@ func HighlightSpecialContent(title string, highlightType int, enableNerdFonts bo
 
 func getSpecialContentRoundedBar(text string, highlightType int, enableNerdFonts bool) string {
 	switch highlightType {
-	case Reverse:
+	case Selected:
 		return label(text, lipgloss.Color("4"), lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, highlightType, enableNerdFonts)
 
-	case FaintAndItalic:
+	case MarkAsRead | DisableInput:
 		return label(text, lipgloss.Color("16"), style.GetHeaderBg(), highlightType, enableNerdFonts)
 
 	default:
