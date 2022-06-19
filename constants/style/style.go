@@ -26,7 +26,7 @@ const (
 	ycLogoFgDark            = orange
 	ycLogoMarkAsReadFgDark  = orangeFaint
 	ycLabelBgDark           = logoBgDark
-	ycLabelMarkAsReadBgDark = headerBgDark
+	ycLabelMarkAsReadBgDark = orangeFaint
 	ycTextFgDark            = unselectedItemFgDark
 	ycTextMarkAsReadFgDark  = ycTextFgDark
 

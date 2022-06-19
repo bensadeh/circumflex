@@ -42,6 +42,7 @@ func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNer
 	if enableNerdFont {
 		return HighlightYCStartupsInHeadlinesWithNerdFonts(comment, highlightType)
 	}
+
 	expression := regexp.MustCompile(`\((YC [SW]\d{2})\)`)
 	highlight := getHighlight(highlightType)
 
@@ -58,7 +59,7 @@ func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNer
 func HighlightYCStartupsInHeadlinesWithNerdFonts(comment string, highlightType int) string {
 	expression := regexp.MustCompile(`\((YC ([SW]\d{2}))\)`)
 
-	content := getYCRoundedBar(` $2`, highlightType)
+	content := getYCRoundedBar(` $2`, highlightType)
 
 	highlightedStartup := reset + content + getHighlight(highlightType)
 
@@ -68,32 +69,13 @@ func HighlightYCStartupsInHeadlinesWithNerdFonts(comment string, highlightType i
 func getYCRoundedBar(text string, highlightType int) string {
 	switch highlightType {
 	case Reverse:
-		return rounded(text, style.GetLogoBg(), style.GetYCLogoFg(), highlightType)
+		return rounded(text, style.GetYCLogoFg(), lipgloss.Color("16"), highlightType)
 
 	case FaintAndItalic:
-		return rounded(text, style.GetYCLogoMarkAsReadFg(), getYCContentStyle(highlightType).GetBackground(), highlightType)
+		return rounded(text, lipgloss.Color("16"), style.GetYCLabelMarkAsReadBg(), highlightType)
 
 	default:
-		return rounded(text, style.GetYCLogoFg(), getYCContentStyle(highlightType).GetBackground(), highlightType)
-	}
-}
-
-func getYCContentStyle(highlightType int) lipgloss.Style {
-	switch highlightType {
-	case Reverse:
-		return lipgloss.NewStyle().
-			Foreground(style.GetLogoBg()).
-			Background(style.GetYCLogoFg())
-
-	case FaintAndItalic:
-		return lipgloss.NewStyle().
-			Foreground(style.GetYCTextMarkAsReadFg()).
-			Background(style.GetYCLabelMarkAsReadBg())
-
-	default:
-		return lipgloss.NewStyle().
-			Foreground(style.GetYCTextFg()).
-			Background(style.GetYCLabelBg())
+		return rounded(text, lipgloss.Color("16"), style.GetYCLogoFg(), highlightType)
 	}
 }
 
@@ -124,13 +106,13 @@ func HighlightYearInHeadlinesWithNerdFonts(comment string, highlightType int) st
 func getYearRoundedBar(text string, highlightType int) string {
 	switch highlightType {
 	case Reverse:
-		return rounded(text, style.GetLogoBg(), style.GetYCLogoFg(), highlightType)
+		return rounded(text, lipgloss.Color("16"), style.GetYCLogoFg(), highlightType)
 
 	case FaintAndItalic:
-		return rounded(text, style.GetYCLogoMarkAsReadFg(), getYCContentStyle(highlightType).GetBackground(), highlightType)
+		return rounded(text, style.GetYCLogoMarkAsReadFg(), style.GetHeaderBg(), highlightType)
 
 	default:
-		return rounded(text, style.GetYCLogoFg(), getYCContentStyle(highlightType).GetBackground(), highlightType)
+		return rounded(text, style.GetYCLogoFg(), style.GetYCLabelBg(), highlightType)
 	}
 }
 
@@ -215,23 +197,36 @@ func getHighlight(highlightType int) string {
 }
 
 func HighlightSpecialContent(title string, highlightType int, enableNerdFont bool) string {
+	highlight := getHighlight(highlightType)
+
 	if enableNerdFont {
-		title = strings.ReplaceAll(title, "[audio]", aurora.Cyan("").String()+getHighlight(highlightType))
-		title = strings.ReplaceAll(title, "[video]", aurora.Cyan(" 辶").String()+getHighlight(highlightType))
-		title = strings.ReplaceAll(title, "[pdf]", aurora.Cyan("").String()+getHighlight(highlightType))
-		title = strings.ReplaceAll(title, "[PDF]", aurora.Cyan("").String()+getHighlight(highlightType))
-		title = strings.ReplaceAll(title, "[flagged]", aurora.Red("flagged").String()+getHighlight(highlightType))
+		title = strings.ReplaceAll(title, "[audio]", getSpecialContentRoundedBar("", highlightType)+highlight)
+		title = strings.ReplaceAll(title, "[video]", getSpecialContentRoundedBar("", highlightType)+highlight)
+		title = strings.ReplaceAll(title, "[pdf]", getSpecialContentRoundedBar("", highlightType)+highlight)
+		title = strings.ReplaceAll(title, "[PDF]", getSpecialContentRoundedBar("", highlightType)+highlight)
 
 		return title
 	}
 
-	title = strings.ReplaceAll(title, "[audio]", aurora.Cyan("audio").String()+getHighlight(highlightType))
-	title = strings.ReplaceAll(title, "[video]", aurora.Cyan("video").String()+getHighlight(highlightType))
-	title = strings.ReplaceAll(title, "[pdf]", aurora.Cyan("pdf").String()+getHighlight(highlightType))
-	title = strings.ReplaceAll(title, "[PDF]", aurora.Cyan("PDF").String()+getHighlight(highlightType))
-	title = strings.ReplaceAll(title, "[flagged]", aurora.Red("flagged").String()+getHighlight(highlightType))
+	title = strings.ReplaceAll(title, "[audio]", aurora.Cyan("audio").String()+highlight)
+	title = strings.ReplaceAll(title, "[video]", aurora.Cyan("video").String()+highlight)
+	title = strings.ReplaceAll(title, "[pdf]", aurora.Cyan("pdf").String()+highlight)
+	title = strings.ReplaceAll(title, "[PDF]", aurora.Cyan("PDF").String()+highlight)
 
 	return title
+}
+
+func getSpecialContentRoundedBar(text string, highlightType int) string {
+	switch highlightType {
+	case Reverse:
+		return rounded(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("4"), highlightType)
+
+	case FaintAndItalic:
+		return rounded(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("4"), highlightType)
+
+	default:
+		return rounded(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("4"), highlightType)
+	}
 }
 
 func ConvertSmileys(text string) string {
