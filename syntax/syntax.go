@@ -72,7 +72,7 @@ func getYCRoundedBar(text string, highlightType int, enableNerdFont bool) string
 		return label(text, style.GetOrange(), lipgloss.Color("16"), highlightType, enableNerdFont)
 
 	case FaintAndItalic:
-		return label(text, lipgloss.Color("16"), style.GetOrangeFaint(), highlightType, enableNerdFont)
+		return label(text, lipgloss.Color("234"), style.GetOrangeFaint(), highlightType, enableNerdFont)
 
 	default:
 		return label(text, lipgloss.Color("16"), style.GetOrange(), highlightType, enableNerdFont)
