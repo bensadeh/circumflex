@@ -39,43 +39,46 @@ func HighlightYCStartups(comment string) string {
 }
 
 func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNerdFonts bool) string {
+	var expression *regexp.Regexp
+
 	if enableNerdFonts {
-		return HighlightYCStartupsInHeadlinesWithNerdFonts(comment, highlightType, enableNerdFonts)
+		expression = regexp.MustCompile(`\((YC ([SW]\d{2}))\)`)
+
+		highlightedStartup := reset + getYCBarNerdFonts(` $2`, highlightType, enableNerdFonts) +
+			getHighlight(highlightType)
+		return expression.ReplaceAllString(comment, highlightedStartup)
 	}
 
-	expression := regexp.MustCompile(`\((YC [SW]\d{2})\)`)
-	highlight := getHighlight(highlightType)
-
-	orange := uint8(214)
-	if highlightType == FaintAndItalic {
-		orange = uint8(94)
-	}
-	black := uint8(232)
-	highlightedStartup := aurora.Index(black, ` $1 `).BgIndex(orange).String() + highlight
+	expression = regexp.MustCompile(`\((YC [SW]\d{2})\)`)
+	highlightedStartup := reset + getYCBar(`$1`, highlightType, enableNerdFonts) +
+		getHighlight(highlightType)
 
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
 
-func HighlightYCStartupsInHeadlinesWithNerdFonts(comment string, highlightType int, enableNerdFont bool) string {
-	expression := regexp.MustCompile(`\((YC ([SW]\d{2}))\)`)
-
-	content := getYCRoundedBar(` $2`, highlightType, enableNerdFont)
-
-	highlightedStartup := reset + content + getHighlight(highlightType)
-
-	return expression.ReplaceAllString(comment, highlightedStartup)
-}
-
-func getYCRoundedBar(text string, highlightType int, enableNerdFont bool) string {
+func getYCBar(text string, highlightType int, enableNerdFonts bool) string {
 	switch highlightType {
 	case Reverse:
-		return label(text, style.GetOrange(), lipgloss.Color("16"), highlightType, enableNerdFont)
+		return label(text, style.GetOrange(), lipgloss.Color("16"), highlightType, enableNerdFonts)
 
 	case FaintAndItalic:
-		return label(text, lipgloss.Color("234"), style.GetOrangeFaint(), highlightType, enableNerdFont)
+		return label(text, lipgloss.Color("237"), style.GetOrangeFaint(), highlightType, enableNerdFonts)
 
 	default:
-		return label(text, lipgloss.Color("16"), style.GetOrange(), highlightType, enableNerdFont)
+		return label(text, lipgloss.Color("232"), style.GetOrange(), highlightType, enableNerdFonts)
+	}
+}
+
+func getYCBarNerdFonts(text string, highlightType int, enableNerdFonts bool) string {
+	switch highlightType {
+	case Reverse:
+		return label(text, style.GetOrange(), lipgloss.Color("16"), highlightType, enableNerdFonts)
+
+	case FaintAndItalic:
+		return label(text, lipgloss.Color("234"), style.GetOrangeFaint(), highlightType, enableNerdFonts)
+
+	default:
+		return label(text, lipgloss.Color("16"), style.GetOrange(), highlightType, enableNerdFonts)
 	}
 }
 
@@ -129,6 +132,14 @@ func label(text string, fg lipgloss.TerminalColor, bg lipgloss.TerminalColor, hi
 			Foreground(lipgloss.NoColor{}).
 			Background(bg).
 			Reverse(true)
+	}
+
+	if highlightType == FaintAndItalic {
+		content.Italic(true)
+	}
+
+	if highlightType == Bold {
+		content.Bold(true)
 	}
 
 	return reset +
