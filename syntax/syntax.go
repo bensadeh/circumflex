@@ -82,31 +82,14 @@ func getYCBarNerdFonts(text string, highlightType int, enableNerdFonts bool) str
 	}
 }
 
-func HighlightYearInHeadlines(comment string, highlightType int, enableNerdFonts bool) string {
-	if enableNerdFonts {
-		return HighlightYearInHeadlinesWithNerdFonts(comment, highlightType, enableNerdFonts)
-	}
-	expression := regexp.MustCompile(`\((\d{4})\)`)
-	highlight := getHighlight(highlightType)
-
-	highlightedYear := lipgloss.NewStyle().
-		Foreground(getLabelFg(highlightType)).
-		Background(getLabelBg(highlightType)).
-		Render(` $1 `) + highlight
-
-	return expression.ReplaceAllString(comment, reset+highlightedYear) + getHighlight(highlightType)
-}
-
-func HighlightYearInHeadlinesWithNerdFonts(comment string, highlightType int, enableNerdFonts bool) string {
+func HighlightYear(comment string, highlightType int, enableNerdFonts bool) string {
 	expression := regexp.MustCompile(`\((\d{4})\)`)
 
-	content := getYearRoundedBar(`$1`, highlightType, enableNerdFonts)
-
-	return expression.ReplaceAllString(comment, reset+content+
-		getHighlight(highlightType))
+	content := getYearNerdFonts(`$1`, highlightType, enableNerdFonts)
+	return expression.ReplaceAllString(comment, reset+content+getHighlight(highlightType))
 }
 
-func getYearRoundedBar(text string, highlightType int, enableNerdFont bool) string {
+func getYearNerdFonts(text string, highlightType int, enableNerdFont bool) string {
 	switch highlightType {
 	case Reverse:
 		return label(text, lipgloss.AdaptiveColor{Light: "16", Dark: "16"}, lipgloss.AdaptiveColor{Light: "27", Dark: "214"}, highlightType, enableNerdFont)
