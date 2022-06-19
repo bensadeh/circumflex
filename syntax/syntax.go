@@ -262,7 +262,7 @@ func getSpecialContentRoundedBar(text string, highlightType int, enableNerdFonts
 		return label(text, lipgloss.Color("4"), lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, highlightType, enableNerdFonts)
 
 	case FaintAndItalic:
-		return label(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("8"), highlightType, enableNerdFonts)
+		return label(text, lipgloss.Color("16"), style.GetHeaderBg(), highlightType, enableNerdFonts)
 
 	default:
 		return label(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("4"), highlightType, enableNerdFonts)
