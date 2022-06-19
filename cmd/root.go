@@ -58,7 +58,7 @@ func configureFlags(rootCmd *cobra.Command) {
 	rootCmd.PersistentFlags().IntVarP(&commentWidth, "comment-width", "c", settings.New().CommentWidth,
 		"set the comment width")
 	rootCmd.PersistentFlags().BoolVarP(&enableNerdFont, "nerdfonts", "n", false,
-		"use nerdfonts")
+		"enable Nerd Fonts")
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
 		"enable debug mode (offline mode) by using mock data for the endpoints")
