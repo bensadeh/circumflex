@@ -70,6 +70,14 @@ func GetPink() lipgloss.TerminalColor {
 	return lipgloss.AdaptiveColor{Light: pinkLight, Dark: pinkDark}
 }
 
+func GetOrange() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: orange, Dark: orange}
+}
+
+func GetOrangeFaint() lipgloss.TerminalColor {
+	return lipgloss.AdaptiveColor{Light: orangeFaint, Dark: orangeFaint}
+}
+
 func GetLogoBg() lipgloss.TerminalColor {
 	return lipgloss.AdaptiveColor{Light: logoBgLight, Dark: logoBgDark}
 }

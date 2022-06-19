@@ -69,13 +69,13 @@ func HighlightYCStartupsInHeadlinesWithNerdFonts(comment string, highlightType i
 func getYCRoundedBar(text string, highlightType int) string {
 	switch highlightType {
 	case Reverse:
-		return rounded(text, style.GetYCLogoFg(), lipgloss.Color("16"), highlightType)
+		return rounded(text, style.GetOrange(), lipgloss.Color("16"), highlightType)
 
 	case FaintAndItalic:
-		return rounded(text, lipgloss.Color("16"), style.GetYCLabelMarkAsReadBg(), highlightType)
+		return rounded(text, lipgloss.Color("16"), style.GetOrangeFaint(), highlightType)
 
 	default:
-		return rounded(text, lipgloss.Color("16"), style.GetYCLogoFg(), highlightType)
+		return rounded(text, lipgloss.Color("16"), style.GetOrange(), highlightType)
 	}
 }
 
@@ -106,13 +106,13 @@ func HighlightYearInHeadlinesWithNerdFonts(comment string, highlightType int) st
 func getYearRoundedBar(text string, highlightType int) string {
 	switch highlightType {
 	case Reverse:
-		return rounded(text, lipgloss.Color("16"), style.GetYCLogoFg(), highlightType)
+		return rounded(text, lipgloss.AdaptiveColor{Light: "16", Dark: "16"}, lipgloss.AdaptiveColor{Light: "27", Dark: "214"}, highlightType)
 
 	case FaintAndItalic:
-		return rounded(text, style.GetYCLogoMarkAsReadFg(), style.GetHeaderBg(), highlightType)
+		return rounded(text, lipgloss.AdaptiveColor{Light: "39", Dark: "94"}, style.GetHeaderBg(), highlightType)
 
 	default:
-		return rounded(text, style.GetYCLogoFg(), style.GetYCLabelBg(), highlightType)
+		return rounded(text, lipgloss.AdaptiveColor{Light: "27", Dark: "214"}, style.GetLogoBg(), highlightType)
 	}
 }
 
