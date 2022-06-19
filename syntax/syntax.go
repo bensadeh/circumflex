@@ -38,9 +38,9 @@ func HighlightYCStartups(comment string) string {
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
 
-func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNerdFont bool) string {
-	if enableNerdFont {
-		return HighlightYCStartupsInHeadlinesWithNerdFonts(comment, highlightType)
+func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNerdFonts bool) string {
+	if enableNerdFonts {
+		return HighlightYCStartupsInHeadlinesWithNerdFonts(comment, highlightType, enableNerdFonts)
 	}
 
 	expression := regexp.MustCompile(`\((YC [SW]\d{2})\)`)
@@ -56,32 +56,32 @@ func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNer
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
 
-func HighlightYCStartupsInHeadlinesWithNerdFonts(comment string, highlightType int) string {
+func HighlightYCStartupsInHeadlinesWithNerdFonts(comment string, highlightType int, enableNerdFont bool) string {
 	expression := regexp.MustCompile(`\((YC ([SW]\d{2}))\)`)
 
-	content := getYCRoundedBar(` $2`, highlightType)
+	content := getYCRoundedBar(` $2`, highlightType, enableNerdFont)
 
 	highlightedStartup := reset + content + getHighlight(highlightType)
 
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
 
-func getYCRoundedBar(text string, highlightType int) string {
+func getYCRoundedBar(text string, highlightType int, enableNerdFont bool) string {
 	switch highlightType {
 	case Reverse:
-		return label(text, style.GetOrange(), lipgloss.Color("16"), highlightType)
+		return label(text, style.GetOrange(), lipgloss.Color("16"), highlightType, enableNerdFont)
 
 	case FaintAndItalic:
-		return label(text, lipgloss.Color("16"), style.GetOrangeFaint(), highlightType)
+		return label(text, lipgloss.Color("16"), style.GetOrangeFaint(), highlightType, enableNerdFont)
 
 	default:
-		return label(text, lipgloss.Color("16"), style.GetOrange(), highlightType)
+		return label(text, lipgloss.Color("16"), style.GetOrange(), highlightType, enableNerdFont)
 	}
 }
 
-func HighlightYearInHeadlines(comment string, highlightType int, enableNerdFont bool) string {
-	if enableNerdFont {
-		return HighlightYearInHeadlinesWithNerdFonts(comment, highlightType)
+func HighlightYearInHeadlines(comment string, highlightType int, enableNerdFonts bool) string {
+	if enableNerdFonts {
+		return HighlightYearInHeadlinesWithNerdFonts(comment, highlightType, enableNerdFonts)
 	}
 	expression := regexp.MustCompile(`\((\d{4})\)`)
 	highlight := getHighlight(highlightType)
@@ -94,29 +94,29 @@ func HighlightYearInHeadlines(comment string, highlightType int, enableNerdFont 
 	return expression.ReplaceAllString(comment, reset+highlightedYear) + getHighlight(highlightType)
 }
 
-func HighlightYearInHeadlinesWithNerdFonts(comment string, highlightType int) string {
+func HighlightYearInHeadlinesWithNerdFonts(comment string, highlightType int, enableNerdFonts bool) string {
 	expression := regexp.MustCompile(`\((\d{4})\)`)
 
-	content := getYearRoundedBar(`$1`, highlightType)
+	content := getYearRoundedBar(`$1`, highlightType, enableNerdFonts)
 
 	return expression.ReplaceAllString(comment, reset+content+
 		getHighlight(highlightType))
 }
 
-func getYearRoundedBar(text string, highlightType int) string {
+func getYearRoundedBar(text string, highlightType int, enableNerdFont bool) string {
 	switch highlightType {
 	case Reverse:
-		return label(text, lipgloss.AdaptiveColor{Light: "16", Dark: "16"}, lipgloss.AdaptiveColor{Light: "27", Dark: "214"}, highlightType)
+		return label(text, lipgloss.AdaptiveColor{Light: "16", Dark: "16"}, lipgloss.AdaptiveColor{Light: "27", Dark: "214"}, highlightType, enableNerdFont)
 
 	case FaintAndItalic:
-		return label(text, lipgloss.AdaptiveColor{Light: "39", Dark: "94"}, style.GetHeaderBg(), highlightType)
+		return label(text, lipgloss.AdaptiveColor{Light: "39", Dark: "94"}, style.GetHeaderBg(), highlightType, enableNerdFont)
 
 	default:
-		return label(text, lipgloss.AdaptiveColor{Light: "27", Dark: "214"}, style.GetLogoBg(), highlightType)
+		return label(text, lipgloss.AdaptiveColor{Light: "27", Dark: "214"}, style.GetLogoBg(), highlightType, enableNerdFont)
 	}
 }
 
-func label(text string, fg lipgloss.TerminalColor, bg lipgloss.TerminalColor, highlightType int) string {
+func label(text string, fg lipgloss.TerminalColor, bg lipgloss.TerminalColor, highlightType int, enableNerdFonts bool) string {
 	content := lipgloss.NewStyle().
 		Foreground(fg).
 		Background(bg)
@@ -131,7 +131,47 @@ func label(text string, fg lipgloss.TerminalColor, bg lipgloss.TerminalColor, hi
 			Reverse(true)
 	}
 
-	return reset + border.Render("") + content.Render(text) + border.Render("")
+	return reset +
+		getLeftBorder(bg, highlightType, enableNerdFonts) +
+		content.Render(text) +
+		getRightBorder(bg, highlightType, enableNerdFonts)
+}
+
+func getLeftBorder(bg lipgloss.TerminalColor, highlightType int, enableNerdFonts bool) string {
+	if enableNerdFonts {
+		borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
+		return borderStyle.Render("")
+	}
+
+	borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
+	return borderStyle.Render(" ")
+}
+
+func getRightBorder(bg lipgloss.TerminalColor, highlightType int, enableNerdFonts bool) string {
+	if enableNerdFonts {
+		borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
+		return borderStyle.Render("")
+	}
+
+	borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
+	return borderStyle.Render(" ")
+}
+
+func getBorderStyle(bg lipgloss.TerminalColor, highlightType int, enableNerdFonts bool) lipgloss.Style {
+	if !enableNerdFonts {
+		return lipgloss.NewStyle().
+			Background(bg)
+	}
+
+	if highlightType == Reverse {
+		return lipgloss.NewStyle().
+			Foreground(lipgloss.NoColor{}).
+			Background(bg).
+			Reverse(true)
+	}
+
+	return lipgloss.NewStyle().
+		Foreground(bg)
 }
 
 func getLabelFg(highlightType int) lipgloss.TerminalColor {
@@ -196,14 +236,14 @@ func getHighlight(highlightType int) string {
 	}
 }
 
-func HighlightSpecialContent(title string, highlightType int, enableNerdFont bool) string {
+func HighlightSpecialContent(title string, highlightType int, enableNerdFonts bool) string {
 	highlight := getHighlight(highlightType)
 
-	if enableNerdFont {
-		title = strings.ReplaceAll(title, "[audio]", getSpecialContentRoundedBar("", highlightType)+highlight)
-		title = strings.ReplaceAll(title, "[video]", getSpecialContentRoundedBar("", highlightType)+highlight)
-		title = strings.ReplaceAll(title, "[pdf]", getSpecialContentRoundedBar("", highlightType)+highlight)
-		title = strings.ReplaceAll(title, "[PDF]", getSpecialContentRoundedBar("", highlightType)+highlight)
+	if enableNerdFonts {
+		title = strings.ReplaceAll(title, "[audio]", getSpecialContentRoundedBar("", highlightType, enableNerdFonts)+highlight)
+		title = strings.ReplaceAll(title, "[video]", getSpecialContentRoundedBar("", highlightType, enableNerdFonts)+highlight)
+		title = strings.ReplaceAll(title, "[pdf]", getSpecialContentRoundedBar("", highlightType, enableNerdFonts)+highlight)
+		title = strings.ReplaceAll(title, "[PDF]", getSpecialContentRoundedBar("", highlightType, enableNerdFonts)+highlight)
 
 		return title
 	}
@@ -216,16 +256,16 @@ func HighlightSpecialContent(title string, highlightType int, enableNerdFont boo
 	return title
 }
 
-func getSpecialContentRoundedBar(text string, highlightType int) string {
+func getSpecialContentRoundedBar(text string, highlightType int, enableNerdFonts bool) string {
 	switch highlightType {
 	case Reverse:
-		return label(text, lipgloss.Color("4"), lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, highlightType)
+		return label(text, lipgloss.Color("4"), lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, highlightType, enableNerdFonts)
 
 	case FaintAndItalic:
-		return label(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("8"), 15)
+		return label(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("8"), highlightType, enableNerdFonts)
 
 	default:
-		return label(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("4"), highlightType)
+		return label(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("4"), highlightType, enableNerdFonts)
 	}
 }
 
