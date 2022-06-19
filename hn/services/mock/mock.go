@@ -291,7 +291,7 @@ func (MockService) FetchStories(_ int, cat int) []*item.Item {
 func (MockService) FetchStory(_ int) *item.Item {
 	return &item.Item{
 		ID:      32145667,
-		Title:   "Mauris commodo odio quis diam fermentum, et suscipit augue pharetra",
+		Title:   "Mauris commodo odio (YC W05) quis diam fermentum, et suscipit augue pharetra [video]",
 		Points:  543,
 		User:    "riemann",
 		TimeAgo: "6 hours ago",
