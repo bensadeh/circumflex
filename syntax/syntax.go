@@ -69,13 +69,13 @@ func HighlightYCStartupsInHeadlinesWithNerdFonts(comment string, highlightType i
 func getYCRoundedBar(text string, highlightType int) string {
 	switch highlightType {
 	case Reverse:
-		return rounded(text, style.GetOrange(), lipgloss.Color("16"), highlightType)
+		return label(text, style.GetOrange(), lipgloss.Color("16"), highlightType)
 
 	case FaintAndItalic:
-		return rounded(text, lipgloss.Color("16"), style.GetOrangeFaint(), highlightType)
+		return label(text, lipgloss.Color("16"), style.GetOrangeFaint(), highlightType)
 
 	default:
-		return rounded(text, lipgloss.Color("16"), style.GetOrange(), highlightType)
+		return label(text, lipgloss.Color("16"), style.GetOrange(), highlightType)
 	}
 }
 
@@ -106,17 +106,17 @@ func HighlightYearInHeadlinesWithNerdFonts(comment string, highlightType int) st
 func getYearRoundedBar(text string, highlightType int) string {
 	switch highlightType {
 	case Reverse:
-		return rounded(text, lipgloss.AdaptiveColor{Light: "16", Dark: "16"}, lipgloss.AdaptiveColor{Light: "27", Dark: "214"}, highlightType)
+		return label(text, lipgloss.AdaptiveColor{Light: "16", Dark: "16"}, lipgloss.AdaptiveColor{Light: "27", Dark: "214"}, highlightType)
 
 	case FaintAndItalic:
-		return rounded(text, lipgloss.AdaptiveColor{Light: "39", Dark: "94"}, style.GetHeaderBg(), highlightType)
+		return label(text, lipgloss.AdaptiveColor{Light: "39", Dark: "94"}, style.GetHeaderBg(), highlightType)
 
 	default:
-		return rounded(text, lipgloss.AdaptiveColor{Light: "27", Dark: "214"}, style.GetLogoBg(), highlightType)
+		return label(text, lipgloss.AdaptiveColor{Light: "27", Dark: "214"}, style.GetLogoBg(), highlightType)
 	}
 }
 
-func rounded(text string, fg lipgloss.TerminalColor, bg lipgloss.TerminalColor, highlightType int) string {
+func label(text string, fg lipgloss.TerminalColor, bg lipgloss.TerminalColor, highlightType int) string {
 	content := lipgloss.NewStyle().
 		Foreground(fg).
 		Background(bg)
@@ -219,13 +219,13 @@ func HighlightSpecialContent(title string, highlightType int, enableNerdFont boo
 func getSpecialContentRoundedBar(text string, highlightType int) string {
 	switch highlightType {
 	case Reverse:
-		return rounded(text, lipgloss.Color("4"), lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, highlightType)
+		return label(text, lipgloss.Color("4"), lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, highlightType)
 
 	case FaintAndItalic:
-		return rounded(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("8"), 15)
+		return label(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("8"), 15)
 
 	default:
-		return rounded(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("4"), highlightType)
+		return label(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("4"), highlightType)
 	}
 }
 
