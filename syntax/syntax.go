@@ -19,13 +19,13 @@ const (
 	green        = "\033[32m"
 	red          = "\033[31m"
 
-	Normal         = -1
-	Bold           = 0
-	Reverse        = 1
-	Faint          = 2
-	FaintAndItalic = 3
-	Green          = 4
-	Red            = 5
+	Normal = iota
+	Bold
+	Reverse
+	Faint
+	FaintAndItalic
+	Green
+	Red
 )
 
 func HighlightYCStartups(comment string) string {
