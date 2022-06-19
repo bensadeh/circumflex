@@ -135,7 +135,7 @@ func (MockService) FetchStories(_ int, cat int) []*item.Item {
 			CommentsCount: 103,
 		},
 		{
-			Title:         "Sed ut perspiciatis, unde omnis iste natus error",
+			Title:         "Sed ut perspiciatis, unde omnis iste natus error [video]",
 			Points:        0,
 			ID:            14,
 			User:          "xi",

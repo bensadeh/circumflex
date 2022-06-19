@@ -131,7 +131,7 @@ func rounded(text string, fg lipgloss.TerminalColor, bg lipgloss.TerminalColor, 
 			Reverse(true)
 	}
 
-	return border.Render("") + content.Render(text) + border.Render("")
+	return reset + border.Render("") + content.Render(text) + border.Render("")
 }
 
 func getLabelFg(highlightType int) lipgloss.TerminalColor {
@@ -219,10 +219,10 @@ func HighlightSpecialContent(title string, highlightType int, enableNerdFont boo
 func getSpecialContentRoundedBar(text string, highlightType int) string {
 	switch highlightType {
 	case Reverse:
-		return rounded(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("4"), highlightType)
+		return rounded(text, lipgloss.Color("4"), lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, highlightType)
 
 	case FaintAndItalic:
-		return rounded(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("4"), highlightType)
+		return rounded(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("8"), 15)
 
 	default:
 		return rounded(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("4"), highlightType)
