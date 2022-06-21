@@ -102,11 +102,30 @@ type Model struct {
 
 func (m *Model) FetchFrontPageStories() tea.Cmd {
 	return func() tea.Msg {
-		firstPage := 0
-		stories := m.service.FetchStories(firstPage, category.FrontPage)
+		itemsToFetch := m.getNumberOfItemsToFetch(m.category)
+		stories := m.service.FetchStories(itemsToFetch, category.FrontPage)
 
 		m.items[category.FrontPage] = stories
 		return message.FetchingFinished{}
+	}
+}
+
+func (m *Model) getNumberOfItemsToFetch(cat int) int {
+	switch cat {
+	case category.FrontPage:
+		return m.Paginator.PerPage * 3
+
+	case category.New:
+		return m.Paginator.PerPage * 3
+
+	case category.Ask:
+		return m.Paginator.PerPage
+
+	case category.Show:
+		return m.Paginator.PerPage
+
+	default:
+		return m.Paginator.PerPage
 	}
 }
 
@@ -520,7 +539,8 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 	case message.ChangeCategory:
 		return m, func() tea.Msg {
-			stories := m.service.FetchStories(0, msg.Category)
+			itemsToFetch := m.getNumberOfItemsToFetch(m.category)
+			stories := m.service.FetchStories(itemsToFetch, msg.Category)
 
 			m.items[msg.Category] = stories
 

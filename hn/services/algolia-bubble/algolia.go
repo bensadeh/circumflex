@@ -40,16 +40,13 @@ func (s *Service) Init(itemsToShow int) {
 	s.categories[category.Show].numberOfItemsToShow = onePage
 }
 
-func (s *Service) FetchStories(_ int, category int) []*item.Item {
-	initializeStoriesList(s, category)
+func (s *Service) FetchStories(itemsToFetch int, category int) []*item.Item {
+	listOfIDs := fetchStoriesList(category)
 
-	orderedIds := s.categories[category].items
-	itemsToShow := s.categories[category].numberOfItemsToShow
-	ids := getStoryListURIParam(orderedIds[0 : s.categories[category].numberOfItemsToShow+1])
+	ids := getStoryListURIParam(listOfIDs[0 : s.categories[category].numberOfItemsToShow+1])
 
-	toShow := strconv.Itoa(itemsToShow)
 	url := "https://hn.algolia.com/api/v1/search?tags=story," +
-		"(" + ids + ")&hitsPerPage=" + toShow
+		"(" + ids + ")&hitsPerPage=" + strconv.Itoa(itemsToFetch)
 
 	var a *algolia
 
@@ -61,21 +58,10 @@ func (s *Service) FetchStories(_ int, category int) []*item.Item {
 		SetResult(&a).
 		Get(url)
 
-	stories := mapStories(a)
-	orderedStories := joinStories(orderedIds, stories)
+	mapOfItemsWithMetaData := mapStories(a)
+	orderedStories := joinStories(listOfIDs, mapOfItemsWithMetaData)
 
 	return orderedStories
-}
-
-func initializeStoriesList(s *Service, category int) {
-	if len(s.categories[category].items) != 0 {
-		return
-	}
-
-	stories := fetchStoriesList(category)
-	//storiesSubset := shortenStories(stories, s.categories[category].numberOfItemsToShow)
-
-	s.categories[category].items = stories
 }
 
 func fetchStoriesList(category int) []int {
