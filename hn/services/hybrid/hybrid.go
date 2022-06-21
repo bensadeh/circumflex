@@ -1,17 +1,17 @@
 package hybrid
 
 import (
-	"clx/hn/services/algolia"
+	algolia_bubble "clx/hn/services/algolia-bubble"
 	"clx/hn/services/cheeaun"
 	"clx/item"
 )
 
 type Service struct {
-	algo *algolia.Service
+	algo *algolia_bubble.Service
 }
 
 func (s *Service) Init(itemsToShow int) {
-	s.algo = new(algolia.Service)
+	s.algo = new(algolia_bubble.Service)
 
 	s.algo.Init(itemsToShow)
 }
