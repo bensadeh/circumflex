@@ -539,7 +539,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 	case message.ChangeCategory:
 		return m, func() tea.Msg {
-			itemsToFetch := m.getNumberOfItemsToFetch(m.category)
+			itemsToFetch := m.getNumberOfItemsToFetch(msg.Category)
 			stories := m.service.FetchStories(itemsToFetch, msg.Category)
 
 			m.items[msg.Category] = stories

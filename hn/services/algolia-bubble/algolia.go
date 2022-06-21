@@ -15,29 +15,14 @@ import (
 )
 
 const (
-	uri                = "https://hacker-news.firebaseio.com/v0"
-	numberOfCategories = 4
+	uri = "https://hacker-news.firebaseio.com/v0"
 )
 
 type Service struct {
-	categories []c
-}
-
-type c struct {
-	items               []int
-	numberOfItemsToShow int
 }
 
 func (s *Service) Init(itemsToShow int) {
-	threePages := itemsToShow * 3
-	onePage := itemsToShow
 
-	s.categories = make([]c, numberOfCategories)
-
-	s.categories[category.FrontPage].numberOfItemsToShow = threePages
-	s.categories[category.New].numberOfItemsToShow = threePages
-	s.categories[category.Ask].numberOfItemsToShow = onePage
-	s.categories[category.Show].numberOfItemsToShow = onePage
 }
 
 func (s *Service) FetchStories(itemsToFetch int, category int) []*item.Item {
