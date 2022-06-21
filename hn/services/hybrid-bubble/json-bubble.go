@@ -1,4 +1,4 @@
-package algolia_bubble
+package hybrid_bubble
 
 import "time"
 

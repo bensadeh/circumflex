@@ -434,8 +434,6 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	if m.OnStartup() {
 		m.SetSize(screen.GetTerminalWidth(), screen.GetTerminalHeight())
 
-		m.service.Init(m.Paginator.PerPage)
-
 		var cmds []tea.Cmd
 
 		spinnerCmd := m.StartSpinner()

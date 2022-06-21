@@ -3,7 +3,7 @@ package cmd
 import (
 	"clx/cli"
 	"clx/comment"
-	"clx/hn/services/hybrid"
+	hybrid_bubble "clx/hn/services/hybrid-bubble"
 	"clx/screen"
 	"clx/settings"
 	"strconv"
@@ -23,14 +23,9 @@ func viewCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			id, _ := strconv.Atoi(args[0])
 
-			service := new(hybrid.Service)
+			service := new(hybrid_bubble.Service)
 
 			comments := service.FetchStory(id)
-			//if err != nil {
-			//	println(messages.CommentsNotFetched)
-			//
-			//	os.Exit(1)
-			//}
 
 			config := settings.New()
 
