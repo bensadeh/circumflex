@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-type MockService struct{}
+type Service struct{}
 
-func (MockService) Init(_ int) {
+func (Service) Init(_ int) {
 }
 
-func (MockService) FetchStories(_ int, cat int) []*item.Item {
+func (Service) FetchStories(_ int, cat int) []*item.Item {
 	// Uncomment to test the spinner on startup
 	time.Sleep(time.Second * 1)
 
@@ -288,7 +288,7 @@ func (MockService) FetchStories(_ int, cat int) []*item.Item {
 	return items
 }
 
-func (MockService) FetchStory(_ int) *item.Item {
+func (Service) FetchStory(_ int) *item.Item {
 	return &item.Item{
 		ID:      32145667,
 		Title:   "Mauris commodo odio (YC W05) quis diam fermentum, et suscipit augue pharetra [video]",

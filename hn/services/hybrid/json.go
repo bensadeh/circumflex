@@ -1,4 +1,4 @@
-package hybrid_bubble
+package hybrid
 
 import "time"
 

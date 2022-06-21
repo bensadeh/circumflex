@@ -1,9 +1,9 @@
-package hybrid_bubble
+package hybrid
 
 import (
 	"clx/constants/category"
 	"clx/constants/clx"
-	"clx/hn/services/cheeaun"
+	"clx/endpoints"
 	"clx/item"
 	"fmt"
 	"github.com/bobesa/go-domain-util/domainutil"
@@ -131,8 +131,41 @@ func joinStories(orderedIds []int, stories map[int]*item.Item) []*item.Item {
 	return orderedStories
 }
 
-func (s *Service) FetchStory(id int) *item.Item {
-	c := cheeaun.Service{}
+func (s Service) FetchStory(id int) *item.Item {
+	comments := new(endpoints.Comments)
 
-	return c.FetchStory(id)
+	client := resty.New()
+	client.SetTimeout(5 * time.Second)
+	client.SetBaseURL("http://api.hackerwebapp.com/item/")
+
+	_, _ = client.R().
+		SetHeader("User-Agent", clx.Name+"/"+clx.Version).
+		SetResult(comments).
+		Get(strconv.Itoa(id))
+
+	return mapComments(comments)
+}
+
+func mapComments(comments *endpoints.Comments) *item.Item {
+	items := make([]*item.Item, 0, len(comments.Comments))
+
+	for i := range comments.Comments {
+		items = append(items, mapComments(&comments.Comments[i]))
+	}
+
+	return &item.Item{
+		ID:            comments.ID,
+		Title:         comments.Title,
+		Points:        comments.Points,
+		User:          comments.User,
+		Time:          comments.Time,
+		TimeAgo:       comments.TimeAgo,
+		Type:          comments.Type,
+		URL:           comments.URL,
+		Level:         comments.Level,
+		Domain:        comments.Domain,
+		Comments:      items,
+		Content:       comments.Content,
+		CommentsCount: comments.CommentsCount,
+	}
 }

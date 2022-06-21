@@ -3,7 +3,7 @@ package cmd
 import (
 	"clx/cli"
 	"clx/comment"
-	hybrid_bubble "clx/hn/services/hybrid-bubble"
+	hybrid_bubble "clx/hn/services/hybrid"
 	"clx/screen"
 	"clx/settings"
 	"strconv"

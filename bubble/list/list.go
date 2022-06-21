@@ -13,7 +13,7 @@ import (
 	"clx/help"
 	"clx/history"
 	"clx/hn"
-	hybrid "clx/hn/services/hybrid-bubble"
+	hybrid "clx/hn/services/hybrid"
 	"clx/hn/services/mock"
 	"clx/item"
 	"clx/markdown/parser"
@@ -190,7 +190,7 @@ func getHistory(debugMode bool, markAsRead bool) history.History {
 
 func getService(debugMode bool) hn.Service {
 	if debugMode {
-		return mock.MockService{}
+		return mock.Service{}
 	}
 
 	return &hybrid.Service{}
