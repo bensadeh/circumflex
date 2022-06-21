@@ -8,6 +8,7 @@ _WIP_
 
 **Bugfix**
 - Re-added keybinding for entering the help screen with `?`
+- Fixed a bug where Refresh was not working properly
 
 ## 2.0
 _12.06.22_
