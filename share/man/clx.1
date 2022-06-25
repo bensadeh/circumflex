@@ -120,27 +120,27 @@ Clear the history of visited \fIID\fPs from ~/.cache/circumflex/history.json.
 .sp
 \fB\-c\fP \fIn\fP, \fB\-\-comment\-width\fP=\fIn\fP
 .RS 4
-Set the comment width to \fIn\fP columns
+Set the comment width to \fIn\fP columns.
 .RE
 .sp
 \fB\-p, \-\-plain\-headlines\fP
 .RS 4
-Disable syntax highlighting for headlines
+Disable syntax highlighting for headlines.
 .RE
 .sp
 \fB\-o, \-\-plain\-comments\fP
 .RS 4
-Disable syntax highlighting for comments
+Disable syntax highlighting for comments.
 .RE
 .sp
 \fB\-s, \-\-disable\-emojis\fP
 .RS 4
-Disable conversion of smileys to emojis
+Disable conversion of smileys to emojis.
 .RE
 .sp
 \fB\-t, \-\-hide\-indent\fP
 .RS 4
-Hide the indentation bar to the left of the reply
+Hide the indentation bar to the left of the reply.
 .RE
 .sp
 \fB\-n, \-\-nerdfonts\fP
@@ -148,20 +148,28 @@ Hide the indentation bar to the left of the reply
 Use Nerd Fonts icons as decorators for some elements (requires a Nerd Font\-patched font)
 .RE
 .sp
+\fB\-\-force\-light\-mode, \-\-force\-dark\-mode\fP
+.RS 4
+  \fBclx\fP has a dark color scheme and a light color scheme. The color scheme is automatically chosen based on the color
+scheme of the terminal. Use these flags to force a specific color scheme.
+.RE
+.sp
 \fB\-v, \-\-version\fP
 .RS 4
-Show the current version of \fBclx\fP
+Show the current version of \fBclx\fP.
 .RE
 .sp
 \fB\-q, \-\-debug\-mode\fP
 .RS 4
-Mock all endpoints and use dummy data for the submissions screen and comment section
+Mock all endpoints and use dummy data for the submissions screen and comment section.
 .RE
 .SH "FAVORITES"
 .sp
-Press \fIf\fP to add the currently highlighted submission to your list of favorites. Remove submissions from the Favorites page with \fIx\fP.
+Press \fIf\fP to add the currently highlighted submission to your list of favorites. Remove submissions from the Favorites
+page with \fIx\fP.
 .sp
-Favorites are stored in ~/.config/circumflex/favorites.json. The entries in favorites.json are pretty\-printed to make them both human\-readable and VCS\-friendly.
+Favorites are stored in ~/.config/circumflex/favorites.json. The entries in favorites.json are pretty\-printed to make
+them both human\-readable and VCS\-friendly.
 .SH "SEE ALSO"
 .sp
 \fBless\fP(1), \fBvim\fP(1)

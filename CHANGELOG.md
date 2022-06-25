@@ -3,6 +3,8 @@
 ## 2.2
 _WIP_
 
+**New features**
+- Added flags for explicitly setting dark or light color scheme
 
 ## 2.1
 _25.06.22_

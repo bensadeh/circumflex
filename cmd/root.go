@@ -5,6 +5,7 @@ import (
 	clx2 "clx/constants/clx"
 	"clx/indent"
 	"clx/settings"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 )
 
@@ -17,6 +18,8 @@ var (
 	hideIndentSymbol bool
 	debugMode        bool
 	enableNerdFont   bool
+	forceLightMode   bool
+	forceDarkMode    bool
 )
 
 func Root() *cobra.Command {
@@ -59,6 +62,10 @@ func configureFlags(rootCmd *cobra.Command) {
 		"set the comment width")
 	rootCmd.PersistentFlags().BoolVarP(&enableNerdFont, "nerdfonts", "n", false,
 		"enable Nerd Fonts")
+	rootCmd.PersistentFlags().BoolVar(&forceLightMode, "force-light-mode", false,
+		"Force use light color scheme")
+	rootCmd.PersistentFlags().BoolVar(&forceDarkMode, "force-dark-mode", false,
+		"Force use dark color scheme")
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
 		"enable debug mode (offline mode) by using mock data for the endpoints")
@@ -92,6 +99,14 @@ func getConfig() *settings.Config {
 
 	if hideIndentSymbol {
 		config.HideIndentSymbol = true
+	}
+
+	if forceLightMode {
+		lipgloss.SetHasDarkBackground(false)
+	}
+
+	if forceDarkMode {
+		lipgloss.SetHasDarkBackground(true)
 	}
 
 	if debugMode {

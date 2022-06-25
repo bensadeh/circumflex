@@ -82,34 +82,41 @@ _n_, _N_::
 == Options
 
 *-c* _n_, *--comment-width*=_n_::
-  Set the comment width to _n_ columns
+  Set the comment width to _n_ columns.
 
 *-p, --plain-headlines*::
-  Disable syntax highlighting for headlines
+  Disable syntax highlighting for headlines.
 
 *-o, --plain-comments*::
-  Disable syntax highlighting for comments
+  Disable syntax highlighting for comments.
 
 *-s, --disable-emojis*::
-  Disable conversion of smileys to emojis
+  Disable conversion of smileys to emojis.
 
 *-t, --hide-indent*::
-  Hide the indentation bar to the left of the reply
+  Hide the indentation bar to the left of the reply.
 
 *-n, --nerdfonts*::
   Use Nerd Fonts icons as decorators for some elements (requires a Nerd Font-patched font)
 
+*--force-light-mode, --force-dark-mode*::
+  *clx* has a dark color scheme and a light color scheme. The color scheme is automatically chosen based on the color
+scheme of the terminal. Use these flags to force a specific color scheme.
+
+
 *-v, --version*::
-  Show the current version of *clx*
+  Show the current version of *clx*.
 
 *-q, --debug-mode*::
-  Mock all endpoints and use dummy data for the submissions screen and comment section
+  Mock all endpoints and use dummy data for the submissions screen and comment section.
 
 == Favorites
 
-Press _f_ to add the currently highlighted submission to your list of favorites. Remove submissions from the Favorites page with _x_.
+Press _f_ to add the currently highlighted submission to your list of favorites. Remove submissions from the Favorites
+page with _x_.
 
-Favorites are stored in ~/.config/circumflex/favorites.json. The entries in favorites.json are pretty-printed to make them both human-readable and VCS-friendly.
+Favorites are stored in ~/.config/circumflex/favorites.json. The entries in favorites.json are pretty-printed to make
+them both human-readable and VCS-friendly.
 
 == See also
 
