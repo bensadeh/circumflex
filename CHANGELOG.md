@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2.1
-_WIP_
+_25.06.22_
 
 **New features**
 - Added support for Nerd Fonts
