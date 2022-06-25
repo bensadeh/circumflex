@@ -46,21 +46,17 @@ func GetCommentSectionMetaBlock(c *item.Item, config *settings.Config, newCommen
 		PaddingRight(1).
 		Width(config.CommentWidth)
 
-	points := strconv.Itoa(c.Points)
-	numberOfComments := strconv.Itoa(c.CommentsCount)
-	id := strconv.Itoa(c.ID)
-
 	leftColumn := lipgloss.NewStyle().
 		Width(columnWidth).
 		Align(lipgloss.Left)
-	leftColumnText := "by " + Red(c.User).String() + " " + Faint(c.TimeAgo).String() + newLine +
-		Magenta(numberOfComments).String() + " comments" + getNewCommentsInfo(newComments)
+	leftColumnText := getAuthor(c.User, config.EnableNerdFonts) + " " + Faint(c.TimeAgo).String() + newLine +
+		getComments(c.CommentsCount, config.EnableNerdFonts) + getNewCommentsInfo(newComments, config.EnableNerdFonts)
 
 	rightColumn := lipgloss.NewStyle().
 		Width(columnWidth).
 		Align(lipgloss.Right)
-	rightColumnText := Green("ID "+id).Faint().String() + newLine +
-		Yellow(points).String() + " points"
+	rightColumnText := getID(c.ID, config.EnableNerdFonts) + newLine +
+		getPoints(c.Points, config.EnableNerdFonts)
 
 	joined := lipgloss.JoinHorizontal(lipgloss.Left, leftColumn.Render(leftColumnText),
 		rightColumn.Render(rightColumnText))
@@ -68,12 +64,54 @@ func GetCommentSectionMetaBlock(c *item.Item, config *settings.Config, newCommen
 	return getHeadline(c.Title, config) + newParagraph + style.Render(url+joined+rootComment)
 }
 
-func getNewCommentsInfo(newComments int) string {
+func getAuthor(author string, enableNerdFonts bool) string {
+	if enableNerdFonts {
+		return Red(" " + author).String()
+	}
+
+	return "by " + Red(author).String()
+}
+
+func getComments(commentsCount int, enableNerdFonts bool) string {
+	comments := strconv.Itoa(commentsCount)
+
+	if enableNerdFonts {
+		return Magenta(" " + comments).String()
+	}
+
+	return Magenta(comments).String() + " comments"
+}
+
+func getPoints(points int, enableNerdFonts bool) string {
+	p := strconv.Itoa(points)
+
+	if enableNerdFonts {
+		return Yellow(p + " ﰵ").String()
+	}
+
+	return Yellow(p).String() + " points"
+}
+
+func getID(id int, enableNerdFonts bool) string {
+	idTag := strconv.Itoa(id)
+
+	if enableNerdFonts {
+		return Green(idTag + " ").Faint().String()
+	}
+
+	return Green("ID " + idTag).Faint().String()
+}
+
+func getNewCommentsInfo(newComments int, enableNerdFonts bool) string {
 	if newComments == 0 {
 		return ""
 	}
 
 	c := strconv.Itoa(newComments)
+
+	if enableNerdFonts {
+		return " (" + Cyan(c).String() + ")"
+	}
 
 	return " (" + Cyan(c).String() + " new)"
 }

@@ -14,7 +14,7 @@ func (Service) Init(_ int) {
 
 func (Service) FetchStories(_ int, cat int) []*item.Item {
 	// Uncomment to test the spinner on startup
-	time.Sleep(time.Second * 4)
+	//time.Sleep(time.Second * 4)
 
 	items := []*item.Item{
 		{

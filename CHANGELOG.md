@@ -7,6 +7,9 @@ _WIP_
 - Added flags for explicitly setting dark or light color scheme
 - Number of replies now also indicate how many of the replies are new since last visit
 
+**Cosmetic**
+- Added more Nerd Fonts in the comment section
+
 ## 2.1
 _25.06.22_
 
