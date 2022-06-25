@@ -11,48 +11,27 @@ const (
 	blueDark    = "33"
 	pinkDark    = "219"
 
-	black       = "16"
 	orange      = "214"
 	orangeFaint = "94"
 
-	logoBgDark              = "#0f1429"
-	labelFgDark             = yellowDark
-	labelMarkAsReadFgDark   = yellowDark
-	labelBgDark             = logoBgDark
-	labelMarkAsReadBgDark   = headerBgDark
-	headerBgDark            = "#2d3454"
-	unselectedItemFgDark    = "247"
-	paginatorBgDark         = logoBgDark
-	selectedPageFgDark      = unselectedItemFgDark
-	unselectedPageFgDark    = "239"
-	ycLogoFgDark            = orange
-	ycLogoMarkAsReadFgDark  = orangeFaint
-	ycLabelBgDark           = logoBgDark
-	ycLabelMarkAsReadBgDark = orangeFaint
-	ycTextFgDark            = unselectedItemFgDark
-	ycTextMarkAsReadFgDark  = ycTextFgDark
+	logoBgDark           = "#0f1429"
+	headerBgDark         = "#2d3454"
+	unselectedItemFgDark = "247"
+	paginatorBgDark      = logoBgDark
+	selectedPageFgDark   = unselectedItemFgDark
+	unselectedPageFgDark = "239"
 
 	magentaLight = magentaDark
 	yellowLight  = "208"
 	blueLight    = blueDark
 	pinkLight    = pinkDark
 
-	logoBgLight              = "252"
-	labelFgLight             = yellowLight
-	labelMarkAsReadFgLight   = yellowLight
-	labelBgLight             = headerBgLight
-	labelMarkAsReadBgLight   = headerBgLight
-	headerBgLight            = "254"
-	unselectedItemFgLight    = "235"
-	paginatorBgLight         = logoBgLight
-	selectedPageFgLight      = unselectedItemFgLight
-	unselectedPageFgLight    = "247"
-	ycLogoFgLight            = black
-	ycLogoMarkAsReadFgLight  = "245"
-	ycLabelBgLight           = orange
-	ycLabelMarkAsReadBgLight = "253"
-	ycTextFgLight            = unselectedItemFgLight
-	ycTextMarkAsReadFgLight  = "245"
+	logoBgLight           = "252"
+	headerBgLight         = "254"
+	unselectedItemFgLight = "235"
+	paginatorBgLight      = logoBgLight
+	selectedPageFgLight   = unselectedItemFgLight
+	unselectedPageFgLight = "247"
 )
 
 func GetMagenta() lipgloss.TerminalColor {
