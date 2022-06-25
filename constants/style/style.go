@@ -22,7 +22,6 @@ const (
 	labelMarkAsReadBgDark   = headerBgDark
 	headerBgDark            = "#2d3454"
 	unselectedItemFgDark    = "247"
-	statusBarBgDark         = headerBgDark
 	paginatorBgDark         = logoBgDark
 	selectedPageFgDark      = unselectedItemFgDark
 	unselectedPageFgDark    = "239"
@@ -45,7 +44,6 @@ const (
 	labelMarkAsReadBgLight   = headerBgLight
 	headerBgLight            = "254"
 	unselectedItemFgLight    = "235"
-	statusBarBgLight         = headerBgLight
 	paginatorBgLight         = logoBgLight
 	selectedPageFgLight      = unselectedItemFgLight
 	unselectedPageFgLight    = "247"
@@ -85,22 +83,6 @@ func GetLogoBg() lipgloss.TerminalColor {
 	return lipgloss.AdaptiveColor{Light: logoBgLight, Dark: logoBgDark}
 }
 
-func GetLabelBg() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: labelBgLight, Dark: labelBgDark}
-}
-
-func GetLabelFg() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: labelFgLight, Dark: labelFgDark}
-}
-
-func GetLabelMarkAsReadFg() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: labelMarkAsReadFgLight, Dark: labelMarkAsReadFgDark}
-}
-
-func GetLabelMarkAsReadBg() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: labelMarkAsReadBgLight, Dark: labelMarkAsReadBgDark}
-}
-
 func GetHeaderBg() lipgloss.TerminalColor {
 	profile := termenv.ColorProfile()
 
@@ -129,28 +111,4 @@ func GetSelectedPageFg() lipgloss.TerminalColor {
 
 func GetUnselectedPageFg() lipgloss.TerminalColor {
 	return lipgloss.AdaptiveColor{Light: unselectedPageFgLight, Dark: unselectedPageFgDark}
-}
-
-func GetYCLogoFg() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: ycLogoFgLight, Dark: ycLogoFgDark}
-}
-
-func GetYCLogoMarkAsReadFg() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: ycLogoMarkAsReadFgLight, Dark: ycLogoMarkAsReadFgDark}
-}
-
-func GetYCLabelBg() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: ycLabelBgLight, Dark: ycLabelBgDark}
-}
-
-func GetYCLabelMarkAsReadBg() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: ycLabelMarkAsReadBgLight, Dark: ycLabelMarkAsReadBgDark}
-}
-
-func GetYCTextFg() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: ycTextFgLight, Dark: ycTextFgDark}
-}
-
-func GetYCTextMarkAsReadFg() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: ycTextMarkAsReadFgLight, Dark: ycTextMarkAsReadFgDark}
 }
