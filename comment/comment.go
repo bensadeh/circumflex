@@ -130,7 +130,7 @@ func formatHeader(c *item.Item, originalPoster string, parentPoster string, unde
 	author := getAuthor(c.User, lastVisited, c.Time)
 	authorLabel := getAuthorLabel(c.User, originalPoster, parentPoster)
 	zeroWidthSpace := getZeroWidthSpace(enableZeroWidthSpace)
-	repliesTag := getReplies(showReplies, c)
+	repliesTag := getReplies(showReplies, c, lastVisited)
 	indentation := strings.Repeat(" ", indentSize)
 
 	spacingLength := commentWidth - text.Len(indentation+author+authorLabel+c.TimeAgo+repliesTag)
@@ -160,23 +160,36 @@ func underlineAndDim(enabled bool, timeAgo, spacing, replies string) string {
 	return aurora.Faint(timeAgo).String()
 }
 
-func getReplies(showReplies bool, children *item.Item) string {
+func getReplies(showReplies bool, children *item.Item, lastVisited int64) string {
 	if !showReplies {
 		return ""
 	}
 
 	numberOfReplies := getReplyCount(children)
-	replyTag := getRepliesTag(numberOfReplies)
+	newComments := getNewCommentsCount(children, lastVisited)
 
-	return replyTag
+	replySymbol := ""
+	if numberOfReplies != 0 {
+		replySymbol = " ↩"
+	}
+
+	return getRepliesCount(numberOfReplies) + getNewCommentsTag(newComments, numberOfReplies) + replySymbol
 }
 
-func getRepliesTag(numberOfReplies int) string {
+func getRepliesCount(numberOfReplies int) string {
 	if numberOfReplies == 0 {
 		return ""
 	}
 
-	return strconv.Itoa(numberOfReplies) + " ↩"
+	return strconv.Itoa(numberOfReplies)
+}
+
+func getNewCommentsTag(newCommentsCount int, numberOfReplies int) string {
+	if newCommentsCount == 0 || newCommentsCount == numberOfReplies {
+		return ""
+	}
+
+	return " (" + strconv.Itoa(newCommentsCount) + " new)"
 }
 
 func getZeroWidthSpace(enabled bool) string {
