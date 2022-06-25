@@ -5,6 +5,7 @@ _WIP_
 
 **New features**
 - Added support for Nerd Fonts
+- Better fallback colors for terminals that do not support True Color
 
 **Bugfix**
 - Re-added keybinding for entering the help screen with `?`

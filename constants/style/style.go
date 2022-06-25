@@ -1,6 +1,9 @@
 package style
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"github.com/charmbracelet/lipgloss"
+	"github.com/muesli/termenv"
+)
 
 const (
 	magentaDark = "200"
@@ -99,11 +102,17 @@ func GetLabelMarkAsReadBg() lipgloss.TerminalColor {
 }
 
 func GetHeaderBg() lipgloss.TerminalColor {
+	profile := termenv.ColorProfile()
+
+	if profile != termenv.TrueColor {
+		return lipgloss.AdaptiveColor{Light: headerBgLight, Dark: "237"}
+	}
+
 	return lipgloss.AdaptiveColor{Light: headerBgLight, Dark: headerBgDark}
 }
 
 func GetStatusBarBg() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: statusBarBgLight, Dark: statusBarBgDark}
+	return GetHeaderBg()
 }
 
 func GetPaginatorBg() lipgloss.TerminalColor {
