@@ -172,6 +172,7 @@ func HighlightHackerNewsHeadlines(title string, highlightType int) string {
 	askHN := "Ask HN:"
 	showHN := "Show HN:"
 	tellHN := "Tell HN:"
+	thankHN := "Thank HN:"
 	launchHN := "Launch HN:"
 
 	highlight := getHighlight(highlightType)
@@ -179,6 +180,7 @@ func HighlightHackerNewsHeadlines(title string, highlightType int) string {
 	title = strings.ReplaceAll(title, askHN, aurora.Blue(askHN).String()+highlight)
 	title = strings.ReplaceAll(title, showHN, aurora.Red(showHN).String()+highlight)
 	title = strings.ReplaceAll(title, tellHN, aurora.Magenta(tellHN).String()+highlight)
+	title = strings.ReplaceAll(title, thankHN, aurora.Cyan(thankHN).String()+highlight)
 	title = strings.ReplaceAll(title, launchHN, aurora.Green(launchHN).String()+highlight)
 
 	return title
