@@ -2,6 +2,7 @@ package syntax
 
 import (
 	"clx/constants/style"
+	"clx/constants/unicode"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/logrusorgru/aurora/v3"
 	"regexp"
@@ -44,7 +45,7 @@ func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNer
 	if enableNerdFonts {
 		expression = regexp.MustCompile(`\((YC ([SW]\d{2}))\)`)
 
-		highlightedStartup := reset + getYCBarNerdFonts(` $2`, highlightType, enableNerdFonts) +
+		highlightedStartup := reset + getYCBarNerdFonts(``+unicode.NoBreakSpace+`$2`, highlightType, enableNerdFonts) +
 			getHighlight(highlightType)
 		return expression.ReplaceAllString(comment, highlightedStartup)
 	}

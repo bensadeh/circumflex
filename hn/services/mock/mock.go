@@ -371,14 +371,23 @@ func (Service) FetchStory(_ int) *item.Item {
 				TimeAgo:  "6 minutes ago",
 				Level:    0,
 				Comments: nil,
-				Content: "<p>Boss keys[1] should be standard for every website.  The March Madness[2] one for example." +
-					"  There are some good ones developed for Reddit to look like Outlook[3], shell [4], etc.<p>[1]" +
-					" <a href=\"https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Boss_key\" rel=\"nofollow\">" +
+				Content: "<p>Vivamus elementum auctor congue. Etiam[1] nulla nisl, varius vehicula[2] quam vel, aliquet " +
+					"iaculis enim. Donec felis elit[3], sollicitudin viverra velit eget, posuere[4] vestibulum eros. " +
+					"<p>[1] <a href=\"https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Boss_key\" rel=\"nofollow\">" +
 					"https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Boss_key</a><p>[2] <a href=\"https:&#x2F;&#x2F;www." +
 					"ncaa.com&#x2F;march-madness-live&#x2F;boss\" rel=\"nofollow\">https:&#x2F;&#x2F;www.ncaa.com&#x2F;" +
 					"march-madness-live&#x2F;boss</a><p>[3] <a href=\"http:&#x2F;&#x2F;pcottle.github.io&#x2F;MSOutlookit&#" +
 					"x2F;&#x2F;\" rel=\"nofollow\">http:&#x2F;&#x2F;pcottle.github.io&#x2F;MSOutlookit&#x2F;&#x2F;</a><p>[4]" +
 					" <a href=\"https:&#x2F;&#x2F;redditshell.com&#x2F;\" rel=\"nofollow\">https:&#x2F;&#x2F;redditshell.com&#x2F;</a>",
+				CommentsCount: 0,
+			},
+			{
+				ID:            4,
+				User:          "hamilton",
+				TimeAgo:       "1 hour ago",
+				Level:         0,
+				Comments:      nil,
+				Content:       "<p> This comment tests parsing of YC-funded companies: xxxxxxCompany (YC S07)",
 				CommentsCount: 0,
 			},
 		},

@@ -108,7 +108,7 @@ func ParseComment(c string, config *settings.Config, commentWidth int, available
 
 			paragraph = syntax.ReplaceHTML(paragraph)
 			paragraph = strings.TrimLeft(paragraph, " ")
-			paragraph = highlightCommentSyntax(paragraph, config.HighlightComments)
+			paragraph = highlightCommentSyntax(paragraph, config.HighlightComments, config.EnableNerdFonts)
 
 			paragraph = syntax.TrimURLs(paragraph, config.HighlightComments)
 			paragraph = syntax.RemoveUnwantedNewLines(paragraph)
@@ -154,7 +154,7 @@ func getParagraphSeparator(index int, sliceLength int) string {
 	return "\n\n"
 }
 
-func highlightCommentSyntax(input string, commentHighlighting bool) string {
+func highlightCommentSyntax(input string, commentHighlighting bool, enableNerdFonts bool) string {
 	if !commentHighlighting {
 		return input
 	}
@@ -164,7 +164,7 @@ func highlightCommentSyntax(input string, commentHighlighting bool) string {
 	input = syntax.HighlightVariables(input)
 	input = syntax.HighlightAbbreviations(input)
 	input = syntax.HighlightReferences(input)
-	input = syntax.HighlightYCStartups(input)
+	input = syntax.HighlightYCStartupsInHeadlines(input, syntax.Unselected, enableNerdFonts)
 
 	return input
 }
