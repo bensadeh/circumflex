@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/logrusorgru/aurora/v3"
+	. "github.com/logrusorgru/aurora/v3"
 
 	text "github.com/MichaelMure/go-term-text"
 )
@@ -104,7 +104,7 @@ func getSeparator(level int, commentWidth int, currentCommentID int, firstCommen
 		return newLine
 	}
 
-	return aurora.Faint(strings.Repeat(" ", commentWidth)).Underline().String() + newLine + newLine
+	return Faint(strings.Repeat(" ", commentWidth)).Underline().String() + newLine + newLine
 }
 
 func getIndentString(level int) string {
@@ -141,12 +141,12 @@ func formatHeader(c *item.Item, originalPoster string, parentPoster string, unde
 }
 
 func getAuthor(author string, lastVisited, timePosted int64) string {
-	authorInBold := aurora.Bold(author).String() + " "
+	authorInBold := Bold(author).String() + " "
 
 	commentIsNew := lastVisited < timePosted
 
 	if commentIsNew {
-		return authorInBold + aurora.Blue("●").String() + " "
+		return authorInBold + Cyan("●").String() + " "
 	}
 
 	return authorInBold
@@ -154,10 +154,10 @@ func getAuthor(author string, lastVisited, timePosted int64) string {
 
 func underlineAndDim(enabled bool, timeAgo, spacing, replies string) string {
 	if enabled {
-		return aurora.Faint(timeAgo + spacing + replies).String()
+		return Faint(timeAgo + spacing + replies).String()
 	}
 
-	return aurora.Faint(timeAgo).String()
+	return Faint(timeAgo).String()
 }
 
 func getReplies(showReplies bool, children *item.Item, lastVisited int64) string {
@@ -170,7 +170,7 @@ func getReplies(showReplies bool, children *item.Item, lastVisited int64) string
 
 	replySymbol := ""
 	if numberOfReplies != 0 {
-		replySymbol = " ↩"
+		replySymbol = Faint(" ↩").String()
 	}
 
 	return getRepliesCount(numberOfReplies) + getNewCommentsTag(newComments, numberOfReplies) + replySymbol
@@ -189,7 +189,7 @@ func getNewCommentsTag(newCommentsCount int, numberOfReplies int) string {
 		return ""
 	}
 
-	return " (" + strconv.Itoa(newCommentsCount) + " new)"
+	return Faint(" (").String() + Faint(strconv.Itoa(newCommentsCount)).Cyan().String() + Faint(")").String()
 }
 
 func getZeroWidthSpace(enabled bool) string {
@@ -237,13 +237,13 @@ func incrementNewCommentsCount(comments *item.Item, newCommentsSoFar *int, lastV
 func getAuthorLabel(author, originalPoster, parentPoster string) string {
 	switch author {
 	case "dang":
-		return aurora.Green("mod ").String()
+		return Green("mod ").String()
 
 	case originalPoster:
-		return aurora.Red("OP ").String()
+		return Red("OP ").String()
 
 	case parentPoster:
-		return aurora.Magenta("PP ").String()
+		return Magenta("PP ").String()
 
 	default:
 		return ""

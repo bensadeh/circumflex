@@ -54,7 +54,7 @@
   [0mthe AP seems as close as one can get to a neutral source.
   [2;4m                                                                                [0m
 ​
-  [1mdorkwood[0m [2m9 months ago                                                      101 ↩[0m
+  [1mdorkwood[0m [2m9 months ago                                                      101[2m ↩[0m[0m
   [0m¼ There's a famous optical illusion ½ with a spinning silhouette of a dancer.
   [0mWhen you ¾, look at it, you'll swear it's spinning in one direction — say,
   [0mcounter-clockwise. In fact, you'll be so sure it's spinning counter-clockwise,
@@ -1319,7 +1319,7 @@
   [0m[31m▎[0mdivide is a goal, that's basically impossible now.
   [2;4m                                                                                [0m
 ​
-  [1mablekh[0m [2m9 months ago                                                         98 ↩[0m
+  [1mablekh[0m [2m9 months ago                                                         98[2m ↩[0m[0m
   [0mOK, so the transition from Make America Great Again slogan to Make America
   [0mDecent Again (and Better) reality is inevitable and welcome. It is easy to get
   [0moverjoyed by results of the U.S. Presidential Election (and some celebration
@@ -2386,7 +2386,7 @@
   [0m[31m▎[0m[34msecure.actblue.com/donate/gasenatebattleground.[0m
   [2;4m                                                                                [0m
 ​
-  [1mgigatexal[0m [2m9 months ago                                                     126 ↩[0m
+  [1mgigatexal[0m [2m9 months ago                                                     126[2m ↩[0m[0m
   [0mWhat is really keeping me up at night is the existential problem the US faces
   [0mfor the next 50 years: the ever increasingly large divide that is the polarizing
   [0mof the electorate. We have to come together as Americans or someone will divide
@@ -3697,7 +3697,7 @@
    [0m[33m▎[0mon the peddlers of lies more than those who were duped by them.
   [2;4m                                                                                [0m
 ​
-  [1msoftwaredoug[0m [2m9 months ago                                                   75 ↩[0m
+  [1msoftwaredoug[0m [2m9 months ago                                                   75[2m ↩[0m[0m
   [0mOn the data nerd side I continue to be shocked at how people misinterpret the
   [0mcertainty of polls/forecasts. Forecasts give us probability distributions based
   [0mon historical polling error data. Not infallible predictions the expected value
@@ -4431,7 +4431,7 @@
   [0m[31m▎[0mlearned any statistics.
   [2;4m                                                                                [0m
 ​
-  [1mjebronie[0m [2m9 months ago                                                       45 ↩[0m
+  [1mjebronie[0m [2m9 months ago                                                       45[2m ↩[0m[0m
   [0mFor me the bottomline of the Trump administration is that he has started zero
   [0mnew wars, sparing hundreds of thousands of innocent lives. As an outsider I hope
   [0mthat the US will not go back to its foreign military interventions.
@@ -4698,7 +4698,7 @@
    [0m[33m▎[0mHow high is the death toll, how many cities where obliterated?
   [2;4m                                                                                [0m
 ​
-  [1mlovecg[0m [2m9 months ago                                                        117 ↩[0m
+  [1mlovecg[0m [2m9 months ago                                                        117[2m ↩[0m[0m
   [0mCan we have a conversation about broader implications of the increasing power in
   [0mthe public discourse of Twitter et al.? I’m no Trump supporter but I do wonder
   [0mif the tables were turned and Twitter e.g. turned Biden’s page into a wall of
@@ -5600,7 +5600,7 @@
   [0m[31m▎[0min exactly the same way.
   [2;4m                                                                                [0m
 ​
-  [1msdfhbdf[0m [2m9 months ago                                                        28 ↩[0m
+  [1msdfhbdf[0m [2m9 months ago                                                        28[2m ↩[0m[0m
   [0mInteresting fact I noticed: If Biden is to take the presidency after the
   [0mElectoral Collage voted that would make him the oldest president to take office
   [0myet, also interesting that wikipedia already marked Biden as president-elect
@@ -5801,7 +5801,7 @@
   [0m[31m▎[0mcrypt somewhere.
   [2;4m                                                                                [0m
 ​
-  [1mrandomsearch[0m [2m9 months ago                                                    4 ↩[0m
+  [1mrandomsearch[0m [2m9 months ago                                                    4[2m ↩[0m[0m
   [0m[This has been hinted at in various threads but I'm stating it clearly here]
   [0m
   [0mA fundamental cause of political polarisation is social media. Tech platforms
@@ -5858,7 +5858,7 @@
     [0m[32m▎[0mtime with something because you enjoy it, or because it enraged you.
   [2;4m                                                                                [0m
 ​
-  [1mbfieidhbrjr[0m [2m9 months ago                                                   118 ↩[0m
+  [1mbfieidhbrjr[0m [2m9 months ago                                                   118[2m ↩[0m[0m
   [0mIt's amazing. My friends on the left think the only reason for voting trump is
   [0mracism, and friends on the right think the only reason for voting biden is
   [0msocialism.
@@ -6976,7 +6976,7 @@
     [0m[32m▎[0mracism and collectivism, collectivism would win handily.
   [2;4m                                                                                [0m
 ​
-  [1msocialdemocrat[0m [2m9 months ago                                                  8 ↩[0m
+  [1msocialdemocrat[0m [2m9 months ago                                                  8[2m ↩[0m[0m
   [0mBiden’s focus ought to be making sure a crazy person like Trump is never elected
   [0magain and that if he is, that government institutions cannot be abused the way
   [0mthey were under Trump.
@@ -7085,7 +7085,7 @@
     [0m[32m▎[0m[34mnews.ycombinator.com/item?id=21153531[0m
   [2;4m                                                                                [0m
 ​
-  [1mNesco[0m [2m9 months ago                                                           7 ↩[0m
+  [1mNesco[0m [2m9 months ago                                                           7[2m ↩[0m[0m
   [0mPersonally I think we are watching the slow death of the USA. May be from France
   [0mI am not getting all the subtle details about the situation on the ground but
   [0mthe country seems to be completely divided.
@@ -7166,7 +7166,7 @@
   [0m[31m▎[0mportrayed to the world
   [2;4m                                                                                [0m
 ​
-  [1mdchichkov[0m [2m9 months ago                                                       2 ↩[0m
+  [1mdchichkov[0m [2m9 months ago                                                       2[2m ↩[0m[0m
   [0mWhat saddens me, is that by the standards of corporate world Trump didn't do
   [0manything extraordinary. He was running a country in a style of a mediocre
   [0mcorporate executive. Same type of an executive that, for example, resulted in
@@ -7192,7 +7192,7 @@
   [0m[31m▎[0msecurity and law enforcement, should not be run as a business
   [2;4m                                                                                [0m
 ​
-  [1mChuckMcM[0m [2m9 months ago                                                        7 ↩[0m
+  [1mChuckMcM[0m [2m9 months ago                                                        7[2m ↩[0m[0m
   [0mOne of the things this election, and the last four years, has shown me, is the
   [0mimpact of technology on our political discourse. It hasn't been a "good"
   [0minsight.
@@ -7366,7 +7366,7 @@
    [0m[33m▎[0mserviced. And those ways are not constrained by ethics.
   [2;4m                                                                                [0m
 ​
-  [1mMichaelMoser123[0m [2m9 months ago                                                19 ↩[0m
+  [1mMichaelMoser123[0m [2m9 months ago                                                19[2m ↩[0m[0m
   [0mWhatever his style, Trump didn't start any wars during his term. Lets see if
   [0mBiden will do as well.
 
@@ -7510,7 +7510,7 @@
   [0m[31m▎[0mThe trade war?
   [2;4m                                                                                [0m
 ​
-  [1msergiotapia[0m [2m9 months ago                                                    32 ↩[0m
+  [1msergiotapia[0m [2m9 months ago                                                    32[2m ↩[0m[0m
   [0mHow does this election relate to the 2000 election when all media called Gore
   [0mthe winner, but then in December, Bush became the president elect?
   [0m
@@ -7759,7 +7759,7 @@
     [0m[32m▎[0mwould have been made on Wednesday morning.
   [2;4m                                                                                [0m
 ​
-  [1mPensacola[0m [2m9 months ago                                                       4 ↩[0m
+  [1mPensacola[0m [2m9 months ago                                                       4[2m ↩[0m[0m
   [0mSkimming through this thread, it certainly verges on flame - but I'd just like
   [0mto remind you all that officially, Biden hasn't won yet. Several (not all) media
   [0moutlets have called the race, and it sure looks like he will; but the elections
@@ -7782,7 +7782,7 @@
     [0m[32m▎[0msystem will decide this. In fact, I believe their impact will be near zero.
   [2;4m                                                                                [0m
 ​
-  [1msvara[0m [2m9 months ago                                                           6 ↩[0m
+  [1msvara[0m [2m9 months ago                                                           6[2m ↩[0m[0m
   [0mThe sentiment of mutual understanding accross polticial lines expressed in many
   [0mcomments here is beautiful.
   [0m
@@ -7867,7 +7867,7 @@
     [0m[32m▎[0mHow would Trump winning the election be plunging the US into a dictatorship?
   [2;4m                                                                                [0m
 ​
-  [1mdeftnerd[0m [2m9 months ago                                                      216 ↩[0m
+  [1mdeftnerd[0m [2m9 months ago                                                      216[2m ↩[0m[0m
   [0mI've always felt that the Trump presidency served as an effective form of "Chaos
   [0mEngineering". Regardless of your views of Trump's politics, his administration
   [0mand method of leadership has exposed a lot of flaws in how our government has
@@ -9782,7 +9782,7 @@
     [0m[32m▎[0mTrump's wasn't by partisan lines, Romney voted for it.
   [2;4m                                                                                [0m
 ​
-  [1mdrocer88[0m [2m9 months ago                                                       11 ↩[0m
+  [1mdrocer88[0m [2m9 months ago                                                       11[2m ↩[0m[0m
   [0mShouldn't we wait for the states to go through , in some cases, mandatory
   [0mrecounts and certification of the results and then the actual electoral college
   [0mvote after any legal appeals?
@@ -9868,7 +9868,7 @@
   [0m[31m▎[0mElectoral College.
   [2;4m                                                                                [0m
 ​
-  [1mjseliger[0m [2m9 months ago                                                       16 ↩[0m
+  [1mjseliger[0m [2m9 months ago                                                       16[2m ↩[0m[0m
   [0mA big problem that divides us is property renters versus owners: owners have
   [0mspent the last several decades restricting access to property, and that's now
   [0mraised the cost of the most productive metro areas to unacceptable levels:
@@ -10049,7 +10049,7 @@
   [0m[31m▎[0mYes. Hence the popularity of #vanlife and #tinyhouse.
   [2;4m                                                                                [0m
 ​
-  [1mbosswipe[0m [2m9 months ago                                                       15 ↩[0m
+  [1mbosswipe[0m [2m9 months ago                                                       15[2m ↩[0m[0m
   [0mIf Republicans keep the Senate Biden won't accomplish much of his agenda.
   [0mEspecially with Mitch Mcconnell's uncompromising approach expect gridlock,
   [0mgovernment shutdowns, probably a constitutional crisis or two, and a complete
@@ -10160,7 +10160,7 @@
    [0m[33m▎[0mnot really
   [2;4m                                                                                [0m
 ​
-  [1monecommentman[0m [2m9 months ago                                                  10 ↩[0m
+  [1monecommentman[0m [2m9 months ago                                                  10[2m ↩[0m[0m
   [0mThanks for the valiant attempts to keep this discussion from devolving into a
   [0mfull-fledged dumpster fire.
   [0m
@@ -10275,7 +10275,7 @@
    [0m[33m▎[0mThat last sentence sealed it, the exceptionalism reeks
   [2;4m                                                                                [0m
 ​
-  [1mchmod600[0m [2m9 months ago                                                       14 ↩[0m
+  [1mchmod600[0m [2m9 months ago                                                       14[2m ↩[0m[0m
   [0mA voting system needs to be accurate but it also needs to inspire confidence. I
   [0mthink the U.S. failed on the latter point. Let me be clear that I don't think
   [0mthis affected the [3moutcome[0m, only the [3mconfidence in the outcome[0m.
@@ -10447,7 +10447,7 @@
    [0m[33m▎[0meligible to do so.
   [2;4m                                                                                [0m
 ​
-  [1mcharliemil4[0m [2m9 months ago                                                    42 ↩[0m
+  [1mcharliemil4[0m [2m9 months ago                                                    42[2m ↩[0m[0m
   [0mWe should trust but verify the results. The basis of facts should be settled in
   [0mthe following:
   [0m
@@ -10893,7 +10893,7 @@
     [0m[32m▎[0missue getting thrown out. Where is there room for concern for fraud?
   [2;4m                                                                                [0m
 ​
-  [1manonu[0m [2m9 months ago                                                         124 ↩[0m
+  [1manonu[0m [2m9 months ago                                                         124[2m ↩[0m[0m
   [0mThe country may be divided. But those divisions are manufactured and exacerbated
   [0mover the last 4 years by a made-for-TV president.
   [0m
@@ -11932,7 +11932,7 @@
     [0m[32m▎[0mThen the division, according to you, is self inflicted.
   [2;4m                                                                                [0m
 ​
-  [1mDarmody[0m [2m9 months ago                                                        13 ↩[0m
+  [1mDarmody[0m [2m9 months ago                                                        13[2m ↩[0m[0m
   [0mTrump has changed American politics forever and we'll see that in the years to
   [0mcome.
 
@@ -12008,7 +12008,7 @@
    [0m[33m▎[0mFox and all the mass media. Pure partisan garbage. Goebbels would be so proud.
   [2;4m                                                                                [0m
 ​
-  [1mOJFord[0m [2m9 months ago                                                          5 ↩[0m
+  [1mOJFord[0m [2m9 months ago                                                          5[2m ↩[0m[0m
   [0m[2m ▎[3m[2mKamala Harris also made history as the first Black woman to become vice[0m
   [0m[2m ▎[2;3mpresident, an achievement that comes as the U.S. faces a reckoning on racial[0m
   [0m[2m ▎[2;3mjustice. The California senator, who is also the first person of South Asian[0m
@@ -12075,7 +12075,7 @@
    [0m[33m▎[0mI don't know, maybe it's just my reading.
   [2;4m                                                                                [0m
 ​
-  [1m3np[0m [2m9 months ago                                                             6 ↩[0m
+  [1m3np[0m [2m9 months ago                                                             6[2m ↩[0m[0m
   [0mWhat I’m really curious about now is how the GOP are going to position itself
   [0mwrt Trump and his rhetoric and claims when he’s no longer in office.
 
@@ -12136,7 +12136,7 @@
   [0myour immense wealth and power.
   [2;4m                                                                                [0m
 ​
-  [1mhn_throwaway_99[0m [2m9 months ago                                                31 ↩[0m
+  [1mhn_throwaway_99[0m [2m9 months ago                                                31[2m ↩[0m[0m
   [0mBeing a centrist, I can definitely understand the desire for more conservative
   [0mpolicies, and a rejection of more liberal policies. What has been tough for me
   [0mpersonally, though, is to see a person as amoral as Trump get so much support. I
@@ -12495,7 +12495,7 @@
    [0m[33m▎[0mSlowing down the testing. Children in cages. Family separation.
   [2;4m                                                                                [0m
 ​
-  [1mlayer8[0m [2m9 months ago                                                         21 ↩[0m
+  [1mlayer8[0m [2m9 months ago                                                         21[2m ↩[0m[0m
   [0mI just realized that Trump could become presidential candidate again in 2024 for
   [0ma second term. So it might not be over yet.
 
@@ -12600,7 +12600,7 @@
   [0mteam site opens.
   [2;4m                                                                                [0m
 ​
-  [1mbetwixthewires[0m [2m9 months ago                                                  3 ↩[0m
+  [1mbetwixthewires[0m [2m9 months ago                                                  3[2m ↩[0m[0m
   [0mFor a site full of engineers I'm surprised to see the discussion center on
   [0mpartisan politics, talking points, unsourced claims and demands for sources,
   [0mbickering over every detail, when what I'd want to talk about among technical
@@ -12662,7 +12662,7 @@
   [0m[31m▎[0mtomorrow and boy then we would all look stupid!
   [2;4m                                                                                [0m
 ​
-  [1mhaunter[0m [2m9 months ago                                                         1 ↩[0m
+  [1mhaunter[0m [2m9 months ago                                                         1[2m ↩[0m[0m
   [0mAs a european outsider I see big social media (Twitter, FB, Reddit etc.) as the
   [0mloser here, no matter the president.
   [0m
@@ -12689,7 +12689,7 @@
   [0m[31m▎[0mwhich has suddenly disappeared
   [2;4m                                                                                [0m
 ​
-  [1mhonkycat[0m [2m9 months ago                                                        3 ↩[0m
+  [1mhonkycat[0m [2m9 months ago                                                        3[2m ↩[0m[0m
   [0mI'm glad we got Trump out of the white house. But I'm still skeptical.
   [0m
   [0mThe growing divide and threat of civil war ( not going to happen btw ) are
@@ -12778,7 +12778,7 @@
   [0mand out regularly, it's been a stressful year.
   [2;4m                                                                                [0m
 ​
-  [1mBooneJS[0m [2m9 months ago                                                         5 ↩[0m
+  [1mBooneJS[0m [2m9 months ago                                                         5[2m ↩[0m[0m
   [0mThis isn’t and end, it’s a new beginning. Talk is cheap, and if Biden wants to
   [0mheal the nation he’s going to need to walk the line between disparate groups. Go
   [0mback to first principles on what it means to be an American, adapt it for 2020,
@@ -12800,7 +12800,7 @@
    [0m[33m▎[0mit.
   [2;4m                                                                                [0m
 ​
-  [1msfblah[0m [2m9 months ago                                                          2 ↩[0m
+  [1msfblah[0m [2m9 months ago                                                          2[2m ↩[0m[0m
   [0mJust curious. Does anyone have a reasonable response to the following
   [0mcontention:
   [0m
@@ -12829,7 +12829,7 @@
   [0m[31m▎[0macceptable' range at 6.9%.
   [2;4m                                                                                [0m
 ​
-  [1mSCAQTony[0m [2m9 months ago                                                        4 ↩[0m
+  [1mSCAQTony[0m [2m9 months ago                                                        4[2m ↩[0m[0m
   [0mWhen you look at countries that are unified and act as a cohesive state such as
   [0mSwitzerland, Korea, Norway, or Singapore, what they have in common is culture.
   [0m
@@ -12877,7 +12877,7 @@
   [0m[31m▎[0mAt the root of it all is wealth disparity. The rest of it is just a facade.
   [2;4m                                                                                [0m
 ​
-  [1mopportune[0m [2m9 months ago                                                      64 ↩[0m
+  [1mopportune[0m [2m9 months ago                                                      64[2m ↩[0m[0m
   [0mMy biggest concern is how seemingly so many conservative people are becoming
   [0mhuge conspiracy theorists. I don't mean normal conspiracy theories like there
   [0mbeing something more behind the JFK assassination, but like QAnon, Bill Gates
@@ -13608,7 +13608,7 @@
   [0mstone towards even better candidates.
   [2;4m                                                                                [0m
 ​
-  [1mgbil[0m [2m9 months ago                                                           11 ↩[0m
+  [1mgbil[0m [2m9 months ago                                                           11[2m ↩[0m[0m
   [0mI'd like to open a slightly different topic here which stems though from the
   [0melections of the past 20 years. Wouldn't be a big take away now the reform of
   [0mthe Elector College and the shift to a direct vote from the people ?
@@ -13750,7 +13750,7 @@
    [0m[33m▎[0mover people.
   [2;4m                                                                                [0m
 ​
-  [1margella[0m [2m9 months ago                                                         2 ↩[0m
+  [1margella[0m [2m9 months ago                                                         2[2m ↩[0m[0m
   [0mIt'd be nice to discuss whether the benford's law analysis can be reasonably
   [0mapplied to election returns, but any mention of it is flagged by the thought
   [0mpolice.
@@ -13778,7 +13778,7 @@
   [0mI'm so glad it's stinking over. I might even read non-tech news again.
   [2;4m                                                                                [0m
 ​
-  [1maaronharsh[0m [2m9 months ago                                                      1 ↩[0m
+  [1maaronharsh[0m [2m9 months ago                                                      1[2m ↩[0m[0m
   [0mThe Trump presidency put a spotlight on the damage that can be done by a
   [0mcombination of:
   [0m
@@ -13843,7 +13843,7 @@
   [0mBest wish for USA and Taiwan, whilst I can still send message.
   [2;4m                                                                                [0m
 ​
-  [1mtinus_hn[0m [2m9 months ago                                                        4 ↩[0m
+  [1mtinus_hn[0m [2m9 months ago                                                        4[2m ↩[0m[0m
   [0mI wonder what Biden is going to do about the coronavirus. Trumps denials don’t
   [0mwork but the things people expect Biden to do (mask mandates etc.) aren’t a
   [0mmagical solution either.
@@ -13896,7 +13896,7 @@
   [0mclean and go back to the good old way, is wrong.
   [2;4m                                                                                [0m
 ​
-  [1mjustinzollars[0m [2m9 months ago                                                   8 ↩[0m
+  [1mjustinzollars[0m [2m9 months ago                                                   8[2m ↩[0m[0m
   [0mBiden will be the First Democrat since Grover Cleveland to take office without a
   [0mDemocratic Senate. The House majority is smaller. So his mandate is effectively
   [0mtoast. Another interesting historical fact. America has never elected 4
@@ -13980,7 +13980,7 @@
    [0m[33m▎[0mDo you have some information the runoff? I wasn't aware about that.
   [2;4m                                                                                [0m
 ​
-  [1mmedium_burrito[0m [2m9 months ago                                                  1 ↩[0m
+  [1mmedium_burrito[0m [2m9 months ago                                                  1[2m ↩[0m[0m
   [0mIn an ideal world, I think we should do either: A) Random selection a la the
   [0mVenetian Doge (political leader, not meme-canine). The house should definitely
   [0mbe random selection- preferably all citizens over 18 and under say 70 filing a
@@ -14005,7 +14005,7 @@
   [0m[31m▎[0mmachine: [34men.wikipedia.org/wiki/Kleroterion[0m
   [2;4m                                                                                [0m
 ​
-  [1mjimnotgym[0m [2m9 months ago                                                      21 ↩[0m
+  [1mjimnotgym[0m [2m9 months ago                                                      21[2m ↩[0m[0m
   [0mPlease permit me a ramble, there are too many points to fit in a hn box and I'm
   [0mtyping on a phone.
   [0m
@@ -14269,7 +14269,7 @@
   [0mdisrupting the very fabric of democracy.
   [2;4m                                                                                [0m
 ​
-  [1msanguy[0m [2m9 months ago                                                          5 ↩[0m
+  [1msanguy[0m [2m9 months ago                                                          5[2m ↩[0m[0m
   [0mCanadian who has been living in the US for 5 years. Perm resident but not
   [0mnaturalized. Arrived a year and a bit before Trump 2016 win.
   [0m
@@ -14345,7 +14345,7 @@
   [0m[31m▎[0mSmoke less weed and relax. There's not going to be a civil war.
   [2;4m                                                                                [0m
 ​
-  [1mbeloch[0m [2m9 months ago                                                          1 ↩[0m
+  [1mbeloch[0m [2m9 months ago                                                          1[2m ↩[0m[0m
   [0mAs a Canadian, what stands out for me about the last two elections is that many
   [0mAmericans seem to desperately want a variety of political reforms, but neither
   [0mparty seems interested in providing them. Trump and Sanders both sold themselves
@@ -14397,7 +14397,7 @@
   [0mI'm in are more liberal based, from a US perspective)
   [2;4m                                                                                [0m
 ​
-  [1mjeffrallen[0m [2m9 months ago                                                      3 ↩[0m
+  [1mjeffrallen[0m [2m9 months ago                                                      3[2m ↩[0m[0m
   [0mThis election was your regular 4 year reminder that the electoral college is
   [0mstupid and that the National Popular Vote Interstate Compact needs to be
   [0mcompleted.
@@ -14421,7 +14421,7 @@
   [0m[31m▎[0mpolitical minorities. Perhaps explain why you don’t like things this way?
   [2;4m                                                                                [0m
 ​
-  [1mrixrax[0m [2m9 months ago                                                         17 ↩[0m
+  [1mrixrax[0m [2m9 months ago                                                         17[2m ↩[0m[0m
   [0mI am holding my breath until Jan 6th at least when electoral college votes:
   [0m
   [0mUrl: [34mcrsreports.congress.gov/product/pdf/IF/IF11641[0m
@@ -14582,7 +14582,7 @@
   [0m3. [34mwww.politifact.com/article/2016/jun/08/donald-trumps…[0m
   [2;4m                                                                                [0m
 ​
-  [1mprossercj[0m [2m9 months ago                                                       2 ↩[0m
+  [1mprossercj[0m [2m9 months ago                                                       2[2m ↩[0m[0m
   [0mAnyone else want to see more states adopt something other than a winner-take-all
   [0mallotment of electoral votes? Here in Pennsylvania we’d be about evenly split. I
   [0mwonder if splitting our electoral votes would moderate our politics.
@@ -14603,7 +14603,7 @@
   [0mupset/angry/hateful/malicious.
   [2;4m                                                                                [0m
 ​
-  [1mshadykiller[0m [2m9 months ago                                                     1 ↩[0m
+  [1mshadykiller[0m [2m9 months ago                                                     1[2m ↩[0m[0m
   [0mLooks like Biden would be able to fulfill his promise of not changing anything:
   [0m[34mwww.salon.com/2019/06/19/joe-biden-to-rich-donors-no…[0m
   [0m
@@ -14615,7 +14615,7 @@
   [0m[31m▎[0mhave tough years ahead.
   [2;4m                                                                                [0m
 ​
-  [1misabelc[0m [2m9 months ago                                                         1 ↩[0m
+  [1misabelc[0m [2m9 months ago                                                         1[2m ↩[0m[0m
   [0mThe division will not be fixed until they realize that the division is not
   [0mideological.
   [0m
@@ -14664,7 +14664,7 @@
   [0mquestion".
   [2;4m                                                                                [0m
 ​
-  [1mspinny[0m [2m9 months ago                                                          1 ↩[0m
+  [1mspinny[0m [2m9 months ago                                                          1[2m ↩[0m[0m
   [0mThe division was created by all the media (social included) manipulation of
   [0mreality perception. I bet that in 2016 a much higher percentage of votes were
   [0magainst Hillary. In 2020 the "against" was very likely higher. Division will
@@ -14714,7 +14714,7 @@
   [0mthat there might be scant progress on other issues like climate change.
   [2;4m                                                                                [0m
 ​
-  [1mnot_a_moth[0m [2m9 months ago                                                      2 ↩[0m
+  [1mnot_a_moth[0m [2m9 months ago                                                      2[2m ↩[0m[0m
   [0mThis title is actually wrong because networks don't decide who wins. If Biden
   [0mwins, let it be because all due process was followed so that the 71MM who voted
   [0mfor Trump can get behind the new president. There are close and contested
@@ -14759,7 +14759,7 @@
   [0mHere’s to science and civility.
   [2;4m                                                                                [0m
 ​
-  [1mgrosales[0m [2m9 months ago                                                        3 ↩[0m
+  [1mgrosales[0m [2m9 months ago                                                        3[2m ↩[0m[0m
   [0mAs a dad and an United States citizen, I am proud to call Joe Biden , my
   [0mpresident.
   [0m
@@ -14785,7 +14785,7 @@
    [0m[33m▎[0mDon’t forget Kamala Harris
   [2;4m                                                                                [0m
 ​
-  [1mjulius_set[0m [2m9 months ago                                                      1 ↩[0m
+  [1mjulius_set[0m [2m9 months ago                                                      1[2m ↩[0m[0m
   [0mOk legit question, is Biden’s mental health an issue? (i.e. Dementia, Alzheimer’
   [0ms). Surprised my family brings this up, and I’m not sure how to reply back to
   [0mthem..
@@ -14804,7 +14804,7 @@
   [0m[31m▎[0morganizations.
   [2;4m                                                                                [0m
 ​
-  [1mb20000[0m [2m9 months ago                                                          1 ↩[0m
+  [1mb20000[0m [2m9 months ago                                                          1[2m ↩[0m[0m
   [0mAs far as I know the votes still need to be counted again. And, you can probably
   [0mforget about that stimulus package if Biden really wins.
 
@@ -14837,7 +14837,7 @@
   [0man official announcement.
   [2;4m                                                                                [0m
 ​
-  [1mmjfl[0m [2m9 months ago                                                            2 ↩[0m
+  [1mmjfl[0m [2m9 months ago                                                            2[2m ↩[0m[0m
   [0mwhat do people think about the voting irregularities in this election
   [0m
   [0m- the delays in Nevada - the early calls in Arizona - the delayed, large swing
@@ -14878,7 +14878,7 @@
   [0mthe day.
   [2;4m                                                                                [0m
 ​
-  [1mtomerbd[0m [2m9 months ago                                                         1 ↩[0m
+  [1mtomerbd[0m [2m9 months ago                                                         1[2m ↩[0m[0m
   [0mFor an outsider non US guy looking at the democrat / republican debate seems
   [0mlike a debate between a IntelliJ dark mode and IntelliJ white mode both are a
   [0mmatter of taste but code is the same.
@@ -14892,7 +14892,7 @@
   [0mWow I just need to comment to be part of this historically large thread!
   [2;4m                                                                                [0m
 ​
-  [1mk__[0m [2m9 months ago                                                             2 ↩[0m
+  [1mk__[0m [2m9 months ago                                                             2[2m ↩[0m[0m
   [0mDid he get the senate?
   [0m
   [0mI had the impression, he can't do much without it, but news from yesterday
@@ -15012,7 +15012,7 @@
   [0mget on with life.
   [2;4m                                                                                [0m
 ​
-  [1mmanigandham[0m [2m9 months ago                                                     4 ↩[0m
+  [1mmanigandham[0m [2m9 months ago                                                     4[2m ↩[0m[0m
   [0mMost people (in this election) are more voting against something they hate
   [0mrather than for something they actually like and want.
 
@@ -15041,7 +15041,7 @@
    [0m[33m▎[0mmatched.
   [2;4m                                                                                [0m
 ​
-  [1mvcanales[0m [2m9 months ago                                                        1 ↩[0m
+  [1mvcanales[0m [2m9 months ago                                                        1[2m ↩[0m[0m
   [0mSo, American friends, I can't imagine Trump stopping his hissy fit and conceding
   [0m… what happens if he doesn't concede?
 
@@ -15053,7 +15053,7 @@
   [0m[31m▎[0mnecessary.
   [2;4m                                                                                [0m
 ​
-  [1mdevit[0m [2m9 months ago                                                           6 ↩[0m
+  [1mdevit[0m [2m9 months ago                                                           6[2m ↩[0m[0m
   [0mIt's pretty remarkable though that almost half of the US voted for someone who
   [0mis clearly unsuitable to be president based on his first term.
   [0m
@@ -15111,7 +15111,7 @@
   [0m[31m▎[0mUSA has already let go of it, as convicted felons don't have a right to vote.
   [2;4m                                                                                [0m
 ​
-  [1mvowelless[0m [2m9 months ago                                                       1 ↩[0m
+  [1mvowelless[0m [2m9 months ago                                                       1[2m ↩[0m[0m
   [0mWhat kinds of investments can one make to capitalize on a Biden victory? For
   [0mexample:
   [0m
@@ -15143,7 +15143,7 @@
   [0mwaterfall of flags.
   [2;4m                                                                                [0m
 ​
-  [1mfaebi[0m [2m9 months ago                                                           3 ↩[0m
+  [1mfaebi[0m [2m9 months ago                                                           3[2m ↩[0m[0m
   [0mIs this good or bad for the stock market? Or does it not matter at all?
 
    [1mtiziniano[0m [2m9 months ago[0m
@@ -15167,7 +15167,7 @@
   [0minspiring.
   [2;4m                                                                                [0m
 ​
-  [1mGrakel[0m [2m9 months ago                                                          4 ↩[0m
+  [1mGrakel[0m [2m9 months ago                                                          4[2m ↩[0m[0m
   [0mThe media doesn't have a role in declaring victory in elections.
 
    [1mdavid927[0m [2m9 months ago[0m
@@ -15195,7 +15195,7 @@
    [0m[33m▎[0mAl Gore was projected winner, and didn't concede until mid December.
   [2;4m                                                                                [0m
 ​
-  [1merichocean[0m [2m9 months ago                                                      6 ↩[0m
+  [1merichocean[0m [2m9 months ago                                                      6[2m ↩[0m[0m
   [0mFavorite fact about the 2020 election:
   [0m
   [0mBiden not only got more Black votes than Obama, he got a higher [3mpercentage[0m of
@@ -15243,7 +15243,7 @@
   [0mthe house.
   [2;4m                                                                                [0m
 ​
-  [1mpaul7986[0m [2m9 months ago                                                        2 ↩[0m
+  [1mpaul7986[0m [2m9 months ago                                                        2[2m ↩[0m[0m
   [0mGreat news and I voted for neither! But what a relief!!!
 
    [1m__float[0m [2m9 months ago[0m
@@ -15259,7 +15259,7 @@
   [0mis still up in the air.
   [2;4m                                                                                [0m
 ​
-  [1mbaxtr[0m [2m9 months ago                                                           2 ↩[0m
+  [1mbaxtr[0m [2m9 months ago                                                           2[2m ↩[0m[0m
   [0mInteresting fact: Trump could be elected president in 2024. I don’t think he
   [0mwill be gone for too long.
   [0m
@@ -15295,7 +15295,7 @@
   [0mundo any of the things he promised to undo. Same as Obama.
   [2;4m                                                                                [0m
 ​
-  [1mmmastrac[0m [2m9 months ago                                                       31 ↩[0m
+  [1mmmastrac[0m [2m9 months ago                                                       31[2m ↩[0m[0m
   [0mThe media was way too cautious in making the call here, but it's easy to
   [0munderstand why when the Republicans made it so difficult to count absentee
   [0mballots before election night, likely to benefit their candidate through the
@@ -15556,7 +15556,7 @@
   [0mby AP, NBC, and ABC.
   [2;4m                                                                                [0m
 ​
-  [1mTheRealPomax[0m [2m9 months ago                                                   10 ↩[0m
+  [1mTheRealPomax[0m [2m9 months ago                                                   10[2m ↩[0m[0m
   [0mNo: he hasn't, and that's confusing to both "the world" as well as waaay too
   [0mmany Americans: the election isn't until mid December, when the electoral
   [0mcollege casts its votes. You didn't vote for the president, you voted for what
@@ -15825,7 +15825,7 @@
   [0mnice
   [2;4m                                                                                [0m
 ​
-  [1mscrollaway[0m [2m9 months ago                                                      2 ↩[0m
+  [1mscrollaway[0m [2m9 months ago                                                      2[2m ↩[0m[0m
   [0m[2m ▎[3m[2mIt's still on our todo list to have some form of karma sharing for situations[0m
   [0m[2m ▎[2;3mlike this, to make it be less of a race and/or lottery.[0m
   [0m
@@ -15841,7 +15841,7 @@
   [0m[31m▎[0m(We detached this subthread from [34mnews.ycombinator.com/item?id=25017129[0m)
   [2;4m                                                                                [0m
 ​
-  [1mojnabieoot[0m [2m9 months ago                                                     16 ↩[0m
+  [1mojnabieoot[0m [2m9 months ago                                                     16[2m ↩[0m[0m
   [0mWhile it’s true that the US government needs structural reform, the issue wasn’t
   [0manything the Constitution can fix by nibbling around the edges. The issue is
   [0mthat the unified Republican elite, along with > 35% of the electorate, is
@@ -15995,7 +15995,7 @@
    [0m[33m▎[0m[2m ▎[2;3mSocialism, Dude, at least it's an ethos."[0m
   [2;4m                                                                                [0m
 ​
-  [1m0xB31B1B[0m [2m9 months ago                                                       16 ↩[0m
+  [1m0xB31B1B[0m [2m9 months ago                                                       16[2m ↩[0m[0m
   [0mThere are facts here. Things like Covid 19 and climate change are both real and
   [0mcurrent or impending disasters. The "left" has solutions and the "right"
   [0mpretends they don't exist. The US right has slipped further and further from
@@ -16115,7 +16115,7 @@
    [0m[33m▎[0m[citation needed]
   [2;4m                                                                                [0m
 ​
-  [1mmikedilger[0m [2m9 months ago                                                      1 ↩[0m
+  [1mmikedilger[0m [2m9 months ago                                                      1[2m ↩[0m[0m
   [0mNov 3 - Election Day
   [0m
   [0mNov 7 - News media called a winner (this is not an official act)
@@ -16134,7 +16134,7 @@
   [0m[31m▎[0mJudges have thrown out nearly every lawsuit the Trump campaign has filed.
   [2;4m                                                                                [0m
 ​
-  [1mthrowaway201103[0m [2m9 months ago                                               113 ↩[0m
+  [1mthrowaway201103[0m [2m9 months ago                                               113[2m ↩[0m[0m
   [0mTo me what this election (as well as the 2016 election) illustrates, is what a
   [0mpoor set of choices we have had.
   [0m
@@ -17345,7 +17345,7 @@
    [0m[33m▎[0mthem even if the other candidate was not a bigoted wannabe authoritarian.
   [2;4m                                                                                [0m
 ​
-  [1mnso95[0m [2m9 months ago                                                          25 ↩[0m
+  [1mnso95[0m [2m9 months ago                                                          25[2m ↩[0m[0m
   [0mI don't care if you're liberal or conservative. The problem with Trump is that
   [0mall of his success has come from lying, cheating, and manipulation. That's all
   [0mhe knows. This was never a simple matter of political differences. This was not
@@ -17599,7 +17599,7 @@
    [0m[33m▎[0mMaybe you should look at the data.
   [2;4m                                                                                [0m
 ​
-  [1mbluejay2387[0m [2m9 months ago                                                     9 ↩[0m
+  [1mbluejay2387[0m [2m9 months ago                                                     9[2m ↩[0m[0m
   [0mI don't understand why this is flagged. It's highly relevant to tech
   [0m(particularly given trump's moves on Chinese tech firms and his treatment of
   [0msocial media) and from a legitimate source.
@@ -17663,7 +17663,7 @@
   [0mCongratulations, America.
   [2;4m                                                                                [0m
 ​
-  [1mtertiary[0m [2m9 months ago                                                       15 ↩[0m
+  [1mtertiary[0m [2m9 months ago                                                       15[2m ↩[0m[0m
   [0mThe thing that will sit deep within me for at least the next few years is that,
   [0mno matter how you slice it, a vote for Trump is complicit acceptance of his
   [0mdivisive and harmful behavior. Of course you don't need to be a racist to vote
@@ -17821,7 +17821,7 @@
   [0m[31m▎[0mnot anymore than anybody else who votes against any other candidate.
   [2;4m                                                                                [0m
 ​
-  [1mTrasmatta[0m [2m9 months ago                                                      12 ↩[0m
+  [1mTrasmatta[0m [2m9 months ago                                                      12[2m ↩[0m[0m
   [0mThank god.
   [0m
   [0mNow I want the last 4 years of my life back.
@@ -17905,7 +17905,7 @@
    [0m[33m▎[0mNo, I won't get them back because that's how time works.
   [2;4m                                                                                [0m
 ​
-  [1mDevils-Avocado[0m [2m9 months ago                                                  1 ↩[0m
+  [1mDevils-Avocado[0m [2m9 months ago                                                  1[2m ↩[0m[0m
   [0mNow we can get back to destabilizing the Mideast, offshoring our manufacturing
   [0mjobs, starting more endless wars and transferring the rest of our technology to
   [0mChina. The Trump years were just a speed bump on the way to complete
@@ -17915,7 +17915,7 @@
   [0m[31m▎[0mWhat is your preferred solution to those problems?
   [2;4m                                                                                [0m
 ​
-  [1mminimaxir[0m [2m9 months ago                                                       3 ↩[0m
+  [1mminimaxir[0m [2m9 months ago                                                       3[2m ↩[0m[0m
   [0mdang's comment from 4 years ago on this subject (Trump's election win):
   [0m[34mnews.ycombinator.com/item?id=12910929[0m
 
@@ -17990,7 +17990,7 @@
   [0mthat forgets and isnt mentally heathly for office
   [2;4m                                                                                [0m
 ​
-  [1mrichardARPANET[0m [2m9 months ago                                                  2 ↩[0m
+  [1mrichardARPANET[0m [2m9 months ago                                                  2[2m ↩[0m[0m
   [0mFact check: False.
   [0m
   [0mThe election process is still ongoing, the media is simply saying Biden is their
@@ -18068,7 +18068,7 @@
   [0mEighty thousand votes is neither a “clear victory” nor a “mandate” for anything.
   [2;4m                                                                                [0m
 ​
-  [1mseek3r[0m [2m9 months ago                                                         21 ↩[0m
+  [1mseek3r[0m [2m9 months ago                                                         21[2m ↩[0m[0m
   [0mNot an American citizen, but I’m really glad that Biden won. USA sets an example
   [0mfor other Western countries, and Trump wasn’t a good example. I hope you’re able
   [0mto recover from Trumpism and that the Republican Party rejects such violent and
@@ -18307,7 +18307,7 @@
   [0mTrump has the edge over Biden
   [2;4m                                                                                [0m
 ​
-  [1mmewse[0m [2m9 months ago                                                          17 ↩[0m
+  [1mmewse[0m [2m9 months ago                                                          17[2m ↩[0m[0m
   [0mOne candidate supports separating children from their families for certain
   [0mgroups of illegal immigrants, kept those children in cages for some time, and
   [0mhas since lost track of around 500 of them; not reuiniting them with their
@@ -18527,7 +18527,7 @@
   [0mThe fat lady isn’t singing yet
   [2;4m                                                                                [0m
 ​
-  [1mtiziniano[0m [2m9 months ago                                                       1 ↩[0m
+  [1mtiziniano[0m [2m9 months ago                                                       1[2m ↩[0m[0m
   [0mDoesn't the actual election happen later? If I recall in 2000, they had some
   [0mtrouble until December with Al Gore.
 
@@ -18538,7 +18538,7 @@
   [0m[31m▎[0mNeither is the case here.
   [2;4m                                                                                [0m
 ​
-  [1mbra-ket[0m [2m9 months ago                                                         2 ↩[0m
+  [1mbra-ket[0m [2m9 months ago                                                         2[2m ↩[0m[0m
   [0mit's a projection, tens of thousands of provisioned and military ballots are
   [0mstill not counted. Recounts are still to happen in most swing states. Lawsuits
   [0mare pending.
@@ -18580,7 +18580,7 @@
   [0mviolently.
   [2;4m                                                                                [0m
 ​
-  [1mte_chris[0m [2m9 months ago                                                        6 ↩[0m
+  [1mte_chris[0m [2m9 months ago                                                        6[2m ↩[0m[0m
   [0mOn behalf of the rest of the world: thanks America, removing the arsonist of
   [0mglobal unity and multilateralism is appreciated.
 
@@ -18628,7 +18628,7 @@
   [0mAlso: sign up your children for Chinese lessons, they'll need it.
   [2;4m                                                                                [0m
 ​
-  [1mbiscotti[0m [2m9 months ago                                                        1 ↩[0m
+  [1mbiscotti[0m [2m9 months ago                                                        1[2m ↩[0m[0m
   [0m"Racist" mentioned in this thread dozens of times along with fascists all the
   [0musual derogatory buzzwords. Communist and woke both worryingly have less
   [0mmentions considering the context. Bolshevism suprisingly has got no mentions
@@ -18697,7 +18697,7 @@
   [0mThis is not a time of honor.
   [2;4m                                                                                [0m
 ​
-  [1mjoak[0m [2m9 months ago                                                            4 ↩[0m
+  [1mjoak[0m [2m9 months ago                                                            4[2m ↩[0m[0m
   [0mWhat really afraid me is that if such an idiot was able to become president and
   [0mwas finally so hard to beat. There is room for a much smarter populist. It will
   [0mbe then very hard to remove him/her.
@@ -18722,7 +18722,7 @@
    [0m[33m▎[0mElon Musk?
   [2;4m                                                                                [0m
 ​
-  [1mAnHonestComment[0m [2m9 months ago                                                 1 ↩[0m
+  [1mAnHonestComment[0m [2m9 months ago                                                 1[2m ↩[0m[0m
   [0mI’m censored on HN because I subscribe to wrongthink.
   [0m
   [0m[32m@dang[0m declared that no matter how calmly and politely I stated mainstream
@@ -18745,7 +18745,7 @@
   [0mfor the spread into the Republicans of trumpism.
   [2;4m                                                                                [0m
 ​
-  [1mbra-ket[0m [2m9 months ago                                                         2 ↩[0m
+  [1mbra-ket[0m [2m9 months ago                                                         2[2m ↩[0m[0m
   [0mTrump has been blatantly slandered by the mainstream media as racist evil orange
   [0mman, it was 4 years of '1984' style brainwashing by the left.
   [0m
@@ -18759,7 +18759,7 @@
   [0m[31m▎[0mAs a registered democrat, I too am ashamed at the last four years of slander.
   [2;4m                                                                                [0m
 ​
-  [1med25519FUUU[0m [2m9 months ago                                                     5 ↩[0m
+  [1med25519FUUU[0m [2m9 months ago                                                     5[2m ↩[0m[0m
   [0mNot surprising at all given Wikipedia's political leanings. I wonder what
   [0mWikipedia says about Antifa?
 
@@ -18787,7 +18787,7 @@
   [0m[31m▎[0mlike in this case, the reference to Joe is gone, it was undone.
   [2;4m                                                                                [0m
 ​
-  [1mnostromo[0m [2m9 months ago                                                        6 ↩[0m
+  [1mnostromo[0m [2m9 months ago                                                        6[2m ↩[0m[0m
   [0mThere are a lot of curious statistics about ballot counts in a few swing states,
   [0mincluding a record-breaking 90% turn-out in Wisconsin.
   [0m
@@ -18839,7 +18839,7 @@
   [0m[31m▎[0mIt’s only curious because you and the author misunderstand the data.
   [2;4m                                                                                [0m
 ​
-  [1mFranzFerdiNaN[0m [2m9 months ago                                                  13 ↩[0m
+  [1mFranzFerdiNaN[0m [2m9 months ago                                                  13[2m ↩[0m[0m
   [0mTrump and the MAGA crowd are absolutely fine with things like separating kids
   [0mfrom their parents, forced sterilization, intense racism, celebrating and
   [0mstimulating police violence, attempting to steal elections, open corruption by a
@@ -18973,7 +18973,7 @@
   [0m[31m▎[0mYou’re part of the problem
   [2;4m                                                                                [0m
 ​
-  [1mjust-juan-post[0m [2m9 months ago                                                  1 ↩[0m
+  [1mjust-juan-post[0m [2m9 months ago                                                  1[2m ↩[0m[0m
   [0mJoe Biden, Kamala Harris Got a Big Social Media Boost from Indian Troll Farms
   [0m
   [0m[34mwww.newsweek.com/joe-biden-kamala-harris-got-big-soc…[0m
@@ -18996,7 +18996,7 @@
   [0m[31m▎[0mIt's called "news" for a reason. Old stories simply aren't as interesting.
   [2;4m                                                                                [0m
 ​
-  [1memailf845872[0m [2m9 months ago                                                    2 ↩[0m
+  [1memailf845872[0m [2m9 months ago                                                    2[2m ↩[0m[0m
   [0mDemocrats want to subjugate. The anti-globalist portion of the Republican party
   [0m(the one that elected Trump) just wants to get the hell away and have their own
   [0mcountry.
@@ -19031,7 +19031,7 @@
   [0mIt stayed up. Please show the same consideration.
   [2;4m                                                                                [0m
 ​
-  [1mCurtHagenlocher[0m [2m9 months ago                                                13 ↩[0m
+  [1mCurtHagenlocher[0m [2m9 months ago                                                13[2m ↩[0m[0m
   [0mEverybody does realize that this has no legal significance, right?
 
    [1mnotatoad[0m [2m9 months ago[0m
@@ -19091,7 +19091,7 @@
   [0m[31m▎[0maccompli.
   [2;4m                                                                                [0m
 ​
-  [1mrefurb[0m [2m9 months ago                                                          4 ↩[0m
+  [1mrefurb[0m [2m9 months ago                                                          4[2m ↩[0m[0m
   [0mNot saying Biden didn’t win, but is it really the media that makes the call?
 
    [1mihuman[0m [2m9 months ago[0m
@@ -19127,7 +19127,7 @@
    [0m[33m▎[0mvictor.
   [2;4m                                                                                [0m
 ​
-  [1mbkovacev[0m [2m9 months ago                                                       12 ↩[0m
+  [1mbkovacev[0m [2m9 months ago                                                       12[2m ↩[0m[0m
   [0mAs someone who is not that much into politics but receives salary in US dollar -
   [0mwhat does Biden win mean for the US economy and the dollar?
 
@@ -19222,7 +19222,7 @@
    [0m[33m▎[0mhow tax brackets work.
   [2;4m                                                                                [0m
 ​
-  [1mcmurf[0m [2m9 months ago                                                           4 ↩[0m
+  [1mcmurf[0m [2m9 months ago                                                           4[2m ↩[0m[0m
   [0mIt's flagged why? There's an identically titled one for Trump from 2016.
 
    [1mihuman[0m [2m9 months ago[0m
@@ -19391,7 +19391,7 @@
   [0mFraud
   [2;4m                                                                                [0m
 ​
-  [1mdschuetz[0m [2m9 months ago                                                        2 ↩[0m
+  [1mdschuetz[0m [2m9 months ago                                                        2[2m ↩[0m[0m
   [0mI'm glad for those Americans who suffered the nightmarish past 4 years. Finally,
   [0myou're about to catch a break.
 
@@ -19407,7 +19407,7 @@
    [0m[33m▎[0mlikely would have won reelection.
   [2;4m                                                                                [0m
 ​
-  [1mThe_rationalist[0m [2m9 months ago                                                 1 ↩[0m
+  [1mThe_rationalist[0m [2m9 months ago                                                 1[2m ↩[0m[0m
   [0mSTOP TEH COUNTS
 
    [1mThe_rationalist[0m [35mPP [0m[2m9 months ago[0m
@@ -19434,7 +19434,7 @@
   [0mwe all want to be free from this disease and doing better 4 years from now.
   [2;4m                                                                                [0m
 ​
-  [1maaron695[0m [2m9 months ago                                                        1 ↩[0m
+  [1maaron695[0m [2m9 months ago                                                        1[2m ↩[0m[0m
   [0mAnyone else not getting Trump's real Twitter account on search anymore for the
   [0mpast few days?
   [0m
@@ -19443,7 +19443,7 @@
   [0mObviously[33m @realdonaldtrump[0m is normally top, with preview.
   [2;4m                                                                                [0m
 ​
-  [1mFjolsvith[0m [2m9 months ago                                                       2 ↩[0m
+  [1mFjolsvith[0m [2m9 months ago                                                       2[2m ↩[0m[0m
   [0mIts far from over. Has anyone compared the people on the legal team that Bush
   [0mused to beat Gore with the current Supreme Court justices?
   [0m
@@ -19470,7 +19470,7 @@
   [0mthe possibility of civil war.
   [2;4m                                                                                [0m
 ​
-  [1masdfk-12[0m [2m9 months ago                                                        1 ↩[0m
+  [1masdfk-12[0m [2m9 months ago                                                        1[2m ↩[0m[0m
   [0mMedia and political institutions have been attempting to bury the current
   [0mpresident with the tired Russia narrative and other gambits since he walked down
   [0mthe escalator.
@@ -19500,7 +19500,7 @@
   [0ma parking lot of empty cars.
   [2;4m                                                                                [0m
 ​
-  [1mFandangoRanger[0m [2m9 months ago                                                  1 ↩[0m
+  [1mFandangoRanger[0m [2m9 months ago                                                  1[2m ↩[0m[0m
   [0mHe hasn’t been certified as the winner of even a single state yet. Trump called
   [0mthe bluff, soon the only vote that matters will be ACB’s.
 
@@ -19509,7 +19509,7 @@
   [0m[31m▎[0m(hence the famous "Dewey Defeats Truman").
   [2;4m                                                                                [0m
 ​
-  [1mauganov[0m [2m9 months ago                                                         8 ↩[0m
+  [1mauganov[0m [2m9 months ago                                                         8[2m ↩[0m[0m
   [0mFTX [[37m0[0m] has President Trump's chances at remaining President in February 2021 at
   [0ma little over 10%. Numerous legal pathways remain for President Trump to win.
   [0m
@@ -19598,7 +19598,7 @@
   [0manymore workers.
   [2;4m                                                                                [0m
 ​
-  [1malexashka[0m [2m9 months ago                                                       5 ↩[0m
+  [1malexashka[0m [2m9 months ago                                                       5[2m ↩[0m[0m
   [0mDoes anyone feel strange about a 77 year old man being put under this much
   [0mstress?
   [0m
@@ -19653,7 +19653,7 @@
   [0m[31m▎[0mI will be very surprised if he runs for another term however.
   [2;4m                                                                                [0m
 ​
-  [1meinpoklum[0m [2m9 months ago                                                       3 ↩[0m
+  [1meinpoklum[0m [2m9 months ago                                                       3[2m ↩[0m[0m
   [0mBiden has vowed to a group of his donor that, if he is elected, "Nothing would
   [0mfundamentally change":
   [0m
@@ -19711,7 +19711,7 @@
   [0mwork out for Bi… I mean Harris.
   [2;4m                                                                                [0m
 ​
-  [1mceilingcorner[0m [2m9 months ago                                                  12 ↩[0m
+  [1mceilingcorner[0m [2m9 months ago                                                  12[2m ↩[0m[0m
   [0mCompletely independently of who won/will win this election, I find it massively
   [0mirresponsible that media outlets are calling it before actual states are. The
   [0mmedia should report the news, not make it.
@@ -19849,7 +19849,7 @@
   [0mcentury.
   [2;4m                                                                                [0m
 ​
-  [1m_hyn3[0m [2m9 months ago                                                           3 ↩[0m
+  [1m_hyn3[0m [2m9 months ago                                                           3[2m ↩[0m[0m
   [0mRegardless of media projections (and we know how accurate projections have been
   [0mthe last few years), it's simply not true that Biden has [3mwon[0m.
   [0m
