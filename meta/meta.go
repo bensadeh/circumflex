@@ -1,7 +1,10 @@
 package meta
 
 import (
+	"fmt"
 	"strconv"
+
+	"clx/constants/nerdfonts"
 
 	"clx/constants/unicode"
 	"clx/item"
@@ -57,7 +60,7 @@ func GetCommentSectionMetaBlock(c *item.Item, config *settings.Config, newCommen
 		Width(columnWidth).
 		Align(lipgloss.Right)
 	rightColumnText := getID(c.ID, config.EnableNerdFonts) + newLine +
-		getPoints(c.Points, config.EnableNerdFonts)
+		getScore(c.Points, config.EnableNerdFonts)
 
 	joined := lipgloss.JoinHorizontal(lipgloss.Left, leftColumn.Render(leftColumnText),
 		rightColumn.Render(rightColumnText))
@@ -67,40 +70,48 @@ func GetCommentSectionMetaBlock(c *item.Item, config *settings.Config, newCommen
 
 func getAuthor(author string, enableNerdFonts bool) string {
 	if enableNerdFonts {
-		return Red(" " + author).String()
+		authorLabel := fmt.Sprintf("%s %s", nerdfonts.Author, author)
+
+		return Red(authorLabel).String()
 	}
 
-	return "by " + Red(author).String()
+	return fmt.Sprintf("by %s", Red(author).String())
 }
 
 func getComments(commentsCount int, enableNerdFonts bool) string {
 	comments := strconv.Itoa(commentsCount)
 
 	if enableNerdFonts {
-		return Magenta(" " + comments).String()
+		commentsLabel := fmt.Sprintf("%s %s", nerdfonts.Comment, comments)
+
+		return Magenta(commentsLabel).String()
 	}
 
-	return Magenta(comments).String() + " comments"
+	return fmt.Sprintf("%s comments", Magenta(comments).String())
 }
 
-func getPoints(points int, enableNerdFonts bool) string {
-	p := strconv.Itoa(points)
+func getScore(points int, enableNerdFonts bool) string {
+	score := strconv.Itoa(points)
 
 	if enableNerdFonts {
-		return Yellow(p + " ﰵ").String()
+		pointsLabel := fmt.Sprintf("%s %s", score, nerdfonts.Score)
+
+		return Yellow(pointsLabel).String()
 	}
 
-	return Yellow(p).String() + " points"
+	return fmt.Sprintf("%s points", Yellow(score).String())
 }
 
 func getID(id int, enableNerdFonts bool) string {
-	idTag := strconv.Itoa(id)
-
 	if enableNerdFonts {
-		return Green(idTag + " ").Faint().String()
+		idLabel := fmt.Sprintf("%d %s", id, nerdfonts.Tag)
+
+		return Green(idLabel).Faint().String()
 	}
 
-	return Green("ID " + idTag).Faint().String()
+	idLabel := fmt.Sprintf("ID %d", id)
+
+	return Green(idLabel).Faint().String()
 }
 
 func getNewCommentsInfo(newComments int, enableNerdFonts bool) string {
@@ -108,13 +119,13 @@ func getNewCommentsInfo(newComments int, enableNerdFonts bool) string {
 		return ""
 	}
 
-	c := strconv.Itoa(newComments)
+	comments := strconv.Itoa(newComments)
 
 	if enableNerdFonts {
-		return " (" + Cyan(c).String() + ")"
+		return fmt.Sprintf(" (%s)", Cyan(comments).String())
 	}
 
-	return " (" + Cyan(c).String() + " new)"
+	return fmt.Sprintf(" (%s new)", Cyan(comments).String())
 }
 
 func getHeadline(title string, config *settings.Config) string {

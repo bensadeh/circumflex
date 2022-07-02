@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 
+	"clx/constants/nerdfonts"
+
 	"clx/constants/category"
 	"clx/item"
 	"clx/syntax"
@@ -179,7 +181,7 @@ func getComments(numberOfComments int, enableNerdFonts bool) string {
 	}
 
 	if enableNerdFonts {
-		return fmt.Sprintf(" %d", numberOfComments)
+		return fmt.Sprintf("%s %d", nerdfonts.Comment, numberOfComments)
 	}
 
 	return fmt.Sprintf("| %d comments", numberOfComments)
@@ -191,7 +193,7 @@ func getScore(score int, enableNerdFonts bool) string {
 	}
 
 	if enableNerdFonts {
-		return fmt.Sprintf("ﰵ %d ", score)
+		return fmt.Sprintf("%s %d ", nerdfonts.Score, score)
 	}
 
 	return fmt.Sprintf("%d points ", score)
@@ -203,7 +205,7 @@ func getAuthor(author string, enableNerdFonts bool) string {
 	}
 
 	if enableNerdFonts {
-		return fmt.Sprintf(" %s ", author)
+		return fmt.Sprintf("%s %s ", nerdfonts.Author, author)
 	}
 
 	return fmt.Sprintf("by %s ", author)
@@ -232,10 +234,10 @@ func parseTime(unixTime int64, enableNerdFonts bool) string {
 	now, _ := goment.New()
 
 	if enableNerdFonts {
-		return " " + moment.From(now) + " "
+		return fmt.Sprintf("%s %s ", nerdfonts.Time, moment.From(now))
 	}
 
-	return moment.From(now) + " "
+	return fmt.Sprintf("%s ", moment.From(now))
 }
 
 // ShortHelp returns the delegate's short help.
