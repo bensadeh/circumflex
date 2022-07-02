@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"strings"
 
+	"clx/constants/nerdfonts"
+
 	"clx/comment/postprocessor"
 	"clx/constants/margins"
 	"clx/constants/unicode"
@@ -90,7 +92,7 @@ func formatComment(c *item.Item, config *settings.Config, originalPoster string,
 ) string {
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, c.Level)
 
-	header := getCommentHeader(c, originalPoster, parentPoster, commentWidth, lastVisited)
+	header := getCommentHeader(c, originalPoster, parentPoster, commentWidth, lastVisited, config)
 	comment := parser.ParseComment(c.Content, config, commentWidth, availableScreenWidth)
 
 	paddedComment, _ := text.WrapWithPad(comment, availableScreenWidth, coloredIndentSymbol)
@@ -118,21 +120,21 @@ func getIndentString(level int) string {
 	return strings.Repeat(" ", level-1)
 }
 
-func getCommentHeader(c *item.Item, originalPoster string, parentPoster string, commentWidth int, lastVisited int64) string {
+func getCommentHeader(c *item.Item, originalPoster string, parentPoster string, commentWidth int, lastVisited int64, config *settings.Config) string {
 	if c.Level == 0 {
 		return formatHeader(c, originalPoster, parentPoster, true, true, true,
-			commentWidth, 0, lastVisited)
+			commentWidth, 0, lastVisited, config)
 	}
 
 	return formatHeader(c, originalPoster, parentPoster, false, false, false,
-		commentWidth, 1, lastVisited)
+		commentWidth, 1, lastVisited, config)
 }
 
 func formatHeader(c *item.Item, originalPoster string, parentPoster string, underlineHeader bool, showReplies bool,
-	enableZeroWidthSpace bool, commentWidth int, indentSize int, lastVisited int64,
+	enableZeroWidthSpace bool, commentWidth int, indentSize int, lastVisited int64, config *settings.Config,
 ) string {
 	author := getAuthor(c.User, lastVisited, c.Time)
-	authorLabel := getAuthorLabel(c.User, originalPoster, parentPoster)
+	authorLabel := getAuthorLabel(c.User, originalPoster, parentPoster, config.EnableNerdFonts)
 	zeroWidthSpace := getZeroWidthSpace(enableZeroWidthSpace)
 	repliesTag := getReplies(showReplies, c, lastVisited)
 	indentation := strings.Repeat(" ", indentSize)
@@ -238,7 +240,25 @@ func incrementNewCommentsCount(comments *item.Item, newCommentsSoFar *int, lastV
 	return *newCommentsSoFar
 }
 
-func getAuthorLabel(author, originalPoster, parentPoster string) string {
+func getAuthorLabel(author, originalPoster, parentPoster string, enableNerdFonts bool) string {
+	if enableNerdFonts {
+		authorLabel := nerdfonts.Author + " "
+
+		switch author {
+		case "dang":
+			return Green(authorLabel).String()
+
+		case originalPoster:
+			return Red(authorLabel).String()
+
+		case parentPoster:
+			return Magenta(authorLabel).String()
+
+		default:
+			return ""
+		}
+	}
+
 	switch author {
 	case "dang":
 		return Green("mod ").String()
