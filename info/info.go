@@ -3,6 +3,9 @@ package info
 import (
 	"strings"
 
+	"clx/constants/nerdfonts"
+	. "github.com/logrusorgru/aurora/v3"
+
 	"clx/constants/margins"
 	"clx/constants/style"
 	"clx/keymaps"
@@ -11,13 +14,13 @@ import (
 	text "github.com/MichaelMure/go-term-text"
 )
 
-func GetText(screenWidth int) string {
+func GetText(screenWidth int, enableNerdFonts bool) string {
 	keys := new(keymaps.List)
 	keys.Init()
 
 	cmd := lipgloss.NewStyle().Background(lipgloss.Color("237")).Italic(true)
 
-	keys.AddHeader(cmd.Foreground(style.GetBlue()).Render(" circumflex "))
+	keys.AddHeader(cmd.Foreground(style.GetMagenta()).Render(" circumflex "))
 	keys.AddSeparator()
 	keys.AddKeymap("Read comment section", "Enter")
 	keys.AddKeymap("Read article in Reader Mode", "Space")
@@ -34,6 +37,7 @@ func GetText(screenWidth int) string {
 	keys.AddKeymap("Bring up this screen", "i, ?")
 	keys.AddKeymap("Quit to prompt", "q")
 	keys.AddSeparator()
+
 	keys.AddHeader(cmd.Foreground(style.GetYellow()).Render(" less "))
 	keys.AddSeparator()
 	keys.AddKeymap("Down one half-window", "d")
@@ -44,6 +48,13 @@ func GetText(screenWidth int) string {
 	keys.AddSeparator()
 	keys.AddKeymap("Help screen", "h")
 	keys.AddKeymap("Return to circumflex", "q")
+	keys.AddSeparator()
+
+	keys.AddHeader(cmd.Foreground(style.GetBlue()).Render(" legend "))
+	keys.AddSeparator()
+	keys.AddKeymap("Original Poster", Red(getOP(enableNerdFonts)).String())
+	keys.AddKeymap("Parent Poster", Magenta(getPP(enableNerdFonts)).String())
+	keys.AddKeymap("Moderator", Green(getMod(enableNerdFonts)).String())
 
 	keymapsWidth := 80
 	listOfKeymaps := keys.Print(keymapsWidth)
@@ -63,4 +74,28 @@ func alignCenter(input string, screenWidth int, keymapsWidth int) string {
 	output, _ := text.WrapWithPad(input, screenWidth, padToCenterAlign)
 
 	return output
+}
+
+func getOP(enableNerdFonts bool) string {
+	if enableNerdFonts {
+		return nerdfonts.Author
+	}
+
+	return "OP"
+}
+
+func getPP(enableNerdFonts bool) string {
+	if enableNerdFonts {
+		return nerdfonts.Author
+	}
+
+	return "PP"
+}
+
+func getMod(enableNerdFonts bool) string {
+	if enableNerdFonts {
+		return nerdfonts.Author
+	}
+
+	return "mod"
 }

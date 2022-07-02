@@ -836,7 +836,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 }
 
 func (m *Model) showHelpScreen() tea.Cmd {
-	helpScreen := help.GetHelpScreen()
+	helpScreen := help.GetHelpScreen(m.config.EnableNerdFonts)
 
 	command := cli.WrapLess(helpScreen)
 

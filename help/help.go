@@ -15,14 +15,14 @@ const (
 	newPar  = "\n\n"
 )
 
-func GetHelpScreen() string {
+func GetHelpScreen(enableNerdFonts bool) string {
 	screenWidth := screen.GetTerminalWidth()
 	textWidth := 70
 
 	var sb strings.Builder
 
 	sb.WriteString(unicode.ZeroWidthSpace + lipgloss.PlaceHorizontal(screenWidth, lipgloss.Center, "") + newPar)
-	sb.WriteString(unicode.ZeroWidthSpace + lipgloss.PlaceHorizontal(screenWidth, lipgloss.Center, info.GetText(textWidth)) + newPar)
+	sb.WriteString(unicode.ZeroWidthSpace + lipgloss.PlaceHorizontal(screenWidth, lipgloss.Center, info.GetText(textWidth, enableNerdFonts)) + newPar)
 
 	sb.WriteString(unicode.ZeroWidthSpace + lipgloss.PlaceHorizontal(screenWidth, lipgloss.Center, lipgloss.NewStyle().Faint(true).Render("press q to return • github.com/bensadeh/circumflex • version "+app.Version)) + newPar)
 

@@ -5,6 +5,7 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 
+	termText "github.com/MichaelMure/go-term-text"
 	"github.com/jedib0t/go-pretty/v6/text"
 )
 
@@ -77,10 +78,10 @@ func (k *List) Print(screenWidth int) string {
 }
 
 func getDotSeparators(description string, key string, screenWidth int) string {
-	descriptionLength := len(description)
-	keyLength := len(key)
+	descriptionLength := termText.Len(description)
+	keyLength := termText.Len(key)
 	space := " "
-	spaceLength := len(space)
+	spaceLength := termText.Len(space)
 	numberOfDotSeparators := screenWidth - descriptionLength - keyLength - spaceLength - spaceLength
 
 	if numberOfDotSeparators < 0 {

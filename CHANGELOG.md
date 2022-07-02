@@ -11,6 +11,7 @@ _WIP_
 **Cosmetic**
 - Added Nerd Fonts to the comment section and submissions list
 - Fixed a bug where labels weren't hidden properly on Refresh or change of category
+- Added legend to help screen
 
 **Bugfixes**
 - Fixed a bug where the number of submissions from the front page was off by one
