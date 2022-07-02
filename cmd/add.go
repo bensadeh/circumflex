@@ -2,40 +2,34 @@ package cmd
 
 import (
 	"strconv"
-	"time"
+
+	"clx/hn/services/hybrid"
 
 	"clx/bfavorites"
-	"clx/item"
-	"github.com/charmbracelet/lipgloss"
-
 	"github.com/spf13/cobra"
 )
 
 func addCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "add",
-		Short: "Add item to list of favorites by ID",
-		Long: "Add item to list of favorites by ID. Enter the comment section from inside 'clx' to " +
-			"update fields.",
+		Use:                   "add",
+		Short:                 "Add item to list of favorites by ID",
+		Long:                  "Add item to list of favorites by ID",
 		Args:                  cobra.ExactArgs(1),
 		DisableFlagsInUseLine: true,
 		Run: func(cmd *cobra.Command, args []string) {
-			id := args[0]
+			id, err := strconv.Atoi(args[0])
+			if err != nil {
+				panic("ID format error")
+			}
 
-			submission := new(item.Item)
-			submission.ID, _ = strconv.Atoi(id)
-			submission.Title = lipgloss.NewStyle().
-				Foreground(lipgloss.Color("3")).
-				Render("[Enter comment section to update story]")
-			submission.Time = time.Now().Unix()
-			submission.User = "[]"
+			service := hybrid.Service{}
+			submission := service.FetchItem(id)
 
 			favorites := bfavorites.New()
 			favorites.Add(submission)
 			favorites.Write()
 
 			println("Item added to favorites")
-			println("(enter the comment section from clx to update)")
 		},
 	}
 }

@@ -6,6 +6,7 @@ _WIP_
 **New features**
 - Added flags for explicitly setting dark or light color scheme
 - Number of replies now also indicate how many of the replies are new since last visit
+- `clx add` now fetches metadata (before: user had to manually enter comment section to update)
 
 **Cosmetic**
 - Added more Nerd Fonts in the comment section

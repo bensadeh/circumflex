@@ -14,6 +14,18 @@ type Story struct {
 	Type          string `json:"type"`
 }
 
+type HN struct {
+	By          string `json:"by"`
+	Descendants int    `json:"descendants"`
+	Id          int    `json:"id"`
+	Kids        []int  `json:"kids"`
+	Score       int    `json:"score"`
+	Time        int    `json:"time"`
+	Title       string `json:"title"`
+	Type        string `json:"type"`
+	Url         string `json:"url"`
+}
+
 type Comments struct {
 	ID            int        `json:"id"`
 	Title         string     `json:"title"`

@@ -136,7 +136,32 @@ func joinStories(orderedIds []int, stories map[int]*item.Item) []*item.Item {
 }
 
 func (s Service) FetchItem(id int) *item.Item {
-	return nil
+	hn := new(endpoints.HN)
+
+	client := resty.New()
+	client.SetTimeout(5 * time.Second)
+	client.SetBaseURL("https://hacker-news.firebaseio.com/v0/item/")
+
+	_, _ = client.R().
+		SetHeader("User-Agent", app.Name+"/"+app.Version).
+		SetResult(hn).
+		Get(strconv.Itoa(id) + ".json")
+
+	return mapItem(hn)
+}
+
+func mapItem(hn *endpoints.HN) *item.Item {
+	return &item.Item{
+		ID:            hn.Id,
+		Title:         hn.Title,
+		Points:        hn.Score,
+		User:          hn.By,
+		Time:          int64(hn.Time),
+		TimeAgo:       "",
+		Type:          "",
+		URL:           hn.Url,
+		CommentsCount: hn.Descendants,
+	}
 }
 
 func (s Service) FetchComments(id int) *item.Item {
