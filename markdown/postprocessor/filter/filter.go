@@ -1,9 +1,10 @@
 package filter
 
 import (
+	"strings"
+
 	"clx/constants/unicode"
 	ansi "clx/utils/strip-ansi"
-	"strings"
 )
 
 type RuleSet struct {

@@ -1,12 +1,13 @@
 package comment_test
 
 import (
-	"clx/comment"
-	"clx/item"
-	"clx/settings"
 	"encoding/json"
 	"io/ioutil"
 	"testing"
+
+	"clx/comment"
+	"clx/item"
+	"clx/settings"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -1,10 +1,11 @@
 package list
 
 import (
+	"time"
+
 	"clx/constants/style"
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/lipgloss"
-	"time"
 )
 
 const (
@@ -50,15 +51,15 @@ func DefaultStyles() (s Styles) {
 
 	s.TitleBar = lipgloss.NewStyle().Padding(0, 0, 1, 2)
 
-	//s.Title = lipgloss.NewStyle().
+	// s.Title = lipgloss.NewStyle().
 	//	Background(lipgloss.Color("62")).
 	//	Foreground(lipgloss.Color("230")).
 	//	Padding(0, 1)
 
 	s.Spinner = lipgloss.NewStyle()
-	//Foreground(lipgloss.Color("250")).
-	//Background(lipgloss.Color("238")).
-	//Faint(true)
+	// Foreground(lipgloss.Color("250")).
+	// Background(lipgloss.Color("238")).
+	// Faint(true)
 
 	s.FilterPrompt = lipgloss.NewStyle().
 		Foreground(lipgloss.AdaptiveColor{Light: "#04B575", Dark: "#ECFD65"})
@@ -68,7 +69,7 @@ func DefaultStyles() (s Styles) {
 
 	s.DefaultFilterCharacterMatch = lipgloss.NewStyle().Underline(true)
 
-	//s.StatusBar = lipgloss.NewStyle().
+	// s.StatusBar = lipgloss.NewStyle().
 	//	Foreground(lipgloss.Color("16")).
 	//	Background(lipgloss.Color("4"))
 

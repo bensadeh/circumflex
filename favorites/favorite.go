@@ -1,10 +1,11 @@
 package favorites
 
 import (
-	"clx/file"
-	"clx/item"
 	"encoding/json"
 	"io/ioutil"
+
+	"clx/file"
+	"clx/item"
 )
 
 type Favorites struct {

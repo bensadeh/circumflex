@@ -1,10 +1,11 @@
 package ranking
 
 import (
-	"github.com/charmbracelet/lipgloss"
-	"github.com/logrusorgru/aurora/v3"
 	"strconv"
 	"strings"
+
+	"github.com/charmbracelet/lipgloss"
+	"github.com/logrusorgru/aurora/v3"
 )
 
 const (

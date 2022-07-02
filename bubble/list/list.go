@@ -1,6 +1,12 @@
 package list
 
 import (
+	"fmt"
+	"io"
+	"strconv"
+	"strings"
+	"time"
+
 	"clx/bfavorites"
 	"clx/browser"
 	"clx/bubble/list/message"
@@ -23,11 +29,6 @@ import (
 	"clx/screen"
 	"clx/settings"
 	"clx/validator"
-	"fmt"
-	"io"
-	"strconv"
-	"strings"
-	"time"
 
 	"github.com/charmbracelet/bubbles/paginator"
 	"github.com/charmbracelet/bubbles/spinner"
@@ -40,7 +41,7 @@ const (
 )
 
 // Item is an item that appears in the list.
-//type Item interface{}
+// type Item interface{}
 
 // ItemDelegate encapsulates the general functionality for all list items. The
 // benefit to separating this logic from the item itself is that you can change
@@ -244,7 +245,7 @@ func (m Model) SelectedItem() *item.Item {
 
 	items := m.VisibleItems()
 	if i < 0 || len(items) == 0 || len(items) <= i {
-		//return nil
+		// return nil
 		return &item.Item{}
 	}
 
@@ -299,6 +300,7 @@ func (m *Model) getNextCategory() int {
 
 	return m.category + 1
 }
+
 func (m *Model) getNumberOfCategories() int {
 	if m.favorites.HasItems() {
 		return numberOfCategories

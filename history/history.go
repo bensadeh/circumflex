@@ -1,10 +1,11 @@
 package history
 
 import (
-	"clx/file"
 	"encoding/json"
 	"os"
 	"path"
+
+	"clx/file"
 )
 
 type History interface {

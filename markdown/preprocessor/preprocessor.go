@@ -1,8 +1,9 @@
 package preprocessor
 
 import (
-	"clx/markdown"
 	"strings"
+
+	"clx/markdown"
 )
 
 func ConvertItalicTags(text string) string {

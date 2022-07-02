@@ -1,12 +1,13 @@
 package renderer
 
 import (
+	"regexp"
+	"strings"
+
 	"clx/constants/unicode"
 	"clx/markdown"
 	"clx/meta"
 	"clx/syntax"
-	"regexp"
-	"strings"
 
 	"github.com/charmbracelet/glamour"
 

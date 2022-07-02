@@ -1,11 +1,12 @@
 package info
 
 import (
+	"strings"
+
 	"clx/constants/margins"
 	"clx/constants/style"
 	"clx/keymaps"
 	"github.com/charmbracelet/lipgloss"
-	"strings"
 
 	text "github.com/MichaelMure/go-term-text"
 )

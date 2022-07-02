@@ -1,8 +1,9 @@
 package postprocessor
 
 import (
-	"clx/markdown/postprocessor/filter"
 	"strings"
+
+	"clx/markdown/postprocessor/filter"
 )
 
 func filterSite(text string, url string) string {

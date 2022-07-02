@@ -1,11 +1,12 @@
 package bfavorites
 
 import (
-	"clx/file"
-	"clx/item"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+
+	"clx/file"
+	"clx/item"
 )
 
 type Favorites struct {

@@ -1,6 +1,9 @@
 package comment
 
 import (
+	"strconv"
+	"strings"
+
 	"clx/comment/postprocessor"
 	"clx/constants/margins"
 	"clx/constants/unicode"
@@ -9,8 +12,6 @@ import (
 	"clx/parser"
 	"clx/settings"
 	"clx/syntax"
-	"strconv"
-	"strings"
 
 	. "github.com/logrusorgru/aurora/v3"
 
@@ -55,7 +56,8 @@ func getHeader(c *item.Item, config *settings.Config, lastVisited int64) string 
 }
 
 func printReplies(c *item.Item, config *settings.Config, screenWidth int, originalPoster string,
-	parentPoster string, firstCommentID int, lastVisited int64) string {
+	parentPoster string, firstCommentID int, lastVisited int64,
+) string {
 	isDeletedAndHasNoReplies := c.Content == "[deleted]" && len(c.Comments) == 0
 	if isDeletedAndHasNoReplies {
 		return ""
@@ -84,7 +86,8 @@ func printReplies(c *item.Item, config *settings.Config, screenWidth int, origin
 }
 
 func formatComment(c *item.Item, config *settings.Config, originalPoster string, parentPoster string, commentWidth int,
-	availableScreenWidth int, lastVisited int64) string {
+	availableScreenWidth int, lastVisited int64,
+) string {
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, c.Level)
 
 	header := getCommentHeader(c, originalPoster, parentPoster, commentWidth, lastVisited)
@@ -126,7 +129,8 @@ func getCommentHeader(c *item.Item, originalPoster string, parentPoster string, 
 }
 
 func formatHeader(c *item.Item, originalPoster string, parentPoster string, underlineHeader bool, showReplies bool,
-	enableZeroWidthSpace bool, commentWidth int, indentSize int, lastVisited int64) string {
+	enableZeroWidthSpace bool, commentWidth int, indentSize int, lastVisited int64,
+) string {
 	author := getAuthor(c.User, lastVisited, c.Time)
 	authorLabel := getAuthorLabel(c.User, originalPoster, parentPoster)
 	zeroWidthSpace := getZeroWidthSpace(enableZeroWidthSpace)

@@ -1,9 +1,10 @@
 package parser
 
 import (
+	"strings"
+
 	"clx/settings"
 	"clx/syntax"
-	"strings"
 
 	"github.com/logrusorgru/aurora/v3"
 

@@ -1,10 +1,11 @@
 package parser
 
 import (
-	"clx/markdown"
 	"errors"
 	"regexp"
 	"strings"
+
+	"clx/markdown"
 )
 
 func Parse(text string) []*markdown.Block {

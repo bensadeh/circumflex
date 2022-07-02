@@ -1,10 +1,11 @@
 package mock
 
 import (
-	"clx/constants/category"
-	"clx/item"
 	"math/rand"
 	"time"
+
+	"clx/constants/category"
+	"clx/item"
 )
 
 type Service struct{}
@@ -14,7 +15,7 @@ func (Service) Init(_ int) {
 
 func (Service) FetchStories(_ int, cat int) []*item.Item {
 	// Uncomment to test the spinner on startup
-	//time.Sleep(time.Second * 4)
+	// time.Sleep(time.Second * 4)
 
 	items := []*item.Item{
 		{
@@ -280,7 +281,7 @@ func (Service) FetchStories(_ int, cat int) []*item.Item {
 		},
 	}
 
-	//Randomize list to make debugging easier
+	// Randomize list to make debugging easier
 	if cat != category.FrontPage {
 		rand.Shuffle(len(items), func(i, j int) { items[i], items[j] = items[j], items[i] })
 	}

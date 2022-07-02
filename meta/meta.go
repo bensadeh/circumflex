@@ -1,12 +1,13 @@
 package meta
 
 import (
+	"strconv"
+
 	"clx/constants/unicode"
 	"clx/item"
 	"clx/parser"
 	"clx/settings"
 	"clx/syntax"
-	"strconv"
 
 	text "github.com/MichaelMure/go-term-text"
 

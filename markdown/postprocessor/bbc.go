@@ -1,8 +1,9 @@
 package postprocessor
 
 import (
-	"clx/markdown/postprocessor/filter"
 	"strings"
+
+	"clx/markdown/postprocessor/filter"
 
 	. "github.com/logrusorgru/aurora/v3"
 )

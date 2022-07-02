@@ -1,10 +1,11 @@
 package header
 
 import (
+	"strings"
+
 	"clx/constants/category"
 	"clx/constants/style"
 	"github.com/charmbracelet/lipgloss"
-	"strings"
 )
 
 func GetHeader(selectedSubHeader int, favoritesHasItems bool, width int) string {

@@ -1,8 +1,9 @@
 package keymaps
 
 import (
-	"github.com/charmbracelet/lipgloss"
 	"strings"
+
+	"github.com/charmbracelet/lipgloss"
 
 	"github.com/jedib0t/go-pretty/v6/text"
 )

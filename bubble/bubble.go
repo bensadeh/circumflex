@@ -1,14 +1,16 @@
 package bubble
 
 import (
+	"fmt"
+	"os"
+
 	"clx/bfavorites"
 	"clx/bubble/list"
 	"clx/cli"
 	"clx/settings"
-	"fmt"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"os"
 )
 
 var docStyle = lipgloss.NewStyle()
@@ -44,5 +46,4 @@ func Run(config *settings.Config) {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}
-
 }

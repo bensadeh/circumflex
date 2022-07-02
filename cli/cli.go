@@ -1,10 +1,11 @@
 package cli
 
 import (
-	"clx/constants/unicode"
 	"os"
 	"os/exec"
 	"strings"
+
+	"clx/constants/unicode"
 )
 
 func Less(input string) {

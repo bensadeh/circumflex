@@ -1,14 +1,15 @@
 package reader
 
 import (
-	"clx/markdown"
-	"clx/markdown/preprocessor"
 	"fmt"
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"clx/markdown"
+	"clx/markdown/preprocessor"
 
 	"github.com/JohannesKaufmann/html-to-markdown/plugin"
 
