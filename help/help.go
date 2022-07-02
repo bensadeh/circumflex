@@ -1,12 +1,13 @@
 package help
 
 import (
-	"clx/constants/clx"
+	"strings"
+
+	"clx/app"
 	"clx/constants/unicode"
 	"clx/info"
 	"clx/screen"
 	"github.com/charmbracelet/lipgloss"
-	"strings"
 )
 
 const (
@@ -21,10 +22,9 @@ func GetHelpScreen() string {
 	var sb strings.Builder
 
 	sb.WriteString(unicode.ZeroWidthSpace + lipgloss.PlaceHorizontal(screenWidth, lipgloss.Center, "") + newPar)
-	//sb.WriteString(unicode.ZeroWidthSpace + lipgloss.PlaceHorizontal(screenWidth, lipgloss.Center, getSubSection(textWidth)) + newPar)
 	sb.WriteString(unicode.ZeroWidthSpace + lipgloss.PlaceHorizontal(screenWidth, lipgloss.Center, info.GetText(textWidth)) + newPar)
 
-	sb.WriteString(unicode.ZeroWidthSpace + lipgloss.PlaceHorizontal(screenWidth, lipgloss.Center, lipgloss.NewStyle().Faint(true).Render("press q to return • github.com/bensadeh/circumflex • version "+clx.Version)) + newPar)
+	sb.WriteString(unicode.ZeroWidthSpace + lipgloss.PlaceHorizontal(screenWidth, lipgloss.Center, lipgloss.NewStyle().Faint(true).Render("press q to return • github.com/bensadeh/circumflex • version "+app.Version)) + newPar)
 
 	return sb.String()
 }

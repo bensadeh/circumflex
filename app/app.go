@@ -1,4 +1,4 @@
-package clx
+package app
 
 const (
 	Name    = "circumflex"

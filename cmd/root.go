@@ -1,8 +1,8 @@
 package cmd
 
 import (
+	clx2 "clx/app"
 	"clx/bubble"
-	clx2 "clx/constants/clx"
 	"clx/indent"
 	"clx/settings"
 	"github.com/charmbracelet/lipgloss"

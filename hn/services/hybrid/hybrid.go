@@ -1,24 +1,25 @@
 package hybrid
 
 import (
-	"clx/constants/category"
-	"clx/constants/clx"
-	"clx/endpoints"
-	"clx/item"
 	"fmt"
-	"github.com/bobesa/go-domain-util/domainutil"
-	"github.com/go-resty/resty/v2"
 	"strconv"
 	"strings"
 	"time"
+
+	"clx/app"
+	"clx/constants/category"
+	"clx/endpoints"
+	"clx/item"
+
+	"github.com/bobesa/go-domain-util/domainutil"
+	"github.com/go-resty/resty/v2"
 )
 
 const (
 	uri = "https://hacker-news.firebaseio.com/v0"
 )
 
-type Service struct {
-}
+type Service struct{}
 
 func (s *Service) FetchStories(itemsToFetch int, category int) []*item.Item {
 	listOfIDs := fetchStoriesList(category)
@@ -34,7 +35,7 @@ func (s *Service) FetchStories(itemsToFetch int, category int) []*item.Item {
 	client.SetTimeout(5 * time.Second)
 
 	_, _ = client.R().
-		SetHeader("User-Agent", clx.Name+"/"+clx.Version).
+		SetHeader("User-Agent", app.Name+"/"+app.Version).
 		SetResult(&a).
 		Get(url)
 
@@ -53,7 +54,7 @@ func fetchStoriesList(category int) []int {
 	client.SetTimeout(5 * time.Second)
 
 	_, _ = client.R().
-		SetHeader("User-Agent", clx.Name+"/"+clx.Version).
+		SetHeader("User-Agent", app.Name+"/"+app.Version).
 		SetResult(&stories).
 		Get(url)
 
@@ -139,7 +140,7 @@ func (s Service) FetchStory(id int) *item.Item {
 	client.SetBaseURL("http://api.hackerwebapp.com/item/")
 
 	_, _ = client.R().
-		SetHeader("User-Agent", clx.Name+"/"+clx.Version).
+		SetHeader("User-Agent", app.Name+"/"+app.Version).
 		SetResult(comments).
 		Get(strconv.Itoa(id))
 

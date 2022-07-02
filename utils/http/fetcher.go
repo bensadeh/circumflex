@@ -1,12 +1,13 @@
 package http
 
 import (
-	"clx/constants/category"
-	"clx/constants/clx"
-	"clx/endpoints"
 	"fmt"
 	"strconv"
 	"time"
+
+	"clx/app"
+	"clx/constants/category"
+	"clx/endpoints"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -26,7 +27,7 @@ func FetchStories(page int, category int) ([]*endpoints.Story, error) {
 	client.SetTimeout(5 * time.Second)
 
 	_, err := client.R().
-		SetHeader("User-Agent", clx.Name+"/"+clx.Version).
+		SetHeader("User-Agent", app.Name+"/"+app.Version).
 		SetResult(&s).
 		Get(url + p)
 	if err != nil {
