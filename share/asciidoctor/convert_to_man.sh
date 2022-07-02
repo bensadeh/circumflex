@@ -1,3 +1,7 @@
 #!/bin/bash
 
-asciidoctor -b manpage clx.adoc --destination=../man/
+version=$(go run ../../main.go version)
+
+asciidoctor -b manpage clx.adoc \
+  --destination=../man/ \
+  --attribute release-version="$version"

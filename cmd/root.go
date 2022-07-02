@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	clx2 "clx/app"
+	"clx/app"
 	"clx/bubble"
 	"clx/indent"
 	"clx/settings"
@@ -27,7 +27,7 @@ func Root() *cobra.Command {
 		Use:     "clx",
 		Short:   "circumflex is a command line tool for browsing Hacker News in your terminal",
 		Long:    "circumflex is a command line tool for browsing Hacker News in your terminal",
-		Version: clx2.Version,
+		Version: app.Version,
 		Run: func(cmd *cobra.Command, args []string) {
 			config := getConfig()
 			config.IndentationSymbol = indent.GetIndentSymbol(hideIndentSymbol)
@@ -41,6 +41,7 @@ func Root() *cobra.Command {
 	rootCmd.AddCommand(addCmd())
 	rootCmd.AddCommand(clearCmd())
 	rootCmd.AddCommand(viewCmd())
+	rootCmd.AddCommand(versionCmd())
 
 	configureFlags(rootCmd)
 

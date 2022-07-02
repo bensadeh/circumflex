@@ -1,10 +1,7 @@
 = clx(1)
 :doctype: manpage
 :manmanual: circumflex
-//:mansource: clx
-:release-version: 2.2
-//:man version:  {revnumber}
-:man source: circumflex {release-version}
+:man source: circumflex +{release-version}+
 
 ifdef::env-github[]
 :toc:
