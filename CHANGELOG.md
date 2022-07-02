@@ -9,6 +9,7 @@ _WIP_
 
 **Cosmetic**
 - Added more Nerd Fonts in the comment section
+- Fixed a bug where labels weren't hidden properly on Refresh or change of category
 
 ## 2.1
 _25.06.22_

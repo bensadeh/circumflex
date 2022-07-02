@@ -1,12 +1,13 @@
 package syntax
 
 import (
+	"regexp"
+	"strings"
+
 	"clx/constants/style"
 	"clx/constants/unicode"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/logrusorgru/aurora/v3"
-	"regexp"
-	"strings"
 )
 
 const (
@@ -23,21 +24,10 @@ const (
 	Unselected = iota
 	HeadlineInCommentSection
 	Selected
-	DisableInput
 	MarkAsRead
 	AddToFavorites
 	RemoveFromFavorites
 )
-
-func HighlightYCStartups(comment string) string {
-	expression := regexp.MustCompile(`\((YC [SW]\d{2})\)`)
-
-	orange := uint8(214)
-	black := uint8(232)
-	highlightedStartup := aurora.Index(black, ` $1 `).BgIndex(orange).String()
-
-	return expression.ReplaceAllString(comment, highlightedStartup)
-}
 
 func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNerdFonts bool) string {
 	var expression *regexp.Regexp
@@ -62,7 +52,7 @@ func getYCBar(text string, highlightType int, enableNerdFonts bool) string {
 	case Selected:
 		return label(text, style.GetOrange(), lipgloss.Color("16"), highlightType, enableNerdFonts)
 
-	case MarkAsRead | DisableInput:
+	case MarkAsRead:
 		return label(text, lipgloss.Color("237"), style.GetOrangeFaint(), highlightType, enableNerdFonts)
 
 	default:
@@ -75,7 +65,7 @@ func getYCBarNerdFonts(text string, highlightType int, enableNerdFonts bool) str
 	case Selected:
 		return label(text, style.GetOrange(), lipgloss.Color("16"), highlightType, enableNerdFonts)
 
-	case MarkAsRead | DisableInput:
+	case MarkAsRead:
 		return label(text, lipgloss.Color("234"), style.GetOrangeFaint(), highlightType, enableNerdFonts)
 
 	default:
@@ -95,7 +85,7 @@ func getYear(text string, highlightType int, enableNerdFont bool) string {
 	case Selected:
 		return label(text, lipgloss.AdaptiveColor{Light: "16", Dark: "16"}, lipgloss.AdaptiveColor{Light: "27", Dark: "214"}, highlightType, enableNerdFont)
 
-	case MarkAsRead | DisableInput:
+	case MarkAsRead:
 		return label(text, lipgloss.AdaptiveColor{Light: "39", Dark: "94"}, style.GetHeaderBg(), highlightType, enableNerdFont)
 
 	default:
@@ -193,8 +183,6 @@ func getHighlight(highlightType int) string {
 		return bold
 	case Selected:
 		return reverse
-	case DisableInput:
-		return faint
 	case MarkAsRead:
 		return faint + italic
 	case AddToFavorites:
@@ -231,7 +219,7 @@ func getSpecialContentRoundedBar(text string, highlightType int, enableNerdFonts
 	case Selected:
 		return label(text, lipgloss.Color("4"), lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, highlightType, enableNerdFonts)
 
-	case MarkAsRead | DisableInput:
+	case MarkAsRead:
 		return label(text, style.GetUnselectedItemFg(), style.GetHeaderBg(), highlightType, enableNerdFonts)
 
 	default:

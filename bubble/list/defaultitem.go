@@ -1,12 +1,14 @@
 package list
 
 import (
+	"fmt"
+	"io"
+
 	"clx/constants/category"
 	"clx/item"
 	"clx/syntax"
-	"fmt"
+
 	"github.com/nleeper/goment"
-	"io"
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
@@ -149,7 +151,7 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 
 	case m.disableInput && !(m.onAddToFavoritesPrompt || m.onRemoveFromFavoritesPrompt):
 		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(false), s.MarkAsReadDesc, domain,
-			desc, syntax.DisableInput, m.config.PlainHeadlines, m.config.EnableNerdFonts)
+			desc, syntax.MarkAsRead, m.config.PlainHeadlines, m.config.EnableNerdFonts)
 
 	default:
 		title, desc = styleTitleAndDesc(title, s.NormalTitle, s.NormalDesc, domain,
@@ -164,7 +166,8 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 }
 
 func styleTitleAndDesc(title string, titleStyle lipgloss.Style, descStyle lipgloss.Style, domain string, desc string,
-	syntaxStyle int, plainHeadlines bool, enableNerdFont bool) (string, string) {
+	syntaxStyle int, plainHeadlines bool, enableNerdFont bool,
+) (string, string) {
 	title = titleStyle.Render(title)
 
 	if !plainHeadlines {
