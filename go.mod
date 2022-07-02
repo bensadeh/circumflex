@@ -17,7 +17,7 @@ require (
 	github.com/logrusorgru/aurora/v3 v3.0.0
 	github.com/muesli/reflow v0.3.0
 	github.com/muesli/termenv v0.12.0
-	github.com/nleeper/goment v1.4.0
+	github.com/nleeper/goment v1.4.4
 	github.com/spf13/cobra v1.4.0
 	github.com/stretchr/testify v1.7.0
 	github.com/wayneashleyberry/terminal-dimensions v1.0.0

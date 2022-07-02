@@ -137,7 +137,7 @@ func (Service) FetchItems(_ int, cat int) []*item.Item {
 		},
 		{
 			Title:         "Sed ut perspiciatis, unde omnis iste natus error [video]",
-			Points:        0,
+			Points:        26,
 			ID:            14,
 			User:          "xi",
 			Time:          time.Now().Add(-time.Minute * 17).Unix(),

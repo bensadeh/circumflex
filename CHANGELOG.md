@@ -9,7 +9,7 @@ _WIP_
 - `clx add` now fetches metadata (before: user had to manually enter comment section to update)
 
 **Cosmetic**
-- Added more Nerd Fonts in the comment section
+- Added Nerd Fonts to the comment section and submissions list
 - Fixed a bug where labels weren't hidden properly on Refresh or change of category
 
 **Bugfixes**

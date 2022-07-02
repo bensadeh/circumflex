@@ -115,10 +115,18 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 		s                   = &d.Styles
 	)
 
+	enableNerdFonts := m.config.EnableNerdFonts
+
 	title = item.Title
+
 	domain = syntax.HighlightDomain(item.Domain)
-	desc = fmt.Sprintf("%d points by %s %s | %d comments",
-		item.Points, item.User, parseTime(item.Time), item.CommentsCount)
+
+	score := getScore(item.Points, enableNerdFonts)
+	author := getAuthor(item.User, enableNerdFonts)
+	comments := getComments(item.CommentsCount, enableNerdFonts)
+	time := parseTime(item.Time, enableNerdFonts)
+
+	desc = score + author + time + comments
 
 	// Prevent text from exceeding list width
 	if m.width > 0 {
@@ -135,27 +143,27 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 	switch {
 	case isSelected && m.onAddToFavoritesPrompt:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitleAddToFavorites, s.SelectedDescAddToFavorites, domain,
-			desc, syntax.AddToFavorites, m.config.PlainHeadlines, m.config.EnableNerdFonts)
+			desc, syntax.AddToFavorites, m.config.PlainHeadlines, enableNerdFonts)
 
 	case isSelected && m.onRemoveFromFavoritesPrompt:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitleRemoveFromFavorites, s.SelectedDescRemoveFromFavoritesFavorites, domain,
-			desc, syntax.RemoveFromFavorites, m.config.PlainHeadlines, m.config.EnableNerdFonts)
+			desc, syntax.RemoveFromFavorites, m.config.PlainHeadlines, enableNerdFonts)
 
 	case isSelected && !m.disableInput:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitle, s.SelectedDesc, domain,
-			desc, syntax.Selected, m.config.PlainHeadlines, m.config.EnableNerdFonts)
+			desc, syntax.Selected, m.config.PlainHeadlines, enableNerdFonts)
 
 	case markAsRead && m.category != category.Favorites:
 		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle, s.MarkAsReadDesc, domain,
-			desc, syntax.MarkAsRead, m.config.PlainHeadlines, m.config.EnableNerdFonts)
+			desc, syntax.MarkAsRead, m.config.PlainHeadlines, enableNerdFonts)
 
 	case m.disableInput && !(m.onAddToFavoritesPrompt || m.onRemoveFromFavoritesPrompt):
 		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(false), s.MarkAsReadDesc, domain,
-			desc, syntax.MarkAsRead, m.config.PlainHeadlines, m.config.EnableNerdFonts)
+			desc, syntax.MarkAsRead, m.config.PlainHeadlines, enableNerdFonts)
 
 	default:
 		title, desc = styleTitleAndDesc(title, s.NormalTitle, s.NormalDesc, domain,
-			desc, syntax.Unselected, m.config.PlainHeadlines, m.config.EnableNerdFonts)
+			desc, syntax.Unselected, m.config.PlainHeadlines, enableNerdFonts)
 	}
 
 	if d.ShowDescription {
@@ -163,6 +171,42 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 		return
 	}
 	_, _ = fmt.Fprintf(w, "%s", title)
+}
+
+func getComments(numberOfComments int, enableNerdFonts bool) string {
+	if numberOfComments == 0 {
+		return ""
+	}
+
+	if enableNerdFonts {
+		return fmt.Sprintf(" %d", numberOfComments)
+	}
+
+	return fmt.Sprintf("| %d comments", numberOfComments)
+}
+
+func getScore(score int, enableNerdFonts bool) string {
+	if score == 0 {
+		return ""
+	}
+
+	if enableNerdFonts {
+		return fmt.Sprintf("ﰵ %d ", score)
+	}
+
+	return fmt.Sprintf("%d points ", score)
+}
+
+func getAuthor(author string, enableNerdFonts bool) string {
+	if author == "" {
+		return ""
+	}
+
+	if enableNerdFonts {
+		return fmt.Sprintf(" %s ", author)
+	}
+
+	return fmt.Sprintf("by %s ", author)
 }
 
 func styleTitleAndDesc(title string, titleStyle lipgloss.Style, descStyle lipgloss.Style, domain string, desc string,
@@ -183,11 +227,15 @@ func styleTitleAndDesc(title string, titleStyle lipgloss.Style, descStyle lipglo
 	return title, desc
 }
 
-func parseTime(unixTime int64) string {
+func parseTime(unixTime int64, enableNerdFonts bool) string {
 	moment, _ := goment.Unix(unixTime)
 	now, _ := goment.New()
 
-	return moment.From(now)
+	if enableNerdFonts {
+		return " " + moment.From(now) + " "
+	}
+
+	return moment.From(now) + " "
 }
 
 // ShortHelp returns the delegate's short help.
