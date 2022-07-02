@@ -22,12 +22,15 @@ const (
 type Service struct{}
 
 func (s *Service) FetchStories(itemsToFetch int, category int) []*item.Item {
+	// Posts of the type: 'Company (YC __) is hiring ...' is filtered out
+	// from Algolia. For this reason, we ask for one more item than we need.
+	itemsToFetchWithBuffer := itemsToFetch + 1
 	listOfIDs := fetchStoriesList(category)
 
-	ids := getStoryListURIParam(listOfIDs[0:itemsToFetch])
+	ids := getStoryListURIParam(listOfIDs[0:itemsToFetchWithBuffer])
 
 	url := "https://hn.algolia.com/api/v1/search?tags=story," +
-		"(" + ids + ")&hitsPerPage=" + strconv.Itoa(itemsToFetch)
+		"(" + ids + ")&hitsPerPage=" + strconv.Itoa(itemsToFetchWithBuffer)
 
 	var a *algolia
 
@@ -42,7 +45,7 @@ func (s *Service) FetchStories(itemsToFetch int, category int) []*item.Item {
 	mapOfItemsWithMetaData := mapStories(a)
 	orderedStories := joinStories(listOfIDs, mapOfItemsWithMetaData)
 
-	return orderedStories
+	return orderedStories[0:min(itemsToFetch, len(orderedStories))]
 }
 
 func fetchStoriesList(category int) []int {
@@ -169,4 +172,11 @@ func mapComments(comments *endpoints.Comments) *item.Item {
 		Content:       comments.Content,
 		CommentsCount: comments.CommentsCount,
 	}
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }

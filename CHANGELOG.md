@@ -11,6 +11,9 @@ _WIP_
 - Added more Nerd Fonts in the comment section
 - Fixed a bug where labels weren't hidden properly on Refresh or change of category
 
+**Bugfixes**
+- Fixed a bug where the number of submissions from the front page was off by one
+
 ## 2.1
 _25.06.22_
 
