@@ -434,8 +434,6 @@ func (m *Model) hideStatusMessage() {
 
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	if m.OnStartup() {
-		prepareDebugMode(m.config.DebugMode)
-
 		m.SetSize(screen.GetTerminalWidth(), screen.GetTerminalHeight())
 
 		var cmds []tea.Cmd
@@ -563,13 +561,6 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	cmds = append(cmds, m.handleBrowsing(msg))
 
 	return m, tea.Batch(cmds...)
-}
-
-func prepareDebugMode(debugMode bool) {
-	if debugMode {
-		// Hack: Debug mode tends to start up with garbled input. Adding a sleep on startup solves this issue.
-		time.Sleep(10 * time.Millisecond)
-	}
 }
 
 func (m *Model) updateCursor() {
