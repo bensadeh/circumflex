@@ -32,7 +32,7 @@ func (s *Service) FetchItems(itemsToFetch int, category int) []*item.Item {
 	url := "https://hn.algolia.com/api/v1/search?tags=story," +
 		"(" + ids + ")&hitsPerPage=" + strconv.Itoa(itemsToFetchWithBuffer)
 
-	var a *algolia
+	var a *endpoints.Algolia
 
 	client := resty.New()
 	client.SetTimeout(5 * time.Second)
@@ -93,7 +93,7 @@ func getCategory(cat int) string {
 	}
 }
 
-func mapStories(stories *algolia) map[int]*item.Item {
+func mapStories(stories *endpoints.Algolia) map[int]*item.Item {
 	m := make(map[int]*item.Item)
 
 	for _, story := range stories.Hits {
@@ -133,6 +133,10 @@ func joinStories(orderedIds []int, stories map[int]*item.Item) []*item.Item {
 	}
 
 	return orderedStories
+}
+
+func (s Service) FetchItem(id int) *item.Item {
+	return nil
 }
 
 func (s Service) FetchComments(id int) *item.Item {

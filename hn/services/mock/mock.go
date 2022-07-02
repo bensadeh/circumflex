@@ -397,3 +397,7 @@ func (Service) FetchComments(_ int) *item.Item {
 		CommentsCount: 57,
 	}
 }
+
+func (s Service) FetchItem(id int) *item.Item {
+	return nil
+}
