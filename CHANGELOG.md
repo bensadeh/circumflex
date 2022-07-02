@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2.2
-_WIP_
+_02.07.22_
 
 **New features**
 - Added flags for explicitly setting dark or light color scheme
