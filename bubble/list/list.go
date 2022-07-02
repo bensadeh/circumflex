@@ -104,7 +104,7 @@ type Model struct {
 func (m *Model) FetchFrontPageStories() tea.Cmd {
 	return func() tea.Msg {
 		itemsToFetch := m.getNumberOfItemsToFetch(m.category)
-		stories := m.service.FetchStories(itemsToFetch, category.FrontPage)
+		stories := m.service.FetchItems(itemsToFetch, category.FrontPage)
 
 		m.items[category.FrontPage] = stories
 		return message.FetchingFinished{}
@@ -490,7 +490,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 		m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
-		story := m.service.FetchStory(msg.Id)
+		story := m.service.FetchComments(msg.Id)
 
 		if m.category == category.Favorites {
 			m.favorites.UpdateStoryAndWriteToDisk(story)
@@ -540,7 +540,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	case message.ChangeCategory:
 		return m, func() tea.Msg {
 			itemsToFetch := m.getNumberOfItemsToFetch(msg.Category)
-			stories := m.service.FetchStories(itemsToFetch, msg.Category)
+			stories := m.service.FetchItems(itemsToFetch, msg.Category)
 
 			m.items[msg.Category] = stories
 

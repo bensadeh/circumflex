@@ -26,7 +26,7 @@ func viewCmd() *cobra.Command {
 
 			service := new(hybrid_bubble.Service)
 
-			comments := service.FetchStory(id)
+			comments := service.FetchComments(id)
 
 			config := settings.New()
 

@@ -21,7 +21,7 @@ const (
 
 type Service struct{}
 
-func (s *Service) FetchStories(itemsToFetch int, category int) []*item.Item {
+func (s *Service) FetchItems(itemsToFetch int, category int) []*item.Item {
 	// Posts of the type: 'Company (YC __) is hiring ...' is filtered out
 	// from Algolia. For this reason, we ask for one more item than we need.
 	itemsToFetchWithBuffer := itemsToFetch + 1
@@ -135,7 +135,7 @@ func joinStories(orderedIds []int, stories map[int]*item.Item) []*item.Item {
 	return orderedStories
 }
 
-func (s Service) FetchStory(id int) *item.Item {
+func (s Service) FetchComments(id int) *item.Item {
 	comments := new(endpoints.Comments)
 
 	client := resty.New()

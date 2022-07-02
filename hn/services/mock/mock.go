@@ -13,7 +13,7 @@ type Service struct{}
 func (Service) Init(_ int) {
 }
 
-func (Service) FetchStories(_ int, cat int) []*item.Item {
+func (Service) FetchItems(_ int, cat int) []*item.Item {
 	// Uncomment to test the spinner on startup
 	// time.Sleep(time.Second * 4)
 
@@ -289,7 +289,7 @@ func (Service) FetchStories(_ int, cat int) []*item.Item {
 	return items
 }
 
-func (Service) FetchStory(_ int) *item.Item {
+func (Service) FetchComments(_ int) *item.Item {
 	return &item.Item{
 		ID:      32145667,
 		Title:   "Mauris commodo odio (YC W05) quis diam fermentum, et suscipit augue pharetra [video]",
