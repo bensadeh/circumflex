@@ -6,9 +6,9 @@ import (
 
 	"clx/constants/nerdfonts"
 
+	"clx/comment"
 	"clx/constants/unicode"
 	"clx/item"
-	"clx/parser"
 	"clx/settings"
 	"clx/syntax"
 
@@ -165,7 +165,7 @@ func parseRootComment(c string, config *settings.Config) string {
 		return ""
 	}
 
-	comment := parser.ParseComment(c, config, config.CommentWidth-2, config.CommentWidth)
+	comment := comment.Print(c, config, config.CommentWidth-2, config.CommentWidth)
 	wrappedComment, _ := text.Wrap(comment, config.CommentWidth-2)
 
 	return newParagraph + wrappedComment

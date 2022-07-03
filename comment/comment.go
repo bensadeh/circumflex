@@ -1,275 +1,170 @@
 package comment
 
 import (
-	"strconv"
 	"strings"
 
-	"clx/constants/nerdfonts"
-
-	"clx/comment/postprocessor"
-	"clx/constants/margins"
-	"clx/constants/unicode"
-	"clx/item"
-	"clx/meta"
-	"clx/parser"
 	"clx/settings"
 	"clx/syntax"
 
-	. "github.com/logrusorgru/aurora/v3"
+	"github.com/logrusorgru/aurora/v3"
 
 	text "github.com/MichaelMure/go-term-text"
 )
 
 const (
-	newLine      = "\n"
-	newParagraph = "\n\n"
+	reset  = "\033[0m"
+	dimmed = "\033[2m"
+	italic = "\033[3m"
 )
 
-func ToString(comments *item.Item, config *settings.Config, screenWidth int, lastVisited int64) string {
-	commentSectionScreenWidth := screenWidth - margins.CommentSectionLeftMargin
+type comment struct {
+	sections []*section
+}
 
-	header := getHeader(comments, config, lastVisited)
-	firstCommentID := getFirstCommentID(comments.Comments)
+type section struct {
+	isCodeBlock bool
+	isQuote     bool
+	content     string
+}
 
-	replies := ""
-
-	for _, reply := range comments.Comments {
-		replies += printReplies(reply, config, commentSectionScreenWidth, comments.User, "", firstCommentID,
-			lastVisited)
+func Print(c string, config *settings.Config, commentWidth int, availableScreenWidth int) string {
+	if c == "[deleted]" {
+		return aurora.Faint(c).String()
 	}
 
-	commentSection := postprocessor.Process(header+replies+newLine, screenWidth)
+	c = strings.Replace(c, "<p>", "", 1)
+	c = strings.ReplaceAll(c, "\n</code></pre>\n", "<p>")
+	paragraphs := strings.Split(c, "<p>")
 
-	return commentSection
-}
+	comment := new(comment)
+	comment.sections = make([]*section, len(paragraphs))
 
-func getFirstCommentID(comments []*item.Item) int {
-	if len(comments) == 0 {
-		return 0
-	}
+	for i, paragraph := range paragraphs {
+		s := new(section)
+		s.content = syntax.ReplaceCharacters(paragraph)
 
-	return comments[0].ID
-}
-
-func getHeader(c *item.Item, config *settings.Config, lastVisited int64) string {
-	newComments := getNewCommentsCount(c, lastVisited)
-
-	return meta.GetCommentSectionMetaBlock(c, config, newComments) + newParagraph
-}
-
-func printReplies(c *item.Item, config *settings.Config, screenWidth int, originalPoster string,
-	parentPoster string, firstCommentID int, lastVisited int64,
-) string {
-	isDeletedAndHasNoReplies := c.Content == "[deleted]" && len(c.Comments) == 0
-	if isDeletedAndHasNoReplies {
-		return ""
-	}
-
-	indentation := getIndentString(c.Level)
-	indentSize := len(indentation)
-	availableScreenWidth := screenWidth - indentSize - margins.CommentSectionLeftMargin
-	adjustedCommentWidth := config.CommentWidth - c.Level
-
-	comment := formatComment(c, config, originalPoster, parentPoster, adjustedCommentWidth, availableScreenWidth,
-		lastVisited)
-	indentedComment, _ := text.WrapWithPad(comment, screenWidth, indentation)
-	fullComment := getSeparator(c.Level, config.CommentWidth, c.ID, firstCommentID) + indentedComment + newLine
-
-	if c.Level == 0 {
-		parentPoster = c.User
-	}
-
-	for _, reply := range c.Comments {
-		fullComment += printReplies(reply, config, screenWidth, originalPoster, parentPoster, firstCommentID,
-			lastVisited)
-	}
-
-	return fullComment
-}
-
-func formatComment(c *item.Item, config *settings.Config, originalPoster string, parentPoster string, commentWidth int,
-	availableScreenWidth int, lastVisited int64,
-) string {
-	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, c.Level)
-
-	header := getCommentHeader(c, originalPoster, parentPoster, commentWidth, lastVisited, config)
-	comment := parser.ParseComment(c.Content, config, commentWidth, availableScreenWidth)
-
-	paddedComment, _ := text.WrapWithPad(comment, availableScreenWidth, coloredIndentSymbol)
-
-	return header + paddedComment
-}
-
-func getSeparator(level int, commentWidth int, currentCommentID int, firstCommentID int) string {
-	if currentCommentID == firstCommentID {
-		return ""
-	}
-
-	if level != 0 || currentCommentID == firstCommentID {
-		return newLine
-	}
-
-	return Faint(strings.Repeat(" ", commentWidth)).Underline().String() + newLine + newLine
-}
-
-func getIndentString(level int) string {
-	if level == 0 {
-		return ""
-	}
-
-	return strings.Repeat(" ", level-1)
-}
-
-func getCommentHeader(c *item.Item, originalPoster string, parentPoster string, commentWidth int, lastVisited int64, config *settings.Config) string {
-	if c.Level == 0 {
-		return formatHeader(c, originalPoster, parentPoster, true, true, true,
-			commentWidth, 0, lastVisited, config)
-	}
-
-	return formatHeader(c, originalPoster, parentPoster, false, false, false,
-		commentWidth, 1, lastVisited, config)
-}
-
-func formatHeader(c *item.Item, originalPoster string, parentPoster string, underlineHeader bool, showReplies bool,
-	enableZeroWidthSpace bool, commentWidth int, indentSize int, lastVisited int64, config *settings.Config,
-) string {
-	author := getAuthor(c.User, lastVisited, c.Time)
-	authorLabel := getAuthorLabel(c.User, originalPoster, parentPoster, config.EnableNerdFonts)
-	zeroWidthSpace := getZeroWidthSpace(enableZeroWidthSpace)
-	repliesTag := getReplies(showReplies, c, lastVisited)
-	indentation := strings.Repeat(" ", indentSize)
-
-	spacingLength := commentWidth - text.Len(indentation+author+authorLabel+c.TimeAgo+repliesTag)
-	spacing := strings.Repeat(" ", spacingLength)
-
-	return zeroWidthSpace + indentation + author + authorLabel +
-		underlineAndDim(underlineHeader, c.TimeAgo, spacing, repliesTag) + newLine
-}
-
-func getAuthor(author string, lastVisited, timePosted int64) string {
-	authorInBold := Bold(author).String() + " "
-
-	commentIsNew := lastVisited < timePosted
-
-	if commentIsNew {
-		return authorInBold + Cyan("●").String() + " "
-	}
-
-	return authorInBold
-}
-
-func underlineAndDim(enabled bool, timeAgo, spacing, replies string) string {
-	if enabled {
-		return Faint(timeAgo + spacing + replies).String()
-	}
-
-	return Faint(timeAgo).String()
-}
-
-func getReplies(showReplies bool, children *item.Item, lastVisited int64) string {
-	if !showReplies {
-		return ""
-	}
-
-	numberOfReplies := getReplyCount(children)
-	newComments := getNewCommentsCount(children, lastVisited)
-
-	replySymbol := ""
-	if numberOfReplies != 0 {
-		replySymbol = Faint(" ↩").String()
-	}
-
-	return getRepliesCount(numberOfReplies) + getNewCommentsTag(newComments, numberOfReplies) + replySymbol
-}
-
-func getRepliesCount(numberOfReplies int) string {
-	if numberOfReplies == 0 {
-		return ""
-	}
-
-	return strconv.Itoa(numberOfReplies)
-}
-
-func getNewCommentsTag(newCommentsCount int, numberOfReplies int) string {
-	if newCommentsCount == 0 || newCommentsCount == numberOfReplies {
-		return ""
-	}
-
-	return Faint(" (").String() + Faint(strconv.Itoa(newCommentsCount)).Cyan().String() + Faint(")").String()
-}
-
-func getZeroWidthSpace(enabled bool) string {
-	if enabled {
-		return unicode.ZeroWidthSpace
-	}
-
-	return ""
-}
-
-func getReplyCount(comments *item.Item) int {
-	numberOfReplies := 0
-
-	return incrementReplyCount(comments, &numberOfReplies)
-}
-
-func incrementReplyCount(comments *item.Item, repliesSoFar *int) int {
-	for _, reply := range comments.Comments {
-		*repliesSoFar++
-		incrementReplyCount(reply, repliesSoFar)
-	}
-
-	return *repliesSoFar
-}
-
-func getNewCommentsCount(comments *item.Item, lastVisited int64) int {
-	numberOfReplies := 0
-
-	return incrementNewCommentsCount(comments, &numberOfReplies, lastVisited)
-}
-
-func incrementNewCommentsCount(comments *item.Item, newCommentsSoFar *int, lastVisited int64) int {
-	for _, reply := range comments.Comments {
-		commentIsNew := lastVisited < reply.Time
-		if commentIsNew {
-			*newCommentsSoFar++
+		if strings.Contains(s.content, "<pre><code>") {
+			s.isCodeBlock = true
 		}
 
-		incrementNewCommentsCount(reply, newCommentsSoFar, lastVisited)
+		if isQuote(s.content) {
+			s.isQuote = true
+		}
+
+		comment.sections[i] = s
 	}
 
-	return *newCommentsSoFar
-}
+	output := ""
 
-func getAuthorLabel(author, originalPoster, parentPoster string, enableNerdFonts bool) string {
-	if enableNerdFonts {
-		authorLabel := nerdfonts.Author + " "
+	for i, s := range comment.sections {
+		paragraph := s.content
 
-		switch author {
-		case "dang":
-			return Green(authorLabel).String()
+		switch {
+		case s.isQuote:
+			paragraph = strings.ReplaceAll(paragraph, "<i>", "")
+			paragraph = strings.ReplaceAll(paragraph, "</i>", "")
+			paragraph = strings.ReplaceAll(paragraph, "</a>", reset+dimmed+italic)
+			paragraph = syntax.ReplaceSymbols(paragraph)
+			paragraph = replaceSmileys(paragraph, config.EmojiSmileys)
 
-		case originalPoster:
-			return Red(authorLabel).String()
+			paragraph = strings.Replace(paragraph, ">>", "", 1)
+			paragraph = strings.Replace(paragraph, ">", "", 1)
+			paragraph = strings.TrimLeft(paragraph, " ")
+			paragraph = syntax.TrimURLs(paragraph, false)
+			paragraph = syntax.RemoveUnwantedNewLines(paragraph)
+			paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
 
-		case parentPoster:
-			return Magenta(authorLabel).String()
+			paragraph = italic + dimmed + paragraph + reset
+
+			quoteIndent := " " + config.IndentationSymbol
+			padding := text.WrapPad(dimmed + quoteIndent)
+			wrappedAndPaddedComment, _ := text.Wrap(paragraph, commentWidth, padding)
+			paragraph = wrappedAndPaddedComment
+
+		case s.isCodeBlock:
+			paragraph = syntax.ReplaceHTML(paragraph)
+			wrappedComment, _ := text.Wrap(paragraph, availableScreenWidth)
+
+			codeLines := strings.Split(wrappedComment, "\n")
+			formattedCodeLines := ""
+
+			for j, codeLine := range codeLines {
+				isOnLastLine := j == len(codeLines)-1
+
+				if isOnLastLine {
+					formattedCodeLines += dimmed + codeLine + reset
+
+					break
+				}
+
+				formattedCodeLines += dimmed + codeLine + reset + "\n"
+			}
+
+			paragraph = formattedCodeLines
 
 		default:
-			return ""
+			paragraph = syntax.ReplaceSymbols(paragraph)
+			paragraph = replaceSmileys(paragraph, config.EmojiSmileys)
+
+			paragraph = syntax.ReplaceHTML(paragraph)
+			paragraph = strings.TrimLeft(paragraph, " ")
+			paragraph = highlightCommentSyntax(paragraph, config.HighlightComments, config.EnableNerdFonts)
+
+			paragraph = syntax.TrimURLs(paragraph, config.HighlightComments)
+			paragraph = syntax.RemoveUnwantedNewLines(paragraph)
+			paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
+
+			wrappedAndPaddedComment, _ := text.Wrap(paragraph, commentWidth)
+			paragraph = wrappedAndPaddedComment
 		}
+
+		separator := getParagraphSeparator(i, len(comment.sections))
+		output += paragraph + separator
 	}
 
-	switch author {
-	case "dang":
-		return Green("mod ").String()
+	return output
+}
 
-	case originalPoster:
-		return Red("OP ").String()
+func replaceSmileys(paragraph string, emojiSmiley bool) string {
+	if !emojiSmiley {
+		return paragraph
+	}
 
-	case parentPoster:
-		return Magenta("PP ").String()
+	paragraph = syntax.ConvertSmileys(paragraph)
 
-	default:
+	return paragraph
+}
+
+func isQuote(text string) bool {
+	quoteMark := ">"
+
+	return strings.HasPrefix(text, quoteMark) ||
+		strings.HasPrefix(text, " "+quoteMark) ||
+		strings.HasPrefix(text, "<i>"+quoteMark) ||
+		strings.HasPrefix(text, "<i> "+quoteMark)
+}
+
+func getParagraphSeparator(index int, sliceLength int) string {
+	isAtLastParagraph := index == sliceLength-1
+
+	if isAtLastParagraph {
 		return ""
 	}
+
+	return "\n\n"
+}
+
+func highlightCommentSyntax(input string, commentHighlighting bool, enableNerdFonts bool) string {
+	if !commentHighlighting {
+		return input
+	}
+
+	input = syntax.HighlightBackticks(input)
+	input = syntax.HighlightMentions(input)
+	input = syntax.HighlightVariables(input)
+	input = syntax.HighlightAbbreviations(input)
+	input = syntax.HighlightReferences(input)
+	input = syntax.HighlightYCStartupsInHeadlines(input, syntax.Unselected, enableNerdFonts)
+
+	return input
 }

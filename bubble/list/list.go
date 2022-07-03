@@ -12,7 +12,6 @@ import (
 	"clx/bubble/list/message"
 	"clx/bubble/ranking"
 	"clx/cli"
-	"clx/comment"
 	"clx/constants/category"
 	"clx/constants/style"
 	"clx/header"
@@ -28,6 +27,7 @@ import (
 	"clx/reader"
 	"clx/screen"
 	"clx/settings"
+	"clx/tree"
 	"clx/validator"
 
 	"github.com/charmbracelet/bubbles/paginator"
@@ -496,7 +496,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			m.favorites.UpdateStoryAndWriteToDisk(story)
 		}
 
-		commentTree := comment.ToString(story, m.config, m.width, lastVisited)
+		commentTree := tree.Print(story, m.config, m.width, lastVisited)
 
 		command := cli.WrapLess(commentTree)
 

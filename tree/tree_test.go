@@ -1,25 +1,25 @@
-package comment_test
+package tree_test
 
 import (
 	"encoding/json"
 	"io/ioutil"
 	"testing"
 
-	"clx/comment"
 	"clx/item"
 	"clx/settings"
+	"clx/tree"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFullParse(t *testing.T) {
+func TestPring(t *testing.T) {
 	t.Parallel()
 
 	commentJSON, _ := ioutil.ReadFile("test/comments.json")
 	expected, _ := ioutil.ReadFile("test/expected.txt")
 
 	comments := unmarshal(commentJSON)
-	actual := comment.ToString(comments, getConfig(), 85, 1643215106)
+	actual := tree.Print(comments, getConfig(), 85, 1643215106)
 
 	assert.Equal(t, string(expected), actual)
 }

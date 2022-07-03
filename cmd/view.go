@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"clx/cli"
-	"clx/comment"
 	hybrid_bubble "clx/hn/services/hybrid"
 	"clx/screen"
 	"clx/settings"
+	"clx/tree"
 
 	"github.com/spf13/cobra"
 )
@@ -31,7 +31,7 @@ func viewCmd() *cobra.Command {
 			config := settings.New()
 
 			screenWidth := screen.GetTerminalWidth()
-			commentTree := comment.ToString(comments, config, screenWidth, time.Now().Unix())
+			commentTree := tree.Print(comments, config, screenWidth, time.Now().Unix())
 
 			cli.Less(commentTree)
 		},
