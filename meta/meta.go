@@ -165,8 +165,8 @@ func parseRootComment(c string, config *settings.Config) string {
 		return ""
 	}
 
-	comment := comment.Print(c, config, config.CommentWidth-2, config.CommentWidth)
-	wrappedComment, _ := text.Wrap(comment, config.CommentWidth-2)
+	rootComment := comment.Print(c, config, config.CommentWidth-2, config.CommentWidth)
+	wrappedComment, _ := text.Wrap(rootComment, config.CommentWidth-2)
 
 	return newParagraph + wrappedComment
 }

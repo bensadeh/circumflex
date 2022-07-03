@@ -93,9 +93,9 @@ func formatComment(c *item.Item, config *settings.Config, originalPoster string,
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, c.Level)
 
 	header := getCommentHeader(c, originalPoster, parentPoster, commentWidth, lastVisited, config)
-	comment := comment.Print(c.Content, config, commentWidth, availableScreenWidth)
+	formattedComment := comment.Print(c.Content, config, commentWidth, availableScreenWidth)
 
-	paddedComment, _ := text.WrapWithPad(comment, availableScreenWidth, coloredIndentSymbol)
+	paddedComment, _ := text.WrapWithPad(formattedComment, availableScreenWidth, coloredIndentSymbol)
 
 	return header + paddedComment
 }
