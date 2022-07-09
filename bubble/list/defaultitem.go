@@ -156,7 +156,7 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 			desc, syntax.Selected, m.config.PlainHeadlines, enableNerdFonts)
 
 	case markAsRead && m.category != category.Favorites:
-		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle, s.MarkAsReadDesc, domain,
+		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(true), s.MarkAsReadDesc, domain,
 			desc, syntax.MarkAsRead, m.config.PlainHeadlines, enableNerdFonts)
 
 	case m.disableInput && !(m.onAddToFavoritesPrompt || m.onRemoveFromFavoritesPrompt):
