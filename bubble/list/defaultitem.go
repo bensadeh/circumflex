@@ -239,19 +239,3 @@ func parseTime(unixTime int64, enableNerdFonts bool) string {
 
 	return fmt.Sprintf("%s ", moment.From(now))
 }
-
-// ShortHelp returns the delegate's short help.
-func (d DefaultDelegate) ShortHelp() []key.Binding {
-	if d.ShortHelpFunc != nil {
-		return d.ShortHelpFunc()
-	}
-	return nil
-}
-
-// FullHelp returns the delegate's full help.
-func (d DefaultDelegate) FullHelp() [][]key.Binding {
-	if d.FullHelpFunc != nil {
-		return d.FullHelpFunc()
-	}
-	return nil
-}
