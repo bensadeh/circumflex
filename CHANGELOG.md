@@ -3,6 +3,8 @@
 ## 2.3
 _WIP_
 
+**Bugfixes**
+- Refreshing submissions no longer jumps to the first page just before fetching
 
 ## 2.2
 _02.07.22_

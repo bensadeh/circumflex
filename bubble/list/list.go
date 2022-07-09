@@ -747,6 +747,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 		case msg.String() == "r" && m.category != category.Favorites:
 			currentCategory := m.category
+			currentPage := m.Paginator.Page
 
 			m.items[category.Buffer] = m.items[m.category]
 			m.category = category.Buffer
@@ -761,7 +762,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			m.SetDisabledInput(true)
 			m.cursor = 0
-			m.Paginator.Page = 0
+			m.Paginator.Page = currentPage
 
 			changeCatCmd := func() tea.Msg {
 				return message.ChangeCategory{Category: currentCategory, Cursor: m.cursor}
