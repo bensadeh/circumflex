@@ -427,6 +427,7 @@ func ReplaceCharacters(input string) string {
 	input = strings.ReplaceAll(input, "&lt;", "<")
 	input = strings.ReplaceAll(input, "&#x2F;", "/")
 	input = strings.ReplaceAll(input, "&quot;", `"`)
+	input = strings.ReplaceAll(input, "&#34;", `"`)
 	input = strings.ReplaceAll(input, "&amp;", "&")
 
 	return input
