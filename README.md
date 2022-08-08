@@ -57,11 +57,11 @@
 
 ### Via Homebrew
 
-`circumflex` is available as a [Tap](https://docs.brew.sh/Taps).
+`circumflex` is available on [Homebrew](https://brew.sh/).
 
 ```console
 # Install
-brew install bensadeh/circumflex/circumflex
+brew install circumflex
 
 # Run
 clx
