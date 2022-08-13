@@ -10,11 +10,12 @@ _13.08.22_
 - Collapse / uncollapse all replies with <kbd>h</kbd> / <kbd>l</kbd> 
 
 **Cosmetic**
-- Left-aligned help screen
+- Left-aligned help screen to better accomodate for screen resizes (Fixes [#6](https://github.com/bensadeh/circumflex/issues/6))
 
 **Bugfixes**
 - Refreshing submissions no longer jumps to the first page just before fetching
 - Fixed a bug where submissions marked as read would not properly italicize after a refresh
+- Fixed a bug where `"` was not being showed correctly (Thanks @FnControlOption, [#5](https://github.com/bensadeh/circumflex/pull/5)!)
 
 ## 2.2
 _02.07.22_
