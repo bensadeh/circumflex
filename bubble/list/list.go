@@ -1,8 +1,11 @@
 package list
 
 import (
+	_ "embed"
 	"fmt"
 	"io"
+	"log"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -39,6 +42,9 @@ import (
 const (
 	numberOfCategories = 5
 )
+
+//go:embed lesskey
+var lesskey string
 
 // Item is an item that appears in the list.
 // type Item interface{}
@@ -498,9 +504,19 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 		commentTree := tree.Print(story, m.config, m.width, lastVisited)
 
-		command := cli.WrapLess(commentTree)
+		tempLesskeyFile, err := os.CreateTemp("", "lesskey*")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		_, _ = tempLesskeyFile.WriteString(lesskey)
+
+		// lesskeyPath, _ := filepath.Abs(filepath.Dir(tempLesskeyFile.Name()))
+
+		command := cli.LessWithLesskey(commentTree, tempLesskeyFile.Name())
 
 		return m, tea.ExecProcess(command, func(err error) tea.Msg {
+			defer os.Remove(tempLesskeyFile.Name())
 			return message.EditorFinishedMsg{Err: err}
 		})
 

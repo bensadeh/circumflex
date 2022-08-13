@@ -7,7 +7,6 @@ import (
 	. "github.com/logrusorgru/aurora/v3"
 
 	"clx/constants/margins"
-	"clx/constants/style"
 	"clx/keymaps"
 	"github.com/charmbracelet/lipgloss"
 
@@ -18,9 +17,9 @@ func GetText(screenWidth int, enableNerdFonts bool) string {
 	keys := new(keymaps.List)
 	keys.Init()
 
-	cmd := lipgloss.NewStyle().Background(lipgloss.Color("237")).Italic(true)
+	cmd := lipgloss.NewStyle().Italic(true).Bold(true)
 
-	keys.AddHeader(cmd.Foreground(style.GetMagenta()).Render(" circumflex "))
+	keys.AddHeader(cmd.Render(" Main Menu "))
 	keys.AddSeparator()
 	keys.AddKeymap("Read comment section", "Enter")
 	keys.AddKeymap("Read article in Reader Mode", "Space")
@@ -38,10 +37,13 @@ func GetText(screenWidth int, enableNerdFonts bool) string {
 	keys.AddKeymap("Quit to prompt", "q")
 	keys.AddSeparator()
 
-	keys.AddHeader(cmd.Foreground(style.GetYellow()).Render(" less "))
+	keys.AddHeader(cmd.Render(" Comment Section / Reader Mode "))
 	keys.AddSeparator()
 	keys.AddKeymap("Down one half-window", "d")
 	keys.AddKeymap("Up one half-window", "u")
+	keys.AddSeparator()
+	keys.AddKeymap("Hide all replies", "h")
+	keys.AddKeymap("Show all replies", "l")
 	keys.AddSeparator()
 	keys.AddKeymap("Jump to next top-level comment", "n")
 	keys.AddKeymap("Jump to previous top-level comment", "N")
@@ -50,7 +52,7 @@ func GetText(screenWidth int, enableNerdFonts bool) string {
 	keys.AddKeymap("Return to circumflex", "q")
 	keys.AddSeparator()
 
-	keys.AddHeader(cmd.Foreground(style.GetBlue()).Render(" legend "))
+	keys.AddHeader(cmd.Render(" Legend "))
 	keys.AddSeparator()
 	keys.AddKeymap("Original Poster", Red(getOP(enableNerdFonts)).String())
 	keys.AddKeymap("Parent Poster", Magenta(getPP(enableNerdFonts)).String())

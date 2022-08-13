@@ -383,6 +383,25 @@ func (Service) FetchComments(_ int) *item.Item {
 				CommentsCount: 0,
 			},
 			{
+				ID:      5,
+				User:    "hamilton",
+				TimeAgo: "2 hours ago",
+				Level:   0,
+				Comments: []*item.Item{
+					{
+						ID:            41,
+						User:          "euler",
+						TimeAgo:       "1 hour ago",
+						Level:         1,
+						Comments:      nil,
+						Content:       "<p>&gt; Godot doesn’t fight you when you’re building scenes. Making a scene feels a lot like creating a class using composition, and scenes can even inherit from other scenes (using another scene as the the root node of a scene allows you to inherit from it and override its properties in the editor and in code), allowing you to express patterns you’re intimately familiar with from object-oriented programming.<p>I personally find the approach of nodes everywhere a bit odd.<p><pre><code>  EnemyObject\n    PathfindingObject\n      PathfindingBehavior (attached script)\n    ShootingObject\n      ShootingBehavior (attached script)\n    TalkingObject\n      TalkingBehavior (attached script)\n</code></pre>\nIt kind of feels like it would be nicer to be able to attach a number of scripts to the object that I actually want to control, instead of having Nodes that I don&#x27;t really see much of a use for, apart from them being script containers.</a>",
+						CommentsCount: 0,
+					},
+				},
+				Content:       "<p>&gt; Godot doesn’t fight you when you’re building scenes. Making a scene feels a lot like creating a class using composition, and scenes can even inherit from other scenes (using another scene as the the root node of a scene allows you to inherit from it and override its properties in the editor and in code), allowing you to express patterns you’re intimately familiar with from object-oriented programming.<p>I personally find the approach of nodes everywhere a bit odd.<p><pre><code>  EnemyObject\n    PathfindingObject\n      PathfindingBehavior (attached script)\n    ShootingObject\n      ShootingBehavior (attached script)\n    TalkingObject\n      TalkingBehavior (attached script)\n</code></pre>\nIt kind of feels like it would be nicer to be able to attach a number of scripts to the object that I actually want to control, instead of having Nodes that I don&#x27;t really see much of a use for, apart from them being script containers.</a>",
+				CommentsCount: 0,
+			},
+			{
 				ID:            4,
 				User:          "hamilton",
 				TimeAgo:       "1 hour ago",

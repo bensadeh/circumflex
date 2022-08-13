@@ -99,6 +99,9 @@ comment section.
 
 - <kbd>d</kbd>/<kbd>u</kbd> to scroll half a screen
 - <kbd>j</kbd>/<kbd>k</kbd> to scroll one line at a time 
+
+ 
+- <kbd>h</kbd>/<kbd>l</kbd> to hide and show replies
 - <kbd>n</kbd>/<kbd>N</kbd> to jump to the next top-level comment
 
 

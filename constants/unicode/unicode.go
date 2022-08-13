@@ -1,6 +1,7 @@
 package unicode
 
 const (
-	ZeroWidthSpace = "\u200b"
-	NoBreakSpace   = " "
+	ZeroWidthSpace     = "\u200b"
+	InvisibleCharacter = "⁣"
+	NoBreakSpace       = " "
 )

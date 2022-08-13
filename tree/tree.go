@@ -74,17 +74,36 @@ func printReplies(c *item.Item, config *settings.Config, screenWidth int, origin
 		lastVisited)
 	indentedComment, _ := text.WrapWithPad(comment, screenWidth, indentation)
 	fullComment := getSeparator(c.Level, config.CommentWidth, c.ID, firstCommentID) + indentedComment + newLine
+	fullCommentWithFilterTag := addFilterTag(c.Level, fullComment)
 
 	if c.Level == 0 {
 		parentPoster = c.User
 	}
 
 	for _, reply := range c.Comments {
-		fullComment += printReplies(reply, config, screenWidth, originalPoster, parentPoster, firstCommentID,
+		fullCommentWithFilterTag += printReplies(reply, config, screenWidth, originalPoster, parentPoster, firstCommentID,
 			lastVisited)
 	}
 
-	return fullComment
+	return fullCommentWithFilterTag
+}
+
+func addFilterTag(level int, fullComment string) string {
+	if level == 0 {
+		return fullComment
+	}
+
+	fullCommentWithFilterTags := ""
+	lines := strings.Split(fullComment, "\n")
+
+	for i, line := range lines {
+		if i == len(lines)-1 {
+			continue
+		}
+		fullCommentWithFilterTags += line + unicode.InvisibleCharacter + "\n"
+	}
+
+	return fullCommentWithFilterTags
 }
 
 func formatComment(c *item.Item, config *settings.Config, originalPoster string, parentPoster string, commentWidth int,
