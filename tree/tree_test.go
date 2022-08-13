@@ -2,7 +2,7 @@ package tree_test
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"clx/item"
@@ -12,14 +12,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPring(t *testing.T) {
+func TestPrint(t *testing.T) {
 	t.Parallel()
 
-	commentJSON, _ := ioutil.ReadFile("test/comments.json")
-	expected, _ := ioutil.ReadFile("test/expected.txt")
+	commentJSON, _ := os.ReadFile("test/comments.json")
+	expected, _ := os.ReadFile("test/expected.txt")
 
 	comments := unmarshal(commentJSON)
-	actual := tree.Print(comments, getConfig(), 85, 1643215106)
+	actual := tree.Print(comments, getConfig(), 120, 1643215106)
 
 	assert.Equal(t, string(expected), actual)
 }
@@ -33,7 +33,7 @@ func unmarshal(data []byte) *item.Item {
 
 func getConfig() *settings.Config {
 	return &settings.Config{
-		CommentWidth:       80,
+		CommentWidth:       110,
 		HighlightHeadlines: true,
 		RelativeNumbering:  false,
 		HighlightComments:  true,
