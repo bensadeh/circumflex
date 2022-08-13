@@ -15,7 +15,7 @@ func Less(input string) {
 		"--ignore-case",
 		"--tilde",
 		"--use-color",
-		"-P?e"+"\u001B[48;5;237m "+"\u001B[38;5;200m"+"e"+"\u001B[38;5;214m"+"n"+"\u001B[38;5;69m"+"d "+"\033[0m",
+		"-P?e"+"\u001B[48;5;232m "+"\u001B[38;5;200m"+"e"+"\u001B[38;5;214m"+"n"+"\u001B[38;5;69m"+"d "+"\033[0m",
 		"-DSy",
 		"-DP-")
 
@@ -34,7 +34,7 @@ func WrapLess(input string) *exec.Cmd {
 		"--ignore-case",
 		"--tilde",
 		"--use-color",
-		"-P?e"+"\u001B[48;5;234m "+"\u001B[38;5;200m"+"E"+"\u001B[38;5;214m"+"n"+"\u001B[38;5;69m"+"d "+"\033[0m",
+		"-P?e"+"\u001B[48;5;232m "+"\u001B[38;5;200m"+"E"+"\u001B[38;5;214m"+"n"+"\u001B[38;5;69m"+"d "+"\033[0m",
 		"-DSy",
 		"-DP-")
 
@@ -52,7 +52,7 @@ func LessWithLesskey(input string, pathToLesskey string) *exec.Cmd {
 		"--lesskey-src="+pathToLesskey,
 		"--tilde",
 		"--use-color",
-		"-P?e"+"\u001B[48;5;234m "+"\u001B[38;5;200m"+"E"+"\u001B[38;5;214m"+"n"+"\u001B[38;5;69m"+"d "+"\033[0m",
+		"-P?e"+"\u001B[48;5;232m "+"\u001B[38;5;200m"+"E"+"\u001B[38;5;214m"+"n"+"\u001B[38;5;69m"+"d "+"\033[0m",
 		"-DSy",
 		"-DP-")
 
