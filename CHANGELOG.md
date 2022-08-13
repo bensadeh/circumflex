@@ -3,6 +3,9 @@
 ## 2.3
 _WIP_
 
+**Core**
+- Bump Go to 1.19
+
 **Bugfixes**
 - Refreshing submissions no longer jumps to the first page just before fetching
 - Fixed a bug where submissions marked as read would not properly italicize after a refresh
