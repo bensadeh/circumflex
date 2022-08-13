@@ -17,7 +17,7 @@ func GetText(screenWidth int, enableNerdFonts bool) string {
 	keys := new(keymaps.List)
 	keys.Init()
 
-	cmd := lipgloss.NewStyle().Italic(true).Bold(true)
+	cmd := lipgloss.NewStyle().Underline(true).Bold(false)
 
 	keys.AddHeader(cmd.Render(" Main Menu "))
 	keys.AddSeparator()

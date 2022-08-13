@@ -64,8 +64,7 @@ func (k *List) Print(screenWidth int) string {
 		switch item.category {
 		case header:
 			centeredHeader := text.AlignCenter.Apply(item.header, screenWidth)
-			headerInBold := lipgloss.NewStyle().Bold(true).Render(centeredHeader)
-			output += headerInBold + newline
+			output += centeredHeader + newline
 		case separator:
 			output += newline
 		case keymap:
