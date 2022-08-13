@@ -9,6 +9,9 @@ _WIP_
 **New features**
 - Collapse / uncollapse all replies with <kbd>h</kbd> / <kbd>l</kbd> 
 
+**Cosmetic**
+- Left-aligned help screen
+
 **Bugfixes**
 - Refreshing submissions no longer jumps to the first page just before fetching
 - Fixed a bug where submissions marked as read would not properly italicize after a refresh
