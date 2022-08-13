@@ -62,6 +62,9 @@ _j_, _k_::
 _d_, _u_::
   Scroll up/down one half-page
 
+_h_, _l_::
+  Hide / unhide all replies
+
 _n_, _N_::
   Scroll between the next/previous _top-level_ comment (comment section) or _headline_ (Reader Mode)
 

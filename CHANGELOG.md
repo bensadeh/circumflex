@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2.3
-_WIP_
+_13.08.22_
 
 **Core**
 - Bump Go to 1.19
