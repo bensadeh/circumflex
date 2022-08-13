@@ -3,6 +3,8 @@ package info
 import (
 	"strings"
 
+	"clx/app"
+
 	"clx/constants/nerdfonts"
 	. "github.com/logrusorgru/aurora/v3"
 
@@ -57,6 +59,10 @@ func GetText(screenWidth int, enableNerdFonts bool) string {
 	keys.AddKeymap("Original Poster", Red(getOP(enableNerdFonts)).String())
 	keys.AddKeymap("Parent Poster", Magenta(getPP(enableNerdFonts)).String())
 	keys.AddKeymap("Moderator", Green(getMod(enableNerdFonts)).String())
+
+	keys.AddSeparator()
+	keys.AddSeparator()
+	keys.AddHeader(cmd.Underline(false).Faint(true).Render("press q to return • github.com/bensadeh/circumflex • version " + app.Version))
 
 	keymapsWidth := 80
 	listOfKeymaps := keys.Print(keymapsWidth)

@@ -6,7 +6,6 @@ import (
 	"clx/constants/margins"
 	"github.com/muesli/reflow/indent"
 
-	"clx/app"
 	"clx/constants/unicode"
 	"clx/info"
 	"github.com/charmbracelet/lipgloss"
@@ -23,8 +22,6 @@ func GetHelpScreen(enableNerdFonts bool) string {
 
 	sb.WriteString(unicode.ZeroWidthSpace + newPar)
 	sb.WriteString(unicode.ZeroWidthSpace + indent.String(info.GetText(textWidth, enableNerdFonts), margins.MainViewLeftMargin) + newPar)
-
-	sb.WriteString(unicode.ZeroWidthSpace + indent.String(lipgloss.NewStyle().Faint(true).Render("press q to return • github.com/bensadeh/circumflex • version "+app.Version), margins.MainViewLeftMargin) + newPar)
 
 	return sb.String()
 }
