@@ -4,8 +4,6 @@ import (
 	_ "embed"
 	"fmt"
 	"io"
-	"log"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -42,9 +40,6 @@ import (
 const (
 	numberOfCategories = 5
 )
-
-//go:embed lesskey
-var lesskey string
 
 // Item is an item that appears in the list.
 // type Item interface{}
@@ -504,19 +499,9 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 		commentTree := tree.Print(story, m.config, m.width, lastVisited)
 
-		tempLesskeyFile, err := os.CreateTemp("", "lesskey*")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		_, _ = tempLesskeyFile.WriteString(lesskey)
-
-		// lesskeyPath, _ := filepath.Abs(filepath.Dir(tempLesskeyFile.Name()))
-
-		command := cli.LessWithLesskey(commentTree, tempLesskeyFile.Name())
+		command := cli.Less(commentTree, m.config.LesskeyPath)
 
 		return m, tea.ExecProcess(command, func(err error) tea.Msg {
-			defer os.Remove(tempLesskeyFile.Name())
 			return message.EditorFinishedMsg{Err: err}
 		})
 
@@ -536,11 +521,11 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		}
 
 		blocks := parser.Parse(article)
-		header := renderer.CreateHeader(msg.Title, msg.Url, 70)
-		renderedArticle := renderer.ToString(blocks, 70, m.config.IndentationSymbol)
+		header := renderer.CreateHeader(msg.Title, msg.Url, m.config.CommentWidth)
+		renderedArticle := renderer.ToString(blocks, m.config.CommentWidth, m.config.IndentationSymbol)
 		renderedArticle = postprocessor.Process(header+renderedArticle, msg.Url)
 
-		command := cli.WrapLess(renderedArticle)
+		command := cli.Less(renderedArticle, m.config.LesskeyPath)
 
 		return m, tea.ExecProcess(command, func(err error) tea.Msg {
 			return message.EditorFinishedMsg{Err: err}
@@ -855,7 +840,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 func (m *Model) showHelpScreen() tea.Cmd {
 	helpScreen := help.GetHelpScreen(m.config.EnableNerdFonts)
 
-	command := cli.WrapLess(helpScreen)
+	command := cli.Less(helpScreen, m.config.LesskeyPath)
 
 	return tea.ExecProcess(command, func(err error) tea.Msg {
 		return message.EditorFinishedMsg{Err: err}

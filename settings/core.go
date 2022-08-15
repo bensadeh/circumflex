@@ -12,6 +12,7 @@ type Config struct {
 	IndentationSymbol  string
 	DebugMode          bool
 	EnableNerdFonts    bool
+	LesskeyPath        string
 }
 
 func New() *Config {

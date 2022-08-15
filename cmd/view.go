@@ -1,13 +1,16 @@
 package cmd
 
 import (
+	_ "embed"
 	"strconv"
 	"time"
 
+	"clx/less"
+
+	"clx/hn/services/hybrid"
+
 	"clx/cli"
-	hybrid_bubble "clx/hn/services/hybrid"
 	"clx/screen"
-	"clx/settings"
 	"clx/tree"
 
 	"github.com/spf13/cobra"
@@ -24,16 +27,23 @@ func viewCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			id, _ := strconv.Atoi(args[0])
 
-			service := new(hybrid_bubble.Service)
+			service := new(hybrid.Service)
 
 			comments := service.FetchComments(id)
 
-			config := settings.New()
+			config := getConfig()
 
 			screenWidth := screen.GetTerminalWidth()
 			commentTree := tree.Print(comments, config, screenWidth, time.Now().Unix())
 
-			cli.Less(commentTree)
+			lesskey := less.NewLesskey()
+
+			command := cli.Less(commentTree, lesskey.GetPath())
+
+			if err := command.Run(); err != nil {
+				defer lesskey.Remove()
+				panic(err)
+			}
 		},
 	}
 }

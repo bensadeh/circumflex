@@ -4,6 +4,7 @@ import (
 	"clx/app"
 	"clx/bubble"
 	"clx/indent"
+	"clx/less"
 	"clx/settings"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
@@ -32,7 +33,12 @@ func Root() *cobra.Command {
 			config := getConfig()
 			config.IndentationSymbol = indent.GetIndentSymbol(hideIndentSymbol)
 
+			lesskey := less.NewLesskey()
+			config.LesskeyPath = lesskey.GetPath()
+
 			bubble.Run(config)
+
+			defer lesskey.Remove()
 		},
 	}
 
