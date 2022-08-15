@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/JohannesKaufmann/html-to-markdown v1.3.0
 	github.com/MichaelMure/go-term-text v0.2.9
-	github.com/PuerkitoBio/goquery v1.5.1
+	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89
 	github.com/charmbracelet/bubbles v0.13.0
 	github.com/charmbracelet/bubbletea v0.22.0
@@ -25,7 +25,7 @@ require (
 
 require (
 	github.com/alecthomas/chroma v0.10.0 // indirect
-	github.com/andybalholm/cascadia v1.2.0 // indirect
+	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/containerd/console v1.0.3 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
