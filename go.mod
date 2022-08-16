@@ -20,7 +20,7 @@ require (
 	github.com/nleeper/goment v1.4.4
 	github.com/spf13/cobra v1.5.0
 	github.com/stretchr/testify v1.8.0
-	github.com/wayneashleyberry/terminal-dimensions v1.0.0
+	github.com/wayneashleyberry/terminal-dimensions v1.1.0
 )
 
 require (
