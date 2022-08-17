@@ -3,9 +3,9 @@ package indent
 import "os"
 
 const (
-	noIndent      = " "
-	itermIndent   = "▎"
-	regularIndent = "┃"
+	noIndent            = " "
+	normalIndent        = "▎"
+	compatibilityIndent = "┃"
 )
 
 func GetIndentSymbol(hideIndentSymbol bool) string {
@@ -13,11 +13,9 @@ func GetIndentSymbol(hideIndentSymbol bool) string {
 		return noIndent
 	}
 
-	terminal := os.Getenv("LC_TERMINAL")
-
-	if terminal == "iTerm2" {
-		return itermIndent
+	if os.Getenv("TERM_PROGRAM") == "Apple_Terminal" {
+		return compatibilityIndent
 	}
 
-	return regularIndent
+	return normalIndent
 }

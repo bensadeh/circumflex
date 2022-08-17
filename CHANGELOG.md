@@ -3,6 +3,8 @@
 ## 2.4
 _WIP_
 
+**Cosmetic**
+- Use normal and best looking indentation block by default
 
 ## 2.3
 _13.08.22_
