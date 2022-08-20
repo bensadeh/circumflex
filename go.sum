@@ -1,9 +1,9 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
-github.com/JohannesKaufmann/html-to-markdown v1.3.5 h1:FrP3D5IqpxkNOk97TvbFduSo0JQKs/ZpgjuxpmAEFRA=
-github.com/JohannesKaufmann/html-to-markdown v1.3.5/go.mod h1:JNSClIRYICFDiFhw6RBhBeWGnMSSKVZ6sPQA+TK4tyM=
 github.com/MichaelMure/go-term-text v0.3.1 h1:Kw9kZanyZWiCHOYu9v/8pWEgDQ6UVN9/ix2Vd2zzWf0=
 github.com/MichaelMure/go-term-text v0.3.1/go.mod h1:QgVjAEDUnRMlzpS6ky5CGblux7ebeiLnuy9dAaFZu8o=
+github.com/JohannesKaufmann/html-to-markdown v1.3.0 h1:K/p4cq8Ib13hcSVcKQNfKCSWw93CYW5pAjY0fl85has=
+github.com/JohannesKaufmann/html-to-markdown v1.3.0/go.mod h1:JNSClIRYICFDiFhw6RBhBeWGnMSSKVZ6sPQA+TK4tyM=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/PuerkitoBio/goquery v1.5.1/go.mod h1:GsLWisAFVj4WgDibEWF4pvYnkVQBpKBKeU+7zCJoLcc=
 github.com/PuerkitoBio/goquery v1.8.0 h1:PJTF7AmFCFKk1N6V6jmKfrNH9tV5pNE6lZMkG0gta/U=
