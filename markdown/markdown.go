@@ -15,10 +15,10 @@ const (
 	Table   = 11
 	Divider = 12
 
-	ItalicStart = "[CLX-ITALIC]"
-	ItalicStop  = "[CLX-ITALIC-STOP]"
-	BoldStart   = "[CLX-BOLD]"
-	BoldStop    = "[CLX-BOLD-STOP]"
+	ItalicStart = "(CLX-ITALIC)"
+	ItalicStop  = "(CLX-ITALIC-STOP)"
+	BoldStart   = "(CLX-BOLD)"
+	BoldStop    = "(CLX-BOLD-STOP)"
 )
 
 type Block struct {
