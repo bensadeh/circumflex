@@ -5,21 +5,24 @@ import (
 	"regexp"
 	"strings"
 
-	"clx/markdown"
+	"clx/reader/markdown"
 )
 
-func Parse(text string) []*markdown.Block {
+const (
+	enDash     = "–"
+	emDash     = "—"
+	normalDash = "-"
+)
+
+func ConvertToMarkdownBlocks(text string) []*markdown.Block {
 	var blocks []*markdown.Block
 
-	enDash := "–"
-	emDash := "—"
-	normalDash := "-"
-
-	// en- and em-dashes are occasionally used or list items.
-	// converting them to normal dashes lets us parse more list items.
+	// en- and em-dashes are occasionally used to list items.
+	// Converting them to normal dashes lets us parse more list items.
 	text = strings.ReplaceAll(text, enDash, normalDash)
 	text = strings.ReplaceAll(text, emDash, normalDash)
 
+	// Disable bold text
 	text = strings.ReplaceAll(text, markdown.BoldStart, "")
 	text = strings.ReplaceAll(text, markdown.BoldStop, "")
 

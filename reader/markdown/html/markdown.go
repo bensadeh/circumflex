@@ -1,36 +1,16 @@
-package new_reader
+package html
 
 import (
-	"fmt"
 	"strings"
-	"time"
 
-	"clx/markdown"
-
-	"github.com/PuerkitoBio/goquery"
-
-	"github.com/JohannesKaufmann/html-to-markdown/plugin"
+	"clx/reader/markdown"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
-
-	"github.com/go-shiori/go-readability"
+	"github.com/JohannesKaufmann/html-to-markdown/plugin"
+	"github.com/PuerkitoBio/goquery"
 )
 
-func GetNew(url string) (string, error) {
-	articleInRawHTML, httpErr := readability.FromURL(url, 5*time.Second)
-	if httpErr != nil {
-		return "", fmt.Errorf("could not fetch url: %w", httpErr)
-	}
-
-	articleInMarkdown, mdErr := convertHtmlToMarkdown(articleInRawHTML)
-	if mdErr != nil {
-		return "", fmt.Errorf("could not fetch url: %w", httpErr)
-	}
-
-	return articleInMarkdown, nil
-}
-
-func convertHtmlToMarkdown(art readability.Article) (string, error) {
+func ConvertToMarkdown(article string) (string, error) {
 	// Remove hyperlink tags
 	href := md.Rule{
 		Filter: []string{"a"},
@@ -67,5 +47,5 @@ func convertHtmlToMarkdown(art readability.Article) (string, error) {
 	converter.AddRules(bold)
 	converter.Use(plugin.Table())
 
-	return converter.ConvertString(art.Content)
+	return converter.ConvertString(article)
 }

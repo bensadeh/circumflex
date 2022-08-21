@@ -1,11 +1,12 @@
-package renderer
+package terminal
 
 import (
 	"regexp"
 	"strings"
 
+	"clx/reader/markdown"
+
 	"clx/constants/unicode"
-	"clx/markdown"
 	"clx/meta"
 	"clx/syntax"
 
@@ -30,7 +31,7 @@ func CreateHeader(title string, domain string, lineWidth int) string {
 	return meta.GetReaderModeMetaBlock(title, domain, lineWidth)
 }
 
-func ToString(blocks []*markdown.Block, lineWidth int, indentBlock string) string {
+func ConvertToTerminalFormat(blocks []*markdown.Block, lineWidth int, indentBlock string) string {
 	output := ""
 
 	for _, block := range blocks {

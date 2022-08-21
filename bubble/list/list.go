@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	new_reader "clx/new-reader"
+	"clx/reader"
 
 	"clx/bfavorites"
 	"clx/browser"
@@ -21,12 +21,9 @@ import (
 	"clx/help"
 	"clx/history"
 	"clx/hn"
-	hybrid "clx/hn/services/hybrid"
+	"clx/hn/services/hybrid"
 	"clx/hn/services/mock"
 	"clx/item"
-	"clx/markdown/parser"
-	"clx/markdown/postprocessor"
-	"clx/markdown/renderer"
 	"clx/screen"
 	"clx/settings"
 	"clx/tree"
@@ -516,17 +513,12 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			return m, tea.Batch(cmds...)
 		}
 
-		article, err := new_reader.GetNew(msg.Url)
+		article, err := reader.GetNew(msg.Url, msg.Title, m.config.CommentWidth, m.config.IndentationSymbol)
 		if err != nil {
 			panic(err)
 		}
 
-		blocks := parser.Parse(article)
-		header := renderer.CreateHeader(msg.Title, msg.Url, m.config.CommentWidth)
-		renderedArticle := renderer.ToString(blocks, m.config.CommentWidth, m.config.IndentationSymbol)
-		renderedArticle = postprocessor.Process(header+renderedArticle, msg.Url)
-
-		command := cli.Less(renderedArticle, m.config.LesskeyPath)
+		command := cli.Less(article, m.config.LesskeyPath)
 
 		return m, tea.ExecProcess(command, func(err error) tea.Msg {
 			return message.EditorFinishedMsg{Err: err}
