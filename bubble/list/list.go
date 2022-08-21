@@ -10,13 +10,13 @@ import (
 
 	"clx/reader"
 
-	"clx/bfavorites"
 	"clx/browser"
 	"clx/bubble/list/message"
 	"clx/bubble/ranking"
 	"clx/cli"
 	"clx/constants/category"
 	"clx/constants/style"
+	"clx/favorites"
 	"clx/header"
 	"clx/help"
 	"clx/history"
@@ -97,7 +97,7 @@ type Model struct {
 	history   history.History
 	config    *settings.Config
 	service   hn.Service
-	favorites *bfavorites.Favorites
+	favorites *favorites.Favorites
 }
 
 func (m *Model) FetchFrontPageStories() tea.Cmd {
@@ -129,7 +129,7 @@ func (m *Model) getNumberOfItemsToFetch(cat int) int {
 	}
 }
 
-func New(delegate ItemDelegate, config *settings.Config, favorites *bfavorites.Favorites, width, height int) Model {
+func New(delegate ItemDelegate, config *settings.Config, favorites *favorites.Favorites, width, height int) Model {
 	styles := DefaultStyles()
 
 	sp := spinner.New()

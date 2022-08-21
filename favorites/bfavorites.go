@@ -1,9 +1,9 @@
-package bfavorites
+package favorites
 
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"clx/file"
 	"clx/item"
@@ -17,7 +17,7 @@ func New() *Favorites {
 	favoritesPath := file.PathToFavoritesFile()
 
 	if file.Exists(favoritesPath) {
-		favoritesJSON, _ := ioutil.ReadFile(favoritesPath)
+		favoritesJSON, _ := os.ReadFile(favoritesPath)
 		items := unmarshal(favoritesJSON)
 
 		favoritesFromDisk := new(Favorites)

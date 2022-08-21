@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"clx/bfavorites"
 	"clx/bubble/list"
 	"clx/cli"
+	"clx/favorites"
 	"clx/settings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -38,7 +38,7 @@ func (m model) View() string {
 func Run(config *settings.Config) {
 	cli.ClearScreen()
 
-	m := model{list: list.New(list.NewDefaultDelegate(), config, bfavorites.New(), 0, 0)}
+	m := model{list: list.New(list.NewDefaultDelegate(), config, favorites.New(), 0, 0)}
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
 

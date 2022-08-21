@@ -3,9 +3,9 @@ package cmd
 import (
 	"strconv"
 
+	"clx/favorites"
 	"clx/hn/services/hybrid"
 
-	"clx/bfavorites"
 	"github.com/spf13/cobra"
 )
 
@@ -25,9 +25,9 @@ func addCmd() *cobra.Command {
 			service := hybrid.Service{}
 			submission := service.FetchItem(id)
 
-			favorites := bfavorites.New()
-			favorites.Add(submission)
-			favorites.Write()
+			fav := favorites.New()
+			fav.Add(submission)
+			fav.Write()
 
 			println("Item added to favorites")
 		},
