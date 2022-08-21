@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	new_reader "clx/new-reader"
+
 	"clx/bfavorites"
 	"clx/browser"
 	"clx/bubble/list/message"
@@ -25,7 +27,6 @@ import (
 	"clx/markdown/parser"
 	"clx/markdown/postprocessor"
 	"clx/markdown/renderer"
-	"clx/reader"
 	"clx/screen"
 	"clx/settings"
 	"clx/tree"
@@ -515,7 +516,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			return m, tea.Batch(cmds...)
 		}
 
-		article, err := reader.GetNew(msg.Url)
+		article, err := new_reader.GetNew(msg.Url)
 		if err != nil {
 			panic(err)
 		}
