@@ -13,7 +13,7 @@ import (
 	"github.com/go-shiori/go-readability"
 )
 
-func GetNew(url string, title string, width int, indentationSymbol string) (string, error) {
+func GetArticle(url string, title string, width int, indentationSymbol string) (string, error) {
 	articleInRawHTML, httpErr := readability.FromURL(url, 5*time.Second)
 	if httpErr != nil {
 		return "", fmt.Errorf("could not fetch url: %w", httpErr)

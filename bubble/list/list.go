@@ -513,7 +513,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			return m, tea.Batch(cmds...)
 		}
 
-		article, err := reader.GetNew(msg.Url, msg.Title, m.config.CommentWidth, m.config.IndentationSymbol)
+		article, err := reader.GetArticle(msg.Url, msg.Title, m.config.CommentWidth, m.config.IndentationSymbol)
 		if err != nil {
 			panic(err)
 		}
