@@ -4,6 +4,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/muesli/reflow/wordwrap"
+
 	"clx/reader/markdown"
 
 	"clx/constants/unicode"
@@ -15,6 +17,7 @@ import (
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 
 	termtext "github.com/MichaelMure/go-term-text"
+
 	. "github.com/logrusorgru/aurora/v3"
 )
 
@@ -103,16 +106,10 @@ func renderText(text string, lineWidth int) string {
 	text = syntax.HighlightMentions(text)
 	text = syntax.TrimURLs(text, true)
 
-	text, _ = termtext.Wrap(text, lineWidth)
-
-	return text
+	return wordwrap.String(text, lineWidth)
 }
 
 func renderList(text string, lineWidth int) string {
-	// Remove unwanted newlines
-	exp := regexp.MustCompile(`([\w\W[:cntrl:]])(\n)\s*([a-zA-Z\x60(])`)
-	text = exp.ReplaceAllString(text, `$1 $3`)
-
 	text = it(text)
 	text = bld(text)
 	text = removeImageReference(text)
@@ -213,7 +210,6 @@ func renderQuote(text string, lineWidth int, indentSymbol string) string {
 	text = Italic(text).Faint().String()
 	text = unescapeCharacters(text)
 	text = removeHrefs(text)
-	text = removeUnwantedNewLines(text)
 
 	indentBlock := " " + indentSymbol
 	text = itReversed(text)
@@ -223,22 +219,6 @@ func renderQuote(text string, lineWidth int, indentSymbol string) string {
 	text, _ = termtext.Wrap(text, lineWidth, padding)
 
 	return text
-}
-
-func removeUnwantedNewLines(text string) string {
-	paragraphSeparator := "\n\n"
-	paragraphs := strings.Split(text, paragraphSeparator)
-	output := ""
-
-	for _, paragraph := range paragraphs {
-		paragraph = syntax.RemoveUnwantedNewLines(paragraph)
-
-		output += paragraph + paragraphSeparator
-	}
-
-	output = strings.TrimSuffix(output, paragraphSeparator)
-
-	return output
 }
 
 func renderTable(text string) string {
