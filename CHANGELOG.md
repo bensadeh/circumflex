@@ -3,6 +3,10 @@
 ## 2.4
 _WIP_
 
+**New features**
+- Added a new command: `clx read [ID]` to directly read the article associated with the given `ID` in Reader Mode 
+
+
 **Cosmetic**
 - Use normal and best looking indentation block by default
 

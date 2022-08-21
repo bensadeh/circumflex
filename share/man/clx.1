@@ -2,12 +2,12 @@
 .\"     Title: clx
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.17
-.\"      Date: 2022-08-13
+.\"      Date: 2022-08-21
 .\"    Manual: circumflex
-.\"    Source: circumflex +2.3+
+.\"    Source: circumflex +2.4-dev+
 .\"  Language: English
 .\"
-.TH "CLX" "1" "2022-08-13" "circumflex +2.3+" "circumflex"
+.TH "CLX" "1" "2022-08-21" "circumflex +2.4\-dev+" "circumflex"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -112,9 +112,14 @@ Scroll between the next/previous \fItop\-level\fP comment (comment section) or \
 Add item to list of favorites by \fIID\fP. Enter the comment section from inside \fBclx\fP to update fields.
 .RE
 .sp
+\fBclx read\fP [\fIID\fP]
+.RS 4
+Directly read the associated link for an ID in Reader Mode without first going through the main view.
+.RE
+.sp
 \fBclx view\fP [\fIID\fP]
 .RS 4
-Directly go to the comment section for a given item \fIID\fP without going through the main view.
+Directly go to the comment section for a given item \fIID\fP without first going through the main view.
 .RE
 .sp
 \fBclx clear\fP

@@ -7,6 +7,7 @@ import (
 	"clx/less"
 	"clx/settings"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/logrusorgru/aurora/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -26,8 +27,7 @@ var (
 func Root() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:     "clx",
-		Short:   "circumflex is a command line tool for browsing Hacker News in your terminal",
-		Long:    "circumflex is a command line tool for browsing Hacker News in your terminal",
+		Short:   "\n" + aurora.Magenta("circumflex").Italic().String() + " is a command line tool for browsing Hacker News in your terminal",
 		Version: app.Version,
 		Run: func(cmd *cobra.Command, args []string) {
 			config := getConfig()
@@ -47,6 +47,7 @@ func Root() *cobra.Command {
 	rootCmd.AddCommand(addCmd())
 	rootCmd.AddCommand(clearCmd())
 	rootCmd.AddCommand(viewCmd())
+	rootCmd.AddCommand(readCmd())
 	rootCmd.AddCommand(versionCmd())
 
 	configureFlags(rootCmd)

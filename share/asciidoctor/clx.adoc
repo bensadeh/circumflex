@@ -73,8 +73,11 @@ _n_, _N_::
 *clx add* [_ID_]::
   Add item to list of favorites by _ID_. Enter the comment section from inside *clx* to update fields.
 
+*clx read* [_ID_]::
+Directly read the associated link for an ID in Reader Mode without first going through the main view.
+
 *clx view* [_ID_]::
-  Directly go to the comment section for a given item _ID_ without going through the main view.
+  Directly go to the comment section for a given item _ID_ without first going through the main view.
 
 *clx clear*::
   Clear the history of visited __ID__s from ~/.cache/circumflex/history.json.
