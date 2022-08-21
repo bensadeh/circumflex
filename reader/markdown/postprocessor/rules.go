@@ -11,7 +11,7 @@ func filterSite(text string, url string) string {
 
 	switch {
 	case strings.Contains(url, "en.wikipedia.org"):
-		text = strings.ReplaceAll(text, "[edit]", "")
+		text = strings.ReplaceAll(text, "\\[edit\\]", "")
 		text = removeWikipediaReferences(text)
 
 		ruleSet.EndBeforeLineEquals("References")
