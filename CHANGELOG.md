@@ -9,6 +9,7 @@ _WIP_
 **Cosmetic**
 - Use normal and best looking indentation block by default
 - Improved word wrapping in Reader Mode
+- Increased contrast between categories and header background
 
 ## 2.3
 _13.08.22_

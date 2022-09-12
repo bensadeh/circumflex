@@ -16,7 +16,7 @@ const (
 
 	logoBgDark           = "#0f1429"
 	headerBgDark         = "#2d3454"
-	unselectedItemFgDark = "247"
+	unselectedItemFgDark = "251"
 	paginatorBgDark      = logoBgDark
 	selectedPageFgDark   = unselectedItemFgDark
 	unselectedPageFgDark = "239"
