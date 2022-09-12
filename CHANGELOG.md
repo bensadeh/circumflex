@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2.4
-_WIP_
+_12.09.22_
 
 **New features**
 - Added a new command: `clx read [ID]` to directly read the article associated with the given `ID` in Reader Mode 
