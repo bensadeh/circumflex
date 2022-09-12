@@ -1,8 +1,9 @@
-name: goreleaser
+name: GoReleaser
 
 on:
-  pull_request:
   push:
+    tags:
+      - '*'
 
 jobs:
   goreleaser:
@@ -15,7 +16,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.16
+          go-version: 1.19
       - name: Run tests
         run: go test -v ./...
       - name: Run GoReleaser
