@@ -37,8 +37,9 @@ func viewCmd() *cobra.Command {
 			commentTree := tree.Print(comments, config, screenWidth, time.Now().Unix())
 
 			lesskey := less.NewLesskey()
+			config.LesskeyPath = lesskey.GetPath()
 
-			command := cli.Less(commentTree, lesskey.GetPath())
+			command := cli.Less(commentTree, config)
 
 			if err := command.Run(); err != nil {
 				defer lesskey.Remove()

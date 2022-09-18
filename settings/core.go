@@ -1,18 +1,19 @@
 package settings
 
 type Config struct {
-	CommentWidth       int
-	PlainHeadlines     bool
-	HighlightHeadlines bool
-	HighlightComments  bool
-	RelativeNumbering  bool
-	EmojiSmileys       bool
-	MarkAsRead         bool
-	HideIndentSymbol   bool
-	IndentationSymbol  string
-	DebugMode          bool
-	EnableNerdFonts    bool
-	LesskeyPath        string
+	CommentWidth         int
+	PlainHeadlines       bool
+	HighlightHeadlines   bool
+	HighlightComments    bool
+	RelativeNumbering    bool
+	EmojiSmileys         bool
+	MarkAsRead           bool
+	HideIndentSymbol     bool
+	IndentationSymbol    string
+	DebugMode            bool
+	EnableNerdFonts      bool
+	LesskeyPath          string
+	AutoCollapseComments bool
 }
 
 func New() *Config {

@@ -497,7 +497,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 		commentTree := tree.Print(story, m.config, m.width, lastVisited)
 
-		command := cli.Less(commentTree, m.config.LesskeyPath)
+		command := cli.Less(commentTree, m.config)
 
 		return m, tea.ExecProcess(command, func(err error) tea.Msg {
 			return message.EditorFinishedMsg{Err: err}
@@ -518,7 +518,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			panic(err)
 		}
 
-		command := cli.Less(article, m.config.LesskeyPath)
+		command := cli.Less(article, m.config)
 
 		return m, tea.ExecProcess(command, func(err error) tea.Msg {
 			return message.EditorFinishedMsg{Err: err}
@@ -833,7 +833,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 func (m *Model) showHelpScreen() tea.Cmd {
 	helpScreen := help.GetHelpScreen(m.config.EnableNerdFonts)
 
-	command := cli.Less(helpScreen, m.config.LesskeyPath)
+	command := cli.Less(helpScreen, m.config)
 
 	return tea.ExecProcess(command, func(err error) tea.Msg {
 		return message.EditorFinishedMsg{Err: err}

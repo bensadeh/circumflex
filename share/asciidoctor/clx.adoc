@@ -103,9 +103,10 @@ Directly read the associated link for an ID in Reader Mode without first going t
   Use Nerd Fonts icons as decorators for some elements (requires a Nerd Font-patched font)
 
 *--force-light-mode, --force-dark-mode*::
-  *clx* has a dark color scheme and a light color scheme. The color scheme is automatically chosen based on the color
-scheme of the terminal. Use these flags to force a specific color scheme.
+  *clx* has a dark color scheme and a light color scheme. The color scheme is automatically chosen based on the color scheme of the terminal. Use these flags to force a specific color scheme.
 
+*-a, --auto-collapse*::
+  Auto collapse all replies upon entering the comment section (expand comments with *l*)
 
 *-v, --version*::
   Show the current version of *clx*.

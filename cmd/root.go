@@ -12,16 +12,17 @@ import (
 )
 
 var (
-	plainHeadlines   bool
-	commentWidth     int
-	plainComments    bool
-	disableHistory   bool
-	disableEmojis    bool
-	hideIndentSymbol bool
-	debugMode        bool
-	enableNerdFont   bool
-	forceLightMode   bool
-	forceDarkMode    bool
+	plainHeadlines       bool
+	commentWidth         int
+	plainComments        bool
+	disableHistory       bool
+	disableEmojis        bool
+	hideIndentSymbol     bool
+	debugMode            bool
+	enableNerdFont       bool
+	forceLightMode       bool
+	forceDarkMode        bool
+	autoCollapseComments bool
 )
 
 func Root() *cobra.Command {
@@ -71,9 +72,11 @@ func configureFlags(rootCmd *cobra.Command) {
 	rootCmd.PersistentFlags().BoolVarP(&enableNerdFont, "nerdfonts", "n", false,
 		"enable Nerd Fonts")
 	rootCmd.PersistentFlags().BoolVar(&forceLightMode, "force-light-mode", false,
-		"Force use light color scheme")
+		"force use light color scheme")
 	rootCmd.PersistentFlags().BoolVar(&forceDarkMode, "force-dark-mode", false,
-		"Force use dark color scheme")
+		"force use dark color scheme")
+	rootCmd.PersistentFlags().BoolVarP(&autoCollapseComments, "auto-collapse", "a", false,
+		"auto collapse all replies in the comment section")
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
 		"enable debug mode (offline mode) by using mock data for the endpoints")
@@ -115,6 +118,10 @@ func getConfig() *settings.Config {
 
 	if forceDarkMode {
 		lipgloss.SetHasDarkBackground(true)
+	}
+
+	if autoCollapseComments {
+		config.AutoCollapseComments = true
 	}
 
 	if debugMode {

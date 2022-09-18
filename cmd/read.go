@@ -42,7 +42,7 @@ func readCmd() *cobra.Command {
 
 			lesskey := less.NewLesskey()
 
-			command := cli.Less(article, lesskey.GetPath())
+			command := cli.Less(article, config)
 
 			if err := command.Run(); err != nil {
 				defer lesskey.Remove()

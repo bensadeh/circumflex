@@ -3,6 +3,8 @@
 ## 2.5
 _WIP_
 
+**New features**
+- Comments can now be auto-collapsed with the `-a` or `--auto-collapse`
 
 ## 2.4
 _12.09.22_
