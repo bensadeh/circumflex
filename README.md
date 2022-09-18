@@ -193,31 +193,31 @@ Favorites are stored in `~/.config/circumflex/favorites.json`. `circumflex` pret
 Run `clx help` or `man clx` for a list of available commands and settings.
 
 ##### -c `n`, --comment-width=`n`
-Set the comment width
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Set the comment width
 
 ##### -p, --plain-headlines
-Disable syntax highlighting for the headlines
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Disable syntax highlighting for the headlines
 
 ##### -o, --plain-comments 
-Disable syntax highlighting in the comment section.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Disable syntax highlighting in the comment section.
 
 ##### -s, --disable-emojis
-Disable conversion of smileys (`:)`) to emojis (😊)                          
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Disable conversion of smileys (`:)`) to emojis (😊)                          
 
 ##### -d, --disable-history
-Disable marking submissions as read                                          
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Disable marking submissions as read                                          
 
 ##### -t, --hide-indent
-Hide the indentation symbol from the comment section (does not affect quotes)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hide the indentation symbol from the comment section (does not affect quotes)
 
 ##### -n, --nerdfonts
-Use Nerd Fonts icons as decorators  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Use Nerd Fonts icons as decorators  
 
 ##### --force-dark-mode, --force-light-mode
-Override setting the color scheme automatically
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Override setting the color scheme automatically
 
 ##### -a, --auto-collapse
-Auto collapse all replies in the comment section
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Auto collapse all replies in the comment section
 
 
 ## Keymaps
