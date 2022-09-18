@@ -2,5 +2,5 @@ package app
 
 const (
 	Name    = "circumflex"
-	Version = "2.4"
+	Version = "2.5-dev"
 )
