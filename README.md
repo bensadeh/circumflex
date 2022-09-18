@@ -192,17 +192,33 @@ Favorites are stored in `~/.config/circumflex/favorites.json`. `circumflex` pret
 
 Run `clx help` or `man clx` for a list of available commands and settings.
 
-A table of available flags is provided below:
+##### -c `n`, --comment-width=`n`
+Set the comment width
 
-| Flag | Description                                                                   |
-|:-----|:------------------------------------------------------------------------------|
-| `-c` | Set the comment width                                                         |
-| `-l` | Disable syntax highlighting for the headlines                                 |
-| `-o` | Disable syntax highlighting in the comment section.                           |
-| `-s` | Disable conversion of smileys (`:)`) to emojis (😊)                           |
-| `-d` | Disable marking submissions as read                                           |
-| `-t` | Hide the indentation symbol from the comment section (does not affect quotes) |
-| `-n` | Use Nerd Fonts icons as decorators                                            |
+##### -p, --plain-headlines
+Disable syntax highlighting for the headlines
+
+##### -o, --plain-comments 
+Disable syntax highlighting in the comment section.
+
+##### -s, --disable-emojis
+Disable conversion of smileys (`:)`) to emojis (😊)                          
+
+##### -d, --disable-history
+Disable marking submissions as read                                          
+
+##### -t, --hide-indent
+Hide the indentation symbol from the comment section (does not affect quotes)
+
+##### -n, --nerdfonts
+Use Nerd Fonts icons as decorators  
+
+##### --force-dark-mode, --force-light-mode
+Override setting the color scheme automatically
+
+##### -a, --auto-collapse
+Auto collapse all replies in the comment section
+
 
 ## Keymaps
 
@@ -230,7 +246,7 @@ Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of available keymaps:
 * [Algolia's Search API](https://hn.algolia.com/api) for list of submissions and [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) 
 for providing comments
 * [`less`](http://greenwoodsoftware.com/less/) for viewing comments and articles
-* [go-term-text](https://github.com/MichaelMure/go-term-text) for text formatting
+* [go-term-text](https://github.com/MichaelMure/go-term-text) and [lipgloss](https://github.com/charmbracelet/lipgloss) for text formatting
 * [go-readability](https://github.com/go-shiori/go-readability), [html-to-markdown](https://github.com/JohannesKaufmann/html-to-markdown) 
 and [Glamour](https://github.com/charmbracelet/glamour) for formatting and rendering articles in Reader Mode
 
