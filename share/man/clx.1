@@ -2,12 +2,12 @@
 .\"     Title: clx
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.17
-.\"      Date: 2022-09-12
+.\"      Date: 2022-09-22
 .\"    Manual: circumflex
-.\"    Source: circumflex +2.4+
+.\"    Source: circumflex 2.5-dev
 .\"  Language: English
 .\"
-.TH "CLX" "1" "2022-09-12" "circumflex +2.4+" "circumflex"
+.TH "CLX" "1" "2022-09-22" "circumflex 2.5\-dev" "circumflex"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -34,92 +34,92 @@ clx \- it\*(Aqs Hacker News in your terminal
 \fBclx\fP [\fIOPTION\fP]...
 .SH "DESCRIPTION"
 .sp
-\fBclx\fP lets you browse Hacker News from the comfort of your own terminal. Visit the comment section or read the article
-in Reader Mode.
+\fBclx\fP lets you browse Hacker News in your terminal. Quickly and easily visit the comment section or read
+the article in Reader Mode.
 .SH "KEYBINDINGS"
 .sp
 \fIEnter\fP
 .RS 4
-Read the Comment section
+Read the Comment section.
 .RE
 .sp
 \fISpace\fP
 .RS 4
-Read the article in Reader Mode
+Read the article in Reader Mode.
 .RE
 .sp
 \fIr\fP
 .RS 4
-Refresh
+Re\-fetches submissions for current category. Purges already fetched submissions from other categories.
 .RE
 .sp
 \fITab\fP
 .RS 4
-Change category
+Change category (use Shift + Tab to change in opposite direction).
 .RE
 .sp
 \fIo\fP
 .RS 4
-Open link to article in browser
+Open link to article in browser.
 .RE
 .sp
 \fIc\fP
 .RS 4
-Open comment section in browser
+Open comment section in browser.
 .RE
 .sp
 \fIf\fP
 .RS 4
-Add to favorites
+Add currently highlighted submission to favorites.
 .RE
 .sp
 \fIx\fP
 .RS 4
-Remove from favorites
+Remove currently highlighted submission from favorites.
 .RE
 .sp
 \fIq\fP
 .RS 4
-Quit
+Quit to prompt.
 .RE
 .SH "NAVIGATION"
 .sp
-\fBclx\fP pipes all its content to the pager \fBless\fP. To enjoy and use clx effectively, it is recommended to use the following keybindings for moving around:
+\fBclx\fP pipes all its content to the pager \fBless\fP. It is recommended to use the following keybindings for moving around:
 .sp
 \fIj\fP, \fIk\fP
 .RS 4
-Scroll up/down one line
+Scroll up/down one line.
 .RE
 .sp
 \fId\fP, \fIu\fP
 .RS 4
-Scroll up/down one half\-page
+Scroll up/down one half\-page.
 .RE
 .sp
 \fIh\fP, \fIl\fP
 .RS 4
-Hide / unhide all replies
+Hide / unhide all replies.
 .RE
 .sp
 \fIn\fP, \fIN\fP
 .RS 4
-Scroll between the next/previous \fItop\-level\fP comment (comment section) or \fIheadline\fP (Reader Mode)
+Scroll between the next/previous \fItop\-level\fP comment (comment section) or \fIheadline\fP (Reader Mode).
 .RE
 .SH "COMMANDS"
 .sp
 \fBclx add\fP [\fIID\fP]
 .RS 4
-Add item to list of favorites by \fIID\fP. Enter the comment section from inside \fBclx\fP to update fields.
+Add item to list of favorites by \fIID\fP.
 .RE
 .sp
 \fBclx read\fP [\fIID\fP]
 .RS 4
-Directly read the associated link for an ID in Reader Mode without first going through the main view.
+Go directly to Reader Mode for a given item \fIID\fP without first going through the main view.
 .RE
 .sp
 \fBclx view\fP [\fIID\fP]
 .RS 4
-Directly go to the comment section for a given item \fIID\fP without first going through the main view.
+Go directly to the Comment section for a given item \fIID\fP without first going through the main view.
 .RE
 .sp
 \fBclx clear\fP
@@ -148,6 +148,11 @@ Disable syntax highlighting for comments.
 Disable conversion of smileys to emojis.
 .RE
 .sp
+\fB\-d, \-\-disable\-history\fP
+.RS 4
+Disable marking submissions as read.
+.RE
+.sp
 \fB\-t, \-\-hide\-indent\fP
 .RS 4
 Hide the indentation bar to the left of the reply.
@@ -160,8 +165,13 @@ Use Nerd Fonts icons as decorators for some elements (requires a Nerd Font\-patc
 .sp
 \fB\-\-force\-light\-mode, \-\-force\-dark\-mode\fP
 .RS 4
-  \fBclx\fP has a dark color scheme and a light color scheme. The color scheme is automatically chosen based on the color
-scheme of the terminal. Use these flags to force a specific color scheme.
+The color scheme is chosen automatically based on the color scheme of the terminal. Use these
+flags to override.
+.RE
+.sp
+\fB\-a, \-\-auto\-collapse\fP
+.RS 4
+Auto collapse all replies upon entering the comment section (expand comments with \fIl\fP)
 .RE
 .sp
 \fB\-v, \-\-version\fP

@@ -6,6 +6,9 @@ _WIP_
 **New features**
 - Comments can now be auto-collapsed with the `-a` or `--auto-collapse`
 
+**Cosmetic**
+- Cleaned up the `man` pages
+
 ## 2.4
 _12.09.22_
 

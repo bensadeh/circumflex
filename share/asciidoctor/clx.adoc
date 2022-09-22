@@ -1,7 +1,7 @@
 = clx(1)
 :doctype: manpage
 :manmanual: circumflex
-:man source: circumflex +{release-version}+
+:man source: circumflex {release-version}
 
 ifdef::env-github[]
 :toc:
@@ -21,63 +21,63 @@ clx - it's Hacker News in your terminal
 
 == Description
 
-*clx* lets you browse Hacker News from the comfort of your own terminal. Visit the comment section or read the article
-in Reader Mode.
+*clx* lets you browse Hacker News in your terminal. Quickly and easily visit the comment section or read 
+the article in Reader Mode.
 
 == Keybindings
 
 _Enter_::
-  Read the Comment section
+  Read the Comment section.
 
 _Space_::
-  Read the article in Reader Mode
+  Read the article in Reader Mode.
 
 _r_::
-  Refresh
+  Re-fetches submissions for current category. Purges already fetched submissions from other categories.
 
 _Tab_::
-  Change category
+  Change category (use Shift + Tab to change in opposite direction).
 
 _o_::
-  Open link to article in browser
+  Open link to article in browser.
 
 _c_::
-  Open comment section in browser
+  Open comment section in browser.
 
 _f_::
-  Add to favorites
+  Add currently highlighted submission to favorites.
 
 _x_::
-  Remove from favorites
+  Remove currently highlighted submission from favorites.
 
 _q_::
-  Quit
+  Quit to prompt.
 
 == Navigation
-*clx* pipes all its content to the pager *less*. To enjoy and use clx effectively, it is recommended to use the following keybindings for moving around:
+*clx* pipes all its content to the pager *less*. It is recommended to use the following keybindings for moving around:
 
 _j_, _k_::
-  Scroll up/down one line
+  Scroll up/down one line.
 
 _d_, _u_::
-  Scroll up/down one half-page
+  Scroll up/down one half-page.
 
 _h_, _l_::
-  Hide / unhide all replies
+  Hide / unhide all replies.
 
 _n_, _N_::
-  Scroll between the next/previous _top-level_ comment (comment section) or _headline_ (Reader Mode)
+  Scroll between the next/previous _top-level_ comment (comment section) or _headline_ (Reader Mode).
 
 == Commands
 
 *clx add* [_ID_]::
-  Add item to list of favorites by _ID_. Enter the comment section from inside *clx* to update fields.
+  Add item to list of favorites by _ID_.
 
 *clx read* [_ID_]::
-Directly read the associated link for an ID in Reader Mode without first going through the main view.
+  Go directly to Reader Mode for a given item _ID_ without first going through the main view.
 
 *clx view* [_ID_]::
-  Directly go to the comment section for a given item _ID_ without first going through the main view.
+  Go directly to the Comment section for a given item _ID_ without first going through the main view.
 
 *clx clear*::
   Clear the history of visited __ID__s from ~/.cache/circumflex/history.json.
@@ -96,6 +96,9 @@ Directly read the associated link for an ID in Reader Mode without first going t
 *-s, --disable-emojis*::
   Disable conversion of smileys to emojis.
 
+*-d, --disable-history*::
+  Disable marking submissions as read.
+
 *-t, --hide-indent*::
   Hide the indentation bar to the left of the reply.
 
@@ -103,10 +106,11 @@ Directly read the associated link for an ID in Reader Mode without first going t
   Use Nerd Fonts icons as decorators for some elements (requires a Nerd Font-patched font)
 
 *--force-light-mode, --force-dark-mode*::
-  *clx* has a dark color scheme and a light color scheme. The color scheme is automatically chosen based on the color scheme of the terminal. Use these flags to force a specific color scheme.
+  The color scheme is chosen automatically based on the color scheme of the terminal. Use these 
+  flags to override.
 
 *-a, --auto-collapse*::
-  Auto collapse all replies upon entering the comment section (expand comments with *l*)
+  Auto collapse all replies upon entering the comment section (expand comments with _l_)
 
 *-v, --version*::
   Show the current version of *clx*.
