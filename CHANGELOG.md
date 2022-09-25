@@ -4,7 +4,7 @@
 _WIP_
 
 **New features**
-- Comments can now be auto-collapsed with the `-a` or `--auto-collapse`
+- Comments can now be auto-collapsed with the `-a` or `--auto-collapse` flag
 
 **Cosmetic**
 - Cleaned up the `man` pages
