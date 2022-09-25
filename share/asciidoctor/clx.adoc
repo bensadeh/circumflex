@@ -27,7 +27,7 @@ the article in Reader Mode.
 == Keybindings
 
 _Enter_::
-  Read the Comment section.
+  Read the comment section.
 
 _Space_::
   Read the article in Reader Mode.
@@ -63,7 +63,7 @@ _d_, _u_::
   Scroll up/down one half-page.
 
 _h_, _l_::
-  Hide / unhide all replies.
+  Hide/unhide all replies.
 
 _n_, _N_::
   Scroll between the next/previous _top-level_ comment (comment section) or _headline_ (Reader Mode).
@@ -77,7 +77,7 @@ _n_, _N_::
   Go directly to Reader Mode for a given item _ID_ without first going through the main view.
 
 *clx view* [_ID_]::
-  Go directly to the Comment section for a given item _ID_ without first going through the main view.
+  Go directly to the comment section for a given item _ID_ without first going through the main view.
 
 *clx clear*::
   Clear the history of visited __ID__s from ~/.cache/circumflex/history.json.
