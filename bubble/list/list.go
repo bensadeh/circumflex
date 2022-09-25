@@ -90,8 +90,9 @@ type Model struct {
 	statusMessage      string
 	statusMessageTimer *time.Timer
 
-	category int
-	items    [][]*item.Item
+	category          int
+	categoryToDisplay int
+	items             [][]*item.Item
 
 	delegate  ItemDelegate
 	history   history.History
@@ -567,6 +568,7 @@ func (m *Model) categoryHasStories(cat int) bool {
 
 func (m *Model) changeToCategory(cat int) {
 	m.category = cat
+	m.categoryToDisplay = m.category
 	m.Paginator.Page = 0
 	m.cursor = min(m.cursor, len(m.items[m.category])-1)
 	m.updatePagination()
@@ -676,6 +678,8 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			m.SetDisabledInput(true)
 			startSpinnerCmd := m.StartSpinner()
 
+			m.categoryToDisplay = nextCat
+
 			changeCatCmd := func() tea.Msg {
 				return message.ChangeCategory{Category: nextCat, Cursor: m.cursor}
 			}
@@ -696,6 +700,8 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			m.SetDisabledInput(true)
 			startSpinnerCmd := m.StartSpinner()
+
+			m.categoryToDisplay = prevCat
 
 			changeCatCmd := func() tea.Msg {
 				return message.ChangeCategory{Category: prevCat, Cursor: m.cursor}
@@ -878,7 +884,7 @@ func (m Model) View() string {
 }
 
 func (m Model) titleView() string {
-	return header.GetHeader(m.category, m.favorites.HasItems(), m.width) + "\n"
+	return header.GetHeader(m.categoryToDisplay, m.favorites.HasItems(), m.width) + "\n"
 }
 
 func (m Model) statusAndPaginationView() string {

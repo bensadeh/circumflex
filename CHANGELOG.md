@@ -8,6 +8,7 @@ _WIP_
 
 **Cosmetic**
 - Cleaned up the `man` pages
+- Immedietly change category indicator on <kbd>Tab</kbd>/<kbd>Shift + Tab</kbd>
 
 ## 2.4
 _12.09.22_
