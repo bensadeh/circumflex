@@ -33,12 +33,12 @@ func unmarshal(data []byte) *item.Item {
 
 func getConfig() *settings.Config {
 	return &settings.Config{
-		CommentWidth:       110,
-		HighlightHeadlines: true,
-		RelativeNumbering:  false,
-		HighlightComments:  true,
-		EmojiSmileys:       true,
-		MarkAsRead:         false,
-		IndentationSymbol:  "▎",
+		CommentWidth:               110,
+		HighlightHeadlines:         true,
+		RelativeNumbering:          false,
+		HighlightComments:          true,
+		EmojiSmileys:               true,
+		DoNotMarkSubmissionsAsRead: false,
+		IndentationSymbol:          "▎",
 	}
 }

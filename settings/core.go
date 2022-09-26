@@ -1,30 +1,30 @@
 package settings
 
 type Config struct {
-	CommentWidth         int
-	PlainHeadlines       bool
-	HighlightHeadlines   bool
-	HighlightComments    bool
-	RelativeNumbering    bool
-	EmojiSmileys         bool
-	MarkAsRead           bool
-	HideIndentSymbol     bool
-	IndentationSymbol    string
-	DebugMode            bool
-	EnableNerdFonts      bool
-	LesskeyPath          string
-	AutoCollapseComments bool
+	CommentWidth               int
+	PlainHeadlines             bool
+	HighlightHeadlines         bool
+	HighlightComments          bool
+	RelativeNumbering          bool
+	EmojiSmileys               bool
+	DoNotMarkSubmissionsAsRead bool
+	HideIndentSymbol           bool
+	IndentationSymbol          string
+	DebugMode                  bool
+	EnableNerdFonts            bool
+	LesskeyPath                string
+	AutoCollapseComments       bool
 }
 
-func New() *Config {
+func Default() *Config {
 	return &Config{
-		CommentWidth:       70,
-		HighlightHeadlines: true,
-		HighlightComments:  true,
-		RelativeNumbering:  false,
-		EmojiSmileys:       true,
-		MarkAsRead:         true,
-		HideIndentSymbol:   false,
-		IndentationSymbol:  " ▎",
+		CommentWidth:               70,
+		HighlightHeadlines:         true,
+		HighlightComments:          true,
+		RelativeNumbering:          false,
+		EmojiSmileys:               true,
+		DoNotMarkSubmissionsAsRead: false,
+		HideIndentSymbol:           false,
+		IndentationSymbol:          " ▎",
 	}
 }

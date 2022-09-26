@@ -160,7 +160,7 @@ func New(delegate ItemDelegate, config *settings.Config, favorites *favorites.Fa
 		width:        width,
 		height:       height,
 		delegate:     delegate,
-		history:      getHistory(config.DebugMode, config.MarkAsRead),
+		history:      getHistory(config.DebugMode, config.DoNotMarkSubmissionsAsRead),
 		items:        items,
 		Paginator:    p,
 		spinner:      sp,
@@ -177,16 +177,16 @@ func New(delegate ItemDelegate, config *settings.Config, favorites *favorites.Fa
 	return m
 }
 
-func getHistory(debugMode bool, markAsRead bool) history.History {
+func getHistory(debugMode bool, doNotMarkAsRead bool) history.History {
 	if debugMode {
 		return history.NewMockHistory()
 	}
 
-	if markAsRead {
-		return history.NewPersistentHistory()
+	if doNotMarkAsRead {
+		return history.NewNonPersistentHistory()
 	}
 
-	return history.NewNonPersistentHistory()
+	return history.NewPersistentHistory()
 }
 
 func getService(debugMode bool) hn.Service {

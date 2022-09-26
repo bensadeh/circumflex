@@ -67,7 +67,7 @@ func configureFlags(rootCmd *cobra.Command) {
 		"disable conversion of smileys to emojis")
 	rootCmd.PersistentFlags().BoolVarP(&hideIndentSymbol, "hide-indent", "t", false,
 		"hide the indentation bar to the left of the reply")
-	rootCmd.PersistentFlags().IntVarP(&commentWidth, "comment-width", "c", settings.New().CommentWidth,
+	rootCmd.PersistentFlags().IntVarP(&commentWidth, "comment-width", "c", settings.Default().CommentWidth,
 		"set the comment width")
 	rootCmd.PersistentFlags().BoolVarP(&enableNerdFont, "nerdfonts", "n", false,
 		"enable Nerd Fonts")
@@ -84,32 +84,22 @@ func configureFlags(rootCmd *cobra.Command) {
 }
 
 func getConfig() *settings.Config {
-	config := settings.New()
+	config := settings.Default()
 
 	config.CommentWidth = commentWidth
-
-	if plainHeadlines {
-		config.PlainHeadlines = true
-	}
+	config.PlainHeadlines = plainHeadlines
+	config.DoNotMarkSubmissionsAsRead = disableHistory
+	config.EnableNerdFonts = enableNerdFont
+	config.HideIndentSymbol = hideIndentSymbol
+	config.AutoCollapseComments = autoCollapseComments
+	config.DebugMode = debugMode
 
 	if plainComments {
 		config.HighlightComments = false
 	}
 
-	if disableHistory {
-		config.MarkAsRead = false
-	}
-
 	if disableEmojis {
 		config.EmojiSmileys = false
-	}
-
-	if enableNerdFont {
-		config.EnableNerdFonts = true
-	}
-
-	if hideIndentSymbol {
-		config.HideIndentSymbol = true
 	}
 
 	if forceLightMode {
@@ -118,14 +108,6 @@ func getConfig() *settings.Config {
 
 	if forceDarkMode {
 		lipgloss.SetHasDarkBackground(true)
-	}
-
-	if autoCollapseComments {
-		config.AutoCollapseComments = true
-	}
-
-	if debugMode {
-		config.DebugMode = true
 	}
 
 	return config
