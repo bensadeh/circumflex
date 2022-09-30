@@ -773,7 +773,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			return tea.Batch(cmds...)
 
-		case msg.String() == "f":
+		case msg.String() == "f" || msg.String() == "V":
 			m.SetPermanentStatusMessage(getAddItemConfirmationMessage())
 			m.onAddToFavoritesPrompt = true
 			m.disableInput = true
