@@ -3,15 +3,11 @@ package info
 import (
 	"strings"
 
-	"clx/app"
-
 	"clx/constants/nerdfonts"
 	. "github.com/logrusorgru/aurora/v3"
 
 	"clx/constants/margins"
 	"clx/keymaps"
-	"github.com/charmbracelet/lipgloss"
-
 	text "github.com/MichaelMure/go-term-text"
 )
 
@@ -19,12 +15,10 @@ func GetText(screenWidth int, enableNerdFonts bool) string {
 	keys := new(keymaps.List)
 	keys.Init()
 
-	cmd := lipgloss.NewStyle().Underline(true).Bold(false)
-
-	keys.AddHeader(cmd.Render(" Main Menu "))
+	keys.AddHeader(Red(" Main Menu ").Underline().String())
 	keys.AddSeparator()
-	keys.AddKeymap("Read comment section", "Enter")
-	keys.AddKeymap("Read article in Reader Mode", "Space")
+	keys.AddKeymap("View comment section", "Enter")
+	keys.AddKeymap("View article in Reader Mode", "Space")
 	keys.AddSeparator()
 	keys.AddKeymap("Refresh", "r")
 	keys.AddKeymap("Change category", "Tab")
@@ -39,7 +33,7 @@ func GetText(screenWidth int, enableNerdFonts bool) string {
 	keys.AddKeymap("Quit to prompt", "q")
 	keys.AddSeparator()
 
-	keys.AddHeader(cmd.Render(" Comment Section / Reader Mode "))
+	keys.AddHeader(Yellow(" Comment Section / Reader Mode ").Underline().String())
 	keys.AddSeparator()
 	keys.AddKeymap("Down one half-window", "d")
 	keys.AddKeymap("Up one half-window", "u")
@@ -54,7 +48,7 @@ func GetText(screenWidth int, enableNerdFonts bool) string {
 	keys.AddKeymap("Return to circumflex", "q")
 	keys.AddSeparator()
 
-	keys.AddHeader(cmd.Render(" Legend "))
+	keys.AddHeader(Blue(" Legend ").Underline().String())
 	keys.AddSeparator()
 	keys.AddKeymap("Original Poster", Red(getOP(enableNerdFonts)).String())
 	keys.AddKeymap("Parent Poster", Magenta(getPP(enableNerdFonts)).String())
@@ -62,7 +56,7 @@ func GetText(screenWidth int, enableNerdFonts bool) string {
 
 	keys.AddSeparator()
 	keys.AddSeparator()
-	keys.AddHeader(cmd.Underline(false).Faint(true).Render("press q to return • github.com/bensadeh/circumflex • version " + app.Version))
+	// keys.AddHeader(cmd.Underline(false).Faint(true).Render("press q to return • github.com/bensadeh/circumflex • version " + app.Version))
 
 	keymapsWidth := 80
 	listOfKeymaps := keys.Print(keymapsWidth)

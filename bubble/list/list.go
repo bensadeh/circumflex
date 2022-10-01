@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"clx/app"
+
 	"github.com/charmbracelet/bubbles/viewport"
 
 	"clx/reader"
@@ -383,9 +385,10 @@ func (m *Model) NewStatusMessageWithDuration(s string, d time.Duration) tea.Cmd 
 	}
 }
 
-func (m *Model) SetPermanentStatusMessage(s string) {
+func (m *Model) SetPermanentStatusMessage(s string, faint bool) {
 	m.statusMessage = lipgloss.NewStyle().
 		Foreground(style.GetUnselectedItemFg()).
+		Faint(faint).
 		Render(s)
 }
 
@@ -469,7 +472,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.viewport = viewport.New(windowSizeMsg.Width, windowSizeMsg.Height-heightOfHeaderAndStatusLine)
 		m.viewport.YPosition = 2
 		m.viewport.HighPerformanceRendering = false
-		m.viewport.SetContent("First line sadf asdf asdf\nSecond line  sadf asdfsd \nThird line  sadf asdfasd ")
+		m.viewport.SetContent(help.GetHelpScreen(m.config.EnableNerdFonts))
 
 		return m, tea.Batch(cmds...)
 	}
@@ -637,8 +640,12 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-		case msg.String() == "t":
+		case msg.String() == "i":
 			m.isOnHelpScreen = true
+
+			statusMessage := "press q to return • github.com/bensadeh/circumflex • version " + app.Version
+
+			m.SetPermanentStatusMessage(statusMessage, true)
 
 			return nil
 
@@ -835,14 +842,14 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return tea.Batch(cmds...)
 
 		case msg.String() == "f" || msg.String() == "V":
-			m.SetPermanentStatusMessage(getAddItemConfirmationMessage())
+			m.SetPermanentStatusMessage(getAddItemConfirmationMessage(), false)
 			m.onAddToFavoritesPrompt = true
 			m.disableInput = true
 
 			return nil
 
 		case msg.String() == "x" && m.category == category.Favorites:
-			m.SetPermanentStatusMessage(getRemoveItemConfirmationMessage())
+			m.SetPermanentStatusMessage(getRemoveItemConfirmationMessage(), false)
 			m.onRemoveFromFavoritesPrompt = true
 			m.disableInput = true
 
@@ -910,7 +917,9 @@ func (m *Model) showHelpScreen() tea.Cmd {
 // View renders the component.
 func (m Model) View() string {
 	if m.isOnHelpScreen {
-		return fmt.Sprintf("%s\n%s\n%s", "title", m.viewport.View(), "footer")
+		return fmt.Sprintf("%s\n%s\n%s", header.GetHeader(m.categoryToDisplay, m.favorites.HasItems(), m.width),
+			m.viewport.View(),
+			m.statusAndPaginationView())
 	}
 
 	var (
