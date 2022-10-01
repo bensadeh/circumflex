@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/charmbracelet/bubbles/viewport"
+
 	"clx/reader"
 
 	"clx/browser"
@@ -99,6 +101,9 @@ type Model struct {
 	config    *settings.Config
 	service   hn.Service
 	favorites *favorites.Favorites
+
+	isOnHelpScreen bool
+	viewport       viewport.Model
 }
 
 func (m *Model) FetchFrontPageStories() tea.Cmd {
@@ -433,8 +438,19 @@ func (m *Model) hideStatusMessage() {
 }
 
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
-	if m.OnStartup() {
-		m.SetSize(screen.GetTerminalWidth(), screen.GetTerminalHeight())
+	windowSizeMsg, isWindowSizeMsg := msg.(tea.WindowSizeMsg)
+
+	// Since this program is using the full size of the viewport we
+	// need to wait until we've received the window dimensions before
+	// we can initialize the viewport. The initial dimensions come in
+	// quickly, though asynchronously, which is why we wait for them
+	// here.
+	if m.onStartup && !isWindowSizeMsg {
+		return m, nil
+	}
+
+	if m.onStartup && isWindowSizeMsg {
+		m.SetSize(windowSizeMsg.Width, windowSizeMsg.Height)
 
 		var cmds []tea.Cmd
 
@@ -448,7 +464,18 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		fetchCmd := m.FetchFrontPageStories()
 		cmds = append(cmds, fetchCmd)
 
+		heightOfHeaderAndStatusLine := 2
+
+		m.viewport = viewport.New(windowSizeMsg.Width, windowSizeMsg.Height-heightOfHeaderAndStatusLine)
+		m.viewport.YPosition = 2
+		m.viewport.HighPerformanceRendering = false
+		m.viewport.SetContent("First line sadf asdf asdf\nSecond line  sadf asdfsd \nThird line  sadf asdfasd ")
+
 		return m, tea.Batch(cmds...)
+	}
+
+	if m.isOnHelpScreen {
+		return m.updateHelpScreen(msg)
 	}
 
 	var cmds []tea.Cmd
@@ -558,6 +585,35 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
+func (m Model) updateHelpScreen(msg tea.Msg) (Model, tea.Cmd) {
+	var (
+		cmd  tea.Cmd
+		cmds []tea.Cmd
+	)
+
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		if k := msg.String(); k == "ctrl+c" || k == "q" || k == "esc" {
+			return m, tea.Quit
+		}
+
+	case tea.WindowSizeMsg:
+		headerHeight := lipgloss.Height("")
+		footerHeight := lipgloss.Height("")
+		verticalMarginHeight := headerHeight + footerHeight
+
+		m.viewport.Width = msg.Width
+		m.viewport.Height = msg.Height - verticalMarginHeight
+
+	}
+
+	// Handle keyboard and mouse events in the viewport
+	m.viewport, cmd = m.viewport.Update(msg)
+	cmds = append(cmds, cmd)
+
+	return m, tea.Batch(cmds...)
+}
+
 func (m *Model) updateCursor() {
 	m.cursor = min(m.cursor, m.Paginator.ItemsOnPage(len(m.VisibleItems()))-1)
 }
@@ -581,6 +637,11 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
+		case msg.String() == "t":
+			m.isOnHelpScreen = true
+
+			return nil
+
 		case m.onAddToFavoritesPrompt && msg.String() == "y":
 			m.onAddToFavoritesPrompt = false
 			m.disableInput = false
@@ -848,6 +909,10 @@ func (m *Model) showHelpScreen() tea.Cmd {
 
 // View renders the component.
 func (m Model) View() string {
+	if m.isOnHelpScreen {
+		return fmt.Sprintf("%s\n%s\n%s", "title", m.viewport.View(), "footer")
+	}
+
 	var (
 		sections    []string
 		availHeight = m.height
