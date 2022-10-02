@@ -577,9 +577,6 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			return message.EditorFinishedMsg{Err: err}
 		})
 
-	case message.EnterHelpScreen:
-		return m, m.showHelpScreen()
-
 	case message.EditorFinishedMsg:
 		m.SetIsVisible(true)
 		m.SetDisabledInput(false)
@@ -683,7 +680,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-		case msg.String() == "i":
+		case msg.String() == "i" || msg.String() == "?":
 			m.isOnHelpScreen = true
 
 			return nil
@@ -918,16 +915,6 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 					Domain: m.SelectedItem().Domain,
 				}
 			}
-
-		case msg.String() == "i" || msg.String() == "?":
-			m.SetIsVisible(false)
-
-			cmd := func() tea.Msg {
-				return message.EnterHelpScreen{}
-			}
-
-			return cmd
-
 		}
 	}
 

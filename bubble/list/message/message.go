@@ -17,8 +17,6 @@ type EnteringReaderMode struct {
 	Domain string
 }
 
-type EnterHelpScreen struct{}
-
 type StatusMessageTimeout struct{}
 
 type FetchingFinished struct{}
