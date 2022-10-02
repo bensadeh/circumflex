@@ -826,11 +826,6 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			return nil
 
-		case msg.String() == "e":
-			cmd := m.NewStatusMessageWithDuration("Test", 2*time.Second)
-
-			return cmd
-
 		case msg.String() == "o":
 			if m.SelectedItem().URL == "" {
 				url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(m.SelectedItem().ID)
