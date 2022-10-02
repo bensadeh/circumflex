@@ -453,7 +453,8 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	}
 
 	if m.onStartup && isWindowSizeMsg {
-		m.SetSize(windowSizeMsg.Width, windowSizeMsg.Height)
+		h, v := lipgloss.NewStyle().GetFrameSize()
+		m.SetSize(windowSizeMsg.Width-h, windowSizeMsg.Height-v)
 
 		var cmds []tea.Cmd
 
@@ -472,7 +473,13 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.viewport = viewport.New(windowSizeMsg.Width, windowSizeMsg.Height-heightOfHeaderAndStatusLine)
 		m.viewport.YPosition = 2
 		m.viewport.HighPerformanceRendering = false
-		m.viewport.SetContent(help.GetHelpScreen(m.config.EnableNerdFonts))
+
+		content := lipgloss.NewStyle().
+			Width(windowSizeMsg.Width).
+			AlignHorizontal(lipgloss.Center).
+			SetString(help.GetHelpScreen(m.config.EnableNerdFonts))
+
+		m.viewport.SetContent(content.String())
 
 		return m, tea.Batch(cmds...)
 	}
@@ -607,6 +614,18 @@ func (m Model) updateHelpScreen(msg tea.Msg) (Model, tea.Cmd) {
 
 		m.viewport.Width = msg.Width
 		m.viewport.Height = msg.Height - verticalMarginHeight
+
+		m.width = msg.Width
+		m.height = msg.Height
+
+		content := lipgloss.NewStyle().
+			Width(msg.Width).
+			AlignHorizontal(lipgloss.Center).
+			SetString(help.GetHelpScreen(m.config.EnableNerdFonts))
+
+		m.viewport.SetContent(content.String())
+
+		return m, viewport.Sync(m.viewport)
 
 	}
 

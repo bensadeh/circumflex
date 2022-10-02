@@ -3,9 +3,6 @@ package help
 import (
 	"strings"
 
-	"clx/constants/margins"
-	"github.com/muesli/reflow/indent"
-
 	"clx/constants/unicode"
 	"clx/info"
 	"github.com/charmbracelet/lipgloss"
@@ -21,7 +18,7 @@ func GetHelpScreen(enableNerdFonts bool) string {
 	var sb strings.Builder
 
 	sb.WriteString(unicode.ZeroWidthSpace + newPar)
-	sb.WriteString(unicode.ZeroWidthSpace + indent.String(info.GetText(textWidth, enableNerdFonts), margins.MainViewLeftMargin) + newPar)
+	sb.WriteString(unicode.ZeroWidthSpace + info.GetText(textWidth, enableNerdFonts) + newPar)
 
 	return sb.String()
 }
