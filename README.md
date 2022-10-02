@@ -25,7 +25,7 @@
 
 - 🛋 **Everything in one place** — read both the comment section and articles in Reader Mode
 - 🌈 **Syntax highlighting** — syntax-aware formatting for comments and headlines
-- ⚡️ **Familiar tools** — content is piped to the pager `less` 
+- ⚡️ **Read it with `less`** — use the pager you already know for quick and simple navigation 
 
 **You might also like:**
 - 🤹 **Adaptive terminal colors** — you bring your own color scheme, `circumflex` does the rest
