@@ -56,7 +56,6 @@ func GetText(screenWidth int, enableNerdFonts bool) string {
 
 	keys.AddSeparator()
 	keys.AddSeparator()
-	// keys.AddHeader(cmd.Underline(false).Faint(true).Render("press q to return • github.com/bensadeh/circumflex • version " + app.Version))
 
 	keymapsWidth := 80
 	listOfKeymaps := keys.Print(keymapsWidth)

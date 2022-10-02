@@ -662,10 +662,6 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 		case msg.String() == "i":
 			m.isOnHelpScreen = true
 
-			statusMessage := "press q to return • github.com/bensadeh/circumflex • version " + app.Version
-
-			m.SetPermanentStatusMessage(statusMessage, true)
-
 			return nil
 
 		case m.onAddToFavoritesPrompt && msg.String() == "y":
@@ -982,11 +978,21 @@ func (m Model) titleView() string {
 
 func (m Model) statusAndPaginationView() string {
 	centerContent := ""
+	rightContent := ""
 
-	if m.showSpinner {
+	if m.isOnHelpScreen {
+		centerContent = lipgloss.NewStyle().Faint(true).Render(
+			"github.com/bensadeh/circumflex • version " + app.Version)
+	} else if m.showSpinner {
 		centerContent = m.spinnerView()
 	} else {
 		centerContent = m.statusMessage
+	}
+
+	if m.isOnHelpScreen {
+		rightContent = "hlp"
+	} else {
+		rightContent = m.Paginator.View()
 	}
 
 	left := lipgloss.NewStyle().Inline(true).
@@ -999,7 +1005,7 @@ func (m Model) statusAndPaginationView() string {
 
 	right := lipgloss.NewStyle().Inline(true).
 		Background(style.GetPaginatorBg()).
-		Width(5).Align(lipgloss.Center).Render(m.Paginator.View())
+		Width(5).Align(lipgloss.Center).Render(rightContent)
 
 	return m.Styles.StatusBar.Render(left) + m.Styles.StatusBar.Render(center) + m.Styles.StatusBar.Render(right)
 }
