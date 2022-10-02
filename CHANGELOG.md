@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2.5
-_WIP_
+_02.10.22_
 
 **New features**
 - Comments can now be auto-collapsed with the `-a` or `--auto-collapse` flag

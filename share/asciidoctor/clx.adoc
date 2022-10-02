@@ -2,6 +2,7 @@
 :doctype: manpage
 :manmanual: circumflex
 :man source: circumflex {release-version}
+:revdate: {docdate}
 
 ifdef::env-github[]
 :toc:
