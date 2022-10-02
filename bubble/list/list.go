@@ -603,8 +603,10 @@ func (m Model) updateHelpScreen(msg tea.Msg) (Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		if k := msg.String(); k == "ctrl+c" || k == "q" || k == "esc" {
-			return m, tea.Quit
+		if k := msg.String(); k == "ctrl+c" || k == "q" || k == "esc" || k == "i" || k == "?" {
+			m.isOnHelpScreen = false
+
+			return m, nil
 		}
 
 	case tea.WindowSizeMsg:
