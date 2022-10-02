@@ -44,10 +44,7 @@
 * [History](#history)
 * [Favorites](#favorites)
 ###
-* [Headers](#headers)
 * [Settings](#settings)
-* [Tweaks](#tweaks)
-###
 * [Keymaps](#keymaps)
 * [Under the hood](#under-the-hood)
 
@@ -76,6 +73,8 @@ You can also build `circumflex` from source:
 go run main.go
 ```
 
+When building from source, make sure you are using the latest version of [`less`](http://greenwoodsoftware.com/less/).
+
 ## Comment section
 
 ### Overview
@@ -103,7 +102,7 @@ comment section.
 - <kbd>n</kbd>/<kbd>N</kbd> to jump to the next top-level comment
 
 
-## Reader Mode
+## Reader mode
 Press <kbd>Space</kbd> to read the submission link in Reader Mode. 
 
 <p align="center">
