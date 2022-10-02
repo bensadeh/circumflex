@@ -484,10 +484,6 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		return m, tea.Batch(cmds...)
 	}
 
-	if m.isOnHelpScreen {
-		return m.updateHelpScreen(msg)
-	}
-
 	var cmds []tea.Cmd
 
 	switch msg := msg.(type) {
@@ -521,6 +517,25 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		h, v := lipgloss.NewStyle().GetFrameSize()
 		m.SetSize(msg.Width-h, msg.Height-v)
+
+		headerHeight := lipgloss.Height("")
+		footerHeight := lipgloss.Height("")
+		verticalMarginHeight := headerHeight + footerHeight
+
+		m.viewport.Width = msg.Width
+		m.viewport.Height = msg.Height - verticalMarginHeight
+
+		m.width = msg.Width
+		m.height = msg.Height
+
+		content := lipgloss.NewStyle().
+			Width(msg.Width).
+			AlignHorizontal(lipgloss.Center).
+			SetString(help.GetHelpScreen(m.config.EnableNerdFonts))
+
+		m.viewport.SetContent(content.String())
+
+		return m, nil
 
 	case message.EnteringCommentSection:
 		lastVisited := m.history.GetLastVisited(msg.Id)
@@ -590,6 +605,10 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.updatePagination()
 	}
 
+	if m.isOnHelpScreen {
+		return m.updateHelpScreen(msg)
+	}
+
 	cmds = append(cmds, m.handleBrowsing(msg))
 
 	return m, tea.Batch(cmds...)
@@ -610,6 +629,9 @@ func (m Model) updateHelpScreen(msg tea.Msg) (Model, tea.Cmd) {
 		}
 
 	case tea.WindowSizeMsg:
+		h, v := lipgloss.NewStyle().GetFrameSize()
+		m.SetSize(msg.Width-h, msg.Height-v)
+
 		headerHeight := lipgloss.Height("")
 		footerHeight := lipgloss.Height("")
 		verticalMarginHeight := headerHeight + footerHeight
