@@ -23,7 +23,9 @@ func Less(input string, config *settings.Config) *exec.Cmd {
 		"-DP-",
 	}
 
-	if config.AutoCollapseComments {
+	if config.AutoExpandComments {
+		args = append(args, "+A")
+	} else {
 		args = append(args, "+C")
 	}
 

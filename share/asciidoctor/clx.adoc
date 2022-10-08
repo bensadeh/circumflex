@@ -110,8 +110,8 @@ _n_, _N_::
   The color scheme is chosen automatically based on the color scheme of the terminal. Use these 
   flags to override.
 
-*-a, --auto-collapse*::
-  Auto collapse all replies upon entering the comment section (expand comments with _l_)
+*-a, --auto-expand*::
+  Auto expand all replies upon entering the comment section (collapse comments with _h_)
 
 *-v, --version*::
   Show the current version of *clx*.

@@ -1,8 +1,13 @@
 package tree
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
+
+	style2 "clx/constants/style"
+
+	"github.com/charmbracelet/lipgloss"
 
 	"clx/constants/nerdfonts"
 
@@ -74,6 +79,8 @@ func printReplies(c *item.Item, config *settings.Config, screenWidth int, origin
 		lastVisited)
 	indentedComment, _ := text.WrapWithPad(comment, screenWidth, indentation)
 	fullComment := getSeparator(c.Level, config.CommentWidth, c.ID, firstCommentID) + indentedComment + newLine
+	fullComment += getButton(c.Level, getReplyCount(c), config.CommentWidth, config.EnableNerdFonts)
+
 	fullCommentWithFilterTag := addFilterTag(c.Level, fullComment)
 
 	if c.Level == 0 {
@@ -86,6 +93,61 @@ func printReplies(c *item.Item, config *settings.Config, screenWidth int, origin
 	}
 
 	return fullCommentWithFilterTag
+}
+
+func getButton(level int, replyCount int, commentWidth int, enableNerdFonts bool) string {
+	if replyCount == 0 || level != 0 {
+		return ""
+	}
+
+	buttonWidth := 16
+	replies := ""
+	nerdfontsRightSeparator := ""
+	nerdfontsLeftSeparator := ""
+
+	if enableNerdFonts {
+		nerdfontsRightSeparator = nerdfonts.RightSeparator
+		nerdfontsLeftSeparator = nerdfonts.LeftSeparator
+		buttonWidth -= 2
+	}
+
+	if replyCount == 1 {
+		replies = "reply"
+	} else {
+		replies = "replies"
+	}
+
+	buttonLabel := fmt.Sprintf("%d %s", replyCount, replies)
+
+	buttonNotPressedStyle := lipgloss.NewStyle().
+		Foreground(style2.GetUnselectedItemFg()).
+		Background(style2.GetHeaderBg()).
+		Width(buttonWidth).
+		AlignHorizontal(lipgloss.Center).
+		SetString(buttonLabel)
+	buttonNotPressedRoundedSeparator := lipgloss.NewStyle().
+		Foreground(buttonNotPressedStyle.GetBackground())
+	buttonNotPressed := buttonNotPressedRoundedSeparator.Render(nerdfontsLeftSeparator) +
+		buttonNotPressedStyle.String() +
+		buttonNotPressedRoundedSeparator.Render(nerdfontsRightSeparator)
+
+	buttonPressedStyle := lipgloss.NewStyle().
+		Foreground(style2.GetUnselectedItemFg()).
+		Background(style2.GetLogoBg()).
+		Faint(true).
+		Width(buttonWidth).
+		AlignHorizontal(lipgloss.Center).
+		SetString(buttonLabel)
+	buttonPressedRoundedSeparator := lipgloss.NewStyle().
+		Foreground(buttonPressedStyle.GetBackground())
+	buttonPressed := buttonPressedRoundedSeparator.Render(nerdfontsLeftSeparator) +
+		buttonPressedStyle.String() +
+		buttonPressedRoundedSeparator.Render(nerdfontsRightSeparator)
+
+	style := lipgloss.NewStyle().Width(commentWidth).AlignHorizontal(lipgloss.Center)
+
+	return newLine + style.Render(buttonNotPressed) + unicode.AnotherInvisibleCharacter +
+		newLine + style.Render(buttonPressed) + unicode.InvisibleCharacter + newLine
 }
 
 func addFilterTag(level int, fullComment string) string {
@@ -111,7 +173,7 @@ func formatComment(c *item.Item, config *settings.Config, originalPoster string,
 ) string {
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, c.Level)
 
-	header := getCommentHeader(c, originalPoster, parentPoster, commentWidth, lastVisited, config)
+	header := getCommentHeader(c, originalPoster, parentPoster, lastVisited, config)
 	formattedComment := comment.Print(c.Content, config, commentWidth, availableScreenWidth)
 
 	paddedComment, _ := text.WrapWithPad(formattedComment, availableScreenWidth, coloredIndentSymbol)
@@ -139,30 +201,30 @@ func getIndentString(level int) string {
 	return strings.Repeat(" ", level-1)
 }
 
-func getCommentHeader(c *item.Item, originalPoster string, parentPoster string, commentWidth int, lastVisited int64, config *settings.Config) string {
+func getCommentHeader(c *item.Item, originalPoster string, parentPoster string, lastVisited int64, config *settings.Config) string {
 	if c.Level == 0 {
-		return formatHeader(c, originalPoster, parentPoster, true, true, true,
-			commentWidth, 0, lastVisited, config)
+		return formatHeader(c, originalPoster, parentPoster, true,
+			0, lastVisited, config)
 	}
 
-	return formatHeader(c, originalPoster, parentPoster, false, false, false,
-		commentWidth, 1, lastVisited, config)
+	return formatHeader(c, originalPoster, parentPoster, false,
+		1, lastVisited, config)
 }
 
-func formatHeader(c *item.Item, originalPoster string, parentPoster string, underlineHeader bool, showReplies bool,
-	enableZeroWidthSpace bool, commentWidth int, indentSize int, lastVisited int64, config *settings.Config,
+func formatHeader(c *item.Item, originalPoster string, parentPoster string,
+	enableZeroWidthSpace bool, indentSize int, lastVisited int64, config *settings.Config,
 ) string {
 	author := getAuthor(c.User, lastVisited, c.Time)
 	authorLabel := getAuthorLabel(c.User, originalPoster, parentPoster, config.EnableNerdFonts)
 	zeroWidthSpace := getZeroWidthSpace(enableZeroWidthSpace)
-	repliesTag := getReplies(showReplies, c, lastVisited)
+	// repliesTag := getReplies(showReplies, c, lastVisited)
 	indentation := strings.Repeat(" ", indentSize)
 
-	spacingLength := commentWidth - text.Len(indentation+author+authorLabel+c.TimeAgo+repliesTag)
-	spacing := strings.Repeat(" ", spacingLength)
+	// spacingLength := commentWidth - text.Len(indentation+author+authorLabel+c.TimeAgo)
+	// spacing := strings.Repeat(" ", spacingLength)
 
 	return zeroWidthSpace + indentation + author + authorLabel +
-		underlineAndDim(underlineHeader, c.TimeAgo, spacing, repliesTag) + newLine
+		Faint(c.TimeAgo).String() + newLine
 }
 
 func getAuthor(author string, lastVisited, timePosted int64) string {
@@ -177,9 +239,9 @@ func getAuthor(author string, lastVisited, timePosted int64) string {
 	return authorInBold
 }
 
-func underlineAndDim(enabled bool, timeAgo, spacing, replies string) string {
+func underlineAndDim(enabled bool, timeAgo string) string {
 	if enabled {
-		return Faint(timeAgo + spacing + replies).String()
+		return Faint(timeAgo).String()
 	}
 
 	return Faint(timeAgo).String()

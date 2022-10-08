@@ -12,17 +12,17 @@ import (
 )
 
 var (
-	plainHeadlines       bool
-	commentWidth         int
-	plainComments        bool
-	disableHistory       bool
-	disableEmojis        bool
-	hideIndentSymbol     bool
-	debugMode            bool
-	enableNerdFont       bool
-	forceLightMode       bool
-	forceDarkMode        bool
-	autoCollapseComments bool
+	plainHeadlines     bool
+	commentWidth       int
+	plainComments      bool
+	disableHistory     bool
+	disableEmojis      bool
+	hideIndentSymbol   bool
+	debugMode          bool
+	enableNerdFont     bool
+	forceLightMode     bool
+	forceDarkMode      bool
+	autoExpandComments bool
 )
 
 func Root() *cobra.Command {
@@ -75,8 +75,8 @@ func configureFlags(rootCmd *cobra.Command) {
 		"force use light color scheme")
 	rootCmd.PersistentFlags().BoolVar(&forceDarkMode, "force-dark-mode", false,
 		"force use dark color scheme")
-	rootCmd.PersistentFlags().BoolVarP(&autoCollapseComments, "auto-collapse", "a", false,
-		"auto collapse all replies in the comment section")
+	rootCmd.PersistentFlags().BoolVarP(&autoExpandComments, "auto-expand", "a", false,
+		"automatically expand all replies upon entering the comment section")
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
 		"enable debug mode (offline mode) by using mock data for the endpoints")
@@ -91,7 +91,7 @@ func getConfig() *settings.Config {
 	config.DoNotMarkSubmissionsAsRead = disableHistory
 	config.EnableNerdFonts = enableNerdFont
 	config.HideIndentSymbol = hideIndentSymbol
-	config.AutoCollapseComments = autoCollapseComments
+	config.AutoExpandComments = autoExpandComments
 	config.DebugMode = debugMode
 
 	if plainComments {

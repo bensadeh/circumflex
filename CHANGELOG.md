@@ -3,6 +3,12 @@
 ## 2.6
 _WIP_
 
+**New features**
+- Comments are now collapsed by default and can be expanded with <kbd>l</kbd>
+
+**Changes**
+- `--auto-collapse` flag changed to `--auto-expand`
+
 **Cosmetic**
 - Add new comment indicator to the legend menu
 
@@ -14,7 +20,7 @@ _02.10.22_
 
 **Cosmetic**
 - Cleaned up the `man` pages
-- Immediately change category indicator on <kbd>Tab</kbd>/<kbd>Shift + Tab</kbd>
+- Immediately change category indicator on <kbd>Tab</kbd>/<kbd>Shift</kdb> + <kbd>Tab</kbd>
 - Help screen (open with `i` or `?`) is now rendered inside `clx` via the viewport Bubble
 
 ## 2.4

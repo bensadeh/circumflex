@@ -4,6 +4,8 @@ import (
 	"regexp"
 	"strings"
 
+	"clx/constants/nerdfonts"
+
 	"clx/constants/style"
 	"clx/constants/unicode"
 	"github.com/charmbracelet/lipgloss"
@@ -125,7 +127,7 @@ func label(text string, fg lipgloss.TerminalColor, bg lipgloss.TerminalColor, hi
 func getLeftBorder(bg lipgloss.TerminalColor, highlightType int, enableNerdFonts bool) string {
 	if enableNerdFonts {
 		borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
-		return borderStyle.Render("")
+		return borderStyle.Render(nerdfonts.LeftSeparator)
 	}
 
 	borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
@@ -135,7 +137,7 @@ func getLeftBorder(bg lipgloss.TerminalColor, highlightType int, enableNerdFonts
 func getRightBorder(bg lipgloss.TerminalColor, highlightType int, enableNerdFonts bool) string {
 	if enableNerdFonts {
 		borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
-		return borderStyle.Render("")
+		return borderStyle.Render(nerdfonts.RightSeparator)
 	}
 
 	borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)

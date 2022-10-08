@@ -5,7 +5,6 @@ type Config struct {
 	PlainHeadlines             bool
 	HighlightHeadlines         bool
 	HighlightComments          bool
-	RelativeNumbering          bool
 	EmojiSmileys               bool
 	DoNotMarkSubmissionsAsRead bool
 	HideIndentSymbol           bool
@@ -13,7 +12,7 @@ type Config struct {
 	DebugMode                  bool
 	EnableNerdFonts            bool
 	LesskeyPath                string
-	AutoCollapseComments       bool
+	AutoExpandComments         bool
 }
 
 func Default() *Config {
@@ -21,7 +20,6 @@ func Default() *Config {
 		CommentWidth:               70,
 		HighlightHeadlines:         true,
 		HighlightComments:          true,
-		RelativeNumbering:          false,
 		EmojiSmileys:               true,
 		DoNotMarkSubmissionsAsRead: false,
 		HideIndentSymbol:           false,

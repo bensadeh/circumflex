@@ -5,15 +5,20 @@ import (
 	"os"
 	"testing"
 
+	"github.com/muesli/termenv"
+
 	"clx/item"
 	"clx/settings"
 	"clx/tree"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestPrint(t *testing.T) {
 	t.Parallel()
+
+	lipgloss.SetColorProfile(termenv.ANSI)
 
 	commentJSON, _ := os.ReadFile("test/comments.json")
 	expected, _ := os.ReadFile("test/expected.txt")
@@ -33,12 +38,10 @@ func unmarshal(data []byte) *item.Item {
 
 func getConfig() *settings.Config {
 	return &settings.Config{
-		CommentWidth:               110,
-		HighlightHeadlines:         true,
-		RelativeNumbering:          false,
-		HighlightComments:          true,
-		EmojiSmileys:               true,
-		DoNotMarkSubmissionsAsRead: false,
-		IndentationSymbol:          "▎",
+		CommentWidth:       110,
+		HighlightHeadlines: true,
+		HighlightComments:  true,
+		EmojiSmileys:       true,
+		IndentationSymbol:  "▎",
 	}
 }

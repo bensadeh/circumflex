@@ -211,8 +211,8 @@ Run `clx help` or `man clx` for a list of available commands and settings.
 ##### --force-dark-mode, --force-light-mode
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Override setting the color scheme automatically
 
-##### -a, --auto-collapse
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Auto collapse all replies in the comment section
+##### -a, --auto-expand
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Auto expand all replies in the comment section
 
 
 ## Keymaps

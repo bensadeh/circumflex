@@ -1,9 +1,11 @@
 package nerdfonts
 
 const (
-	Time    = ""
-	Author  = ""
-	Score   = "ﰵ"
-	Comment = ""
-	Tag     = ""
+	Time           = ""
+	Author         = ""
+	Score          = "ﰵ"
+	Comment        = ""
+	Tag            = ""
+	LeftSeparator  = ""
+	RightSeparator = ""
 )
