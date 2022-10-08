@@ -3,6 +3,8 @@
 ## 2.6
 _WIP_
 
+**Cosmetic**
+- Add new comment indicator to the legend menu
 
 ## 2.5
 _02.10.22_

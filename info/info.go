@@ -53,6 +53,8 @@ func GetText(screenWidth int, enableNerdFonts bool) string {
 	keys.AddKeymap("Original Poster", Red(getOP(enableNerdFonts)).String())
 	keys.AddKeymap("Parent Poster", Magenta(getPP(enableNerdFonts)).String())
 	keys.AddKeymap("Moderator", Green(getMod(enableNerdFonts)).String())
+	keys.AddSeparator()
+	keys.AddKeymap("New comment indicator", Cyan("●").String())
 
 	keys.AddSeparator()
 	keys.AddSeparator()
