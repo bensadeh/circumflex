@@ -54,8 +54,6 @@
 
 ### Via Homebrew
 
-`circumflex` is available on [Homebrew](https://brew.sh/).
-
 ```console
 # Install
 brew install circumflex
@@ -66,10 +64,8 @@ clx
 
 ### From source
 
-You can also build `circumflex` from source:
-
 ```console
-# Run
+# Build and run
 go run main.go
 ```
 
