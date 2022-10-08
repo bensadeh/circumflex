@@ -11,6 +11,7 @@ _WIP_
 
 **Cosmetic**
 - Add new comment indicator to the legend menu
+- Made the separator between parent replies slightly thicker
 
 ## 2.5
 _02.10.22_

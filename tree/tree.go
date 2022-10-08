@@ -190,7 +190,7 @@ func getSeparator(level int, commentWidth int, currentCommentID int, firstCommen
 		return newLine
 	}
 
-	return Faint(strings.Repeat(" ", commentWidth)).Underline().String() + newLine + newLine
+	return Faint(strings.Repeat("▁", commentWidth)).Faint().String() + newLine + newLine
 }
 
 func getIndentString(level int) string {
