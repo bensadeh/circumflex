@@ -208,7 +208,7 @@ func getAuthor(author string, enableNerdFonts bool) string {
 		width := 14
 		truncatedAuthor := truncate.StringWithTail(author, uint(width), "…")
 		centeredAuthor := lipgloss.NewStyle().Width(width).AlignHorizontal(lipgloss.Center).Render(truncatedAuthor)
-		return fmt.Sprintf("  %s %-14s ", nerdfonts.Author, centeredAuthor)
+		return fmt.Sprintf(" %s %-14s ", nerdfonts.Author, centeredAuthor)
 	}
 
 	return fmt.Sprintf("by %s ", author)
