@@ -237,7 +237,7 @@ func parseTime(unixTime int64, enableNerdFonts bool) string {
 	now, _ := goment.New()
 
 	if enableNerdFonts {
-		return fmt.Sprintf(" %s %-14s ", nerdfonts.Time, moment.From(now))
+		return fmt.Sprintf("%s %-14s ", nerdfonts.Time, moment.From(now))
 	}
 
 	return fmt.Sprintf("%s ", moment.From(now))
