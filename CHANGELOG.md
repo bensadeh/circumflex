@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6
+_WIP_
+
+
 ## 2.5
 _02.10.22_
 
@@ -8,7 +12,7 @@ _02.10.22_
 
 **Cosmetic**
 - Cleaned up the `man` pages
-- Immedietly change category indicator on <kbd>Tab</kbd>/<kbd>Shift + Tab</kbd>
+- Immediately change category indicator on <kbd>Tab</kbd>/<kbd>Shift + Tab</kbd>
 - Help screen (open with `i` or `?`) is now rendered inside `clx` via the viewport Bubble
 
 ## 2.4
