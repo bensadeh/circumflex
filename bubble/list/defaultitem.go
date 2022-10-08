@@ -181,7 +181,7 @@ func getComments(numberOfComments int, enableNerdFonts bool) string {
 	}
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s %d", nerdfonts.Comment, numberOfComments)
+		return fmt.Sprintf("%s%4d", nerdfonts.Comment, numberOfComments)
 	}
 
 	return fmt.Sprintf("| %d comments", numberOfComments)
@@ -193,7 +193,7 @@ func getScore(score int, enableNerdFonts bool) string {
 	}
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s %d ", nerdfonts.Score, score)
+		return fmt.Sprintf("%s %3d ", nerdfonts.Score, score)
 	}
 
 	return fmt.Sprintf("%d points ", score)
@@ -205,7 +205,10 @@ func getAuthor(author string, enableNerdFonts bool) string {
 	}
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s %s ", nerdfonts.Author, author)
+		width := 14
+		truncatedAuthor := truncate.StringWithTail(author, uint(width), "…")
+		centeredAuthor := lipgloss.NewStyle().Width(width).AlignHorizontal(lipgloss.Center).Render(truncatedAuthor)
+		return fmt.Sprintf("  %s %-14s ", nerdfonts.Author, centeredAuthor)
 	}
 
 	return fmt.Sprintf("by %s ", author)
@@ -234,7 +237,7 @@ func parseTime(unixTime int64, enableNerdFonts bool) string {
 	now, _ := goment.New()
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s %s ", nerdfonts.Time, moment.From(now))
+		return fmt.Sprintf(" %s %-14s ", nerdfonts.Time, moment.From(now))
 	}
 
 	return fmt.Sprintf("%s ", moment.From(now))

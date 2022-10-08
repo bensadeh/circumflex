@@ -12,6 +12,8 @@ _WIP_
 **Cosmetic**
 - Add new comment indicator to the legend menu
 - Made the separator between parent replies slightly thicker
+- Aligned the information under the submission title (score, user, time and number of comments) 
+when using the `--nerdfonts` flag
 
 ## 2.5
 _02.10.22_
