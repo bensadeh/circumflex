@@ -94,7 +94,7 @@ _n_, _N_::
 *-o, --plain-comments*::
   Disable syntax highlighting for comments.
 
-*-s, --disable-emojis*::
+*-e, --disable-emojis*::
   Disable conversion of smileys to emojis.
 
 *-d, --disable-history*::

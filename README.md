@@ -196,7 +196,7 @@ Run `clx help` or `man clx` for a list of available commands and settings.
 ##### -o, --plain-comments 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Disable syntax highlighting in the comment section.
 
-##### -s, --disable-emojis
+##### -e, --disable-emojis
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Disable conversion of smileys (`:)`) to emojis (😊)                          
 
 ##### -d, --disable-history

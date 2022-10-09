@@ -12,17 +12,17 @@ import (
 )
 
 var (
-	plainHeadlines     bool
-	commentWidth       int
-	plainComments      bool
-	disableHistory     bool
-	disableEmojis      bool
-	hideIndentSymbol   bool
-	debugMode          bool
-	enableNerdFont     bool
-	forceLightMode     bool
-	forceDarkMode      bool
-	autoExpandComments bool
+	disableHeadlineHighlighting bool
+	commentWidth                int
+	disableCommentHighlighting  bool
+	disableHistory              bool
+	disableEmojis               bool
+	hideIndentSymbol            bool
+	debugMode                   bool
+	enableNerdFont              bool
+	forceLightMode              bool
+	forceDarkMode               bool
+	autoExpandComments          bool
 )
 
 func Root() *cobra.Command {
@@ -57,13 +57,13 @@ func Root() *cobra.Command {
 }
 
 func configureFlags(rootCmd *cobra.Command) {
-	rootCmd.PersistentFlags().BoolVarP(&plainHeadlines, "plain-headlines", "p", false,
+	rootCmd.PersistentFlags().BoolVarP(&disableHeadlineHighlighting, "plain-headlines", "p", false,
 		"disable syntax highlighting for headlines")
-	rootCmd.PersistentFlags().BoolVarP(&plainComments, "plain-comments", "o", false,
+	rootCmd.PersistentFlags().BoolVarP(&disableCommentHighlighting, "plain-comments", "o", false,
 		"disable syntax highlighting for comments")
 	rootCmd.PersistentFlags().BoolVarP(&disableHistory, "disable-history", "d", false,
 		"disable marking stories as read")
-	rootCmd.PersistentFlags().BoolVarP(&disableEmojis, "disable-emojis", "s", false,
+	rootCmd.PersistentFlags().BoolVarP(&disableEmojis, "disable-emojis", "e", false,
 		"disable conversion of smileys to emojis")
 	rootCmd.PersistentFlags().BoolVarP(&hideIndentSymbol, "hide-indent", "t", false,
 		"hide the indentation bar to the left of the reply")
@@ -87,20 +87,14 @@ func getConfig() *settings.Config {
 	config := settings.Default()
 
 	config.CommentWidth = commentWidth
-	config.PlainHeadlines = plainHeadlines
+	config.DisableHeadlineHighlighting = disableHeadlineHighlighting
+	config.DisableCommentHighlighting = disableCommentHighlighting
 	config.DoNotMarkSubmissionsAsRead = disableHistory
 	config.EnableNerdFonts = enableNerdFont
 	config.HideIndentSymbol = hideIndentSymbol
 	config.AutoExpandComments = autoExpandComments
+	config.DisableEmojis = disableEmojis
 	config.DebugMode = debugMode
-
-	if plainComments {
-		config.HighlightComments = false
-	}
-
-	if disableEmojis {
-		config.EmojiSmileys = false
-	}
 
 	if forceLightMode {
 		lipgloss.SetHasDarkBackground(false)

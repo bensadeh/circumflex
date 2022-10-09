@@ -346,10 +346,10 @@ func ColorizeIndentSymbol(indentSymbol string, level int) string {
 	return reset + indentSymbol
 }
 
-func TrimURLs(comment string, highlightComment bool) string {
+func TrimURLs(comment string, disableCommentHighlighting bool) string {
 	expression := regexp.MustCompile(`<a href=".*?" rel="nofollow">`)
 
-	if !highlightComment {
+	if disableCommentHighlighting {
 		return expression.ReplaceAllString(comment, "")
 	}
 

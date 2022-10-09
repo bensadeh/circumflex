@@ -145,27 +145,27 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 	switch {
 	case isSelected && m.onAddToFavoritesPrompt:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitleAddToFavorites, s.SelectedDescAddToFavorites, domain,
-			desc, syntax.AddToFavorites, m.config.PlainHeadlines, enableNerdFonts)
+			desc, syntax.AddToFavorites, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 
 	case isSelected && m.onRemoveFromFavoritesPrompt:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitleRemoveFromFavorites, s.SelectedDescRemoveFromFavoritesFavorites, domain,
-			desc, syntax.RemoveFromFavorites, m.config.PlainHeadlines, enableNerdFonts)
+			desc, syntax.RemoveFromFavorites, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 
 	case isSelected && !m.disableInput:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitle, s.SelectedDesc, domain,
-			desc, syntax.Selected, m.config.PlainHeadlines, enableNerdFonts)
+			desc, syntax.Selected, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 
 	case markAsRead && m.category != category.Favorites:
 		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(true), s.MarkAsReadDesc, domain,
-			desc, syntax.MarkAsRead, m.config.PlainHeadlines, enableNerdFonts)
+			desc, syntax.MarkAsRead, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 
 	case m.disableInput && !(m.onAddToFavoritesPrompt || m.onRemoveFromFavoritesPrompt):
 		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(false), s.MarkAsReadDesc, domain,
-			desc, syntax.MarkAsRead, m.config.PlainHeadlines, enableNerdFonts)
+			desc, syntax.MarkAsRead, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 
 	default:
 		title, desc = styleTitleAndDesc(title, s.NormalTitle, s.NormalDesc, domain,
-			desc, syntax.Unselected, m.config.PlainHeadlines, enableNerdFonts)
+			desc, syntax.Unselected, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 	}
 
 	if d.ShowDescription {
@@ -215,11 +215,11 @@ func getAuthor(author string, enableNerdFonts bool) string {
 }
 
 func styleTitleAndDesc(title string, titleStyle lipgloss.Style, descStyle lipgloss.Style, domain string, desc string,
-	syntaxStyle int, plainHeadlines bool, enableNerdFont bool,
+	syntaxStyle int, disableHeadlineHighlighting bool, enableNerdFont bool,
 ) (string, string) {
 	title = titleStyle.Render(title)
 
-	if !plainHeadlines {
+	if !disableHeadlineHighlighting {
 		title = syntax.HighlightYCStartupsInHeadlines(title, syntaxStyle, enableNerdFont)
 		title = syntax.HighlightYear(title, syntaxStyle, enableNerdFont)
 		title = syntax.HighlightHackerNewsHeadlines(title, syntaxStyle)

@@ -65,7 +65,7 @@ func Print(c string, config *settings.Config, commentWidth int, availableScreenW
 			paragraph = strings.ReplaceAll(paragraph, "</i>", "")
 			paragraph = strings.ReplaceAll(paragraph, "</a>", reset+dimmed+italic)
 			paragraph = syntax.ReplaceSymbols(paragraph)
-			paragraph = replaceSmileys(paragraph, config.EmojiSmileys)
+			paragraph = convertToEmojis(paragraph, config.DisableEmojis)
 
 			paragraph = strings.Replace(paragraph, ">>", "", 1)
 			paragraph = strings.Replace(paragraph, ">", "", 1)
@@ -104,13 +104,13 @@ func Print(c string, config *settings.Config, commentWidth int, availableScreenW
 
 		default:
 			paragraph = syntax.ReplaceSymbols(paragraph)
-			paragraph = replaceSmileys(paragraph, config.EmojiSmileys)
+			paragraph = convertToEmojis(paragraph, config.DisableEmojis)
 
 			paragraph = syntax.ReplaceHTML(paragraph)
 			paragraph = strings.TrimLeft(paragraph, " ")
-			paragraph = highlightCommentSyntax(paragraph, config.HighlightComments, config.EnableNerdFonts)
+			paragraph = highlightCommentSyntax(paragraph, config.DisableCommentHighlighting, config.EnableNerdFonts)
 
-			paragraph = syntax.TrimURLs(paragraph, config.HighlightComments)
+			paragraph = syntax.TrimURLs(paragraph, config.DisableCommentHighlighting)
 			paragraph = syntax.RemoveUnwantedNewLines(paragraph)
 			paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
 
@@ -125,8 +125,8 @@ func Print(c string, config *settings.Config, commentWidth int, availableScreenW
 	return output
 }
 
-func replaceSmileys(paragraph string, emojiSmiley bool) string {
-	if !emojiSmiley {
+func convertToEmojis(paragraph string, disableEmojis bool) string {
+	if disableEmojis {
 		return paragraph
 	}
 
@@ -154,8 +154,8 @@ func getParagraphSeparator(index int, sliceLength int) string {
 	return "\n\n"
 }
 
-func highlightCommentSyntax(input string, commentHighlighting bool, enableNerdFonts bool) string {
-	if !commentHighlighting {
+func highlightCommentSyntax(input string, disableCommentHighlighting bool, enableNerdFonts bool) string {
+	if disableCommentHighlighting {
 		return input
 	}
 

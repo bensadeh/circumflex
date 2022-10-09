@@ -8,6 +8,7 @@ _WIP_
 
 **Changes**
 - `--auto-collapse` flag changed to `--auto-expand`
+- Changed disable emoji shorthand flag from `-s` to `-e`
 
 **Cosmetic**
 - Add new comment indicator to the legend menu

@@ -129,7 +129,7 @@ func getNewCommentsInfo(newComments int, enableNerdFonts bool) string {
 }
 
 func getHeadline(title string, config *settings.Config) string {
-	formattedTitle := highlightTitle(unicode.ZeroWidthSpace+" "+newLine+title, config.HighlightHeadlines,
+	formattedTitle := highlightTitle(unicode.ZeroWidthSpace+" "+newLine+title, config.DisableHeadlineHighlighting,
 		config.EnableNerdFonts)
 	wrappedHeadline, _ := text.Wrap(formattedTitle, config.CommentWidth)
 
