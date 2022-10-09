@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2.6
-_WIP_
+_09.10.22_
 
 **New features**
 - Comments are now collapsed by default and can be expanded with <kbd>l</kbd>
