@@ -3,6 +3,7 @@ package list
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"clx/constants/nerdfonts"
 
@@ -128,7 +129,13 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 	comments := getComments(item.CommentsCount, enableNerdFonts)
 	time := parseTime(item.Time, enableNerdFonts)
 
-	desc = score + author + time + comments
+	if enableNerdFonts {
+		spacingSize := 4
+		spacing := strings.Repeat(" ", spacingSize)
+		desc = score + spacing + comments + spacing + time + spacing + author
+	} else {
+		desc = score + author + time + comments
+	}
 
 	// Prevent text from exceeding list width
 	if m.width > 0 {
@@ -176,6 +183,10 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 }
 
 func getComments(numberOfComments int, enableNerdFonts bool) string {
+	if numberOfComments == 0 && enableNerdFonts {
+		return "     "
+	}
+
 	if numberOfComments == 0 {
 		return ""
 	}
@@ -193,7 +204,7 @@ func getScore(score int, enableNerdFonts bool) string {
 	}
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s %3d ", nerdfonts.Score, score)
+		return fmt.Sprintf("%s %3d", nerdfonts.Score, score)
 	}
 
 	return fmt.Sprintf("%d points ", score)
@@ -205,10 +216,7 @@ func getAuthor(author string, enableNerdFonts bool) string {
 	}
 
 	if enableNerdFonts {
-		width := 14
-		truncatedAuthor := truncate.StringWithTail(author, uint(width), "…")
-		centeredAuthor := lipgloss.NewStyle().Width(width).AlignHorizontal(lipgloss.Center).Render(truncatedAuthor)
-		return fmt.Sprintf(" %s %-14s ", nerdfonts.Author, centeredAuthor)
+		return fmt.Sprintf("%s %s", nerdfonts.Author, author)
 	}
 
 	return fmt.Sprintf("by %s ", author)
@@ -237,7 +245,7 @@ func parseTime(unixTime int64, enableNerdFonts bool) string {
 	now, _ := goment.New()
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s %-14s ", nerdfonts.Time, moment.From(now))
+		return fmt.Sprintf("%s %-14s", nerdfonts.Time, moment.From(now))
 	}
 
 	return fmt.Sprintf("%s ", moment.From(now))

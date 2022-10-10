@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.?
+_WIP_
+
+**Cosmetic**
+- Re-aligned the information under the submission title for the `--nerdfonts` flag
+
 ## 2.6
 _09.10.22_
 

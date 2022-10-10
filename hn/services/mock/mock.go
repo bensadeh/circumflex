@@ -63,7 +63,7 @@ func (Service) FetchItems(_ int, cat int) []*item.Item {
 			User:          "epsilon",
 			Time:          time.Now().Add(-time.Minute * 68).Unix(),
 			Domain:        "bloomberg.com",
-			CommentsCount: 41,
+			CommentsCount: 0,
 		},
 		{
 			Title:         "Ask HN: Vestibulum ante plero ipsum primis in faucibus?",
