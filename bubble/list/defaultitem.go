@@ -130,7 +130,7 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 	time := parseTime(item.Time, enableNerdFonts)
 
 	if enableNerdFonts {
-		spacingSize := 4
+		spacingSize := 2
 		spacing := strings.Repeat(" ", spacingSize)
 		desc = score + spacing + comments + spacing + time + spacing + author
 	} else {
