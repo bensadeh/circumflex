@@ -198,8 +198,23 @@ Favorites are stored in `~/.config/circumflex/favorites.json`. `circumflex` pret
 `favorites.json` to make it both human-readable and VCS-friendly.
 
 ## Settings
-
+### Overview
 Run `clx help` or `man clx` for a list of available commands and settings.
+
+### Commands
+##### clx add [ID]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add item to list of favorites by `ID`.
+
+##### clx read [ID]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Go directly to Reader Mode for a given item `ID` without first going through the main view.
+
+##### clx view [ID]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Go directly to the comment section for a given item `ID` without first going through the main view.
+
+##### clx clear
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Clear the history of visited `ID`s from `~/.cache/circumflex/history.json`.
+
+### Flags
 
 ##### -c `n`, --comment-width=`n`
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Set the comment width
