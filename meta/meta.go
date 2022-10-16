@@ -136,10 +136,10 @@ func getHeadline(title string, config *settings.Config) string {
 	return wrappedHeadline
 }
 
-func highlightTitle(title string, highlightHeadlines bool, enableNerdFont bool) string {
+func highlightTitle(title string, disableHeadlineHighlighting bool, enableNerdFont bool) string {
 	highlightedTitle := title
 
-	if highlightHeadlines {
+	if !disableHeadlineHighlighting {
 		highlightedTitle = syntax.HighlightYCStartupsInHeadlines(highlightedTitle, syntax.HeadlineInCommentSection, enableNerdFont)
 		highlightedTitle = syntax.HighlightYear(highlightedTitle, syntax.HeadlineInCommentSection, enableNerdFont)
 		highlightedTitle = syntax.HighlightHackerNewsHeadlines(highlightedTitle, syntax.HeadlineInCommentSection)

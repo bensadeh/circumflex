@@ -3,6 +3,9 @@
 ## 2.?
 _WIP_
 
+**Bugfixes**
+- Fixed a bug where headlines weren't properly highlighted in the comment section
+
 **Cosmetic**
 - Re-aligned the information under the submission title for the `--nerdfonts` flag
 
