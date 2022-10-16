@@ -29,7 +29,7 @@
 
 **You might also like:**
 - 🤹 **Adaptive terminal colors** — you bring your own color scheme, `circumflex` does the rest
-- 🛠 **Easy customization** — quickly enable or disable features  
+- 💎 **Nerd Fonts** — full support for Nerd Fonts as icons  
 - ❤️ **Add to favorites** — save interesting submissions for later
 
 #
@@ -41,11 +41,13 @@
 * [Reader mode](#reader-mode)
 ###
 * [Syntax highlighting](#syntax-highlighting)
+* [Nerd Fonts](#nerd-fonts)
 * [History](#history)
-* [Favorites](#favorites)
 ###
+* [Favorites](#favorites)
 * [Settings](#settings)
 * [Keymaps](#keymaps)
+###
 * [Under the hood](#under-the-hood)
 
 ***
@@ -145,6 +147,18 @@ Headlines containing the text `Ask HN`, `Tell HN`, `Show HN` and `Launch HN` are
 
 <p align="center">
   <img src="screenshots/yc.png" width="350" alt="^"/>
+</p>
+
+## Nerd Fonts
+
+If you have a Nerd Fonts-patched fonts, you can run `clx` with the `-n` or `--nerdfonts` flag.
+
+<p align="center">
+  <img src="screenshots/nerd-fonts-1.png" width="500"/>
+</p>
+
+<p align="center">
+  <img src="screenshots/nerd-fonts-2.png" width="500"/>
 </p>
 
 ## History
