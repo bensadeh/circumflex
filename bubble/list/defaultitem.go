@@ -204,7 +204,7 @@ func getScore(score int, enableNerdFonts bool) string {
 	}
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s %3d", nerdfonts.Score, score)
+		return fmt.Sprintf("%s%4d", nerdfonts.Score, score)
 	}
 
 	return fmt.Sprintf("%d points ", score)
