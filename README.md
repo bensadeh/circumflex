@@ -1,18 +1,12 @@
 
 <p align="center">
-  <img src="screenshots/clx.svg" width="150" alt="circumflex"/>
+  <img src="screenshots/clx.png" width="150" alt="circumflex"/>
 </p>
-
-<p align="center">
-<a href="https://github.com/bensadeh/circumflex/releases" target="__blank"><img src="https://img.shields.io/github/v/release/bensadeh/circumflex?style=flat&label=&color=293452"></a>
-<a href="/LICENSE" target="__blank"><img src="https://img.shields.io/github/license/bensadeh/circumflex?style=flat&color=89ddff&label=" alt="License"></a>
-<a href="/CHANGELOG.md" target="__blank"><img src="https://img.shields.io/badge/docs-changelog-9cc4ff?style=flat&label=" alt="Changelog"></a>
-<a href="/go.mod" target="__blank"><img src="https://img.shields.io/static/v1?label=&message=1.19&color=e1acff&logo=go&logoColor=black" alt="Go Version"></a>
      
 #
      
 <p align="center">
-  <code>circumflex</code> is a command line tool for browsing Hacker News in your terminal
+  <code>circumflex</code> is a command line tool for browsing Hacker&nbsp;News in your terminal
 </p>
   
 
@@ -154,11 +148,11 @@ Headlines containing the text `Ask HN`, `Tell HN`, `Show HN` and `Launch HN` are
 If you have a Nerd Fonts-patched fonts, you can run `clx` with the `-n` or `--nerdfonts` flag.
 
 <p align="center">
-  <img src="screenshots/nerd-fonts-1.png" width="500"/>
+  <img src="screenshots/nerd-fonts-1.png" width="650"/>
 </p>
 
 <p align="center">
-  <img src="screenshots/nerd-fonts-2.png" width="500"/>
+  <img src="screenshots/nerd-fonts-2.png" width="650"/>
 </p>
 
 ## History
@@ -202,46 +196,46 @@ Favorites are stored in `~/.config/circumflex/favorites.json`. `circumflex` pret
 Run `clx help` or `man clx` for a list of available commands and settings.
 
 ### Commands
-##### clx add [ID]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add item to list of favorites by `ID`.
+###### clx add [ID]
+Add item to list of favorites by `ID`.
 
-##### clx read [ID]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Go directly to Reader Mode for a given item `ID` without first going through the main view.
+###### clx read [ID]
+Go directly to Reader Mode for a given item `ID` without first going through the main view.
 
-##### clx view [ID]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Go directly to the comment section for a given item `ID` without first going through the main view.
+###### clx view [ID]
+Go directly to the comment section for a given item `ID` without first going through the main view.
 
-##### clx clear
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Clear the history of visited `ID`s from `~/.cache/circumflex/history.json`.
+###### clx clear
+Clear the history of visited `ID`s from `~/.cache/circumflex/history.json`.
 
 ### Flags
 
-##### -c `n`, --comment-width=`n`
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Set the comment width
+###### -c `n`, --comment-width=`n`
+Set the comment width
 
-##### -p, --plain-headlines
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Disable syntax highlighting for the headlines
+###### -p, --plain-headlines
+Disable syntax highlighting for the headlines
 
-##### -o, --plain-comments 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Disable syntax highlighting in the comment section.
+###### -o, --plain-comments 
+Disable syntax highlighting in the comment section.
 
-##### -e, --disable-emojis
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Disable conversion of smileys (`:)`) to emojis (😊)                          
+###### -e, --disable-emojis
+Disable conversion of smileys (`:)`) to emojis (😊)                          
 
-##### -d, --disable-history
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Disable marking submissions as read                                          
+###### -d, --disable-history
+Disable marking submissions as read                                          
 
-##### -t, --hide-indent
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hide the indentation symbol from the comment section (does not affect quotes)
+###### -t, --hide-indent
+Hide the indentation symbol from the comment section (does not affect quotes)
 
-##### -n, --nerdfonts
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Use Nerd Fonts icons as decorators  
+###### -n, --nerdfonts
+Use Nerd Fonts icons as decorators  
 
-##### --force-dark-mode, --force-light-mode
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Override setting the color scheme automatically
+###### --force-dark-mode, --force-light-mode
+Override setting the color scheme automatically
 
-##### -a, --auto-expand
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Auto expand all replies in the comment section
+###### -a, --auto-expand
+Auto expand all replies in the comment section
 
 
 ## Keymaps
