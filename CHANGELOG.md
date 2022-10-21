@@ -5,6 +5,8 @@ _WIP_
 
 **Bugfixes**
 - Fixed a bug where headlines weren't properly highlighted in the comment section
+- Fixed a bug where headlines could contain special unicode characters which broke
+formatting
 
 **Cosmetic**
 - Re-aligned the information under the submission title for the `--nerdfonts` flag

@@ -101,7 +101,7 @@ func mapStories(stories *endpoints.Algolia) map[int]*item.Item {
 
 		it := &item.Item{
 			ID:            id,
-			Title:         story.Title,
+			Title:         sanitize(story.Title),
 			Points:        story.Points,
 			User:          story.Author,
 			Time:          int64(story.CreatedAtI),
@@ -119,6 +119,20 @@ func mapStories(stories *endpoints.Algolia) map[int]*item.Item {
 	}
 
 	return m
+}
+
+func sanitize(s string) string {
+	var b strings.Builder
+
+	for _, c := range s {
+		if c == '­' {
+			continue
+		}
+
+		b.WriteRune(c)
+	}
+
+	return b.String()
 }
 
 func joinStories(orderedIds []int, stories map[int]*item.Item) []*item.Item {
