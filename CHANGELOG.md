@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.?
+## 2.7
 _WIP_
 
 **Bugfixes**
