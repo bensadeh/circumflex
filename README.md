@@ -61,11 +61,19 @@ clx
 ### From source
 
 ```console
-# Build and run
-go run main.go
+# Clone and change dir
+git clone https://github.com/bensadeh/circumflex.git && cd circumflex
+
+# Install 
+go install
+
+# Run
+clx
 ```
 
-When building from source, make sure you are using the latest version of [`less`](http://greenwoodsoftware.com/less/).
+When building from source, make sure that: 
+- `$GOPATH/bin` is in your `PATH` environment variable.
+- you are using the latest version of [`less`](http://greenwoodsoftware.com/less/).
 
 ## Comment section
 
