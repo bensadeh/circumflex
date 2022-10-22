@@ -12,6 +12,7 @@ type Config struct {
 	EnableNerdFonts             bool
 	LesskeyPath                 string
 	AutoExpandComments          bool
+	NoLessVerify                bool
 }
 
 func Default() *Config {

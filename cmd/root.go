@@ -1,11 +1,16 @@
 package cmd
 
 import (
+	"fmt"
+	"os"
+
 	"clx/app"
 	"clx/bubble"
+	"clx/cli"
 	"clx/indent"
 	"clx/less"
 	"clx/settings"
+
 	"github.com/charmbracelet/lipgloss"
 	"github.com/logrusorgru/aurora/v3"
 	"github.com/spf13/cobra"
@@ -23,6 +28,7 @@ var (
 	forceLightMode              bool
 	forceDarkMode               bool
 	autoExpandComments          bool
+	noLessVerify                bool
 )
 
 func Root() *cobra.Command {
@@ -34,12 +40,13 @@ func Root() *cobra.Command {
 			config := getConfig()
 			config.IndentationSymbol = indent.GetIndentSymbol(hideIndentSymbol)
 
+			verifyLess(noLessVerify)
+
 			lesskey := less.NewLesskey()
 			config.LesskeyPath = lesskey.GetPath()
+			defer lesskey.Remove()
 
 			bubble.Run(config)
-
-			defer lesskey.Remove()
 		},
 	}
 
@@ -77,6 +84,8 @@ func configureFlags(rootCmd *cobra.Command) {
 		"force use dark color scheme")
 	rootCmd.PersistentFlags().BoolVarP(&autoExpandComments, "auto-expand", "a", false,
 		"automatically expand all replies upon entering the comment section")
+	rootCmd.PersistentFlags().BoolVar(&noLessVerify, "no-less-verify", false,
+		"disable checking less version on startup")
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
 		"enable debug mode (offline mode) by using mock data for the endpoints")
@@ -95,6 +104,7 @@ func getConfig() *settings.Config {
 	config.AutoExpandComments = autoExpandComments
 	config.DisableEmojis = disableEmojis
 	config.DebugMode = debugMode
+	config.NoLessVerify = noLessVerify
 
 	if forceLightMode {
 		lipgloss.SetHasDarkBackground(false)
@@ -105,4 +115,25 @@ func getConfig() *settings.Config {
 	}
 
 	return config
+}
+
+func verifyLess(noLessVerify bool) {
+	if noLessVerify {
+		return
+	}
+
+	isValid, currentLessVersion := cli.VerifyLessVersion(app.MinimumLessVersion)
+
+	if !isValid {
+		flag := aurora.Bold("--no-less-verify").String()
+		less := aurora.Magenta("less").String()
+		clx := aurora.Magenta("clx").String()
+
+		fmt.Printf("Your version of %s is outdated\n\n", less)
+		fmt.Printf("Your version:     %d\n", currentLessVersion)
+		fmt.Printf("Required version: %d\n\n", app.MinimumLessVersion)
+		fmt.Printf("If you think this is an error, re-run %s with the %s flag to disable check", clx, flag)
+
+		os.Exit(1)
+	}
 }

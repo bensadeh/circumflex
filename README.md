@@ -245,6 +245,8 @@ Override setting the color scheme automatically
 ###### -a, --auto-expand
 Auto expand all replies in the comment section
 
+###### --no-less-verify
+Do not verify `less` version on startup
 
 ## Keymaps
 

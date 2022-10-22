@@ -3,6 +3,9 @@
 ## 2.7
 _WIP_
 
+**New features**
+- Check `less` version on startup
+
 **Bugfixes**
 - Fixed a bug where headlines weren't properly highlighted in the comment section
 - Fixed a bug where headlines could contain special unicode characters which broke

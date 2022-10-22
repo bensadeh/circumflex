@@ -3,6 +3,7 @@ package cli
 import (
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	"clx/settings"
@@ -41,4 +42,31 @@ func ClearScreen() {
 	c := exec.Command("clear")
 	c.Stdout = os.Stdout
 	_ = c.Run()
+}
+
+func VerifyLessVersion(minimumVersion int) (isValid bool, currentVersion int) {
+	lessVersionInfo := getLessVersionInfo()
+
+	lessVersionInfoWords := strings.Fields(lessVersionInfo)
+	if len(lessVersionInfoWords) < 1 {
+		panic("Could not parse less version info")
+	}
+
+	lessVersion, err := strconv.Atoi(lessVersionInfoWords[1])
+	if err != nil {
+		panic(err)
+	}
+
+	return lessVersion >= minimumVersion, lessVersion
+}
+
+func getLessVersionInfo() string {
+	command := exec.Command("less", "--version")
+
+	output, commandError := command.Output()
+	if commandError != nil {
+		panic(commandError)
+	}
+
+	return string(output)
 }

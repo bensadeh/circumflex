@@ -22,110 +22,116 @@ clx - it's Hacker News in your terminal
 
 == Description
 
-*clx* lets you browse Hacker News in your terminal. Quickly and easily visit the comment section or read 
-the article in Reader Mode.
+*circumflex* lets you browse Hacker News in your terminal.
+Quickly and easily visit the comment section or read the article in Reader Mode.
 
 == Keybindings
 
 _Enter_::
-  Read the comment section.
+Read the comment section.
 
 _Space_::
-  Read the article in Reader Mode.
+Read the article in Reader Mode.
 
 _r_::
-  Re-fetches submissions for current category. Purges already fetched submissions from other categories.
+Re-fetches submissions for current category.
+Purges already fetched submissions from other categories.
 
 _Tab_::
-  Change category (use Shift + Tab to change in opposite direction).
+Change category (use Shift + Tab to change in opposite direction).
 
 _o_::
-  Open link to article in browser.
+Open link to article in browser.
 
 _c_::
-  Open comment section in browser.
+Open comment section in browser.
 
 _f_::
-  Add currently highlighted submission to favorites.
+Add currently highlighted submission to favorites.
 
 _x_::
-  Remove currently highlighted submission from favorites.
+Remove currently highlighted submission from favorites.
 
 _q_::
-  Quit to prompt.
+Quit to prompt.
 
 == Navigation
-*clx* pipes all its content to the pager *less*. It is recommended to use the following keybindings for moving around:
+
+*circumflex* pipes all its content to the pager *less*.
+It is recommended to use the following keybindings for moving around:
 
 _j_, _k_::
-  Scroll up/down one line.
+Scroll up/down one line.
 
 _d_, _u_::
-  Scroll up/down one half-page.
+Scroll up/down one half-page.
 
 _h_, _l_::
-  Hide/unhide all replies.
+Hide/unhide all replies.
 
 _n_, _N_::
-  Scroll between the next/previous _top-level_ comment (comment section) or _headline_ (Reader Mode).
+Scroll between the next/previous _top-level_ comment (comment section) or _headline_ (Reader Mode).
 
 == Commands
 
 *clx add* [_ID_]::
-  Add item to list of favorites by _ID_.
+Add item to list of favorites by _ID_.
 
 *clx read* [_ID_]::
-  Go directly to Reader Mode for a given item _ID_ without first going through the main view.
+Go directly to Reader Mode for a given item _ID_ without first going through the main view.
 
 *clx view* [_ID_]::
-  Go directly to the comment section for a given item _ID_ without first going through the main view.
+Go directly to the comment section for a given item _ID_ without first going through the main view.
 
 *clx clear*::
-  Clear the history of visited __ID__s from ~/.cache/circumflex/history.json.
+Clear the history of visited __ID__s from ~/.cache/circumflex/history.json.
 
 == Options
 
 *-c* _n_, *--comment-width*=_n_::
-  Set the comment width to _n_ columns.
+Set the comment width to _n_ columns.
 
 *-p, --plain-headlines*::
-  Disable syntax highlighting for headlines.
+Disable syntax highlighting for headlines.
 
 *-o, --plain-comments*::
-  Disable syntax highlighting for comments.
+Disable syntax highlighting for comments.
 
 *-e, --disable-emojis*::
-  Disable conversion of smileys to emojis.
+Disable conversion of smileys to emojis.
 
 *-d, --disable-history*::
-  Disable marking submissions as read.
+Disable marking submissions as read.
 
 *-t, --hide-indent*::
-  Hide the indentation bar to the left of the reply.
+Hide the indentation bar to the left of the reply.
 
 *-n, --nerdfonts*::
-  Use Nerd Fonts icons as decorators for some elements (requires a Nerd Font-patched font).
+Use Nerd Fonts icons as decorators for some elements (requires a Nerd Font-patched font).
 
 *--force-light-mode, --force-dark-mode*::
-  The color scheme is chosen automatically based on the color scheme of the terminal. Use these 
-  flags to override.
+The color scheme is chosen automatically based on the color scheme of the terminal.
+Use these flags to override.
 
 *-a, --auto-expand*::
-  Auto expand all replies upon entering the comment section (collapse comments with _h_).
+Auto expand all replies upon entering the comment section (collapse comments with _h_).
 
 *-v, --version*::
-  Show the current version of *clx*.
+Show the current version of *circumflex*.
 
 *-q, --debug-mode*::
-  Mock all endpoints and use dummy data for the submissions screen and comment section.
+Mock all endpoints and use dummy data for the submissions screen and comment section.
+
+*--no-less-verify*::
+Do not verify *less* version on startup
 
 == Favorites
 
-Press _f_ to add the currently highlighted submission to your list of favorites. Remove submissions from the Favorites
-page with _x_.
+Press _f_ to add the currently highlighted submission to your list of favorites.
+Remove submissions from the Favorites page with _x_.
 
-Favorites are stored in ~/.config/circumflex/favorites.json. The entries in favorites.json are pretty-printed to make
-them both human-readable and VCS-friendly.
+Favorites are stored in ~/.config/circumflex/favorites.json.
+The entries in favorites.json are pretty-printed to make them both human-readable and VCS-friendly.
 
 == See also
 
