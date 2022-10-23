@@ -56,10 +56,13 @@ func fetchStoriesList(category int) []int {
 	client := resty.New()
 	client.SetTimeout(5 * time.Second)
 
-	_, _ = client.R().
+	_, err := client.R().
 		SetHeader("User-Agent", app.Name+"/"+app.Version).
 		SetResult(&stories).
 		Get(url)
+	if err != nil {
+		panic(err)
+	}
 
 	return stories
 }
@@ -156,10 +159,13 @@ func (s Service) FetchItem(id int) *item.Item {
 	client.SetTimeout(5 * time.Second)
 	client.SetBaseURL("https://hacker-news.firebaseio.com/v0/item/")
 
-	_, _ = client.R().
+	_, err := client.R().
 		SetHeader("User-Agent", app.Name+"/"+app.Version).
 		SetResult(hn).
 		Get(strconv.Itoa(id) + ".json")
+	if err != nil {
+		panic(err)
+	}
 
 	return mapItem(hn)
 }
@@ -185,10 +191,13 @@ func (s Service) FetchComments(id int) *item.Item {
 	client.SetTimeout(5 * time.Second)
 	client.SetBaseURL("http://api.hackerwebapp.com/item/")
 
-	_, _ = client.R().
+	_, err := client.R().
 		SetHeader("User-Agent", app.Name+"/"+app.Version).
 		SetResult(comments).
 		Get(strconv.Itoa(id))
+	if err != nil {
+		panic(err)
+	}
 
 	return mapComments(comments)
 }
