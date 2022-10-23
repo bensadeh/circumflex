@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2.7
-_WIP_
+_23.10.22_
 
 **New features**
 - Check `less` version on startup

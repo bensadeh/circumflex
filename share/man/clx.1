@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: clx
 .\"    Author: [see the "AUTHOR(S)" section]
-.\" Generator: Asciidoctor 2.0.17
-.\"      Date: 2022-10-09
+.\" Generator: Asciidoctor 2.0.18
+.\"      Date: 2022-10-22
 .\"    Manual: circumflex
-.\"    Source: circumflex 2.6
+.\"    Source: circumflex 2.7
 .\"  Language: English
 .\"
-.TH "CLX" "1" "2022-10-09" "circumflex 2.6" "circumflex"
+.TH "CLX" "1" "2022-10-22" "circumflex 2.7" "circumflex"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -34,8 +34,8 @@ clx \- it\*(Aqs Hacker News in your terminal
 \fBclx\fP [\fIOPTION\fP]...
 .SH "DESCRIPTION"
 .sp
-\fBclx\fP lets you browse Hacker News in your terminal. Quickly and easily visit the comment section or read
-the article in Reader Mode.
+\fBcircumflex\fP lets you browse Hacker News in your terminal.
+Quickly and easily visit the comment section or read the article in Reader Mode.
 .SH "KEYBINDINGS"
 .sp
 \fIEnter\fP
@@ -50,7 +50,8 @@ Read the article in Reader Mode.
 .sp
 \fIr\fP
 .RS 4
-Re\-fetches submissions for current category. Purges already fetched submissions from other categories.
+Re\-fetches submissions for current category.
+Purges already fetched submissions from other categories.
 .RE
 .sp
 \fITab\fP
@@ -84,7 +85,8 @@ Quit to prompt.
 .RE
 .SH "NAVIGATION"
 .sp
-\fBclx\fP pipes all its content to the pager \fBless\fP. It is recommended to use the following keybindings for moving around:
+\fBcircumflex\fP pipes all its content to the pager \fBless\fP.
+It is recommended to use the following keybindings for moving around:
 .sp
 \fIj\fP, \fIk\fP
 .RS 4
@@ -165,8 +167,8 @@ Use Nerd Fonts icons as decorators for some elements (requires a Nerd Font\-patc
 .sp
 \fB\-\-force\-light\-mode, \-\-force\-dark\-mode\fP
 .RS 4
-The color scheme is chosen automatically based on the color scheme of the terminal. Use these
-flags to override.
+The color scheme is chosen automatically based on the color scheme of the terminal.
+Use these flags to override.
 .RE
 .sp
 \fB\-a, \-\-auto\-expand\fP
@@ -176,20 +178,25 @@ Auto expand all replies upon entering the comment section (collapse comments wit
 .sp
 \fB\-v, \-\-version\fP
 .RS 4
-Show the current version of \fBclx\fP.
+Show the current version of \fBcircumflex\fP.
 .RE
 .sp
 \fB\-q, \-\-debug\-mode\fP
 .RS 4
 Mock all endpoints and use dummy data for the submissions screen and comment section.
 .RE
+.sp
+\fB\-\-no\-less\-verify\fP
+.RS 4
+Do not verify \fBless\fP version on startup
+.RE
 .SH "FAVORITES"
 .sp
-Press \fIf\fP to add the currently highlighted submission to your list of favorites. Remove submissions from the Favorites
-page with \fIx\fP.
+Press \fIf\fP to add the currently highlighted submission to your list of favorites.
+Remove submissions from the Favorites page with \fIx\fP.
 .sp
-Favorites are stored in ~/.config/circumflex/favorites.json. The entries in favorites.json are pretty\-printed to make
-them both human\-readable and VCS\-friendly.
+Favorites are stored in ~/.config/circumflex/favorites.json.
+The entries in favorites.json are pretty\-printed to make them both human\-readable and VCS\-friendly.
 .SH "SEE ALSO"
 .sp
 \fBless\fP(1), \fBvim\fP(1)
