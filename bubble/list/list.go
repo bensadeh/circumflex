@@ -114,6 +114,7 @@ func (m *Model) FetchFrontPageStories() tea.Cmd {
 		stories := m.service.FetchItems(itemsToFetch, category.FrontPage)
 
 		m.items[category.FrontPage] = stories
+
 		return message.FetchingFinished{}
 	}
 }
@@ -742,7 +743,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			return nil
 
-		case m.disableInput && msg.String() != "r":
+		case m.disableInput:
 			return nil
 
 		case msg.String() == "q" || msg.String() == "esc" || msg.String() == "ctrl+c":

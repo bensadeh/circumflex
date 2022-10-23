@@ -7,9 +7,9 @@ _WIP_
 - Check `less` version on startup
 
 **Bugfixes**
-- Fixed a bug where headlines weren't properly highlighted in the comment section
-- Fixed a bug where headlines could contain special unicode characters which broke
-formatting
+- Headlines are now properly highlighted in the comment section
+- Headlines are now somewhat sanitized to avoid breaking formatting
+- Pressing <kbd>r</kbd> while page is already reloading no longer leads to a panic
 
 **Cosmetic**
 - Re-aligned the information under the submission title for the `--nerdfonts` flag
