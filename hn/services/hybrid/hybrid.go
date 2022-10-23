@@ -37,10 +37,13 @@ func (s *Service) FetchItems(itemsToFetch int, category int) []*item.Item {
 	client := resty.New()
 	client.SetTimeout(5 * time.Second)
 
-	_, _ = client.R().
+	_, err := client.R().
 		SetHeader("User-Agent", app.Name+"/"+app.Version).
 		SetResult(&a).
 		Get(url)
+	if err != nil {
+		panic(err)
+	}
 
 	mapOfItemsWithMetaData := mapStories(a)
 	orderedStories := joinStories(listOfIDs, mapOfItemsWithMetaData)
