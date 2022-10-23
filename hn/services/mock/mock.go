@@ -13,13 +13,13 @@ type Service struct{}
 func (Service) Init(_ int) {
 }
 
-func (Service) FetchItems(_ int, cat int) []*item.Item {
+func (Service) FetchItems(_ int, cat int) (items []*item.Item, error string) {
 	// Uncomment to test the spinner on startup
 	if cat != 0 {
 		time.Sleep(time.Second * 1)
 	}
 
-	items := []*item.Item{
+	items = []*item.Item{
 		{
 			Title:         "Lorem ipsum dolor sit amet et quasi architecto",
 			Points:        31,
@@ -288,7 +288,7 @@ func (Service) FetchItems(_ int, cat int) []*item.Item {
 		rand.Shuffle(len(items), func(i, j int) { items[i], items[j] = items[j], items[i] })
 	}
 
-	return items
+	return items, ""
 }
 
 func (Service) FetchComments(_ int) *item.Item {

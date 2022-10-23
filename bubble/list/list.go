@@ -111,11 +111,12 @@ type Model struct {
 func (m *Model) FetchFrontPageStories() tea.Cmd {
 	return func() tea.Msg {
 		itemsToFetch := m.getNumberOfItemsToFetch(m.category)
-		stories := m.service.FetchItems(itemsToFetch, category.FrontPage)
+
+		stories, errMsg := m.service.FetchItems(itemsToFetch, category.FrontPage)
 
 		m.items[category.FrontPage] = stories
 
-		return message.FetchingFinished{}
+		return message.FetchingFinished{Message: errMsg}
 	}
 }
 
@@ -501,6 +502,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		h, v := lipgloss.NewStyle().GetFrameSize()
 		m.setSize(screen.GetTerminalWidth()-h, screen.GetTerminalHeight()-v)
 		m.disableInput = false
+		m.NewStatusMessage(msg.Message)
 
 		return m, nil
 
@@ -585,11 +587,11 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	case message.ChangeCategory:
 		return m, func() tea.Msg {
 			itemsToFetch := m.getNumberOfItemsToFetch(msg.Category)
-			stories := m.service.FetchItems(itemsToFetch, msg.Category)
+			stories, errMsg := m.service.FetchItems(itemsToFetch, msg.Category)
 
 			m.items[msg.Category] = stories
 
-			return message.CategoryFetchingFinished{Category: msg.Category, Cursor: msg.Cursor}
+			return message.CategoryFetchingFinished{Category: msg.Category, Cursor: msg.Cursor, Message: errMsg}
 		}
 
 	case message.CategoryFetchingFinished:
@@ -600,6 +602,9 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 		itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))
 		m.cursor = min(msg.Cursor, itemsOnPage-1)
+
+		m.NewStatusMessage(msg.Message)
+
 		m.updatePagination()
 	}
 

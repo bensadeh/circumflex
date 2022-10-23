@@ -19,7 +19,9 @@ type EnteringReaderMode struct {
 
 type StatusMessageTimeout struct{}
 
-type FetchingFinished struct{}
+type FetchingFinished struct {
+	Message string
+}
 
 type ChangeCategory struct {
 	Category int
@@ -29,6 +31,7 @@ type ChangeCategory struct {
 type CategoryFetchingFinished struct {
 	Category int
 	Cursor   int
+	Message  string
 }
 
 type AddToFavorites struct {

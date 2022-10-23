@@ -21,11 +21,14 @@ const (
 
 type Service struct{}
 
-func (s *Service) FetchItems(itemsToFetch int, category int) []*item.Item {
+func (s *Service) FetchItems(itemsToFetch int, category int) (items []*item.Item, errMsg string) {
 	// Posts of the type: 'Company (YC __) is hiring ...' is filtered out
 	// from Algolia. For this reason, we ask for one more item than we need.
 	itemsToFetchWithBuffer := itemsToFetch + 1
-	listOfIDs := fetchStoriesList(category)
+	listOfIDs, errMsg := fetchStoriesList(category)
+	if errMsg != "" {
+		return nil, errMsg
+	}
 
 	ids := getStoryListURIParam(listOfIDs[0:itemsToFetchWithBuffer])
 
@@ -42,18 +45,16 @@ func (s *Service) FetchItems(itemsToFetch int, category int) []*item.Item {
 		SetResult(&a).
 		Get(url)
 	if err != nil {
-		panic(err)
+		return nil, err.Error()
 	}
 
 	mapOfItemsWithMetaData := mapStories(a)
 	orderedStories := joinStories(listOfIDs, mapOfItemsWithMetaData)
 
-	return orderedStories[0:min(itemsToFetch, len(orderedStories))]
+	return orderedStories[0:min(itemsToFetch, len(orderedStories))], ""
 }
 
-func fetchStoriesList(category int) []int {
-	var stories []int
-
+func fetchStoriesList(category int) (stories []int, errMsg string) {
 	url := fmt.Sprintf("%s/%s.json", uri, getCategory(category))
 
 	client := resty.New()
@@ -64,10 +65,10 @@ func fetchStoriesList(category int) []int {
 		SetResult(&stories).
 		Get(url)
 	if err != nil {
-		panic(err)
+		return nil, err.Error()
 	}
 
-	return stories
+	return stories, ""
 }
 
 func getStoryListURIParam(ids []int) string {

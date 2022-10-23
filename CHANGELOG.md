@@ -5,6 +5,7 @@ _WIP_
 
 **New features**
 - Check `less` version on startup
+- Network errors are now displayed to the user
 
 **Bugfixes**
 - Headlines are now properly highlighted in the comment section
