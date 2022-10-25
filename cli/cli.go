@@ -44,7 +44,7 @@ func ClearScreen() {
 	_ = c.Run()
 }
 
-func VerifyLessVersion(minimumVersion int) (isValid bool, currentVersion int) {
+func VerifyLessVersion(minimumVersion int) (isValid bool, currentVersion string) {
 	lessVersionInfo := getLessVersionInfo()
 
 	lessVersionInfoWords := strings.Fields(lessVersionInfo)
@@ -52,12 +52,12 @@ func VerifyLessVersion(minimumVersion int) (isValid bool, currentVersion int) {
 		panic("Could not parse less version info")
 	}
 
-	lessVersion, err := strconv.Atoi(lessVersionInfoWords[1])
+	lessVersion, err := strconv.ParseFloat(lessVersionInfoWords[1], 64)
 	if err != nil {
 		panic(err)
 	}
 
-	return lessVersion >= minimumVersion, lessVersion
+	return int(lessVersion) >= minimumVersion, lessVersionInfoWords[1]
 }
 
 func getLessVersionInfo() string {

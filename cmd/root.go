@@ -130,7 +130,7 @@ func verifyLess(noLessVerify bool) {
 		clx := aurora.Magenta("clx").String()
 
 		fmt.Printf("Your version of %s is outdated\n\n", less)
-		fmt.Printf("Your version:     %d\n", currentLessVersion)
+		fmt.Printf("Your version:     %s\n", currentLessVersion)
 		fmt.Printf("Required version: %d\n\n", app.MinimumLessVersion)
 		fmt.Printf("If you think this is an error, re-run %s with the %s flag to disable check", clx, flag)
 
