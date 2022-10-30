@@ -71,9 +71,9 @@ go install
 clx
 ```
 
-When building from source, make sure that: 
-- `$GOPATH/bin` is in your `PATH` environment variable.
-- you are using the latest version of [`less`](http://greenwoodsoftware.com/less/).
+> **Note** 
+> When building from source, make sure that `$GOPATH/bin` is in your `PATH` environment variable and
+> that you are using the latest version of [`less`](http://greenwoodsoftware.com/less/).
 
 ## Comment section
 
@@ -109,7 +109,8 @@ Press <kbd>Space</kbd> to read the submission link in Reader Mode.
   <img src="screenshots/reader_mode.png" width="500" alt="^"/>
 </p>
 
-**Note**: some websites do not work well with Reader Mode. If the submission URL points to
+> **Note**
+> Some websites do not work well with Reader Mode. If the submission URL points to
 a domain with known Reader Mode incompatibility, the link cannot be opened in Reader Mode. 
 See [validator.go](/validator/validator.go) for a full list of incompatible sites.
 
