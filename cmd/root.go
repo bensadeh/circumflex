@@ -126,13 +126,14 @@ func verifyLess(noLessVerify bool) {
 
 	if !isValid {
 		flag := aurora.Bold("--no-less-verify").String()
-		less := aurora.Magenta("less").String()
-		clx := aurora.Magenta("clx").String()
+		lessCmd := aurora.Magenta("less").Italic().String()
+		clxCmd := aurora.Magenta("clx").Italic().String()
+		lessVersion := aurora.Yellow(currentLessVersion).String()
 
-		fmt.Printf("Your version of %s is outdated\n\n", less)
-		fmt.Printf("Your version:     %s\n", currentLessVersion)
-		fmt.Printf("Required version: %d\n\n", app.MinimumLessVersion)
-		fmt.Printf("If you think this is an error, re-run %s with the %s flag to disable check", clx, flag)
+		fmt.Printf("Your version of %s is outdated\n\n", lessCmd)
+		fmt.Printf("Required: %d\n", app.MinimumLessVersion)
+		fmt.Printf("Current:  %s\n\n", lessVersion)
+		fmt.Printf("Re-run %s with the %s flag to disable this check\n", clxCmd, flag)
 
 		os.Exit(1)
 	}
