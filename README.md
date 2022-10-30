@@ -52,7 +52,7 @@
 
 ```console
 # Install
-brew install bensadeh/circumflex/circumflex
+brew install circumflex
 
 # Run
 clx
