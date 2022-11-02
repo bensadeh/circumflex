@@ -35,6 +35,9 @@ func GetText(screenWidth int, enableNerdFonts bool) string {
 
 	keys.AddHeader(Yellow(" Comment Section / Reader Mode ").Underline().String())
 	keys.AddSeparator()
+	keys.AddKeymap("Down one line", "j")
+	keys.AddKeymap("Up one line", "k")
+	keys.AddSeparator()
 	keys.AddKeymap("Down one half-window", "d")
 	keys.AddKeymap("Up one half-window", "u")
 	keys.AddSeparator()
@@ -44,7 +47,6 @@ func GetText(screenWidth int, enableNerdFonts bool) string {
 	keys.AddKeymap("Jump to next top-level comment", "n")
 	keys.AddKeymap("Jump to previous top-level comment", "N")
 	keys.AddSeparator()
-	keys.AddKeymap("Help screen", "h")
 	keys.AddKeymap("Return to circumflex", "q")
 	keys.AddSeparator()
 
