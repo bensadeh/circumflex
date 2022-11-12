@@ -1,11 +1,11 @@
 package bubble
 
 import (
+	"clx/cli"
 	"fmt"
 	"os"
 
 	"clx/bubble/list"
-	"clx/cli"
 	"clx/favorites"
 	"clx/settings"
 
@@ -42,7 +42,8 @@ func Run(config *settings.Config) {
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
 
-	if err := p.Start(); err != nil {
+	_, err := p.Run()
+	if err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}
