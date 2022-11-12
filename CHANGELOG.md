@@ -8,6 +8,7 @@ _WIP_
 
 **Cosmetic**
 - Rearranged and rephrased the info screen items
+- Re-stylized headers in Reader Mode
 
 
 ## 2.7

@@ -294,7 +294,7 @@ func bldInQuote(text string) string {
 
 func h1(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Bold(text).String()
+	text = White("█ ").String() + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -303,7 +303,7 @@ func h1(text string, lineWidth int) string {
 
 func h2(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Bold(text).String()
+	text = Blue("█ ").String() + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -312,7 +312,7 @@ func h2(text string, lineWidth int) string {
 
 func h3(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Bold(text).Underline().Blue().String()
+	text = Red("█ ").String() + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -321,7 +321,7 @@ func h3(text string, lineWidth int) string {
 
 func h4(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Bold(text).Underline().Yellow().String()
+	text = Magenta("█ ").String() + Bold(text).String()
 
 	text, _ = termtext.WrapWithPad(text, lineWidth, indentLevel1)
 
@@ -330,7 +330,7 @@ func h4(text string, lineWidth int) string {
 
 func h5(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Bold(text).Underline().Green().String()
+	text = Yellow("█ ").String() + Bold(text).String()
 
 	text, _ = termtext.WrapWithPad(text, lineWidth, indentLevel2)
 
@@ -339,7 +339,7 @@ func h5(text string, lineWidth int) string {
 
 func h6(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Bold(text).Underline().Cyan().String()
+	text = Green("█ ").String() + Bold(text).String()
 
 	text, _ = termtext.WrapWithPad(text, lineWidth, indentLevel3)
 
