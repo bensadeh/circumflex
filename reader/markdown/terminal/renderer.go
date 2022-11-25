@@ -313,7 +313,8 @@ func h2(text string, lineWidth int) string {
 
 func h3(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Red(unicode.Block+" ").String() + Bold(text).String()
+	block := strings.Repeat(unicode.Block, 2)
+	text = Red(block).String() + " " + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -322,7 +323,8 @@ func h3(text string, lineWidth int) string {
 
 func h4(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Magenta(unicode.Block+" ").String() + Bold(text).String()
+	block := strings.Repeat(unicode.Block, 3)
+	text = Magenta(block).String() + " " + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -331,7 +333,8 @@ func h4(text string, lineWidth int) string {
 
 func h5(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Yellow(unicode.Block+" ").String() + Bold(text).String()
+	block := strings.Repeat(unicode.Block, 4)
+	text = Yellow(block).String() + " " + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -340,7 +343,8 @@ func h5(text string, lineWidth int) string {
 
 func h6(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Green(unicode.Block+" ").String() + Bold(text).String()
+	block := strings.Repeat(unicode.Block, 5)
+	text = Green(block).String() + " " + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
