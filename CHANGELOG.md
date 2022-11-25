@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2.8
-_WIP_
+_25.11.22_
 
 **Bugfixes**
 - Fixed a bug where `circumflex` would crash if the `less` version contained decimals in the version number (Thanks @PrayagS! [#40](https://github.com/bensadeh/circumflex/pull/40))
