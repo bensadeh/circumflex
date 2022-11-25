@@ -5,4 +5,5 @@ const (
 	InvisibleCharacter        = "⁣"
 	AnotherInvisibleCharacter = "‌" // Zero width non joiner
 	NoBreakSpace              = " "
+	Block                     = "█"
 )

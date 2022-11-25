@@ -10,7 +10,7 @@ func removeWikipediaReferences(input string) string {
 
 	for i := 1; i < 256; i++ {
 		number := strconv.Itoa(i)
-		inputWithoutReferences = strings.ReplaceAll(inputWithoutReferences, "\\["+number+"\\]", "")
+		inputWithoutReferences = strings.ReplaceAll(inputWithoutReferences, "["+number+"]", "")
 	}
 
 	return inputWithoutReferences

@@ -1,6 +1,7 @@
 package postprocessor
 
 import (
+	"clx/constants/unicode"
 	"strings"
 
 	"clx/reader/markdown/postprocessor/filter"
@@ -11,11 +12,13 @@ func filterSite(text string, url string) string {
 
 	switch {
 	case strings.Contains(url, "en.wikipedia.org"):
-		text = strings.ReplaceAll(text, "\\[edit\\]", "")
+		text = strings.ReplaceAll(text, "[edit]", "")
 		text = removeWikipediaReferences(text)
 
-		ruleSet.EndBeforeLineEquals("References")
-		ruleSet.EndBeforeLineEquals("Footnotes")
+		ruleSet.EndBeforeLineEquals(unicode.Block + " References")
+		ruleSet.EndBeforeLineEquals(unicode.Block + " Footnotes")
+		ruleSet.EndBeforeLineEquals(unicode.Block + " See also")
+		ruleSet.EndBeforeLineEquals(unicode.Block + " Notes")
 
 		return ruleSet.Filter(text)
 

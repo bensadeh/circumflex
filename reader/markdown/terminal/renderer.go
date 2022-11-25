@@ -146,7 +146,8 @@ func renderImage(text string, lineWidth int) string {
 	italic := "\u001B[3m"
 	faint := "\u001B[2m"
 	normal := "\u001B[0m"
-	imageLabel := normal + red + faint + "Image " + normal + faint + italic
+	imageLabel := normal + Red(unicode.Block).Faint().String() + Yellow(unicode.Block).Faint().String() +
+		Blue(unicode.Block).Faint().String() + normal + red + faint + italic + " Image " + normal + faint + italic
 
 	text = regexp.MustCompile(`!\[(.*?)\]\(.*?\)$`).
 		ReplaceAllString(text, imageLabel+`$1`)
@@ -294,7 +295,7 @@ func bldInQuote(text string) string {
 
 func h1(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = White("█ ").String() + Bold(text).String()
+	text = White(unicode.Block+" ").String() + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -303,7 +304,7 @@ func h1(text string, lineWidth int) string {
 
 func h2(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Blue("█ ").String() + Bold(text).String()
+	text = Blue(unicode.Block+" ").String() + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -312,7 +313,7 @@ func h2(text string, lineWidth int) string {
 
 func h3(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Red("█ ").String() + Bold(text).String()
+	text = Red(unicode.Block+" ").String() + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -321,27 +322,27 @@ func h3(text string, lineWidth int) string {
 
 func h4(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Magenta("█ ").String() + Bold(text).String()
+	text = Magenta(unicode.Block+" ").String() + Bold(text).String()
 
-	text, _ = termtext.WrapWithPad(text, lineWidth, indentLevel1)
+	text, _ = termtext.Wrap(text, lineWidth)
 
 	return unicode.ZeroWidthSpace + text
 }
 
 func h5(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Yellow("█ ").String() + Bold(text).String()
+	text = Yellow(unicode.Block+" ").String() + Bold(text).String()
 
-	text, _ = termtext.WrapWithPad(text, lineWidth, indentLevel2)
+	text, _ = termtext.Wrap(text, lineWidth)
 
 	return unicode.ZeroWidthSpace + text
 }
 
 func h6(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Green("█ ").String() + Bold(text).String()
+	text = Green(unicode.Block+" ").String() + Bold(text).String()
 
-	text, _ = termtext.WrapWithPad(text, lineWidth, indentLevel3)
+	text, _ = termtext.Wrap(text, lineWidth)
 
 	return unicode.ZeroWidthSpace + text
 }
