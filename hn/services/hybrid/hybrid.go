@@ -38,7 +38,7 @@ func (s *Service) FetchItems(itemsToFetch int, category int) (items []*item.Item
 	var a *endpoints.Algolia
 
 	client := resty.New()
-	client.SetTimeout(5 * time.Second)
+	client.SetTimeout(10 * time.Second)
 
 	_, err := client.R().
 		SetHeader("User-Agent", app.Name+"/"+app.Version).
@@ -58,7 +58,7 @@ func fetchStoriesList(category int) (stories []int, errMsg string) {
 	url := fmt.Sprintf("%s/%s.json", uri, getCategory(category))
 
 	client := resty.New()
-	client.SetTimeout(5 * time.Second)
+	client.SetTimeout(10 * time.Second)
 
 	_, err := client.R().
 		SetHeader("User-Agent", app.Name+"/"+app.Version).

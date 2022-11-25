@@ -10,6 +10,9 @@ _WIP_
 - Rearranged and rephrased the info screen items
 - Re-stylized headers in Reader Mode
 
+**Other**
+- Increased timeout for fetching submissions
+
 
 ## 2.7
 _23.10.22_
