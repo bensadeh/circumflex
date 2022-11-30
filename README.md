@@ -277,7 +277,7 @@ Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of available keymaps:
 * [`less`](http://greenwoodsoftware.com/less/) for viewing comments and articles
 * [go-term-text](https://github.com/MichaelMure/go-term-text) and [lipgloss](https://github.com/charmbracelet/lipgloss) for text formatting
 * [go-readability](https://github.com/go-shiori/go-readability), [html-to-markdown](https://github.com/JohannesKaufmann/html-to-markdown) 
-and [Glamour](https://github.com/charmbracelet/glamour) for formatting and rendering articles in Reader Mode
+and [Glamour](https://github.com/charmbracelet/glamour) for formatting
 
 Screenshots use:
 
