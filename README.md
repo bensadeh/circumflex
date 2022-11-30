@@ -272,8 +272,8 @@ Press <kbd>?</kbd>/<kbd>i</kbd> to show a list of available keymaps:
 
 * [Bubble Tea](https://github.com/charmbracelet/bubbletea) for the TUI
 * [cobra](https://github.com/spf13/cobra) for the CLI
-* [Algolia's Search API](https://hn.algolia.com/api) for list of submissions and [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) 
-for providing comments
+* [Algolia's Search API](https://hn.algolia.com/api) for submissions
+* [cheeaun's unofficial Hacker News API](https://github.com/cheeaun/node-hnapi) for comments
 * [`less`](http://greenwoodsoftware.com/less/) for viewing comments and articles
 * [go-term-text](https://github.com/MichaelMure/go-term-text) and [lipgloss](https://github.com/charmbracelet/lipgloss) for text formatting
 * [go-readability](https://github.com/go-shiori/go-readability), [html-to-markdown](https://github.com/JohannesKaufmann/html-to-markdown) 
