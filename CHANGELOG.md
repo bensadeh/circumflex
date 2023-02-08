@@ -1,6 +1,12 @@
 # Changelog
-## 2.9
-_WIP_
+
+## 2.8.1
+_08.02.22_
+
+**Dependencies**
+- Bump go-pretty 6.4.3 to 6.4.4
+- Bump bubbles from 0.14.0 to 0.15.0
+- Bump termenv from 0.13.0 to 0.14.0
 
 
 ## 2.8
