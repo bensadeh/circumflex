@@ -48,27 +48,22 @@
 
 ## Installing
 
-### Via Homebrew
+The binary name for `circumflex` is `clx`.
 
+#### Package managers
 ```console
-# Install
+# Homebrew
 brew install circumflex
 
-# Run
-clx
+# Nix
+nix-env -iA nixpkgs.circumflex
 ```
 
-### From source
+#### From source
 
 ```console
-# Clone and change dir
-git clone https://github.com/bensadeh/circumflex.git && cd circumflex
-
-# Install 
-go install
-
-# Run
-clx
+# Clone, change to dir and install
+git clone https://github.com/bensadeh/circumflex.git && cd circumflex && go install
 ```
 
 > **Note** 
