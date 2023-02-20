@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/JohannesKaufmann/html-to-markdown v1.3.6
 	github.com/MichaelMure/go-term-text v0.3.1
-	github.com/PuerkitoBio/goquery v1.8.0
+	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89
 	github.com/charmbracelet/bubbles v0.15.0
 	github.com/charmbracelet/bubbletea v0.23.2
