@@ -19,7 +19,7 @@ require (
 	github.com/muesli/termenv v0.14.0
 	github.com/nleeper/goment v1.4.4
 	github.com/spf13/cobra v1.6.1
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 	github.com/wayneashleyberry/terminal-dimensions v1.1.0
 )
 
