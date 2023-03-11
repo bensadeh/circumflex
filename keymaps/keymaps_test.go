@@ -1,6 +1,7 @@
 package keymaps_test
 
 import (
+	ansi "clx/utils/strip-ansi"
 	"testing"
 
 	"clx/keymaps"
@@ -43,5 +44,9 @@ func TestKeymaps(t *testing.T) {
 [1ma + b[0m[2m ..................................................................... [0mItem
 `
 
-	assert.Equal(t, expected, actual)
+	// Workaround for a bug where lipgloss does not render ansi formatting during testing
+	// Possibly related to https://github.com/charmbracelet/lipgloss/issues/176
+	expectedWithoutAnsi := ansi.Strip(expected)
+
+	assert.Equal(t, expectedWithoutAnsi, actual)
 }
