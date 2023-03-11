@@ -1,10 +1,19 @@
 # Changelog
 
-## 2.9
-_WIP_
+## 2.8.2
+_11.03.23_
+
+**Dependencies**
+- Bump Go from 1.19 to 1.20
+- Bump lipgloss from 0.6.0 to 0.7.1
+- Bump html-to-markdown from 1.3.6 to 1.3.7
+- Bump termenv from 0.14.0 to 0.15.1
+- Bump go-pretty from 6.4.4 to 6.4.6
+- Bump testify from 1.8.1 to 1.8.2
+- Bump goquery from 1.8.0 to 1.8.1
 
 ## 2.8.1
-_08.02.22_
+_08.02.23_
 
 **Dependencies**
 - Bump go-pretty 6.4.3 to 6.4.4
