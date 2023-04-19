@@ -58,8 +58,8 @@ brew install circumflex
 # Nix
 nix-env -iA nixpkgs.circumflex
 
-# Arch Linux
-# https://aur.archlinux.org/packages/circumflex
+# AUR
+yay -S circumflex
 
 ```
 
