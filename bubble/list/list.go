@@ -1008,11 +1008,11 @@ func (m Model) statusAndPaginationView() string {
 	}
 
 	left := lipgloss.NewStyle().Inline(true).
-		Background(style.GetStatusBarBg()).
+		//Background(style.GetStatusBarBg()).
 		Width(5).MaxWidth(5).Render("")
 
 	center := lipgloss.NewStyle().Inline(true).
-		Background(style.GetStatusBarBg()).
+		//Background(style.GetStatusBarBg()).
 		Width(m.width - 5 - 5).Align(lipgloss.Center).Render(centerContent)
 
 	right := lipgloss.NewStyle().Inline(true).
@@ -1100,8 +1100,8 @@ func (m Model) spinnerView() string {
 
 func getAddItemConfirmationMessage() string {
 	normal := lipgloss.NewStyle().
-		Foreground(style.GetUnselectedItemFg()).
-		Background(style.GetStatusBarBg())
+		Foreground(style.GetUnselectedItemFg())
+	//Background(style.GetStatusBarBg())
 	green := normal.Copy().
 		Foreground(lipgloss.Color("2"))
 	bold := normal.Copy().
@@ -1114,8 +1114,8 @@ func getAddItemConfirmationMessage() string {
 
 func getRemoveItemConfirmationMessage() string {
 	normal := lipgloss.NewStyle().
-		Foreground(style.GetUnselectedItemFg()).
-		Background(style.GetStatusBarBg())
+		Foreground(style.GetUnselectedItemFg())
+	//Background(style.GetStatusBarBg())
 	red := normal.Copy().
 		Foreground(lipgloss.Color("1"))
 	bold := normal.Copy().

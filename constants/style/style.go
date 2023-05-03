@@ -14,8 +14,8 @@ const (
 	orange      = "214"
 	orangeFaint = "94"
 
-	logoBgDark           = "#0f1429"
-	headerBgDark         = "#2d3454"
+	logoBgDark           = "0"
+	headerBgDark         = "8"
 	unselectedItemFgDark = "251"
 	paginatorBgDark      = logoBgDark
 	selectedPageFgDark   = unselectedItemFgDark
@@ -26,8 +26,8 @@ const (
 	blueLight    = blueDark
 	pinkLight    = pinkDark
 
-	logoBgLight           = "252"
-	headerBgLight         = "254"
+	logoBgLight           = "7"
+	headerBgLight         = "15"
 	unselectedItemFgLight = "235"
 	paginatorBgLight      = logoBgLight
 	selectedPageFgLight   = unselectedItemFgLight
@@ -81,7 +81,7 @@ func GetPaginatorBg() lipgloss.TerminalColor {
 }
 
 func GetUnselectedItemFg() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: unselectedItemFgLight, Dark: unselectedItemFgDark}
+	return lipgloss.AdaptiveColor{}
 }
 
 func GetSelectedPageFg() lipgloss.TerminalColor {

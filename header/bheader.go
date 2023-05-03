@@ -40,22 +40,23 @@ func getFiller(title string, categories string, width int) string {
 	filler := strings.Repeat(" ", availableSpace)
 
 	return lipgloss.NewStyle().
-		Background(style.GetHeaderBg()).
+		//Background(style.GetHeaderBg()).
 		Render(filler)
 }
 
 func getCategories(selectedSubHeader int, favoritesHasItems bool) string {
 	subHeaders := getSubHeaders(favoritesHasItems)
 	fg := style.GetUnselectedItemFg()
-	bg := style.GetHeaderBg()
+	//bg := style.GetHeaderBg()
 
 	categories := lipgloss.NewStyle().
-		Background(bg).
-		Render("   ")
+		//Background(bg).
+		Underline(true).
+		Render("")
 
 	separator := lipgloss.NewStyle().
 		Foreground(fg).
-		Background(bg).
+		//Background(bg).
 		Render(" • ")
 
 	for i, subHeader := range subHeaders {
@@ -64,7 +65,7 @@ func getCategories(selectedSubHeader int, favoritesHasItems bool) string {
 
 		categories += lipgloss.NewStyle().
 			Foreground(selectedCatColor).
-			Background(bg).
+			//Background(bg).
 			Bold(isSelected).
 			Render(subHeader)
 
