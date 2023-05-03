@@ -27,7 +27,7 @@ func GetHeader(selectedSubHeader int, favoritesHasItems bool, width int) string 
 	categories := getCategories(selectedSubHeader, favoritesHasItems)
 	filler := getFiller(title, categories, width)
 
-	return title + categories + filler
+	return title + categories + filler + "\n" + strings.Repeat("‾", width)
 }
 
 func getFiller(title string, categories string, width int) string {
@@ -56,6 +56,7 @@ func getCategories(selectedSubHeader int, favoritesHasItems bool) string {
 
 	separator := lipgloss.NewStyle().
 		Foreground(fg).
+		Faint(true).
 		//Background(bg).
 		Render(" • ")
 
@@ -65,8 +66,9 @@ func getCategories(selectedSubHeader int, favoritesHasItems bool) string {
 
 		categories += lipgloss.NewStyle().
 			Foreground(selectedCatColor).
+			Faint(!isSelected).
 			//Background(bg).
-			Bold(isSelected).
+			//Bold(isSelected).
 			Render(subHeader)
 
 		if !isOnLastItem {

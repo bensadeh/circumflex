@@ -414,7 +414,8 @@ func (m *Model) updatePagination() {
 		availHeight -= lipgloss.Height(m.titleView())
 	}
 	if m.showStatusBar {
-		availHeight -= lipgloss.Height(m.statusView())
+		// We subtract one from the height because we don't want any spacing
+		availHeight -= lipgloss.Height(m.statusAndPaginationView()) - 1
 	}
 
 	m.Paginator.PerPage = max(1, availHeight/(m.delegate.Height()+m.delegate.Spacing()))
@@ -944,7 +945,8 @@ func (m *Model) showHelpScreen() tea.Cmd {
 // View renders the component.
 func (m Model) View() string {
 	if m.isOnHelpScreen {
-		return fmt.Sprintf("%s\n%s\n%s", header.GetHeader(m.categoryToDisplay, m.favorites.HasItems(), m.width),
+		return fmt.Sprintf("%s%s%s",
+			header.GetHeader(m.categoryToDisplay, m.favorites.HasItems(), m.width),
 			m.viewport.View(),
 			m.statusAndPaginationView())
 	}
@@ -965,8 +967,9 @@ func (m Model) View() string {
 	}
 
 	if m.showStatusBar {
-		v := m.statusView()
+		v := m.statusAndPaginationView()
 		availHeight -= lipgloss.Height(v)
+
 	}
 
 	content := lipgloss.NewStyle().Height(availHeight).Render(m.populatedView())
@@ -985,7 +988,7 @@ func (m Model) View() string {
 }
 
 func (m Model) titleView() string {
-	return header.GetHeader(m.categoryToDisplay, m.favorites.HasItems(), m.width) + "\n"
+	return header.GetHeader(m.categoryToDisplay, m.favorites.HasItems(), m.width)
 }
 
 func (m Model) statusAndPaginationView() string {
@@ -1019,27 +1022,30 @@ func (m Model) statusAndPaginationView() string {
 		Background(style.GetPaginatorBg()).
 		Width(5).Align(lipgloss.Center).Render(rightContent)
 
-	return m.Styles.StatusBar.Render(left) + m.Styles.StatusBar.Render(center) + m.Styles.StatusBar.Render(right)
+	underscore := lipgloss.NewStyle().Underline(true).Render(" ")
+	underline := strings.Repeat(underscore, screen.GetTerminalWidth())
+
+	return underline + "\n" + m.Styles.StatusBar.Render(left) + m.Styles.StatusBar.Render(center) + m.Styles.StatusBar.Render(right)
 }
 
-func (m Model) statusView() string {
-	var status string
-
-	visibleItems := len(m.VisibleItems())
-
-	plural := ""
-	if visibleItems != 1 {
-		plural = "s"
-	}
-
-	if len(m.items) == 0 {
-		status = m.Styles.StatusEmpty.Render("")
-	} else {
-		status += fmt.Sprintf("%d item%s", visibleItems, plural)
-	}
-
-	return m.Styles.StatusBar.Render(status)
-}
+//func (m Model) statusView() string {
+//	var status string
+//
+//	visibleItems := len(m.VisibleItems())
+//
+//	plural := ""
+//	if visibleItems != 1 {
+//		plural = "s"
+//	}
+//
+//	if len(m.items) == 0 {
+//		status = m.Styles.StatusEmpty.Render("")
+//	} else {
+//		status += fmt.Sprintf("%d item%s", visibleItems, plural)
+//	}
+//
+//	return m.Styles.StatusBar.Render(status)
+//}
 
 func (m Model) OnStartup() bool {
 	return m.onStartup
@@ -1058,22 +1064,22 @@ func (m *Model) SetOnStartup(value bool) {
 }
 
 func (m Model) populatedView() string {
-	items := m.VisibleItems()
+	allItems := m.VisibleItems()
 
 	var b strings.Builder
 
 	// Empty states
-	if len(items) == 0 {
+	if len(allItems) == 0 {
 		return m.Styles.NoItems.Render("")
 	}
 
-	if len(items) > 0 {
-		start, end := m.Paginator.GetSliceBounds(len(items))
-		docs := items[start:end]
+	if len(allItems) > 0 {
+		start, end := m.Paginator.GetSliceBounds(len(allItems))
+		itemsToShow := allItems[start:end]
 
-		for i, item := range docs {
+		for i, item := range itemsToShow {
 			m.delegate.Render(&b, m, i+start, item)
-			if i != len(docs)-1 {
+			if i != len(itemsToShow)-1 {
 				fmt.Fprint(&b, strings.Repeat("\n", m.delegate.Spacing()+1))
 			}
 		}
@@ -1082,13 +1088,13 @@ func (m Model) populatedView() string {
 	// If there aren't enough items to fill up this page (always the last page)
 	// then we need to add some newlines to fill up the space where items would
 	// have been.
-	itemsOnPage := m.Paginator.ItemsOnPage(len(items))
+	itemsOnPage := m.Paginator.ItemsOnPage(len(allItems))
 	if itemsOnPage < m.Paginator.PerPage {
 		n := (m.Paginator.PerPage - itemsOnPage) * (m.delegate.Height() + m.delegate.Spacing())
-		if len(items) == 0 {
+		if len(allItems) == 0 {
 			n -= m.delegate.Height() - 1
 		}
-		fmt.Fprint(&b, strings.Repeat("\n", n))
+		_, _ = fmt.Fprint(&b, strings.Repeat("\n", n))
 	}
 
 	return b.String()
