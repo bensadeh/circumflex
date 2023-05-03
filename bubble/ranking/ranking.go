@@ -44,7 +44,7 @@ func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPa
 		rankings += rank + newParagraph
 	}
 
-	return strings.TrimSuffix(rankings, "\n")
+	return strings.TrimSuffix(rankings, "\n\n")
 }
 
 func relativeRankings(itemsVisible int, itemsTotal int, currentPosition int, currentPage int, totalPages int) string {
