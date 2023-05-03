@@ -5,8 +5,6 @@ import (
 	"strconv"
 	"strings"
 
-	style2 "clx/constants/style"
-
 	"github.com/charmbracelet/lipgloss"
 
 	"clx/constants/nerdfonts"
@@ -79,7 +77,7 @@ func printReplies(c *item.Item, config *settings.Config, screenWidth int, origin
 		lastVisited)
 	indentedComment, _ := text.WrapWithPad(comment, screenWidth, indentation)
 	fullComment := getSeparator(c.Level, config.CommentWidth, c.ID, firstCommentID) + indentedComment + newLine
-	fullComment += getButton(c.Level, getReplyCount(c), config.CommentWidth, config.EnableNerdFonts)
+	fullComment += getButton(c.Level, getReplyCount(c), config.CommentWidth)
 
 	fullCommentWithFilterTag := addFilterTag(c.Level, fullComment)
 
@@ -95,21 +93,12 @@ func printReplies(c *item.Item, config *settings.Config, screenWidth int, origin
 	return fullCommentWithFilterTag
 }
 
-func getButton(level int, replyCount int, commentWidth int, enableNerdFonts bool) string {
+func getButton(level int, replyCount int, commentWidth int) string {
 	if replyCount == 0 || level != 0 {
 		return ""
 	}
 
-	buttonWidth := 16
 	replies := ""
-	nerdfontsRightSeparator := ""
-	nerdfontsLeftSeparator := ""
-
-	if enableNerdFonts {
-		nerdfontsRightSeparator = nerdfonts.RightSeparator
-		nerdfontsLeftSeparator = nerdfonts.LeftSeparator
-		buttonWidth -= 2
-	}
 
 	if replyCount == 1 {
 		replies = "reply"
@@ -120,29 +109,19 @@ func getButton(level int, replyCount int, commentWidth int, enableNerdFonts bool
 	buttonLabel := fmt.Sprintf("%d %s", replyCount, replies)
 
 	buttonNotPressedStyle := lipgloss.NewStyle().
-		Foreground(style2.GetUnselectedItemFg()).
-		Background(style2.GetHeaderBg()).
-		Width(buttonWidth).
+		Bold(true).
 		AlignHorizontal(lipgloss.Center).
-		SetString(buttonLabel)
-	buttonNotPressedRoundedSeparator := lipgloss.NewStyle().
-		Foreground(buttonNotPressedStyle.GetBackground())
-	buttonNotPressed := buttonNotPressedRoundedSeparator.Render(nerdfontsLeftSeparator) +
-		buttonNotPressedStyle.String() +
-		buttonNotPressedRoundedSeparator.Render(nerdfontsRightSeparator)
+		SetString("› " + buttonLabel)
+
+	buttonNotPressed := buttonNotPressedStyle.String()
 
 	buttonPressedStyle := lipgloss.NewStyle().
-		Foreground(style2.GetUnselectedItemFg()).
-		Background(style2.GetLogoBg()).
+		Bold(true).
 		Faint(true).
-		Width(buttonWidth).
 		AlignHorizontal(lipgloss.Center).
-		SetString(buttonLabel)
-	buttonPressedRoundedSeparator := lipgloss.NewStyle().
-		Foreground(buttonPressedStyle.GetBackground())
-	buttonPressed := buttonPressedRoundedSeparator.Render(nerdfontsLeftSeparator) +
-		buttonPressedStyle.String() +
-		buttonPressedRoundedSeparator.Render(nerdfontsRightSeparator)
+		SetString("⌄ " + buttonLabel)
+
+	buttonPressed := buttonPressedStyle.String()
 
 	style := lipgloss.NewStyle().Width(commentWidth).AlignHorizontal(lipgloss.Center)
 
