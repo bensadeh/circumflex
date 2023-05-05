@@ -19,7 +19,6 @@ import (
 	"clx/bubble/ranking"
 	"clx/cli"
 	"clx/constants/category"
-	"clx/constants/style"
 	"clx/favorites"
 	"clx/header"
 	"clx/help"
@@ -387,7 +386,6 @@ func (m *Model) NewStatusMessageWithDuration(s string, d time.Duration) tea.Cmd 
 
 func (m *Model) SetPermanentStatusMessage(s string, faint bool) {
 	m.statusMessage = lipgloss.NewStyle().
-		Foreground(style.GetUnselectedItemFg()).
 		Faint(faint).
 		Render(s)
 }

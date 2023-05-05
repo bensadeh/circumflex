@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"clx/constants/category"
-	"clx/constants/style"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -34,14 +33,12 @@ func getFiller(title string, categories string, width int) string {
 
 func getCategories(selectedSubHeader int, favoritesHasItems bool) string {
 	subHeaders := getSubHeaders(favoritesHasItems)
-	fg := style.GetUnselectedItemFg()
 
 	categories := lipgloss.NewStyle().
 		Underline(true).
 		Render("")
 
 	separator := lipgloss.NewStyle().
-		Foreground(fg).
 		Faint(true).
 		Render(" • ")
 
@@ -75,7 +72,7 @@ func getColor(i int, selectedSubHeader int) (color lipgloss.TerminalColor, isSel
 		return getSelectedCategoryColor(i + 1)
 	}
 
-	return style.GetUnselectedItemFg(), false
+	return lipgloss.NoColor{}, false
 }
 
 func getSelectedCategoryColor(selectedSubHeader int) (color lipgloss.TerminalColor, isSelected bool) {
