@@ -2,6 +2,6 @@ package app
 
 const (
 	Name               = "circumflex"
-	Version            = "2.8.2"
+	Version            = "2.9"
 	MinimumLessVersion = 608
 )
