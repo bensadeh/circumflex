@@ -2,7 +2,6 @@ package style
 
 import (
 	"github.com/charmbracelet/lipgloss"
-	"github.com/muesli/termenv"
 )
 
 const (
@@ -58,36 +57,6 @@ func GetOrangeFaint() lipgloss.TerminalColor {
 	return lipgloss.AdaptiveColor{Light: orangeFaint, Dark: orangeFaint}
 }
 
-func GetLogoBg() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: logoBgLight, Dark: logoBgDark}
-}
-
-func GetHeaderBg() lipgloss.TerminalColor {
-	profile := termenv.ColorProfile()
-
-	if profile != termenv.TrueColor {
-		return lipgloss.AdaptiveColor{Light: headerBgLight, Dark: "237"}
-	}
-
-	return lipgloss.AdaptiveColor{Light: headerBgLight, Dark: headerBgDark}
-}
-
-func GetStatusBarBg() lipgloss.TerminalColor {
-	return GetHeaderBg()
-}
-
-func GetPaginatorBg() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: paginatorBgLight, Dark: paginatorBgDark}
-}
-
 func GetUnselectedItemFg() lipgloss.TerminalColor {
 	return lipgloss.AdaptiveColor{}
-}
-
-func GetSelectedPageFg() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: selectedPageFgLight, Dark: selectedPageFgDark}
-}
-
-func GetUnselectedPageFg() lipgloss.TerminalColor {
-	return lipgloss.AdaptiveColor{Light: unselectedPageFgLight, Dark: unselectedPageFgDark}
 }
