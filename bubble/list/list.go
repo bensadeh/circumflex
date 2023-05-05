@@ -467,7 +467,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		fetchCmd := m.FetchFrontPageStories()
 		cmds = append(cmds, fetchCmd)
 
-		heightOfHeaderAndStatusLine := 2
+		heightOfHeaderAndStatusLine := 3
 
 		m.viewport = viewport.New(windowSizeMsg.Width, windowSizeMsg.Height-heightOfHeaderAndStatusLine)
 		m.viewport.YPosition = 2
@@ -990,10 +990,13 @@ func (m Model) titleView() string {
 func (m Model) statusAndPaginationView() string {
 	centerContent := ""
 	rightContent := ""
+	underscore := lipgloss.NewStyle().Underline(true).Render(" ")
+	underline := strings.Repeat(underscore, screen.GetTerminalWidth())
 
 	if m.isOnHelpScreen {
 		centerContent = lipgloss.NewStyle().Faint(true).Render(
 			"github.com/bensadeh/circumflex • version " + app.Version)
+		underline = "\n" + underline
 	} else if m.showSpinner {
 		centerContent = m.spinnerView()
 	} else {
@@ -1001,7 +1004,7 @@ func (m Model) statusAndPaginationView() string {
 	}
 
 	if m.isOnHelpScreen {
-		rightContent = "hlp"
+		rightContent = ""
 	} else {
 		rightContent = m.Paginator.View()
 	}
@@ -1024,30 +1027,11 @@ func (m Model) statusAndPaginationView() string {
 		Align(lipgloss.Center).
 		Render(rightContent)
 
-	underscore := lipgloss.NewStyle().Underline(true).Render(" ")
-	underline := strings.Repeat(underscore, screen.GetTerminalWidth())
-
-	return underline + "\n" + m.Styles.StatusBar.Render(left) + m.Styles.StatusBar.Render(center) + m.Styles.StatusBar.Render(right)
+	return underline + "\n" +
+		m.Styles.StatusBar.Render(left) +
+		m.Styles.StatusBar.Render(center) +
+		m.Styles.StatusBar.Render(right)
 }
-
-//func (m Model) statusView() string {
-//	var status string
-//
-//	visibleItems := len(m.VisibleItems())
-//
-//	plural := ""
-//	if visibleItems != 1 {
-//		plural = "s"
-//	}
-//
-//	if len(m.items) == 0 {
-//		status = m.Styles.StatusEmpty.Render("")
-//	} else {
-//		status += fmt.Sprintf("%d item%s", visibleItems, plural)
-//	}
-//
-//	return m.Styles.StatusBar.Render(status)
-//}
 
 func (m Model) OnStartup() bool {
 	return m.onStartup
