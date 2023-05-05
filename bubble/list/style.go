@@ -46,8 +46,8 @@ type Styles struct {
 // DefaultStyles returns a set of default style definitions for this list
 // component.
 func DefaultStyles() (s Styles) {
-	verySubduedColor := lipgloss.AdaptiveColor{Light: "#DDDADA", Dark: "#3C3C3C"}
-	subduedColor := lipgloss.AdaptiveColor{Light: "#9B9B9B", Dark: "#5C5C5C"}
+	//verySubduedColor := lipgloss.AdaptiveColor{Light: "#DDDADA", Dark: "#3C3C3C"}
+	//subduedColor := lipgloss.AdaptiveColor{Light: "#9B9B9B", Dark: "#5C5C5C"}
 
 	s.TitleBar = lipgloss.NewStyle().Padding(0, 0, 1, 2)
 
@@ -73,17 +73,17 @@ func DefaultStyles() (s Styles) {
 	//	Foreground(lipgloss.Color("16")).
 	//	Background(lipgloss.Color("4"))
 
-	s.StatusEmpty = lipgloss.NewStyle().Foreground(subduedColor)
+	s.StatusEmpty = lipgloss.NewStyle()
 
 	s.StatusBarActiveFilter = lipgloss.NewStyle().
 		Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"})
 
-	s.StatusBarFilterCount = lipgloss.NewStyle().Foreground(verySubduedColor)
+	s.StatusBarFilterCount = lipgloss.NewStyle()
 
 	s.NoItems = lipgloss.NewStyle().
 		Foreground(lipgloss.AdaptiveColor{Light: "#909090", Dark: "#626262"})
 
-	s.ArabicPagination = lipgloss.NewStyle().Foreground(subduedColor)
+	s.ArabicPagination = lipgloss.NewStyle()
 
 	s.PaginationStyle = lipgloss.NewStyle().PaddingLeft(2) //nolint:gomnd
 
@@ -110,8 +110,7 @@ func DefaultStyles() (s Styles) {
 func getSpinner() spinner.Spinner {
 	normal := lipgloss.NewStyle().
 		Foreground(style.GetUnselectedItemFg()).
-		//Background(style.GetStatusBarBg()).
-		Faint(false)
+		Faint(true)
 
 	color := normal.Copy()
 
