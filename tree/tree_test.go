@@ -2,16 +2,15 @@ package tree_test
 
 import (
 	"encoding/json"
+	"github.com/charmbracelet/lipgloss"
+	"github.com/muesli/termenv"
 	"os"
 	"testing"
-
-	"github.com/muesli/termenv"
 
 	"clx/item"
 	"clx/settings"
 	"clx/tree"
 
-	"github.com/charmbracelet/lipgloss"
 	"github.com/stretchr/testify/assert"
 )
 

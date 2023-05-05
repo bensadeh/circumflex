@@ -2,7 +2,6 @@ package tree
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
@@ -196,11 +195,7 @@ func formatHeader(c *item.Item, originalPoster string, parentPoster string,
 	author := getAuthor(c.User, lastVisited, c.Time)
 	authorLabel := getAuthorLabel(c.User, originalPoster, parentPoster, config.EnableNerdFonts)
 	zeroWidthSpace := getZeroWidthSpace(enableZeroWidthSpace)
-	// repliesTag := getReplies(showReplies, c, lastVisited)
 	indentation := strings.Repeat(" ", indentSize)
-
-	// spacingLength := commentWidth - text.Len(indentation+author+authorLabel+c.TimeAgo)
-	// spacing := strings.Repeat(" ", spacingLength)
 
 	return zeroWidthSpace + indentation + author + authorLabel +
 		Faint(c.TimeAgo).String() + newLine
@@ -216,46 +211,6 @@ func getAuthor(author string, lastVisited, timePosted int64) string {
 	}
 
 	return authorInBold
-}
-
-func underlineAndDim(enabled bool, timeAgo string) string {
-	if enabled {
-		return Faint(timeAgo).String()
-	}
-
-	return Faint(timeAgo).String()
-}
-
-func getReplies(showReplies bool, children *item.Item, lastVisited int64) string {
-	if !showReplies {
-		return ""
-	}
-
-	numberOfReplies := getReplyCount(children)
-	newComments := getNewCommentsCount(children, lastVisited)
-
-	replySymbol := ""
-	if numberOfReplies != 0 {
-		replySymbol = Faint(" ↩").String()
-	}
-
-	return getRepliesCount(numberOfReplies) + getNewCommentsTag(newComments, numberOfReplies) + replySymbol
-}
-
-func getRepliesCount(numberOfReplies int) string {
-	if numberOfReplies == 0 {
-		return ""
-	}
-
-	return strconv.Itoa(numberOfReplies)
-}
-
-func getNewCommentsTag(newCommentsCount int, numberOfReplies int) string {
-	if newCommentsCount == 0 || newCommentsCount == numberOfReplies {
-		return ""
-	}
-
-	return Faint(" (").String() + Faint(strconv.Itoa(newCommentsCount)).Cyan().String() + Faint(")").String()
 }
 
 func getZeroWidthSpace(enabled bool) string {
