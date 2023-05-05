@@ -60,16 +60,7 @@ func getYCBar(text string, highlightType int, enableNerdFonts bool) string {
 	default:
 		return lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Render(text)
 	}
-	//switch highlightType {
-	//case Selected:
-	//	return label(text, style.GetOrange(), lipgloss.Color("16"), highlightType, enableNerdFonts)
-	//
-	//case MarkAsRead:
-	//	return label(text, lipgloss.Color("237"), style.GetOrangeFaint(), highlightType, enableNerdFonts)
-	//
-	//default:
-	//	return label(text, lipgloss.Color("232"), style.GetOrange(), highlightType, enableNerdFonts)
-	//}
+
 }
 
 func getYCBarNerdFonts(text string, highlightType int, enableNerdFonts bool) string {

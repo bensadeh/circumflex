@@ -1010,17 +1010,23 @@ func (m Model) statusAndPaginationView() string {
 		rightContent = m.Paginator.View()
 	}
 
-	left := lipgloss.NewStyle().Inline(true).
-		//Background(style.GetStatusBarBg()).
-		Width(5).MaxWidth(5).Render("")
+	left := lipgloss.NewStyle().
+		Inline(true).
+		Width(5).
+		MaxWidth(5).
+		Render("")
 
-	center := lipgloss.NewStyle().Inline(true).
-		//Background(style.GetStatusBarBg()).
-		Width(m.width - 5 - 5).Align(lipgloss.Center).Render(centerContent)
+	center := lipgloss.NewStyle().
+		Inline(true).
+		Width(m.width - 5 - 5).
+		Align(lipgloss.Center).
+		Render(centerContent)
 
-	right := lipgloss.NewStyle().Inline(true).
-		Background(style.GetPaginatorBg()).
-		Width(5).Align(lipgloss.Center).Render(rightContent)
+	right := lipgloss.NewStyle().
+		Inline(true).
+		Width(5).
+		Align(lipgloss.Center).
+		Render(rightContent)
 
 	underscore := lipgloss.NewStyle().Underline(true).Render(" ")
 	underline := strings.Repeat(underscore, screen.GetTerminalWidth())
