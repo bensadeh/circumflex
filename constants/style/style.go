@@ -6,9 +6,9 @@ import (
 )
 
 const (
-	magentaDark = "200"
-	yellowDark  = "214"
-	blueDark    = "33"
+	magentaDark = "5"
+	yellowDark  = "3"
+	blueDark    = "4"
 	pinkDark    = "219"
 
 	orange      = "214"
