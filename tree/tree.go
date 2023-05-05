@@ -111,7 +111,7 @@ func getButton(level int, replyCount int, commentWidth int) string {
 	buttonNotPressedStyle := lipgloss.NewStyle().
 		Bold(true).
 		AlignHorizontal(lipgloss.Center).
-		SetString("› " + buttonLabel)
+		SetString("▶ " + buttonLabel)
 
 	buttonNotPressed := buttonNotPressedStyle.String()
 
@@ -119,7 +119,7 @@ func getButton(level int, replyCount int, commentWidth int) string {
 		Bold(true).
 		Faint(true).
 		AlignHorizontal(lipgloss.Center).
-		SetString("⌄ " + buttonLabel)
+		SetString("▼ " + buttonLabel)
 
 	buttonPressed := buttonPressedStyle.String()
 
