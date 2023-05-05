@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.9
+_05.05.23_
+
+**Cosmetic**
+- Simplified coloring of items to only use terminal colors from 0-16. This will make `circumflex` look better across different 
+color schemes.
+
+
 ## 2.8.2
 _11.03.23_
 
