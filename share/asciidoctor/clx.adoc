@@ -109,10 +109,6 @@ Hide the indentation bar to the left of the reply.
 *-n, --nerdfonts*::
 Use Nerd Fonts icons as decorators for some elements (requires a Nerd Font-patched font).
 
-*--force-light-mode, --force-dark-mode*::
-The color scheme is chosen automatically based on the color scheme of the terminal.
-Use these flags to override.
-
 *-a, --auto-expand*::
 Auto expand all replies upon entering the comment section (collapse comments with _h_).
 

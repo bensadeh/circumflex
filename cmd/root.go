@@ -11,7 +11,6 @@ import (
 	"clx/less"
 	"clx/settings"
 
-	"github.com/charmbracelet/lipgloss"
 	"github.com/logrusorgru/aurora/v3"
 	"github.com/spf13/cobra"
 )
@@ -25,8 +24,6 @@ var (
 	hideIndentSymbol            bool
 	debugMode                   bool
 	enableNerdFont              bool
-	forceLightMode              bool
-	forceDarkMode               bool
 	autoExpandComments          bool
 	noLessVerify                bool
 )
@@ -78,10 +75,6 @@ func configureFlags(rootCmd *cobra.Command) {
 		"set the comment width")
 	rootCmd.PersistentFlags().BoolVarP(&enableNerdFont, "nerdfonts", "n", false,
 		"enable Nerd Fonts")
-	rootCmd.PersistentFlags().BoolVar(&forceLightMode, "force-light-mode", false,
-		"force use light color scheme")
-	rootCmd.PersistentFlags().BoolVar(&forceDarkMode, "force-dark-mode", false,
-		"force use dark color scheme")
 	rootCmd.PersistentFlags().BoolVarP(&autoExpandComments, "auto-expand", "a", false,
 		"automatically expand all replies upon entering the comment section")
 	rootCmd.PersistentFlags().BoolVar(&noLessVerify, "no-less-verify", false,
@@ -105,14 +98,6 @@ func getConfig() *settings.Config {
 	config.DisableEmojis = disableEmojis
 	config.DebugMode = debugMode
 	config.NoLessVerify = noLessVerify
-
-	if forceLightMode {
-		lipgloss.SetHasDarkBackground(false)
-	}
-
-	if forceDarkMode {
-		lipgloss.SetHasDarkBackground(true)
-	}
 
 	return config
 }
