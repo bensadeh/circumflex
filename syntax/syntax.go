@@ -1,6 +1,7 @@
 package syntax
 
 import (
+	"github.com/logrusorgru/aurora/v3"
 	"regexp"
 	"strings"
 
@@ -9,7 +10,6 @@ import (
 	"clx/constants/style"
 	"clx/constants/unicode"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/logrusorgru/aurora/v3"
 )
 
 const (
@@ -75,23 +75,23 @@ func getYCBarNerdFonts(text string, highlightType int, enableNerdFonts bool) str
 	}
 }
 
-func HighlightYear(comment string, highlightType int, enableNerdFonts bool) string {
+func HighlightYear(comment string, highlightType int) string {
 	expression := regexp.MustCompile(`\((\d{4})\)`)
 
-	content := getYear(`$1`, highlightType, enableNerdFonts)
+	content := getYear(`$1`, highlightType)
 	return expression.ReplaceAllString(comment, reset+content+getHighlight(highlightType))
 }
 
-func getYear(text string, highlightType int, enableNerdFont bool) string {
+func getYear(text string, highlightType int) string {
 	switch highlightType {
 	case Selected:
-		return label(text, lipgloss.AdaptiveColor{Light: "16", Dark: "16"}, lipgloss.AdaptiveColor{Light: "27", Dark: "214"}, highlightType, enableNerdFont)
+		return lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Reverse(true).Render(text)
 
 	case MarkAsRead:
-		return label(text, lipgloss.AdaptiveColor{Light: "39", Dark: "94"}, style.GetHeaderBg(), highlightType, enableNerdFont)
+		return lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Faint(true).Render(text)
 
 	default:
-		return label(text, lipgloss.AdaptiveColor{Light: "27", Dark: "214"}, style.GetLogoBg(), highlightType, enableNerdFont)
+		return lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Render(text)
 	}
 }
 
@@ -200,10 +200,10 @@ func HighlightSpecialContent(title string, highlightType int, enableNerdFonts bo
 	highlight := getHighlight(highlightType)
 
 	if enableNerdFonts {
-		title = strings.ReplaceAll(title, "[audio]", getSpecialContentRoundedBar("", highlightType, enableNerdFonts)+highlight)
-		title = strings.ReplaceAll(title, "[video]", getSpecialContentRoundedBar("", highlightType, enableNerdFonts)+highlight)
-		title = strings.ReplaceAll(title, "[pdf]", getSpecialContentRoundedBar("", highlightType, enableNerdFonts)+highlight)
-		title = strings.ReplaceAll(title, "[PDF]", getSpecialContentRoundedBar("", highlightType, enableNerdFonts)+highlight)
+		title = strings.ReplaceAll(title, "[audio]", aurora.Cyan("").String()+highlight)
+		title = strings.ReplaceAll(title, "[video]", aurora.Cyan("").String()+highlight)
+		title = strings.ReplaceAll(title, "[pdf]", aurora.Cyan("").String()+highlight)
+		title = strings.ReplaceAll(title, "[PDF]", aurora.Cyan("").String()+highlight)
 
 		return title
 	}
