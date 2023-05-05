@@ -104,14 +104,10 @@ func getScore(points int, enableNerdFonts bool) string {
 
 func getID(id int, enableNerdFonts bool) string {
 	if enableNerdFonts {
-		idLabel := fmt.Sprintf("%d %s", id, nerdfonts.Tag)
-
-		return Green(idLabel).Faint().String()
+		return fmt.Sprintf("%d %s", Faint(id).Green(), Green(nerdfonts.Tag))
 	}
 
-	idLabel := fmt.Sprintf("ID %d", id)
-
-	return Green(idLabel).Faint().String()
+	return fmt.Sprintf("%s %d", "ID", Faint(id).Green())
 }
 
 func getNewCommentsInfo(newComments int, enableNerdFonts bool) string {
