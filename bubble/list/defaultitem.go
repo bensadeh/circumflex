@@ -229,7 +229,7 @@ func styleTitleAndDesc(title string, titleStyle lipgloss.Style, descStyle lipglo
 
 	if !disableHeadlineHighlighting {
 		title = syntax.HighlightYCStartupsInHeadlines(title, syntaxStyle, enableNerdFont)
-		title = syntax.HighlightYear(title, syntaxStyle, enableNerdFont)
+		title = syntax.HighlightYear(title, syntaxStyle)
 		title = syntax.HighlightHackerNewsHeadlines(title, syntaxStyle)
 		title = syntax.HighlightSpecialContent(title, syntaxStyle, enableNerdFont)
 	}
