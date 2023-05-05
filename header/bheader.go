@@ -29,25 +29,20 @@ func getFiller(title string, categories string, width int) string {
 
 	filler := strings.Repeat(" ", availableSpace)
 
-	return lipgloss.NewStyle().
-		//Background(style.GetHeaderBg()).
-		Render(filler)
+	return lipgloss.NewStyle().Render(filler)
 }
 
 func getCategories(selectedSubHeader int, favoritesHasItems bool) string {
 	subHeaders := getSubHeaders(favoritesHasItems)
 	fg := style.GetUnselectedItemFg()
-	//bg := style.GetHeaderBg()
 
 	categories := lipgloss.NewStyle().
-		//Background(bg).
 		Underline(true).
 		Render("")
 
 	separator := lipgloss.NewStyle().
 		Foreground(fg).
 		Faint(true).
-		//Background(bg).
 		Render(" • ")
 
 	for i, subHeader := range subHeaders {
@@ -57,8 +52,6 @@ func getCategories(selectedSubHeader int, favoritesHasItems bool) string {
 		categories += lipgloss.NewStyle().
 			Foreground(selectedCatColor).
 			Faint(!isSelected).
-			//Background(bg).
-			//Bold(isSelected).
 			Render(subHeader)
 
 		if !isOnLastItem {
@@ -77,7 +70,7 @@ func getSubHeaders(favoritesHasItems bool) []string {
 	return []string{"new", "ask", "show"}
 }
 
-func getColor(i int, selectedSubHeader int) (lipgloss.TerminalColor, bool) {
+func getColor(i int, selectedSubHeader int) (color lipgloss.TerminalColor, isSelected bool) {
 	if i+1 == selectedSubHeader {
 		return getSelectedCategoryColor(i + 1)
 	}
@@ -85,17 +78,22 @@ func getColor(i int, selectedSubHeader int) (lipgloss.TerminalColor, bool) {
 	return style.GetUnselectedItemFg(), false
 }
 
-func getSelectedCategoryColor(selectedSubHeader int) (lipgloss.TerminalColor, bool) {
+func getSelectedCategoryColor(selectedSubHeader int) (color lipgloss.TerminalColor, isSelected bool) {
+	magenta := lipgloss.Color("5")
+	yellow := lipgloss.Color("3")
+	blue := lipgloss.Color("4")
+	pink := lipgloss.Color("219")
+
 	switch selectedSubHeader {
 	case category.New:
-		return style.GetMagenta(), true
+		return magenta, true
 	case category.Ask:
-		return style.GetYellow(), true
+		return yellow, true
 	case category.Show:
-		return style.GetBlue(), true
+		return blue, true
 	case category.Favorites:
-		return style.GetPink(), true
+		return pink, true
 	default:
-		return style.GetUnselectedItemFg(), false
+		panic("unsupported header category")
 	}
 }

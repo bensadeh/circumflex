@@ -7,7 +7,6 @@ import (
 
 	"clx/constants/nerdfonts"
 
-	"clx/constants/style"
 	"clx/constants/unicode"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -66,13 +65,13 @@ func getYCBar(text string, highlightType int, enableNerdFonts bool) string {
 func getYCBarNerdFonts(text string, highlightType int, enableNerdFonts bool) string {
 	switch highlightType {
 	case Selected:
-		return label(text, style.GetOrange(), lipgloss.Color("16"), highlightType, enableNerdFonts)
+		return label(text, lipgloss.Color("3"), lipgloss.Color("16"), highlightType, enableNerdFonts)
 
 	case MarkAsRead:
-		return label(text, lipgloss.Color("234"), style.GetOrangeFaint(), highlightType, enableNerdFonts)
+		return label(text, lipgloss.Color("16"), lipgloss.Color("11"), highlightType, enableNerdFonts)
 
 	default:
-		return label(text, lipgloss.Color("16"), style.GetOrange(), highlightType, enableNerdFonts)
+		return label(text, lipgloss.Color("16"), lipgloss.Color("3"), highlightType, enableNerdFonts)
 	}
 }
 
@@ -112,7 +111,9 @@ func label(text string, fg lipgloss.TerminalColor, bg lipgloss.TerminalColor, hi
 	}
 
 	if highlightType == MarkAsRead {
-		content.Italic(true)
+		content.
+			Italic(true).
+			Faint(true)
 	}
 
 	if highlightType == HeadlineInCommentSection {
@@ -215,19 +216,6 @@ func HighlightSpecialContent(title string, highlightType int, enableNerdFonts bo
 	title = strings.ReplaceAll(title, "[PDF]", aurora.Cyan("PDF").String()+highlight)
 
 	return title
-}
-
-func getSpecialContentRoundedBar(text string, highlightType int, enableNerdFonts bool) string {
-	switch highlightType {
-	case Selected:
-		return label(text, lipgloss.Color("4"), lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, highlightType, enableNerdFonts)
-
-	case MarkAsRead:
-		return label(text, style.GetUnselectedItemFg(), style.GetHeaderBg(), highlightType, enableNerdFonts)
-
-	default:
-		return label(text, lipgloss.AdaptiveColor{Light: "255", Dark: "16"}, lipgloss.Color("4"), highlightType, enableNerdFonts)
-	}
 }
 
 func ConvertSmileys(text string) string {

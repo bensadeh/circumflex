@@ -370,9 +370,7 @@ func (m *Model) NewStatusMessage(s string) tea.Cmd {
 }
 
 func (m *Model) NewStatusMessageWithDuration(s string, d time.Duration) tea.Cmd {
-	m.statusMessage = lipgloss.NewStyle().
-		Foreground(style.GetUnselectedItemFg()).
-		Render(s)
+	m.statusMessage = lipgloss.NewStyle().Render(s)
 
 	if m.statusMessageTimer != nil {
 		m.statusMessageTimer.Stop()
@@ -1111,13 +1109,11 @@ func (m Model) spinnerView() string {
 }
 
 func getAddItemConfirmationMessage() string {
-	normal := lipgloss.NewStyle().
-		Foreground(style.GetUnselectedItemFg())
-	//Background(style.GetStatusBarBg())
+	normal := lipgloss.NewStyle()
 	green := normal.Copy().
 		Foreground(lipgloss.Color("2"))
 	bold := normal.Copy().
-		Foreground(style.GetBlue()).
+		Foreground(lipgloss.Color("4")).
 		Bold(true)
 
 	return green.Render("Add") + normal.Render(" to Favorites? Press ") + bold.Render("y") +
@@ -1125,13 +1121,11 @@ func getAddItemConfirmationMessage() string {
 }
 
 func getRemoveItemConfirmationMessage() string {
-	normal := lipgloss.NewStyle().
-		Foreground(style.GetUnselectedItemFg())
-	//Background(style.GetStatusBarBg())
+	normal := lipgloss.NewStyle()
 	red := normal.Copy().
 		Foreground(lipgloss.Color("1"))
 	bold := normal.Copy().
-		Foreground(style.GetBlue()).
+		Foreground(lipgloss.Color("4")).
 		Bold(true)
 
 	return red.Render("Remove") + normal.Render(" from Favorites? Press ") + bold.Render("y") +
