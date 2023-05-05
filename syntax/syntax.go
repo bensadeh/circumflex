@@ -52,14 +52,24 @@ func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNer
 func getYCBar(text string, highlightType int, enableNerdFonts bool) string {
 	switch highlightType {
 	case Selected:
-		return label(text, style.GetOrange(), lipgloss.Color("16"), highlightType, enableNerdFonts)
+		return lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Reverse(true).Render(text)
 
 	case MarkAsRead:
-		return label(text, lipgloss.Color("237"), style.GetOrangeFaint(), highlightType, enableNerdFonts)
+		return lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Faint(true).Render(text)
 
 	default:
-		return label(text, lipgloss.Color("232"), style.GetOrange(), highlightType, enableNerdFonts)
+		return lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Render(text)
 	}
+	//switch highlightType {
+	//case Selected:
+	//	return label(text, style.GetOrange(), lipgloss.Color("16"), highlightType, enableNerdFonts)
+	//
+	//case MarkAsRead:
+	//	return label(text, lipgloss.Color("237"), style.GetOrangeFaint(), highlightType, enableNerdFonts)
+	//
+	//default:
+	//	return label(text, lipgloss.Color("232"), style.GetOrange(), highlightType, enableNerdFonts)
+	//}
 }
 
 func getYCBarNerdFonts(text string, highlightType int, enableNerdFonts bool) string {
@@ -85,13 +95,13 @@ func HighlightYear(comment string, highlightType int) string {
 func getYear(text string, highlightType int) string {
 	switch highlightType {
 	case Selected:
-		return lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Reverse(true).Render(text)
+		return lipgloss.NewStyle().Foreground(lipgloss.Color("5")).Reverse(true).Render(text)
 
 	case MarkAsRead:
-		return lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Faint(true).Render(text)
+		return lipgloss.NewStyle().Foreground(lipgloss.Color("5")).Faint(true).Render(text)
 
 	default:
-		return lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Render(text)
+		return lipgloss.NewStyle().Foreground(lipgloss.Color("5")).Render(text)
 	}
 }
 
