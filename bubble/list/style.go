@@ -3,7 +3,6 @@ package list
 import (
 	"time"
 
-	"clx/constants/style"
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -109,7 +108,6 @@ func DefaultStyles() (s Styles) {
 
 func getSpinner() spinner.Spinner {
 	normal := lipgloss.NewStyle().
-		Foreground(style.GetUnselectedItemFg()).
 		Faint(true)
 
 	color := normal.Copy()
