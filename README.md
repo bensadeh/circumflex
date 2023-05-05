@@ -239,9 +239,6 @@ Hide the indentation symbol from the comment section (does not affect quotes)
 ###### -n, --nerdfonts
 Use Nerd Fonts icons as decorators  
 
-###### --force-dark-mode, --force-light-mode
-Override setting the color scheme automatically
-
 ###### -a, --auto-expand
 Auto expand all replies in the comment section
 
