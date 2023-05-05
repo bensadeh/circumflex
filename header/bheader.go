@@ -9,9 +9,9 @@ import (
 )
 
 func GetHeader(selectedSubHeader int, favoritesHasItems bool, width int) string {
-	c := lipgloss.NewStyle().Foreground(style.GetMagenta())
-	l := lipgloss.NewStyle().Foreground(style.GetYellow())
-	x := lipgloss.NewStyle().Foreground(style.GetBlue())
+	c := lipgloss.NewStyle().Foreground(lipgloss.Color("5"))
+	l := lipgloss.NewStyle().Foreground(lipgloss.Color("3"))
+	x := lipgloss.NewStyle().Foreground(lipgloss.Color("4"))
 
 	title := c.Render("  c") + l.Render("l") + x.Render("x  ")
 	categories := getCategories(selectedSubHeader, favoritesHasItems)
