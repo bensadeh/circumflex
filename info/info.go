@@ -15,7 +15,7 @@ func GetText(screenWidth int, enableNerdFonts bool) string {
 	keys := new(keymaps.List)
 	keys.Init()
 
-	keys.AddHeader(Red(" Main Menu ").Underline().String())
+	keys.AddHeader(Magenta(" Main Menu ").Underline().String())
 	keys.AddSeparator()
 	keys.AddKeymap("View comment section", "Enter")
 	keys.AddKeymap("View article in Reader Mode", "Space")
