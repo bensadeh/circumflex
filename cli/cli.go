@@ -37,6 +37,10 @@ func Less(input string, config *settings.Config) *exec.Cmd {
 	return command
 }
 
+func EnableNerdFontsInLess() {
+	os.Setenv("LESSUTFCHARDEF", "E000-F8FF:p,F0000-FFFFD:p,100000-10FFFD:p")
+}
+
 func ClearScreen() {
 	c := exec.Command("clear")
 	c.Stdout = os.Stdout

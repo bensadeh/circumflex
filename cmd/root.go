@@ -39,6 +39,10 @@ func Root() *cobra.Command {
 
 			verifyLess(noLessVerify)
 
+			if config.EnableNerdFonts {
+				cli.EnableNerdFontsInLess()
+			}
+
 			lessKey := less.NewLesskey()
 			config.LesskeyPath = lessKey.GetPath()
 			defer lessKey.Remove()

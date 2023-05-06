@@ -5,6 +5,7 @@ _WIP_
 
 **Bugfixes**
 - Fixed a bug where `less` would open the comment section on the second line
+- Fixed a bug where `less` would not properly render Nerd Fonts
 
 ## 2.9
 _05.05.23_
