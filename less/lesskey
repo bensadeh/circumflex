@@ -1,16 +1,10 @@
 # ^M     Clear the active filter
-# ^N     Change the filter to Non-match filter
+# !      Change the filter to Non-match filter
 # \kl    Left arrow
 # \kr    Right arrow
 
-h    filter   ^M&^N⁣\r
-\kl  filter   ^M&^N⁣\r
+h    filter   ^M&!⁣\r
+\kl  filter   ^M&!⁣\r
 
-l    filter   ^M&^N‌\r
-\kr  filter   ^M&^N‌\r
-
-# Special commands for startup
-# C is shorthand for 'Collapse' and must do the same as 'h filter ...' above
-# A is shorthand for 'Auto expand' and must do the same as 'l filter ...' above
-C    filter   ^M&^N⁣\r
-A    filter   ^M&^N‌\r
+l    filter   ^M&!‌\r
+\kr  filter   ^M&!‌\r

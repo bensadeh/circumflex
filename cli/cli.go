@@ -6,9 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"clx/settings"
-
 	"clx/constants/unicode"
+	"clx/settings"
 )
 
 func Less(input string, config *settings.Config) *exec.Cmd {
@@ -25,9 +24,9 @@ func Less(input string, config *settings.Config) *exec.Cmd {
 	}
 
 	if config.AutoExpandComments {
-		args = append(args, "+A")
+		args = append(args, "+&!"+unicode.InvisibleCharacterForCollapse)
 	} else {
-		args = append(args, "+C")
+		args = append(args, "+&!"+unicode.InvisibleCharacterForExpansion)
 	}
 
 	command := exec.Command("less", args...)

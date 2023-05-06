@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.9.1
+_WIP_
+
+**Bugfixes**
+- Fixed a bug where `less` would open the comment section on the second line
+
 ## 2.9
 _05.05.23_
 

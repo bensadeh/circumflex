@@ -124,8 +124,8 @@ func getButton(level int, replyCount int, commentWidth int) string {
 
 	style := lipgloss.NewStyle().Width(commentWidth).AlignHorizontal(lipgloss.Center)
 
-	return newLine + style.Render(buttonNotPressed) + unicode.AnotherInvisibleCharacter +
-		newLine + style.Render(buttonPressed) + unicode.InvisibleCharacter + newLine
+	return newLine + style.Render(buttonNotPressed) + unicode.InvisibleCharacterForCollapse +
+		newLine + style.Render(buttonPressed) + unicode.InvisibleCharacterForExpansion + newLine
 }
 
 func addFilterTag(level int, fullComment string) string {
@@ -140,7 +140,7 @@ func addFilterTag(level int, fullComment string) string {
 		if i == len(lines)-1 {
 			continue
 		}
-		fullCommentWithFilterTags += line + unicode.InvisibleCharacter + "\n"
+		fullCommentWithFilterTags += line + unicode.InvisibleCharacterForExpansion + "\n"
 	}
 
 	return fullCommentWithFilterTags
