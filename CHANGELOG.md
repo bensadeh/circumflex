@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2.9.1
-_WIP_
+_06.05.23_
 
 **Core**
 - Set minimum `less` version to latest stable release (633)
