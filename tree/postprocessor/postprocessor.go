@@ -24,8 +24,8 @@ func Process(commentSection string, screenWidth int) string {
 func moveZeroWidthSpaceUpOneLine(commentSection string) string {
 	indentBlock := getIndentBlock()
 
-	return strings.ReplaceAll(commentSection, newLine+indentBlock+unicode.ZeroWidthSpace,
-		unicode.ZeroWidthSpace+newLine+indentBlock)
+	return strings.ReplaceAll(commentSection, newLine+indentBlock+unicode.InvisibleCharacterForTopLevelComments,
+		unicode.InvisibleCharacterForTopLevelComments+newLine+indentBlock)
 }
 
 func indentCommentSection(commentSection string, screenWidth int) string {

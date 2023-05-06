@@ -215,7 +215,7 @@ func getAuthor(author string, lastVisited, timePosted int64) string {
 
 func getZeroWidthSpace(enabled bool) string {
 	if enabled {
-		return unicode.ZeroWidthSpace
+		return unicode.InvisibleCharacterForTopLevelComments
 	}
 
 	return ""

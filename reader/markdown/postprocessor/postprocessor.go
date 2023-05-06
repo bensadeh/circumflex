@@ -24,8 +24,8 @@ func Process(text string, url string) string {
 }
 
 func moveZeroWidthSpaceUpOneLine(text string) string {
-	return strings.ReplaceAll(text, newLine+unicode.ZeroWidthSpace,
-		unicode.ZeroWidthSpace+newLine)
+	return strings.ReplaceAll(text, newLine+unicode.InvisibleCharacterForTopLevelComments,
+		unicode.InvisibleCharacterForTopLevelComments+newLine)
 }
 
 func indent(commentSection string) string {

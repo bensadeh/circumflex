@@ -32,7 +32,7 @@ func GetReaderModeMetaBlock(title string, url string, lineWidth int) string {
 		Width(lineWidth)
 
 	formattedTitle, _ := text.Wrap(Bold(title).String(), lineWidth)
-	formattedTitle = unicode.ZeroWidthSpace + newLine + formattedTitle
+	formattedTitle = unicode.InvisibleCharacterForTopLevelComments + newLine + formattedTitle
 	formattedURL := Blue(text.TruncateMax(url, lineWidth-2)).String()
 	info := newParagraph + Green("Reader Mode").String()
 
@@ -125,7 +125,7 @@ func getNewCommentsInfo(newComments int, enableNerdFonts bool) string {
 }
 
 func getHeadline(title string, config *settings.Config) string {
-	formattedTitle := highlightTitle(unicode.ZeroWidthSpace+" "+newLine+title, config.DisableHeadlineHighlighting,
+	formattedTitle := highlightTitle(unicode.InvisibleCharacterForTopLevelComments+" "+newLine+title, config.DisableHeadlineHighlighting,
 		config.EnableNerdFonts)
 	wrappedHeadline, _ := text.Wrap(formattedTitle, config.CommentWidth)
 

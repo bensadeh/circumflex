@@ -299,7 +299,7 @@ func h1(text string, lineWidth int) string {
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
-	return unicode.ZeroWidthSpace + text
+	return unicode.InvisibleCharacterForTopLevelComments + text
 }
 
 func h2(text string, lineWidth int) string {
@@ -308,7 +308,7 @@ func h2(text string, lineWidth int) string {
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
-	return unicode.ZeroWidthSpace + text
+	return unicode.InvisibleCharacterForTopLevelComments + text
 }
 
 func h3(text string, lineWidth int) string {
@@ -318,7 +318,7 @@ func h3(text string, lineWidth int) string {
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
-	return unicode.ZeroWidthSpace + text
+	return unicode.InvisibleCharacterForTopLevelComments + text
 }
 
 func h4(text string, lineWidth int) string {
@@ -328,7 +328,7 @@ func h4(text string, lineWidth int) string {
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
-	return unicode.ZeroWidthSpace + text
+	return unicode.InvisibleCharacterForTopLevelComments + text
 }
 
 func h5(text string, lineWidth int) string {
@@ -338,7 +338,7 @@ func h5(text string, lineWidth int) string {
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
-	return unicode.ZeroWidthSpace + text
+	return unicode.InvisibleCharacterForTopLevelComments + text
 }
 
 func h6(text string, lineWidth int) string {
@@ -348,7 +348,7 @@ func h6(text string, lineWidth int) string {
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
-	return unicode.ZeroWidthSpace + text
+	return unicode.InvisibleCharacterForTopLevelComments + text
 }
 
 func removeHrefs(text string) string {

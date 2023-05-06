@@ -13,7 +13,7 @@ import (
 func Less(input string, config *settings.Config) *exec.Cmd {
 	args := []string{
 		"--RAW-CONTROL-CHARS",
-		"--pattern=" + unicode.ZeroWidthSpace,
+		"--pattern=" + unicode.InvisibleCharacterForTopLevelComments,
 		"--ignore-case",
 		"--lesskey-src=" + config.LesskeyPath,
 		"--tilde",

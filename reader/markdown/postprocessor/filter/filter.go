@@ -122,7 +122,7 @@ func equals(targets []string, line string) bool {
 	for _, target := range targets {
 		line = ansi.Strip(line)
 		line = strings.TrimSpace(line)
-		line = strings.TrimLeft(line, unicode.ZeroWidthSpace)
+		line = strings.TrimLeft(line, unicode.InvisibleCharacterForTopLevelComments)
 
 		if line == target {
 			return true
@@ -148,7 +148,7 @@ func IsOnLineBeforeTargetEquals(targets []string, lines []string, i int) bool {
 		nextLine := lines[i+1]
 		nextLine = ansi.Strip(nextLine)
 		nextLine = strings.TrimSpace(nextLine)
-		nextLine = strings.TrimLeft(nextLine, unicode.ZeroWidthSpace)
+		nextLine = strings.TrimLeft(nextLine, unicode.InvisibleCharacterForTopLevelComments)
 
 		if nextLine == target {
 			return true

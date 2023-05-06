@@ -17,8 +17,8 @@ func GetHelpScreen(enableNerdFonts bool) string {
 
 	var sb strings.Builder
 
-	sb.WriteString(unicode.ZeroWidthSpace + newPar)
-	sb.WriteString(unicode.ZeroWidthSpace + info.GetText(textWidth, enableNerdFonts) + newPar)
+	sb.WriteString(unicode.InvisibleCharacterForTopLevelComments + newPar)
+	sb.WriteString(unicode.InvisibleCharacterForTopLevelComments + info.GetText(textWidth, enableNerdFonts) + newPar)
 
 	return sb.String()
 }
