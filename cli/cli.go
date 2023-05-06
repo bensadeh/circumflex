@@ -19,7 +19,7 @@ func Less(input string, config *settings.Config) *exec.Cmd {
 		"--lesskey-src=" + config.LesskeyPath,
 		"--tilde",
 		"--use-color",
-		"-P?e" + "\u001B[48;5;232m " + "\u001B[38;5;200m" + "E" + "\u001B[38;5;214m" + "n" + "\u001B[38;5;69m" + "d " + "\033[0m",
+		"-P?e" + "\u001B[38;5;5m" + "E" + "\u001B[38;5;3m" + "n" + "\u001B[38;5;4m" + "d " + "\033[0m",
 		"-DSy",
 		"-DP-",
 	}
