@@ -10,6 +10,7 @@ _WIP_
 - Fixed a bug where `less` would open the comment section on the second line
 - Fixed a bug where `less` would not properly render Nerd Fonts
 - Updated Nerd Font icons to version 3
+- Fixed a bug where the help screen would not render properly after resizing
 
 ## 2.9
 _05.05.23_

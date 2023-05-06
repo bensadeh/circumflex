@@ -467,7 +467,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		fetchCmd := m.FetchFrontPageStories()
 		cmds = append(cmds, fetchCmd)
 
-		heightOfHeaderAndStatusLine := 3
+		heightOfHeaderAndStatusLine := 4
 
 		m.viewport = viewport.New(windowSizeMsg.Width, windowSizeMsg.Height-heightOfHeaderAndStatusLine)
 		m.viewport.YPosition = 2
@@ -518,8 +518,8 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		h, v := lipgloss.NewStyle().GetFrameSize()
 		m.SetSize(msg.Width-h, msg.Height-v)
 
-		headerHeight := lipgloss.Height("")
-		footerHeight := lipgloss.Height("")
+		headerHeight := 2
+		footerHeight := 2
 		verticalMarginHeight := headerHeight + footerHeight
 
 		m.viewport.Width = msg.Width
@@ -941,7 +941,7 @@ func (m *Model) showHelpScreen() tea.Cmd {
 // View renders the component.
 func (m Model) View() string {
 	if m.isOnHelpScreen {
-		return fmt.Sprintf("%s%s%s",
+		return fmt.Sprintf("%s\n%s\n%s",
 			header.GetHeader(m.categoryToDisplay, m.favorites.HasItems(), m.width),
 			m.viewport.View(),
 			m.statusAndPaginationView())
@@ -996,7 +996,6 @@ func (m Model) statusAndPaginationView() string {
 	if m.isOnHelpScreen {
 		centerContent = lipgloss.NewStyle().Faint(true).Render(
 			"github.com/bensadeh/circumflex • version " + app.Version)
-		underline = "\n" + underline
 	} else if m.showSpinner {
 		centerContent = m.spinnerView()
 	} else {
