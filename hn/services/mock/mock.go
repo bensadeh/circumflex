@@ -81,7 +81,7 @@ func (Service) FetchItems(_ int, cat int) (items []*item.Item, error string) {
 			CommentsCount: 89,
 		},
 		{
-			Title:         "Tell HN: Donec eget sapien viverra, viverra lacus in",
+			Title:         "Launch HN: Cras consectetur (YC W05) - Nam vitae massa leo",
 			Points:        16,
 			ID:            8,
 			User:          "theta",
@@ -126,7 +126,7 @@ func (Service) FetchItems(_ int, cat int) (items []*item.Item, error string) {
 			CommentsCount: 14,
 		},
 		{
-			Title:         "Launch HN: Cras consectetur (YC W05) - Nam vitae massa leo",
+			Title:         "Tell HN: Donec eget sapien viverra, viverra lacus in",
 			Points:        9,
 			ID:            13,
 			User:          "nu",
