@@ -22,7 +22,7 @@
 - ⚡️ **Read it with `less`** — use the pager you already know for quick and simple navigation 
 
 **You might also like:**
-- 🤹 **Adaptive terminal colors** — you bring your own color scheme, `circumflex` does the rest
+- 🤹 **Native terminal colors** — you bring your own color scheme, `circumflex` does the rest
 - 💎 **Nerd Fonts** — full support for Nerd Fonts as icons  
 - ❤️ **Add to favorites** — save interesting submissions for later
 
