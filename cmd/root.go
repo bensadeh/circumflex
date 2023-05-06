@@ -39,9 +39,9 @@ func Root() *cobra.Command {
 
 			verifyLess(noLessVerify)
 
-			lesskey := less.NewLesskey()
-			config.LesskeyPath = lesskey.GetPath()
-			defer lesskey.Remove()
+			lessKey := less.NewLesskey()
+			config.LesskeyPath = lessKey.GetPath()
+			defer lessKey.Remove()
 
 			bubble.Run(config)
 		},
