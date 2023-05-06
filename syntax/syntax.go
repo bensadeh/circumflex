@@ -202,10 +202,10 @@ func HighlightSpecialContent(title string, highlightType int, enableNerdFonts bo
 	highlight := getHighlight(highlightType)
 
 	if enableNerdFonts {
-		title = strings.ReplaceAll(title, "[audio]", aurora.Cyan("").String()+highlight)
-		title = strings.ReplaceAll(title, "[video]", aurora.Cyan("").String()+highlight)
-		title = strings.ReplaceAll(title, "[pdf]", aurora.Cyan("").String()+highlight)
-		title = strings.ReplaceAll(title, "[PDF]", aurora.Cyan("").String()+highlight)
+		title = strings.ReplaceAll(title, "[audio]", aurora.Cyan(nerdfonts.Audio).String()+highlight)
+		title = strings.ReplaceAll(title, "[video]", aurora.Cyan(nerdfonts.Video).String()+highlight)
+		title = strings.ReplaceAll(title, "[pdf]", aurora.Cyan(nerdfonts.Document).String()+highlight)
+		title = strings.ReplaceAll(title, "[PDF]", aurora.Cyan(nerdfonts.Document).String()+highlight)
 
 		return title
 	}
