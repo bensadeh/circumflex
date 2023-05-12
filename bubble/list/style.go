@@ -110,7 +110,7 @@ func getSpinner() spinner.Spinner {
 	normal := lipgloss.NewStyle().
 		Faint(true)
 
-	color := normal.Copy()
+	color := lipgloss.NewStyle()
 
 	magenta := lipgloss.Color("5")
 	yellow := lipgloss.Color("3")
