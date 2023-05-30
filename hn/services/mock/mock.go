@@ -18,7 +18,7 @@ func (Service) FetchItems(_ int, cat int) (items []*item.Item, error string) {
 
 	items = []*item.Item{
 		{
-			Title:         "Lorem ipsum dolor sit amet et quasi architecto",
+			Title:         "Lorem ipsum dolor amet et quasi architecto",
 			Points:        31,
 			ID:            1,
 			User:          "alfa",
@@ -41,25 +41,25 @@ func (Service) FetchItems(_ int, cat int) (items []*item.Item, error string) {
 			ID:            3,
 			User:          "gamma",
 			Time:          time.Now().Add(-time.Hour * 3).Unix(),
-			Domain:        "github.com",
+			Domain:        "",
 			CommentsCount: 145,
 		},
 		{
-			Title:         "Interdum et malesuada fames ac ante merquenta aquito [PDF]",
+			Title:         "Interdum et malesuada fames ac ante merquenta [PDF]",
 			Points:        40,
 			ID:            4,
 			User:          "delta",
 			Time:          time.Now().Add(-time.Hour * 5).Unix(),
-			Domain:        "objective-see.com",
+			Domain:        "bloomberg.com",
 			CommentsCount: 58,
 		},
 		{
-			Title:         "Donec sed orci aliquam lorem mattis consequat lapin es dom",
+			Title:         "Donec sed orci aliquam lorem mattis consequat",
 			Points:        417,
 			ID:            5,
 			User:          "epsilon",
 			Time:          time.Now().Add(-time.Minute * 68).Unix(),
-			Domain:        "bloomberg.com",
+			Domain:        "github.com",
 			CommentsCount: 0,
 		},
 		{
@@ -81,12 +81,12 @@ func (Service) FetchItems(_ int, cat int) (items []*item.Item, error string) {
 			CommentsCount: 89,
 		},
 		{
-			Title:         "Launch HN: Cras consectetur (YC W05) - Nam vitae massa leo",
+			Title:         "Launch HN: Cras consectetur (YC W05)",
 			Points:        16,
 			ID:            8,
 			User:          "theta",
 			Time:          time.Now().Add(-time.Hour * 3).Unix(),
-			Domain:        "en.wikipedia.org",
+			Domain:        "",
 			CommentsCount: 91,
 		},
 		{
