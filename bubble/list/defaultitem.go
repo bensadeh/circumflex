@@ -192,7 +192,7 @@ func getComments(numberOfComments int, enableNerdFonts bool) string {
 	}
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s%4d", nerdfonts.Comment, numberOfComments)
+		return fmt.Sprintf("%s%5d", nerdfonts.Comment, numberOfComments)
 	}
 
 	return fmt.Sprintf("| %d comments", numberOfComments)

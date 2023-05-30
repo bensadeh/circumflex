@@ -4,7 +4,7 @@ const (
 	Time           = ""
 	Author         = ""
 	Score          = "󰜷"
-	Comment        = ""
+	Comment        = "󰅺"
 	Tag            = ""
 	Document       = ""
 	Audio          = ""

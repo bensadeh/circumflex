@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.10
+_WIP_
+
+**Cosmetic**
+- Changed the Nerd Font Icon for comments
+
 ## 2.9.1
 _06.05.23_
 
