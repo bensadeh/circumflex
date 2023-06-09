@@ -118,10 +118,10 @@ func getSpinner() spinner.Spinner {
 
 	return spinner.Spinner{
 		Frames: []string{
-			normal.Render("fetching" + color.Foreground(magenta).Render(".") + color.Foreground(yellow).Render(".") + color.Foreground(blue).Render(".")),
+			normal.Render("fetching") + color.Foreground(magenta).Render(".") + color.Foreground(yellow).Render(".") + color.Foreground(blue).Render("."),
 			normal.Render("fetching   "),
-			normal.Render("fetching" + color.Foreground(magenta).Render(".") + normal.Render("  ")),
-			normal.Render("fetching" + color.Foreground(magenta).Render(".") + color.Foreground(yellow).Render(".") + normal.Render(" ")),
+			normal.Render("fetching") + color.Foreground(magenta).Render(".") + normal.Render("  "),
+			normal.Render("fetching") + color.Foreground(magenta).Render(".") + color.Foreground(yellow).Render(".") + normal.Render(" "),
 		},
 		FPS: 1500 * time.Millisecond,
 	}

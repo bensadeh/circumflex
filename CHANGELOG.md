@@ -6,6 +6,9 @@ _WIP_
 **Cosmetic**
 - Changed the Nerd Font Icon for comments
 
+**Bugfixes**
+- Fixed a bug where the first dot in the "fetching..." spinner was highlighted in faint
+
 ## 2.9.1
 _06.05.23_
 
