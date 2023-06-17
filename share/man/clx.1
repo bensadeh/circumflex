@@ -2,12 +2,12 @@
 .\"     Title: clx
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.20
-.\"      Date: 2023-06-11
+.\"      Date: 2023-06-17
 .\"    Manual: circumflex
-.\"    Source: circumflex 3.0
+.\"    Source: circumflex 3.1-dev
 .\"  Language: English
 .\"
-.TH "CLX" "1" "2023-06-11" "circumflex 3.0" "circumflex"
+.TH "CLX" "1" "2023-06-17" "circumflex 3.1\-dev" "circumflex"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -183,6 +183,13 @@ Mock all endpoints and use dummy data for the submissions screen and comment sec
 \fB\-\-no\-less\-verify\fP
 .RS 4
 Do not verify \fBless\fP version on startup
+.RE
+.sp
+\fB\-\-categories\fP
+.RS 4
+Set the categories in the header. Choose between top, new, best, ask and show.
+First category will be treated as the default one. Separate categories with comma.
+Default value: "frontpage,newest,ask,show"
 .RE
 .SH "FAVORITES"
 .sp

@@ -121,6 +121,11 @@ Mock all endpoints and use dummy data for the submissions screen and comment sec
 *--no-less-verify*::
 Do not verify *less* version on startup
 
+*--categories*::
+Set the categories in the header. Choose between top, new, best, ask and show.
+First category will be treated as the default one. Separate categories with comma.
+Default value: "frontpage,newest,ask,show"
+
 == Favorites
 
 Press _f_ to add the currently highlighted submission to your list of favorites.

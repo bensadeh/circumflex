@@ -88,7 +88,7 @@ func configureFlags(rootCmd *cobra.Command) {
 	rootCmd.PersistentFlags().BoolVar(&noLessVerify, "no-less-verify", false,
 		"disable checking less version on startup")
 	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", "frontpage,newest,ask,show",
-		"select categories for stories")
+		"set the categories in the header")
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
 		"enable debug mode (offline mode) by using mock data for the endpoints")
