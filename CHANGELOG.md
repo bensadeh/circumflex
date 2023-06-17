@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.1.1
+_17.06.23_
+
+**Bugfixes**
+- Fixed a bug where the wrong default string would be set in the `categories` flag
+
+
 ## 3.1
 _17.06.23_
 
