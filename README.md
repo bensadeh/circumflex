@@ -217,8 +217,9 @@ clear                     Clear the history of visited IDs
 ```console
 -a, --auto-expand         automatically expand all replies upon 
                           entering the comment section
-    --categories=[string] set the categories in the header 
-                          (default "frontpage,newest,ask,show")
+    --categories=[string] set the categories in the header
+                          (available: "top,newest,ask,show,best")
+                          (default: "top,newest,ask,show")
 -c, --comment-width=[int] set the comment width 
                           (default 70)
 -e, --disable-emojis      disable conversion of smileys to emojis
