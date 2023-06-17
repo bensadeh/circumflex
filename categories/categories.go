@@ -33,6 +33,10 @@ type Categories struct {
 }
 
 func New(categoriesCSV string) *Categories {
+	if categoriesCSV == "" {
+		println("Need at least one category")
+		os.Exit(1)
+	}
 	categories := strings.Split(categoriesCSV, ",")
 	var validCategories []int
 	for _, category := range categories {

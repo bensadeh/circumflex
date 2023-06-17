@@ -128,6 +128,9 @@ func (m *Model) getNumberOfItemsToFetch(cat int) int {
 	case category.New:
 		return m.Paginator.PerPage * 3
 
+	case category.Best:
+		return m.Paginator.PerPage * 3
+
 	case category.Ask:
 		return m.Paginator.PerPage
 
