@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"clx/constants/category"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -47,7 +46,7 @@ func getCategories(allCategories []int, hasFavorites bool, selectedSubHeader int
 
 	for i, subHeader := range subHeaders {
 		isOnLastItem := i == len(subHeaders)-1
-		selectedCatColor, isSelected := getColor(i, selectedSubHeader)
+		selectedCatColor, isSelected := getColor(i, selectedSubHeader, len(subHeaders), hasFavorites)
 
 		cats += lipgloss.NewStyle().
 			Foreground(selectedCatColor).
@@ -89,46 +88,39 @@ func getSubHeaders(allCategories []int, hasFavorites bool) []string {
 
 func removeFirstElement(list []string) []string {
 	if len(list) == 0 {
-		return []string{} // return an empty slice when the input list is empty
+		return []string{}
 	}
 
-	// return a slice starting from the second element (index 1) to the end of the list
-	// this will not mutate the original list, it will create a new one
 	return list[1:]
 }
 
-//func getSubHeaders(allCategories []int) []string {
-//	if favoritesHasItems {
-//		return []string{"new", "ask", "show", "favorites"}
-//	}
-//
-//	return []string{"new", "ask", "show"}
-//}
-
-func getColor(i int, selectedSubHeader int) (color lipgloss.TerminalColor, isSelected bool) {
+func getColor(i int, selectedSubHeader int, numCategories int, hasFavorites bool) (color lipgloss.TerminalColor, isSelected bool) {
 	if i+1 == selectedSubHeader {
-		return getSelectedCategoryColor(i + 1)
+		return getSelectedCategoryColor(i+1, numCategories, hasFavorites)
 	}
 
 	return lipgloss.NoColor{}, false
 }
 
-func getSelectedCategoryColor(selectedSubHeader int) (color lipgloss.TerminalColor, isSelected bool) {
+func getSelectedCategoryColor(selectedSubHeader int, numCategories int, hasFavorites bool) (color lipgloss.TerminalColor,
+	isSelected bool) {
 	magenta := lipgloss.Color("5")
 	yellow := lipgloss.Color("3")
 	blue := lipgloss.Color("4")
 	pink := lipgloss.Color("219")
 
-	switch selectedSubHeader {
-	case category.New:
-		return magenta, true
-	case category.Ask:
-		return yellow, true
-	case category.Show:
-		return blue, true
-	case category.Favorites:
+	if hasFavorites && selectedSubHeader == numCategories {
 		return pink, true
+	}
+
+	switch selectedSubHeader % 3 {
+	case 0:
+		return blue, true
+	case 1:
+		return magenta, true
+	case 2:
+		return yellow, true
 	default:
-		panic("unsupported header category")
+		panic("unreachable code")
 	}
 }
