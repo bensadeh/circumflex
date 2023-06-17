@@ -95,6 +95,9 @@ func getCategory(cat int) string {
 	case category.Show:
 		return "showstories"
 
+	case category.Best:
+		return "beststories"
+
 	default:
 		panic("Unsupported c: " + strconv.Itoa(cat))
 	}

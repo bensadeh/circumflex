@@ -5,6 +5,7 @@ const (
 	New       = 1
 	Ask       = 2
 	Show      = 3
-	Favorites = 4
-	Buffer    = 5
+	Best      = 4
+	Favorites = 5
+	Buffer    = 6
 )

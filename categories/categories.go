@@ -1,6 +1,7 @@
 package categories
 
 import (
+	"clx/constants/category"
 	"fmt"
 	"os"
 	"strings"
@@ -13,15 +14,17 @@ const (
 	Newest    Category = "newest"
 	Ask       Category = "ask"
 	Show      Category = "show"
+	Best      Category = "best"
 	Favorites Category = "favorites"
 )
 
 var CategoryMapping = map[Category]int{
-	FrontPage: 0,
-	Newest:    1,
-	Ask:       2,
-	Show:      3,
-	Favorites: 4,
+	FrontPage: category.FrontPage,
+	Newest:    category.New,
+	Ask:       category.Ask,
+	Show:      category.Show,
+	Best:      category.Best,
+	Favorites: category.Favorites,
 }
 
 type Categories struct {

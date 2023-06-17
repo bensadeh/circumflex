@@ -40,7 +40,7 @@ import (
 )
 
 const (
-	numberOfCategories = 5
+	numberOfCategories = 6
 )
 
 // Item is an item that appears in the list.
@@ -94,10 +94,8 @@ type Model struct {
 	statusMessage      string
 	statusMessageTimer *time.Timer
 
-	//category          int
 	isBufferActive bool
-	//categoryToDisplay int
-	items [][]*item.Item
+	items          [][]*item.Item
 
 	delegate  ItemDelegate
 	history   history.History
