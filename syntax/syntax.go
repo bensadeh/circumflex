@@ -336,7 +336,7 @@ func ColorizeIndentSymbol(indentSymbol string, level int) string {
 }
 
 func TrimURLs(comment string, disableCommentHighlighting bool) string {
-	expression := regexp.MustCompile(`<a href=".*?" rel="nofollow">`)
+	expression := regexp.MustCompile(`<a href=".*?".*>`)
 
 	if disableCommentHighlighting {
 		return expression.ReplaceAllString(comment, "")

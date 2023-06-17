@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.1
+_WIP_
+
+**Bugfixes**
+- Fixed a bug where the urls would not be correctly parsed and highlighted
+
 ## 3.0
 _11.06.23_
 
