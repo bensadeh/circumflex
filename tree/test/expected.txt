@@ -9071,8 +9071,7 @@
   [0m[31m▎[0m⁣
   [0m[31m▎[0mThis is leaving aside the well documented actions of DeJoy during his time with the USPS. I would also like⁣
   [0m[31m▎[0mto see an investigation with subpoena of communications of of the company that caused delays in the⁣
-  [0m[31m▎[0mprinting/mailing of PA absentee ballots [34mwww.wkyc.com/article/news/politics/elections/clevela…[0m and tracing the⁣
-  [0m[31m▎[0mthreatening robocall campaign in swing states: [34mwww.washingtonpost.com/technology/2020/11/03/robocal…[0m⁣
+  [0m[31m▎[0mprinting/mailing of PA absentee ballots [34mwww.washingtonpost.com/technology/2020/11/03/robocal…[0m⁣
   [0m[31m▎[0m⁣
   [0m[31m▎[0mThe US doesn't have a voting integrity issue, it has a voting suppression issue.⁣
   [0m[31m▎[0m⁣
@@ -9220,7 +9219,6 @@
     [0m[32m▎[0m⁣
     [0m[32m▎[0mHN is throttling me, so here's some more info:⁣
     [0m[32m▎[0m⁣
-    [0m[32m▎[0m[34mwww.ncsl.org/research/elections-and-campaigns/absent…[0m and⁣
     [0m[32m▎[0m[34melectproject.github.io/Early-Vote-2020G/index.html[0m have most of the info you want.⁣
     [0m[32m▎[0m⁣
     [0m[32m▎[0mCO, DC, HI, OR, UT, and WA are vote by mail for all elections. CA was sort of doing VBM in 2016, but it's⁣
@@ -17169,9 +17167,7 @@
 ​
   [1mthrowawaysea[0m [2m9 months ago[0m
   [0mHow does HN feel about the call from AOC to compile lists of those who supported or worked for or aligned with
-  [0mthe Trump administration ([34mnypost.com/2020/11/06/aoc-facing-heat-for-wanting-to…[0m). Former Obama administration
-  [0mstaffer Michael Simon said that he is gathering the names of anyone who supported Trump in the 2016 and 2020
-  [0melection, and has created a project for this ([34mmobile.twitter.com/trumpaccproject[0m).
+  [0mthe Trump administration ([34mmobile.twitter.com/trumpaccproject[0m).
   [0m
   [0mThis seems like the logical end of cancel culture and deplatforming, which is to assemble a list of people and
   [0morganizations to target or shame or blacklist. I find this to be a very disagreeable suggestion given that
