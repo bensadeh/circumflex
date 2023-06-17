@@ -39,7 +39,7 @@ func FetchStories(page int, category int) ([]*endpoints.Story, error) {
 
 func getURL(cat int) string {
 	switch cat {
-	case category.FrontPage:
+	case category.Top:
 		return baseURL + "news" + page
 
 	case category.New:

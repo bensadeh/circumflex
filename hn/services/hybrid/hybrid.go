@@ -83,7 +83,7 @@ func getStoryListURIParam(ids []int) string {
 
 func getCategory(cat int) string {
 	switch cat {
-	case category.FrontPage:
+	case category.Top:
 		return "topstories"
 
 	case category.New:

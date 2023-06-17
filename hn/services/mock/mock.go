@@ -281,7 +281,7 @@ func (Service) FetchItems(_ int, cat int) (items []*item.Item, error string) {
 	}
 
 	// Randomize list to make debugging easier
-	if cat != category.FrontPage {
+	if cat != category.Top {
 		rand.Shuffle(len(items), func(i, j int) { items[i], items[j] = items[j], items[i] })
 	}
 

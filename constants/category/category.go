@@ -1,7 +1,7 @@
 package category
 
 const (
-	FrontPage = 0
+	Top       = 0
 	New       = 1
 	Ask       = 2
 	Show      = 3

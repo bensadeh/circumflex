@@ -10,8 +10,8 @@ import (
 type Category string
 
 const (
-	FrontPage Category = "frontpage"
-	Newest    Category = "newest"
+	Top       Category = "top"
+	Newest    Category = "new"
 	Ask       Category = "ask"
 	Show      Category = "show"
 	Best      Category = "best"
@@ -19,7 +19,7 @@ const (
 )
 
 var CategoryMapping = map[Category]int{
-	FrontPage: category.FrontPage,
+	Top:       category.Top,
 	Newest:    category.New,
 	Ask:       category.Ask,
 	Show:      category.Show,

@@ -62,7 +62,7 @@ func getCategories(allCategories []int, hasFavorites bool, selectedSubHeader int
 }
 
 var ReverseCategoryMapping = map[int]categories.Category{
-	0: categories.FrontPage,
+	0: categories.Top,
 	1: categories.Newest,
 	2: categories.Ask,
 	3: categories.Show,

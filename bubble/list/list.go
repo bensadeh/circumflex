@@ -108,13 +108,13 @@ type Model struct {
 	viewport       viewport.Model
 }
 
-func (m *Model) FetchFrontPageStories() tea.Cmd {
+func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 	return func() tea.Msg {
 		itemsToFetch := m.getNumberOfItemsToFetch(m.cat.GetCurrentCategory(m.favorites.HasItems()))
+		categoryToFetch := m.cat.GetCurrentCategory(m.favorites.HasItems())
+		stories, errMsg := m.service.FetchItems(itemsToFetch, categoryToFetch)
 
-		stories, errMsg := m.service.FetchItems(itemsToFetch, category.FrontPage)
-
-		m.items[category.FrontPage] = stories
+		m.items[categoryToFetch] = stories
 
 		return message.FetchingFinished{Message: errMsg}
 	}
@@ -122,7 +122,7 @@ func (m *Model) FetchFrontPageStories() tea.Cmd {
 
 func (m *Model) getNumberOfItemsToFetch(cat int) int {
 	switch cat {
-	case category.FrontPage:
+	case category.Top:
 		return m.Paginator.PerPage * 3
 
 	case category.New:
@@ -444,7 +444,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 		m.items[category.Favorites] = m.favorites.GetItems()
 
-		fetchCmd := m.FetchFrontPageStories()
+		fetchCmd := m.FetchStoriesForFirstCategory()
 		cmds = append(cmds, fetchCmd)
 
 		heightOfHeaderAndStatusLine := 4
@@ -709,11 +709,12 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			itemRemovedMessage := "Item removed"
 
 			if hasOnlyOneItem {
-				m.cursor = 0
+				m.cat.SetIndex(0)
+				m.updateCursor()
+				m.updatePagination()
 
 				cmds = append(cmds, func() tea.Msg {
-					// Todo: make this work with the new cat struct
-					return message.FetchAndChangeToCategory{Category: category.FrontPage, Cursor: m.cursor}
+					return message.FetchAndChangeToCategory{Index: m.cat.GetCurrentIndex(), Category: m.cat.GetCurrentCategory(false), Cursor: 0}
 				})
 				cmds = append(cmds, m.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2))
 
