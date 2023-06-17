@@ -110,7 +110,7 @@ type Model struct {
 
 func (m *Model) FetchFrontPageStories() tea.Cmd {
 	return func() tea.Msg {
-		itemsToFetch := m.getNumberOfItemsToFetch(m.cat.GetCurrentCategory())
+		itemsToFetch := m.getNumberOfItemsToFetch(m.cat.GetCurrentCategory(m.favorites.HasItems()))
 
 		stories, errMsg := m.service.FetchItems(itemsToFetch, category.FrontPage)
 
@@ -232,7 +232,7 @@ func (m Model) ShowStatusBar() bool {
 // Set the items available in the list. This returns a command.
 func (m *Model) SetItems(i []*item.Item) tea.Cmd {
 	var cmd tea.Cmd
-	m.items[m.cat.GetCurrentCategory()] = i
+	m.items[m.cat.GetCurrentCategory(m.favorites.HasItems())] = i
 
 	m.updatePagination()
 
@@ -251,7 +251,7 @@ func (m Model) VisibleItems() []*item.Item {
 		return m.items[category.Buffer]
 	}
 
-	return m.items[m.cat.GetCurrentCategory()]
+	return m.items[m.cat.GetCurrentCategory(m.favorites.HasItems())]
 }
 
 // SelectedItems returns the current selected item in the list.
@@ -521,7 +521,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 		story := m.service.FetchComments(msg.Id)
 
-		if m.cat.GetCurrentCategory() == category.Favorites {
+		if m.cat.GetCurrentCategory(m.favorites.HasItems()) == category.Favorites {
 			m.favorites.UpdateStoryAndWriteToDisk(story)
 		}
 
@@ -558,14 +558,14 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.SetIsVisible(true)
 		m.SetDisabledInput(false)
 
-	case message.ChangeCategory:
+	case message.FetchAndChangeToCategory:
 		return m, func() tea.Msg {
 			itemsToFetch := m.getNumberOfItemsToFetch(msg.Category)
 			stories, errMsg := m.service.FetchItems(itemsToFetch, msg.Category)
 
 			m.items[msg.Category] = stories
 
-			return message.CategoryFetchingFinished{Category: msg.Category, Cursor: msg.Cursor, Message: errMsg}
+			return message.CategoryFetchingFinished{Index: msg.Index, Cursor: msg.Cursor, Message: errMsg}
 		}
 
 	case message.CategoryFetchingFinished:
@@ -573,7 +573,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.SetDisabledInput(false)
 		m.StopSpinner()
 		m.isBufferActive = false
-		m.cat.SetIndex(msg.Category)
+		m.cat.SetIndex(msg.Index)
 
 		itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))
 		m.cursor = min(msg.Cursor, itemsOnPage-1)
@@ -648,7 +648,7 @@ func (m *Model) categoryHasStories(cat int) bool {
 
 func (m *Model) changeToNextCategory() {
 	m.cat.Next(m.favorites.HasItems())
-	currentCategory := m.cat.GetCurrentCategory()
+	currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
 
 	m.Paginator.Page = 0
 	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)
@@ -657,7 +657,7 @@ func (m *Model) changeToNextCategory() {
 
 func (m *Model) changeToPrevCategory() {
 	m.cat.Prev(m.favorites.HasItems())
-	currentCategory := m.cat.GetCurrentCategory()
+	currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
 
 	m.Paginator.Page = 0
 	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)
@@ -709,7 +709,8 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 				m.cursor = 0
 
 				cmds = append(cmds, func() tea.Msg {
-					return message.ChangeCategory{Category: category.FrontPage, Cursor: m.cursor}
+					// Todo: make this work with the new cat struct
+					return message.FetchAndChangeToCategory{Category: category.FrontPage, Cursor: m.cursor}
 				})
 				cmds = append(cmds, m.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2))
 
@@ -762,6 +763,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return nil
 
 		case msg.String() == "tab":
+			nextIndex := m.cat.GetNextIndex(m.favorites.HasItems())
 			nextCat := m.cat.GetNextCategory(m.favorites.HasItems())
 
 			if m.categoryHasStories(nextCat) {
@@ -776,7 +778,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			//m.categoryToDisplay = nextCat
 
 			changeCatCmd := func() tea.Msg {
-				return message.ChangeCategory{Category: nextCat, Cursor: m.cursor}
+				return message.FetchAndChangeToCategory{Index: nextIndex, Category: nextCat, Cursor: m.cursor}
 			}
 
 			cmds = append(cmds, startSpinnerCmd)
@@ -785,6 +787,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return tea.Batch(cmds...)
 
 		case msg.String() == "shift+tab":
+			prevIndex := m.cat.GetPrevIndex(m.favorites.HasItems())
 			prevCat := m.cat.GetPrevCategory(m.favorites.HasItems())
 
 			if m.categoryHasStories(prevCat) {
@@ -799,7 +802,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			//m.categoryToDisplay = prevCat
 
 			changeCatCmd := func() tea.Msg {
-				return message.ChangeCategory{Category: prevCat, Cursor: m.cursor}
+				return message.FetchAndChangeToCategory{Index: prevIndex, Category: prevCat, Cursor: m.cursor}
 			}
 
 			cmds = append(cmds, startSpinnerCmd)
@@ -835,8 +838,8 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			return nil
 
-		case msg.String() == "r" && m.cat.GetCurrentCategory() != category.Favorites:
-			currentCategory := m.cat.GetCurrentCategory()
+		case msg.String() == "r" && m.cat.GetCurrentCategory(m.favorites.HasItems()) != category.Favorites:
+			currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
 			currentPage := m.Paginator.Page
 
 			m.items[category.Buffer] = m.items[currentCategory]
@@ -844,20 +847,22 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			m.isBufferActive = true
 			//m.category = category.Buffer
 			m.Paginator.Page = 0
-			m.cursor = min(m.cursor, len(m.items[m.cat.GetCurrentCategory()])-1)
+			m.cursor = min(m.cursor, len(m.items[m.cat.GetCurrentCategory(m.favorites.HasItems())])-1)
 			m.updatePagination()
 
-			m.items[category.FrontPage] = []*item.Item{}
-			m.items[category.New] = []*item.Item{}
-			m.items[category.Ask] = []*item.Item{}
-			m.items[category.Show] = []*item.Item{}
+			// initialize as much as the total number of categories
+			m.items[0] = []*item.Item{}
+			m.items[1] = []*item.Item{}
+			m.items[3] = []*item.Item{}
+			m.items[4] = []*item.Item{}
+			m.items[5] = []*item.Item{}
 
 			m.SetDisabledInput(true)
 			m.cursor = 0
 			m.Paginator.Page = currentPage
 
 			changeCatCmd := func() tea.Msg {
-				return message.ChangeCategory{Category: currentCategory, Cursor: m.cursor}
+				return message.FetchAndChangeToCategory{Category: currentCategory, Cursor: m.cursor}
 			}
 
 			cmds = append(cmds, m.StartSpinner())
@@ -872,7 +877,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			return nil
 
-		case msg.String() == "x" && m.cat.GetCurrentCategory() == category.Favorites:
+		case msg.String() == "x" && m.cat.GetCurrentCategory(m.favorites.HasItems()) == category.Favorites:
 			m.SetPermanentStatusMessage(getRemoveItemConfirmationMessage(), false)
 			m.onRemoveFromFavoritesPrompt = true
 			m.disableInput = true
@@ -938,7 +943,7 @@ func (m Model) View() string {
 			header.GetHeader(
 				categoriesWithoutFavorites,
 				hasFavorites,
-				m.cat.GetCurrentCategory(),
+				m.cat.GetCurrentIndex(),
 				m.width),
 			m.viewport.View(),
 			m.statusAndPaginationView())
@@ -966,7 +971,7 @@ func (m Model) View() string {
 	}
 
 	content := lipgloss.NewStyle().Height(availHeight).Render(m.populatedView())
-	rankings := ranking.GetRankings(false, m.Paginator.PerPage, len(m.items[m.cat.GetCurrentCategory()]), m.cursor,
+	rankings := ranking.GetRankings(false, m.Paginator.PerPage, len(m.items[m.cat.GetCurrentCategory(m.favorites.HasItems())]), m.cursor,
 		m.Paginator.Page, m.Paginator.TotalPages)
 
 	rankingsAndContent := lipgloss.JoinHorizontal(lipgloss.Top, rankings, content)
@@ -987,7 +992,7 @@ func (m Model) titleView() string {
 	return header.GetHeader(
 		categoriesWithoutFavorites,
 		hasFavorites,
-		m.cat.GetCurrentCategory(),
+		m.cat.GetCurrentIndex(),
 		m.width)
 }
 

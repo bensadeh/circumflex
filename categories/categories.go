@@ -74,6 +74,28 @@ func (c *Categories) Prev(hasFavorites bool) {
 	}
 }
 
+func (c *Categories) GetNextIndex(hasFavorites bool) int {
+	nextIndex := c.currentIndex + 1
+	if hasFavorites && nextIndex >= len(c.categories)+1 || !hasFavorites && nextIndex >= len(c.categories) {
+		nextIndex = 0
+	}
+
+	return nextIndex
+}
+
+func (c *Categories) GetPrevIndex(hasFavorites bool) int {
+	prevIndex := c.currentIndex - 1
+	if prevIndex < 0 {
+		if hasFavorites {
+			prevIndex = len(c.categories)
+		} else {
+			prevIndex = len(c.categories) - 1
+		}
+	}
+
+	return prevIndex
+}
+
 func (c *Categories) GetCategories(hasFavorites bool) []int {
 	if hasFavorites {
 		return append(c.categories, CategoryMapping[Favorites])
@@ -82,7 +104,16 @@ func (c *Categories) GetCategories(hasFavorites bool) []int {
 	return c.categories
 }
 
-func (c *Categories) GetCurrentCategory() int {
+func (c *Categories) GetCurrentCategory(hasFavorites bool) int {
+	if hasFavorites {
+		categoriesWithFavorites := append(c.categories, CategoryMapping[Favorites])
+		return categoriesWithFavorites[c.currentIndex]
+	}
+
+	return c.categories[c.currentIndex]
+}
+
+func (c *Categories) GetCurrentIndex() int {
 	return c.currentIndex
 }
 
@@ -91,9 +122,11 @@ func (c *Categories) GetNextCategory(hasFavorites bool) int {
 	if hasFavorites && nextIndex >= len(c.categories)+1 || !hasFavorites && nextIndex >= len(c.categories) {
 		nextIndex = 0
 	}
+
 	if hasFavorites && nextIndex == len(c.categories) {
 		return CategoryMapping[Favorites]
 	}
+
 	return c.categories[nextIndex]
 }
 

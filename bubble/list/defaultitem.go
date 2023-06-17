@@ -162,7 +162,7 @@ func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item
 		title, desc = styleTitleAndDesc(title, s.SelectedTitle, s.SelectedDesc, domain,
 			desc, syntax.Selected, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 
-	case markAsRead && m.cat.GetCurrentCategory() != category.Favorites:
+	case markAsRead && m.cat.GetCurrentCategory(m.favorites.HasItems()) != category.Favorites:
 		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(true), s.MarkAsReadDesc, domain,
 			desc, syntax.MarkAsRead, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 

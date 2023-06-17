@@ -87,7 +87,7 @@ func configureFlags(rootCmd *cobra.Command) {
 		"automatically expand all replies upon entering the comment section")
 	rootCmd.PersistentFlags().BoolVar(&noLessVerify, "no-less-verify", false,
 		"disable checking less version on startup")
-	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", "frontpage,newest,ask,show,best",
+	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", "frontpage,ask,newest,show,best",
 		"select categories for stories")
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,

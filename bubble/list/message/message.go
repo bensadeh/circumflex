@@ -23,15 +23,16 @@ type FetchingFinished struct {
 	Message string
 }
 
-type ChangeCategory struct {
+type FetchAndChangeToCategory struct {
+	Index    int
 	Category int
 	Cursor   int
 }
 
 type CategoryFetchingFinished struct {
-	Category int
-	Cursor   int
-	Message  string
+	Index   int
+	Cursor  int
+	Message string
 }
 
 type AddToFavorites struct {
