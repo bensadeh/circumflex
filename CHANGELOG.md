@@ -1,7 +1,7 @@
 # Changelog
 
 ## 3.1
-_WIP_
+_17.06.23_
 
 **New features**
 - Added new optional category: `best`

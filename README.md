@@ -219,22 +219,22 @@ Clear the history of visited `ID`s from `~/.cache/circumflex/history.json`.
 ### Flags
 
 ```console
-  -a, --auto-expand         automatically expand all replies upon 
-                            entering the comment section
-      --categories=[string] set the categories in the header 
-                            (default "frontpage,newest,ask,show")
-  -c, --comment-width=[int] set the comment width 
-                            (default 70)
-  -e, --disable-emojis      disable conversion of smileys to emojis
-  -d, --disable-history     disable marking stories as read
-  -h, --help                help for clx
-  -t, --hide-indent         hide the indentation bar to the left of 
-                            the reply
-  -n, --nerdfonts           enable Nerd Fonts
-      --no-less-verify      disable checking less version on startup
-  -o, --plain-comments      disable syntax highlighting for comments
-  -p, --plain-headlines     disable syntax highlighting for headlines
-  -v, --version             version for clx
+-a, --auto-expand         automatically expand all replies upon 
+                          entering the comment section
+    --categories=[string] set the categories in the header 
+                          (default "frontpage,newest,ask,show")
+-c, --comment-width=[int] set the comment width 
+                          (default 70)
+-e, --disable-emojis      disable conversion of smileys to emojis
+-d, --disable-history     disable marking stories as read
+-h, --help                help for clx
+-t, --hide-indent         hide the indentation bar to the left of 
+                          the reply
+-n, --nerdfonts           enable Nerd Fonts
+    --no-less-verify      disable checking less version on startup
+-o, --plain-comments      disable syntax highlighting for comments
+-p, --plain-headlines     disable syntax highlighting for headlines
+-v, --version             version for clx
 ```
 
 
