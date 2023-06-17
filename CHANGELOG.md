@@ -3,6 +3,10 @@
 ## 3.1
 _WIP_
 
+**New features**
+- Added new optional category: `best`
+- Dynamically set the categories with the `--categories` flag
+
 **Bugfixes**
 - Fixed a bug where the urls would not be correctly parsed and highlighted
 
