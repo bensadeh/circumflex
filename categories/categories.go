@@ -75,19 +75,40 @@ func (c *Categories) GetCategories(hasFavorites bool) []int {
 	if hasFavorites {
 		return append(c.categories, CategoryMapping[Favorites])
 	}
+
 	return c.categories
 }
 
-func (c *Categories) GetIndex(hasFavorites bool) int {
-	if hasFavorites && c.currentIndex == len(c.categories) {
-		return CategoryMapping[Favorites]
-	}
-	return c.categories[c.currentIndex]
+func (c *Categories) GetCurrentCategory() int {
+	return c.currentIndex
 }
 
-func (c *Categories) GetCategory(hasFavorites bool) int {
-	if hasFavorites && c.currentIndex == len(c.categories) {
+func (c *Categories) GetNextCategory(hasFavorites bool) int {
+	nextIndex := c.currentIndex + 1
+	if hasFavorites && nextIndex >= len(c.categories)+1 || !hasFavorites && nextIndex >= len(c.categories) {
+		nextIndex = 0
+	}
+	if hasFavorites && nextIndex == len(c.categories) {
 		return CategoryMapping[Favorites]
 	}
-	return c.categories[c.currentIndex]
+	return c.categories[nextIndex]
+}
+
+func (c *Categories) GetPrevCategory(hasFavorites bool) int {
+	prevIndex := c.currentIndex - 1
+	if prevIndex < 0 {
+		if hasFavorites {
+			prevIndex = len(c.categories)
+		} else {
+			prevIndex = len(c.categories) - 1
+		}
+	}
+	if hasFavorites && prevIndex == len(c.categories) {
+		return CategoryMapping[Favorites]
+	}
+	return c.categories[prevIndex]
+}
+
+func (c *Categories) SetIndex(index int) {
+	c.currentIndex = index
 }
