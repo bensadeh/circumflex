@@ -1,6 +1,7 @@
 package bubble
 
 import (
+	"clx/categories"
 	"clx/cli"
 	"fmt"
 	"os"
@@ -35,10 +36,10 @@ func (m model) View() string {
 	return docStyle.Render(m.list.View())
 }
 
-func Run(config *settings.Config) {
+func Run(config *settings.Config, cat *categories.Categories) {
 	cli.ClearScreen()
 
-	m := model{list: list.New(list.NewDefaultDelegate(), config, favorites.New(), 0, 0)}
+	m := model{list: list.New(list.NewDefaultDelegate(), config, cat, favorites.New(), 0, 0)}
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
 

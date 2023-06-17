@@ -1,6 +1,7 @@
 package list
 
 import (
+	"clx/categories"
 	_ "embed"
 	"fmt"
 	"io"
@@ -102,6 +103,7 @@ type Model struct {
 	config    *settings.Config
 	service   hn.Service
 	favorites *favorites.Favorites
+	cat       *categories.Categories
 
 	isOnHelpScreen bool
 	viewport       viewport.Model
@@ -138,7 +140,7 @@ func (m *Model) getNumberOfItemsToFetch(cat int) int {
 	}
 }
 
-func New(delegate ItemDelegate, config *settings.Config, favorites *favorites.Favorites, width, height int) Model {
+func New(delegate ItemDelegate, config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int) Model {
 	styles := DefaultStyles()
 
 	sp := spinner.New()
@@ -178,6 +180,7 @@ func New(delegate ItemDelegate, config *settings.Config, favorites *favorites.Fa
 		config:       config,
 		service:      getService(config.DebugMode),
 		favorites:    favorites,
+		cat:          cat,
 	}
 
 	m.updatePagination()

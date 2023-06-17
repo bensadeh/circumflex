@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"clx/categories"
 	"fmt"
 	"os"
 
@@ -26,16 +27,19 @@ var (
 	enableNerdFont              bool
 	autoExpandComments          bool
 	noLessVerify                bool
+	selectedCategories          string
 )
 
 func Root() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:     "clx",
-		Short:   "\n" + aurora.Magenta("circumflex").Italic().String() + " is a command line tool for browsing Hacker News in your terminal",
+		Short:   "\n" + aurora.Magenta("circumflex").String() + " is a command line tool for browsing Hacker News in your terminal",
 		Version: app.Version,
 		Run: func(cmd *cobra.Command, args []string) {
 			config := getConfig()
 			config.IndentationSymbol = indent.GetIndentSymbol(hideIndentSymbol)
+
+			cat := categories.New(selectedCategories)
 
 			verifyLess(noLessVerify)
 
@@ -47,7 +51,7 @@ func Root() *cobra.Command {
 			config.LesskeyPath = lessKey.GetPath()
 			defer lessKey.Remove()
 
-			bubble.Run(config)
+			bubble.Run(config, cat)
 		},
 	}
 
@@ -83,6 +87,8 @@ func configureFlags(rootCmd *cobra.Command) {
 		"automatically expand all replies upon entering the comment section")
 	rootCmd.PersistentFlags().BoolVar(&noLessVerify, "no-less-verify", false,
 		"disable checking less version on startup")
+	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", "frontpage,newest,ask,show",
+		"select categories for stories")
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
 		"enable debug mode (offline mode) by using mock data for the endpoints")
@@ -115,8 +121,8 @@ func verifyLess(noLessVerify bool) {
 
 	if !isValid {
 		flag := aurora.Bold("--no-less-verify").String()
-		lessCmd := aurora.Magenta("less").Italic().String()
-		clxCmd := aurora.Magenta("clx").Italic().String()
+		lessCmd := aurora.Magenta("less").String()
+		clxCmd := aurora.Magenta("clx").String()
 		lessVersion := aurora.Yellow(currentLessVersion).String()
 
 		fmt.Printf("Your version of %s is outdated\n\n", lessCmd)
