@@ -933,8 +933,15 @@ func (m *Model) showHelpScreen() tea.Cmd {
 // View renders the component.
 func (m Model) View() string {
 	if m.isOnHelpScreen {
+		categoriesWithoutFavorites := m.cat.GetCategories(false)
+		hasFavorites := m.favorites.HasItems()
+
 		return fmt.Sprintf("%s\n%s\n%s",
-			header.GetHeader(m.cat.GetCurrentCategory(), m.favorites.HasItems(), m.width),
+			header.GetHeader(
+				categoriesWithoutFavorites,
+				hasFavorites,
+				m.cat.GetCurrentCategory(),
+				m.width),
 			m.viewport.View(),
 			m.statusAndPaginationView())
 	}
@@ -976,7 +983,14 @@ func (m Model) View() string {
 }
 
 func (m Model) titleView() string {
-	return header.GetHeader(m.cat.GetCurrentCategory(), m.favorites.HasItems(), m.width)
+	categoriesWithoutFavorites := m.cat.GetCategories(false)
+	hasFavorites := m.favorites.HasItems()
+
+	return header.GetHeader(
+		categoriesWithoutFavorites,
+		hasFavorites,
+		m.cat.GetCurrentCategory(),
+		m.width)
 }
 
 func (m Model) statusAndPaginationView() string {
