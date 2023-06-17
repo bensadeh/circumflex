@@ -206,7 +206,7 @@ Run `clx help` or `man clx` for a list of available commands and settings.
 ### Commands
 
 ```console
-add  [ID]   Add item to list of favorites by ID
+add  [ID]  Add item to list of favorites by ID
 view [ID]  Go directly to the comment section by ID
 read [ID]  Read the linked article associated with 
            an item based on the ID
