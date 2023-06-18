@@ -215,23 +215,22 @@ clear       Clear the history of visited IDs
 ### Flags
 
 ```console
--a, --auto-expand         Automatically expand all replies upon 
-                            entering the comment section
-    --categories=[string] Set the categories in the header
-                            (available: "top,new,ask,show,best")
-                            (default: "top,new,ask,show")
--c, --comment-width=[int] Set the comment width 
-                            (default 70)
--e, --disable-emojis      Disable conversion of smileys to emojis
--d, --disable-history     Disable marking stories as read
--h, --help                Help for clx
--t, --hide-indent         Hide the indentation bar to the left of 
-                            the reply
--n, --nerdfonts           Enable Nerd Fonts
-    --no-less-verify      Disable checking less version on startup
--o, --plain-comments      Disable syntax highlighting for comments
--p, --plain-headlines     Disable syntax highlighting for headlines
--v, --version             Print current version
+-a, --auto-expand           Automatically expand all replies upon
+                              entering the comment section
+    --categories=[string]   Set the categories in the header
+                              (available: "top,new,ask,show,best")
+                              (default: "top,new,ask,show")
+-c, --comment-width=[int]   Set the comment width 
+                              (default 70)
+-e, --disable-emojis        Disable conversion of smileys to emojis
+-d, --disable-history       Disable marking stories as read
+-t, --hide-indent           Hide the indentation bar to the left of 
+                              the reply
+-n, --nerdfonts             Enable Nerd Fonts
+    --no-less-verify        Disable checking less version on startup
+-o, --plain-comments        Disable syntax highlighting for comments
+-p, --plain-headlines       Disable syntax highlighting for headlines
+-v, --version               Print current version
 ```
 
 
