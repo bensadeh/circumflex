@@ -206,27 +206,27 @@ Run `clx help` or `man clx` for a list of available commands and settings.
 ### Commands
 
 ```console
-add [ID]                  Add item to list of favorites by ID
-view [ID]                 Go directly to the comment section by ID
-read [ID]                 Read the linked article associated with 
-                          an item based on the ID
-clear                     Clear the history of visited IDs
+add [ID]    Add item to list of favorites by ID
+view [ID]   Go directly to the comment section by ID
+read [ID]   Read the linked article associated with 
+              an item based on the ID
+clear       Clear the history of visited IDs
 ```
 ### Flags
 
 ```console
 -a, --auto-expand         Automatically expand all replies upon 
-                          entering the comment section
+                            entering the comment section
     --categories=[string] Set the categories in the header
-                          (available: "top,new,ask,show,best")
-                          (default: "top,new,ask,show")
+                            (available: "top,new,ask,show,best")
+                            (default: "top,new,ask,show")
 -c, --comment-width=[int] Set the comment width 
-                          (default 70)
+                            (default 70)
 -e, --disable-emojis      Disable conversion of smileys to emojis
 -d, --disable-history     Disable marking stories as read
 -h, --help                Help for clx
 -t, --hide-indent         Hide the indentation bar to the left of 
-                          the reply
+                            the reply
 -n, --nerdfonts           Enable Nerd Fonts
     --no-less-verify      Disable checking less version on startup
 -o, --plain-comments      Disable syntax highlighting for comments
