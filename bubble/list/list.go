@@ -571,6 +571,22 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			return message.CategoryFetchingFinished{Index: msg.Index, Cursor: msg.Cursor, Message: errMsg}
 		}
 
+	case message.Refresh:
+		return m, func() tea.Msg {
+			itemsToFetch := m.getNumberOfItemsToFetch(msg.CurrentCategory)
+			stories, errMsg := m.service.FetchItems(itemsToFetch, msg.CurrentCategory)
+
+			m.items[category.Top] = []*item.Item{}
+			m.items[category.New] = []*item.Item{}
+			m.items[category.Ask] = []*item.Item{}
+			m.items[category.Show] = []*item.Item{}
+			m.items[category.Best] = []*item.Item{}
+
+			m.items[msg.CurrentCategory] = stories
+
+			return message.CategoryFetchingFinished{Index: msg.CurrentIndex, Cursor: 0, Message: errMsg}
+		}
+
 	case message.CategoryFetchingFinished:
 		m.Paginator.Page = 0
 		m.SetDisabledInput(false)
@@ -849,24 +865,16 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			m.items[category.Buffer] = m.items[currentCategory]
 
 			m.isBufferActive = true
-			//m.category = category.Buffer
 			m.Paginator.Page = 0
-			m.cursor = min(m.cursor, len(m.items[m.cat.GetCurrentCategory(m.favorites.HasItems())])-1)
+			m.cursor = min(m.cursor, len(m.items[currentCategory])-1)
 			m.updatePagination()
-
-			// initialize as much as the total number of categories
-			m.items[0] = []*item.Item{}
-			m.items[1] = []*item.Item{}
-			m.items[3] = []*item.Item{}
-			m.items[4] = []*item.Item{}
-			m.items[5] = []*item.Item{}
 
 			m.SetDisabledInput(true)
 			m.cursor = 0
 			m.Paginator.Page = currentPage
 
 			changeCatCmd := func() tea.Msg {
-				return message.FetchAndChangeToCategory{Category: currentCategory, Cursor: m.cursor}
+				return message.Refresh{CurrentIndex: m.cat.GetCurrentIndex(), CurrentCategory: currentCategory}
 			}
 
 			cmds = append(cmds, m.StartSpinner())
@@ -975,8 +983,14 @@ func (m Model) View() string {
 	}
 
 	content := lipgloss.NewStyle().Height(availHeight).Render(m.populatedView())
-	rankings := ranking.GetRankings(false, m.Paginator.PerPage, len(m.items[m.cat.GetCurrentCategory(m.favorites.HasItems())]), m.cursor,
-		m.Paginator.Page, m.Paginator.TotalPages)
+	totalItems := len(m.items[m.cat.GetCurrentCategory(m.favorites.HasItems())])
+	rankings := ranking.GetRankings(
+		false,
+		m.Paginator.PerPage,
+		totalItems,
+		m.cursor,
+		m.Paginator.Page,
+		m.Paginator.TotalPages)
 
 	rankingsAndContent := lipgloss.JoinHorizontal(lipgloss.Top, rankings, content)
 	sections = append(sections, rankingsAndContent)

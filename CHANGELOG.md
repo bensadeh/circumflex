@@ -1,11 +1,17 @@
 # Changelog
 
+## 3.1.2
+_WIP_
+
+**Bugfixes**
+- Fixed a bug where the submission rankings would disappear during a refresh (<kbd>r</kbd>)
+ 
+
 ## 3.1.1
 _17.06.23_
 
 **Bugfixes**
 - Fixed a bug where the wrong default string would be set in the `categories` flag
-
 
 ## 3.1
 _17.06.23_

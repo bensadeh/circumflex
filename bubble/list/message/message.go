@@ -29,6 +29,11 @@ type FetchAndChangeToCategory struct {
 	Cursor   int
 }
 
+type Refresh struct {
+	CurrentCategory int
+	CurrentIndex    int
+}
+
 type CategoryFetchingFinished struct {
 	Index   int
 	Cursor  int
