@@ -1,11 +1,10 @@
 # Changelog
 
 ## 3.1.2
-_WIP_
+_24.06.23_
 
 **Bugfixes**
-- Fixed a bug where the submission rankings would disappear during a refresh (<kbd>r</kbd>)
- 
+- Fixed a bug where the submission rankings would disappear during a refresh 
 
 ## 3.1.1
 _17.06.23_
