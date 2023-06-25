@@ -1,6 +1,9 @@
 package message
 
-import "clx/item"
+import (
+	"clx/item"
+	"time"
+)
 
 type EditorFinishedMsg struct {
 	Err error
@@ -15,6 +18,11 @@ type EnteringReaderMode struct {
 	Url    string
 	Title  string
 	Domain string
+}
+
+type ShowStatusMessage struct {
+	Message  string
+	Duration time.Duration
 }
 
 type StatusMessageTimeout struct{}

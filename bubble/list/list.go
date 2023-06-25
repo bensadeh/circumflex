@@ -548,7 +548,11 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 		article, err := reader.GetArticle(msg.Url, msg.Title, m.config.CommentWidth, m.config.IndentationSymbol)
 		if err != nil {
-			panic(err)
+			cmds = append(cmds, m.NewStatusMessageWithDuration("Could not read article in Reader Mode", time.Second*3))
+			cmds = append(cmds, func() tea.Msg {
+				return message.EditorFinishedMsg{Err: nil}
+			})
+			return m, tea.Batch(cmds...)
 		}
 
 		command := cli.Less(article, m.config)
@@ -586,6 +590,9 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 			return message.CategoryFetchingFinished{Index: msg.CurrentIndex, Cursor: 0, Message: errMsg}
 		}
+
+	case message.ShowStatusMessage:
+		cmds = append(cmds, m.NewStatusMessageWithDuration(msg.Message, msg.Duration))
 
 	case message.CategoryFetchingFinished:
 		m.Paginator.Page = 0

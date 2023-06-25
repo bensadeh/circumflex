@@ -14,7 +14,7 @@ import (
 )
 
 func GetArticle(url string, title string, width int, indentationSymbol string) (string, error) {
-	articleInRawHTML, httpErr := readability.FromURL(url, 5*time.Second)
+	articleInRawHTML, httpErr := readability.FromURL(url, 6*time.Second)
 	if httpErr != nil {
 		return "", fmt.Errorf("could not fetch url: %w", httpErr)
 	}
