@@ -1,7 +1,7 @@
 # Changelog
 
 ## 3.1.3
-_WIP_
+_25.06.23_
 
 **Bugfixes**
 - Fixed a bug where `circumflex` would panic if go-readability failed to parse the URL of an article to be read in
