@@ -77,8 +77,8 @@ type DefaultDelegate struct {
 }
 
 // NewDefaultDelegate creates a new delegate with default styles.
-func NewDefaultDelegate() DefaultDelegate {
-	return DefaultDelegate{
+func NewDefaultDelegate() *DefaultDelegate {
+	return &DefaultDelegate{
 		ShowDescription: true,
 		Styles:          NewDefaultItemStyles(),
 		spacing:         1,
@@ -86,7 +86,7 @@ func NewDefaultDelegate() DefaultDelegate {
 }
 
 // Height returns the delegate's preferred height.
-func (d DefaultDelegate) Height() int {
+func (d *DefaultDelegate) Height() int {
 	if d.ShowDescription {
 		return 2 //nolint:gomnd
 	}
@@ -99,12 +99,12 @@ func (d *DefaultDelegate) SetSpacing(i int) {
 }
 
 // Spacing returns the delegate's spacing.
-func (d DefaultDelegate) Spacing() int {
+func (d *DefaultDelegate) Spacing() int {
 	return d.spacing
 }
 
 // Update checks whether the delegate's UpdateFunc is set and calls it.
-func (d DefaultDelegate) Update(msg tea.Msg, m *Model) tea.Cmd {
+func (d *DefaultDelegate) Update(msg tea.Msg, m *Model) tea.Cmd {
 	if d.UpdateFunc == nil {
 		return nil
 	}
@@ -112,7 +112,7 @@ func (d DefaultDelegate) Update(msg tea.Msg, m *Model) tea.Cmd {
 }
 
 // Render prints an item.
-func (d DefaultDelegate) Render(w io.Writer, m Model, index int, item *item.Item) {
+func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *item.Item) {
 	var (
 		title, desc, domain string
 		s                   = &d.Styles

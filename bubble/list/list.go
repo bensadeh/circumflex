@@ -54,7 +54,7 @@ const (
 // help items will be added to the help view.
 type ItemDelegate interface {
 	// Render renders the item's view.
-	Render(w io.Writer, m Model, index int, item *item.Item)
+	Render(w io.Writer, m *Model, index int, item *item.Item)
 
 	// Height is the height of the list item.
 	Height() int
@@ -142,7 +142,7 @@ func (m *Model) getNumberOfItemsToFetch(cat int) int {
 	}
 }
 
-func New(delegate ItemDelegate, config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int) Model {
+func New(delegate ItemDelegate, config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int) *Model {
 	styles := DefaultStyles()
 
 	sp := spinner.New()
@@ -187,7 +187,7 @@ func New(delegate ItemDelegate, config *settings.Config, cat *categories.Categor
 
 	m.updatePagination()
 
-	return m
+	return &m
 }
 
 func getHistory(debugMode bool, doNotMarkAsRead bool) history.History {
@@ -228,7 +228,7 @@ func (m *Model) SetShowStatusBar(v bool) {
 }
 
 // ShowStatusBar returns whether or not the status bar is set to be rendered.
-func (m Model) ShowStatusBar() bool {
+func (m *Model) ShowStatusBar() bool {
 	return m.showStatusBar
 }
 
@@ -249,7 +249,7 @@ func (m *Model) Select(index int) {
 }
 
 // VisibleItems returns the total items available to be shown.
-func (m Model) VisibleItems() []*item.Item {
+func (m *Model) VisibleItems() []*item.Item {
 	if m.isBufferActive {
 		return m.items[category.Buffer]
 	}
@@ -258,7 +258,7 @@ func (m Model) VisibleItems() []*item.Item {
 }
 
 // SelectedItems returns the current selected item in the list.
-func (m Model) SelectedItem() *item.Item {
+func (m *Model) SelectedItem() *item.Item {
 	i := m.Index()
 
 	items := m.VisibleItems()
@@ -272,12 +272,12 @@ func (m Model) SelectedItem() *item.Item {
 
 // Index returns the index of the currently selected item as it appears in the
 // entire slice of items.
-func (m Model) Index() int {
+func (m *Model) Index() int {
 	return m.Paginator.Page*m.Paginator.PerPage + m.cursor
 }
 
 // Cursor returns the index of the cursor on the current page.
-func (m Model) Cursor() int {
+func (m *Model) Cursor() int {
 	return m.cursor
 }
 
@@ -419,7 +419,7 @@ func (m *Model) hideStatusMessage() {
 	}
 }
 
-func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
+func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	windowSizeMsg, isWindowSizeMsg := msg.(tea.WindowSizeMsg)
 
 	// Since this program is using the full size of the viewport we
@@ -618,7 +618,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
-func (m Model) updateHelpScreen(msg tea.Msg) (Model, tea.Cmd) {
+func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 	var (
 		cmd  tea.Cmd
 		cmds []tea.Cmd
@@ -953,7 +953,7 @@ func (m *Model) showHelpScreen() tea.Cmd {
 }
 
 // View renders the component.
-func (m Model) View() string {
+func (m *Model) View() string {
 	if m.isOnHelpScreen {
 		categoriesWithoutFavorites := m.cat.GetCategories(false)
 		hasFavorites := m.favorites.HasItems()
@@ -1010,7 +1010,7 @@ func (m Model) View() string {
 	return lipgloss.JoinVertical(lipgloss.Left, sections...)
 }
 
-func (m Model) titleView() string {
+func (m *Model) titleView() string {
 	categoriesWithoutFavorites := m.cat.GetCategories(false)
 	hasFavorites := m.favorites.HasItems()
 
@@ -1021,7 +1021,7 @@ func (m Model) titleView() string {
 		m.width)
 }
 
-func (m Model) statusAndPaginationView() string {
+func (m *Model) statusAndPaginationView() string {
 	centerContent := ""
 	rightContent := ""
 	underscore := lipgloss.NewStyle().Underline(true).Render(" ")
@@ -1066,7 +1066,7 @@ func (m Model) statusAndPaginationView() string {
 		m.Styles.StatusBar.Render(right)
 }
 
-func (m Model) OnStartup() bool {
+func (m *Model) OnStartup() bool {
 	return m.onStartup
 }
 
@@ -1082,7 +1082,7 @@ func (m *Model) SetOnStartup(value bool) {
 	m.onStartup = value
 }
 
-func (m Model) populatedView() string {
+func (m *Model) populatedView() string {
 	allItems := m.VisibleItems()
 
 	var b strings.Builder
@@ -1119,7 +1119,7 @@ func (m Model) populatedView() string {
 	return b.String()
 }
 
-func (m Model) spinnerView() string {
+func (m *Model) spinnerView() string {
 	return m.spinner.View()
 }
 

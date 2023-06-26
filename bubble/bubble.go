@@ -17,7 +17,7 @@ import (
 var docStyle = lipgloss.NewStyle()
 
 type model struct {
-	list list.Model
+	list *list.Model
 }
 
 func (m model) Init() tea.Cmd {
