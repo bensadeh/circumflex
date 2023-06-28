@@ -16,7 +16,7 @@ require (
 	github.com/jedib0t/go-pretty/v6 v6.4.6
 	github.com/logrusorgru/aurora/v3 v3.0.0
 	github.com/muesli/reflow v0.3.0
-	github.com/muesli/termenv v0.15.1
+	github.com/muesli/termenv v0.15.2
 	github.com/nleeper/goment v1.4.4
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4
