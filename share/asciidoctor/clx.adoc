@@ -134,6 +134,12 @@ Remove submissions from the Favorites page with _x_.
 Favorites are stored in ~/.config/circumflex/favorites.json.
 The entries in favorites.json are pretty-printed to make them both human-readable and VCS-friendly.
 
+== Environment Variables
+
+*CLX_BROWSER*::
+Set to a custom command to be run when opening links. The URL to the website will be appended to
+CLX_BROWSER and ran as a single command.
+
 == See also
 
 *less*(1), *vim*(1)

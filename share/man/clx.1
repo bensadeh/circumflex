@@ -2,12 +2,12 @@
 .\"     Title: clx
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.20
-.\"      Date: 2023-06-25
+.\"      Date: 2023-07-01
 .\"    Manual: circumflex
-.\"    Source: circumflex 3.1.3
+.\"    Source: circumflex 3.2-dev
 .\"  Language: English
 .\"
-.TH "CLX" "1" "2023-06-25" "circumflex 3.1.3" "circumflex"
+.TH "CLX" "1" "2023-07-01" "circumflex 3.2\-dev" "circumflex"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -198,6 +198,13 @@ Remove submissions from the Favorites page with \fIx\fP.
 .sp
 Favorites are stored in ~/.config/circumflex/favorites.json.
 The entries in favorites.json are pretty\-printed to make them both human\-readable and VCS\-friendly.
+.SH "ENVIRONMENT VARIABLES"
+.sp
+\fBCLX_BROWSER\fP
+.RS 4
+Set to a custom command to be run when opening links. The URL to the website will be appended to
+CLX_BROWSER and ran as a single command.
+.RE
 .SH "SEE ALSO"
 .sp
 \fBless\fP(1), \fBvim\fP(1)

@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.2
+_WIP_
+
+**New features**
+- Set the `CLX_BROWSER` env variable to override opening links in the default browser.
+
+
 ## 3.1.3
 _25.06.23_
 
