@@ -4,11 +4,16 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 )
 
 func Open(url string) {
 	if browser := os.Getenv("CLX_BROWSER"); browser != "" {
-		cmd := exec.Command(browser, url)
+		commandAndArgs := strings.Fields(browser)
+		command := commandAndArgs[0]
+		args := append(commandAndArgs[1:], url)
+
+		cmd := exec.Command(command, args...)
 		_ = cmd.Start()
 
 		return
