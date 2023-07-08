@@ -1,7 +1,7 @@
 # Changelog
 
 ## 3.2
-_WIP_
+_08.07.23_
 
 **Changes**
 - Default categories are now: top, best, ask, show (replaced new with best)
