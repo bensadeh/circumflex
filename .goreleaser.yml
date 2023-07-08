@@ -8,12 +8,7 @@ builds:
       - linux
       - darwin
 archives:
-  - replacements:
-      darwin: macOS
-      linux: Linux
-      386: 32-bit
-      amd64: 64-bit
-    files:
+  - files:
       - share/man/*
 checksum:
   name_template: 'checksums.txt'
@@ -23,7 +18,7 @@ changelog:
   skip: true
 brews:
   - name: circumflex
-    tap:
+    repository:
       owner: bensadeh
       name: homebrew-circumflex
     description: "circumflex is a command line tool for browsing Hacker News in your terminal"
