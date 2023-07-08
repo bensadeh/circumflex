@@ -3,6 +3,9 @@
 ## 3.2
 _WIP_
 
+**Changes**
+- Default categories are now: top, best, ask, show (replaced new with best)
+ 
 **New features**
 - Set the `CLX_BROWSER` env variable to override opening links in the default browser.
 
