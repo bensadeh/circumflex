@@ -217,8 +217,8 @@ clear       Clear the history of visited IDs
 -a, --auto-expand           Automatically expand all replies upon entering
                               the comment section
     --categories=[string]   Set the categories in the header
-                              (available: "top,new,ask,show,best")
-                              (default: "top,new,ask,show")
+                              (available: "top,best,ask,show,new")
+                              (default: "top,best,ask,show")
 -c, --comment-width=[int]   Set the comment width 
                               (default 70)
 -e, --disable-emojis        Disable conversion of smileys to emojis
