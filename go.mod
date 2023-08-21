@@ -3,7 +3,7 @@ module clx
 go 1.20
 
 require (
-	github.com/JohannesKaufmann/html-to-markdown v1.4.0
+	github.com/JohannesKaufmann/html-to-markdown v1.4.1
 	github.com/MichaelMure/go-term-text v0.3.1
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89
@@ -48,13 +48,13 @@ require (
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tkuchiki/go-timezone v0.2.0 // indirect
-	github.com/yuin/goldmark v1.5.4 // indirect
+	github.com/yuin/goldmark v1.5.5 // indirect
 	github.com/yuin/goldmark-emoji v1.0.1 // indirect
-	golang.org/x/net v0.9.0 // indirect
+	golang.org/x/net v0.14.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.7.0 // indirect
-	golang.org/x/term v0.7.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/term v0.11.0 // indirect
+	golang.org/x/text v0.12.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
