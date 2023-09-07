@@ -110,8 +110,7 @@ Press <kbd>Space</kbd> to read the submission link in Reader Mode.
 
 > **Note**
 > Some websites do not work well with Reader Mode. If the submission URL points to
-a domain with known Reader Mode incompatibility, the link cannot be opened in Reader Mode. 
-See [validator.go](/validator/validator.go) for a full list of incompatible sites.
+a domain with known Reader Mode incompatibility, the link cannot be opened in Reader Mode.
 
 ## Syntax highlighting
 ### Quotes
