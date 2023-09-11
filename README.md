@@ -56,11 +56,10 @@ The binary name for `circumflex` is `clx`.
 brew install circumflex
 
 # Nix
-nix-env -iA nixpkgs.circumflex
+nix-shell -p circumflex
 
 # AUR
 yay -S circumflex
-
 ```
 
 #### From source
@@ -217,7 +216,7 @@ clear       Clear the history of visited IDs
                               the comment section
     --categories=[string]   Set the categories in the header
                               (available: "top,best,ask,show,new")
-                              (default: "top,best,ask,show")
+                              (default:   "top,best,ask,show")
 -c, --comment-width=[int]   Set the comment width 
                               (default 70)
 -e, --disable-emojis        Disable conversion of smileys to emojis
