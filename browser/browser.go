@@ -19,6 +19,17 @@ func Open(url string) {
 		return
 	}
 
+	if browser := os.Getenv("BROWSER"); browser != "" {
+		commandAndArgs := strings.Fields(browser)
+		command := commandAndArgs[0]
+		args := append(commandAndArgs[1:], url)
+
+		cmd := exec.Command(command, args...)
+		_ = cmd.Start()
+
+		return
+	}
+
 	switch runtime.GOOS {
 	case "linux":
 		cmd := exec.Command("xdg-open", url)
