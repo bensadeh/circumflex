@@ -62,6 +62,7 @@ func Root() *cobra.Command {
 	rootCmd.AddCommand(clearCmd())
 	rootCmd.AddCommand(viewCmd())
 	rootCmd.AddCommand(readCmd())
+	rootCmd.AddCommand(urlCmd())
 	rootCmd.AddCommand(versionCmd())
 
 	configureFlags(rootCmd)
