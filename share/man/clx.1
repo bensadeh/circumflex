@@ -2,12 +2,12 @@
 .\"     Title: clx
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.20
-.\"      Date: 2023-07-08
+.\"      Date: 2023-10-01
 .\"    Manual: circumflex
-.\"    Source: circumflex 3.2
+.\"    Source: circumflex 3.3
 .\"  Language: English
 .\"
-.TH "CLX" "1" "2023-07-08" "circumflex 3.2" "circumflex"
+.TH "CLX" "1" "2023-10-01" "circumflex 3.3" "circumflex"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -114,14 +114,19 @@ Scroll between the next/previous \fItop\-level\fP comment (comment section) or \
 Add item to list of favorites by \fIID\fP.
 .RE
 .sp
-\fBclx read\fP [\fIID\fP]
+\fBclx article\fP [\fIID\fP]
 .RS 4
 Go directly to Reader Mode for a given item \fIID\fP without first going through the main view.
 .RE
 .sp
-\fBclx view\fP [\fIID\fP]
+\fBclx comments\fP [\fIID\fP]
 .RS 4
 Go directly to the comment section for a given item \fIID\fP without first going through the main view.
+.RE
+.sp
+\fBclx url\fP [\fIURL\fP]
+.RS 4
+Open a URL directly in Reader Mode
 .RE
 .sp
 \fBclx clear\fP
@@ -199,6 +204,12 @@ Remove submissions from the Favorites page with \fIx\fP.
 Favorites are stored in ~/.config/circumflex/favorites.json.
 The entries in favorites.json are pretty\-printed to make them both human\-readable and VCS\-friendly.
 .SH "ENVIRONMENT VARIABLES"
+.sp
+\fBNERDFONTS\fP
+.RS 4
+If this variable is set, \fBcircumflex\fP will use Nerd Fonts icons as decorators for some elements. Same as running \fBclx\fP
+with the \fB\-\-nerdfonts\fP flag.
+.RE
 .sp
 \fBCLX_BROWSER\fP
 .RS 4
