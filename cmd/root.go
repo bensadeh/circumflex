@@ -60,8 +60,8 @@ func Root() *cobra.Command {
 
 	rootCmd.AddCommand(addCmd())
 	rootCmd.AddCommand(clearCmd())
-	rootCmd.AddCommand(viewCmd())
-	rootCmd.AddCommand(readCmd())
+	rootCmd.AddCommand(commentsCmd())
+	rootCmd.AddCommand(articleCmd())
 	rootCmd.AddCommand(urlCmd())
 	rootCmd.AddCommand(versionCmd())
 

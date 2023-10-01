@@ -14,9 +14,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func readCmd() *cobra.Command {
+func articleCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:                   "read",
+		Use:                   "article",
 		Short:                 "Read the linked article associated with an item based on the ID",
 		Args:                  cobra.ExactArgs(1),
 		DisableFlagsInUseLine: true,

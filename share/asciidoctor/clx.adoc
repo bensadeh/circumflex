@@ -77,11 +77,14 @@ Scroll between the next/previous _top-level_ comment (comment section) or _headl
 *clx add* [_ID_]::
 Add item to list of favorites by _ID_.
 
-*clx read* [_ID_]::
+*clx article* [_ID_]::
 Go directly to Reader Mode for a given item _ID_ without first going through the main view.
 
-*clx view* [_ID_]::
+*clx comments* [_ID_]::
 Go directly to the comment section for a given item _ID_ without first going through the main view.
+
+*clx url* [_URL_]::
+Open a URL directly in Reader Mode
 
 *clx clear*::
 Clear the history of visited __ID__s from ~/.cache/circumflex/history.json.

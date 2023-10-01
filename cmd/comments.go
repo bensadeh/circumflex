@@ -16,9 +16,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func viewCmd() *cobra.Command {
+func commentsCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "view",
+		Use:   "comments",
 		Short: "Go directly to the comment section by ID",
 		Long: "Directly enter the comment section for a given item without going through the main " +
 			"view first",

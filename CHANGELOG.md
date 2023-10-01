@@ -5,6 +5,8 @@ _WIP_
 
 - Bump to Go `1.21`
 - All content (headlines, comment section and articles from web) are now sanitized for malicious ansi escape codes
+- Added subcommand: `url` [URL] to open a URL directly in Reader Mode
+- Renamed `clx read ID` to `clx comments ID` and `clx view ID` to `clx article ID`
 
 
 ## 3.2
