@@ -1,10 +1,13 @@
 package hybrid
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
+
+	ansi "clx/utils/strip-ansi"
 
 	"clx/app"
 	"clx/constants/category"
@@ -31,27 +34,34 @@ func (s *Service) FetchItems(itemsToFetch int, category int) (items []*item.Item
 	}
 
 	ids := getStoryListURIParam(listOfIDs[0:itemsToFetchWithBuffer])
-
-	url := "https://hn.algolia.com/api/v1/search?tags=story," +
-		"(" + ids + ")&hitsPerPage=" + strconv.Itoa(itemsToFetchWithBuffer)
-
-	var a *endpoints.Algolia
+	url := constructURL(ids, itemsToFetchWithBuffer)
 
 	client := resty.New()
 	client.SetTimeout(10 * time.Second)
 
-	_, err := client.R().
+	response, err := client.R().
 		SetHeader("User-Agent", app.Name+"/"+app.Version).
-		SetResult(&a).
 		Get(url)
 	if err != nil {
 		return nil, err.Error()
 	}
 
-	mapOfItemsWithMetaData := mapStories(a)
+	sanitizedResponse := ansi.Strip(string(response.Body()))
+
+	var algoliaItems *endpoints.Algolia
+	if err := json.Unmarshal([]byte(sanitizedResponse), &algoliaItems); err != nil {
+		return nil, fmt.Sprintf("Error while unmarshalling sanitized response: %v", err)
+	}
+
+	mapOfItemsWithMetaData := mapStories(algoliaItems)
 	orderedStories := joinStories(listOfIDs, mapOfItemsWithMetaData)
 
 	return orderedStories[0:min(itemsToFetch, len(orderedStories))], ""
+}
+
+func constructURL(ids string, count int) string {
+	baseURL := "https://hn.algolia.com/api/v1/search?tags=story,"
+	return baseURL + "(" + ids + ")&hitsPerPage=" + strconv.Itoa(count)
 }
 
 func fetchStoriesList(category int) (stories []int, errMsg string) {
@@ -159,7 +169,7 @@ func joinStories(orderedIds []int, stories map[int]*item.Item) []*item.Item {
 	return orderedStories
 }
 
-func (s Service) FetchItem(id int) *item.Item {
+func (s *Service) FetchItem(id int) *item.Item {
 	hn := new(endpoints.HN)
 
 	client := resty.New()
@@ -191,19 +201,23 @@ func mapItem(hn *endpoints.HN) *item.Item {
 	}
 }
 
-func (s Service) FetchComments(id int) *item.Item {
-	comments := new(endpoints.Comments)
-
+func (s *Service) FetchComments(id int) *item.Item {
 	client := resty.New()
 	client.SetTimeout(5 * time.Second)
 	client.SetBaseURL("http://api.hackerwebapp.com/item/")
 
-	_, err := client.R().
+	response, err := client.R().
 		SetHeader("User-Agent", app.Name+"/"+app.Version).
-		SetResult(comments).
 		Get(strconv.Itoa(id))
 	if err != nil {
 		panic(err)
+	}
+
+	sanitizedResponse := ansi.Strip(string(response.Body()))
+
+	comments := new(endpoints.Comments)
+	if err := json.Unmarshal([]byte(sanitizedResponse), comments); err != nil {
+		panic(fmt.Sprintf("Error while unmarshalling sanitized response: %v", err))
 	}
 
 	return mapComments(comments)
@@ -231,11 +245,4 @@ func mapComments(comments *endpoints.Comments) *item.Item {
 		Content:       comments.Content,
 		CommentsCount: comments.CommentsCount,
 	}
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	ansi "clx/utils/strip-ansi"
+
 	"clx/reader/markdown/postprocessor"
 	"clx/reader/markdown/terminal"
 
@@ -14,12 +16,14 @@ import (
 )
 
 func GetArticle(url string, title string, width int, indentationSymbol string) (string, error) {
-	articleInRawHTML, httpErr := readability.FromURL(url, 6*time.Second)
+	articleInRawHtml, httpErr := readability.FromURL(url, 6*time.Second)
 	if httpErr != nil {
 		return "", fmt.Errorf("could not fetch url: %w", httpErr)
 	}
 
-	articleInMarkdown, mdErr := html.ConvertToMarkdown(articleInRawHTML.Content)
+	articleContentInRawHtmlAndSanitized := ansi.Strip(articleInRawHtml.Content)
+
+	articleInMarkdown, mdErr := html.ConvertToMarkdown(articleContentInRawHtmlAndSanitized)
 	if mdErr != nil {
 		return "", fmt.Errorf("could not fetch url: %w", httpErr)
 	}

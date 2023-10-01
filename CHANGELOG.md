@@ -3,6 +3,10 @@
 ## 3.3
 _WIP_
 
+- Bump to Go `1.21`
+- All content (headlines, comment section and articles from web) are now sanitized for malicious ansi escape codes
+
+
 ## 3.2
 _08.07.23_
 
