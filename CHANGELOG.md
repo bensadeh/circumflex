@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.3.1
+_01.10.23_
+
+- Fixed a bug where content wouldn't properly be sanitized for malicious ansi escape codes
+
 ## 3.3
 _01.10.23_
 
