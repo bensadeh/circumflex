@@ -1,8 +1,6 @@
 package main
 
-import (
-	"clx/cmd"
-)
+import "clx/cmd"
 
 func main() {
 	rootCmd := cmd.Root()

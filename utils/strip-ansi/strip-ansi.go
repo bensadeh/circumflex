@@ -4,15 +4,8 @@ import (
 	"regexp"
 )
 
-const (
-	esc         = "[\u001B\u009B]"
-	oscSequence = "(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007"
-	csiSequence = "(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~])"
-	ansi        = esc + "[[\\]()#;?]*" + "(?:" + oscSequence + "|" + csiSequence + ")"
-)
-
-var ansiRegex = regexp.MustCompile(ansi)
+var combinedRegex = regexp.MustCompile(`(\x1B\[|\x9B\[|\\u001b\[|\\u009b\[)[0-?]*[ -/]*[@-~]`)
 
 func Strip(text string) string {
-	return ansiRegex.ReplaceAllString(text, "")
+	return combinedRegex.ReplaceAllString(text, "")
 }
