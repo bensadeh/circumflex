@@ -139,6 +139,10 @@ The entries in favorites.json are pretty-printed to make them both human-readabl
 
 == Environment Variables
 
+*NERDFONTS*::
+If this variable is set, *circumflex* will use Nerd Fonts icons as decorators for some elements. Same as running *clx*
+with the *--nerdfonts* flag.
+
 *CLX_BROWSER*::
 Set to a custom command to be run when opening links. The URL to the website will be appended to
 CLX_BROWSER and ran as a single command.

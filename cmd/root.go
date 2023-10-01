@@ -100,11 +100,13 @@ func configureFlags(rootCmd *cobra.Command) {
 func getConfig() *settings.Config {
 	config := settings.Default()
 
+	_, nerdFontsEnvIsSet := os.LookupEnv("NERDFONTS")
+
 	config.CommentWidth = commentWidth
 	config.DisableHeadlineHighlighting = disableHeadlineHighlighting
 	config.DisableCommentHighlighting = disableCommentHighlighting
 	config.DoNotMarkSubmissionsAsRead = disableHistory
-	config.EnableNerdFonts = enableNerdFont
+	config.EnableNerdFonts = nerdFontsEnvIsSet || enableNerdFont
 	config.HideIndentSymbol = hideIndentSymbol
 	config.AutoExpandComments = autoExpandComments
 	config.DisableEmojis = disableEmojis
