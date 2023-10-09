@@ -13,7 +13,7 @@ require (
 	github.com/charmbracelet/lipgloss v0.8.0
 	github.com/go-resty/resty/v2 v2.9.1
 	github.com/go-shiori/go-readability v0.0.0-20210627123243-82cc33435520
-	github.com/jedib0t/go-pretty/v6 v6.4.7
+	github.com/jedib0t/go-pretty/v6 v6.4.8
 	github.com/logrusorgru/aurora/v3 v3.0.0
 	github.com/muesli/reflow v0.3.0
 	github.com/muesli/termenv v0.15.2
