@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
-	"strings"
+	"sync/atomic"
 	"time"
 
 	ansi "clx/utils/strip-ansi"
@@ -14,7 +14,6 @@ import (
 	"clx/endpoints"
 	"clx/item"
 
-	"github.com/bobesa/go-domain-util/domainutil"
 	"github.com/go-resty/resty/v2"
 )
 
@@ -25,43 +24,33 @@ const (
 type Service struct{}
 
 func (s *Service) FetchItems(itemsToFetch int, category int) (items []*item.Item, errMsg string) {
-	// Posts of the type: 'Company (YC __) is hiring ...' is filtered out
-	// from Algolia. For this reason, we ask for one more item than we need.
-	itemsToFetchWithBuffer := itemsToFetch + 1
 	listOfIDs, errMsg := fetchStoriesList(category)
 	if errMsg != "" {
 		return nil, errMsg
 	}
 
-	ids := getStoryListURIParam(listOfIDs[0:itemsToFetchWithBuffer])
-	url := constructURL(ids, itemsToFetchWithBuffer)
+	first40 := listOfIDs[:min(len(listOfIDs), itemsToFetch)]
 
-	client := resty.New()
-	client.SetTimeout(10 * time.Second)
-
-	response, err := client.R().
-		SetHeader("User-Agent", app.Name+"/"+app.Version).
-		Get(url)
-	if err != nil {
-		return nil, err.Error()
-	}
-
-	sanitizedResponse := ansi.Strip(string(response.Body()))
-
-	var algoliaItems *endpoints.Algolia
-	if err := json.Unmarshal([]byte(sanitizedResponse), &algoliaItems); err != nil {
-		return nil, fmt.Sprintf("Error while unmarshalling sanitized response: %v", err)
-	}
-
-	mapOfItemsWithMetaData := mapStories(algoliaItems)
-	orderedStories := joinStories(listOfIDs, mapOfItemsWithMetaData)
-
-	return orderedStories[0:min(itemsToFetch, len(orderedStories))], ""
+	return fetchItemsInParallel(first40), ""
 }
 
-func constructURL(ids string, count int) string {
-	baseURL := "https://hn.algolia.com/api/v1/search?tags=story,"
-	return baseURL + "(" + ids + ")&hitsPerPage=" + strconv.Itoa(count)
+func fetchItemsInParallel(ids []int) []*item.Item {
+	items := make([]*item.Item, len(ids))
+	var counter int32
+
+	for i, id := range ids {
+		go func(i int, id int) {
+			items[i] = fetchItem(id)
+			atomic.AddInt32(&counter, 1)
+		}(i, id)
+	}
+
+	// Wait until all goroutines have finished
+	for atomic.LoadInt32(&counter) != int32(len(ids)) {
+		// This loop will spin until the counter equals the length of ids
+	}
+
+	return items
 }
 
 func fetchStoriesList(category int) (stories []int, errMsg string) {
@@ -79,16 +68,6 @@ func fetchStoriesList(category int) (stories []int, errMsg string) {
 	}
 
 	return stories, ""
-}
-
-func getStoryListURIParam(ids []int) string {
-	var sb strings.Builder
-
-	for _, id := range ids {
-		sb.WriteString(fmt.Sprintf("story_%d,", id))
-	}
-
-	return sb.String()
 }
 
 func getCategory(cat int) string {
@@ -113,63 +92,11 @@ func getCategory(cat int) string {
 	}
 }
 
-func mapStories(stories *endpoints.Algolia) map[int]*item.Item {
-	m := make(map[int]*item.Item)
-
-	for _, story := range stories.Hits {
-		id, _ := strconv.Atoi(story.ObjectID)
-
-		it := &item.Item{
-			ID:            id,
-			Title:         sanitize(story.Title),
-			Points:        story.Points,
-			User:          story.Author,
-			Time:          int64(story.CreatedAtI),
-			TimeAgo:       "",
-			Type:          "",
-			URL:           story.URL,
-			Domain:        domainutil.Domain(story.URL),
-			Comments:      nil,
-			Content:       "",
-			Level:         0,
-			CommentsCount: story.NumComments,
-		}
-
-		m[id] = it
-	}
-
-	return m
-}
-
-func sanitize(s string) string {
-	var b strings.Builder
-
-	for _, c := range s {
-		if c == '­' {
-			continue
-		}
-
-		b.WriteRune(c)
-	}
-
-	return b.String()
-}
-
-func joinStories(orderedIds []int, stories map[int]*item.Item) []*item.Item {
-	var orderedStories []*item.Item
-
-	for _, id := range orderedIds {
-		if stories[id] == nil {
-			continue
-		}
-
-		orderedStories = append(orderedStories, stories[id])
-	}
-
-	return orderedStories
-}
-
 func (s *Service) FetchItem(id int) *item.Item {
+	return fetchItem(id)
+}
+
+func fetchItem(id int) *item.Item {
 	hn := new(endpoints.HN)
 
 	client := resty.New()
