@@ -2,7 +2,7 @@
 
 ## 3.4
 
-_WIP_
+_12.10.23_
 
 - `circumflex` now uses the official HN API to fetch submissions instead of Algolia
 - Fixed a bug where `less --version` would not properly be parsed
