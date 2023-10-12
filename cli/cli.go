@@ -52,15 +52,18 @@ func VerifyLessVersion(minimumVersion int) (isValid bool, currentVersion string)
 
 	lessVersionInfoWords := strings.Fields(lessVersionInfo)
 	if len(lessVersionInfoWords) < 1 {
-		panic("Could not parse less version info")
+		return false, ""
 	}
 
 	lessVersion, err := strconv.ParseFloat(lessVersionInfoWords[1], 64)
 	if err != nil {
-		panic(err)
+		return false, ""
 	}
 
-	return int(lessVersion) >= minimumVersion, lessVersionInfoWords[1]
+	isValid = int(lessVersion) >= minimumVersion
+	currentVersion = lessVersionInfoWords[1]
+
+	return isValid, currentVersion
 }
 
 func getLessVersionInfo() string {
