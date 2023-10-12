@@ -29,9 +29,9 @@ func (s *Service) FetchItems(itemsToFetch int, category int) (items []*item.Item
 		return nil, errMsg
 	}
 
-	first40 := listOfIDs[:min(len(listOfIDs), itemsToFetch)]
+	listOfIdsToFetch := listOfIDs[:min(len(listOfIDs), itemsToFetch)]
 
-	return fetchItemsInParallel(first40), ""
+	return fetchItemsInParallel(listOfIdsToFetch), ""
 }
 
 func fetchItemsInParallel(ids []int) []*item.Item {
