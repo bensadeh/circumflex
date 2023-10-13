@@ -5,6 +5,7 @@
 _WIP_
 
 - Responses from the official HN API are now properly sanitized
+- Improved the spacing in the descriptions when using Nerdfonts
 
 ## 3.4
 

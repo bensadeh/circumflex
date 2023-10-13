@@ -184,7 +184,7 @@ func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *item.It
 
 func getComments(numberOfComments int, enableNerdFonts bool) string {
 	if numberOfComments == 0 && enableNerdFonts {
-		return "     "
+		return "      "
 	}
 
 	if numberOfComments == 0 {
@@ -245,7 +245,7 @@ func parseTime(unixTime int64, enableNerdFonts bool) string {
 	now, _ := goment.New()
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s %-14s", nerdfonts.Time, moment.From(now))
+		return fmt.Sprintf("%s %-12s", nerdfonts.Time, moment.From(now))
 	}
 
 	return fmt.Sprintf("%s ", moment.From(now))
