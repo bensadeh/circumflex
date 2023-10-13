@@ -103,10 +103,16 @@ func fetchItem(id int) *item.Item {
 	client.SetTimeout(5 * time.Second)
 	client.SetBaseURL("https://hacker-news.firebaseio.com/v0/item/")
 
-	_, err := client.R().
+	resp, err := client.R().
 		SetHeader("User-Agent", app.Name+"/"+app.Version).
-		SetResult(hn).
 		Get(strconv.Itoa(id) + ".json")
+	if err != nil {
+		panic(err)
+	}
+
+	sanitizedBody := ansi.Strip(string(resp.Body()))
+
+	err = json.Unmarshal([]byte(sanitizedBody), hn)
 	if err != nil {
 		panic(err)
 	}

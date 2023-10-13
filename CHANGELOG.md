@@ -2,6 +2,12 @@
 
 ## 3.4
 
+_WIP_
+
+- Responses from the offical HN API are now properly sanitized
+
+## 3.4
+
 _12.10.23_
 
 - `circumflex` now uses the official HN API to fetch submissions instead of Algolia
