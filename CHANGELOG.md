@@ -1,10 +1,10 @@
 # Changelog
 
-## 3.4
+## 3.5
 
 _WIP_
 
-- Responses from the offical HN API are now properly sanitized
+- Responses from the official HN API are now properly sanitized
 
 ## 3.4
 
