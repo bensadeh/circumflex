@@ -65,13 +65,13 @@ yay -S circumflex
 #### From source
 
 ```console
-# Clone, change to dir and install
-git clone https://github.com/bensadeh/circumflex.git && cd circumflex && go install
+# Go
+go run main.go
 ```
 
 > **Note** 
-> When building from source, make sure that `$GOPATH/bin` is in your `PATH` environment variable and
-> that you are using the latest version of [`less`](http://greenwoodsoftware.com/less/).
+> When building from source, make sure that you are using the latest version
+> of [`less`](http://greenwoodsoftware.com/less/).
 
 ## Comment section
 
