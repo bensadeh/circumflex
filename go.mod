@@ -6,12 +6,11 @@ require (
 	github.com/JohannesKaufmann/html-to-markdown v1.4.1
 	github.com/MichaelMure/go-term-text v0.3.1
 	github.com/PuerkitoBio/goquery v1.8.1
-	github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89
 	github.com/charmbracelet/bubbles v0.16.1
 	github.com/charmbracelet/bubbletea v0.24.2
 	github.com/charmbracelet/glamour v0.6.0
 	github.com/charmbracelet/lipgloss v0.8.0
-	github.com/go-resty/resty/v2 v2.9.1
+	github.com/go-resty/resty/v2 v2.10.0
 	github.com/go-shiori/go-readability v0.0.0-20210627123243-82cc33435520
 	github.com/jedib0t/go-pretty/v6 v6.4.8
 	github.com/logrusorgru/aurora/v3 v3.0.0
