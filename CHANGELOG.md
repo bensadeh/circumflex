@@ -6,6 +6,7 @@ _WIP_
 
 - Responses from the official HN API are now properly sanitized
 - Improved the spacing in the descriptions when using Nerdfonts
+- Fixed a bug where the domain was not shown
 
 ## 3.4
 

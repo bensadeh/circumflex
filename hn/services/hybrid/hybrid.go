@@ -7,6 +7,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/bobesa/go-domain-util/domainutil"
+
 	ansi "clx/utils/strip-ansi"
 
 	"clx/app"
@@ -130,6 +132,7 @@ func mapItem(hn *endpoints.HN) *item.Item {
 		TimeAgo:       "",
 		Type:          "",
 		URL:           hn.Url,
+		Domain:        domainutil.Domain(hn.Url),
 		CommentsCount: hn.Descendants,
 	}
 }
