@@ -69,7 +69,7 @@ yay -S circumflex
 go run main.go
 ```
 
-> **Note** 
+> [!NOTE] 
 > When building from source, make sure that you are using the latest version
 > of [`less`](http://greenwoodsoftware.com/less/).
 
