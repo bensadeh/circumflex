@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/JohannesKaufmann/html-to-markdown v1.5.0
 	github.com/MichaelMure/go-term-text v0.3.1
-	github.com/PuerkitoBio/goquery v1.9.0
+	github.com/PuerkitoBio/goquery v1.9.1
 	github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89
 	github.com/charmbracelet/bubbles v0.18.0
 	github.com/charmbracelet/bubbletea v0.25.0
@@ -19,7 +19,7 @@ require (
 	github.com/muesli/termenv v0.15.2
 	github.com/nleeper/goment v1.4.4
 	github.com/spf13/cobra v1.8.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/wayneashleyberry/terminal-dimensions v1.1.0
 )
 
