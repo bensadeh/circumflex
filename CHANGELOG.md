@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.6
+
+_01.04.24_
+
+- Update header styles in reader mode
+- Bump Go to 1.22
+- Bump most dependencies
+
 ## 3.5
 
 _17.10.23_
