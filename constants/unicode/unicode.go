@@ -5,5 +5,6 @@ const (
 	InvisibleCharacterForExpansion        = "⁣"
 	InvisibleCharacterForCollapse         = "‌"
 	NoBreakSpace                          = " "
-	Block                                 = "█"
+	Block                                 = "■"
+	Circle                                = "●"
 )

@@ -146,8 +146,8 @@ func renderImage(text string, lineWidth int) string {
 	italic := "\u001B[3m"
 	faint := "\u001B[2m"
 	normal := "\u001B[0m"
-	imageLabel := normal + Red(unicode.Block).Faint().String() + Yellow(unicode.Block).Faint().String() +
-		Blue(unicode.Block).Faint().String() + normal + red + faint + italic + " Image " + normal + faint + italic
+	imageLabel := normal + Red(unicode.Circle).Faint().String() + Yellow(unicode.Circle).Faint().String() +
+		Blue(unicode.Circle).Faint().String() + normal + red + faint + italic + " Image " + normal + faint + italic
 
 	text = regexp.MustCompile(`!\[(.*?)\]\(.*?\)$`).
 		ReplaceAllString(text, imageLabel+`$1`)
@@ -313,7 +313,7 @@ func h2(text string, lineWidth int) string {
 
 func h3(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	block := strings.Repeat(unicode.Block, 2)
+	block := strings.Repeat(unicode.Block, 0)
 	text = Red(block).String() + " " + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
@@ -323,7 +323,7 @@ func h3(text string, lineWidth int) string {
 
 func h4(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	block := strings.Repeat(unicode.Block, 3)
+	block := strings.Repeat(unicode.Block, 0)
 	text = Magenta(block).String() + " " + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
@@ -333,7 +333,7 @@ func h4(text string, lineWidth int) string {
 
 func h5(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	block := strings.Repeat(unicode.Block, 4)
+	block := strings.Repeat(unicode.Block, 0)
 	text = Yellow(block).String() + " " + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
@@ -343,7 +343,7 @@ func h5(text string, lineWidth int) string {
 
 func h6(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	block := strings.Repeat(unicode.Block, 5)
+	block := strings.Repeat(unicode.Block, 0)
 	text = Green(block).String() + " " + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
