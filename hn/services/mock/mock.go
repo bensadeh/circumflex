@@ -4,8 +4,8 @@ import (
 	"math/rand"
 	"time"
 
-	"clx/constants/category"
-	"clx/item"
+	"github.com/f01c33/circumflex/constants/category"
+	"github.com/f01c33/circumflex/item"
 )
 
 type Service struct{}

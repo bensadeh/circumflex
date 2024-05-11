@@ -3,7 +3,7 @@ package html
 import (
 	"strings"
 
-	"clx/reader/markdown"
+	"github.com/f01c33/circumflex/reader/markdown"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/JohannesKaufmann/html-to-markdown/plugin"

@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"time"
 
-	ansi "clx/utils/strip-ansi"
+	ansi "github.com/f01c33/circumflex/utils/strip-ansi"
 
-	"clx/reader/markdown/postprocessor"
-	"clx/reader/markdown/terminal"
+	"github.com/f01c33/circumflex/reader/markdown/postprocessor"
+	"github.com/f01c33/circumflex/reader/markdown/terminal"
 
-	"clx/reader/markdown/html"
-	"clx/reader/markdown/parser"
+	"github.com/f01c33/circumflex/reader/markdown/html"
+	"github.com/f01c33/circumflex/reader/markdown/parser"
 
 	"github.com/go-shiori/go-readability"
 )

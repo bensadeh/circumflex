@@ -3,9 +3,9 @@ package postprocessor
 import (
 	"strings"
 
-	"clx/constants/margins"
-	"clx/constants/unicode"
-	"clx/screen"
+	"github.com/f01c33/circumflex/constants/margins"
+	"github.com/f01c33/circumflex/constants/unicode"
+	"github.com/f01c33/circumflex/screen"
 
 	t "github.com/MichaelMure/go-term-text"
 )

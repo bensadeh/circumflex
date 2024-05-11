@@ -1,7 +1,6 @@
 package list
 
 import (
-	"clx/categories"
 	_ "embed"
 	"fmt"
 	"io"
@@ -9,29 +8,31 @@ import (
 	"strings"
 	"time"
 
-	"clx/app"
+	"github.com/f01c33/circumflex/categories"
+
+	"github.com/f01c33/circumflex/app"
 
 	"github.com/charmbracelet/bubbles/viewport"
 
-	"clx/reader"
+	"github.com/f01c33/circumflex/reader"
 
-	"clx/browser"
-	"clx/bubble/list/message"
-	"clx/bubble/ranking"
-	"clx/cli"
-	"clx/constants/category"
-	"clx/favorites"
-	"clx/header"
-	"clx/help"
-	"clx/history"
-	"clx/hn"
-	"clx/hn/services/hybrid"
-	"clx/hn/services/mock"
-	"clx/item"
-	"clx/screen"
-	"clx/settings"
-	"clx/tree"
-	"clx/validator"
+	"github.com/f01c33/circumflex/browser"
+	"github.com/f01c33/circumflex/bubble/list/message"
+	"github.com/f01c33/circumflex/bubble/ranking"
+	"github.com/f01c33/circumflex/cli"
+	"github.com/f01c33/circumflex/constants/category"
+	"github.com/f01c33/circumflex/favorites"
+	"github.com/f01c33/circumflex/header"
+	"github.com/f01c33/circumflex/help"
+	"github.com/f01c33/circumflex/history"
+	"github.com/f01c33/circumflex/hn"
+	"github.com/f01c33/circumflex/hn/services/hybrid"
+	"github.com/f01c33/circumflex/hn/services/mock"
+	"github.com/f01c33/circumflex/item"
+	"github.com/f01c33/circumflex/screen"
+	"github.com/f01c33/circumflex/settings"
+	"github.com/f01c33/circumflex/tree"
+	"github.com/f01c33/circumflex/validator"
 
 	"github.com/charmbracelet/bubbles/paginator"
 	"github.com/charmbracelet/bubbles/spinner"

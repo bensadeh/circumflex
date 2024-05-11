@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"clx/history"
+	"github.com/f01c33/circumflex/history"
 
 	"github.com/spf13/cobra"
 )

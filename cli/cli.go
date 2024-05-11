@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"clx/constants/unicode"
-	"clx/settings"
+	"github.com/f01c33/circumflex/constants/unicode"
+	"github.com/f01c33/circumflex/settings"
 )
 
 func Less(input string, config *settings.Config) *exec.Cmd {

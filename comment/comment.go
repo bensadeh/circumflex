@@ -3,8 +3,8 @@ package comment
 import (
 	"strings"
 
-	"clx/settings"
-	"clx/syntax"
+	"github.com/f01c33/circumflex/settings"
+	"github.com/f01c33/circumflex/syntax"
 
 	"github.com/logrusorgru/aurora/v3"
 

@@ -5,12 +5,12 @@ import (
 	"os"
 	"strconv"
 
-	"clx/less"
-	"clx/reader"
+	"github.com/f01c33/circumflex/less"
+	"github.com/f01c33/circumflex/reader"
 
-	"clx/hn/services/hybrid"
+	"github.com/f01c33/circumflex/hn/services/hybrid"
 
-	"clx/cli"
+	"github.com/f01c33/circumflex/cli"
 	"github.com/spf13/cobra"
 )
 

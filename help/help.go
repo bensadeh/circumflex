@@ -3,9 +3,9 @@ package help
 import (
 	"strings"
 
-	"clx/constants/unicode"
-	"clx/info"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/f01c33/circumflex/constants/unicode"
+	"github.com/f01c33/circumflex/info"
 )
 
 const (

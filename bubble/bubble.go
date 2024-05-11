@@ -1,14 +1,15 @@
 package bubble
 
 import (
-	"clx/categories"
-	"clx/cli"
 	"fmt"
 	"os"
 
-	"clx/bubble/list"
-	"clx/favorites"
-	"clx/settings"
+	"github.com/f01c33/circumflex/categories"
+	"github.com/f01c33/circumflex/cli"
+
+	"github.com/f01c33/circumflex/bubble/list"
+	"github.com/f01c33/circumflex/favorites"
+	"github.com/f01c33/circumflex/settings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"

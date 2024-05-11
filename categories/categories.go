@@ -1,10 +1,11 @@
 package categories
 
 import (
-	"clx/constants/category"
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/f01c33/circumflex/constants/category"
 )
 
 type Category string

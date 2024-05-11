@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"clx/app"
-	"clx/constants/category"
-	"clx/endpoints"
+	"github.com/f01c33/circumflex/app"
+	"github.com/f01c33/circumflex/constants/category"
+	"github.com/f01c33/circumflex/endpoints"
 
 	"github.com/go-resty/resty/v2"
 )
