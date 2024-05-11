@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/f01c33/circumflex/constants/category"
+	"github.com/f01c33/clx/constants/category"
 )
 
 type Category string

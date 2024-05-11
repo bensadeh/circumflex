@@ -3,9 +3,9 @@ package keymaps_test
 import (
 	"testing"
 
-	ansi "github.com/f01c33/circumflex/utils/strip-ansi"
+	ansi "github.com/f01c33/clx/utils/strip-ansi"
 
-	"github.com/f01c33/circumflex/keymaps"
+	"github.com/f01c33/clx/keymaps"
 
 	"github.com/stretchr/testify/assert"
 )

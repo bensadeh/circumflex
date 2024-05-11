@@ -3,7 +3,7 @@ package message
 import (
 	"time"
 
-	"github.com/f01c33/circumflex/item"
+	"github.com/f01c33/clx/item"
 )
 
 type EditorFinishedMsg struct {

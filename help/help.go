@@ -4,8 +4,8 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/f01c33/circumflex/constants/unicode"
-	"github.com/f01c33/circumflex/info"
+	"github.com/f01c33/clx/constants/unicode"
+	"github.com/f01c33/clx/info"
 )
 
 const (

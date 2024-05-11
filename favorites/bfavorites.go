@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/f01c33/circumflex/file"
-	"github.com/f01c33/circumflex/item"
+	"github.com/f01c33/clx/file"
+	"github.com/f01c33/clx/item"
 )
 
 type Favorites struct {

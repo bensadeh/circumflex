@@ -4,10 +4,10 @@ import (
 	_ "embed"
 	"os"
 
-	"github.com/f01c33/circumflex/less"
-	"github.com/f01c33/circumflex/reader"
+	"github.com/f01c33/clx/less"
+	"github.com/f01c33/clx/reader"
 
-	"github.com/f01c33/circumflex/cli"
+	"github.com/f01c33/clx/cli"
 	"github.com/spf13/cobra"
 )
 
