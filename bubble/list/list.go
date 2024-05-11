@@ -666,7 +666,7 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 }
 
 func (m *Model) updateCursor() {
-	m.cursor = 0
+	m.cursor = min(m.cursor, m.Paginator.ItemsOnPage(len(m.VisibleItems()))-1)
 }
 
 func (m *Model) categoryHasStories(cat int) bool {
@@ -675,15 +675,19 @@ func (m *Model) categoryHasStories(cat int) bool {
 
 func (m *Model) changeToNextCategory() {
 	m.cat.Next(m.favorites.HasItems())
+	currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
+
 	m.Paginator.Page = 0
-	m.cursor = 0
+	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)
 	m.updatePagination()
 }
 
 func (m *Model) changeToPrevCategory() {
 	m.cat.Prev(m.favorites.HasItems())
+	currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
+
 	m.Paginator.Page = 0
-	m.cursor = 0
+	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)
 	m.updatePagination()
 }
 
