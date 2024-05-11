@@ -3,12 +3,12 @@ package info
 import (
 	"strings"
 
-	"github.com/f01c33/clx/constants/nerdfonts"
+	"github.com/f01c33/circumflex/constants/nerdfonts"
 	. "github.com/logrusorgru/aurora/v3"
 
 	text "github.com/MichaelMure/go-term-text"
-	"github.com/f01c33/clx/constants/margins"
-	"github.com/f01c33/clx/keymaps"
+	"github.com/f01c33/circumflex/constants/margins"
+	"github.com/f01c33/circumflex/keymaps"
 )
 
 func GetText(screenWidth int, enableNerdFonts bool) string {

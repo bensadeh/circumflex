@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/f01c33/clx/categories"
-	"github.com/f01c33/clx/cli"
+	"github.com/f01c33/circumflex/categories"
+	"github.com/f01c33/circumflex/cli"
 
-	"github.com/f01c33/clx/bubble/list"
-	"github.com/f01c33/clx/favorites"
-	"github.com/f01c33/clx/settings"
+	"github.com/f01c33/circumflex/bubble/list"
+	"github.com/f01c33/circumflex/favorites"
+	"github.com/f01c33/circumflex/settings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"

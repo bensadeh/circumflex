@@ -6,16 +6,16 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/f01c33/clx/constants/nerdfonts"
+	"github.com/f01c33/circumflex/constants/nerdfonts"
 
-	"github.com/f01c33/clx/comment"
-	"github.com/f01c33/clx/constants/margins"
-	"github.com/f01c33/clx/constants/unicode"
-	"github.com/f01c33/clx/item"
-	"github.com/f01c33/clx/meta"
-	"github.com/f01c33/clx/settings"
-	"github.com/f01c33/clx/syntax"
-	"github.com/f01c33/clx/tree/postprocessor"
+	"github.com/f01c33/circumflex/comment"
+	"github.com/f01c33/circumflex/constants/margins"
+	"github.com/f01c33/circumflex/constants/unicode"
+	"github.com/f01c33/circumflex/item"
+	"github.com/f01c33/circumflex/meta"
+	"github.com/f01c33/circumflex/settings"
+	"github.com/f01c33/circumflex/syntax"
+	"github.com/f01c33/circumflex/tree/postprocessor"
 
 	. "github.com/logrusorgru/aurora/v3"
 

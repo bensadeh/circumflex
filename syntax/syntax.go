@@ -6,10 +6,10 @@ import (
 
 	"github.com/logrusorgru/aurora/v3"
 
-	"github.com/f01c33/clx/constants/nerdfonts"
+	"github.com/f01c33/circumflex/constants/nerdfonts"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/f01c33/clx/constants/unicode"
+	"github.com/f01c33/circumflex/constants/unicode"
 )
 
 const (

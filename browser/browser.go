@@ -8,7 +8,7 @@ import (
 )
 
 func Open(url string) {
-	if browser := os.Getenv("github.com/f01c33/clx_BROWSER"); browser != "" {
+	if browser := os.Getenv("github.com/f01c33/circumflex_BROWSER"); browser != "" {
 		commandAndArgs := strings.Fields(browser)
 		command := commandAndArgs[0]
 		args := append(commandAndArgs[1:], url)

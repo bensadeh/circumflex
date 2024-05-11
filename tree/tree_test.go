@@ -8,9 +8,9 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/termenv"
 
-	"github.com/f01c33/clx/item"
-	"github.com/f01c33/clx/settings"
-	"github.com/f01c33/clx/tree"
+	"github.com/f01c33/circumflex/item"
+	"github.com/f01c33/circumflex/settings"
+	"github.com/f01c33/circumflex/tree"
 
 	"github.com/stretchr/testify/assert"
 )

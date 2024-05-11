@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/f01c33/clx/constants/nerdfonts"
+	"github.com/f01c33/circumflex/constants/nerdfonts"
 
-	"github.com/f01c33/clx/comment"
-	"github.com/f01c33/clx/constants/unicode"
-	"github.com/f01c33/clx/item"
-	"github.com/f01c33/clx/settings"
-	"github.com/f01c33/clx/syntax"
+	"github.com/f01c33/circumflex/comment"
+	"github.com/f01c33/circumflex/constants/unicode"
+	"github.com/f01c33/circumflex/item"
+	"github.com/f01c33/circumflex/settings"
+	"github.com/f01c33/circumflex/syntax"
 
 	text "github.com/MichaelMure/go-term-text"
 

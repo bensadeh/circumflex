@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/f01c33/clx/categories"
+	"github.com/f01c33/circumflex/categories"
 
 	"github.com/charmbracelet/lipgloss"
 )
