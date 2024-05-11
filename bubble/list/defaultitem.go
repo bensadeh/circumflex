@@ -5,11 +5,11 @@ import (
 	"io"
 	"strings"
 
-	"github.com/f01c33/circumflex/constants/nerdfonts"
+	"github.com/bensadeh/circumflex/constants/nerdfonts"
 
-	"github.com/f01c33/circumflex/constants/category"
-	"github.com/f01c33/circumflex/item"
-	"github.com/f01c33/circumflex/syntax"
+	"github.com/bensadeh/circumflex/constants/category"
+	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/syntax"
 
 	"github.com/nleeper/goment"
 

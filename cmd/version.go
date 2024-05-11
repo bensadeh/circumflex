@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/f01c33/circumflex/app"
+	"github.com/bensadeh/circumflex/app"
 
 	"github.com/spf13/cobra"
 )

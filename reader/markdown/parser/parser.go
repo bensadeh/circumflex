@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/f01c33/circumflex/reader/markdown"
+	"github.com/bensadeh/circumflex/reader/markdown"
 )
 
 const (

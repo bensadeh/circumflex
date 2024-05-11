@@ -3,9 +3,9 @@ package postprocessor
 import (
 	"strings"
 
-	"github.com/f01c33/circumflex/constants/unicode"
+	"github.com/bensadeh/circumflex/constants/unicode"
 
-	"github.com/f01c33/circumflex/reader/markdown/postprocessor/filter"
+	"github.com/bensadeh/circumflex/reader/markdown/postprocessor/filter"
 )
 
 func filterSite(text string, url string) string {

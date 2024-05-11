@@ -3,7 +3,7 @@ package postprocessor
 import (
 	"strings"
 
-	"github.com/f01c33/circumflex/reader/markdown/postprocessor/filter"
+	"github.com/bensadeh/circumflex/reader/markdown/postprocessor/filter"
 
 	. "github.com/logrusorgru/aurora/v3"
 )

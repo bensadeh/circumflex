@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/f01c33/circumflex/history"
+	"github.com/bensadeh/circumflex/history"
 
 	"github.com/spf13/cobra"
 )

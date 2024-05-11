@@ -3,8 +3,8 @@ package postprocessor
 import (
 	"strings"
 
-	"github.com/f01c33/circumflex/constants/margins"
-	"github.com/f01c33/circumflex/constants/unicode"
+	"github.com/bensadeh/circumflex/constants/margins"
+	"github.com/bensadeh/circumflex/constants/unicode"
 
 	text "github.com/MichaelMure/go-term-text"
 )

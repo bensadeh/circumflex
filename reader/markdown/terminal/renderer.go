@@ -6,11 +6,11 @@ import (
 
 	"github.com/muesli/reflow/wordwrap"
 
-	"github.com/f01c33/circumflex/reader/markdown"
+	"github.com/bensadeh/circumflex/reader/markdown"
 
-	"github.com/f01c33/circumflex/constants/unicode"
-	"github.com/f01c33/circumflex/meta"
-	"github.com/f01c33/circumflex/syntax"
+	"github.com/bensadeh/circumflex/constants/unicode"
+	"github.com/bensadeh/circumflex/meta"
+	"github.com/bensadeh/circumflex/syntax"
 
 	"github.com/charmbracelet/glamour"
 

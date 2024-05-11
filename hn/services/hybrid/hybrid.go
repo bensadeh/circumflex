@@ -9,12 +9,12 @@ import (
 
 	"github.com/bobesa/go-domain-util/domainutil"
 
-	ansi "github.com/f01c33/circumflex/utils/strip-ansi"
+	ansi "github.com/bensadeh/circumflex/utils/strip-ansi"
 
-	"github.com/f01c33/circumflex/app"
-	"github.com/f01c33/circumflex/constants/category"
-	"github.com/f01c33/circumflex/endpoints"
-	"github.com/f01c33/circumflex/item"
+	"github.com/bensadeh/circumflex/app"
+	"github.com/bensadeh/circumflex/constants/category"
+	"github.com/bensadeh/circumflex/endpoints"
+	"github.com/bensadeh/circumflex/item"
 
 	"github.com/go-resty/resty/v2"
 )
