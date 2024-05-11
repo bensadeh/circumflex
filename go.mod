@@ -1,4 +1,4 @@
-module github.com/f01c33/circumflex
+module github.com/f01c33/clx
 
 go 1.22
 
