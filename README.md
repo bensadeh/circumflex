@@ -66,7 +66,7 @@ yay -S circumflex
 
 ```console
 # Go
-go run main.go
+go install github.com/bensadeh/circumflex@latest
 ```
 
 > [!IMPORTANT] 
