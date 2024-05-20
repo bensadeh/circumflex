@@ -665,7 +665,9 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 }
 
 func (m *Model) updateCursor() {
-	m.cursor = 0
+	currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
+
+	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)
 }
 
 func (m *Model) categoryHasStories(cat int) bool {
@@ -789,9 +791,8 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			nextIndex := m.cat.GetNextIndex(m.favorites.HasItems())
 			nextCat := m.cat.GetNextCategory(m.favorites.HasItems())
 
+			m.changeToNextCategory()
 			if m.categoryHasStories(nextCat) {
-				m.changeToNextCategory()
-
 				return nil
 			}
 
@@ -811,9 +812,8 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			prevIndex := m.cat.GetPrevIndex(m.favorites.HasItems())
 			prevCat := m.cat.GetPrevCategory(m.favorites.HasItems())
 
+			m.changeToPrevCategory()
 			if m.categoryHasStories(prevCat) {
-				m.changeToPrevCategory()
-
 				return nil
 			}
 
