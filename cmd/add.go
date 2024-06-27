@@ -3,8 +3,8 @@ package cmd
 import (
 	"strconv"
 
-	"clx/favorites"
-	"clx/hn/services/hybrid"
+	"github.com/bensadeh/circumflex/favorites"
+	"github.com/bensadeh/circumflex/hn/services/hybrid"
 
 	"github.com/spf13/cobra"
 )
