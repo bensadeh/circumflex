@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 3.7
+
+_WIP_
+
+- Opening links with <kbd>o</kbd> now marks the submission as read (Thanks, @antznin!)
+
 ## 3.6
 
 _01.04.24_
