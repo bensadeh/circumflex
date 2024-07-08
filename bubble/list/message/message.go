@@ -20,9 +20,11 @@ type OpeningLink struct {
 }
 
 type EnteringReaderMode struct {
-	Url    string
-	Title  string
-	Domain string
+	Url          string
+	Title        string
+	Domain       string
+	Id           int
+	CommentCount int
 }
 
 type ShowStatusMessage struct {
