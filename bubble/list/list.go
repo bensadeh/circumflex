@@ -539,6 +539,9 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	case message.OpeningLink:
 		m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
+	case message.OpeningCommentsInBrowser:
+		m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
+
 	case message.EnteringReaderMode:
 		errorMessage := validator.GetErrorMessage(msg.Title, msg.Domain)
 		if errorMessage != "" {
@@ -873,7 +876,14 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(m.SelectedItem().ID)
 			browser.Open(url)
 
-			return nil
+			cmd := func() tea.Msg {
+				return message.OpeningCommentsInBrowser{
+					Id:           m.SelectedItem().ID,
+					CommentCount: m.SelectedItem().CommentsCount,
+				}
+			}
+
+			return cmd
 
 		case msg.String() == "r" && m.cat.GetCurrentCategory(m.favorites.HasItems()) != category.Favorites:
 			currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())

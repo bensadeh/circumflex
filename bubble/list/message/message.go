@@ -14,6 +14,11 @@ type EnteringCommentSection struct {
 	CommentCount int
 }
 
+type OpeningCommentsInBrowser struct {
+	Id           int
+	CommentCount int
+}
+
 type OpeningLink struct {
 	Id           int
 	CommentCount int
