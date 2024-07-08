@@ -560,6 +560,8 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 		command := cli.Less(article, m.config)
 
+		m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
+
 		return m, tea.ExecProcess(command, func(err error) tea.Msg {
 			return message.EditorFinishedMsg{Err: err}
 		})
@@ -930,9 +932,11 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			return func() tea.Msg {
 				return message.EnteringReaderMode{
-					Url:    m.SelectedItem().URL,
-					Title:  m.SelectedItem().Title,
-					Domain: m.SelectedItem().Domain,
+					Url:          m.SelectedItem().URL,
+					Title:        m.SelectedItem().Title,
+					Domain:       m.SelectedItem().Domain,
+					Id:           m.SelectedItem().ID,
+					CommentCount: m.SelectedItem().CommentsCount,
 				}
 			}
 		}
