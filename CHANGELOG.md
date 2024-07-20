@@ -5,7 +5,8 @@
 
 _WIP_
 
-- Opening links with <kbd>o</kbd> now marks the submission as read (Thanks, @antznin!)
+- Interacting with stories in any way (open link in browser, open in reader mode etc.) 
+now marks the submission as read (Thanks, @antznin!)
 
 ## 3.6
 
