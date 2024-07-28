@@ -3,7 +3,7 @@
 
 ## 3.7
 
-_WIP_
+_28.08.24_
 
 - Interacting with stories in any way (open link in browser, open in reader mode etc.) 
 now marks the submission as read (Thanks, @antznin!)
