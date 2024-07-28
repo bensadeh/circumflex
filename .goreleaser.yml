@@ -1,3 +1,4 @@
+version: 2
 before:
   hooks:
     - go mod download
@@ -14,8 +15,6 @@ checksum:
   name_template: 'checksums.txt'
 snapshot:
   name_template: "{{ .Tag }}-next"
-changelog:
-  skip: true
 brews:
   - name: circumflex
     repository:

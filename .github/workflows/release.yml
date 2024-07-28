@@ -19,9 +19,9 @@ jobs:
       - name: Run tests
         run: go test -v ./...
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v4
+        uses: goreleaser/goreleaser-action@v6
         with:
-          version: latest
-          args: release --clean
+          distribution: goreleaser
+          version: "~> v2"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
