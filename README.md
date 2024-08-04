@@ -107,7 +107,7 @@ Press <kbd>Space</kbd> to read the submission link in Reader Mode.
   <img src="screenshots/reader_mode.png" width="500" alt="^"/>
 </p>
 
-> **Note**
+> [!NOTE]
 > Some websites do not work well with Reader Mode. If the submission URL points to
 a domain with known Reader Mode incompatibility, the link cannot be opened in Reader Mode.
 
