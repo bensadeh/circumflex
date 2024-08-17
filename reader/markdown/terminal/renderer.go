@@ -233,8 +233,7 @@ func renderTable(text string) string {
 	text = unescapeCharacters(text)
 	text = removeImageReference(text)
 
-	r, _ := glamour.NewTermRenderer(glamour.WithStyles(glamour.NoTTYStyleConfig),
-		glamour.WithWordWrap(int(screenWidth)))
+	r, _ := glamour.NewTermRenderer(glamour.WithAutoStyle(), glamour.WithWordWrap(int(screenWidth)))
 
 	out, _ := r.Render(text)
 
