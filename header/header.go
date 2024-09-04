@@ -1,9 +1,10 @@
 package header
 
 import (
-	"clx/categories"
 	"fmt"
 	"strings"
+
+	"github.com/bensadeh/circumflex/categories"
 
 	"github.com/charmbracelet/lipgloss"
 )

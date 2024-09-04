@@ -5,7 +5,7 @@ import (
 	"os"
 	"path"
 
-	"clx/file"
+	"github.com/bensadeh/circumflex/file"
 )
 
 type History interface {
