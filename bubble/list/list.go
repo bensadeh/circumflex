@@ -637,7 +637,7 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 		if k := msg.String(); k == "ctrl+c" || k == "q" || k == "esc" || k == "i" || k == "?" {
 			m.isOnHelpScreen = false
 
-			return m, nil
+			return m, tea.ClearScreen
 		}
 
 	case tea.WindowSizeMsg:
