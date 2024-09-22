@@ -964,16 +964,6 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	return tea.Batch(cmds...)
 }
 
-func (m *Model) showHelpScreen() tea.Cmd {
-	helpScreen := help.GetHelpScreen(m.config.EnableNerdFonts)
-
-	command := cli.Less(helpScreen, m.config)
-
-	return tea.ExecProcess(command, func(err error) tea.Msg {
-		return message.EditorFinishedMsg{Err: err}
-	})
-}
-
 // View renders the component.
 func (m *Model) View() string {
 	if m.isOnHelpScreen {
