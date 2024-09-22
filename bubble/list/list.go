@@ -637,7 +637,7 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 		if k := msg.String(); k == "ctrl+c" || k == "q" || k == "esc" || k == "i" || k == "?" {
 			m.isOnHelpScreen = false
 
-			return m, nil
+			return m, tea.ClearScreen
 		}
 
 	case tea.WindowSizeMsg:
@@ -962,16 +962,6 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	}
 
 	return tea.Batch(cmds...)
-}
-
-func (m *Model) showHelpScreen() tea.Cmd {
-	helpScreen := help.GetHelpScreen(m.config.EnableNerdFonts)
-
-	command := cli.Less(helpScreen, m.config)
-
-	return tea.ExecProcess(command, func(err error) tea.Msg {
-		return message.EditorFinishedMsg{Err: err}
-	})
 }
 
 // View renders the component.
