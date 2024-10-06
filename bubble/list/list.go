@@ -777,25 +777,25 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 		case msg.String() == "up" || msg.String() == "k":
 			if m.cursor == 0 && !m.Paginator.OnFirstPage() {
-        m.Paginator.PrevPage()
-        itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))
-	  	  m.cursor = max(m.cursor, itemsOnPage - 1)
-        
-        return nil 
-      } 
-      m.CursorUp()
+				m.Paginator.PrevPage()
+				itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))
+				m.cursor = max(m.cursor, itemsOnPage-1)
+
+				return nil
+			}
+			m.CursorUp()
 
 			return nil
 
 		case msg.String() == "down" || msg.String() == "j":
-      itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))
-      if m.cursor == itemsOnPage - 1 && !m.Paginator.OnLastPage() {
-        m.Paginator.NextPage()
-        m.cursor = 0
-        
-        return nil
-      } 
-      m.CursorDown()
+			itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))
+			if m.cursor == itemsOnPage-1 && !m.Paginator.OnLastPage() {
+				m.Paginator.NextPage()
+				m.cursor = 0
+
+				return nil
+			}
+			m.CursorDown()
 
 			return nil
 
