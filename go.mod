@@ -1,19 +1,20 @@
 module clx
 
 go 1.22
+toolchain go1.23.2
 
 require (
 	github.com/JohannesKaufmann/html-to-markdown v1.6.0
 	github.com/MichaelMure/go-term-text v0.3.1
-	github.com/PuerkitoBio/goquery v1.9.2
+	github.com/PuerkitoBio/goquery v1.10.0
 	github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89
-	github.com/charmbracelet/bubbles v0.19.0
-	github.com/charmbracelet/bubbletea v1.1.0
+	github.com/charmbracelet/bubbles v0.20.0
+	github.com/charmbracelet/bubbletea v1.1.1
 	github.com/charmbracelet/glamour v0.8.0
 	github.com/charmbracelet/lipgloss v0.13.0
-	github.com/go-resty/resty/v2 v2.14.0
+	github.com/go-resty/resty/v2 v2.15.3
 	github.com/go-shiori/go-readability v0.0.0-20240204090920-819593fddc6b
-	github.com/jedib0t/go-pretty/v6 v6.5.9
+	github.com/jedib0t/go-pretty/v6 v6.6.0
 	github.com/logrusorgru/aurora/v3 v3.0.0
 	github.com/muesli/reflow v0.3.0
 	github.com/muesli/termenv v0.15.3-0.20240618155329-98d742f6907a
@@ -50,11 +51,11 @@ require (
 	github.com/tkuchiki/go-timezone v0.2.2 // indirect
 	github.com/yuin/goldmark v1.7.4 // indirect
 	github.com/yuin/goldmark-emoji v1.0.3 // indirect
-	golang.org/x/net v0.27.0 // indirect
+	golang.org/x/net v0.29.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/sys v0.24.0 // indirect
-	golang.org/x/term v0.22.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
+	golang.org/x/sys v0.25.0 // indirect
+	golang.org/x/term v0.24.0 // indirect
+	golang.org/x/text v0.18.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
