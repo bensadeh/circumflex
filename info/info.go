@@ -4,10 +4,12 @@ import (
 	"strings"
 
 	"clx/constants/nerdfonts"
+
 	. "github.com/logrusorgru/aurora/v3"
 
 	"clx/constants/margins"
 	"clx/keymaps"
+
 	text "github.com/MichaelMure/go-term-text"
 )
 
@@ -26,6 +28,7 @@ func GetText(screenWidth int, enableNerdFonts bool) string {
 	keys.AddKeymap("Open story link in browser", "o")
 	keys.AddKeymap("Open comments in browser", "c")
 	keys.AddSeparator()
+	keys.AddKeymap("Download article's document (only PDFs)", "d")
 	keys.AddKeymap("Add to favorites", "f")
 	keys.AddKeymap("Remove from favorites", "x")
 	keys.AddSeparator()
