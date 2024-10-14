@@ -1,12 +1,17 @@
 # Changelog
 
+## 3.8
+
+_WIP_
+
+- Bump Go to 1.23
 
 ## 3.7
 
 _28.08.24_
 
-- Interacting with stories in any way (open link in browser, open in reader mode etc.) 
-now marks the submission as read (Thanks, @antznin!)
+- Interacting with stories in any way (open link in browser, open in reader mode etc.)
+  now marks the submission as read (Thanks, @antznin!)
 
 ## 3.6
 
