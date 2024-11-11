@@ -8,10 +8,10 @@ require (
 	github.com/PuerkitoBio/goquery v1.10.0
 	github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89
 	github.com/charmbracelet/bubbles v0.20.0
-	github.com/charmbracelet/bubbletea v1.1.2
+	github.com/charmbracelet/bubbletea v1.2.1
 	github.com/charmbracelet/glamour v0.8.0
 	github.com/charmbracelet/lipgloss v1.0.0
-	github.com/go-resty/resty/v2 v2.15.3
+	github.com/go-resty/resty/v2 v2.16.0
 	github.com/go-shiori/go-readability v0.0.0-20241012063810-92284fa8a71f
 	github.com/jedib0t/go-pretty/v6 v6.6.1
 	github.com/logrusorgru/aurora/v3 v3.0.0
@@ -29,7 +29,7 @@ require (
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
-	github.com/charmbracelet/x/ansi v0.4.2 // indirect
+	github.com/charmbracelet/x/ansi v0.4.5 // indirect
 	github.com/charmbracelet/x/term v0.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dlclark/regexp2 v1.11.4 // indirect
