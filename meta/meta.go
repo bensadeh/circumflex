@@ -16,7 +16,7 @@ import (
 
 	. "github.com/logrusorgru/aurora/v3"
 
-	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/v2"
 )
 
 const (
