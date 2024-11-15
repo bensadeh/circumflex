@@ -5,7 +5,7 @@ import (
 
 	"clx/constants/unicode"
 	"clx/info"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/lipgloss/v2"
 )
 
 const (

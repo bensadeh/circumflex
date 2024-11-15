@@ -2,7 +2,7 @@ package tree_test
 
 import (
 	"encoding/json"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/lipgloss/v2"
 	"github.com/muesli/termenv"
 	"os"
 	"testing"

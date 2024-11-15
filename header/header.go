@@ -4,8 +4,9 @@ import (
 	"clx/categories"
 	"fmt"
 	"strings"
+	"image/color"
 
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/lipgloss/v2"
 )
 
 func GetHeader(allCategories []int, hasFavorites bool, selectedSubHeader int, width int) string {
@@ -95,7 +96,7 @@ func removeFirstElement(list []string) []string {
 	return list[1:]
 }
 
-func getColor(i int, selectedSubHeader int, numCategories int, hasFavorites bool) (color lipgloss.TerminalColor, isSelected bool) {
+func getColor(i int, selectedSubHeader int, numCategories int, hasFavorites bool) (color color.Color, isSelected bool) {
 	if i+1 == selectedSubHeader {
 		return getSelectedCategoryColor(i+1, numCategories, hasFavorites)
 	}
@@ -103,7 +104,7 @@ func getColor(i int, selectedSubHeader int, numCategories int, hasFavorites bool
 	return lipgloss.NoColor{}, false
 }
 
-func getSelectedCategoryColor(selectedSubHeader int, numCategories int, hasFavorites bool) (color lipgloss.TerminalColor,
+func getSelectedCategoryColor(selectedSubHeader int, numCategories int, hasFavorites bool) (color color.Color,
 	isSelected bool) {
 	magenta := lipgloss.Color("5")
 	yellow := lipgloss.Color("3")
