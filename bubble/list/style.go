@@ -3,8 +3,9 @@ package list
 import (
 	"time"
 
-	"github.com/charmbracelet/bubbles/spinner"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/spinner"
+	"charm.land/lipgloss/v2"
+	"charm.land/lipgloss/v2/compat"
 )
 
 const (
@@ -61,10 +62,10 @@ func DefaultStyles() (s Styles) {
 	// Faint(true)
 
 	s.FilterPrompt = lipgloss.NewStyle().
-		Foreground(lipgloss.AdaptiveColor{Light: "#04B575", Dark: "#ECFD65"})
+		Foreground(compat.AdaptiveColor{Light: lipgloss.Color("#04B575"), Dark: lipgloss.Color("#ECFD65")})
 
 	s.FilterCursor = lipgloss.NewStyle().
-		Foreground(lipgloss.AdaptiveColor{Light: "#EE6FF8", Dark: "#EE6FF8"})
+		Foreground(compat.AdaptiveColor{Light: lipgloss.Color("#EE6FF8"), Dark: lipgloss.Color("#EE6FF8")})
 
 	s.DefaultFilterCharacterMatch = lipgloss.NewStyle().Underline(true)
 
@@ -75,12 +76,12 @@ func DefaultStyles() (s Styles) {
 	s.StatusEmpty = lipgloss.NewStyle()
 
 	s.StatusBarActiveFilter = lipgloss.NewStyle().
-		Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"})
+		Foreground(compat.AdaptiveColor{Light: lipgloss.Color("#1a1a1a"), Dark: lipgloss.Color("#dddddd")})
 
 	s.StatusBarFilterCount = lipgloss.NewStyle()
 
 	s.NoItems = lipgloss.NewStyle().
-		Foreground(lipgloss.AdaptiveColor{Light: "#909090", Dark: "#626262"})
+		Foreground(compat.AdaptiveColor{Light: lipgloss.Color("#909090"), Dark: lipgloss.Color("#626262")})
 
 	s.ArabicPagination = lipgloss.NewStyle()
 

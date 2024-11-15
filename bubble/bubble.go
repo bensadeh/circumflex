@@ -10,8 +10,8 @@ import (
 	"clx/favorites"
 	"clx/settings"
 
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 )
 
 var docStyle = lipgloss.NewStyle()
@@ -32,8 +32,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m model) View() string {
-	return docStyle.Render(m.list.View())
+func (m model) View() tea.View {
+	v := tea.NewView(docStyle.Render(m.list.View()))
+	v.AltScreen = true
+	return v
 }
 
 func Run(config *settings.Config, cat *categories.Categories) {
@@ -41,7 +43,7 @@ func Run(config *settings.Config, cat *categories.Categories) {
 
 	m := model{list: list.New(list.NewDefaultDelegate(), config, cat, favorites.New(), 0, 0)}
 
-	p := tea.NewProgram(m, tea.WithAltScreen())
+	p := tea.NewProgram(m)
 
 	_, err := p.Run()
 	if err != nil {

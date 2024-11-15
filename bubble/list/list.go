@@ -11,7 +11,7 @@ import (
 
 	"clx/app"
 
-	"github.com/charmbracelet/bubbles/viewport"
+	"charm.land/bubbles/v2/viewport"
 
 	"clx/reader"
 
@@ -33,10 +33,10 @@ import (
 	"clx/tree"
 	"clx/validator"
 
-	"github.com/charmbracelet/bubbles/paginator"
-	"github.com/charmbracelet/bubbles/spinner"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/paginator"
+	"charm.land/bubbles/v2/spinner"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 )
 
 const (
@@ -153,11 +153,6 @@ func New(delegate ItemDelegate, config *settings.Config, cat *categories.Categor
 	p.Type = paginator.Dots
 	p.ActiveDot = styles.ActivePaginationDot.String()
 	p.InactiveDot = styles.InactivePaginationDot.String()
-	p.UseHLKeys = false
-	p.UseJKKeys = false
-	p.UseLeftRightKeys = false
-	p.UsePgUpPgDownKeys = false
-	p.UseUpDownKeys = false
 
 	bufferCategory := 1
 	items := make([][]*item.Item, numberOfCategories+bufferCategory)
@@ -449,9 +444,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 		heightOfHeaderAndStatusLine := 4
 
-		m.viewport = viewport.New(windowSizeMsg.Width, windowSizeMsg.Height-heightOfHeaderAndStatusLine)
-		m.viewport.YPosition = 2
-		m.viewport.HighPerformanceRendering = false
+		m.viewport = viewport.New(viewport.WithWidth(windowSizeMsg.Width), viewport.WithHeight(windowSizeMsg.Height-heightOfHeaderAndStatusLine))
 
 		content := lipgloss.NewStyle().
 			Width(windowSizeMsg.Width).
@@ -502,8 +495,8 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		footerHeight := 2
 		verticalMarginHeight := headerHeight + footerHeight
 
-		m.viewport.Width = msg.Width
-		m.viewport.Height = msg.Height - verticalMarginHeight
+		m.viewport.SetWidth(msg.Width)
+		m.viewport.SetHeight(msg.Height - verticalMarginHeight)
 
 		m.width = msg.Width
 		m.height = msg.Height
@@ -648,8 +641,8 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 		footerHeight := lipgloss.Height("")
 		verticalMarginHeight := headerHeight + footerHeight
 
-		m.viewport.Width = msg.Width
-		m.viewport.Height = msg.Height - verticalMarginHeight
+		m.viewport.SetWidth(msg.Width)
+		m.viewport.SetHeight(msg.Height - verticalMarginHeight)
 
 		m.width = msg.Width
 		m.height = msg.Height
@@ -661,7 +654,7 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 
 		m.viewport.SetContent(content.String())
 
-		return m, viewport.Sync(m.viewport)
+		return m, nil
 
 	}
 
