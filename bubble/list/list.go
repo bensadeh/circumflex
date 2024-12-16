@@ -1,7 +1,6 @@
 package list
 
 import (
-	"clx/categories"
 	_ "embed"
 	"fmt"
 	"io"
@@ -9,29 +8,31 @@ import (
 	"strings"
 	"time"
 
-	"clx/app"
+	"github.com/bensadeh/circumflex/categories"
+
+	"github.com/bensadeh/circumflex/app"
 
 	"github.com/charmbracelet/bubbles/viewport"
 
-	"clx/reader"
+	"github.com/bensadeh/circumflex/reader"
 
-	"clx/browser"
-	"clx/bubble/list/message"
-	"clx/bubble/ranking"
-	"clx/cli"
-	"clx/constants/category"
-	"clx/favorites"
-	"clx/header"
-	"clx/help"
-	"clx/history"
-	"clx/hn"
-	"clx/hn/services/hybrid"
-	"clx/hn/services/mock"
-	"clx/item"
-	"clx/screen"
-	"clx/settings"
-	"clx/tree"
-	"clx/validator"
+	"github.com/bensadeh/circumflex/browser"
+	"github.com/bensadeh/circumflex/bubble/list/message"
+	"github.com/bensadeh/circumflex/bubble/ranking"
+	"github.com/bensadeh/circumflex/cli"
+	"github.com/bensadeh/circumflex/constants/category"
+	"github.com/bensadeh/circumflex/favorites"
+	"github.com/bensadeh/circumflex/header"
+	"github.com/bensadeh/circumflex/help"
+	"github.com/bensadeh/circumflex/history"
+	"github.com/bensadeh/circumflex/hn"
+	"github.com/bensadeh/circumflex/hn/services/hybrid"
+	"github.com/bensadeh/circumflex/hn/services/mock"
+	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/screen"
+	"github.com/bensadeh/circumflex/settings"
+	"github.com/bensadeh/circumflex/tree"
+	"github.com/bensadeh/circumflex/validator"
 
 	"github.com/charmbracelet/bubbles/paginator"
 	"github.com/charmbracelet/bubbles/spinner"
@@ -810,8 +811,6 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			m.SetDisabledInput(true)
 			startSpinnerCmd := m.StartSpinner()
 
-			//m.categoryToDisplay = nextCat
-
 			changeCatCmd := func() tea.Msg {
 				return message.FetchAndChangeToCategory{Index: nextIndex, Category: nextCat, Cursor: m.cursor}
 			}
@@ -833,8 +832,6 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			m.SetDisabledInput(true)
 			startSpinnerCmd := m.StartSpinner()
-
-			//m.categoryToDisplay = prevCat
 
 			changeCatCmd := func() tea.Msg {
 				return message.FetchAndChangeToCategory{Index: prevIndex, Category: prevCat, Cursor: m.cursor}
