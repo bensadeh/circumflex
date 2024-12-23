@@ -148,6 +148,7 @@ func (s *Service) FetchComments(id int) *item.Item {
 
 	for attempt := 1; attempt <= maxRetries; attempt++ {
 		client := resty.New()
+		// Increase timeout
 		client.SetTimeout(baseTimeout * time.Duration(attempt))
 		client.SetBaseURL("http://api.hackerwebapp.com/item/")
 
@@ -159,16 +160,14 @@ func (s *Service) FetchComments(id int) *item.Item {
 			break // Successful request
 		}
 
-		// Log error
-		fmt.Printf("Attempt %d failed: %v\n", attempt, err)
-
-		// Exponential backoff with jitter
+		// Exponential backoff with random jitter
 		jitter := time.Duration(rand.Intn(500)) * time.Millisecond
 		backoff := (1 << attempt) * time.Second
 		time.Sleep(backoff + jitter)
 	}
 
 	if err != nil {
+		// All attempts failed, log error 
 		fmt.Printf("Failed to fetch comments after %d retires: %w", maxRetries, err)
 	}
 
