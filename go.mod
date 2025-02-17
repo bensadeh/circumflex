@@ -5,7 +5,7 @@ go 1.24
 require (
 	github.com/JohannesKaufmann/html-to-markdown v1.6.0
 	github.com/MichaelMure/go-term-text v0.3.1
-	github.com/PuerkitoBio/goquery v1.10.1
+	github.com/PuerkitoBio/goquery v1.10.2
 	github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89
 	github.com/charmbracelet/bubbles v0.20.0
 	github.com/charmbracelet/bubbletea v1.3.3
@@ -18,7 +18,7 @@ require (
 	github.com/muesli/reflow v0.3.0
 	github.com/muesli/termenv v0.15.3-0.20240618155329-98d742f6907a
 	github.com/nleeper/goment v1.4.4
-	github.com/spf13/cobra v1.8.1
+	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
 	github.com/wayneashleyberry/terminal-dimensions v1.1.0
 )
