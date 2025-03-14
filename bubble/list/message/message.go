@@ -63,3 +63,7 @@ type CategoryFetchingFinished struct {
 type AddToFavorites struct {
 	Item *item.Item
 }
+
+type DownloadFile struct {
+	Url string
+}

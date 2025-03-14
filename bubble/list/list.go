@@ -20,6 +20,7 @@ import (
 	"clx/bubble/ranking"
 	"clx/cli"
 	"clx/constants/category"
+	"clx/download"
 	"clx/favorites"
 	"clx/header"
 	"clx/help"
@@ -615,6 +616,21 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		m.NewStatusMessage(msg.Message)
 
 		m.updatePagination()
+
+	case message.DownloadFile:
+		statusMessage := "Document downloaded successfully"
+		m.hideStatusMessage()
+		m.disableInput = false
+
+		filename, _ := download.GuessDownloadFileName(msg.Url)
+		downloadDir, _ := download.GetDownloadDir()
+		absoluteFilepath := fmt.Sprintf("%s/%s", downloadDir, filename)
+		err := download.DownloadFile(msg.Url, absoluteFilepath)
+		if err != nil {
+			statusMessage = "Could not download document"
+		}
+
+		return m, m.NewStatusMessageWithDuration(statusMessage, time.Second*3)
 	}
 
 	if m.isOnHelpScreen {
@@ -949,6 +965,23 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 					CommentCount: m.SelectedItem().CommentsCount,
 				}
 			}
+
+		case msg.String() == "d":
+			if !strings.Contains(m.SelectedItem().Title, "[pdf]") {
+				return m.NewStatusMessage("Only PDFs are currently supported ...")
+			}
+			m.SetDisabledInput(true)
+
+			downloadCmd := func() tea.Msg {
+				return message.DownloadFile{
+					Url: m.SelectedItem().URL,
+				}
+			}
+
+			cmds = append(cmds, downloadCmd)
+			cmds = append(cmds, m.NewStatusMessage("Downloading ..."))
+
+			return tea.Batch(cmds...)
 		}
 	}
 
