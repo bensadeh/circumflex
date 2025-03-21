@@ -6,16 +6,16 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 
-	"clx/constants/nerdfonts"
+	"github.com/bensadeh/circumflex/constants/nerdfonts"
 
-	"clx/comment"
-	"clx/constants/margins"
-	"clx/constants/unicode"
-	"clx/item"
-	"clx/meta"
-	"clx/settings"
-	"clx/syntax"
-	"clx/tree/postprocessor"
+	"github.com/bensadeh/circumflex/comment"
+	"github.com/bensadeh/circumflex/constants/margins"
+	"github.com/bensadeh/circumflex/constants/unicode"
+	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/meta"
+	"github.com/bensadeh/circumflex/settings"
+	"github.com/bensadeh/circumflex/syntax"
+	"github.com/bensadeh/circumflex/tree/postprocessor"
 
 	. "github.com/logrusorgru/aurora/v3"
 
