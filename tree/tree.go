@@ -255,36 +255,49 @@ func incrementNewCommentsCount(comments *item.Item, newCommentsSoFar *int, lastV
 	return *newCommentsSoFar
 }
 
+var mods = []string{"dang", "tomhow"}
+
 func getAuthorLabel(author, originalPoster, parentPoster string, enableNerdFonts bool) string {
-	if enableNerdFonts {
-		authorLabel := nerdfonts.Author + " "
-
-		switch author {
-		case "dang":
-			return Green(authorLabel).String()
-
-		case originalPoster:
-			return Red(authorLabel).String()
-
-		case parentPoster:
-			return Magenta(authorLabel).String()
-
-		default:
-			return ""
-		}
+	label := computeLabel(author, originalPoster, parentPoster, enableNerdFonts)
+	if label == "" {
+		return ""
 	}
+	return colorizeLabel(author, originalPoster, parentPoster, label)
+}
 
-	switch author {
-	case "dang":
-		return Green("mod ").String()
-
-	case originalPoster:
-		return Red("OP ").String()
-
-	case parentPoster:
-		return Magenta("PP ").String()
-
+func computeLabel(author, originalPoster, parentPoster string, nerdFonts bool) string {
+	switch {
+	case nerdFonts:
+		return nerdfonts.Author + " "
+	case isMod(author):
+		return "mod "
+	case author == originalPoster:
+		return "OP "
+	case author == parentPoster:
+		return "PP "
 	default:
 		return ""
 	}
+}
+
+func colorizeLabel(author, originalPoster, parentPoster, label string) string {
+	switch {
+	case isMod(author):
+		return Green(label).String()
+	case author == originalPoster:
+		return Red(label).String()
+	case author == parentPoster:
+		return Magenta(label).String()
+	default:
+		return ""
+	}
+}
+
+func isMod(author string) bool {
+	for _, mod := range mods {
+		if author == mod {
+			return true
+		}
+	}
+	return false
 }

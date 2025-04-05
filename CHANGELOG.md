@@ -4,7 +4,8 @@
 
 _WIP_
 
-- Bump Go to 1.23
+- Added a moderator indicator to `tomhow`
+- Bump Go to 1.24
 
 ## 3.7
 
