@@ -1,8 +1,12 @@
 # Changelog
 
-## 3.8
+## 3.9
 
 _WIP_
+
+## 3.8
+
+_05.04.25_
 
 - Added a moderator indicator to `tomhow`
 - Bump Go to 1.24
