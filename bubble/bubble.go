@@ -10,8 +10,8 @@ import (
 	"clx/favorites"
 	"clx/settings"
 
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	tea "github.com/charmbracelet/bubbletea/v2"
+	"github.com/charmbracelet/lipgloss/v2"
 )
 
 var docStyle = lipgloss.NewStyle()

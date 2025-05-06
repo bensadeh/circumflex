@@ -4,11 +4,12 @@ import (
 	"github.com/logrusorgru/aurora/v3"
 	"regexp"
 	"strings"
+	"image/color"
 
 	"clx/constants/nerdfonts"
 
 	"clx/constants/unicode"
-	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/v2"
 )
 
 const (
@@ -95,7 +96,7 @@ func getYear(text string, highlightType int) string {
 	}
 }
 
-func label(text string, fg lipgloss.TerminalColor, bg lipgloss.TerminalColor, highlightType int, enableNerdFonts bool) string {
+func label(text string, fg color.Color, bg color.Color, highlightType int, enableNerdFonts bool) string {
 	content := lipgloss.NewStyle().
 		Foreground(fg).
 		Background(bg)
@@ -126,7 +127,7 @@ func label(text string, fg lipgloss.TerminalColor, bg lipgloss.TerminalColor, hi
 		getRightBorder(bg, highlightType, enableNerdFonts)
 }
 
-func getLeftBorder(bg lipgloss.TerminalColor, highlightType int, enableNerdFonts bool) string {
+func getLeftBorder(bg color.Color, highlightType int, enableNerdFonts bool) string {
 	if enableNerdFonts {
 		borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
 		return borderStyle.Render(nerdfonts.LeftSeparator)
@@ -136,7 +137,7 @@ func getLeftBorder(bg lipgloss.TerminalColor, highlightType int, enableNerdFonts
 	return borderStyle.Render(" ")
 }
 
-func getRightBorder(bg lipgloss.TerminalColor, highlightType int, enableNerdFonts bool) string {
+func getRightBorder(bg color.Color, highlightType int, enableNerdFonts bool) string {
 	if enableNerdFonts {
 		borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
 		return borderStyle.Render(nerdfonts.RightSeparator)
@@ -146,7 +147,7 @@ func getRightBorder(bg lipgloss.TerminalColor, highlightType int, enableNerdFont
 	return borderStyle.Render(" ")
 }
 
-func getBorderStyle(bg lipgloss.TerminalColor, highlightType int, enableNerdFonts bool) lipgloss.Style {
+func getBorderStyle(bg color.Color, highlightType int, enableNerdFonts bool) lipgloss.Style {
 	if !enableNerdFonts {
 		return lipgloss.NewStyle().
 			Background(bg)
