@@ -51,7 +51,7 @@
 The binary name for `circumflex` is `clx`.
 
 #### Package managers
-```console
+```bash
 # Homebrew
 brew install circumflex
 
@@ -64,9 +64,21 @@ yay -S circumflex
 
 #### From source
 
-```console
+- (Go) For testing or development use
+```bash
 # Go
 go run main.go
+```
+- (Go) Exporting as a terminal application
+```bash
+# (as a terminal app)
+go build -o clx main.go
+
+# For all users (requires sudo)
+sudo mv clx /usr/local/bin/
+
+# OR for current user only
+mv clx ~/.local/bin/
 ```
 
 > [!IMPORTANT] 
