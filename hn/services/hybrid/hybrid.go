@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"sync/atomic"
 	"time"
+	"math/rand"
 
 	"github.com/bobesa/go-domain-util/domainutil"
 
@@ -138,15 +139,36 @@ func mapItem(hn *endpoints.HN) *item.Item {
 }
 
 func (s *Service) FetchComments(id int) *item.Item {
-	client := resty.New()
-	client.SetTimeout(5 * time.Second)
-	client.SetBaseURL("http://api.hackerwebapp.com/item/")
 
-	response, err := client.R().
-		SetHeader("User-Agent", app.Name+"/"+app.Version).
-		Get(strconv.Itoa(id))
+	baseTimeout := 5 * time.Second
+	maxRetries := 3
+
+	var response *resty.Response
+	var err error
+
+	for attempt := 1; attempt <= maxRetries; attempt++ {
+		client := resty.New()
+		// Increase timeout
+		client.SetTimeout(baseTimeout * time.Duration(attempt))
+		client.SetBaseURL("http://api.hackerwebapp.com/item/")
+
+
+		response, err = client.R().
+			SetHeader("User-Agent", app.Name+"/"+app.Version).
+			Get(strconv.Itoa(id))
+		if err == nil {
+			break // Successful request
+		}
+
+		// Exponential backoff with random jitter
+		jitter := time.Duration(rand.Intn(500)) * time.Millisecond
+		backoff := (1 << attempt) * time.Second
+		time.Sleep(backoff + jitter)
+	}
+
 	if err != nil {
-		panic(err)
+		// All attempts failed, log error 
+		fmt.Printf("Failed to fetch comments after %d retires: %w", maxRetries, err)
 	}
 
 	sanitizedResponse := ansi.Strip(string(response.Body()))
