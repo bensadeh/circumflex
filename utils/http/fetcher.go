@@ -24,7 +24,7 @@ func FetchStories(page int, category int) ([]*endpoints.Story, error) {
 	var s []*endpoints.Story
 
 	client := resty.New()
-	client.SetTimeout(5 * time.Second)
+	client.SetTimeout(10 * time.Second)
 
 	_, err := client.R().
 		SetHeader("User-Agent", app.Name+"/"+app.Version).

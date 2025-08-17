@@ -102,7 +102,7 @@ func fetchItem(id int) *item.Item {
 	hn := new(endpoints.HN)
 
 	client := resty.New()
-	client.SetTimeout(5 * time.Second)
+	client.SetTimeout(10 * time.Second)
 	client.SetBaseURL("https://hacker-news.firebaseio.com/v0/item/")
 
 	resp, err := client.R().
@@ -139,7 +139,7 @@ func mapItem(hn *endpoints.HN) *item.Item {
 
 func (s *Service) FetchComments(id int) *item.Item {
 	client := resty.New()
-	client.SetTimeout(5 * time.Second)
+	client.SetTimeout(10 * time.Second)
 	client.SetBaseURL("http://api.hackerwebapp.com/item/")
 
 	response, err := client.R().

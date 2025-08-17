@@ -1,8 +1,11 @@
 # Changelog
 
-## 3.9
+## 3.8.1
 
 _WIP_
+
+- Bump Go to 1.25
+- Set timeout for fetching submissions to 10 seconds
 
 ## 3.8
 
