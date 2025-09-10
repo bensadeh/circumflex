@@ -4,6 +4,7 @@
 
 _WIP_
 
+- Add support for xdg-open on FreeBSD, OpenBSD, and NetBSD
 - Bump Go to 1.25
 - Set timeout for fetching submissions to 10 seconds
 
