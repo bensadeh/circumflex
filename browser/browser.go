@@ -20,7 +20,7 @@ func Open(url string) {
 	}
 
 	switch runtime.GOOS {
-	case "linux":
+	case "linux", "freebsd", "openbsd", "netbsd":
 		cmd := exec.Command("xdg-open", url)
 		_ = cmd.Start()
 
