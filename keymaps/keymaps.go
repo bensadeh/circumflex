@@ -3,7 +3,7 @@ package keymaps
 import (
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/v2"
 
 	termText "github.com/MichaelMure/go-term-text"
 	"github.com/jedib0t/go-pretty/v6/text"
