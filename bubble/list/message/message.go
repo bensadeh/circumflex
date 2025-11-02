@@ -57,6 +57,7 @@ type Refresh struct {
 type CategoryFetchingFinished struct {
 	Index   int
 	Cursor  int
+	Page    int
 	Message string
 }
 
