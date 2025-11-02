@@ -1107,15 +1107,18 @@ func (m *Model) statusAndPaginationView() string {
 		MaxWidth(5).
 		Render("")
 
+	// Calculate dynamic width for pagination indicator
+	rightWidth := max(5, lipgloss.Width(rightContent))
+
 	center := lipgloss.NewStyle().
 		Inline(true).
-		Width(m.width - 5 - 5).
+		Width(m.width - 5 - rightWidth).
 		Align(lipgloss.Center).
 		Render(centerContent)
 
 	right := lipgloss.NewStyle().
 		Inline(true).
-		Width(5).
+		Width(rightWidth).
 		Align(lipgloss.Center).
 		Render(rightContent)
 
