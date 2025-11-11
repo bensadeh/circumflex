@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"os"
 
-	"clx/categories"
+	"github.com/bensadeh/circumflex/categories"
 
-	"clx/app"
-	"clx/bubble"
-	"clx/cli"
-	"clx/indent"
-	"clx/less"
-	"clx/settings"
+	"github.com/bensadeh/circumflex/app"
+	"github.com/bensadeh/circumflex/bubble"
+	"github.com/bensadeh/circumflex/cli"
+	"github.com/bensadeh/circumflex/indent"
+	"github.com/bensadeh/circumflex/less"
+	"github.com/bensadeh/circumflex/settings"
 
 	"github.com/logrusorgru/aurora/v3"
 	"github.com/spf13/cobra"
@@ -33,7 +33,7 @@ var (
 
 func Root() *cobra.Command {
 	rootCmd := &cobra.Command{
-		Use:     "clx",
+		Use:     "github.com/bensadeh/circumflex",
 		Short:   "\n" + aurora.Magenta("circumflex").String() + " is a command line tool for browsing Hacker News in your terminal",
 		Version: app.Version,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -126,7 +126,7 @@ func verifyLess(noLessVerify bool) {
 	if !isValid && currentLessVersion == "" {
 		flag := aurora.Bold("--no-less-verify").String()
 		lessCmd := aurora.Magenta("less").String()
-		clxCmd := aurora.Magenta("clx").String()
+		clxCmd := aurora.Magenta("github.com/bensadeh/circumflex").String()
 		lessVersion := aurora.Yellow("?").String()
 
 		fmt.Printf("Could not verify version of %s\n\n", lessCmd)
@@ -140,7 +140,7 @@ func verifyLess(noLessVerify bool) {
 	if !isValid {
 		flag := aurora.Bold("--no-less-verify").String()
 		lessCmd := aurora.Magenta("less").String()
-		clxCmd := aurora.Magenta("clx").String()
+		clxCmd := aurora.Magenta("github.com/bensadeh/circumflex").String()
 		lessVersion := aurora.Yellow(currentLessVersion).String()
 
 		fmt.Printf("Your version of %s is outdated\n\n", lessCmd)
