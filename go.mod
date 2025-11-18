@@ -1,4 +1,4 @@
-module clx
+module github.com/bensadeh/circumflex
 
 go 1.25
 
