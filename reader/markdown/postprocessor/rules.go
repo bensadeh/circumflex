@@ -1,10 +1,11 @@
 package postprocessor
 
 import (
-	"clx/constants/unicode"
 	"strings"
 
-	"clx/reader/markdown/postprocessor/filter"
+	"github.com/bensadeh/circumflex/constants/unicode"
+
+	"github.com/bensadeh/circumflex/reader/markdown/postprocessor/filter"
 )
 
 func filterSite(text string, url string) string {

@@ -1,8 +1,9 @@
 package message
 
 import (
-	"clx/item"
 	"time"
+
+	"github.com/bensadeh/circumflex/item"
 )
 
 type EditorFinishedMsg struct {

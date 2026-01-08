@@ -5,13 +5,13 @@ import (
 	"strconv"
 	"time"
 
-	"clx/less"
+	"github.com/bensadeh/circumflex/less"
 
-	"clx/hn/services/hybrid"
+	"github.com/bensadeh/circumflex/hn/services/hybrid"
 
-	"clx/cli"
-	"clx/screen"
-	"clx/tree"
+	"github.com/bensadeh/circumflex/cli"
+	"github.com/bensadeh/circumflex/screen"
+	"github.com/bensadeh/circumflex/tree"
 
 	"github.com/spf13/cobra"
 )

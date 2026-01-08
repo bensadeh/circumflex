@@ -3,8 +3,8 @@ package help
 import (
 	"strings"
 
-	"clx/constants/unicode"
-	"clx/info"
+	"github.com/bensadeh/circumflex/constants/unicode"
+	"github.com/bensadeh/circumflex/info"
 	"github.com/charmbracelet/lipgloss"
 )
 

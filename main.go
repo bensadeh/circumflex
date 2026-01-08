@@ -1,6 +1,6 @@
 package main
 
-import "clx/cmd"
+import "github.com/bensadeh/circumflex/cmd"
 
 func main() {
 	rootCmd := cmd.Root()

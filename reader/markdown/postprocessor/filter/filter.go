@@ -3,8 +3,8 @@ package filter
 import (
 	"strings"
 
-	"clx/constants/unicode"
-	ansi "clx/utils/strip-ansi"
+	"github.com/bensadeh/circumflex/constants/unicode"
+	ansi "github.com/bensadeh/circumflex/utils/strip-ansi"
 )
 
 type RuleSet struct {

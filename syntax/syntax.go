@@ -1,13 +1,14 @@
 package syntax
 
 import (
-	"github.com/logrusorgru/aurora/v3"
 	"regexp"
 	"strings"
 
-	"clx/constants/nerdfonts"
+	"github.com/logrusorgru/aurora/v3"
 
-	"clx/constants/unicode"
+	"github.com/bensadeh/circumflex/constants/nerdfonts"
+
+	"github.com/bensadeh/circumflex/constants/unicode"
 	"github.com/charmbracelet/lipgloss"
 )
 
