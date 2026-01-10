@@ -9,6 +9,7 @@ const (
 	Document       = ""
 	Audio          = ""
 	Video          = ""
+	YCombinator    = ""
 	LeftSeparator  = ""
 	RightSeparator = ""
 )

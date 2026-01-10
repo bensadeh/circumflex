@@ -1,13 +1,15 @@
 package syntax
 
 import (
-	"github.com/logrusorgru/aurora/v3"
 	"regexp"
 	"strings"
+
+	"github.com/logrusorgru/aurora/v3"
 
 	"clx/constants/nerdfonts"
 
 	"clx/constants/unicode"
+
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -36,19 +38,19 @@ func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNer
 	if enableNerdFonts {
 		expression = regexp.MustCompile(`\((YC ([SW]\d{2}))\)`)
 
-		highlightedStartup := reset + getYCBarNerdFonts(``+unicode.NoBreakSpace+`$2`, highlightType, enableNerdFonts) +
+		highlightedStartup := reset + getYCBarNerdFonts(nerdfonts.YCombinator+unicode.NoBreakSpace+`$2`, highlightType, enableNerdFonts) +
 			getHighlight(highlightType)
 		return expression.ReplaceAllString(comment, highlightedStartup)
 	}
 
 	expression = regexp.MustCompile(`\((YC [SW]\d{2})\)`)
-	highlightedStartup := reset + getYCBar(`$1`, highlightType, enableNerdFonts) +
+	highlightedStartup := reset + getYCBar(`$1`, highlightType) +
 		getHighlight(highlightType)
 
 	return expression.ReplaceAllString(comment, highlightedStartup)
 }
 
-func getYCBar(text string, highlightType int, enableNerdFonts bool) string {
+func getYCBar(text string, highlightType int) string {
 	switch highlightType {
 	case Selected:
 		return lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Reverse(true).Render(text)
@@ -59,7 +61,6 @@ func getYCBar(text string, highlightType int, enableNerdFonts bool) string {
 	default:
 		return lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Render(text)
 	}
-
 }
 
 func getYCBarNerdFonts(text string, highlightType int, enableNerdFonts bool) string {
