@@ -1,8 +1,8 @@
 # Changelog
 
-## 3.8.1
+## 3.9
 
-_WIP_
+_10.01.26_
 
 - Add support for xdg-open on FreeBSD, OpenBSD, and NetBSD
 - Bump Go to 1.25
