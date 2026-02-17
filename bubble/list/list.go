@@ -673,7 +673,9 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 }
 
 func (m *Model) updateCursor() {
-	m.cursor = min(m.cursor, m.Paginator.ItemsOnPage(len(m.VisibleItems()))-1)
+	currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
+
+	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)
 }
 
 func (m *Model) categoryHasStories(cat int) bool {
@@ -682,19 +684,15 @@ func (m *Model) categoryHasStories(cat int) bool {
 
 func (m *Model) changeToNextCategory() {
 	m.cat.Next(m.favorites.HasItems())
-	currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
-
 	m.Paginator.Page = 0
-	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)
+	m.cursor = 0
 	m.updatePagination()
 }
 
 func (m *Model) changeToPrevCategory() {
 	m.cat.Prev(m.favorites.HasItems())
-	currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
-
 	m.Paginator.Page = 0
-	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)
+	m.cursor = 0
 	m.updatePagination()
 }
 
@@ -801,16 +799,13 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			nextIndex := m.cat.GetNextIndex(m.favorites.HasItems())
 			nextCat := m.cat.GetNextCategory(m.favorites.HasItems())
 
+			m.changeToNextCategory()
 			if m.categoryHasStories(nextCat) {
-				m.changeToNextCategory()
-
 				return nil
 			}
 
 			m.SetDisabledInput(true)
 			startSpinnerCmd := m.StartSpinner()
-
-			//m.categoryToDisplay = nextCat
 
 			changeCatCmd := func() tea.Msg {
 				return message.FetchAndChangeToCategory{Index: nextIndex, Category: nextCat, Cursor: m.cursor}
@@ -825,16 +820,13 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			prevIndex := m.cat.GetPrevIndex(m.favorites.HasItems())
 			prevCat := m.cat.GetPrevCategory(m.favorites.HasItems())
 
+			m.changeToPrevCategory()
 			if m.categoryHasStories(prevCat) {
-				m.changeToPrevCategory()
-
 				return nil
 			}
 
 			m.SetDisabledInput(true)
 			startSpinnerCmd := m.StartSpinner()
-
-			//m.categoryToDisplay = prevCat
 
 			changeCatCmd := func() tea.Msg {
 				return message.FetchAndChangeToCategory{Index: prevIndex, Category: prevCat, Cursor: m.cursor}
