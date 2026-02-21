@@ -36,9 +36,10 @@ func getCategories(allCategories []int, hasFavorites bool, selectedSubHeader int
 	subHeaders := getSubHeaders(allCategories, hasFavorites)
 	subHeaders = removeFirstElement(subHeaders)
 
-	cats := lipgloss.NewStyle().
+	var cats strings.Builder
+	cats.WriteString(lipgloss.NewStyle().
 		Underline(true).
-		Render("")
+		Render(""))
 
 	separator := lipgloss.NewStyle().
 		Faint(true).
@@ -48,17 +49,17 @@ func getCategories(allCategories []int, hasFavorites bool, selectedSubHeader int
 		isOnLastItem := i == len(subHeaders)-1
 		selectedCatColor, isSelected := getColor(i, selectedSubHeader, len(subHeaders), hasFavorites)
 
-		cats += lipgloss.NewStyle().
+		cats.WriteString(lipgloss.NewStyle().
 			Foreground(selectedCatColor).
 			Faint(!isSelected).
-			Render(subHeader)
+			Render(subHeader))
 
 		if !isOnLastItem {
-			cats += separator
+			cats.WriteString(separator)
 		}
 	}
 
-	return cats
+	return cats.String()
 }
 
 var ReverseCategoryMapping = map[int]categories.Category{

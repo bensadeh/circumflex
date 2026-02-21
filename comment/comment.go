@@ -54,7 +54,7 @@ func Print(c string, config *settings.Config, commentWidth int, availableScreenW
 		comment.sections[i] = s
 	}
 
-	output := ""
+	var output strings.Builder
 
 	for i, s := range comment.sections {
 		paragraph := s.content
@@ -86,21 +86,21 @@ func Print(c string, config *settings.Config, commentWidth int, availableScreenW
 			wrappedComment, _ := text.Wrap(paragraph, availableScreenWidth)
 
 			codeLines := strings.Split(wrappedComment, "\n")
-			formattedCodeLines := ""
+			var formattedCodeLines strings.Builder
 
 			for j, codeLine := range codeLines {
 				isOnLastLine := j == len(codeLines)-1
 
 				if isOnLastLine {
-					formattedCodeLines += dimmed + codeLine + reset
+					formattedCodeLines.WriteString(dimmed + codeLine + reset)
 
 					break
 				}
 
-				formattedCodeLines += dimmed + codeLine + reset + "\n"
+				formattedCodeLines.WriteString(dimmed + codeLine + reset + "\n")
 			}
 
-			paragraph = formattedCodeLines
+			paragraph = formattedCodeLines.String()
 
 		default:
 			paragraph = syntax.ReplaceSymbols(paragraph)
@@ -119,10 +119,10 @@ func Print(c string, config *settings.Config, commentWidth int, availableScreenW
 		}
 
 		separator := getParagraphSeparator(i, len(comment.sections))
-		output += paragraph + separator
+		output.WriteString(paragraph + separator)
 	}
 
-	return output
+	return output.String()
 }
 
 func convertToEmojis(paragraph string, disableEmojis bool) string {

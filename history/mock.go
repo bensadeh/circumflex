@@ -1,5 +1,7 @@
 package history
 
+import "slices"
+
 import "time"
 
 type Mock struct{}
@@ -15,13 +17,7 @@ func (Mock) Contains(id int) bool {
 }
 
 func contains(slice []int, element int) bool {
-	for _, a := range slice {
-		if a == element {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(slice, element)
 }
 
 func (Mock) GetLastVisited(_ int) int64 {

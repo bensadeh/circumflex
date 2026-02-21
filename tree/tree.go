@@ -2,6 +2,7 @@ package tree
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
@@ -33,14 +34,14 @@ func Print(comments *item.Item, config *settings.Config, screenWidth int, lastVi
 	header := getHeader(comments, config, lastVisited)
 	firstCommentID := getFirstCommentID(comments.Comments)
 
-	replies := ""
+	var replies strings.Builder
 
 	for _, reply := range comments.Comments {
-		replies += printReplies(reply, config, commentSectionScreenWidth, comments.User, "", firstCommentID,
-			lastVisited)
+		replies.WriteString(printReplies(reply, config, commentSectionScreenWidth, comments.User, "", firstCommentID,
+			lastVisited))
 	}
 
-	commentSection := postprocessor.Process(header+replies+newLine, screenWidth)
+	commentSection := postprocessor.Process(header+replies.String()+newLine, screenWidth)
 
 	return commentSection
 }
@@ -78,18 +79,19 @@ func printReplies(c *item.Item, config *settings.Config, screenWidth int, origin
 	fullComment := getSeparator(c.Level, config.CommentWidth, c.ID, firstCommentID) + indentedComment + newLine
 	fullComment += getButton(c.Level, getReplyCount(c), config.CommentWidth)
 
-	fullCommentWithFilterTag := addFilterTag(c.Level, fullComment)
+	var fullCommentWithFilterTag strings.Builder
+	fullCommentWithFilterTag.WriteString(addFilterTag(c.Level, fullComment))
 
 	if c.Level == 0 {
 		parentPoster = c.User
 	}
 
 	for _, reply := range c.Comments {
-		fullCommentWithFilterTag += printReplies(reply, config, screenWidth, originalPoster, parentPoster, firstCommentID,
-			lastVisited)
+		fullCommentWithFilterTag.WriteString(printReplies(reply, config, screenWidth, originalPoster, parentPoster, firstCommentID,
+			lastVisited))
 	}
 
-	return fullCommentWithFilterTag
+	return fullCommentWithFilterTag.String()
 }
 
 func getButton(level int, replyCount int, commentWidth int) string {
@@ -133,17 +135,17 @@ func addFilterTag(level int, fullComment string) string {
 		return fullComment
 	}
 
-	fullCommentWithFilterTags := ""
+	var fullCommentWithFilterTags strings.Builder
 	lines := strings.Split(fullComment, "\n")
 
 	for i, line := range lines {
 		if i == len(lines)-1 {
 			continue
 		}
-		fullCommentWithFilterTags += line + unicode.InvisibleCharacterForExpansion + "\n"
+		fullCommentWithFilterTags.WriteString(line + unicode.InvisibleCharacterForExpansion + "\n")
 	}
 
-	return fullCommentWithFilterTags
+	return fullCommentWithFilterTags.String()
 }
 
 func formatComment(c *item.Item, config *settings.Config, originalPoster string, parentPoster string, commentWidth int,
@@ -294,10 +296,5 @@ func colorizeLabel(author, originalPoster, parentPoster, label string) string {
 }
 
 func isMod(author string) bool {
-	for _, mod := range mods {
-		if author == mod {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(mods, author)
 }

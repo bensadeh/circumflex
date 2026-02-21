@@ -118,9 +118,9 @@ func renderList(text string, lineWidth int) string {
 	text = highlightBackticks(text)
 
 	output := ""
-	lines := strings.Split(text, "\n")
+	lines := strings.SplitSeq(text, "\n")
 
-	for _, line := range lines {
+	for line := range lines {
 		exp := regexp.MustCompile(`^\s*(-|\d+\.)`)
 
 		listToken := exp.FindString(line)
@@ -461,7 +461,7 @@ func highlightBackticks(text string) string {
 
 func replaceListPrefixes(text string) string {
 	lines := strings.Split(text, "\n")
-	output := ""
+	var output strings.Builder
 
 	for _, line := range lines {
 		line = regexp.MustCompile(`^`+strings.Repeat(indentLevel1, 2)+"-").
@@ -476,8 +476,8 @@ func replaceListPrefixes(text string) string {
 		line = regexp.MustCompile(`^`+strings.Repeat(indentLevel1, 5)+"-").
 			ReplaceAllString(line, strings.Repeat(indentLevel1, 5)+"▫")
 
-		output += line + "\n"
+		output.WriteString(line + "\n")
 	}
 
-	return output
+	return output.String()
 }
