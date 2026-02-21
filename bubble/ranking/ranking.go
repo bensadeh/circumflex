@@ -26,7 +26,7 @@ func GetRankings(useRelativeNumbering bool, itemsVisible, itemsTotal, currentPos
 }
 
 func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPages int) string {
-	rankings := ""
+	var rankings strings.Builder
 
 	startingRank := itemsVisible*currentPage + 1
 	endingRank := 0
@@ -41,10 +41,10 @@ func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPa
 
 	for i := startingRank; i < endingRank; i++ {
 		rank := lipgloss.NewStyle().Width(6).Align(lipgloss.Right).Render(strconv.Itoa(i)+".") + " "
-		rankings += rank + newParagraph
+		rankings.WriteString(rank + newParagraph)
 	}
 
-	return strings.TrimSuffix(rankings, "\n\n")
+	return strings.TrimSuffix(rankings.String(), "\n\n")
 }
 
 func relativeRankings(itemsVisible int, itemsTotal int, currentPosition int, currentPage int, totalPages int) string {
@@ -54,24 +54,24 @@ func relativeRankings(itemsVisible int, itemsTotal int, currentPosition int, cur
 		itemsVisible = itemsVisible - (totalPages*itemsVisible - itemsTotal)
 	}
 
-	rankings := ""
+	var rankings strings.Builder
 	end := itemsVisible - currentPosition
 	iterator := currentPosition
 
 	for iterator != 0 {
 		number := strconv.Itoa(iterator)
-		rankings += aurora.Faint(number).String() + indentationFromRight + newParagraph
+		rankings.WriteString(aurora.Faint(number).String() + indentationFromRight + newParagraph)
 		iterator--
 	}
 
-	rankings += strconv.Itoa(rankOfCurrentlySelectedItem) + " " + indentationFromRight + newParagraph
+	rankings.WriteString(strconv.Itoa(rankOfCurrentlySelectedItem) + " " + indentationFromRight + newParagraph)
 	iterator++
 
 	for iterator < end {
 		number := strconv.Itoa(iterator)
-		rankings += aurora.Faint(number).String() + indentationFromRight + newParagraph
+		rankings.WriteString(aurora.Faint(number).String() + indentationFromRight + newParagraph)
 		iterator++
 	}
 
-	return rankings
+	return rankings.String()
 }

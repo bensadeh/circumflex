@@ -17,7 +17,7 @@ func ConvertToMarkdown(article string) (string, error) {
 		Replacement: func(content string, s *goquery.Selection, opt *md.Options) *string {
 			content = strings.TrimSpace(content)
 
-			return md.String(content)
+			return new(content)
 		},
 	}
 
@@ -28,7 +28,7 @@ func ConvertToMarkdown(article string) (string, error) {
 		Replacement: func(content string, s *goquery.Selection, opt *md.Options) *string {
 			content = strings.TrimSpace(content)
 
-			return md.String(markdown.ItalicStart + content + markdown.ItalicStop)
+			return new(markdown.ItalicStart + content + markdown.ItalicStop)
 		},
 	}
 
@@ -37,7 +37,7 @@ func ConvertToMarkdown(article string) (string, error) {
 		Replacement: func(content string, s *goquery.Selection, opt *md.Options) *string {
 			content = strings.TrimSpace(content)
 
-			return md.String(markdown.BoldStart + content + markdown.BoldStop)
+			return new(markdown.BoldStart + content + markdown.BoldStop)
 		},
 	}
 

@@ -1168,19 +1168,3 @@ func getRemoveItemConfirmationMessage() string {
 	return red.Render("Remove") + normal.Render(" from Favorites? Press ") + bold.Render("y") +
 		normal.Render(" to confirm")
 }
-
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-
-	return b
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-
-	return b
-}

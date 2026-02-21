@@ -29,11 +29,3 @@ func GetSubmissionsToShow(screenHeight int, maxStories int) int {
 
 	return min(adjustedHeight/2, maxStories)
 }
-
-func min(x, y int) int {
-	if x > y {
-		return y
-	}
-
-	return x
-}

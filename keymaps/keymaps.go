@@ -58,22 +58,22 @@ func (k *List) AddKeymap(description string, key string) {
 }
 
 func (k *List) Print(screenWidth int) string {
-	output := ""
+	var output strings.Builder
 
 	for _, item := range k.keymaps {
 		switch item.category {
 		case header:
 			centeredHeader := text.AlignCenter.Apply(item.header, screenWidth)
-			output += centeredHeader + newline
+			output.WriteString(centeredHeader + newline)
 		case separator:
-			output += newline
+			output.WriteString(newline)
 		case keymap:
 			dots := getDotSeparators(item.description, item.key, screenWidth)
-			output += lipgloss.NewStyle().Bold(true).Render(item.key) + lipgloss.NewStyle().Faint(true).Render(dots) + item.description + newline
+			output.WriteString(lipgloss.NewStyle().Bold(true).Render(item.key) + lipgloss.NewStyle().Faint(true).Render(dots) + item.description + newline)
 		}
 	}
 
-	return output
+	return output.String()
 }
 
 func getDotSeparators(description string, key string, screenWidth int) string {
