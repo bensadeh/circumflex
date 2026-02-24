@@ -580,7 +580,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 			m.items[msg.Category] = stories
 
-			return message.CategoryFetchingFinished{Index: msg.Index, Cursor: msg.Cursor, Message: errMsg}
+			return message.CategoryFetchingFinished{Index: msg.Index, Cursor: msg.Cursor, Page: 0, Message: errMsg}
 		}
 
 	case message.Refresh:
@@ -596,14 +596,18 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 			m.items[msg.CurrentCategory] = stories
 
-			return message.CategoryFetchingFinished{Index: msg.CurrentIndex, Cursor: 0, Message: errMsg}
+			return message.CategoryFetchingFinished{Index: msg.CurrentIndex, Cursor: 0, Page: 0, Message: errMsg}
 		}
 
 	case message.ShowStatusMessage:
 		cmds = append(cmds, m.NewStatusMessageWithDuration(msg.Message, msg.Duration))
 
 	case message.CategoryFetchingFinished:
-		m.Paginator.Page = 0
+		if msg.Page > 0 {
+			m.Paginator.Page = msg.Page
+		} else {
+			m.Paginator.Page = 0
+		}
 		m.SetDisabledInput(false)
 		m.StopSpinner()
 		m.isBufferActive = false
@@ -792,6 +796,39 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return nil
 
 		case msg.String() == "right" || msg.String() == "l":
+			// Check if we're at the last page and need to fetch more items
+			if m.Paginator.Page == m.Paginator.TotalPages-1 {
+				currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
+				currentItemCount := len(m.items[currentCategory])
+				itemsToFetch := m.getNumberOfItemsToFetch(currentCategory)
+
+				// If we've fetched all available items, fetch more
+				if currentItemCount >= itemsToFetch {
+					m.SetDisabledInput(true)
+					startSpinnerCmd := m.StartSpinner()
+
+					// Save current cursor position and calculate next page
+					currentCursor := m.cursor
+					targetPage := m.Paginator.Page + 1
+
+					fetchMoreCmd := func() tea.Msg {
+						newItemsToFetch := currentItemCount + (m.Paginator.PerPage * 3)
+						stories, errMsg := m.service.FetchItems(newItemsToFetch, currentCategory)
+						m.items[currentCategory] = stories
+
+						return message.CategoryFetchingFinished{
+							Index:   m.cat.GetCurrentIndex(),
+							Cursor:  currentCursor,
+							Page:    targetPage,
+							Message: errMsg,
+						}
+					}
+
+					cmds := []tea.Cmd{startSpinnerCmd, fetchMoreCmd}
+					return tea.Batch(cmds...)
+				}
+			}
+
 			m.Paginator.NextPage()
 			m.updateCursor()
 
@@ -1070,15 +1107,18 @@ func (m *Model) statusAndPaginationView() string {
 		MaxWidth(5).
 		Render("")
 
+	// Calculate dynamic width for pagination indicator
+	rightWidth := max(5, lipgloss.Width(rightContent))
+
 	center := lipgloss.NewStyle().
 		Inline(true).
-		Width(m.width - 5 - 5).
+		Width(m.width - 5 - rightWidth).
 		Align(lipgloss.Center).
 		Render(centerContent)
 
 	right := lipgloss.NewStyle().
 		Inline(true).
-		Width(5).
+		Width(rightWidth).
 		Align(lipgloss.Center).
 		Render(rightContent)
 
