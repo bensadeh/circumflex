@@ -44,9 +44,5 @@ func TestKeymaps(t *testing.T) {
 [1ma + b[0m[2m ..................................................................... [0mItem
 `
 
-	// Workaround for a bug where lipgloss does not render ansi formatting during testing
-	// Possibly related to https://github.com/charmbracelet/lipgloss/issues/176
-	expectedWithoutAnsi := ansi.Strip(expected)
-
-	assert.Equal(t, expectedWithoutAnsi, actual)
+	assert.Equal(t, ansi.Strip(expected), ansi.Strip(actual))
 }

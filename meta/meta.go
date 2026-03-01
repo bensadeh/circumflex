@@ -31,24 +31,28 @@ func GetReaderModeMetaBlock(title string, url string, lineWidth int) string {
 		PaddingRight(1).
 		Width(lineWidth)
 
+	contentWidth := lineWidth - style.GetHorizontalBorderSize() - style.GetHorizontalPadding()
+
 	formattedTitle, _ := text.Wrap(Bold(title).String(), lineWidth)
 	formattedTitle = unicode.InvisibleCharacterForTopLevelComments + newLine + formattedTitle
-	formattedURL := Blue(text.TruncateMax(url, lineWidth-2)).String()
+	formattedURL := Blue(text.TruncateMax(url, contentWidth)).String()
 	info := newParagraph + Green("Reader Mode").String()
 
 	return formattedTitle + newParagraph + style.Render(formattedURL+info) + newParagraph
 }
 
 func GetCommentSectionMetaBlock(c *item.Item, config *settings.Config, newComments int) string {
-	columnWidth := config.CommentWidth/2 - 1
-	url := getURL(c.URL, c.Domain, config.CommentWidth)
-	rootComment := parseRootComment(c.Content, config)
-
 	style := lipgloss.NewStyle().
 		BorderStyle(lipgloss.RoundedBorder()).
 		PaddingLeft(1).
 		PaddingRight(1).
 		Width(config.CommentWidth)
+
+	contentWidth := config.CommentWidth - style.GetHorizontalBorderSize() - style.GetHorizontalPadding()
+	columnWidth := contentWidth / 2
+
+	url := getURL(c.URL, c.Domain, contentWidth)
+	rootComment := parseRootComment(c.Content, config, contentWidth)
 
 	leftColumn := lipgloss.NewStyle().
 		Width(columnWidth).
@@ -145,24 +149,24 @@ func highlightTitle(title string, disableHeadlineHighlighting bool, enableNerdFo
 	return Bold(highlightedTitle).String()
 }
 
-func getURL(url string, domain string, lineWidth int) string {
+func getURL(url string, domain string, contentWidth int) string {
 	if domain == "" {
 		return ""
 	}
 
-	truncatedURL := text.TruncateMax(url, lineWidth-2)
+	truncatedURL := text.TruncateMax(url, contentWidth)
 	formattedURL := Blue(truncatedURL).String() + newLine
 
 	return formattedURL + newLine
 }
 
-func parseRootComment(c string, config *settings.Config) string {
+func parseRootComment(c string, config *settings.Config, contentWidth int) string {
 	if c == "" {
 		return ""
 	}
 
-	rootComment := comment.Print(c, config, config.CommentWidth-2, config.CommentWidth)
-	wrappedComment, _ := text.Wrap(rootComment, config.CommentWidth-2)
+	rootComment := comment.Print(c, config, contentWidth, contentWidth)
+	wrappedComment, _ := text.Wrap(rootComment, contentWidth)
 
 	return newParagraph + wrappedComment
 }

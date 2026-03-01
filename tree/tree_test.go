@@ -2,8 +2,6 @@ package tree_test
 
 import (
 	"encoding/json"
-	"charm.land/lipgloss/v2"
-	"github.com/muesli/termenv"
 	"os"
 	"testing"
 
@@ -16,8 +14,6 @@ import (
 
 func TestPrint(t *testing.T) {
 	t.Parallel()
-
-	lipgloss.SetColorProfile(termenv.ANSI)
 
 	commentJSON, _ := os.ReadFile("test/comments.json")
 	expected, _ := os.ReadFile("test/expected.txt")
