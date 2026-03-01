@@ -3,8 +3,8 @@
 # \kl    Left arrow
 # \kr    Right arrow
 
-h    filter   ^M&!⁣\r
-\kl  filter   ^M&!⁣\r
+h    filter   ^M&!‍\r
+\kl  filter   ^M&!‍\r
 
 l    filter   ^M&!‌\r
 \kr  filter   ^M&!‌\r
