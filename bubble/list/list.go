@@ -53,21 +53,18 @@ type ItemDelegate interface {
 type Model struct {
 	showTitle     bool
 	showStatusBar bool
-	disableInput  bool
 
 	Title  string
 	Styles Styles
 
-	spinner                     spinner.Model
-	showSpinner                 bool
-	width                       int
-	height                      int
-	Paginator                   paginator.Model
-	cursor                      int
-	onStartup                   bool
-	isVisible                   bool
-	onAddToFavoritesPrompt      bool
-	onRemoveFromFavoritesPrompt bool
+	state       ViewState
+	spinner     spinner.Model
+	showSpinner bool
+	width       int
+	height      int
+	Paginator   paginator.Model
+	cursor      int
+	isVisible   bool
 
 	StatusMessageLifetime time.Duration
 
@@ -84,8 +81,7 @@ type Model struct {
 	favorites *favorites.Favorites
 	cat       *categories.Categories
 
-	isOnHelpScreen bool
-	viewport       viewport.Model
+	viewport viewport.Model
 }
 
 func New(delegate ItemDelegate, config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int) *Model {
@@ -116,29 +112,24 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 		Title:                 "List",
 		StatusMessageLifetime: time.Second,
 
-		width:        width,
-		height:       height,
-		delegate:     delegate,
-		history:      hist,
-		items:        items,
-		Paginator:    p,
-		spinner:      sp,
-		onStartup:    true,
-		isVisible:    true,
-		disableInput: true,
-		config:       config,
-		service:      service,
-		favorites:    favorites,
-		cat:          cat,
+		state:     StateStartup,
+		width:     width,
+		height:    height,
+		delegate:  delegate,
+		history:   hist,
+		items:     items,
+		Paginator: p,
+		spinner:   sp,
+		isVisible: true,
+		config:    config,
+		service:   service,
+		favorites: favorites,
+		cat:       cat,
 	}
 
 	m.updatePagination()
 
 	return &m
-}
-
-func (m *Model) SetIsVisible(v bool) {
-	m.isVisible = v
 }
 
 func (m *Model) setSize(width, height int) {
@@ -155,11 +146,11 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	// we can initialize the viewport. The initial dimensions come in
 	// quickly, though asynchronously, which is why we wait for them
 	// here.
-	if m.onStartup && !isWindowSizeMsg {
+	if m.state == StateStartup && !isWindowSizeMsg {
 		return m, nil
 	}
 
-	if m.onStartup && isWindowSizeMsg {
+	if m.state == StateStartup && isWindowSizeMsg {
 		h, v := lipgloss.NewStyle().GetFrameSize()
 		m.setSize(windowSizeMsg.Width-h, windowSizeMsg.Height-v)
 
@@ -168,7 +159,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		spinnerCmd := m.StartSpinner()
 		cmds = append(cmds, spinnerCmd)
 
-		m.SetOnStartup(false)
+		m.state = StateLoading
 
 		m.items[category.Favorites] = m.favorites.GetItems()
 
@@ -203,7 +194,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	case message.FetchingFinished:
 		m.items[msg.Category] = msg.Stories
 		m.StopSpinner()
-		m.disableInput = false
+		m.state = StateBrowsing
 		m.updatePagination()
 		cmd := m.NewStatusMessage(msg.Message)
 
@@ -279,8 +270,8 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		})
 
 	case message.EditorFinishedMsg:
-		m.SetIsVisible(true)
-		m.SetDisabledInput(false)
+		m.isVisible = true
+		m.state = StateBrowsing
 
 	case message.FetchAndChangeToCategory:
 		return m, m.fetchAndChangeToCategory(msg)
@@ -297,7 +288,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		}
 		m.items[msg.Category] = msg.Stories
 		m.Paginator.Page = 0
-		m.SetDisabledInput(false)
+		m.state = StateBrowsing
 		m.StopSpinner()
 		m.isBufferActive = false
 		m.cat.SetIndex(msg.Index)
@@ -311,7 +302,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		m.updatePagination()
 	}
 
-	if m.isOnHelpScreen {
+	if m.state == StateHelpScreen {
 		return m.updateHelpScreen(msg)
 	}
 
@@ -320,18 +311,3 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
-func (m *Model) OnStartup() bool {
-	return m.onStartup
-}
-
-func (m *Model) IsInputDisabled() bool {
-	return m.disableInput
-}
-
-func (m *Model) SetDisabledInput(value bool) {
-	m.disableInput = value
-}
-
-func (m *Model) SetOnStartup(value bool) {
-	m.onStartup = value
-}

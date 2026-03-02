@@ -13,7 +13,7 @@ import (
 
 // View renders the component.
 func (m *Model) View() string {
-	if m.isOnHelpScreen {
+	if m.state == StateHelpScreen {
 		categoriesWithoutFavorites := m.cat.GetCategories(false)
 		hasFavorites := m.favorites.HasItems()
 
@@ -86,7 +86,7 @@ func (m *Model) statusAndPaginationView() string {
 	underscore := lipgloss.NewStyle().Underline(true).Render(" ")
 	underline := strings.Repeat(underscore, m.width)
 
-	if m.isOnHelpScreen {
+	if m.state == StateHelpScreen {
 		centerContent = lipgloss.NewStyle().Faint(true).Render(
 			"github.com/bensadeh/circumflex • version " + app.Version)
 	} else if m.showSpinner {
@@ -95,7 +95,7 @@ func (m *Model) statusAndPaginationView() string {
 		centerContent = m.statusMessage
 	}
 
-	if m.isOnHelpScreen {
+	if m.state == StateHelpScreen {
 		rightContent = ""
 	} else {
 		rightContent = m.Paginator.View()

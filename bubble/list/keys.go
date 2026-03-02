@@ -19,21 +19,21 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-		case msg.String() == "i" || msg.String() == "?":
-			m.isOnHelpScreen = true
-
-			return nil
-
-		case m.onAddToFavoritesPrompt && msg.String() == "y":
+		case m.state == StateAddFavoritesPrompt && msg.String() == "y":
 			return m.handleConfirmAddFavorites()
 
-		case m.onRemoveFromFavoritesPrompt && msg.String() == "y":
+		case m.state == StateRemoveFavoritesPrompt && msg.String() == "y":
 			return m.handleConfirmRemoveFavorites()
 
-		case m.onAddToFavoritesPrompt || m.onRemoveFromFavoritesPrompt:
+		case m.state == StateAddFavoritesPrompt || m.state == StateRemoveFavoritesPrompt:
 			return m.handleCancelPrompt()
 
-		case m.disableInput:
+		case m.state != StateBrowsing:
+			return nil
+
+		case msg.String() == "i" || msg.String() == "?":
+			m.state = StateHelpScreen
+
 			return nil
 
 		case msg.String() == "q" || msg.String() == "esc" || msg.String() == "ctrl+c":
@@ -82,19 +82,17 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 		case msg.String() == "f" || msg.String() == "V":
 			m.SetPermanentStatusMessage(getAddItemConfirmationMessage(), false)
-			m.onAddToFavoritesPrompt = true
-			m.disableInput = true
+			m.state = StateAddFavoritesPrompt
 			return nil
 
 		case msg.String() == "x" && m.cat.GetCurrentCategory(m.favorites.HasItems()) == category.Favorites:
 			m.SetPermanentStatusMessage(getRemoveItemConfirmationMessage(), false)
-			m.onRemoveFromFavoritesPrompt = true
-			m.disableInput = true
+			m.state = StateRemoveFavoritesPrompt
 			return nil
 
 		case msg.String() == "enter":
-			m.SetIsVisible(false)
-			m.SetDisabledInput(true)
+			m.isVisible = false
+			m.state = StateEditorOpen
 
 			cmd := func() tea.Msg {
 				return message.EnteringCommentSection{
@@ -106,8 +104,8 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return cmd
 
 		case msg.String() == " ":
-			m.SetIsVisible(false)
-			m.SetDisabledInput(true)
+			m.isVisible = false
+			m.state = StateEditorOpen
 
 			return func() tea.Msg {
 				return message.EnteringReaderMode{
@@ -135,8 +133,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 }
 
 func (m *Model) handleConfirmAddFavorites() tea.Cmd {
-	m.onAddToFavoritesPrompt = false
-	m.disableInput = false
+	m.state = StateBrowsing
 
 	addToFavorites := func() tea.Msg {
 		return message.AddToFavorites{Item: m.SelectedItem()}
@@ -146,8 +143,7 @@ func (m *Model) handleConfirmAddFavorites() tea.Cmd {
 }
 
 func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
-	m.onRemoveFromFavoritesPrompt = false
-	m.disableInput = false
+	m.state = StateBrowsing
 
 	m.favorites.Remove(m.Index())
 	m.items[category.Favorites] = m.favorites.GetItems()
@@ -180,9 +176,7 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 }
 
 func (m *Model) handleCancelPrompt() tea.Cmd {
-	m.onAddToFavoritesPrompt = false
-	m.onRemoveFromFavoritesPrompt = false
-	m.disableInput = false
+	m.state = StateBrowsing
 	m.hideStatusMessage()
 	return nil
 }
@@ -196,7 +190,7 @@ func (m *Model) handleTabForward() tea.Cmd {
 		return nil
 	}
 
-	m.SetDisabledInput(true)
+	m.state = StateLoading
 	startSpinnerCmd := m.StartSpinner()
 
 	changeCatCmd := func() tea.Msg {
@@ -215,7 +209,7 @@ func (m *Model) handleTabBackward() tea.Cmd {
 		return nil
 	}
 
-	m.SetDisabledInput(true)
+	m.state = StateLoading
 	startSpinnerCmd := m.StartSpinner()
 
 	changeCatCmd := func() tea.Msg {
@@ -264,7 +258,7 @@ func (m *Model) handleRefresh() tea.Cmd {
 	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)
 	m.updatePagination()
 
-	m.SetDisabledInput(true)
+	m.state = StateLoading
 	m.cursor = 0
 	m.Paginator.Page = currentPage
 

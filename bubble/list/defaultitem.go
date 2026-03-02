@@ -147,15 +147,15 @@ func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *item.It
 	)
 
 	switch {
-	case isSelected && m.onAddToFavoritesPrompt:
+	case isSelected && m.state == StateAddFavoritesPrompt:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitleAddToFavorites, s.SelectedDescAddToFavorites, domain,
 			desc, syntax.AddToFavorites, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 
-	case isSelected && m.onRemoveFromFavoritesPrompt:
+	case isSelected && m.state == StateRemoveFavoritesPrompt:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitleRemoveFromFavorites, s.SelectedDescRemoveFromFavoritesFavorites, domain,
 			desc, syntax.RemoveFromFavorites, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 
-	case isSelected && !m.disableInput:
+	case isSelected && m.state == StateBrowsing:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitle, s.SelectedDesc, domain,
 			desc, syntax.Selected, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 
@@ -163,7 +163,7 @@ func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *item.It
 		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(true), s.MarkAsReadDesc, domain,
 			desc, syntax.MarkAsRead, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 
-	case m.disableInput && !(m.onAddToFavoritesPrompt || m.onRemoveFromFavoritesPrompt):
+	case m.state == StateLoading || m.state == StateEditorOpen:
 		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(false), s.MarkAsReadDesc, domain,
 			desc, syntax.MarkAsRead, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 

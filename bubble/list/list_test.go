@@ -64,7 +64,7 @@ func newTestModelReady(t *testing.T) *Model {
 	// Simulate fetch completion: populate items and reset state
 	m.items[category.Top] = testItems()
 	m.StopSpinner()
-	m.disableInput = false
+	m.state = StateBrowsing
 
 	return m
 }
@@ -100,32 +100,32 @@ func keyMsg(s string) tea.KeyPressMsg {
 
 func TestStartup_WaitsForWindowSizeMsg(t *testing.T) {
 	m := newTestModel(t)
-	assert.True(t, m.onStartup)
+	assert.Equal(t, StateStartup, m.state)
 
 	// Non-WindowSizeMsg during startup should be ignored
 	m, cmd := m.Update(message.StatusMessageTimeout{})
-	assert.True(t, m.onStartup)
+	assert.Equal(t, StateStartup, m.state)
 	assert.Nil(t, cmd)
 }
 
 func TestStartup_InitializesOnWindowSizeMsg(t *testing.T) {
 	m := newTestModel(t)
-	assert.True(t, m.onStartup)
+	assert.Equal(t, StateStartup, m.state)
 
 	m, cmd := m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
-	assert.False(t, m.onStartup)
+	assert.Equal(t, StateLoading, m.state)
 	assert.True(t, m.showSpinner)
 	assert.NotNil(t, cmd, "should return batch cmd with spinner + fetch")
 }
 
 func TestEditorFinished_RestoresState(t *testing.T) {
 	m := newTestModelReady(t)
-	m.SetIsVisible(false)
-	m.SetDisabledInput(true)
+	m.isVisible = false
+	m.state = StateEditorOpen
 
 	m, _ = m.Update(message.EditorFinishedMsg{})
 	assert.True(t, m.isVisible)
-	assert.False(t, m.disableInput)
+	assert.Equal(t, StateBrowsing, m.state)
 }
 
 func TestStatusMessageTimeout_ClearsMessage(t *testing.T) {
@@ -157,13 +157,13 @@ func TestWindowResize_UpdatesDimensions(t *testing.T) {
 
 func TestCategoryFetchingFinished_UpdatesState(t *testing.T) {
 	m := newTestModelReady(t)
-	m.disableInput = true
+	m.state = StateLoading
 	m.showSpinner = true
 	m.isBufferActive = true
 
 	m, _ = m.Update(message.CategoryFetchingFinished{Index: 1, Cursor: 0, Message: ""})
 
-	assert.False(t, m.disableInput)
+	assert.Equal(t, StateBrowsing, m.state)
 	assert.False(t, m.showSpinner)
 	assert.False(t, m.isBufferActive)
 }
@@ -262,7 +262,7 @@ func TestTabToUncachedCategory(t *testing.T) {
 
 	m, cmd := m.Update(keyMsg("tab"))
 
-	assert.True(t, m.disableInput)
+	assert.Equal(t, StateLoading, m.state)
 	assert.True(t, m.showSpinner)
 	assert.NotNil(t, cmd, "should return batch cmd with spinner + fetch")
 }
@@ -272,7 +272,7 @@ func TestEnterCommentSection(t *testing.T) {
 
 	m, cmd := m.Update(keyMsg("enter"))
 	assert.False(t, m.isVisible)
-	assert.True(t, m.disableInput)
+	assert.Equal(t, StateEditorOpen, m.state)
 	assert.NotNil(t, cmd)
 
 	// Execute the returned Cmd to get the message
@@ -351,8 +351,7 @@ func TestAddFavoritesPrompt(t *testing.T) {
 	m := newTestModelReady(t)
 
 	m, _ = m.Update(keyMsg("f"))
-	assert.True(t, m.onAddToFavoritesPrompt)
-	assert.True(t, m.disableInput)
+	assert.Equal(t, StateAddFavoritesPrompt, m.state)
 	assert.NotEmpty(t, m.statusMessage)
 }
 
@@ -361,12 +360,11 @@ func TestAddFavoritesConfirm(t *testing.T) {
 
 	// Enter prompt
 	m, _ = m.Update(keyMsg("f"))
-	assert.True(t, m.onAddToFavoritesPrompt)
+	assert.Equal(t, StateAddFavoritesPrompt, m.state)
 
 	// Confirm
 	m, cmd := m.Update(keyMsg("y"))
-	assert.False(t, m.onAddToFavoritesPrompt)
-	assert.False(t, m.disableInput)
+	assert.Equal(t, StateBrowsing, m.state)
 	assert.NotNil(t, cmd, "should return AddToFavorites cmd")
 }
 
@@ -375,17 +373,16 @@ func TestAddFavoritesCancel(t *testing.T) {
 
 	// Enter prompt
 	m, _ = m.Update(keyMsg("f"))
-	assert.True(t, m.onAddToFavoritesPrompt)
+	assert.Equal(t, StateAddFavoritesPrompt, m.state)
 
 	// Cancel with any key other than "y"
 	m, _ = m.Update(keyMsg("n"))
-	assert.False(t, m.onAddToFavoritesPrompt)
-	assert.False(t, m.disableInput)
+	assert.Equal(t, StateBrowsing, m.state)
 }
 
 func TestDisabledInput_IgnoresKeys(t *testing.T) {
 	m := newTestModelReady(t)
-	m.disableInput = true
+	m.state = StateLoading
 
 	cursorBefore := m.cursor
 	m, cmd := m.Update(keyMsg("j"))
@@ -398,11 +395,11 @@ func TestHelpScreen_Toggle(t *testing.T) {
 
 	// Enter help screen
 	m, _ = m.Update(keyMsg("i"))
-	assert.True(t, m.isOnHelpScreen)
+	assert.Equal(t, StateHelpScreen, m.state)
 
 	// Exit help screen
 	m, _ = m.Update(keyMsg("q"))
-	assert.False(t, m.isOnHelpScreen)
+	assert.Equal(t, StateBrowsing, m.state)
 }
 
 func TestRefresh(t *testing.T) {
@@ -410,7 +407,7 @@ func TestRefresh(t *testing.T) {
 
 	m, cmd := m.Update(keyMsg("r"))
 	assert.True(t, m.isBufferActive)
-	assert.True(t, m.disableInput)
+	assert.Equal(t, StateLoading, m.state)
 	assert.True(t, m.showSpinner)
 	assert.NotNil(t, cmd)
 }
@@ -462,7 +459,7 @@ func TestViewBrowsing_HasContent(t *testing.T) {
 
 func TestViewHelpScreen(t *testing.T) {
 	m := newTestModelReady(t)
-	m.isOnHelpScreen = true
+	m.state = StateHelpScreen
 
 	got := m.View()
 	assert.NotEmpty(t, got)
