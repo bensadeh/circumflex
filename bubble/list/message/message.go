@@ -68,3 +68,12 @@ type CategoryFetchingFinished struct {
 type AddToFavorites struct {
 	Item *item.Item
 }
+
+type CommentTreeReady struct {
+	Content string
+}
+
+type ArticleReady struct {
+	Content string
+	Error   string
+}

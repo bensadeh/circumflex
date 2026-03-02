@@ -4,13 +4,8 @@ import (
 	"io"
 	"time"
 
-	"clx/categories"
-
-	"charm.land/bubbles/v2/viewport"
-
-	"clx/reader"
-
 	"clx/bubble/list/message"
+	"clx/categories"
 	"clx/cli"
 	"clx/constants/category"
 	"clx/favorites"
@@ -19,11 +14,10 @@ import (
 	"clx/hn"
 	"clx/item"
 	"clx/settings"
-	"clx/tree"
-	"clx/validator"
 
 	"charm.land/bubbles/v2/paginator"
 	"charm.land/bubbles/v2/spinner"
+	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 )
@@ -250,23 +244,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, nil
 
 	case message.EnteringCommentSection:
-		lastVisited := m.history.GetLastVisited(msg.Id)
-
-		m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
-
-		story := m.service.FetchComments(msg.Id)
-
-		if m.cat.GetCurrentCategory(m.favorites.HasItems()) == category.Favorites {
-			m.favorites.UpdateStoryAndWriteToDisk(story)
-		}
-
-		commentTree := tree.Print(story, m.config, m.width, lastVisited)
-
-		command := cli.Less(commentTree, m.config)
-
-		return m, tea.ExecProcess(command, func(err error) tea.Msg {
-			return message.EditorFinishedMsg{Err: err}
-		})
+		return m, m.handleEnteringCommentSection(msg)
 
 	case message.OpeningLink:
 		m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
@@ -275,27 +253,26 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
 	case message.EnteringReaderMode:
-		errorMessage := validator.GetErrorMessage(msg.Title, msg.Domain)
-		if errorMessage != "" {
-			cmds = append(cmds, m.NewStatusMessageWithDuration(errorMessage, time.Second*3))
-			cmds = append(cmds, func() tea.Msg {
-				return message.EditorFinishedMsg{Err: nil}
-			})
-			return m, tea.Batch(cmds...)
+		return m, m.handleEnteringReaderMode(msg)
+
+	case message.CommentTreeReady:
+		command := cli.Less(msg.Content, m.config)
+
+		return m, tea.ExecProcess(command, func(err error) tea.Msg {
+			return message.EditorFinishedMsg{Err: err}
+		})
+
+	case message.ArticleReady:
+		if msg.Error != "" {
+			return m, tea.Batch(
+				m.NewStatusMessageWithDuration(msg.Error, time.Second*3),
+				func() tea.Msg {
+					return message.EditorFinishedMsg{Err: nil}
+				},
+			)
 		}
 
-		article, err := reader.GetArticle(msg.Url, msg.Title, m.config.CommentWidth, m.config.IndentationSymbol)
-		if err != nil {
-			cmds = append(cmds, m.NewStatusMessageWithDuration("Could not read article in Reader Mode", time.Second*3))
-			cmds = append(cmds, func() tea.Msg {
-				return message.EditorFinishedMsg{Err: nil}
-			})
-			return m, tea.Batch(cmds...)
-		}
-
-		command := cli.Less(article, m.config)
-
-		m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
+		command := cli.Less(msg.Content, m.config)
 
 		return m, tea.ExecProcess(command, func(err error) tea.Msg {
 			return message.EditorFinishedMsg{Err: err}

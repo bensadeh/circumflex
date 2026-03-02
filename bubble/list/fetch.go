@@ -8,6 +8,9 @@ import (
 	"clx/hn/services/hybrid"
 	"clx/hn/services/mock"
 	"clx/item"
+	"clx/reader"
+	"clx/tree"
+	"clx/validator"
 
 	tea "charm.land/bubbletea/v2"
 )
@@ -96,6 +99,44 @@ func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 			Cursor:   0,
 			Message:  errMsg,
 		}
+	}
+}
+
+func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection) tea.Cmd {
+	width := m.width
+	isOnFavorites := m.cat.GetCurrentCategory(m.favorites.HasItems()) == category.Favorites
+
+	return func() tea.Msg {
+		lastVisited := m.history.GetLastVisited(msg.Id)
+		m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
+
+		story := m.service.FetchComments(msg.Id)
+
+		if isOnFavorites {
+			m.favorites.UpdateStoryAndWriteToDisk(story)
+		}
+
+		commentTree := tree.Print(story, m.config, width, lastVisited)
+
+		return message.CommentTreeReady{Content: commentTree}
+	}
+}
+
+func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd {
+	return func() tea.Msg {
+		errorMessage := validator.GetErrorMessage(msg.Title, msg.Domain)
+		if errorMessage != "" {
+			return message.ArticleReady{Error: errorMessage}
+		}
+
+		article, err := reader.GetArticle(msg.Url, msg.Title, m.config.CommentWidth, m.config.IndentationSymbol)
+		if err != nil {
+			return message.ArticleReady{Error: "Could not read article in Reader Mode"}
+		}
+
+		m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
+
+		return message.ArticleReady{Content: article}
 	}
 }
 

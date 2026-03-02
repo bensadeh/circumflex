@@ -281,6 +281,72 @@ func TestEnterCommentSection(t *testing.T) {
 	assert.True(t, ok, "cmd should produce EnteringCommentSection message")
 }
 
+func TestEnteringCommentSection_ReturnsCmd(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, cmd := m.Update(message.EnteringCommentSection{Id: 1, CommentCount: 10})
+	assert.NotNil(t, cmd, "should return cmd for async comment fetching")
+
+	// Execute the Cmd — it should produce a CommentTreeReady message
+	msg := cmd()
+	result, ok := msg.(message.CommentTreeReady)
+	assert.True(t, ok, "cmd should produce CommentTreeReady message")
+	assert.NotEmpty(t, result.Content)
+}
+
+func TestCommentTreeReady_ReturnsExecCmd(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, cmd := m.Update(message.CommentTreeReady{Content: "comment tree content"})
+	assert.NotNil(t, cmd, "should return ExecProcess cmd")
+}
+
+func TestEnteringReaderMode_ReturnsCmd(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, cmd := m.Update(message.EnteringReaderMode{
+		Url:          "https://example.com",
+		Title:        "Test Article",
+		Domain:       "example.com",
+		Id:           1,
+		CommentCount: 10,
+	})
+	assert.NotNil(t, cmd, "should return cmd for async article fetching")
+}
+
+func TestEnteringReaderMode_InvalidDomain(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, cmd := m.Update(message.EnteringReaderMode{
+		Url:          "https://youtube.com/watch?v=123",
+		Title:        "Test Video",
+		Domain:       "youtube.com",
+		Id:           1,
+		CommentCount: 10,
+	})
+	assert.NotNil(t, cmd)
+
+	// Execute the Cmd — should produce ArticleReady with error
+	msg := cmd()
+	result, ok := msg.(message.ArticleReady)
+	assert.True(t, ok, "cmd should produce ArticleReady message")
+	assert.NotEmpty(t, result.Error)
+}
+
+func TestArticleReady_WithError(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, cmd := m.Update(message.ArticleReady{Error: "Reader Mode not supported"})
+	assert.NotNil(t, cmd, "should return batch cmd with status message and editor finished")
+}
+
+func TestArticleReady_WithContent(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, cmd := m.Update(message.ArticleReady{Content: "article content"})
+	assert.NotNil(t, cmd, "should return ExecProcess cmd")
+}
+
 func TestAddFavoritesPrompt(t *testing.T) {
 	m := newTestModelReady(t)
 
