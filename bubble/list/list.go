@@ -17,10 +17,7 @@ import (
 	"clx/help"
 	"clx/history"
 	"clx/hn"
-	"clx/hn/services/hybrid"
-	"clx/hn/services/mock"
 	"clx/item"
-	"clx/screen"
 	"clx/settings"
 	"clx/tree"
 	"clx/validator"
@@ -98,40 +95,6 @@ type Model struct {
 	viewport       viewport.Model
 }
 
-func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
-	return func() tea.Msg {
-		itemsToFetch := m.getNumberOfItemsToFetch(m.cat.GetCurrentCategory(m.favorites.HasItems()))
-		categoryToFetch := m.cat.GetCurrentCategory(m.favorites.HasItems())
-		stories, errMsg := m.service.FetchItems(itemsToFetch, categoryToFetch)
-
-		m.items[categoryToFetch] = stories
-
-		return message.FetchingFinished{Message: errMsg}
-	}
-}
-
-func (m *Model) getNumberOfItemsToFetch(cat int) int {
-	switch cat {
-	case category.Top:
-		return m.Paginator.PerPage * 3
-
-	case category.New:
-		return m.Paginator.PerPage * 3
-
-	case category.Best:
-		return m.Paginator.PerPage * 3
-
-	case category.Ask:
-		return m.Paginator.PerPage
-
-	case category.Show:
-		return m.Paginator.PerPage
-
-	default:
-		return m.Paginator.PerPage
-	}
-}
-
 func New(delegate ItemDelegate, config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int) *Model {
 	return newModel(delegate, config, cat, favorites, width, height,
 		getService(config.DebugMode),
@@ -179,26 +142,6 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 	m.updatePagination()
 
 	return &m
-}
-
-func getHistory(debugMode bool, doNotMarkAsRead bool) history.History {
-	if debugMode {
-		return history.NewMockHistory()
-	}
-
-	if doNotMarkAsRead {
-		return history.NewNonPersistentHistory()
-	}
-
-	return history.NewPersistentHistory()
-}
-
-func getService(debugMode bool) hn.Service {
-	if debugMode {
-		return mock.Service{}
-	}
-
-	return &hybrid.Service{}
 }
 
 func (m *Model) SetIsVisible(v bool) {
@@ -423,13 +366,13 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		}
 
 	case message.FetchingFinished:
+		m.items[msg.Category] = msg.Stories
 		m.StopSpinner()
-		h, v := lipgloss.NewStyle().GetFrameSize()
-		m.setSize(screen.GetTerminalWidth()-h, screen.GetTerminalHeight()-v)
 		m.disableInput = false
-		m.NewStatusMessage(msg.Message)
+		m.updatePagination()
+		cmd := m.NewStatusMessage(msg.Message)
 
-		return m, nil
+		return m, cmd
 
 	case message.StatusMessageTimeout:
 		m.hideStatusMessage()
@@ -522,35 +465,19 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		m.SetDisabledInput(false)
 
 	case message.FetchAndChangeToCategory:
-		return m, func() tea.Msg {
-			itemsToFetch := m.getNumberOfItemsToFetch(msg.Category)
-			stories, errMsg := m.service.FetchItems(itemsToFetch, msg.Category)
-
-			m.items[msg.Category] = stories
-
-			return message.CategoryFetchingFinished{Index: msg.Index, Cursor: msg.Cursor, Message: errMsg}
-		}
+		return m, m.fetchAndChangeToCategory(msg)
 
 	case message.Refresh:
-		return m, func() tea.Msg {
-			itemsToFetch := m.getNumberOfItemsToFetch(msg.CurrentCategory)
-			stories, errMsg := m.service.FetchItems(itemsToFetch, msg.CurrentCategory)
-
-			m.items[category.Top] = []*item.Item{}
-			m.items[category.New] = []*item.Item{}
-			m.items[category.Ask] = []*item.Item{}
-			m.items[category.Show] = []*item.Item{}
-			m.items[category.Best] = []*item.Item{}
-
-			m.items[msg.CurrentCategory] = stories
-
-			return message.CategoryFetchingFinished{Index: msg.CurrentIndex, Cursor: 0, Message: errMsg}
-		}
+		return m, m.refresh(msg)
 
 	case message.ShowStatusMessage:
 		cmds = append(cmds, m.NewStatusMessageWithDuration(msg.Message, msg.Duration))
 
 	case message.CategoryFetchingFinished:
+		if m.isBufferActive {
+			clearAllCategories(m.items)
+		}
+		m.items[msg.Category] = msg.Stories
 		m.Paginator.Page = 0
 		m.SetDisabledInput(false)
 		m.StopSpinner()
@@ -560,7 +487,8 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))
 		m.cursor = min(msg.Cursor, itemsOnPage-1)
 
-		m.NewStatusMessage(msg.Message)
+		cmd := m.NewStatusMessage(msg.Message)
+		cmds = append(cmds, cmd)
 
 		m.updatePagination()
 	}
