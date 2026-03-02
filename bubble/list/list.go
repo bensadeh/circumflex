@@ -2,7 +2,6 @@ package list
 
 import (
 	"clx/categories"
-	_ "embed"
 	"fmt"
 	"io"
 	"strconv"
@@ -43,8 +42,6 @@ const (
 	numberOfCategories = 6
 )
 
-// Item is an item that appears in the list.
-// type Item interface{}
 
 // ItemDelegate encapsulates the general functionality for all list items. The
 // benefit to separating this logic from the item itself is that you can change
@@ -211,36 +208,8 @@ func getService(debugMode bool) hn.Service {
 	return &hybrid.Service{}
 }
 
-// SetShowTitle shows or hides the title bar.
-func (m *Model) SetShowTitle(v bool) {
-	m.showTitle = v
-	m.updatePagination()
-}
-
 func (m *Model) SetIsVisible(v bool) {
 	m.isVisible = v
-}
-
-// SetShowStatusBar shows or hides the view that displays metadata about the
-// list, such as item counts.
-func (m *Model) SetShowStatusBar(v bool) {
-	m.showStatusBar = v
-	m.updatePagination()
-}
-
-// ShowStatusBar returns whether or not the status bar is set to be rendered.
-func (m *Model) ShowStatusBar() bool {
-	return m.showStatusBar
-}
-
-// Set the items available in the list. This returns a command.
-func (m *Model) SetItems(i []*item.Item) tea.Cmd {
-	var cmd tea.Cmd
-	m.items[m.cat.GetCurrentCategory(m.favorites.HasItems())] = i
-
-	m.updatePagination()
-
-	return cmd
 }
 
 // Select selects the given index of the list and goes to its respective page.
@@ -311,14 +280,6 @@ func (m *Model) CursorDown() {
 	m.cursor = itemsOnPage - 1
 }
 
-func (m *Model) ToggleSpinner() tea.Cmd {
-	if !m.showSpinner {
-		return m.StartSpinner()
-	}
-	m.StopSpinner()
-	return nil
-}
-
 func (m *Model) StartSpinner() tea.Cmd {
 	// Hack: I can't get the spinner to reset properly. As a workaround, we
 	// instantiate a new spinner each time we want to show it.
@@ -369,11 +330,6 @@ func (m *Model) SetPermanentStatusMessage(s string, faint bool) {
 	m.statusMessage = lipgloss.NewStyle().
 		Faint(faint).
 		Render(s)
-}
-
-// SetSize sets the width and height of this component.
-func (m *Model) SetSize(width, height int) {
-	m.setSize(width, height)
 }
 
 func (m *Model) setSize(width, height int) {
@@ -434,7 +390,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 	if m.onStartup && isWindowSizeMsg {
 		h, v := lipgloss.NewStyle().GetFrameSize()
-		m.SetSize(windowSizeMsg.Width-h, windowSizeMsg.Height-v)
+		m.setSize(windowSizeMsg.Width-h, windowSizeMsg.Height-v)
 
 		var cmds []tea.Cmd
 
@@ -495,7 +451,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 	case tea.WindowSizeMsg:
 		h, v := lipgloss.NewStyle().GetFrameSize()
-		m.SetSize(msg.Width-h, msg.Height-v)
+		m.setSize(msg.Width-h, msg.Height-v)
 
 		headerHeight := 2
 		footerHeight := 2
@@ -641,7 +597,7 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 
 	case tea.WindowSizeMsg:
 		h, v := lipgloss.NewStyle().GetFrameSize()
-		m.SetSize(msg.Width-h, msg.Height-v)
+		m.setSize(msg.Width-h, msg.Height-v)
 
 		headerHeight := lipgloss.Height("")
 		footerHeight := lipgloss.Height("")
@@ -961,16 +917,6 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	}
 
 	return tea.Batch(cmds...)
-}
-
-func (m *Model) showHelpScreen() tea.Cmd {
-	helpScreen := help.GetHelpScreen(m.config.EnableNerdFonts)
-
-	command := cli.Less(helpScreen, m.config)
-
-	return tea.ExecProcess(command, func(err error) tea.Msg {
-		return message.EditorFinishedMsg{Err: err}
-	})
 }
 
 // View renders the component.

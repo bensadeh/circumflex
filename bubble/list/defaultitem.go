@@ -13,7 +13,6 @@ import (
 
 	"github.com/nleeper/goment"
 
-	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"github.com/muesli/reflow/truncate"
@@ -71,8 +70,6 @@ type DefaultDelegate struct {
 	ShowDescription bool
 	Styles          DefaultItemStyles
 	UpdateFunc      func(tea.Msg, *Model) tea.Cmd
-	ShortHelpFunc   func() []key.Binding
-	FullHelpFunc    func() [][]key.Binding
 	spacing         int
 }
 
