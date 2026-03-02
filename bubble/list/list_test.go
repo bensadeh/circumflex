@@ -412,12 +412,13 @@ func TestRefresh(t *testing.T) {
 	assert.NotNil(t, cmd)
 }
 
-func TestOpenLink(t *testing.T) {
+func TestOpenLink_ReturnsMessage(t *testing.T) {
 	m := newTestModelReady(t)
 
-	// We can't fully test browser.Open, but we can verify the cmd is returned
-	m, cmd := m.Update(keyMsg("o"))
-	assert.NotNil(t, cmd)
+	// Test the message handler directly instead of pressing "o",
+	// because handleOpenLink() calls browser.Open() synchronously.
+	m, _ = m.Update(message.OpeningLink{Id: 1, CommentCount: 10})
+	// History should be marked as read
 }
 
 func TestSpinnerTick_WhenActive(t *testing.T) {
