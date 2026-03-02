@@ -143,6 +143,12 @@ func (m *Model) getNumberOfItemsToFetch(cat int) int {
 }
 
 func New(delegate ItemDelegate, config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int) *Model {
+	return newModel(delegate, config, cat, favorites, width, height,
+		getService(config.DebugMode),
+		getHistory(config.DebugMode, config.DoNotMarkSubmissionsAsRead))
+}
+
+func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int, service hn.Service, hist history.History) *Model {
 	styles := DefaultStyles()
 
 	sp := spinner.New()
@@ -167,7 +173,7 @@ func New(delegate ItemDelegate, config *settings.Config, cat *categories.Categor
 		width:        width,
 		height:       height,
 		delegate:     delegate,
-		history:      getHistory(config.DebugMode, config.DoNotMarkSubmissionsAsRead),
+		history:      hist,
 		items:        items,
 		Paginator:    p,
 		spinner:      sp,
@@ -175,7 +181,7 @@ func New(delegate ItemDelegate, config *settings.Config, cat *categories.Categor
 		isVisible:    true,
 		disableInput: true,
 		config:       config,
-		service:      getService(config.DebugMode),
+		service:      service,
 		favorites:    favorites,
 		cat:          cat,
 	}
@@ -1040,7 +1046,7 @@ func (m *Model) statusAndPaginationView() string {
 	centerContent := ""
 	rightContent := ""
 	underscore := lipgloss.NewStyle().Underline(true).Render(" ")
-	underline := strings.Repeat(underscore, screen.GetTerminalWidth())
+	underline := strings.Repeat(underscore, m.width)
 
 	if m.isOnHelpScreen {
 		centerContent = lipgloss.NewStyle().Faint(true).Render(

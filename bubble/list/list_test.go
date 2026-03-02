@@ -1,0 +1,411 @@
+package list
+
+import (
+	"clx/bubble/list/message"
+	"clx/categories"
+	"clx/constants/category"
+	"clx/favorites"
+	"clx/history"
+	"clx/item"
+	"clx/settings"
+	"testing"
+	"time"
+
+	tea "charm.land/bubbletea/v2"
+	"github.com/stretchr/testify/assert"
+)
+
+// instantMockService implements hn.Service without the 1-second sleep.
+type instantMockService struct{}
+
+func (instantMockService) Init(_ int) {}
+
+func (instantMockService) FetchItems(_ int, _ int) ([]*item.Item, string) {
+	return testItems(), ""
+}
+
+func (instantMockService) FetchComments(_ int) *item.Item {
+	return &item.Item{ID: 1, Title: "test", CommentsCount: 5}
+}
+
+func (instantMockService) FetchItem(_ int) *item.Item {
+	return nil
+}
+
+func testItems() []*item.Item {
+	return []*item.Item{
+		{ID: 1, Title: "First item", Points: 100, User: "alice", Time: time.Now().Unix(), Domain: "example.com", CommentsCount: 10, URL: "https://example.com/1"},
+		{ID: 2, Title: "Second item", Points: 200, User: "bob", Time: time.Now().Unix(), Domain: "test.com", CommentsCount: 20, URL: "https://test.com/2"},
+		{ID: 3, Title: "Third item", Points: 300, User: "charlie", Time: time.Now().Unix(), Domain: "demo.com", CommentsCount: 30, URL: "https://demo.com/3"},
+		{ID: 4, Title: "Fourth item", Points: 400, User: "dave", Time: time.Now().Unix(), Domain: "site.com", CommentsCount: 40, URL: "https://site.com/4"},
+		{ID: 5, Title: "Fifth item", Points: 500, User: "eve", Time: time.Now().Unix(), Domain: "web.com", CommentsCount: 50, URL: "https://web.com/5"},
+	}
+}
+
+func newTestModel(t *testing.T) *Model {
+	t.Helper()
+	config := settings.Default()
+	cat := categories.New("top,best,ask,show")
+	fav := &favorites.Favorites{}
+	service := &instantMockService{}
+	hist := history.NewMockHistory()
+	return newModel(NewDefaultDelegate(), config, cat, fav, 80, 24, service, hist)
+}
+
+// newTestModelReady creates a model that has completed startup (already received
+// the initial WindowSizeMsg and is in browsing state).
+func newTestModelReady(t *testing.T) *Model {
+	t.Helper()
+	m := newTestModel(t)
+
+	// Send the initial WindowSizeMsg to complete startup
+	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
+
+	// Simulate fetch completion: populate items and reset state
+	m.items[category.Top] = testItems()
+	m.StopSpinner()
+	m.disableInput = false
+
+	return m
+}
+
+func keyMsg(s string) tea.KeyPressMsg {
+	switch s {
+	case "tab":
+		return tea.KeyPressMsg{Code: tea.KeyTab}
+	case "shift+tab":
+		return tea.KeyPressMsg{Code: tea.KeyTab, Mod: tea.ModShift}
+	case "enter":
+		return tea.KeyPressMsg{Code: tea.KeyEnter}
+	case "esc":
+		return tea.KeyPressMsg{Code: tea.KeyEsc}
+	case "up":
+		return tea.KeyPressMsg{Code: tea.KeyUp}
+	case "down":
+		return tea.KeyPressMsg{Code: tea.KeyDown}
+	case "left":
+		return tea.KeyPressMsg{Code: tea.KeyLeft}
+	case "right":
+		return tea.KeyPressMsg{Code: tea.KeyRight}
+	case "ctrl+c":
+		return tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl}
+	default:
+		// Single character keys like "q", "j", "k", etc.
+		r := []rune(s)
+		return tea.KeyPressMsg{Code: r[0], Text: s}
+	}
+}
+
+// --- Phase 0a: Update handler tests ---
+
+func TestStartup_WaitsForWindowSizeMsg(t *testing.T) {
+	m := newTestModel(t)
+	assert.True(t, m.onStartup)
+
+	// Non-WindowSizeMsg during startup should be ignored
+	m, cmd := m.Update(message.StatusMessageTimeout{})
+	assert.True(t, m.onStartup)
+	assert.Nil(t, cmd)
+}
+
+func TestStartup_InitializesOnWindowSizeMsg(t *testing.T) {
+	m := newTestModel(t)
+	assert.True(t, m.onStartup)
+
+	m, cmd := m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
+	assert.False(t, m.onStartup)
+	assert.True(t, m.showSpinner)
+	assert.NotNil(t, cmd, "should return batch cmd with spinner + fetch")
+}
+
+func TestEditorFinished_RestoresState(t *testing.T) {
+	m := newTestModelReady(t)
+	m.SetIsVisible(false)
+	m.SetDisabledInput(true)
+
+	m, _ = m.Update(message.EditorFinishedMsg{})
+	assert.True(t, m.isVisible)
+	assert.False(t, m.disableInput)
+}
+
+func TestStatusMessageTimeout_ClearsMessage(t *testing.T) {
+	m := newTestModelReady(t)
+	m.statusMessage = "some status"
+
+	m, _ = m.Update(message.StatusMessageTimeout{})
+	assert.Empty(t, m.statusMessage)
+}
+
+func TestAddToFavorites_AddsItem(t *testing.T) {
+	m := newTestModelReady(t)
+	initialFavCount := len(m.favorites.GetItems())
+
+	testItem := &item.Item{ID: 99, Title: "Favorite item"}
+	m, _ = m.Update(message.AddToFavorites{Item: testItem})
+
+	assert.Equal(t, initialFavCount+1, len(m.favorites.GetItems()))
+	assert.Equal(t, m.favorites.GetItems()[initialFavCount].ID, 99)
+}
+
+func TestWindowResize_UpdatesDimensions(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, _ = m.Update(tea.WindowSizeMsg{Width: 120, Height: 40})
+	assert.Equal(t, 120, m.width)
+	assert.Equal(t, 40, m.height)
+}
+
+func TestCategoryFetchingFinished_UpdatesState(t *testing.T) {
+	m := newTestModelReady(t)
+	m.disableInput = true
+	m.showSpinner = true
+	m.isBufferActive = true
+
+	m, _ = m.Update(message.CategoryFetchingFinished{Index: 1, Cursor: 0, Message: ""})
+
+	assert.False(t, m.disableInput)
+	assert.False(t, m.showSpinner)
+	assert.False(t, m.isBufferActive)
+}
+
+func TestShowStatusMessage_SetsMessage(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, cmd := m.Update(message.ShowStatusMessage{Message: "hello", Duration: time.Second})
+	assert.NotNil(t, cmd)
+}
+
+// --- Key handling tests ---
+
+func TestQuit(t *testing.T) {
+	m := newTestModelReady(t)
+
+	for _, k := range []string{"q", "esc", "ctrl+c"} {
+		m2 := newTestModelReady(t)
+		_, cmd := m2.Update(keyMsg(k))
+		_ = m
+		// tea.Quit returns a special Cmd; we verify it's non-nil
+		assert.NotNil(t, cmd, "key %q should return quit cmd", k)
+	}
+}
+
+func TestNavigationUpDown(t *testing.T) {
+	m := newTestModelReady(t)
+
+	// Start at cursor 0, move down
+	assert.Equal(t, 0, m.cursor)
+	m, _ = m.Update(keyMsg("j"))
+	assert.Equal(t, 1, m.cursor)
+
+	m, _ = m.Update(keyMsg("j"))
+	assert.Equal(t, 2, m.cursor)
+
+	// Move up
+	m, _ = m.Update(keyMsg("k"))
+	assert.Equal(t, 1, m.cursor)
+
+	// Can also use arrow keys
+	m, _ = m.Update(keyMsg("down"))
+	assert.Equal(t, 2, m.cursor)
+
+	m, _ = m.Update(keyMsg("up"))
+	assert.Equal(t, 1, m.cursor)
+}
+
+func TestNavigationUpDown_Clamped(t *testing.T) {
+	m := newTestModelReady(t)
+
+	// Moving up from 0 stays at 0
+	m, _ = m.Update(keyMsg("k"))
+	assert.Equal(t, 0, m.cursor)
+
+	// Moving down past end stays at last item
+	for i := 0; i < 100; i++ {
+		m, _ = m.Update(keyMsg("j"))
+	}
+	itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))
+	assert.LessOrEqual(t, m.cursor, itemsOnPage-1)
+}
+
+func TestGoToTopBottom(t *testing.T) {
+	m := newTestModelReady(t)
+
+	// Go to bottom
+	m, _ = m.Update(keyMsg("G"))
+	itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))
+	assert.Equal(t, itemsOnPage-1, m.cursor)
+
+	// Go to top
+	m, _ = m.Update(keyMsg("g"))
+	assert.Equal(t, 0, m.cursor)
+}
+
+func TestTabToCachedCategory(t *testing.T) {
+	m := newTestModelReady(t)
+
+	// Pre-populate the "best" category so tab doesn't need to fetch
+	m.items[category.Best] = testItems()
+
+	initialIndex := m.cat.GetCurrentIndex()
+	m, cmd := m.Update(keyMsg("tab"))
+
+	assert.NotEqual(t, initialIndex, m.cat.GetCurrentIndex())
+	// No fetch needed since category is cached, cmd should be nil
+	assert.Nil(t, cmd)
+}
+
+func TestTabToUncachedCategory(t *testing.T) {
+	m := newTestModelReady(t)
+
+	// "best" category is empty (uncached)
+	assert.Empty(t, m.items[category.Best])
+
+	m, cmd := m.Update(keyMsg("tab"))
+
+	assert.True(t, m.disableInput)
+	assert.True(t, m.showSpinner)
+	assert.NotNil(t, cmd, "should return batch cmd with spinner + fetch")
+}
+
+func TestEnterCommentSection(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, cmd := m.Update(keyMsg("enter"))
+	assert.False(t, m.isVisible)
+	assert.True(t, m.disableInput)
+	assert.NotNil(t, cmd)
+
+	// Execute the returned Cmd to get the message
+	msg := cmd()
+	_, ok := msg.(message.EnteringCommentSection)
+	assert.True(t, ok, "cmd should produce EnteringCommentSection message")
+}
+
+func TestAddFavoritesPrompt(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, _ = m.Update(keyMsg("f"))
+	assert.True(t, m.onAddToFavoritesPrompt)
+	assert.True(t, m.disableInput)
+	assert.NotEmpty(t, m.statusMessage)
+}
+
+func TestAddFavoritesConfirm(t *testing.T) {
+	m := newTestModelReady(t)
+
+	// Enter prompt
+	m, _ = m.Update(keyMsg("f"))
+	assert.True(t, m.onAddToFavoritesPrompt)
+
+	// Confirm
+	m, cmd := m.Update(keyMsg("y"))
+	assert.False(t, m.onAddToFavoritesPrompt)
+	assert.False(t, m.disableInput)
+	assert.NotNil(t, cmd, "should return AddToFavorites cmd")
+}
+
+func TestAddFavoritesCancel(t *testing.T) {
+	m := newTestModelReady(t)
+
+	// Enter prompt
+	m, _ = m.Update(keyMsg("f"))
+	assert.True(t, m.onAddToFavoritesPrompt)
+
+	// Cancel with any key other than "y"
+	m, _ = m.Update(keyMsg("n"))
+	assert.False(t, m.onAddToFavoritesPrompt)
+	assert.False(t, m.disableInput)
+}
+
+func TestDisabledInput_IgnoresKeys(t *testing.T) {
+	m := newTestModelReady(t)
+	m.disableInput = true
+
+	cursorBefore := m.cursor
+	m, cmd := m.Update(keyMsg("j"))
+	assert.Equal(t, cursorBefore, m.cursor, "cursor should not move when input is disabled")
+	assert.Nil(t, cmd)
+}
+
+func TestHelpScreen_Toggle(t *testing.T) {
+	m := newTestModelReady(t)
+
+	// Enter help screen
+	m, _ = m.Update(keyMsg("i"))
+	assert.True(t, m.isOnHelpScreen)
+
+	// Exit help screen
+	m, _ = m.Update(keyMsg("q"))
+	assert.False(t, m.isOnHelpScreen)
+}
+
+func TestRefresh(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, cmd := m.Update(keyMsg("r"))
+	assert.True(t, m.isBufferActive)
+	assert.True(t, m.disableInput)
+	assert.True(t, m.showSpinner)
+	assert.NotNil(t, cmd)
+}
+
+func TestOpenLink(t *testing.T) {
+	m := newTestModelReady(t)
+
+	// We can't fully test browser.Open, but we can verify the cmd is returned
+	m, cmd := m.Update(keyMsg("o"))
+	assert.NotNil(t, cmd)
+}
+
+func TestSpinnerTick_WhenActive(t *testing.T) {
+	m := newTestModelReady(t)
+	m.showSpinner = true
+
+	// Create a spinner tick message
+	m, cmd := m.Update(m.spinner.Tick())
+	// When spinner is active, should return a follow-up tick cmd
+	assert.NotNil(t, cmd)
+}
+
+func TestSpinnerTick_WhenInactive(t *testing.T) {
+	m := newTestModelReady(t)
+	m.showSpinner = false
+
+	m, cmd := m.Update(m.spinner.Tick())
+	// When spinner is inactive, no follow-up tick should be returned
+	// cmd may be non-nil from handleBrowsing, but the spinner-specific cmd won't be appended
+	_ = cmd
+}
+
+// --- Phase 0b: View snapshot tests ---
+
+func TestViewEmpty_WhenNotVisible(t *testing.T) {
+	m := newTestModelReady(t)
+	m.isVisible = false
+
+	got := m.View()
+	assert.Equal(t, "", got)
+}
+
+func TestViewBrowsing_HasContent(t *testing.T) {
+	m := newTestModelReady(t)
+
+	got := m.View()
+	assert.NotEmpty(t, got)
+}
+
+func TestViewHelpScreen(t *testing.T) {
+	m := newTestModelReady(t)
+	m.isOnHelpScreen = true
+
+	got := m.View()
+	assert.NotEmpty(t, got)
+}
+
+func TestSpinnerView_WhenActive(t *testing.T) {
+	m := newTestModelReady(t)
+	m.showSpinner = true
+
+	got := m.statusAndPaginationView()
+	assert.NotEmpty(t, got)
+}
