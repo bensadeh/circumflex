@@ -24,12 +24,12 @@ func (instantMockService) FetchItems(_ int, _ int) ([]*item.Item, string) {
 	return testItems(), ""
 }
 
-func (instantMockService) FetchComments(_ int) *item.Item {
-	return &item.Item{ID: 1, Title: "test", CommentsCount: 5}
+func (instantMockService) FetchComments(_ int) (*item.Item, error) {
+	return &item.Item{ID: 1, Title: "test", CommentsCount: 5}, nil
 }
 
-func (instantMockService) FetchItem(_ int) *item.Item {
-	return nil
+func (instantMockService) FetchItem(_ int) (*item.Item, error) {
+	return nil, nil
 }
 
 func testItems() []*item.Item {

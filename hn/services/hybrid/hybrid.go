@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
-	"sync/atomic"
+	"sync"
 	"time"
 
 	"github.com/bobesa/go-domain-util/domainutil"
@@ -33,26 +33,43 @@ func (s *Service) FetchItems(itemsToFetch int, category int) (items []*item.Item
 
 	listOfIdsToFetch := listOfIDs[:min(len(listOfIDs), itemsToFetch)]
 
-	return fetchItemsInParallel(listOfIdsToFetch), ""
+	return fetchItemsInParallel(listOfIdsToFetch)
 }
 
-func fetchItemsInParallel(ids []int) []*item.Item {
+func fetchItemsInParallel(ids []int) ([]*item.Item, string) {
 	items := make([]*item.Item, len(ids))
-	var counter int32
+	var wg sync.WaitGroup
 
 	for i, id := range ids {
+		wg.Add(1)
 		go func(i int, id int) {
-			items[i] = fetchItem(id)
-			atomic.AddInt32(&counter, 1)
+			defer wg.Done()
+			fetched, err := fetchItem(id)
+			if err == nil {
+				items[i] = fetched
+			}
 		}(i, id)
 	}
 
-	// Wait until all goroutines have finished
-	for atomic.LoadInt32(&counter) != int32(len(ids)) {
-		// This loop will spin until the counter equals the length of ids
+	wg.Wait()
+
+	// Filter out nil items (failed fetches)
+	var failed int
+	result := make([]*item.Item, 0, len(items))
+	for _, it := range items {
+		if it != nil {
+			result = append(result, it)
+		} else {
+			failed++
+		}
 	}
 
-	return items
+	var errMsg string
+	if failed > 0 {
+		errMsg = fmt.Sprintf("Could not fetch %d/%d items", failed, len(ids))
+	}
+
+	return result, errMsg
 }
 
 func fetchStoriesList(category int) (stories []int, errMsg string) {
@@ -94,11 +111,11 @@ func getCategory(cat int) string {
 	}
 }
 
-func (s *Service) FetchItem(id int) *item.Item {
+func (s *Service) FetchItem(id int) (*item.Item, error) {
 	return fetchItem(id)
 }
 
-func fetchItem(id int) *item.Item {
+func fetchItem(id int) (*item.Item, error) {
 	hn := new(endpoints.HN)
 
 	client := resty.New()
@@ -109,17 +126,21 @@ func fetchItem(id int) *item.Item {
 		SetHeader("User-Agent", app.Name+"/"+app.Version).
 		Get(strconv.Itoa(id) + ".json")
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("fetching item %d: %w", id, err)
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("fetching item %d: status %d", id, resp.StatusCode())
 	}
 
 	sanitizedBody := ansi.Strip(string(resp.Body()))
 
 	err = json.Unmarshal([]byte(sanitizedBody), hn)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("parsing item %d: %w", id, err)
 	}
 
-	return mapItem(hn)
+	return mapItem(hn), nil
 }
 
 func mapItem(hn *endpoints.HN) *item.Item {
@@ -137,7 +158,7 @@ func mapItem(hn *endpoints.HN) *item.Item {
 	}
 }
 
-func (s *Service) FetchComments(id int) *item.Item {
+func (s *Service) FetchComments(id int) (*item.Item, error) {
 	client := resty.New()
 	client.SetTimeout(10 * time.Second)
 	client.SetBaseURL("http://api.hackerwebapp.com/item/")
@@ -146,17 +167,21 @@ func (s *Service) FetchComments(id int) *item.Item {
 		SetHeader("User-Agent", app.Name+"/"+app.Version).
 		Get(strconv.Itoa(id))
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("fetching comments for %d: %w", id, err)
+	}
+
+	if response.StatusCode() != 200 {
+		return nil, fmt.Errorf("fetching comments for %d: status %d", id, response.StatusCode())
 	}
 
 	sanitizedResponse := ansi.Strip(string(response.Body()))
 
 	comments := new(endpoints.Comments)
 	if err := json.Unmarshal([]byte(sanitizedResponse), comments); err != nil {
-		panic(fmt.Sprintf("Error while unmarshalling sanitized response: %v", err))
+		return nil, fmt.Errorf("parsing comments for %d: %w", id, err)
 	}
 
-	return mapComments(comments)
+	return mapComments(comments), nil
 }
 
 func mapComments(comments *endpoints.Comments) *item.Item {

@@ -288,7 +288,7 @@ func (Service) FetchItems(_ int, cat int) (items []*item.Item, error string) {
 	return items, ""
 }
 
-func (Service) FetchComments(_ int) *item.Item {
+func (Service) FetchComments(_ int) (*item.Item, error) {
 	return &item.Item{
 		ID:      32145667,
 		Title:   "Mauris commodo odio (YC W05) quis diam fermentum, et suscipit augue pharetra [video]",
@@ -413,9 +413,9 @@ func (Service) FetchComments(_ int) *item.Item {
 		Content: "<p>Lorem ipsum dolor sit amet, " +
 			"consectetur adipiscing elit. Integer a augue id elit efficitur tempor sit amet quis lectus.",
 		CommentsCount: 57,
-	}
+	}, nil
 }
 
-func (s Service) FetchItem(id int) *item.Item {
-	return nil
+func (s Service) FetchItem(id int) (*item.Item, error) {
+	return &item.Item{ID: id, Title: "Mock item"}, nil
 }

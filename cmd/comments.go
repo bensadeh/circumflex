@@ -2,6 +2,8 @@ package cmd
 
 import (
 	_ "embed"
+	"fmt"
+	"os"
 	"strconv"
 	"time"
 
@@ -25,11 +27,19 @@ func commentsCmd() *cobra.Command {
 		Args:                  cobra.ExactArgs(1),
 		DisableFlagsInUseLine: true,
 		Run: func(cmd *cobra.Command, args []string) {
-			id, _ := strconv.Atoi(args[0])
+			id, err := strconv.Atoi(args[0])
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "Argument must be a valid ID")
+				os.Exit(1)
+			}
 
 			service := new(hybrid.Service)
 
-			comments := service.FetchComments(id)
+			comments, err := service.FetchComments(id)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				os.Exit(1)
+			}
 
 			config := getConfig()
 
@@ -42,8 +52,9 @@ func commentsCmd() *cobra.Command {
 			command := cli.Less(commentTree, config)
 
 			if err := command.Run(); err != nil {
-				defer lesskey.Remove()
-				panic(err)
+				lesskey.Remove()
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				os.Exit(1)
 			}
 		},
 	}

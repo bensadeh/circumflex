@@ -2,6 +2,7 @@ package cmd
 
 import (
 	_ "embed"
+	"fmt"
 	"os"
 	"strconv"
 
@@ -23,30 +24,39 @@ func articleCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			id, convErr := strconv.Atoi(args[0])
 			if convErr != nil {
-				println("Argument must be a valid ID")
+				fmt.Fprintln(os.Stderr, "Argument must be a valid ID")
 				os.Exit(1)
 			}
 
 			service := new(hybrid.Service)
 
-			item := service.FetchItem(id)
+			item, err := service.FetchItem(id)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				os.Exit(1)
+			}
 
 			if item.URL == "" {
-				println("Could not find any links associated with the ID " + args[0])
+				fmt.Fprintln(os.Stderr, "Could not find any links associated with the ID "+args[0])
 				os.Exit(1)
 			}
 
 			config := getConfig()
 
-			article, _ := reader.GetArticle(item.URL, item.Title, config.CommentWidth, config.IndentationSymbol)
+			article, err := reader.GetArticle(item.URL, item.Title, config.CommentWidth, config.IndentationSymbol)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error reading article: %v\n", err)
+				os.Exit(1)
+			}
 
 			lesskey := less.NewLesskey()
 
 			command := cli.Less(article, config)
 
 			if err := command.Run(); err != nil {
-				defer lesskey.Remove()
-				panic(err)
+				lesskey.Remove()
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				os.Exit(1)
 			}
 		},
 	}

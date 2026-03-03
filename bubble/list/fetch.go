@@ -110,7 +110,10 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 		lastVisited := m.history.GetLastVisited(msg.Id)
 		m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
-		story := m.service.FetchComments(msg.Id)
+		story, err := m.service.FetchComments(msg.Id)
+		if err != nil {
+			return message.CommentTreeReady{Error: "Could not fetch comments: " + err.Error()}
+		}
 
 		if isOnFavorites {
 			m.favorites.UpdateStoryAndWriteToDisk(story)

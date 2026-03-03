@@ -247,6 +247,15 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, m.handleEnteringReaderMode(msg)
 
 	case message.CommentTreeReady:
+		if msg.Error != "" {
+			return m, tea.Batch(
+				m.NewStatusMessageWithDuration(msg.Error, time.Second*3),
+				func() tea.Msg {
+					return message.EditorFinishedMsg{Err: nil}
+				},
+			)
+		}
+
 		command := cli.Less(msg.Content, m.config)
 
 		return m, tea.ExecProcess(command, func(err error) tea.Msg {

@@ -103,7 +103,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			return cmd
 
-		case msg.String() == " ":
+		case msg.String() == "space":
 			m.isVisible = false
 			m.state = StateEditorOpen
 

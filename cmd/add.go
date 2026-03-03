@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+	"os"
 	"strconv"
 
 	"clx/favorites"
@@ -19,11 +21,16 @@ func addCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			id, err := strconv.Atoi(args[0])
 			if err != nil {
-				panic("ID format error")
+				fmt.Fprintln(os.Stderr, "Argument must be a valid ID")
+				os.Exit(1)
 			}
 
 			service := hybrid.Service{}
-			submission := service.FetchItem(id)
+			submission, err := service.FetchItem(id)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				os.Exit(1)
+			}
 
 			fav := favorites.New()
 			fav.Add(submission)

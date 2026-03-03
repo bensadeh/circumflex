@@ -71,6 +71,7 @@ type AddToFavorites struct {
 
 type CommentTreeReady struct {
 	Content string
+	Error   string
 }
 
 type ArticleReady struct {
