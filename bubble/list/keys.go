@@ -17,12 +17,12 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	numItems := len(m.VisibleItems())
 
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch {
-		case m.state == StateAddFavoritesPrompt && msg.String() == "y":
+		case m.state == StateAddFavoritesPrompt && msg.Code == 'y':
 			return m.handleConfirmAddFavorites()
 
-		case m.state == StateRemoveFavoritesPrompt && msg.String() == "y":
+		case m.state == StateRemoveFavoritesPrompt && msg.Code == 'y':
 			return m.handleConfirmRemoveFavorites()
 
 		case m.state == StateAddFavoritesPrompt || m.state == StateRemoveFavoritesPrompt:
@@ -31,66 +31,66 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 		case m.state != StateBrowsing:
 			return nil
 
-		case msg.String() == "i" || msg.String() == "?":
+		case msg.Code == 'i' || msg.Code == '?':
 			m.state = StateHelpScreen
 
 			return nil
 
-		case msg.String() == "q" || msg.String() == "esc" || msg.String() == "ctrl+c":
+		case msg.Code == 'q' || msg.Code == tea.KeyEscape || (msg.Code == 'c' && msg.Mod == tea.ModCtrl):
 			return tea.Quit
 
-		case msg.String() == "up" || msg.String() == "k":
+		case msg.Code == tea.KeyUp || msg.Code == 'k':
 			m.CursorUp()
 			return nil
 
-		case msg.String() == "down" || msg.String() == "j":
+		case msg.Code == tea.KeyDown || msg.Code == 'j':
 			m.CursorDown()
 			return nil
 
-		case msg.String() == "left" || msg.String() == "h":
+		case msg.Code == tea.KeyLeft || msg.Code == 'h':
 			m.Paginator.PrevPage()
 			m.updateCursor()
 			return nil
 
-		case msg.String() == "right" || msg.String() == "l":
+		case msg.Code == tea.KeyRight || msg.Code == 'l':
 			m.Paginator.NextPage()
 			m.updateCursor()
 			return nil
 
-		case msg.String() == "tab":
+		case msg.Code == tea.KeyTab && msg.Mod == 0:
 			return m.handleTabForward()
 
-		case msg.String() == "shift+tab":
+		case msg.Code == tea.KeyTab && msg.Mod == tea.ModShift:
 			return m.handleTabBackward()
 
-		case msg.String() == "g":
+		case msg.Code == 'g':
 			m.cursor = 0
 			return nil
 
-		case msg.String() == "G":
+		case msg.Code == 'G':
 			m.cursor = m.Paginator.ItemsOnPage(numItems) - 1
 			return nil
 
-		case msg.String() == "o":
+		case msg.Code == 'o':
 			return m.handleOpenLink()
 
-		case msg.String() == "c":
+		case msg.Code == 'c':
 			return m.handleOpenComments()
 
-		case msg.String() == "r" && m.cat.GetCurrentCategory(m.favorites.HasItems()) != category.Favorites:
+		case msg.Code == 'r' && m.cat.GetCurrentCategory(m.favorites.HasItems()) != category.Favorites:
 			return m.handleRefresh()
 
-		case msg.String() == "f" || msg.String() == "V":
+		case msg.Code == 'f' || msg.Code == 'V':
 			m.SetPermanentStatusMessage(getAddItemConfirmationMessage(), false)
 			m.state = StateAddFavoritesPrompt
 			return nil
 
-		case msg.String() == "x" && m.cat.GetCurrentCategory(m.favorites.HasItems()) == category.Favorites:
+		case msg.Code == 'x' && m.cat.GetCurrentCategory(m.favorites.HasItems()) == category.Favorites:
 			m.SetPermanentStatusMessage(getRemoveItemConfirmationMessage(), false)
 			m.state = StateRemoveFavoritesPrompt
 			return nil
 
-		case msg.String() == "enter":
+		case msg.Code == tea.KeyEnter:
 			m.isVisible = false
 			m.state = StateEditorOpen
 
@@ -103,7 +103,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			return cmd
 
-		case msg.String() == "space":
+		case msg.Code == tea.KeySpace:
 			m.isVisible = false
 			m.state = StateEditorOpen
 

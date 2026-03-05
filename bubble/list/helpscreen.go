@@ -14,8 +14,8 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 	)
 
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		if k := msg.String(); k == "ctrl+c" || k == "q" || k == "esc" || k == "i" || k == "?" {
+	case tea.KeyPressMsg:
+		if msg.Code == 'q' || msg.Code == tea.KeyEscape || msg.Code == 'i' || msg.Code == '?' || (msg.Code == 'c' && msg.Mod == tea.ModCtrl) {
 			m.state = StateBrowsing
 
 			return m, nil
