@@ -18,6 +18,12 @@ jobs:
         with:
           go-version: stable
 
+      - name: Lint
+        uses: golangci/golangci-lint-action@v7
+
+      - name: Check formatting
+        run: golangci-lint fmt --diff ./...
+
       - name: Build
         run: go build -v ./...
 

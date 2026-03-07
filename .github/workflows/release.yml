@@ -16,6 +16,12 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: stable
+      - name: Lint
+        uses: golangci/golangci-lint-action@v7
+
+      - name: Check formatting
+        run: golangci-lint fmt --diff ./...
+
       - name: Run tests
         run: go test -v ./...
       - name: Run GoReleaser
