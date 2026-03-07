@@ -12,16 +12,4 @@ const (
 	NoBreakSpace                          = " "
 	Block                                 = "■"
 	Circle                                = "●"
-
-	NFTime           = ""
-	NFAuthor         = ""
-	NFScore          = "󰜷"
-	NFComment        = "󰅺"
-	NFTag            = ""
-	NFDocument       = ""
-	NFAudio          = ""
-	NFVideo          = ""
-	NFYCombinator    = ""
-	NFLeftSeparator  = ""
-	NFRightSeparator = ""
 )

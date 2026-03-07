@@ -4,6 +4,7 @@ import (
 	"clx/comment"
 	"clx/constants"
 	"clx/item"
+	"clx/nerdfonts"
 	"clx/settings"
 	"clx/syntax"
 	"fmt"
@@ -71,7 +72,7 @@ func GetCommentSectionMetaBlock(c *item.Item, config *settings.Config, newCommen
 
 func getAuthor(author string, enableNerdFonts bool) string {
 	if enableNerdFonts {
-		authorLabel := fmt.Sprintf("%s %s", constants.NFAuthor, author)
+		authorLabel := fmt.Sprintf("%s %s", nerdfonts.Author, author)
 
 		return Red(authorLabel).String()
 	}
@@ -83,7 +84,7 @@ func getComments(commentsCount int, enableNerdFonts bool) string {
 	comments := strconv.Itoa(commentsCount)
 
 	if enableNerdFonts {
-		commentsLabel := fmt.Sprintf("%s %s", constants.NFComment, comments)
+		commentsLabel := fmt.Sprintf("%s %s", nerdfonts.Comment, comments)
 
 		return Magenta(commentsLabel).String()
 	}
@@ -95,7 +96,7 @@ func getScore(points int, enableNerdFonts bool) string {
 	score := strconv.Itoa(points)
 
 	if enableNerdFonts {
-		pointsLabel := fmt.Sprintf("%s %s", score, constants.NFScore)
+		pointsLabel := fmt.Sprintf("%s %s", score, nerdfonts.Score)
 
 		return Yellow(pointsLabel).String()
 	}
@@ -105,7 +106,7 @@ func getScore(points int, enableNerdFonts bool) string {
 
 func getID(id int, enableNerdFonts bool) string {
 	if enableNerdFonts {
-		return fmt.Sprintf("%d %s", Faint(id).Green(), Green(constants.NFTag))
+		return fmt.Sprintf("%d %s", Faint(id).Green(), Green(nerdfonts.Tag))
 	}
 
 	return fmt.Sprintf("%s %d", "ID", Faint(id).Green())

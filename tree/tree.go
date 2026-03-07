@@ -5,6 +5,7 @@ import (
 	"clx/constants"
 	"clx/item"
 	"clx/meta"
+	"clx/nerdfonts"
 	"clx/settings"
 	"clx/syntax"
 	"clx/tree/formatter"
@@ -263,7 +264,7 @@ func getAuthorLabel(author, originalPoster, parentPoster string, enableNerdFonts
 func computeLabel(author, originalPoster, parentPoster string, nerdFonts bool) string {
 	switch {
 	case nerdFonts:
-		return constants.NFAuthor + " "
+		return nerdfonts.Author + " "
 	case isMod(author):
 		return "mod "
 	case author == originalPoster:

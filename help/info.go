@@ -3,6 +3,7 @@ package help
 import (
 	"clx/constants"
 	"clx/keymaps"
+	"clx/nerdfonts"
 	"strings"
 
 	. "github.com/logrusorgru/aurora/v3"
@@ -76,7 +77,7 @@ func alignCenter(input string, screenWidth int, keymapsWidth int) string {
 
 func getOP(enableNerdFonts bool) string {
 	if enableNerdFonts {
-		return constants.NFAuthor
+		return nerdfonts.Author
 	}
 
 	return "OP"
@@ -84,7 +85,7 @@ func getOP(enableNerdFonts bool) string {
 
 func getPP(enableNerdFonts bool) string {
 	if enableNerdFonts {
-		return constants.NFAuthor
+		return nerdfonts.Author
 	}
 
 	return "PP"
@@ -92,7 +93,7 @@ func getPP(enableNerdFonts bool) string {
 
 func getMod(enableNerdFonts bool) string {
 	if enableNerdFonts {
-		return constants.NFAuthor
+		return nerdfonts.Author
 	}
 
 	return "mod"

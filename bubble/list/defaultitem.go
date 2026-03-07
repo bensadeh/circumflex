@@ -2,8 +2,8 @@ package list
 
 import (
 	"clx/category"
-	"clx/constants"
 	"clx/item"
+	"clx/nerdfonts"
 	"clx/syntax"
 	"fmt"
 	"io"
@@ -187,7 +187,7 @@ func getComments(numberOfComments int, enableNerdFonts bool) string {
 	}
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s%5d", constants.NFComment, numberOfComments)
+		return fmt.Sprintf("%s%5d", nerdfonts.Comment, numberOfComments)
 	}
 
 	return fmt.Sprintf("| %d comments", numberOfComments)
@@ -199,7 +199,7 @@ func getScore(score int, enableNerdFonts bool) string {
 	}
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s%4d", constants.NFScore, score)
+		return fmt.Sprintf("%s%4d", nerdfonts.Score, score)
 	}
 
 	return fmt.Sprintf("%d points ", score)
@@ -211,7 +211,7 @@ func getAuthor(author string, enableNerdFonts bool) string {
 	}
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s %s", constants.NFAuthor, author)
+		return fmt.Sprintf("%s %s", nerdfonts.Author, author)
 	}
 
 	return fmt.Sprintf("by %s ", author)
@@ -240,7 +240,7 @@ func parseTime(unixTime int64, enableNerdFonts bool) string {
 	now, _ := goment.New()
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s %-12s", constants.NFTime, moment.From(now))
+		return fmt.Sprintf("%s %-12s", nerdfonts.Time, moment.From(now))
 	}
 
 	return fmt.Sprintf("%s ", moment.From(now))
