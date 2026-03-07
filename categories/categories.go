@@ -1,30 +1,56 @@
 package categories
 
 import (
-	"clx/category"
 	"fmt"
 	"os"
 	"strings"
 )
 
-type Category string
-
 const (
-	Top       Category = "top"
-	Newest    Category = "new"
-	Ask       Category = "ask"
-	Show      Category = "show"
-	Best      Category = "best"
-	Favorites Category = "favorites"
+	Top       = 0
+	Newest    = 1
+	Ask       = 2
+	Show      = 3
+	Best      = 4
+	Favorites = 5
+	Buffer    = 6
 )
 
-var CategoryMapping = map[Category]int{
-	Top:       category.Top,
-	Newest:    category.New,
-	Ask:       category.Ask,
-	Show:      category.Show,
-	Best:      category.Best,
-	Favorites: category.Favorites,
+// Name returns the display name for a category constant.
+func Name(cat int) string {
+	switch cat {
+	case Top:
+		return "top"
+	case Newest:
+		return "new"
+	case Ask:
+		return "ask"
+	case Show:
+		return "show"
+	case Best:
+		return "best"
+	case Favorites:
+		return "favorites"
+	default:
+		return "unknown"
+	}
+}
+
+func categoryFromName(name string) (int, bool) {
+	switch name {
+	case "top":
+		return Top, true
+	case "new":
+		return Newest, true
+	case "ask":
+		return Ask, true
+	case "show":
+		return Show, true
+	case "best":
+		return Best, true
+	default:
+		return 0, false
+	}
 }
 
 type Categories struct {
@@ -37,17 +63,16 @@ func New(categoriesCSV string) *Categories {
 		println("Need at least one category")
 		os.Exit(1)
 	}
-	categories := strings.Split(categoriesCSV, ",")
+	parts := strings.Split(categoriesCSV, ",")
 	var validCategories []int
-	for _, category := range categories {
-		category = strings.TrimSpace(category)
-		category = strings.ToLower(category)
+	for _, part := range parts {
+		part = strings.TrimSpace(part)
+		part = strings.ToLower(part)
 
-		enumCategory := Category(category)
-		value, exists := CategoryMapping[enumCategory]
+		value, exists := categoryFromName(part)
 
-		if !exists || enumCategory == Favorites {
-			println(fmt.Sprintf("Unsupported category: %s", category))
+		if !exists {
+			println(fmt.Sprintf("Unsupported category: %s", part))
 			os.Exit(1)
 		}
 
@@ -102,7 +127,7 @@ func (c *Categories) GetPrevIndex(hasFavorites bool) int {
 
 func (c *Categories) GetCategories(hasFavorites bool) []int {
 	if hasFavorites {
-		return append(c.categories, CategoryMapping[Favorites])
+		return append(c.categories, Favorites)
 	}
 
 	return c.categories
@@ -112,7 +137,7 @@ func (c *Categories) GetCurrentCategory(hasFavorites bool) int {
 	if hasFavorites {
 		categoriesWithFavorites := make([]int, len(c.categories), len(c.categories)+1)
 		copy(categoriesWithFavorites, c.categories)
-		categoriesWithFavorites = append(categoriesWithFavorites, CategoryMapping[Favorites])
+		categoriesWithFavorites = append(categoriesWithFavorites, Favorites)
 		return categoriesWithFavorites[c.currentIndex]
 	}
 
@@ -130,7 +155,7 @@ func (c *Categories) GetNextCategory(hasFavorites bool) int {
 	}
 
 	if hasFavorites && nextIndex == len(c.categories) {
-		return CategoryMapping[Favorites]
+		return Favorites
 	}
 
 	return c.categories[nextIndex]
@@ -146,7 +171,7 @@ func (c *Categories) GetPrevCategory(hasFavorites bool) int {
 		}
 	}
 	if hasFavorites && prevIndex == len(c.categories) {
-		return CategoryMapping[Favorites]
+		return Favorites
 	}
 	return c.categories[prevIndex]
 }

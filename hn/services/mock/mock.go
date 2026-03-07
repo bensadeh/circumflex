@@ -1,7 +1,7 @@
 package mock
 
 import (
-	"clx/category"
+	"clx/categories"
 	"clx/item"
 	"math/rand"
 	"time"
@@ -280,7 +280,7 @@ func (Service) FetchItems(_ int, cat int) (items []*item.Item, err error) {
 	}
 
 	// Randomize list to make debugging easier
-	if cat != category.Top {
+	if cat != categories.Top {
 		rand.Shuffle(len(items), func(i, j int) { items[i], items[j] = items[j], items[i] })
 	}
 

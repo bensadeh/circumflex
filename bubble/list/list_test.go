@@ -3,7 +3,6 @@ package list
 import (
 	"clx/bubble/list/message"
 	"clx/categories"
-	"clx/category"
 	"clx/favorites"
 	"clx/history"
 	"clx/item"
@@ -62,7 +61,7 @@ func newTestModelReady(t *testing.T) *Model {
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 
 	// Simulate fetch completion: populate items and reset state
-	m.items[category.Top] = testItems()
+	m.items[categories.Top] = testItems()
 	m.StopSpinner()
 	m.state = StateBrowsing
 
@@ -244,7 +243,7 @@ func TestTabToCachedCategory(t *testing.T) {
 	m := newTestModelReady(t)
 
 	// Pre-populate the "best" category so tab doesn't need to fetch
-	m.items[category.Best] = testItems()
+	m.items[categories.Best] = testItems()
 
 	initialIndex := m.cat.GetCurrentIndex()
 	m, cmd := m.Update(keyMsg("tab"))
@@ -258,7 +257,7 @@ func TestTabToUncachedCategory(t *testing.T) {
 	m := newTestModelReady(t)
 
 	// "best" category is empty (uncached)
-	assert.Empty(t, m.items[category.Best])
+	assert.Empty(t, m.items[categories.Best])
 
 	m, cmd := m.Update(keyMsg("tab"))
 

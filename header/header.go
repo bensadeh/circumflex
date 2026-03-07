@@ -62,22 +62,10 @@ func getCategories(allCategories []int, hasFavorites bool, selectedSubHeader int
 	return cats.String()
 }
 
-var ReverseCategoryMapping = map[int]categories.Category{
-	0: categories.Top,
-	1: categories.Newest,
-	2: categories.Ask,
-	3: categories.Show,
-	4: categories.Best,
-}
-
 func getSubHeaders(allCategories []int, hasFavorites bool) []string {
 	var cats []string
 	for _, cat := range allCategories {
-		if categoryName, exists := ReverseCategoryMapping[cat]; exists {
-			cats = append(cats, string(categoryName))
-		} else {
-			cats = append(cats, "unknown")
-		}
+		cats = append(cats, categories.Name(cat))
 	}
 
 	if hasFavorites {

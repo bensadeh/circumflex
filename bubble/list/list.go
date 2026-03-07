@@ -3,7 +3,6 @@ package list
 import (
 	"clx/bubble/list/message"
 	"clx/categories"
-	"clx/category"
 	"clx/cli"
 	"clx/favorites"
 	"clx/help"
@@ -161,7 +160,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 		m.state = StateLoading
 
-		m.items[category.Favorites] = m.favorites.GetItems()
+		m.items[categories.Favorites] = m.favorites.GetItems()
 
 		fetchCmd := m.FetchStoriesForFirstCategory()
 		cmds = append(cmds, fetchCmd)
@@ -204,7 +203,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 	case message.AddToFavorites:
 		m.favorites.Add(msg.Item)
-		m.items[category.Favorites] = m.favorites.GetItems()
+		m.items[categories.Favorites] = m.favorites.GetItems()
 
 		if err := m.favorites.Write(); err != nil {
 			cmds = append(cmds, m.NewStatusMessageWithDuration("Could not save favorites", time.Second*3))

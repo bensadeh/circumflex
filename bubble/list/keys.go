@@ -3,7 +3,7 @@ package list
 import (
 	"clx/browser"
 	"clx/bubble/list/message"
-	"clx/category"
+	"clx/categories"
 	"context"
 	"strconv"
 	"time"
@@ -77,7 +77,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 		case msg.Code == 'c':
 			return m.handleOpenComments()
 
-		case msg.Code == 'r' && m.cat.GetCurrentCategory(m.favorites.HasItems()) != category.Favorites:
+		case msg.Code == 'r' && m.cat.GetCurrentCategory(m.favorites.HasItems()) != categories.Favorites:
 			return m.handleRefresh()
 
 		case msg.Code == 'f' || msg.Code == 'V':
@@ -85,7 +85,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			m.state = StateAddFavoritesPrompt
 			return nil
 
-		case msg.Code == 'x' && m.cat.GetCurrentCategory(m.favorites.HasItems()) == category.Favorites:
+		case msg.Code == 'x' && m.cat.GetCurrentCategory(m.favorites.HasItems()) == categories.Favorites:
 			m.SetPermanentStatusMessage(getRemoveItemConfirmationMessage(), false)
 			m.state = StateRemoveFavoritesPrompt
 			return nil
@@ -148,7 +148,7 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 	if err := m.favorites.Remove(m.Index()); err != nil {
 		return m.NewStatusMessageWithDuration("Could not remove favorite", time.Second*3)
 	}
-	m.items[category.Favorites] = m.favorites.GetItems()
+	m.items[categories.Favorites] = m.favorites.GetItems()
 
 	writeCmd := func() tea.Msg {
 		if err := m.favorites.Write(); err != nil {
@@ -157,8 +157,8 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 		return nil
 	}
 
-	isOnLastItem := m.Index() == len(m.items[category.Favorites])
-	hasOnlyOneItem := len(m.items[category.Favorites]) == 0
+	isOnLastItem := m.Index() == len(m.items[categories.Favorites])
+	hasOnlyOneItem := len(m.items[categories.Favorites]) == 0
 
 	itemRemovedMessage := "Item removed"
 
@@ -262,7 +262,7 @@ func (m *Model) handleRefresh() tea.Cmd {
 	currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
 	currentPage := m.Paginator.Page
 
-	m.items[category.Buffer] = m.items[currentCategory]
+	m.items[categories.Buffer] = m.items[currentCategory]
 
 	m.isBufferActive = true
 	m.Paginator.Page = 0

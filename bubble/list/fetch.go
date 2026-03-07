@@ -2,7 +2,7 @@ package list
 
 import (
 	"clx/bubble/list/message"
-	"clx/category"
+	"clx/categories"
 	"clx/history"
 	"clx/hn"
 	"clx/hn/services/hybrid"
@@ -36,19 +36,19 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 
 func (m *Model) getNumberOfItemsToFetch(cat int) int {
 	switch cat {
-	case category.Top:
+	case categories.Top:
 		return m.Paginator.PerPage * 3
 
-	case category.New:
+	case categories.Newest:
 		return m.Paginator.PerPage * 3
 
-	case category.Best:
+	case categories.Best:
 		return m.Paginator.PerPage * 3
 
-	case category.Ask:
+	case categories.Ask:
 		return m.Paginator.PerPage
 
-	case category.Show:
+	case categories.Show:
 		return m.Paginator.PerPage
 
 	default:
@@ -117,7 +117,7 @@ func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 
 func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection) tea.Cmd {
 	width := m.width
-	isOnFavorites := m.cat.GetCurrentCategory(m.favorites.HasItems()) == category.Favorites
+	isOnFavorites := m.cat.GetCurrentCategory(m.favorites.HasItems()) == categories.Favorites
 
 	return func() tea.Msg {
 		lastVisited := m.history.GetLastVisited(msg.Id)
@@ -157,9 +157,9 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 }
 
 func clearAllCategories(items [][]*item.Item) {
-	items[category.Top] = []*item.Item{}
-	items[category.New] = []*item.Item{}
-	items[category.Ask] = []*item.Item{}
-	items[category.Show] = []*item.Item{}
-	items[category.Best] = []*item.Item{}
+	items[categories.Top] = []*item.Item{}
+	items[categories.Newest] = []*item.Item{}
+	items[categories.Ask] = []*item.Item{}
+	items[categories.Show] = []*item.Item{}
+	items[categories.Best] = []*item.Item{}
 }

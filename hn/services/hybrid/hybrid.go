@@ -2,7 +2,7 @@ package hybrid
 
 import (
 	"clx/ansi"
-	"clx/category"
+	"clx/categories"
 	"clx/item"
 	"clx/version"
 	"encoding/json"
@@ -103,19 +103,19 @@ func (s *Service) fetchStoriesList(cat int) (stories []int, err error) {
 
 func getCategory(cat int) (string, error) {
 	switch cat {
-	case category.Top:
+	case categories.Top:
 		return "topstories", nil
 
-	case category.New:
+	case categories.Newest:
 		return "newstories", nil
 
-	case category.Ask:
+	case categories.Ask:
 		return "askstories", nil
 
-	case category.Show:
+	case categories.Show:
 		return "showstories", nil
 
-	case category.Best:
+	case categories.Best:
 		return "beststories", nil
 
 	default:
