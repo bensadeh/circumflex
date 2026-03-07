@@ -1,20 +1,26 @@
 package reader
 
 import (
+	"bytes"
 	"clx/ansi"
 	"fmt"
 	"time"
 
-	"github.com/go-shiori/go-readability"
+	"codeberg.org/readeck/go-readability/v2"
 )
 
 func GetArticle(url string, title string, width int, indentationSymbol string) (string, error) {
-	articleInRawHtml, httpErr := readability.FromURL(url, 6*time.Second)
+	article, httpErr := readability.FromURL(url, 6*time.Second)
 	if httpErr != nil {
 		return "", fmt.Errorf("could not fetch url: %w", httpErr)
 	}
 
-	articleContentInRawHtmlAndSanitized := ansi.Strip(articleInRawHtml.Content)
+	var buf bytes.Buffer
+	if err := article.RenderHTML(&buf); err != nil {
+		return "", fmt.Errorf("could not render article html: %w", err)
+	}
+
+	articleContentInRawHtmlAndSanitized := ansi.Strip(buf.String())
 
 	articleInMarkdown, mdErr := convertToMarkdown(articleContentInRawHtmlAndSanitized)
 	if mdErr != nil {
