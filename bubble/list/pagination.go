@@ -86,7 +86,7 @@ func (m *Model) Select(index int) {
 }
 
 // VisibleItems returns the total items available to be shown.
-func (m *Model) VisibleItems() []*item.Item {
+func (m *Model) VisibleItems() []*item.Story {
 	if m.isBufferActive {
 		return m.items[categories.Buffer]
 	}
@@ -95,12 +95,12 @@ func (m *Model) VisibleItems() []*item.Item {
 }
 
 // SelectedItem returns the current selected item in the list.
-func (m *Model) SelectedItem() *item.Item {
+func (m *Model) SelectedItem() *item.Story {
 	i := m.Index()
 
 	items := m.VisibleItems()
 	if i < 0 || len(items) == 0 || len(items) <= i {
-		return &item.Item{}
+		return &item.Story{}
 	}
 
 	return items[i]

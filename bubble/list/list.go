@@ -33,7 +33,7 @@ const (
 // help items will be added to the help view.
 type ItemDelegate interface {
 	// Render renders the item's view.
-	Render(w io.Writer, m *Model, index int, item *item.Item)
+	Render(w io.Writer, m *Model, index int, item *item.Story)
 
 	// Height is the height of the list item.
 	Height() int
@@ -71,7 +71,7 @@ type Model struct {
 	statusMessageTimer *time.Timer
 
 	isBufferActive bool
-	items          [][]*item.Item
+	items          [][]*item.Story
 
 	delegate  ItemDelegate
 	history   history.History
@@ -102,7 +102,7 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 	p.InactiveDot = styles.InactivePaginationDot.String()
 
 	bufferCategory := 1
-	items := make([][]*item.Item, numberOfCategories+bufferCategory)
+	items := make([][]*item.Story, numberOfCategories+bufferCategory)
 
 	m := Model{
 		showTitle:             true,

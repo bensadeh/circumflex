@@ -13,19 +13,19 @@ func TestFavorites_AddAndGetItems(t *testing.T) {
 	assert.False(t, f.HasItems())
 	assert.Empty(t, f.GetItems())
 
-	f.Add(&item.Item{ID: 1, Title: "First"})
+	f.Add(&item.Story{ID: 1, Title: "First"})
 	assert.True(t, f.HasItems())
 	assert.Len(t, f.GetItems(), 1)
 
-	f.Add(&item.Item{ID: 2, Title: "Second"})
+	f.Add(&item.Story{ID: 2, Title: "Second"})
 	assert.Len(t, f.GetItems(), 2)
 }
 
 func TestFavorites_Remove(t *testing.T) {
 	f := &Favorites{}
-	f.Add(&item.Item{ID: 1, Title: "First"})
-	f.Add(&item.Item{ID: 2, Title: "Second"})
-	f.Add(&item.Item{ID: 3, Title: "Third"})
+	f.Add(&item.Story{ID: 1, Title: "First"})
+	f.Add(&item.Story{ID: 2, Title: "Second"})
+	f.Add(&item.Story{ID: 3, Title: "Third"})
 
 	err := f.Remove(1)
 	require.NoError(t, err)
@@ -36,8 +36,8 @@ func TestFavorites_Remove(t *testing.T) {
 
 func TestFavorites_Remove_First(t *testing.T) {
 	f := &Favorites{}
-	f.Add(&item.Item{ID: 1, Title: "First"})
-	f.Add(&item.Item{ID: 2, Title: "Second"})
+	f.Add(&item.Story{ID: 1, Title: "First"})
+	f.Add(&item.Story{ID: 2, Title: "Second"})
 
 	err := f.Remove(0)
 	require.NoError(t, err)
@@ -47,8 +47,8 @@ func TestFavorites_Remove_First(t *testing.T) {
 
 func TestFavorites_Remove_Last(t *testing.T) {
 	f := &Favorites{}
-	f.Add(&item.Item{ID: 1, Title: "First"})
-	f.Add(&item.Item{ID: 2, Title: "Second"})
+	f.Add(&item.Story{ID: 1, Title: "First"})
+	f.Add(&item.Story{ID: 2, Title: "Second"})
 
 	err := f.Remove(1)
 	require.NoError(t, err)
@@ -58,7 +58,7 @@ func TestFavorites_Remove_Last(t *testing.T) {
 
 func TestFavorites_Remove_OutOfBounds(t *testing.T) {
 	f := &Favorites{}
-	f.Add(&item.Item{ID: 1, Title: "First"})
+	f.Add(&item.Story{ID: 1, Title: "First"})
 
 	err := f.Remove(-1)
 	require.Error(t, err)
@@ -102,9 +102,9 @@ func TestUnmarshal_EmptyArray(t *testing.T) {
 
 func TestFavorites_UpdateStoryAndWriteToDisk(t *testing.T) {
 	f := &Favorites{}
-	f.Add(&item.Item{ID: 1, Title: "Old Title", Points: 10, CommentsCount: 5})
+	f.Add(&item.Story{ID: 1, Title: "Old Title", Points: 10, CommentsCount: 5})
 
-	newItem := &item.Item{ID: 1, Title: "New Title", Points: 100, CommentsCount: 50}
+	newItem := &item.Story{ID: 1, Title: "New Title", Points: 100, CommentsCount: 50}
 	f.UpdateStoryAndWriteToDisk(newItem)
 
 	assert.Equal(t, "New Title", f.GetItems()[0].Title)
@@ -114,9 +114,9 @@ func TestFavorites_UpdateStoryAndWriteToDisk(t *testing.T) {
 
 func TestFavorites_UpdateStoryAndWriteToDisk_NoMatch(t *testing.T) {
 	f := &Favorites{}
-	f.Add(&item.Item{ID: 1, Title: "Original"})
+	f.Add(&item.Story{ID: 1, Title: "Original"})
 
-	newItem := &item.Item{ID: 99, Title: "Different"}
+	newItem := &item.Story{ID: 99, Title: "Different"}
 	f.UpdateStoryAndWriteToDisk(newItem)
 
 	assert.Equal(t, "Original", f.GetItems()[0].Title)

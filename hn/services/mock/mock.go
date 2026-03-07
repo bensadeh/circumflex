@@ -12,10 +12,10 @@ type Service struct{}
 func (Service) Init(_ int) {
 }
 
-func (Service) FetchItems(_ int, cat int) (items []*item.Item, err error) {
+func (Service) FetchItems(_ int, cat int) (items []*item.Story, err error) {
 	time.Sleep(time.Second * 1)
 
-	items = []*item.Item{
+	items = []*item.Story{
 		{
 			Title:         "Lorem ipsum dolor amet et quasi architecto",
 			Points:        31,
@@ -287,8 +287,8 @@ func (Service) FetchItems(_ int, cat int) (items []*item.Item, err error) {
 	return items, nil
 }
 
-func (Service) FetchComments(_ int) (*item.Item, error) {
-	return &item.Item{
+func (Service) FetchComments(_ int) (*item.Story, error) {
+	return &item.Story{
 		ID:      32145667,
 		Title:   "Mauris commodo odio (YC W05) quis diam fermentum, et suscipit augue pharetra [video]",
 		Points:  543,
@@ -297,38 +297,38 @@ func (Service) FetchComments(_ int) (*item.Item, error) {
 		URL:     "https://en.wikipedia.org/wiki/Riemann_hypothesis",
 		Level:   0,
 		Domain:  "google.com",
-		Comments: []*item.Item{
+		Comments: []*item.Story{
 			{
 				ID:      28,
 				User:    "euler",
 				TimeAgo: "1 hour ago",
 				Level:   0,
-				Comments: []*item.Item{
+				Comments: []*item.Story{
 					{
 						ID:      23,
 						User:    "hilbert",
 						TimeAgo: "40 minutes ago",
 						Level:   1,
-						Comments: []*item.Item{
+						Comments: []*item.Story{
 							{
 								ID:      33,
 								User:    "riemann",
 								TimeAgo: "27 minutes ago",
 								Level:   2,
-								Comments: []*item.Item{
+								Comments: []*item.Story{
 									{
 										ID:      33,
 										User:    "gauss",
 										TimeAgo: "26 minutes ago",
 										Level:   3,
-										Comments: []*item.Item{
+										Comments: []*item.Story{
 											{
 												ID:      33,
 												Time:    time.Now().Add(time.Minute).Unix(),
 												User:    "cantor",
 												TimeAgo: "10 minutes ago",
 												Level:   4,
-												Comments: []*item.Item{
+												Comments: []*item.Story{
 													{
 														ID:      33,
 														Time:    time.Now().Add(time.Minute).Unix(),
@@ -385,7 +385,7 @@ func (Service) FetchComments(_ int) (*item.Item, error) {
 				User:    "hamilton",
 				TimeAgo: "2 hours ago",
 				Level:   0,
-				Comments: []*item.Item{
+				Comments: []*item.Story{
 					{
 						ID:            41,
 						User:          "euler",
@@ -415,6 +415,6 @@ func (Service) FetchComments(_ int) (*item.Item, error) {
 	}, nil
 }
 
-func (s Service) FetchItem(id int) (*item.Item, error) {
-	return &item.Item{ID: id, Title: "Mock item"}, nil
+func (s Service) FetchItem(id int) (*item.Story, error) {
+	return &item.Story{ID: id, Title: "Mock item"}, nil
 }

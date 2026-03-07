@@ -9,7 +9,7 @@ import (
 )
 
 type Favorites struct {
-	items []*item.Item
+	items []*item.Story
 }
 
 func New() *Favorites {
@@ -31,8 +31,8 @@ func New() *Favorites {
 	return new(Favorites)
 }
 
-func unmarshal(data []byte) ([]*item.Item, error) {
-	var items []*item.Item
+func unmarshal(data []byte) ([]*item.Story, error) {
+	var items []*item.Story
 
 	err := json.Unmarshal(data, &items)
 	if err != nil {
@@ -42,7 +42,7 @@ func unmarshal(data []byte) ([]*item.Item, error) {
 	return items, nil
 }
 
-func (f *Favorites) GetItems() []*item.Item {
+func (f *Favorites) GetItems() []*item.Story {
 	return f.items
 }
 
@@ -50,7 +50,7 @@ func (f *Favorites) HasItems() bool {
 	return len(f.items) != 0
 }
 
-func (f *Favorites) Add(item *item.Item) {
+func (f *Favorites) Add(item *item.Story) {
 	f.items = append(f.items, item)
 }
 
@@ -76,7 +76,7 @@ func (f *Favorites) Remove(index int) error {
 	return nil
 }
 
-func (f *Favorites) UpdateStoryAndWriteToDisk(newItem *item.Item) {
+func (f *Favorites) UpdateStoryAndWriteToDisk(newItem *item.Story) {
 	for i, s := range f.items {
 		if s.ID == newItem.ID {
 			isFieldsUpdated := s.Title != newItem.Title || s.Points != newItem.Points ||

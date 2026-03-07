@@ -19,20 +19,20 @@ type instantMockService struct{}
 
 func (instantMockService) Init(_ int) {}
 
-func (instantMockService) FetchItems(_ int, _ int) ([]*item.Item, error) {
+func (instantMockService) FetchItems(_ int, _ int) ([]*item.Story, error) {
 	return testItems(), nil
 }
 
-func (instantMockService) FetchComments(_ int) (*item.Item, error) {
-	return &item.Item{ID: 1, Title: "test", CommentsCount: 5}, nil
+func (instantMockService) FetchComments(_ int) (*item.Story, error) {
+	return &item.Story{ID: 1, Title: "test", CommentsCount: 5}, nil
 }
 
-func (instantMockService) FetchItem(_ int) (*item.Item, error) {
-	return &item.Item{}, nil
+func (instantMockService) FetchItem(_ int) (*item.Story, error) {
+	return &item.Story{}, nil
 }
 
-func testItems() []*item.Item {
-	return []*item.Item{
+func testItems() []*item.Story {
+	return []*item.Story{
 		{ID: 1, Title: "First item", Points: 100, User: "alice", Time: time.Now().Unix(), Domain: "example.com", CommentsCount: 10, URL: "https://example.com/1"},
 		{ID: 2, Title: "Second item", Points: 200, User: "bob", Time: time.Now().Unix(), Domain: "test.com", CommentsCount: 20, URL: "https://test.com/2"},
 		{ID: 3, Title: "Third item", Points: 300, User: "charlie", Time: time.Now().Unix(), Domain: "demo.com", CommentsCount: 30, URL: "https://demo.com/3"},
@@ -139,7 +139,7 @@ func TestAddToFavorites_AddsItem(t *testing.T) {
 	m := newTestModelReady(t)
 	initialFavCount := len(m.favorites.GetItems())
 
-	testItem := &item.Item{ID: 99, Title: "Favorite item"}
+	testItem := &item.Story{ID: 99, Title: "Favorite item"}
 	m, _ = m.Update(message.AddToFavorites{Item: testItem})
 
 	assert.Len(t, m.favorites.GetItems(), initialFavCount+1)

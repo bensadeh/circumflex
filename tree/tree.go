@@ -25,7 +25,7 @@ const (
 	newParagraph = "\n\n"
 )
 
-func Print(comments *item.Item, config *settings.Config, screenWidth int, lastVisited int64) string {
+func Print(comments *item.Story, config *settings.Config, screenWidth int, lastVisited int64) string {
 	commentSectionScreenWidth := screenWidth - constants.CommentSectionLeftMargin
 
 	header := getHeader(comments, config, lastVisited)
@@ -43,7 +43,7 @@ func Print(comments *item.Item, config *settings.Config, screenWidth int, lastVi
 	return commentSection
 }
 
-func getFirstCommentID(comments []*item.Item) int {
+func getFirstCommentID(comments []*item.Story) int {
 	if len(comments) == 0 {
 		return 0
 	}
@@ -51,13 +51,13 @@ func getFirstCommentID(comments []*item.Item) int {
 	return comments[0].ID
 }
 
-func getHeader(c *item.Item, config *settings.Config, lastVisited int64) string {
+func getHeader(c *item.Story, config *settings.Config, lastVisited int64) string {
 	newComments := getNewCommentsCount(c, lastVisited)
 
 	return meta.GetCommentSectionMetaBlock(c, config, newComments) + newParagraph
 }
 
-func printReplies(c *item.Item, config *settings.Config, screenWidth int, originalPoster string,
+func printReplies(c *item.Story, config *settings.Config, screenWidth int, originalPoster string,
 	parentPoster string, firstCommentID int, lastVisited int64,
 ) string {
 	isDeletedAndHasNoReplies := c.Content == "[deleted]" && len(c.Comments) == 0
@@ -142,7 +142,7 @@ func addFilterTag(level int, fullComment string) string {
 	return fullCommentWithFilterTags.String()
 }
 
-func formatComment(c *item.Item, config *settings.Config, originalPoster string, parentPoster string, commentWidth int,
+func formatComment(c *item.Story, config *settings.Config, originalPoster string, parentPoster string, commentWidth int,
 	availableScreenWidth int, lastVisited int64,
 ) string {
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, c.Level)
@@ -175,7 +175,7 @@ func getIndentString(level int) string {
 	return strings.Repeat(" ", level-1)
 }
 
-func getCommentHeader(c *item.Item, originalPoster string, parentPoster string, lastVisited int64, config *settings.Config) string {
+func getCommentHeader(c *item.Story, originalPoster string, parentPoster string, lastVisited int64, config *settings.Config) string {
 	if c.Level == 0 {
 		return formatHeader(c, originalPoster, parentPoster, true,
 			0, lastVisited, config)
@@ -185,7 +185,7 @@ func getCommentHeader(c *item.Item, originalPoster string, parentPoster string, 
 		1, lastVisited, config)
 }
 
-func formatHeader(c *item.Item, originalPoster string, parentPoster string,
+func formatHeader(c *item.Story, originalPoster string, parentPoster string,
 	enableZeroWidthSpace bool, indentSize int, lastVisited int64, config *settings.Config,
 ) string {
 	author := getAuthor(c.User, lastVisited, c.Time)
@@ -217,13 +217,13 @@ func getZeroWidthSpace(enabled bool) string {
 	return ""
 }
 
-func getReplyCount(comments *item.Item) int {
+func getReplyCount(comments *item.Story) int {
 	numberOfReplies := 0
 
 	return incrementReplyCount(comments, &numberOfReplies)
 }
 
-func incrementReplyCount(comments *item.Item, repliesSoFar *int) int {
+func incrementReplyCount(comments *item.Story, repliesSoFar *int) int {
 	for _, reply := range comments.Comments {
 		*repliesSoFar++
 		incrementReplyCount(reply, repliesSoFar)
@@ -232,13 +232,13 @@ func incrementReplyCount(comments *item.Item, repliesSoFar *int) int {
 	return *repliesSoFar
 }
 
-func getNewCommentsCount(comments *item.Item, lastVisited int64) int {
+func getNewCommentsCount(comments *item.Story, lastVisited int64) int {
 	numberOfReplies := 0
 
 	return incrementNewCommentsCount(comments, &numberOfReplies, lastVisited)
 }
 
-func incrementNewCommentsCount(comments *item.Item, newCommentsSoFar *int, lastVisited int64) int {
+func incrementNewCommentsCount(comments *item.Story, newCommentsSoFar *int, lastVisited int64) int {
 	for _, reply := range comments.Comments {
 		commentIsNew := lastVisited < reply.Time
 		if commentIsNew {

@@ -19,7 +19,7 @@ func getConfig() *settings.Config {
 func TestPrintEmptyComments(t *testing.T) {
 	t.Parallel()
 
-	comments := &item.Item{Title: "Test", User: "alice", Points: 10, CommentsCount: 0}
+	comments := &item.Story{Title: "Test", User: "alice", Points: 10, CommentsCount: 0}
 	result := tree.Print(comments, getConfig(), 120, 0)
 
 	assert.NotEmpty(t, result)
@@ -28,9 +28,9 @@ func TestPrintEmptyComments(t *testing.T) {
 func TestPrintSingleComment(t *testing.T) {
 	t.Parallel()
 
-	comments := &item.Item{
+	comments := &item.Story{
 		Title: "Test", User: "poster", Points: 10,
-		Comments: []*item.Item{
+		Comments: []*item.Story{
 			{ID: 1, User: "bob", Content: "Hello world", Level: 0, TimeAgo: "1h ago", Time: 50},
 		},
 	}
@@ -43,9 +43,9 @@ func TestPrintSingleComment(t *testing.T) {
 func TestPrintCommentSeparator(t *testing.T) {
 	t.Parallel()
 
-	comments := &item.Item{
+	comments := &item.Story{
 		Title: "Test", User: "poster", Points: 10,
-		Comments: []*item.Item{
+		Comments: []*item.Story{
 			{ID: 1, User: "bob", Content: "First", Level: 0, TimeAgo: "2h ago", Time: 50},
 			{ID: 2, User: "carol", Content: "Second", Level: 0, TimeAgo: "1h ago", Time: 60},
 		},
@@ -58,12 +58,12 @@ func TestPrintCommentSeparator(t *testing.T) {
 func TestPrintNestedComments(t *testing.T) {
 	t.Parallel()
 
-	comments := &item.Item{
+	comments := &item.Story{
 		Title: "Test", User: "poster", Points: 10,
-		Comments: []*item.Item{
+		Comments: []*item.Story{
 			{
 				ID: 1, User: "bob", Content: "Parent", Level: 0, TimeAgo: "2h ago", Time: 50,
-				Comments: []*item.Item{
+				Comments: []*item.Story{
 					{ID: 2, User: "carol", Content: "Reply", Level: 1, TimeAgo: "1h ago", Time: 60},
 				},
 			},
@@ -79,9 +79,9 @@ func TestPrintNestedComments(t *testing.T) {
 func TestPrintModLabel(t *testing.T) {
 	t.Parallel()
 
-	comments := &item.Item{
+	comments := &item.Story{
 		Title: "Test", User: "poster", Points: 10,
-		Comments: []*item.Item{
+		Comments: []*item.Story{
 			{ID: 1, User: "dang", Content: "Mod says hi", Level: 0, TimeAgo: "1h ago", Time: 50},
 		},
 	}
@@ -93,9 +93,9 @@ func TestPrintModLabel(t *testing.T) {
 func TestPrintOPLabel(t *testing.T) {
 	t.Parallel()
 
-	comments := &item.Item{
+	comments := &item.Story{
 		Title: "Test", User: "poster", Points: 10,
-		Comments: []*item.Item{
+		Comments: []*item.Story{
 			{ID: 1, User: "poster", Content: "OP here", Level: 0, TimeAgo: "1h ago", Time: 50},
 		},
 	}
@@ -107,9 +107,9 @@ func TestPrintOPLabel(t *testing.T) {
 func TestPrintNewCommentDot(t *testing.T) {
 	t.Parallel()
 
-	comments := &item.Item{
+	comments := &item.Story{
 		Title: "Test", User: "poster", Points: 10,
-		Comments: []*item.Item{
+		Comments: []*item.Story{
 			{ID: 1, User: "bob", Content: "New comment", Level: 0, TimeAgo: "1m ago", Time: 200},
 		},
 	}
@@ -121,9 +121,9 @@ func TestPrintNewCommentDot(t *testing.T) {
 func TestPrintDeletedCommentSkipped(t *testing.T) {
 	t.Parallel()
 
-	comments := &item.Item{
+	comments := &item.Story{
 		Title: "Test", User: "poster", Points: 10,
-		Comments: []*item.Item{
+		Comments: []*item.Story{
 			{ID: 1, User: "deleted_user", Content: "[deleted]", Level: 0, TimeAgo: "1h ago", Time: 50},
 		},
 	}
@@ -135,12 +135,12 @@ func TestPrintDeletedCommentSkipped(t *testing.T) {
 func TestPrintDeletedCommentWithReplies(t *testing.T) {
 	t.Parallel()
 
-	comments := &item.Item{
+	comments := &item.Story{
 		Title: "Test", User: "poster", Points: 10,
-		Comments: []*item.Item{
+		Comments: []*item.Story{
 			{
 				ID: 1, User: "deleted_user", Content: "[deleted]", Level: 0, TimeAgo: "1h ago", Time: 50,
-				Comments: []*item.Item{
+				Comments: []*item.Story{
 					{ID: 2, User: "carol", Content: "Reply to deleted", Level: 1, TimeAgo: "30m ago", Time: 60},
 				},
 			},
@@ -154,12 +154,12 @@ func TestPrintDeletedCommentWithReplies(t *testing.T) {
 func TestPrintExpandButton(t *testing.T) {
 	t.Parallel()
 
-	comments := &item.Item{
+	comments := &item.Story{
 		Title: "Test", User: "poster", Points: 10,
-		Comments: []*item.Item{
+		Comments: []*item.Story{
 			{
 				ID: 1, User: "bob", Content: "Has replies", Level: 0, TimeAgo: "2h ago", Time: 50,
-				Comments: []*item.Item{
+				Comments: []*item.Story{
 					{ID: 2, User: "carol", Content: "Reply", Level: 1, TimeAgo: "1h ago", Time: 60},
 				},
 			},

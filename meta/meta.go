@@ -39,7 +39,7 @@ func GetReaderModeMetaBlock(title string, url string, lineWidth int) string {
 	return formattedTitle + newParagraph + style.Render(formattedURL+info) + newParagraph
 }
 
-func GetCommentSectionMetaBlock(c *item.Item, config *settings.Config, newComments int) string {
+func GetCommentSectionMetaBlock(c *item.Story, config *settings.Config, newComments int) string {
 	style := lipgloss.NewStyle().
 		BorderStyle(lipgloss.RoundedBorder()).
 		PaddingLeft(1).

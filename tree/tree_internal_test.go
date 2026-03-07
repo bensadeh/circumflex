@@ -97,10 +97,10 @@ func TestIsMod(t *testing.T) {
 func TestGetReplyCount(t *testing.T) {
 	t.Parallel()
 
-	root := &item.Item{
-		Comments: []*item.Item{
+	root := &item.Story{
+		Comments: []*item.Story{
 			{
-				Comments: []*item.Item{
+				Comments: []*item.Story{
 					{Comments: nil},
 				},
 			},
@@ -114,9 +114,9 @@ func TestGetReplyCount(t *testing.T) {
 func TestGetNewCommentsCount(t *testing.T) {
 	t.Parallel()
 
-	root := &item.Item{
-		Comments: []*item.Item{
-			{Time: 200, Comments: []*item.Item{
+	root := &item.Story{
+		Comments: []*item.Story{
+			{Time: 200, Comments: []*item.Story{
 				{Time: 300, Comments: nil},
 			}},
 			{Time: 50, Comments: nil},
@@ -177,6 +177,6 @@ func TestGetFirstCommentID(t *testing.T) {
 	t.Parallel()
 
 	assert.Equal(t, 0, getFirstCommentID(nil))
-	assert.Equal(t, 0, getFirstCommentID([]*item.Item{}))
-	assert.Equal(t, 42, getFirstCommentID([]*item.Item{{ID: 42}, {ID: 99}}))
+	assert.Equal(t, 0, getFirstCommentID([]*item.Story{}))
+	assert.Equal(t, 42, getFirstCommentID([]*item.Story{{ID: 42}, {ID: 99}}))
 }

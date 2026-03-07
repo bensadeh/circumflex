@@ -40,7 +40,7 @@ type ShowStatusMessage struct {
 type StatusMessageTimeout struct{}
 
 type FetchingFinished struct {
-	Stories  []*item.Item
+	Stories  []*item.Story
 	Category int
 	Message  string
 }
@@ -52,13 +52,13 @@ type FetchAndChangeToCategory struct {
 }
 
 type Refresh struct {
-	Stories         []*item.Item
+	Stories         []*item.Story
 	CurrentCategory int
 	CurrentIndex    int
 }
 
 type CategoryFetchingFinished struct {
-	Stories  []*item.Item
+	Stories  []*item.Story
 	Category int
 	Index    int
 	Cursor   int
@@ -66,7 +66,7 @@ type CategoryFetchingFinished struct {
 }
 
 type AddToFavorites struct {
-	Item *item.Item
+	Item *item.Story
 }
 
 type CommentTreeReady struct {

@@ -156,10 +156,10 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 	}
 }
 
-func clearAllCategories(items [][]*item.Item) {
-	items[categories.Top] = []*item.Item{}
-	items[categories.Newest] = []*item.Item{}
-	items[categories.Ask] = []*item.Item{}
-	items[categories.Show] = []*item.Item{}
-	items[categories.Best] = []*item.Item{}
+func clearAllCategories(items [][]*item.Story) {
+	items[categories.Top] = []*item.Story{}
+	items[categories.Newest] = []*item.Story{}
+	items[categories.Ask] = []*item.Story{}
+	items[categories.Show] = []*item.Story{}
+	items[categories.Best] = []*item.Story{}
 }

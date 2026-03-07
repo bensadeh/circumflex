@@ -1,6 +1,6 @@
 package item
 
-type Item struct {
+type Story struct {
 	ID            int
 	Title         string
 	Points        int
@@ -11,7 +11,7 @@ type Item struct {
 	URL           string
 	Level         int
 	Domain        string
-	Comments      []*Item
+	Comments      []*Story
 	Content       string
 	CommentsCount int
 }

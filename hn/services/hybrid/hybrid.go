@@ -30,7 +30,7 @@ func NewService() *Service {
 	return &Service{client: client}
 }
 
-func (s *Service) FetchItems(itemsToFetch int, cat int) ([]*item.Item, error) {
+func (s *Service) FetchItems(itemsToFetch int, cat int) ([]*item.Story, error) {
 	listOfIDs, err := s.fetchStoriesList(cat)
 	if err != nil {
 		return nil, err
@@ -41,8 +41,8 @@ func (s *Service) FetchItems(itemsToFetch int, cat int) ([]*item.Item, error) {
 	return s.fetchItemsInParallel(listOfIdsToFetch)
 }
 
-func (s *Service) fetchItemsInParallel(ids []int) ([]*item.Item, error) {
-	items := make([]*item.Item, len(ids))
+func (s *Service) fetchItemsInParallel(ids []int) ([]*item.Story, error) {
+	items := make([]*item.Story, len(ids))
 	var wg sync.WaitGroup
 
 	for i, id := range ids {
@@ -60,7 +60,7 @@ func (s *Service) fetchItemsInParallel(ids []int) ([]*item.Item, error) {
 
 	// Filter out nil items (failed fetches)
 	var failed int
-	result := make([]*item.Item, 0, len(items))
+	result := make([]*item.Story, 0, len(items))
 	for _, it := range items {
 		if it != nil {
 			result = append(result, it)
@@ -123,11 +123,11 @@ func getCategory(cat int) (string, error) {
 	}
 }
 
-func (s *Service) FetchItem(id int) (*item.Item, error) {
+func (s *Service) FetchItem(id int) (*item.Story, error) {
 	return s.fetchItem(id)
 }
 
-func (s *Service) fetchItem(id int) (*item.Item, error) {
+func (s *Service) fetchItem(id int) (*item.Story, error) {
 	hn := new(HN)
 
 	client := s.client
@@ -157,8 +157,8 @@ func (s *Service) fetchItem(id int) (*item.Item, error) {
 	return mapItem(hn), nil
 }
 
-func mapItem(hn *HN) *item.Item {
-	return &item.Item{
+func mapItem(hn *HN) *item.Story {
+	return &item.Story{
 		ID:            hn.Id,
 		Title:         hn.Title,
 		Points:        hn.Score,
@@ -172,7 +172,7 @@ func mapItem(hn *HN) *item.Item {
 	}
 }
 
-func (s *Service) FetchComments(id int) (*item.Item, error) {
+func (s *Service) FetchComments(id int) (*item.Story, error) {
 	client := s.client
 	if client == nil {
 		client = resty.New()
@@ -200,14 +200,14 @@ func (s *Service) FetchComments(id int) (*item.Item, error) {
 	return mapComments(comments), nil
 }
 
-func mapComments(comments *Comments) *item.Item {
-	items := make([]*item.Item, 0, len(comments.Comments))
+func mapComments(comments *Comments) *item.Story {
+	items := make([]*item.Story, 0, len(comments.Comments))
 
 	for i := range comments.Comments {
 		items = append(items, mapComments(&comments.Comments[i]))
 	}
 
-	return &item.Item{
+	return &item.Story{
 		ID:            comments.ID,
 		Title:         comments.Title,
 		Points:        comments.Points,
