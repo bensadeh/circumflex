@@ -59,7 +59,7 @@ func WriteToFile(path string, content string) error {
 	return nil
 }
 
-func WriteToFileNew(dirPath string, fileName string, content string) error {
+func WriteToDir(dirPath string, fileName string, content string) error {
 	mkdirErr := os.MkdirAll(dirPath, 0o700)
 	if mkdirErr != nil {
 		return fmt.Errorf("could not create path to config dir: %w", mkdirErr)

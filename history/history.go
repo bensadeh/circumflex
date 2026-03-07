@@ -56,7 +56,7 @@ func writeToDisk(h *Persistent, dirPath string, fileName string) error {
 		return err
 	}
 
-	return file.WriteToFileNew(dirPath, fileName, string(visitedStoriesJSON))
+	return file.WriteToDir(dirPath, fileName, string(visitedStoriesJSON))
 }
 
 func getCacheFilePaths() (string, string, string) {
