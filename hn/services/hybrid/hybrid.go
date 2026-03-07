@@ -84,14 +84,7 @@ func (s *Service) fetchStoriesList(cat int) (stories []int, err error) {
 
 	url := fmt.Sprintf("%s/%s.json", uri, catName)
 
-	client := s.client
-	if client == nil {
-		client = resty.New()
-		client.SetTimeout(10 * time.Second)
-	}
-
-	_, err = client.R().
-		SetHeader("User-Agent", version.Name+"/"+version.Version).
+	_, err = s.client.R().
 		SetResult(&stories).
 		Get(url)
 	if err != nil {
@@ -130,14 +123,7 @@ func (s *Service) FetchItem(id int) (*item.Story, error) {
 func (s *Service) fetchItem(id int) (*item.Story, error) {
 	hn := new(HN)
 
-	client := s.client
-	if client == nil {
-		client = resty.New()
-		client.SetTimeout(10 * time.Second)
-	}
-
-	resp, err := client.R().
-		SetHeader("User-Agent", version.Name+"/"+version.Version).
+	resp, err := s.client.R().
 		Get("https://hacker-news.firebaseio.com/v0/item/" + strconv.Itoa(id) + ".json")
 	if err != nil {
 		return nil, fmt.Errorf("fetching item %d: %w", id, err)
@@ -173,14 +159,7 @@ func mapItem(hn *HN) *item.Story {
 }
 
 func (s *Service) FetchComments(id int) (*item.Story, error) {
-	client := s.client
-	if client == nil {
-		client = resty.New()
-		client.SetTimeout(10 * time.Second)
-	}
-
-	response, err := client.R().
-		SetHeader("User-Agent", version.Name+"/"+version.Version).
+	response, err := s.client.R().
 		Get("http://api.hackerwebapp.com/item/" + strconv.Itoa(id))
 	if err != nil {
 		return nil, fmt.Errorf("fetching comments for %d: %w", id, err)
