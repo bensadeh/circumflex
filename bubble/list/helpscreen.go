@@ -3,6 +3,7 @@ package list
 import (
 	"clx/help"
 
+	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 )
@@ -15,7 +16,7 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
-		if msg.Code == 'q' || msg.Code == tea.KeyEscape || msg.Code == 'i' || msg.Code == '?' || (msg.Code == 'c' && msg.Mod == tea.ModCtrl) {
+		if key.Matches(msg, m.keymap.Quit, m.keymap.Help) {
 			m.state = StateBrowsing
 
 			return m, nil
@@ -38,7 +39,7 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 		content := lipgloss.NewStyle().
 			Width(msg.Width).
 			AlignHorizontal(lipgloss.Center).
-			SetString(help.GetHelpScreen(m.config.EnableNerdFonts))
+			SetString(help.GetHelpScreen(m.config.EnableNerdFonts, m.keymap.MainMenuBindings()))
 
 		m.viewport.SetContent(content.String())
 

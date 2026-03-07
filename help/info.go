@@ -6,31 +6,27 @@ import (
 	"clx/nerdfonts"
 	"strings"
 
+	"charm.land/bubbles/v2/key"
 	. "github.com/logrusorgru/aurora/v3"
 
 	text "github.com/MichaelMure/go-term-text"
 )
 
-func GetText(screenWidth int, enableNerdFonts bool) string {
+func GetText(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Binding) string {
 	keys := new(keymaps.List)
 	keys.Init()
 
 	keys.AddHeader(Magenta(" Main Menu ").Underline().String())
 	keys.AddSeparator()
-	keys.AddKeymap("View comment section", "Enter")
-	keys.AddKeymap("View article in Reader Mode", "Space")
-	keys.AddSeparator()
-	keys.AddKeymap("Refresh", "r")
-	keys.AddKeymap("Change category", "Tab")
-	keys.AddSeparator()
-	keys.AddKeymap("Open story link in browser", "o")
-	keys.AddKeymap("Open comments in browser", "c")
-	keys.AddSeparator()
-	keys.AddKeymap("Add to favorites", "f")
-	keys.AddKeymap("Remove from favorites", "x")
-	keys.AddSeparator()
-	keys.AddKeymap("Bring up this screen", "i, ?")
-	keys.AddKeymap("Quit to prompt", "q")
+
+	for _, b := range mainMenuBindings {
+		if !b.Enabled() {
+			keys.AddSeparator()
+			continue
+		}
+		keys.AddKeymap(b.Help().Desc, b.Help().Key)
+	}
+
 	keys.AddSeparator()
 
 	keys.AddHeader(Yellow(" Comment Section / Reader Mode ").Underline().String())

@@ -79,6 +79,7 @@ type Model struct {
 	service   hn.Service
 	favorites *favorites.Favorites
 	cat       *categories.Categories
+	keymap    KeyMap
 
 	viewport viewport.Model
 }
@@ -124,6 +125,7 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 		service:   service,
 		favorites: favorites,
 		cat:       cat,
+		keymap:    DefaultKeyMap(),
 	}
 
 	m.updatePagination()
@@ -172,7 +174,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		content := lipgloss.NewStyle().
 			Width(windowSizeMsg.Width).
 			AlignHorizontal(lipgloss.Center).
-			SetString(help.GetHelpScreen(m.config.EnableNerdFonts))
+			SetString(help.GetHelpScreen(m.config.EnableNerdFonts, m.keymap.MainMenuBindings()))
 
 		m.viewport.SetContent(content.String())
 
@@ -228,7 +230,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		content := lipgloss.NewStyle().
 			Width(msg.Width).
 			AlignHorizontal(lipgloss.Center).
-			SetString(help.GetHelpScreen(m.config.EnableNerdFonts))
+			SetString(help.GetHelpScreen(m.config.EnableNerdFonts, m.keymap.MainMenuBindings()))
 
 		m.viewport.SetContent(content.String())
 
