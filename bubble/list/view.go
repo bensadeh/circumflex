@@ -1,9 +1,9 @@
 package list
 
 import (
-	"clx/app"
 	"clx/bubble/ranking"
 	"clx/header"
+	"clx/version"
 	"fmt"
 	"strings"
 
@@ -87,7 +87,7 @@ func (m *Model) statusAndPaginationView() string {
 	switch {
 	case m.state == StateHelpScreen:
 		centerContent = lipgloss.NewStyle().Faint(true).Render(
-			"github.com/bensadeh/circumflex • version " + app.Version)
+			"github.com/bensadeh/circumflex • version " + version.Version)
 	case m.showSpinner:
 		centerContent = m.spinnerView()
 	default:

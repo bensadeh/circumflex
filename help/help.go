@@ -1,8 +1,7 @@
 package help
 
 import (
-	"clx/constants/unicode"
-	"clx/info"
+	"clx/constants"
 	"strings"
 )
 
@@ -15,8 +14,8 @@ func GetHelpScreen(enableNerdFonts bool) string {
 
 	var sb strings.Builder
 
-	sb.WriteString(unicode.InvisibleCharacterForTopLevelComments + newPar)
-	sb.WriteString(unicode.InvisibleCharacterForTopLevelComments + info.GetText(textWidth, enableNerdFonts) + newPar)
+	sb.WriteString(constants.InvisibleCharacterForTopLevelComments + newPar)
+	sb.WriteString(constants.InvisibleCharacterForTopLevelComments + GetText(textWidth, enableNerdFonts) + newPar)
 
 	return sb.String()
 }

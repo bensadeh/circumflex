@@ -1,8 +1,7 @@
-package postprocessor
+package reader
 
 import (
-	"clx/constants/margins"
-	"clx/constants/unicode"
+	"clx/constants"
 	"clx/screen"
 	"strings"
 
@@ -13,7 +12,7 @@ const (
 	newLine = "\n"
 )
 
-func Process(text string, url string) string {
+func processArticle(text string, url string) string {
 	text = filterSite(text, url)
 	text = moveZeroWidthSpaceUpOneLine(text)
 	text = indent(text)
@@ -23,12 +22,12 @@ func Process(text string, url string) string {
 }
 
 func moveZeroWidthSpaceUpOneLine(text string) string {
-	return strings.ReplaceAll(text, newLine+unicode.InvisibleCharacterForTopLevelComments,
-		unicode.InvisibleCharacterForTopLevelComments+newLine)
+	return strings.ReplaceAll(text, newLine+constants.InvisibleCharacterForTopLevelComments,
+		constants.InvisibleCharacterForTopLevelComments+newLine)
 }
 
 func indent(commentSection string) string {
-	indentBlock := strings.Repeat(" ", margins.ReaderViewLeftMargin)
+	indentBlock := strings.Repeat(" ", constants.ReaderViewLeftMargin)
 	screenWidth, err := screen.GetTerminalWidth()
 	if err != nil {
 		screenWidth = 80

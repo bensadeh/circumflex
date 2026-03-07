@@ -1,7 +1,7 @@
 package tree
 
 import (
-	"clx/constants/unicode"
+	"clx/constants"
 	"clx/item"
 	"strings"
 	"testing"
@@ -162,14 +162,14 @@ func TestAddFilterTag(t *testing.T) {
 	t.Run("level > 0 adds invisible chars", func(t *testing.T) {
 		input := "line1\nline2\n"
 		result := addFilterTag(1, input)
-		assert.Contains(t, result, unicode.InvisibleCharacterForExpansion)
+		assert.Contains(t, result, constants.InvisibleCharacterForExpansion)
 	})
 }
 
 func TestGetZeroWidthSpace(t *testing.T) {
 	t.Parallel()
 
-	assert.Equal(t, unicode.InvisibleCharacterForTopLevelComments, getZeroWidthSpace(true))
+	assert.Equal(t, constants.InvisibleCharacterForTopLevelComments, getZeroWidthSpace(true))
 	assert.Empty(t, getZeroWidthSpace(false))
 }
 

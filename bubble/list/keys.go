@@ -3,7 +3,7 @@ package list
 import (
 	"clx/browser"
 	"clx/bubble/list/message"
-	"clx/constants/category"
+	"clx/category"
 	"strconv"
 	"time"
 

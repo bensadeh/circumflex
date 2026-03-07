@@ -2,8 +2,7 @@ package meta
 
 import (
 	"clx/comment"
-	"clx/constants/nerdfonts"
-	"clx/constants/unicode"
+	"clx/constants"
 	"clx/item"
 	"clx/settings"
 	"clx/syntax"
@@ -32,7 +31,7 @@ func GetReaderModeMetaBlock(title string, url string, lineWidth int) string {
 	contentWidth := lineWidth - style.GetHorizontalBorderSize() - style.GetHorizontalPadding()
 
 	formattedTitle, _ := text.Wrap(Bold(title).String(), lineWidth)
-	formattedTitle = unicode.InvisibleCharacterForTopLevelComments + newLine + formattedTitle
+	formattedTitle = constants.InvisibleCharacterForTopLevelComments + newLine + formattedTitle
 	formattedURL := Blue(text.TruncateMax(url, contentWidth)).String()
 	info := newParagraph + Green("Reader Mode").String()
 
@@ -72,7 +71,7 @@ func GetCommentSectionMetaBlock(c *item.Item, config *settings.Config, newCommen
 
 func getAuthor(author string, enableNerdFonts bool) string {
 	if enableNerdFonts {
-		authorLabel := fmt.Sprintf("%s %s", nerdfonts.Author, author)
+		authorLabel := fmt.Sprintf("%s %s", constants.NFAuthor, author)
 
 		return Red(authorLabel).String()
 	}
@@ -84,7 +83,7 @@ func getComments(commentsCount int, enableNerdFonts bool) string {
 	comments := strconv.Itoa(commentsCount)
 
 	if enableNerdFonts {
-		commentsLabel := fmt.Sprintf("%s %s", nerdfonts.Comment, comments)
+		commentsLabel := fmt.Sprintf("%s %s", constants.NFComment, comments)
 
 		return Magenta(commentsLabel).String()
 	}
@@ -96,7 +95,7 @@ func getScore(points int, enableNerdFonts bool) string {
 	score := strconv.Itoa(points)
 
 	if enableNerdFonts {
-		pointsLabel := fmt.Sprintf("%s %s", score, nerdfonts.Score)
+		pointsLabel := fmt.Sprintf("%s %s", score, constants.NFScore)
 
 		return Yellow(pointsLabel).String()
 	}
@@ -106,7 +105,7 @@ func getScore(points int, enableNerdFonts bool) string {
 
 func getID(id int, enableNerdFonts bool) string {
 	if enableNerdFonts {
-		return fmt.Sprintf("%d %s", Faint(id).Green(), Green(nerdfonts.Tag))
+		return fmt.Sprintf("%d %s", Faint(id).Green(), Green(constants.NFTag))
 	}
 
 	return fmt.Sprintf("%s %d", "ID", Faint(id).Green())
@@ -127,7 +126,7 @@ func getNewCommentsInfo(newComments int, enableNerdFonts bool) string {
 }
 
 func getHeadline(title string, config *settings.Config) string {
-	formattedTitle := highlightTitle(unicode.InvisibleCharacterForTopLevelComments+" "+newLine+title, config.DisableHeadlineHighlighting,
+	formattedTitle := highlightTitle(constants.InvisibleCharacterForTopLevelComments+" "+newLine+title, config.DisableHeadlineHighlighting,
 		config.EnableNerdFonts)
 	wrappedHeadline, _ := text.Wrap(formattedTitle, config.CommentWidth)
 

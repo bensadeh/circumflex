@@ -1,8 +1,8 @@
 package list
 
 import (
-	"clx/constants/category"
-	"clx/constants/nerdfonts"
+	"clx/category"
+	"clx/constants"
 	"clx/item"
 	"clx/syntax"
 	"fmt"
@@ -29,8 +29,8 @@ type DefaultItemStyles struct {
 	SelectedTitleAddToFavorites lipgloss.Style
 	SelectedDescAddToFavorites  lipgloss.Style
 
-	SelectedTitleRemoveFromFavorites         lipgloss.Style
-	SelectedDescRemoveFromFavoritesFavorites lipgloss.Style
+	SelectedTitleRemoveFromFavorites lipgloss.Style
+	SelectedDescRemoveFromFavorites  lipgloss.Style
 
 	DimmedTitle lipgloss.Style
 	DimmedDesc  lipgloss.Style
@@ -56,7 +56,7 @@ func NewDefaultItemStyles() (s DefaultItemStyles) {
 	s.SelectedDescAddToFavorites = s.NormalDesc.Copy()
 
 	s.SelectedTitleRemoveFromFavorites = s.NormalTitle.Copy().Foreground(lipgloss.Color("1")).Reverse(true)
-	s.SelectedDescRemoveFromFavoritesFavorites = s.NormalDesc.Copy()
+	s.SelectedDescRemoveFromFavorites = s.NormalDesc.Copy()
 
 	s.DimmedTitle = lipgloss.NewStyle()
 	s.DimmedDesc = s.DimmedTitle.Copy()
@@ -150,7 +150,7 @@ func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *item.It
 			desc, syntax.AddToFavorites, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 
 	case isSelected && m.state == StateRemoveFavoritesPrompt:
-		title, desc = styleTitleAndDesc(title, s.SelectedTitleRemoveFromFavorites, s.SelectedDescRemoveFromFavoritesFavorites, domain,
+		title, desc = styleTitleAndDesc(title, s.SelectedTitleRemoveFromFavorites, s.SelectedDescRemoveFromFavorites, domain,
 			desc, syntax.RemoveFromFavorites, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 
 	case isSelected && m.state == StateBrowsing:
@@ -187,7 +187,7 @@ func getComments(numberOfComments int, enableNerdFonts bool) string {
 	}
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s%5d", nerdfonts.Comment, numberOfComments)
+		return fmt.Sprintf("%s%5d", constants.NFComment, numberOfComments)
 	}
 
 	return fmt.Sprintf("| %d comments", numberOfComments)
@@ -199,7 +199,7 @@ func getScore(score int, enableNerdFonts bool) string {
 	}
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s%4d", nerdfonts.Score, score)
+		return fmt.Sprintf("%s%4d", constants.NFScore, score)
 	}
 
 	return fmt.Sprintf("%d points ", score)
@@ -211,7 +211,7 @@ func getAuthor(author string, enableNerdFonts bool) string {
 	}
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s %s", nerdfonts.Author, author)
+		return fmt.Sprintf("%s %s", constants.NFAuthor, author)
 	}
 
 	return fmt.Sprintf("by %s ", author)
@@ -240,7 +240,7 @@ func parseTime(unixTime int64, enableNerdFonts bool) string {
 	now, _ := goment.New()
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s %-12s", nerdfonts.Time, moment.From(now))
+		return fmt.Sprintf("%s %-12s", constants.NFTime, moment.From(now))
 	}
 
 	return fmt.Sprintf("%s ", moment.From(now))

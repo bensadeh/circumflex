@@ -3,7 +3,7 @@ package list
 import (
 	"clx/bubble/list/message"
 	"clx/categories"
-	"clx/constants/category"
+	"clx/category"
 	"clx/favorites"
 	"clx/history"
 	"clx/item"

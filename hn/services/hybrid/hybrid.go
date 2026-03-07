@@ -1,10 +1,10 @@
 package hybrid
 
 import (
-	"clx/app"
-	"clx/constants/category"
-	"clx/endpoints"
+	"clx/ansi"
+	"clx/category"
 	"clx/item"
+	"clx/version"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -12,9 +12,6 @@ import (
 	"time"
 
 	"github.com/bobesa/go-domain-util/domainutil"
-
-	ansi "clx/utils/strip-ansi"
-
 	"github.com/go-resty/resty/v2"
 )
 
@@ -29,7 +26,7 @@ type Service struct {
 func NewService() *Service {
 	client := resty.New()
 	client.SetTimeout(10 * time.Second)
-	client.SetHeader("User-Agent", app.Name+"/"+app.Version)
+	client.SetHeader("User-Agent", version.Name+"/"+version.Version)
 	return &Service{client: client}
 }
 
@@ -94,7 +91,7 @@ func (s *Service) fetchStoriesList(cat int) (stories []int, err error) {
 	}
 
 	_, err = client.R().
-		SetHeader("User-Agent", app.Name+"/"+app.Version).
+		SetHeader("User-Agent", version.Name+"/"+version.Version).
 		SetResult(&stories).
 		Get(url)
 	if err != nil {
@@ -131,7 +128,7 @@ func (s *Service) FetchItem(id int) (*item.Item, error) {
 }
 
 func (s *Service) fetchItem(id int) (*item.Item, error) {
-	hn := new(endpoints.HN)
+	hn := new(HN)
 
 	client := s.client
 	if client == nil {
@@ -140,7 +137,7 @@ func (s *Service) fetchItem(id int) (*item.Item, error) {
 	}
 
 	resp, err := client.R().
-		SetHeader("User-Agent", app.Name+"/"+app.Version).
+		SetHeader("User-Agent", version.Name+"/"+version.Version).
 		Get("https://hacker-news.firebaseio.com/v0/item/" + strconv.Itoa(id) + ".json")
 	if err != nil {
 		return nil, fmt.Errorf("fetching item %d: %w", id, err)
@@ -160,7 +157,7 @@ func (s *Service) fetchItem(id int) (*item.Item, error) {
 	return mapItem(hn), nil
 }
 
-func mapItem(hn *endpoints.HN) *item.Item {
+func mapItem(hn *HN) *item.Item {
 	return &item.Item{
 		ID:            hn.Id,
 		Title:         hn.Title,
@@ -183,7 +180,7 @@ func (s *Service) FetchComments(id int) (*item.Item, error) {
 	}
 
 	response, err := client.R().
-		SetHeader("User-Agent", app.Name+"/"+app.Version).
+		SetHeader("User-Agent", version.Name+"/"+version.Version).
 		Get("http://api.hackerwebapp.com/item/" + strconv.Itoa(id))
 	if err != nil {
 		return nil, fmt.Errorf("fetching comments for %d: %w", id, err)
@@ -195,7 +192,7 @@ func (s *Service) FetchComments(id int) (*item.Item, error) {
 
 	sanitizedResponse := ansi.Strip(string(response.Body()))
 
-	comments := new(endpoints.Comments)
+	comments := new(Comments)
 	if err := json.Unmarshal([]byte(sanitizedResponse), comments); err != nil {
 		return nil, fmt.Errorf("parsing comments for %d: %w", id, err)
 	}
@@ -203,7 +200,7 @@ func (s *Service) FetchComments(id int) (*item.Item, error) {
 	return mapComments(comments), nil
 }
 
-func mapComments(comments *endpoints.Comments) *item.Item {
+func mapComments(comments *Comments) *item.Item {
 	items := make([]*item.Item, 0, len(comments.Comments))
 
 	for i := range comments.Comments {

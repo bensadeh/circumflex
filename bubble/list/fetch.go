@@ -2,7 +2,7 @@ package list
 
 import (
 	"clx/bubble/list/message"
-	"clx/constants/category"
+	"clx/category"
 	"clx/history"
 	"clx/hn"
 	"clx/hn/services/hybrid"

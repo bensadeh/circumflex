@@ -1,9 +1,8 @@
-package terminal
+package reader
 
 import (
-	"clx/constants/unicode"
+	"clx/constants"
 	"clx/meta"
-	"clx/reader/markdown"
 	"clx/syntax"
 	"regexp"
 	"strings"
@@ -30,56 +29,56 @@ const (
 	ansiItalic = "\u001B[3m"
 )
 
-func CreateHeader(title string, domain string, lineWidth int) string {
+func createHeader(title string, domain string, lineWidth int) string {
 	return meta.GetReaderModeMetaBlock(title, domain, lineWidth)
 }
 
-func ConvertToTerminalFormat(blocks []*markdown.Block, lineWidth int, indentBlock string) string {
+func convertToTerminalFormat(blocks []*block, lineWidth int, indentBlock string) string {
 	output := ""
 
-	for _, block := range blocks {
-		switch block.Kind {
-		case markdown.Text:
-			output += renderText(block.Text, lineWidth) + "\n\n"
+	for _, b := range blocks {
+		switch b.Kind {
+		case blockText:
+			output += renderText(b.Text, lineWidth) + "\n\n"
 
-		case markdown.Image:
-			output += renderImage(block.Text, lineWidth) + "\n\n"
+		case blockImage:
+			output += renderImage(b.Text, lineWidth) + "\n\n"
 
-		case markdown.Code:
-			output += renderCode(block.Text) + "\n\n"
+		case blockCode:
+			output += renderCode(b.Text) + "\n\n"
 
-		case markdown.Quote:
-			output += renderQuote(block.Text, lineWidth, indentBlock) + "\n\n"
+		case blockQuote:
+			output += renderQuote(b.Text, lineWidth, indentBlock) + "\n\n"
 
-		case markdown.Table:
-			output += renderTable(block.Text) + "\n\n"
+		case blockTable:
+			output += renderTable(b.Text) + "\n\n"
 
-		case markdown.List:
-			output += renderList(block.Text, lineWidth) + "\n\n"
+		case blockList:
+			output += renderList(b.Text, lineWidth) + "\n\n"
 
-		case markdown.Divider:
+		case blockDivider:
 			output += renderDivider(lineWidth) + "\n\n"
 
-		case markdown.H1:
-			output += h1(block.Text, lineWidth) + "\n\n"
+		case blockH1:
+			output += h1(b.Text, lineWidth) + "\n\n"
 
-		case markdown.H2:
-			output += h2(block.Text, lineWidth) + "\n\n"
+		case blockH2:
+			output += h2(b.Text, lineWidth) + "\n\n"
 
-		case markdown.H3:
-			output += h3(block.Text, lineWidth) + "\n\n"
+		case blockH3:
+			output += h3(b.Text, lineWidth) + "\n\n"
 
-		case markdown.H4:
-			output += h4(block.Text, lineWidth) + "\n\n"
+		case blockH4:
+			output += h4(b.Text, lineWidth) + "\n\n"
 
-		case markdown.H5:
-			output += h5(block.Text, lineWidth) + "\n\n"
+		case blockH5:
+			output += h5(b.Text, lineWidth) + "\n\n"
 
-		case markdown.H6:
-			output += h6(block.Text, lineWidth) + "\n\n"
+		case blockH6:
+			output += h6(b.Text, lineWidth) + "\n\n"
 
 		default:
-			output += renderText(block.Text, lineWidth) + "\n\n"
+			output += renderText(b.Text, lineWidth) + "\n\n"
 		}
 	}
 
@@ -146,8 +145,8 @@ func renderImage(text string, lineWidth int) string {
 	italic := ansiItalic
 	faint := "\u001B[2m"
 	normal := "\u001B[0m"
-	imageLabel := normal + Red(unicode.Circle).Faint().String() + Yellow(unicode.Circle).Faint().String() +
-		Blue(unicode.Circle).Faint().String() + normal + red + faint + italic + " Image " + normal + faint + italic
+	imageLabel := normal + Red(constants.Circle).Faint().String() + Yellow(constants.Circle).Faint().String() +
+		Blue(constants.Circle).Faint().String() + normal + red + faint + italic + " Image " + normal + faint + italic
 
 	text = regexp.MustCompile(`!\[(.*?)\]\(.*?\)$`).
 		ReplaceAllString(text, imageLabel+`$1`)
@@ -224,11 +223,11 @@ func renderQuote(text string, lineWidth int, indentSymbol string) string {
 
 func renderTable(text string) string {
 	screenWidth, _ := terminal.Width()
-	text = strings.ReplaceAll(text, markdown.ItalicStart, "")
-	text = strings.ReplaceAll(text, markdown.ItalicStop, "")
+	text = strings.ReplaceAll(text, italicStart, "")
+	text = strings.ReplaceAll(text, italicStop, "")
 
-	text = strings.ReplaceAll(text, markdown.BoldStart, "")
-	text = strings.ReplaceAll(text, markdown.BoldStop, "")
+	text = strings.ReplaceAll(text, boldStart, "")
+	text = strings.ReplaceAll(text, boldStop, "")
 
 	text = unescapeCharacters(text)
 	text = removeImageReference(text)
@@ -256,8 +255,8 @@ func it(text string) string {
 	italic := ansiItalic
 	noItalic := "\u001B[23m"
 
-	text = strings.ReplaceAll(text, markdown.ItalicStart, italic)
-	text = strings.ReplaceAll(text, markdown.ItalicStop, noItalic)
+	text = strings.ReplaceAll(text, italicStart, italic)
+	text = strings.ReplaceAll(text, italicStop, noItalic)
 
 	return text
 }
@@ -266,88 +265,82 @@ func itReversed(text string) string {
 	italic := ansiItalic
 	noItalic := "\u001B[23m"
 
-	text = strings.ReplaceAll(text, markdown.ItalicStart, noItalic)
-	text = strings.ReplaceAll(text, markdown.ItalicStop, italic)
+	text = strings.ReplaceAll(text, italicStart, noItalic)
+	text = strings.ReplaceAll(text, italicStop, italic)
 
 	return text
 }
 
 func bld(text string) string {
-	// bold := "\033[31m"
-	// noBold := "\033[0m"
-
-	text = strings.ReplaceAll(text, markdown.BoldStart, "")
-	text = strings.ReplaceAll(text, markdown.BoldStop, "")
+	text = strings.ReplaceAll(text, boldStart, "")
+	text = strings.ReplaceAll(text, boldStop, "")
 
 	return text
 }
 
 func bldInQuote(text string) string {
-	// bold := "\033[31m"
-	// noBold := "\033[0m"
-
-	text = strings.ReplaceAll(text, markdown.BoldStart, "")
-	text = strings.ReplaceAll(text, markdown.BoldStop, "")
+	text = strings.ReplaceAll(text, boldStart, "")
+	text = strings.ReplaceAll(text, boldStop, "")
 
 	return text
 }
 
 func h1(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = White(unicode.Block+" ").String() + Bold(text).String()
+	text = White(constants.Block+" ").String() + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
-	return unicode.InvisibleCharacterForTopLevelComments + text
+	return constants.InvisibleCharacterForTopLevelComments + text
 }
 
 func h2(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Blue(unicode.Block+" ").String() + Bold(text).String()
+	text = Blue(constants.Block+" ").String() + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
-	return unicode.InvisibleCharacterForTopLevelComments + text
+	return constants.InvisibleCharacterForTopLevelComments + text
 }
 
 func h3(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	block := strings.Repeat(unicode.Block, 0)
-	text = Red(block).String() + " " + Bold(text).String()
+	blk := strings.Repeat(constants.Block, 0)
+	text = Red(blk).String() + " " + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
-	return unicode.InvisibleCharacterForTopLevelComments + text
+	return constants.InvisibleCharacterForTopLevelComments + text
 }
 
 func h4(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	block := strings.Repeat(unicode.Block, 0)
-	text = Magenta(block).String() + " " + Bold(text).String()
+	blk := strings.Repeat(constants.Block, 0)
+	text = Magenta(blk).String() + " " + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
-	return unicode.InvisibleCharacterForTopLevelComments + text
+	return constants.InvisibleCharacterForTopLevelComments + text
 }
 
 func h5(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	block := strings.Repeat(unicode.Block, 0)
-	text = Yellow(block).String() + " " + Bold(text).String()
+	blk := strings.Repeat(constants.Block, 0)
+	text = Yellow(blk).String() + " " + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
-	return unicode.InvisibleCharacterForTopLevelComments + text
+	return constants.InvisibleCharacterForTopLevelComments + text
 }
 
 func h6(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	block := strings.Repeat(unicode.Block, 0)
-	text = Green(block).String() + " " + Bold(text).String()
+	blk := strings.Repeat(constants.Block, 0)
+	text = Green(blk).String() + " " + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
-	return unicode.InvisibleCharacterForTopLevelComments + text
+	return constants.InvisibleCharacterForTopLevelComments + text
 }
 
 func removeHrefs(text string) string {
@@ -394,17 +387,17 @@ func unescapeCharacters(text string) string {
 }
 
 func removeDoubleWhitespace(text string) string {
-	text = strings.ReplaceAll(text, "  ", " ")
+	text = strings.ReplaceAll(text, "  ", " ")
 
 	return text
 }
 
 func removeBoldAndItalicTags(text string) string {
-	text = strings.ReplaceAll(text, markdown.BoldStart, "")
-	text = strings.ReplaceAll(text, markdown.BoldStop, "")
+	text = strings.ReplaceAll(text, boldStart, "")
+	text = strings.ReplaceAll(text, boldStop, "")
 
-	text = strings.ReplaceAll(text, markdown.ItalicStart, "")
-	text = strings.ReplaceAll(text, markdown.ItalicStop, "")
+	text = strings.ReplaceAll(text, italicStart, "")
+	text = strings.ReplaceAll(text, italicStop, "")
 
 	return text
 }

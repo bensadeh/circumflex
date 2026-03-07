@@ -2,7 +2,6 @@ package header
 
 import (
 	"clx/categories"
-	"fmt"
 	"image/color"
 	"strings"
 
@@ -77,7 +76,7 @@ func getSubHeaders(allCategories []int, hasFavorites bool) []string {
 		if categoryName, exists := ReverseCategoryMapping[cat]; exists {
 			cats = append(cats, string(categoryName))
 		} else {
-			panic(fmt.Sprintf("Invalid category ID: %d", cat))
+			cats = append(cats, "unknown")
 		}
 	}
 
@@ -124,6 +123,6 @@ func getSelectedCategoryColor(selectedSubHeader int, numCategories int, hasFavor
 	case 2:
 		return yellow, true
 	default:
-		panic("unreachable code")
+		return blue, true
 	}
 }

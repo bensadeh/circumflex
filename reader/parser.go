@@ -1,7 +1,6 @@
-package parser
+package reader
 
 import (
-	"clx/reader/markdown"
 	"errors"
 	"regexp"
 	"strings"
@@ -13,17 +12,14 @@ const (
 	normalDash = "-"
 )
 
-func ConvertToMarkdownBlocks(text string) []*markdown.Block {
-	var blocks []*markdown.Block
+func convertToMarkdownBlocks(text string) []*block {
+	var blocks []*block
 
-	// en- and em-dashes are occasionally used to list items.
-	// Converting them to normal dashes lets us parse more list items.
 	text = strings.ReplaceAll(text, enDash, normalDash)
 	text = strings.ReplaceAll(text, emDash, normalDash)
 
-	// Disable bold text
-	text = strings.ReplaceAll(text, markdown.BoldStart, "")
-	text = strings.ReplaceAll(text, markdown.BoldStop, "")
+	text = strings.ReplaceAll(text, boldStart, "")
+	text = strings.ReplaceAll(text, boldStop, "")
 
 	lines := strings.Split(text+"\n", "\n")
 	temp := new(tempBuffer)
@@ -36,8 +32,8 @@ func ConvertToMarkdownBlocks(text string) []*markdown.Block {
 
 	for _, line := range lines {
 		lineWithoutFormatting := strings.TrimLeft(line, " ")
-		lineWithoutFormatting = strings.ReplaceAll(lineWithoutFormatting, markdown.BoldStart, "")
-		lineWithoutFormatting = strings.ReplaceAll(lineWithoutFormatting, markdown.ItalicStart, "")
+		lineWithoutFormatting = strings.ReplaceAll(lineWithoutFormatting, boldStart, "")
+		lineWithoutFormatting = strings.ReplaceAll(lineWithoutFormatting, italicStart, "")
 
 		if isInsideCode {
 			if strings.HasPrefix(lineWithoutFormatting, "```") {
@@ -103,99 +99,99 @@ func ConvertToMarkdownBlocks(text string) []*markdown.Block {
 
 		switch {
 		case strings.HasPrefix(lineWithoutFormatting, `![`):
-			temp.kind = markdown.Image
+			temp.kind = blockImage
 			temp.text = line
 
 		case strings.HasPrefix(lineWithoutFormatting, "> "):
-			temp.kind = markdown.Quote
+			temp.kind = blockQuote
 			temp.text = strings.TrimPrefix(line, "> ")
 
 			isInsideQuote = true
 
 		case strings.HasPrefix(lineWithoutFormatting, "```"):
-			temp.kind = markdown.Code
+			temp.kind = blockCode
 			temp.text = ""
 
 			isInsideCode = true
 
 		case isListItem(lineWithoutFormatting):
-			if isSameTypeAsPreviousItem(markdown.List, blocks) {
+			if isSameTypeAsPreviousItem(blockList, blocks) {
 				lastItem := len(blocks) - 1
 
-				temp.kind = markdown.List
+				temp.kind = blockList
 				temp.text = blocks[lastItem].Text + "\n" + line
 
-				blocks = RemoveIndex(blocks, lastItem)
+				blocks = removeIndex(blocks, lastItem)
 				isInsideList = true
 
 				continue
 			}
 
-			temp.kind = markdown.List
+			temp.kind = blockList
 			temp.text = line
 
 			isInsideList = true
 
 		case strings.HasPrefix(lineWithoutFormatting, "|"):
-			if isSameTypeAsPreviousItem(markdown.Table, blocks) {
+			if isSameTypeAsPreviousItem(blockTable, blocks) {
 				lastItem := len(blocks) - 1
 
-				temp.kind = markdown.Table
+				temp.kind = blockTable
 				temp.text = blocks[lastItem].Text + "\n" + line
 
-				blocks = RemoveIndex(blocks, lastItem)
+				blocks = removeIndex(blocks, lastItem)
 				isInsideTable = true
 
 				continue
 			}
 
-			temp.kind = markdown.Table
+			temp.kind = blockTable
 			temp.text = line
 
 			isInsideTable = true
 
 		case strings.HasPrefix(lineWithoutFormatting, "* * *"):
-			temp.kind = markdown.Divider
+			temp.kind = blockDivider
 			temp.text = line
 
 		case strings.HasPrefix(lineWithoutFormatting, "# "):
-			temp.kind = markdown.H1
+			temp.kind = blockH1
 			temp.text = lineWithoutFormatting
 
 			isInsideText = true
 
 		case strings.HasPrefix(lineWithoutFormatting, "## "):
-			temp.kind = markdown.H2
+			temp.kind = blockH2
 			temp.text = lineWithoutFormatting
 
 			isInsideText = true
 
 		case strings.HasPrefix(lineWithoutFormatting, "### "):
-			temp.kind = markdown.H3
+			temp.kind = blockH3
 			temp.text = lineWithoutFormatting
 
 			isInsideText = true
 
 		case strings.HasPrefix(lineWithoutFormatting, "#### "):
-			temp.kind = markdown.H4
+			temp.kind = blockH4
 			temp.text = lineWithoutFormatting
 
 			isInsideText = true
 
 		case strings.HasPrefix(lineWithoutFormatting, "##### "):
-			temp.kind = markdown.H5
+			temp.kind = blockH5
 			temp.text = lineWithoutFormatting
 
 			isInsideText = true
 
 		case strings.HasPrefix(lineWithoutFormatting, "###### "):
-			temp.kind = markdown.H6
+			temp.kind = blockH6
 			temp.text = lineWithoutFormatting
 
 			isInsideText = true
 
 		default:
-			temp.kind = markdown.Text
+			temp.kind = blockText
 			temp.text = line
 
 			isInsideText = true
@@ -205,7 +201,7 @@ func ConvertToMarkdownBlocks(text string) []*markdown.Block {
 	return blocks
 }
 
-func RemoveIndex(s []*markdown.Block, index int) []*markdown.Block {
+func removeIndex(s []*block, index int) []*block {
 	return append(s[:index], s[index+1:]...)
 }
 
@@ -220,7 +216,7 @@ func isListItem(text string) bool {
 	return listToken != ""
 }
 
-func isSameTypeAsPreviousItem(itemType int, blocks []*markdown.Block) bool {
+func isSameTypeAsPreviousItem(itemType int, blocks []*block) bool {
 	if len(blocks) == 0 {
 		return false
 	}
@@ -230,12 +226,12 @@ func isSameTypeAsPreviousItem(itemType int, blocks []*markdown.Block) bool {
 	return blocks[previousItem].Kind == itemType
 }
 
-func appendNonEmptyBuffer(temp *tempBuffer, blocks []*markdown.Block) ([]*markdown.Block, error) {
-	if temp.kind == markdown.Text && temp.text == "" {
+func appendNonEmptyBuffer(temp *tempBuffer, blocks []*block) ([]*block, error) {
+	if temp.kind == blockText && temp.text == "" {
 		return nil, errors.New("buffer is empty")
 	}
 
-	b := markdown.Block{
+	b := block{
 		Kind: temp.kind,
 		Text: temp.text,
 	}

@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"clx/app"
 	"clx/bubble"
 	"clx/categories"
 	"clx/cli"
@@ -11,6 +10,7 @@ import (
 	"clx/indent"
 	"clx/less"
 	"clx/settings"
+	"clx/version"
 	"fmt"
 	"os"
 
@@ -36,7 +36,7 @@ func Root() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:     "clx",
 		Short:   "\n" + aurora.Magenta("circumflex").String() + " is a command line tool for browsing Hacker News in your terminal",
-		Version: app.Version,
+		Version: version.Version,
 		Run: func(cmd *cobra.Command, args []string) {
 			config := getConfig()
 			config.IndentationSymbol = indent.GetIndentSymbol(hideIndentSymbol)
@@ -130,7 +130,7 @@ func verifyLess(noLessVerify bool) {
 		return
 	}
 
-	isValid, currentLessVersion := cli.VerifyLessVersion(app.MinimumLessVersion)
+	isValid, currentLessVersion := cli.VerifyLessVersion(version.MinimumLessVersion)
 
 	if !isValid && currentLessVersion == "" {
 		flag := aurora.Bold("--no-less-verify").String()
@@ -139,7 +139,7 @@ func verifyLess(noLessVerify bool) {
 		lessVersion := aurora.Yellow("?").String()
 
 		fmt.Printf("Could not verify version of %s\n\n", lessCmd)
-		fmt.Printf("Required: %d\n", app.MinimumLessVersion)
+		fmt.Printf("Required: %d\n", version.MinimumLessVersion)
 		fmt.Printf("Current:  %s\n\n", lessVersion)
 		fmt.Printf("Re-run %s with the %s flag to disable this check\n", clxCmd, flag)
 
@@ -153,7 +153,7 @@ func verifyLess(noLessVerify bool) {
 		lessVersion := aurora.Yellow(currentLessVersion).String()
 
 		fmt.Printf("Your version of %s is outdated\n\n", lessCmd)
-		fmt.Printf("Required: %d\n", app.MinimumLessVersion)
+		fmt.Printf("Required: %d\n", version.MinimumLessVersion)
 		fmt.Printf("Current:  %s\n\n", lessVersion)
 		fmt.Printf("Re-run %s with the %s flag to disable this check\n", clxCmd, flag)
 

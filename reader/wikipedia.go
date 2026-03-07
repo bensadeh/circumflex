@@ -1,4 +1,4 @@
-package postprocessor
+package reader
 
 import (
 	"strconv"

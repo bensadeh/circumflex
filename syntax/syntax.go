@@ -1,8 +1,7 @@
 package syntax
 
 import (
-	"clx/constants/nerdfonts"
-	"clx/constants/unicode"
+	"clx/constants"
 	"image/color"
 	"regexp"
 	"strings"
@@ -37,7 +36,7 @@ func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNer
 	if enableNerdFonts {
 		expression = regexp.MustCompile(`\((YC ([SW]\d{2}))\)`)
 
-		highlightedStartup := reset + getYCBarNerdFonts(nerdfonts.YCombinator+unicode.NoBreakSpace+`$2`, highlightType, enableNerdFonts) +
+		highlightedStartup := reset + getYCBarNerdFonts(constants.NFYCombinator+constants.NoBreakSpace+`$2`, highlightType, enableNerdFonts) +
 			getHighlight(highlightType)
 		return expression.ReplaceAllString(comment, highlightedStartup)
 	}
@@ -129,7 +128,7 @@ func label(text string, fg color.Color, bg color.Color, highlightType int, enabl
 func getLeftBorder(bg color.Color, highlightType int, enableNerdFonts bool) string {
 	if enableNerdFonts {
 		borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
-		return borderStyle.Render(nerdfonts.LeftSeparator)
+		return borderStyle.Render(constants.NFLeftSeparator)
 	}
 
 	borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
@@ -139,7 +138,7 @@ func getLeftBorder(bg color.Color, highlightType int, enableNerdFonts bool) stri
 func getRightBorder(bg color.Color, highlightType int, enableNerdFonts bool) string {
 	if enableNerdFonts {
 		borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
-		return borderStyle.Render(nerdfonts.RightSeparator)
+		return borderStyle.Render(constants.NFRightSeparator)
 	}
 
 	borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
@@ -202,10 +201,10 @@ func HighlightSpecialContent(title string, highlightType int, enableNerdFonts bo
 	highlight := getHighlight(highlightType)
 
 	if enableNerdFonts {
-		title = strings.ReplaceAll(title, "[audio]", aurora.Cyan(nerdfonts.Audio).String()+highlight)
-		title = strings.ReplaceAll(title, "[video]", aurora.Cyan(nerdfonts.Video).String()+highlight)
-		title = strings.ReplaceAll(title, "[pdf]", aurora.Cyan(nerdfonts.Document).String()+highlight)
-		title = strings.ReplaceAll(title, "[PDF]", aurora.Cyan(nerdfonts.Document).String()+highlight)
+		title = strings.ReplaceAll(title, "[audio]", aurora.Cyan(constants.NFAudio).String()+highlight)
+		title = strings.ReplaceAll(title, "[video]", aurora.Cyan(constants.NFVideo).String()+highlight)
+		title = strings.ReplaceAll(title, "[pdf]", aurora.Cyan(constants.NFDocument).String()+highlight)
+		title = strings.ReplaceAll(title, "[PDF]", aurora.Cyan(constants.NFDocument).String()+highlight)
 
 		return title
 	}

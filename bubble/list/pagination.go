@@ -1,7 +1,7 @@
 package list
 
 import (
-	"clx/constants/category"
+	"clx/category"
 	"clx/item"
 
 	"charm.land/lipgloss/v2"

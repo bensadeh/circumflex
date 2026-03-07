@@ -1,7 +1,6 @@
-package postprocessor
+package reader
 
 import (
-	"clx/reader/markdown/postprocessor/filter"
 	"strings"
 
 	. "github.com/logrusorgru/aurora/v3"
@@ -29,8 +28,8 @@ func processBBC(text string) string {
 			continue
 		}
 
-		if filter.IsOnLineBeforeTargetEquals([]string{"--"}, lines, i) ||
-			filter.IsOnLineBeforeTargetEquals([]string{"You may also be interested in:"}, lines, i) {
+		if isOnLineBeforeTargetEquals([]string{"--"}, lines, i) ||
+			isOnLineBeforeTargetEquals([]string{"You may also be interested in:"}, lines, i) {
 			output += "\n"
 
 			break

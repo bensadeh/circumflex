@@ -1,7 +1,7 @@
 package categories
 
 import (
-	"clx/constants/category"
+	"clx/category"
 	"fmt"
 	"os"
 	"strings"

@@ -1,14 +1,9 @@
 package reader
 
 import (
-	"clx/reader/markdown/html"
-	"clx/reader/markdown/parser"
-	"clx/reader/markdown/postprocessor"
-	"clx/reader/markdown/terminal"
+	"clx/ansi"
 	"fmt"
 	"time"
-
-	ansi "clx/utils/strip-ansi"
 
 	"github.com/go-shiori/go-readability"
 )
@@ -21,18 +16,18 @@ func GetArticle(url string, title string, width int, indentationSymbol string) (
 
 	articleContentInRawHtmlAndSanitized := ansi.Strip(articleInRawHtml.Content)
 
-	articleInMarkdown, mdErr := html.ConvertToMarkdown(articleContentInRawHtmlAndSanitized)
+	articleInMarkdown, mdErr := convertToMarkdown(articleContentInRawHtmlAndSanitized)
 	if mdErr != nil {
 		return "", fmt.Errorf("could not convert to markdown: %w", mdErr)
 	}
 
-	markdownBlocks := parser.ConvertToMarkdownBlocks(articleInMarkdown)
+	markdownBlocks := convertToMarkdownBlocks(articleInMarkdown)
 
-	articleInTerminalFormal := terminal.ConvertToTerminalFormat(markdownBlocks, width, indentationSymbol)
+	articleInTerminalFormal := convertToTerminalFormat(markdownBlocks, width, indentationSymbol)
 
-	header := terminal.CreateHeader(title, url, width)
+	header := createHeader(title, url, width)
 
-	articleInTerminalFormal = postprocessor.Process(header+articleInTerminalFormal, url)
+	articleInTerminalFormal = processArticle(header+articleInTerminalFormal, url)
 
 	return articleInTerminalFormal, nil
 }

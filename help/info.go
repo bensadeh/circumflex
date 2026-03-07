@@ -1,8 +1,7 @@
-package info
+package help
 
 import (
-	"clx/constants/margins"
-	"clx/constants/nerdfonts"
+	"clx/constants"
 	"clx/keymaps"
 	"strings"
 
@@ -63,7 +62,7 @@ func GetText(screenWidth int, enableNerdFonts bool) string {
 }
 
 func alignCenter(input string, screenWidth int, keymapsWidth int) string {
-	padding := screenWidth/2 - keymapsWidth/2 - margins.MainViewLeftMargin
+	padding := screenWidth/2 - keymapsWidth/2 - constants.MainViewLeftMargin
 
 	if padding < 0 {
 		return input
@@ -77,7 +76,7 @@ func alignCenter(input string, screenWidth int, keymapsWidth int) string {
 
 func getOP(enableNerdFonts bool) string {
 	if enableNerdFonts {
-		return nerdfonts.Author
+		return constants.NFAuthor
 	}
 
 	return "OP"
@@ -85,7 +84,7 @@ func getOP(enableNerdFonts bool) string {
 
 func getPP(enableNerdFonts bool) string {
 	if enableNerdFonts {
-		return nerdfonts.Author
+		return constants.NFAuthor
 	}
 
 	return "PP"
@@ -93,7 +92,7 @@ func getPP(enableNerdFonts bool) string {
 
 func getMod(enableNerdFonts bool) string {
 	if enableNerdFonts {
-		return nerdfonts.Author
+		return constants.NFAuthor
 	}
 
 	return "mod"

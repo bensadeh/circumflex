@@ -1,8 +1,7 @@
-package postprocessor
+package formatter
 
 import (
-	"clx/constants/margins"
-	"clx/constants/unicode"
+	"clx/constants"
 	"strings"
 
 	text "github.com/MichaelMure/go-term-text"
@@ -23,8 +22,8 @@ func Process(commentSection string, screenWidth int) string {
 func moveZeroWidthSpaceUpOneLine(commentSection string) string {
 	indentBlock := getIndentBlock()
 
-	return strings.ReplaceAll(commentSection, newLine+indentBlock+unicode.InvisibleCharacterForTopLevelComments,
-		unicode.InvisibleCharacterForTopLevelComments+newLine+indentBlock)
+	return strings.ReplaceAll(commentSection, newLine+indentBlock+constants.InvisibleCharacterForTopLevelComments,
+		constants.InvisibleCharacterForTopLevelComments+newLine+indentBlock)
 }
 
 func indentCommentSection(commentSection string, screenWidth int) string {
@@ -64,5 +63,5 @@ func deIndentInfoSection(commentSection string) string {
 }
 
 func getIndentBlock() string {
-	return strings.Repeat(" ", margins.CommentSectionLeftMargin)
+	return strings.Repeat(" ", constants.CommentSectionLeftMargin)
 }

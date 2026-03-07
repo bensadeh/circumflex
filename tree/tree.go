@@ -2,14 +2,12 @@ package tree
 
 import (
 	"clx/comment"
-	"clx/constants/margins"
-	"clx/constants/nerdfonts"
-	"clx/constants/unicode"
+	"clx/constants"
 	"clx/item"
 	"clx/meta"
 	"clx/settings"
 	"clx/syntax"
-	"clx/tree/postprocessor"
+	"clx/tree/formatter"
 	"fmt"
 	"slices"
 	"strings"
@@ -27,7 +25,7 @@ const (
 )
 
 func Print(comments *item.Item, config *settings.Config, screenWidth int, lastVisited int64) string {
-	commentSectionScreenWidth := screenWidth - margins.CommentSectionLeftMargin
+	commentSectionScreenWidth := screenWidth - constants.CommentSectionLeftMargin
 
 	header := getHeader(comments, config, lastVisited)
 	firstCommentID := getFirstCommentID(comments.Comments)
@@ -39,7 +37,7 @@ func Print(comments *item.Item, config *settings.Config, screenWidth int, lastVi
 			lastVisited))
 	}
 
-	commentSection := postprocessor.Process(header+replies.String()+newLine, screenWidth)
+	commentSection := formatter.Process(header+replies.String()+newLine, screenWidth)
 
 	return commentSection
 }
@@ -68,7 +66,7 @@ func printReplies(c *item.Item, config *settings.Config, screenWidth int, origin
 
 	indentation := getIndentString(c.Level)
 	indentSize := len(indentation)
-	availableScreenWidth := screenWidth - indentSize - margins.CommentSectionLeftMargin
+	availableScreenWidth := screenWidth - indentSize - constants.CommentSectionLeftMargin
 	adjustedCommentWidth := config.CommentWidth - c.Level
 
 	comment := formatComment(c, config, originalPoster, parentPoster, adjustedCommentWidth, availableScreenWidth,
@@ -121,8 +119,8 @@ func getButton(level int, replyCount int, commentWidth int) string {
 
 	style := lipgloss.NewStyle().Width(commentWidth).AlignHorizontal(lipgloss.Center)
 
-	return newLine + style.Render(buttonNotPressed) + unicode.InvisibleCharacterForCollapse +
-		newLine + style.Render(buttonPressed) + unicode.InvisibleCharacterForExpansion + newLine
+	return newLine + style.Render(buttonNotPressed) + constants.InvisibleCharacterForCollapse +
+		newLine + style.Render(buttonPressed) + constants.InvisibleCharacterForExpansion + newLine
 }
 
 func addFilterTag(level int, fullComment string) string {
@@ -137,7 +135,7 @@ func addFilterTag(level int, fullComment string) string {
 		if i == len(lines)-1 {
 			continue
 		}
-		fullCommentWithFilterTags.WriteString(line + unicode.InvisibleCharacterForExpansion + "\n")
+		fullCommentWithFilterTags.WriteString(line + constants.InvisibleCharacterForExpansion + "\n")
 	}
 
 	return fullCommentWithFilterTags.String()
@@ -212,7 +210,7 @@ func getAuthor(author string, lastVisited, timePosted int64) string {
 
 func getZeroWidthSpace(enabled bool) string {
 	if enabled {
-		return unicode.InvisibleCharacterForTopLevelComments
+		return constants.InvisibleCharacterForTopLevelComments
 	}
 
 	return ""
@@ -265,7 +263,7 @@ func getAuthorLabel(author, originalPoster, parentPoster string, enableNerdFonts
 func computeLabel(author, originalPoster, parentPoster string, nerdFonts bool) string {
 	switch {
 	case nerdFonts:
-		return nerdfonts.Author + " "
+		return constants.NFAuthor + " "
 	case isMod(author):
 		return "mod "
 	case author == originalPoster:

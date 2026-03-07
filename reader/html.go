@@ -1,7 +1,6 @@
-package html
+package reader
 
 import (
-	"clx/reader/markdown"
 	"strings"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
@@ -9,8 +8,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-func ConvertToMarkdown(article string) (string, error) {
-	// Remove hyperlink tags
+func convertToMarkdown(article string) (string, error) {
 	href := md.Rule{
 		Filter: []string{"a"},
 		Replacement: func(content string, s *goquery.Selection, opt *md.Options) *string {
@@ -20,14 +18,12 @@ func ConvertToMarkdown(article string) (string, error) {
 		},
 	}
 
-	// Convert italic HTML tags to our own CLX_ITALIC tag because these are easier to work with after converting
-	// the HTML page to Markdown
 	italic := md.Rule{
 		Filter: []string{"i", "em"},
 		Replacement: func(content string, s *goquery.Selection, opt *md.Options) *string {
 			content = strings.TrimSpace(content)
 
-			return new(markdown.ItalicStart + content + markdown.ItalicStop)
+			return new(italicStart + content + italicStop)
 		},
 	}
 
@@ -36,7 +32,7 @@ func ConvertToMarkdown(article string) (string, error) {
 		Replacement: func(content string, s *goquery.Selection, opt *md.Options) *string {
 			content = strings.TrimSpace(content)
 
-			return new(markdown.BoldStart + content + markdown.BoldStop)
+			return new(boldStart + content + boldStop)
 		},
 	}
 

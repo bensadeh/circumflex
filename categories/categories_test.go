@@ -1,7 +1,7 @@
 package categories
 
 import (
-	"clx/constants/category"
+	"clx/category"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

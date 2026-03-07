@@ -1,4 +1,4 @@
-package stripansi
+package ansi
 
 import (
 	"regexp"

@@ -1,22 +1,20 @@
-package filter
+package reader
 
 import (
-	"clx/constants/unicode"
+	"clx/ansi"
+	"clx/constants"
 	"strings"
-
-	ansi "clx/utils/strip-ansi"
 )
 
-type RuleSet struct {
-	skipLineContains []string
-	skipLineEquals   []string
-	skipParContains  []string
-	skipParEquals    []string
-	endLineContains  []string
-	endLineEquals    []string
+type ruleSet struct {
+	skipLineContainsRules []string
+	skipLineEqualsRules   []string
+	skipParContainsRules  []string
+	endLineContainsRules  []string
+	endLineEqualsRules    []string
 }
 
-func (rs *RuleSet) Filter(text string) string {
+func (rs *ruleSet) filter(text string) string {
 	paragraphs := strings.Split(text, "\n\n")
 	output := ""
 
@@ -35,7 +33,7 @@ func (rs *RuleSet) Filter(text string) string {
 	return output
 }
 
-func filterByLine(lines []string, output string, rs *RuleSet) string {
+func filterByLine(lines []string, output string, rs *ruleSet) string {
 	for i, line := range lines {
 		isOnFirstOrLastLine := i == 0 || i == len(lines)-1
 		lineNoLeadingWhitespace := strings.TrimLeft(line, " ")
@@ -44,8 +42,8 @@ func filterByLine(lines []string, output string, rs *RuleSet) string {
 			continue
 		}
 
-		if equals(rs.skipLineEquals, line) ||
-			contains(rs.skipLineContains, line) {
+		if equals(rs.skipLineEqualsRules, line) ||
+			contains(rs.skipLineContainsRules, line) {
 			continue
 		}
 
@@ -55,8 +53,8 @@ func filterByLine(lines []string, output string, rs *RuleSet) string {
 			continue
 		}
 
-		if IsOnLineBeforeTargetEquals(rs.endLineEquals, lines, i) ||
-			IsOnLineBeforeTargetContains(rs.endLineContains, lines, i) {
+		if isOnLineBeforeTargetEquals(rs.endLineEqualsRules, lines, i) ||
+			isOnLineBeforeTargetContains(rs.endLineContainsRules, lines, i) {
 			output += "\n"
 
 			break
@@ -68,7 +66,7 @@ func filterByLine(lines []string, output string, rs *RuleSet) string {
 	return output
 }
 
-func filterByParagraph(paragraphs []string, output string, rs *RuleSet) string {
+func filterByParagraph(paragraphs []string, output string, rs *ruleSet) string {
 	for i, paragraph := range paragraphs {
 		isOnFirstOrLastParagraph := i == 0 || i == len(paragraphs)-1
 		parNoLeadingWhitespace := strings.TrimLeft(paragraph, " ")
@@ -77,8 +75,7 @@ func filterByParagraph(paragraphs []string, output string, rs *RuleSet) string {
 			continue
 		}
 
-		if equals(rs.skipParEquals, paragraph) ||
-			contains(rs.skipParContains, paragraph) {
+		if contains(rs.skipParContainsRules, paragraph) {
 			continue
 		}
 
@@ -94,35 +91,27 @@ func filterByParagraph(paragraphs []string, output string, rs *RuleSet) string {
 	return output
 }
 
-func (rs *RuleSet) SkipLineContains(text string) {
-	rs.skipLineContains = append(rs.skipLineContains, text)
+func (rs *ruleSet) skipLineEquals(text string) {
+	rs.skipLineEqualsRules = append(rs.skipLineEqualsRules, text)
 }
 
-func (rs *RuleSet) SkipLineEquals(text string) {
-	rs.skipLineEquals = append(rs.skipLineEquals, text)
+func (rs *ruleSet) skipParContains(text string) {
+	rs.skipParContainsRules = append(rs.skipParContainsRules, text)
 }
 
-func (rs *RuleSet) SkipParContains(text string) {
-	rs.skipParContains = append(rs.skipParContains, text)
+func (rs *ruleSet) endBeforeLineContains(text string) {
+	rs.endLineContainsRules = append(rs.endLineContainsRules, text)
 }
 
-func (rs *RuleSet) SkipParEquals(text string) {
-	rs.skipParEquals = append(rs.skipParEquals, text)
-}
-
-func (rs *RuleSet) EndBeforeLineContains(text string) {
-	rs.endLineContains = append(rs.endLineContains, text)
-}
-
-func (rs *RuleSet) EndBeforeLineEquals(text string) {
-	rs.endLineEquals = append(rs.endLineEquals, text)
+func (rs *ruleSet) endBeforeLineEquals(text string) {
+	rs.endLineEqualsRules = append(rs.endLineEqualsRules, text)
 }
 
 func equals(targets []string, line string) bool {
 	for _, target := range targets {
 		line = ansi.Strip(line)
 		line = strings.TrimSpace(line)
-		line = strings.TrimLeft(line, unicode.InvisibleCharacterForTopLevelComments)
+		line = strings.TrimLeft(line, constants.InvisibleCharacterForTopLevelComments)
 
 		if line == target {
 			return true
@@ -143,12 +132,12 @@ func contains(targets []string, line string) bool {
 	return false
 }
 
-func IsOnLineBeforeTargetEquals(targets []string, lines []string, i int) bool {
+func isOnLineBeforeTargetEquals(targets []string, lines []string, i int) bool {
 	for _, target := range targets {
 		nextLine := lines[i+1]
 		nextLine = ansi.Strip(nextLine)
 		nextLine = strings.TrimSpace(nextLine)
-		nextLine = strings.TrimLeft(nextLine, unicode.InvisibleCharacterForTopLevelComments)
+		nextLine = strings.TrimLeft(nextLine, constants.InvisibleCharacterForTopLevelComments)
 
 		if nextLine == target {
 			return true
@@ -158,7 +147,7 @@ func IsOnLineBeforeTargetEquals(targets []string, lines []string, i int) bool {
 	return false
 }
 
-func IsOnLineBeforeTargetContains(targets []string, lines []string, i int) bool {
+func isOnLineBeforeTargetContains(targets []string, lines []string, i int) bool {
 	for _, target := range targets {
 		nextLine := lines[i+1]
 		nextLine = ansi.Strip(nextLine)

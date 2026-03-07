@@ -1,4 +1,4 @@
-package endpoints
+package hybrid
 
 type Story struct {
 	ID            int    `json:"id"`

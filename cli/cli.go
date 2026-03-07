@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"clx/constants/unicode"
+	"clx/constants"
 	"clx/settings"
 	"os"
 	"os/exec"
@@ -12,7 +12,7 @@ import (
 func Less(input string, config *settings.Config) *exec.Cmd {
 	args := []string{
 		"--RAW-CONTROL-CHARS",
-		"--pattern=" + unicode.InvisibleCharacterForTopLevelComments,
+		"--pattern=" + constants.InvisibleCharacterForTopLevelComments,
 		"--ignore-case",
 		"--lesskey-src=" + config.LesskeyPath,
 		"--tilde",
@@ -23,9 +23,9 @@ func Less(input string, config *settings.Config) *exec.Cmd {
 	}
 
 	if config.AutoExpandComments {
-		args = append(args, "+&!"+unicode.InvisibleCharacterForCollapse)
+		args = append(args, "+&!"+constants.InvisibleCharacterForCollapse)
 	} else {
-		args = append(args, "+&!"+unicode.InvisibleCharacterForExpansion)
+		args = append(args, "+&!"+constants.InvisibleCharacterForExpansion)
 	}
 
 	command := exec.Command("less", args...)

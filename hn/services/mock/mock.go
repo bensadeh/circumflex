@@ -1,7 +1,7 @@
 package mock
 
 import (
-	"clx/constants/category"
+	"clx/category"
 	"clx/item"
 	"math/rand"
 	"time"
