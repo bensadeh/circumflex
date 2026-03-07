@@ -5,6 +5,7 @@
 _WIP_
 
 - Bump Bubble Tea to 2.0
+- Replace terminal-dimensions with golang.org/x/term
 
 ## 3.9
 
