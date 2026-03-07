@@ -49,7 +49,7 @@ func commentsCmd() *cobra.Command {
 			lesskey := less.NewLesskey()
 			config.LesskeyPath = lesskey.GetPath()
 
-			command := cli.Less(commentTree, config)
+			command := cli.Less(cmd.Context(), commentTree, config)
 
 			if err := command.Run(); err != nil {
 				lesskey.Remove()

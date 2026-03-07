@@ -48,7 +48,7 @@ func articleCmd() *cobra.Command {
 
 			lesskey := less.NewLesskey()
 
-			command := cli.Less(article, config)
+			command := cli.Less(cmd.Context(), article, config)
 
 			if err := command.Run(); err != nil {
 				lesskey.Remove()

@@ -1,6 +1,7 @@
 package browser
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
@@ -8,7 +9,7 @@ import (
 	"strings"
 )
 
-func Open(url string) error {
+func Open(ctx context.Context, url string) error {
 	if browser := os.Getenv("CLX_BROWSER"); browser != "" {
 		commandAndArgs := strings.Fields(browser)
 		command := commandAndArgs[0]
@@ -16,21 +17,21 @@ func Open(url string) error {
 		copy(args, commandAndArgs[1:])
 		args = append(args, url)
 
-		cmd := exec.Command(command, args...)
+		cmd := exec.CommandContext(ctx, command, args...)
 		return cmd.Start()
 	}
 
 	switch runtime.GOOS {
 	case "linux", "freebsd", "openbsd", "netbsd":
-		cmd := exec.Command("xdg-open", url)
+		cmd := exec.CommandContext(ctx, "xdg-open", url)
 		return cmd.Start()
 
 	case "windows":
-		cmd := exec.Command("rundll32", "url.dll,FileProtocolHandler", url)
+		cmd := exec.CommandContext(ctx, "rundll32", "url.dll,FileProtocolHandler", url)
 		return cmd.Start()
 
 	case "darwin":
-		cmd := exec.Command("open", url)
+		cmd := exec.CommandContext(ctx, "open", url)
 		return cmd.Start()
 
 	default:

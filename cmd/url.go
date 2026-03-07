@@ -29,7 +29,7 @@ func urlCmd() *cobra.Command {
 			lesskey := less.NewLesskey()
 			config.LesskeyPath = lesskey.GetPath()
 
-			command := cli.Less(article, config)
+			command := cli.Less(cmd.Context(), article, config)
 
 			if err := command.Run(); err != nil {
 				defer lesskey.Remove()

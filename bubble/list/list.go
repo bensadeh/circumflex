@@ -11,6 +11,7 @@ import (
 	"clx/hn"
 	"clx/item"
 	"clx/settings"
+	"context"
 	"io"
 	"time"
 
@@ -256,7 +257,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 			)
 		}
 
-		command := cli.Less(msg.Content, m.config)
+		command := cli.Less(context.Background(), msg.Content, m.config)
 
 		return m, tea.ExecProcess(command, func(err error) tea.Msg {
 			return message.EditorFinishedMsg{Err: err}
@@ -272,7 +273,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 			)
 		}
 
-		command := cli.Less(msg.Content, m.config)
+		command := cli.Less(context.Background(), msg.Content, m.config)
 
 		return m, tea.ExecProcess(command, func(err error) tea.Msg {
 			return message.EditorFinishedMsg{Err: err}

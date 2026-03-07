@@ -6,6 +6,7 @@ import (
 	"clx/cli"
 	"clx/favorites"
 	"clx/settings"
+	"context"
 	"fmt"
 	"os"
 
@@ -38,7 +39,7 @@ func (m model) View() tea.View {
 }
 
 func Run(config *settings.Config, cat *categories.Categories) {
-	cli.ClearScreen()
+	cli.ClearScreen(context.Background())
 
 	m := model{list: list.New(list.NewDefaultDelegate(), config, cat, favorites.New(), 0, 0)}
 

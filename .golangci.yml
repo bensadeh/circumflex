@@ -38,7 +38,6 @@ linters:
     - tagliatelle      # struct tag naming convention — json tags match external APIs
     - nonamedreturns   # forbids named returns — useful in some cases
     - inamedparam      # requires named params in interfaces — too strict
-    - noctx            # requires context in HTTP calls — will add in refactoring Phase 5
     - musttag          # requires struct tags — too strict for internal types
     - maintidx         # maintainability index — overlaps with gocognit/gocyclo
     - recvcheck        # requires consistent receiver types — too pedantic

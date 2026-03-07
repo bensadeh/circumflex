@@ -4,6 +4,7 @@ import (
 	"clx/browser"
 	"clx/bubble/list/message"
 	"clx/category"
+	"context"
 	"strconv"
 	"time"
 
@@ -235,7 +236,7 @@ func (m *Model) handleOpenLink() tea.Cmd {
 	commentCount := m.SelectedItem().CommentsCount
 
 	return func() tea.Msg {
-		_ = browser.Open(url)
+		_ = browser.Open(context.Background(), url)
 		return message.OpeningLink{
 			Id:           id,
 			CommentCount: commentCount,
@@ -249,7 +250,7 @@ func (m *Model) handleOpenComments() tea.Cmd {
 	commentCount := m.SelectedItem().CommentsCount
 
 	return func() tea.Msg {
-		_ = browser.Open(url)
+		_ = browser.Open(context.Background(), url)
 		return message.OpeningCommentsInBrowser{
 			Id:           id,
 			CommentCount: commentCount,
