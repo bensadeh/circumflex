@@ -15,16 +15,21 @@ import (
 	tea "charm.land/bubbletea/v2"
 )
 
+func (m *Model) fetchItems(cat int) ([]*item.Story, string) {
+	stories, err := m.service.FetchItems(m.getNumberOfItemsToFetch(cat), cat)
+	var errMsg string
+	if err != nil {
+		errMsg = err.Error()
+	}
+
+	return stories, errMsg
+}
+
 func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 	categoryToFetch := m.cat.GetCurrentCategory(m.favorites.HasItems())
-	itemsToFetch := m.getNumberOfItemsToFetch(categoryToFetch)
 
 	return func() tea.Msg {
-		stories, err := m.service.FetchItems(itemsToFetch, categoryToFetch)
-		var errMsg string
-		if err != nil {
-			errMsg = err.Error()
-		}
+		stories, errMsg := m.fetchItems(categoryToFetch)
 
 		return message.FetchingFinished{
 			Stories:  stories,
@@ -79,12 +84,7 @@ func getHistory(debugMode bool, doNotMarkAsRead bool) history.History {
 
 func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) tea.Cmd {
 	return func() tea.Msg {
-		itemsToFetch := m.getNumberOfItemsToFetch(msg.Category)
-		stories, err := m.service.FetchItems(itemsToFetch, msg.Category)
-		var errMsg string
-		if err != nil {
-			errMsg = err.Error()
-		}
+		stories, errMsg := m.fetchItems(msg.Category)
 
 		return message.CategoryFetchingFinished{
 			Stories:  stories,
@@ -98,12 +98,7 @@ func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) t
 
 func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 	return func() tea.Msg {
-		itemsToFetch := m.getNumberOfItemsToFetch(msg.CurrentCategory)
-		stories, err := m.service.FetchItems(itemsToFetch, msg.CurrentCategory)
-		var errMsg string
-		if err != nil {
-			errMsg = err.Error()
-		}
+		stories, errMsg := m.fetchItems(msg.CurrentCategory)
 
 		return message.CategoryFetchingFinished{
 			Stories:  stories,
