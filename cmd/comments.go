@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"clx/cli"
-	"clx/less"
 	"clx/tree"
 	_ "embed"
 	"fmt"
@@ -46,13 +45,7 @@ func commentsCmd() *cobra.Command {
 			}
 			commentTree := tree.Print(comments, config, screenWidth, time.Now().Unix())
 
-			lesskey := less.NewLesskey()
-			config.LesskeyPath = lesskey.GetPath()
-
-			command := cli.Less(cmd.Context(), commentTree, config)
-
-			if err := command.Run(); err != nil {
-				lesskey.Remove()
+			if err := cli.RunLess(cmd.Context(), commentTree, config); err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
 			}

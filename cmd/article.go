@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"clx/cli"
-	"clx/less"
 	"clx/reader"
 	_ "embed"
 	"fmt"
@@ -46,12 +45,7 @@ func articleCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			lesskey := less.NewLesskey()
-
-			command := cli.Less(cmd.Context(), article, config)
-
-			if err := command.Run(); err != nil {
-				lesskey.Remove()
+			if err := cli.RunLess(cmd.Context(), article, config); err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
 			}

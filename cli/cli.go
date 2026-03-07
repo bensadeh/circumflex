@@ -2,6 +2,7 @@ package cli
 
 import (
 	"clx/constants"
+	"clx/less"
 	"clx/settings"
 	"context"
 	"os"
@@ -9,6 +10,16 @@ import (
 	"strconv"
 	"strings"
 )
+
+func RunLess(ctx context.Context, content string, config *settings.Config) error {
+	lesskey := less.NewLesskey()
+	defer lesskey.Remove()
+
+	config.LesskeyPath = lesskey.GetPath()
+	command := Less(ctx, content, config)
+
+	return command.Run()
+}
 
 func Less(ctx context.Context, input string, config *settings.Config) *exec.Cmd {
 	args := []string{
