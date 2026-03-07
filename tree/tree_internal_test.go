@@ -1,11 +1,10 @@
 package tree
 
 import (
-	"strings"
-	"testing"
-
 	"clx/constants/unicode"
 	"clx/item"
+	"strings"
+	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -13,8 +12,8 @@ import (
 func TestGetIndentString(t *testing.T) {
 	t.Parallel()
 
-	assert.Equal(t, "", getIndentString(0))
-	assert.Equal(t, "", getIndentString(1))
+	assert.Empty(t, getIndentString(0))
+	assert.Empty(t, getIndentString(1))
 	assert.Equal(t, " ", getIndentString(2))
 	assert.Equal(t, "  ", getIndentString(3))
 }
@@ -23,7 +22,7 @@ func TestGetSeparator(t *testing.T) {
 	t.Parallel()
 
 	t.Run("first comment returns empty", func(t *testing.T) {
-		assert.Equal(t, "", getSeparator(0, 10, 42, 42))
+		assert.Empty(t, getSeparator(0, 10, 42, 42))
 	})
 
 	t.Run("level 0 non-first has underline separator", func(t *testing.T) {
@@ -84,7 +83,7 @@ func TestGetAuthorLabelRegular(t *testing.T) {
 
 	result := getAuthorLabel("charlie", "alice", "bob", false)
 
-	assert.Equal(t, "", result)
+	assert.Empty(t, result)
 }
 
 func TestIsMod(t *testing.T) {
@@ -171,7 +170,7 @@ func TestGetZeroWidthSpace(t *testing.T) {
 	t.Parallel()
 
 	assert.Equal(t, unicode.InvisibleCharacterForTopLevelComments, getZeroWidthSpace(true))
-	assert.Equal(t, "", getZeroWidthSpace(false))
+	assert.Empty(t, getZeroWidthSpace(false))
 }
 
 func TestGetFirstCommentID(t *testing.T) {

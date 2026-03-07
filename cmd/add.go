@@ -1,12 +1,11 @@
 package cmd
 
 import (
+	"clx/favorites"
+	"clx/hn/services/hybrid"
 	"fmt"
 	"os"
 	"strconv"
-
-	"clx/favorites"
-	"clx/hn/services/hybrid"
 
 	"github.com/spf13/cobra"
 )

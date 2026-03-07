@@ -1,13 +1,12 @@
 package http
 
 import (
-	"fmt"
-	"strconv"
-	"time"
-
 	"clx/app"
 	"clx/constants/category"
 	"clx/endpoints"
+	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/go-resty/resty/v2"
 )

@@ -11,7 +11,9 @@ func Open(url string) {
 	if browser := os.Getenv("CLX_BROWSER"); browser != "" {
 		commandAndArgs := strings.Fields(browser)
 		command := commandAndArgs[0]
-		args := append(commandAndArgs[1:], url)
+		args := make([]string, len(commandAndArgs)-1, len(commandAndArgs))
+		copy(args, commandAndArgs[1:])
+		args = append(args, url)
 
 		cmd := exec.Command(command, args...)
 		_ = cmd.Start()

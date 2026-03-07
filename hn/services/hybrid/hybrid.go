@@ -1,6 +1,10 @@
 package hybrid
 
 import (
+	"clx/app"
+	"clx/constants/category"
+	"clx/endpoints"
+	"clx/item"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -10,11 +14,6 @@ import (
 	"github.com/bobesa/go-domain-util/domainutil"
 
 	ansi "clx/utils/strip-ansi"
-
-	"clx/app"
-	"clx/constants/category"
-	"clx/endpoints"
-	"clx/item"
 
 	"github.com/go-resty/resty/v2"
 )

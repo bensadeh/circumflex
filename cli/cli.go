@@ -1,13 +1,12 @@
 package cli
 
 import (
+	"clx/constants/unicode"
+	"clx/settings"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
-
-	"clx/constants/unicode"
-	"clx/settings"
 )
 
 func Less(input string, config *settings.Config) *exec.Cmd {
@@ -38,7 +37,7 @@ func Less(input string, config *settings.Config) *exec.Cmd {
 }
 
 func EnableNerdFontsInLess() {
-	os.Setenv("LESSUTFCHARDEF", "E000-F8FF:p,F0000-FFFFD:p,100000-10FFFD:p")
+	_ = os.Setenv("LESSUTFCHARDEF", "E000-F8FF:p,F0000-FFFFD:p,100000-10FFFD:p")
 }
 
 func ClearScreen() {

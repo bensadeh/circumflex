@@ -1,13 +1,12 @@
 package cmd
 
 import (
+	"clx/cli"
+	"clx/less"
+	"clx/reader"
 	_ "embed"
 	"os"
 
-	"clx/less"
-	"clx/reader"
-
-	"clx/cli"
 	"github.com/spf13/cobra"
 )
 

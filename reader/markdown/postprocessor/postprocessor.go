@@ -1,11 +1,10 @@
 package postprocessor
 
 import (
-	"strings"
-
 	"clx/constants/margins"
 	"clx/constants/unicode"
 	"clx/screen"
+	"strings"
 
 	t "github.com/MichaelMure/go-term-text"
 )

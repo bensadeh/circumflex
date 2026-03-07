@@ -1,9 +1,6 @@
 package list
 
 import (
-	"io"
-	"time"
-
 	"clx/bubble/list/message"
 	"clx/categories"
 	"clx/cli"
@@ -14,6 +11,8 @@ import (
 	"clx/hn"
 	"clx/item"
 	"clx/settings"
+	"io"
+	"time"
 
 	"charm.land/bubbles/v2/paginator"
 	"charm.land/bubbles/v2/spinner"
@@ -183,7 +182,6 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	var cmds []tea.Cmd
 
 	switch msg := msg.(type) {
-
 	case spinner.TickMsg:
 		newSpinnerModel, cmd := m.spinner.Update(msg)
 		m.spinner = newSpinnerModel
@@ -319,4 +317,3 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 	return m, tea.Batch(cmds...)
 }
-

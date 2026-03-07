@@ -1,22 +1,13 @@
 package tree_test
 
 import (
-	"encoding/json"
-	"testing"
-
 	"clx/item"
 	"clx/settings"
 	"clx/tree"
+	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
-
-func unmarshal(data []byte) *item.Item {
-	root := new(item.Item)
-	_ = json.Unmarshal(data, &root)
-
-	return root
-}
 
 func getConfig() *settings.Config {
 	return &settings.Config{

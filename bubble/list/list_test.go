@@ -29,7 +29,7 @@ func (instantMockService) FetchComments(_ int) (*item.Item, error) {
 }
 
 func (instantMockService) FetchItem(_ int) (*item.Item, error) {
-	return nil, nil
+	return &item.Item{}, nil
 }
 
 func testItems() []*item.Item {
@@ -143,8 +143,8 @@ func TestAddToFavorites_AddsItem(t *testing.T) {
 	testItem := &item.Item{ID: 99, Title: "Favorite item"}
 	m, _ = m.Update(message.AddToFavorites{Item: testItem})
 
-	assert.Equal(t, initialFavCount+1, len(m.favorites.GetItems()))
-	assert.Equal(t, m.favorites.GetItems()[initialFavCount].ID, 99)
+	assert.Len(t, m.favorites.GetItems(), initialFavCount+1)
+	assert.Equal(t, 99, m.favorites.GetItems()[initialFavCount].ID)
 }
 
 func TestWindowResize_UpdatesDimensions(t *testing.T) {
@@ -171,7 +171,7 @@ func TestCategoryFetchingFinished_UpdatesState(t *testing.T) {
 func TestShowStatusMessage_SetsMessage(t *testing.T) {
 	m := newTestModelReady(t)
 
-	m, cmd := m.Update(message.ShowStatusMessage{Message: "hello", Duration: time.Second})
+	_, cmd := m.Update(message.ShowStatusMessage{Message: "hello", Duration: time.Second})
 	assert.NotNil(t, cmd)
 }
 
@@ -220,7 +220,7 @@ func TestNavigationUpDown_Clamped(t *testing.T) {
 	assert.Equal(t, 0, m.cursor)
 
 	// Moving down past end stays at last item
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		m, _ = m.Update(keyMsg("j"))
 	}
 	itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))
@@ -284,7 +284,7 @@ func TestEnterCommentSection(t *testing.T) {
 func TestEnteringCommentSection_ReturnsCmd(t *testing.T) {
 	m := newTestModelReady(t)
 
-	m, cmd := m.Update(message.EnteringCommentSection{Id: 1, CommentCount: 10})
+	_, cmd := m.Update(message.EnteringCommentSection{Id: 1, CommentCount: 10})
 	assert.NotNil(t, cmd, "should return cmd for async comment fetching")
 
 	// Execute the Cmd — it should produce a CommentTreeReady message
@@ -297,14 +297,14 @@ func TestEnteringCommentSection_ReturnsCmd(t *testing.T) {
 func TestCommentTreeReady_ReturnsExecCmd(t *testing.T) {
 	m := newTestModelReady(t)
 
-	m, cmd := m.Update(message.CommentTreeReady{Content: "comment tree content"})
+	_, cmd := m.Update(message.CommentTreeReady{Content: "comment tree content"})
 	assert.NotNil(t, cmd, "should return ExecProcess cmd")
 }
 
 func TestEnteringReaderMode_ReturnsCmd(t *testing.T) {
 	m := newTestModelReady(t)
 
-	m, cmd := m.Update(message.EnteringReaderMode{
+	_, cmd := m.Update(message.EnteringReaderMode{
 		Url:          "https://example.com",
 		Title:        "Test Article",
 		Domain:       "example.com",
@@ -317,7 +317,7 @@ func TestEnteringReaderMode_ReturnsCmd(t *testing.T) {
 func TestEnteringReaderMode_InvalidDomain(t *testing.T) {
 	m := newTestModelReady(t)
 
-	m, cmd := m.Update(message.EnteringReaderMode{
+	_, cmd := m.Update(message.EnteringReaderMode{
 		Url:          "https://youtube.com/watch?v=123",
 		Title:        "Test Video",
 		Domain:       "youtube.com",
@@ -336,14 +336,14 @@ func TestEnteringReaderMode_InvalidDomain(t *testing.T) {
 func TestArticleReady_WithError(t *testing.T) {
 	m := newTestModelReady(t)
 
-	m, cmd := m.Update(message.ArticleReady{Error: "Reader Mode not supported"})
+	_, cmd := m.Update(message.ArticleReady{Error: "Reader Mode not supported"})
 	assert.NotNil(t, cmd, "should return batch cmd with status message and editor finished")
 }
 
 func TestArticleReady_WithContent(t *testing.T) {
 	m := newTestModelReady(t)
 
-	m, cmd := m.Update(message.ArticleReady{Content: "article content"})
+	_, cmd := m.Update(message.ArticleReady{Content: "article content"})
 	assert.NotNil(t, cmd, "should return ExecProcess cmd")
 }
 
@@ -417,7 +417,7 @@ func TestOpenLink_ReturnsMessage(t *testing.T) {
 
 	// Test the message handler directly instead of pressing "o",
 	// because handleOpenLink() calls browser.Open() synchronously.
-	m, _ = m.Update(message.OpeningLink{Id: 1, CommentCount: 10})
+	_, _ = m.Update(message.OpeningLink{Id: 1, CommentCount: 10})
 	// History should be marked as read
 }
 
@@ -426,16 +426,38 @@ func TestSpinnerTick_WhenActive(t *testing.T) {
 	m.showSpinner = true
 
 	// Create a spinner tick message
-	m, cmd := m.Update(m.spinner.Tick())
+	_, cmd := m.Update(m.spinner.Tick())
 	// When spinner is active, should return a follow-up tick cmd
 	assert.NotNil(t, cmd)
+}
+
+func TestSpinnerAnimation_FrameAdvances(t *testing.T) {
+	m := newTestModelReady(t)
+
+	// Start the spinner
+	startCmd := m.StartSpinner()
+	assert.True(t, m.showSpinner)
+	assert.NotNil(t, startCmd)
+
+	// Record the initial spinner view
+	initialView := m.spinner.View()
+
+	// Execute the start cmd to get the first TickMsg
+	tickMsg := startCmd()
+
+	// Process the tick - this should advance the frame
+	m, cmd := m.Update(tickMsg)
+	afterFirstTick := m.spinner.View()
+
+	assert.NotEqual(t, initialView, afterFirstTick, "spinner frame should change after tick")
+	assert.NotNil(t, cmd, "should return next tick cmd")
 }
 
 func TestSpinnerTick_WhenInactive(t *testing.T) {
 	m := newTestModelReady(t)
 	m.showSpinner = false
 
-	m, cmd := m.Update(m.spinner.Tick())
+	_, cmd := m.Update(m.spinner.Tick())
 	// When spinner is inactive, no follow-up tick should be returned
 	// cmd may be non-nil from handleBrowsing, but the spinner-specific cmd won't be appended
 	_ = cmd
@@ -448,7 +470,7 @@ func TestViewEmpty_WhenNotVisible(t *testing.T) {
 	m.isVisible = false
 
 	got := m.View()
-	assert.Equal(t, "", got)
+	assert.Empty(t, got)
 }
 
 func TestViewBrowsing_HasContent(t *testing.T) {

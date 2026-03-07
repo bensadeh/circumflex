@@ -1,9 +1,8 @@
 package html
 
 import (
-	"strings"
-
 	"clx/reader/markdown"
+	"strings"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/JohannesKaufmann/html-to-markdown/plugin"

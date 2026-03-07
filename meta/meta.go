@@ -1,16 +1,14 @@
 package meta
 
 import (
-	"fmt"
-	"strconv"
-
-	"clx/constants/nerdfonts"
-
 	"clx/comment"
+	"clx/constants/nerdfonts"
 	"clx/constants/unicode"
 	"clx/item"
 	"clx/settings"
 	"clx/syntax"
+	"fmt"
+	"strconv"
 
 	text "github.com/MichaelMure/go-term-text"
 

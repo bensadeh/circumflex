@@ -1,9 +1,8 @@
 package cmd
 
 import (
-	"fmt"
-
 	"clx/app"
+	"fmt"
 
 	"github.com/spf13/cobra"
 )

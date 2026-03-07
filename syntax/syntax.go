@@ -1,15 +1,13 @@
 package syntax
 
 import (
+	"clx/constants/nerdfonts"
+	"clx/constants/unicode"
+	"image/color"
 	"regexp"
 	"strings"
 
 	"github.com/logrusorgru/aurora/v3"
-	"image/color"
-
-	"clx/constants/nerdfonts"
-
-	"clx/constants/unicode"
 
 	"charm.land/lipgloss/v2"
 )
@@ -365,7 +363,7 @@ func HighlightBackticks(input string) string {
 
 	isOnFirstBacktick := true
 
-	for i := 0; i < numberOfBackticks+1; i++ {
+	for range numberOfBackticks + 1 {
 		if isOnFirstBacktick {
 			input = strings.Replace(input, backtick, italic+magenta, 1)
 		} else {

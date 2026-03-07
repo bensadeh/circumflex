@@ -1,11 +1,10 @@
 package parser
 
 import (
+	"clx/reader/markdown"
 	"errors"
 	"regexp"
 	"strings"
-
-	"clx/reader/markdown"
 )
 
 const (
@@ -37,8 +36,8 @@ func ConvertToMarkdownBlocks(text string) []*markdown.Block {
 
 	for _, line := range lines {
 		lineWithoutFormatting := strings.TrimLeft(line, " ")
-		lineWithoutFormatting = strings.ReplaceAll(line, markdown.BoldStart, "")
-		lineWithoutFormatting = strings.ReplaceAll(line, markdown.ItalicStart, "")
+		lineWithoutFormatting = strings.ReplaceAll(lineWithoutFormatting, markdown.BoldStart, "")
+		lineWithoutFormatting = strings.ReplaceAll(lineWithoutFormatting, markdown.ItalicStart, "")
 
 		if isInsideCode {
 			if strings.HasPrefix(lineWithoutFormatting, "```") {

@@ -1,17 +1,15 @@
 package cmd
 
 import (
+	"clx/cli"
+	"clx/hn/services/hybrid"
+	"clx/less"
+	"clx/reader"
 	_ "embed"
 	"fmt"
 	"os"
 	"strconv"
 
-	"clx/less"
-	"clx/reader"
-
-	"clx/hn/services/hybrid"
-
-	"clx/cli"
 	"github.com/spf13/cobra"
 )
 

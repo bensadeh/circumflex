@@ -1,11 +1,10 @@
 package mock
 
 import (
-	"math/rand"
-	"time"
-
 	"clx/constants/category"
 	"clx/item"
+	"math/rand"
+	"time"
 )
 
 type Service struct{}

@@ -29,15 +29,14 @@ func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPa
 	var rankings strings.Builder
 
 	startingRank := itemsVisible*currentPage + 1
-	endingRank := 0
+	var endingRank int
 	onLastPage := currentPage+1 == totalPages
 
 	if onLastPage {
-		itemsVisible = itemsVisible - (totalPages*itemsVisible - itemsTotal)
-		endingRank = startingRank + itemsVisible
-	} else {
-		endingRank = startingRank + itemsVisible
+		itemsVisible -= totalPages*itemsVisible - itemsTotal
 	}
+
+	endingRank = startingRank + itemsVisible
 
 	for i := startingRank; i < endingRank; i++ {
 		rank := lipgloss.NewStyle().Width(6).Align(lipgloss.Right).Render(strconv.Itoa(i)+".") + " "
@@ -51,7 +50,7 @@ func relativeRankings(itemsVisible int, itemsTotal int, currentPosition int, cur
 	rankOfCurrentlySelectedItem := itemsVisible*currentPage + currentPosition + 1
 	onLastPage := currentPage+1 == totalPages
 	if onLastPage {
-		itemsVisible = itemsVisible - (totalPages*itemsVisible - itemsTotal)
+		itemsVisible -= totalPages*itemsVisible - itemsTotal
 	}
 
 	var rankings strings.Builder

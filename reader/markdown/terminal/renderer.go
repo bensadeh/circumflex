@@ -1,16 +1,14 @@
 package terminal
 
 import (
+	"clx/constants/unicode"
+	"clx/meta"
+	"clx/reader/markdown"
+	"clx/syntax"
 	"regexp"
 	"strings"
 
 	"github.com/muesli/reflow/wordwrap"
-
-	"clx/reader/markdown"
-
-	"clx/constants/unicode"
-	"clx/meta"
-	"clx/syntax"
 
 	"github.com/charmbracelet/glamour"
 
@@ -28,6 +26,8 @@ const (
 
 	codeStart = "[CLX_CODE_START]"
 	codeEnd   = "[CLX_CODE_END]"
+
+	ansiItalic = "\u001B[3m"
 )
 
 func CreateHeader(title string, domain string, lineWidth int) string {
@@ -143,7 +143,7 @@ func renderList(text string, lineWidth int) string {
 
 func renderImage(text string, lineWidth int) string {
 	red := "\u001B[31m"
-	italic := "\u001B[3m"
+	italic := ansiItalic
 	faint := "\u001B[2m"
 	normal := "\u001B[0m"
 	imageLabel := normal + Red(unicode.Circle).Faint().String() + Yellow(unicode.Circle).Faint().String() +
@@ -253,7 +253,7 @@ func removeImageReference(text string) string {
 }
 
 func it(text string) string {
-	italic := "\u001B[3m"
+	italic := ansiItalic
 	noItalic := "\u001B[23m"
 
 	text = strings.ReplaceAll(text, markdown.ItalicStart, italic)
@@ -263,7 +263,7 @@ func it(text string) string {
 }
 
 func itReversed(text string) string {
-	italic := "\u001B[3m"
+	italic := ansiItalic
 	noItalic := "\u001B[23m"
 
 	text = strings.ReplaceAll(text, markdown.ItalicStart, noItalic)
@@ -425,7 +425,7 @@ func trimLeadingZero(text string) string {
 
 func highlightBackticks(text string) string {
 	magenta := "\u001B[35m"
-	italic := "\u001B[3m"
+	italic := ansiItalic
 	normal := "\u001B[0m"
 
 	backtick := "`"
@@ -438,7 +438,7 @@ func highlightBackticks(text string) string {
 
 	isOnFirstBacktick := true
 
-	for i := 0; i < numberOfBackticks+1; i++ {
+	for range numberOfBackticks + 1 {
 		if isOnFirstBacktick {
 			text = strings.Replace(text, backtick, codeStart, 1)
 		} else {

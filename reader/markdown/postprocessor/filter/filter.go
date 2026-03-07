@@ -1,9 +1,9 @@
 package filter
 
 import (
+	"clx/constants/unicode"
 	"strings"
 
-	"clx/constants/unicode"
 	ansi "clx/utils/strip-ansi"
 )
 

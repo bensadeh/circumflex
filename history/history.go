@@ -1,11 +1,10 @@
 package history
 
 import (
+	"clx/file"
 	"encoding/json"
 	"os"
 	"path"
-
-	"clx/file"
 )
 
 type History interface {
@@ -50,9 +49,12 @@ func NewMockHistory() History {
 }
 
 func writeToDisk(h *Persistent, dirPath string, fileName string) {
-	visitedStoriesJSON, _ := json.Marshal(h.VisitedStories)
+	visitedStoriesJSON, err := json.Marshal(h.VisitedStories)
+	if err != nil {
+		panic(err)
+	}
 
-	err := file.WriteToFileNew(dirPath, fileName, string(visitedStoriesJSON))
+	err = file.WriteToFileNew(dirPath, fileName, string(visitedStoriesJSON))
 	if err != nil {
 		panic(err)
 	}

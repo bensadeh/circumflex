@@ -1,12 +1,11 @@
 package favorites
 
 import (
+	"clx/file"
+	"clx/item"
 	"encoding/json"
 	"fmt"
 	"os"
-
-	"clx/file"
-	"clx/item"
 )
 
 type Favorites struct {

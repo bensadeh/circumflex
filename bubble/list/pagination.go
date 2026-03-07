@@ -50,10 +50,7 @@ func (m *Model) CursorUp() {
 	// If we're at the top, stop
 	if m.cursor < 0 {
 		m.cursor = 0
-		return
 	}
-
-	return
 }
 
 // CursorDown moves the cursor down. This can also advance the state to the

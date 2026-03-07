@@ -49,7 +49,7 @@ func WriteToFile(path string, content string) error {
 	if createPathErr != nil {
 		return fmt.Errorf("could not create config file: %w", createPathErr)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	_, writeFileErr := file.WriteString(content)
 	if writeFileErr != nil {
@@ -71,7 +71,7 @@ func WriteToFileNew(dirPath string, fileName string, content string) error {
 	if createPathErr != nil {
 		return fmt.Errorf("could not create config file: %w", createPathErr)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	_, writeFileErr := file.WriteString(content)
 	if writeFileErr != nil {

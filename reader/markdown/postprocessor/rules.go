@@ -2,9 +2,8 @@ package postprocessor
 
 import (
 	"clx/constants/unicode"
-	"strings"
-
 	"clx/reader/markdown/postprocessor/filter"
+	"strings"
 )
 
 func filterSite(text string, url string) string {

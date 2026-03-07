@@ -1,15 +1,13 @@
 package list
 
 import (
+	"clx/constants/category"
+	"clx/constants/nerdfonts"
+	"clx/item"
+	"clx/syntax"
 	"fmt"
 	"io"
 	"strings"
-
-	"clx/constants/nerdfonts"
-
-	"clx/constants/category"
-	"clx/item"
-	"clx/syntax"
 
 	"github.com/nleeper/goment"
 
@@ -85,7 +83,7 @@ func NewDefaultDelegate() *DefaultDelegate {
 // Height returns the delegate's preferred height.
 func (d *DefaultDelegate) Height() int {
 	if d.ShowDescription {
-		return 2 //nolint:gomnd
+		return 2
 	}
 	return 1
 }

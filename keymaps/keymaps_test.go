@@ -1,10 +1,9 @@
 package keymaps_test
 
 import (
+	"clx/keymaps"
 	ansi "clx/utils/strip-ansi"
 	"testing"
-
-	"clx/keymaps"
 
 	"github.com/stretchr/testify/assert"
 )

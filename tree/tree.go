@@ -1,22 +1,20 @@
 package tree
 
 import (
-	"fmt"
-	"slices"
-	"strings"
-
-	"charm.land/lipgloss/v2"
-
-	"clx/constants/nerdfonts"
-
 	"clx/comment"
 	"clx/constants/margins"
+	"clx/constants/nerdfonts"
 	"clx/constants/unicode"
 	"clx/item"
 	"clx/meta"
 	"clx/settings"
 	"clx/syntax"
 	"clx/tree/postprocessor"
+	"fmt"
+	"slices"
+	"strings"
+
+	"charm.land/lipgloss/v2"
 
 	. "github.com/logrusorgru/aurora/v3"
 
@@ -99,12 +97,9 @@ func getButton(level int, replyCount int, commentWidth int) string {
 		return ""
 	}
 
-	replies := ""
-
+	replies := "replies"
 	if replyCount == 1 {
 		replies = "reply"
-	} else {
-		replies = "replies"
 	}
 
 	buttonLabel := fmt.Sprintf("%d %s", replyCount, replies)

@@ -1,13 +1,13 @@
 package info
 
 import (
+	"clx/constants/margins"
+	"clx/constants/nerdfonts"
+	"clx/keymaps"
 	"strings"
 
-	"clx/constants/nerdfonts"
 	. "github.com/logrusorgru/aurora/v3"
 
-	"clx/constants/margins"
-	"clx/keymaps"
 	text "github.com/MichaelMure/go-term-text"
 )
 

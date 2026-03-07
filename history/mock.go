@@ -1,8 +1,9 @@
 package history
 
-import "slices"
-
-import "time"
+import (
+	"slices"
+	"time"
+)
 
 type Mock struct{}
 

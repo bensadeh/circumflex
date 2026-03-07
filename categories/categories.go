@@ -110,7 +110,9 @@ func (c *Categories) GetCategories(hasFavorites bool) []int {
 
 func (c *Categories) GetCurrentCategory(hasFavorites bool) int {
 	if hasFavorites {
-		categoriesWithFavorites := append(c.categories, CategoryMapping[Favorites])
+		categoriesWithFavorites := make([]int, len(c.categories), len(c.categories)+1)
+		copy(categoriesWithFavorites, c.categories)
+		categoriesWithFavorites = append(categoriesWithFavorites, CategoryMapping[Favorites])
 		return categoriesWithFavorites[c.currentIndex]
 	}
 

@@ -1,12 +1,11 @@
 package list
 
 import (
-	"strconv"
-	"time"
-
 	"clx/browser"
 	"clx/bubble/list/message"
 	"clx/constants/category"
+	"strconv"
+	"time"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
@@ -167,7 +166,7 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 	}
 
 	if isOnLastItem {
-		m.cursor = m.cursor - 1
+		m.cursor--
 	}
 
 	m.updatePagination()

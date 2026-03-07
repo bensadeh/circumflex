@@ -1,0 +1,103 @@
+version: "2"
+
+run:
+  go: "1.26"
+
+linters:
+  default: all
+  disable:
+    # Impractical for a CLI/TUI app
+    - forbidigo        # forbids fmt.Print* — a CLI app needs to print to stdout/stderr
+    - gochecknoglobals # flags all globals — Cobra flags are necessarily package-level vars
+    - exhaustruct      # requires every struct field to be set — too strict
+    - ireturn          # forbids returning interfaces — conflicts with factory patterns
+    - wrapcheck        # requires all errors to be wrapped — too strict for internal code
+    - err113           # requires sentinel errors for all comparisons — overkill
+
+    # Too noisy / low value
+    - depguard         # dependency allow/block lists — not needed
+    - godox            # flags TODO/FIXME — we want those as reminders
+    - nlreturn         # requires blank line before return — pedantic
+    - wsl              # whitespace linter — overly opinionated about blank lines
+    - wsl_v5           # same as wsl, v5 variant
+    - varnamelen       # minimum variable name length — too strict for idiomatic Go
+    - funlen           # function length limits — handled in review
+    - cyclop           # cyclomatic complexity — overlaps with gocognit
+    - lll              # line length — handled by editor
+    - testpackage      # requires _test package — internal tests are fine
+    - paralleltest     # requires t.Parallel() — not always appropriate
+    - tparallel        # same as above
+    - mnd              # magic number detector — too noisy in UI/rendering code
+    - funcorder        # method ordering — too pedantic
+    - prealloc         # suggests preallocating slices — micro-optimization, not worth it
+    - predeclared      # flags shadowing built-in names — caught by the actual error return refactoring
+    - tagliatelle      # struct tag naming convention — json tags match external APIs
+    - nonamedreturns   # forbids named returns — useful in some cases
+    - inamedparam      # requires named params in interfaces — too strict
+    - noctx            # requires context in HTTP calls — will add in refactoring Phase 5
+    - musttag          # requires struct tags — too strict for internal types
+    - maintidx         # maintainability index — overlaps with gocognit/gocyclo
+    - recvcheck        # requires consistent receiver types — too pedantic
+    - noinlineerr      # forbids inline error returns — too strict
+    - iotamixing       # flags mixing iota with explicit values — rare edge case
+    - perfsprint       # suggests fmt.Sprintf replacements — micro-optimization
+
+  settings:
+    gocognit:
+      min-complexity: 32  # ConvertToMarkdownBlocks is a parser — inherently complex
+
+    gocyclo:
+      min-complexity: 41  # handleBrowsing is a key dispatch switch — inherently complex
+
+    nestif:
+      min-complexity: 5
+
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment  # struct field ordering for memory — not worth the churn
+
+    gocritic:
+      disabled-checks:
+        - singleCaseSwitch  # type switches with one case are idiomatic in BubbleTea
+
+    dupword:
+      ignore:
+        - "the"
+
+    revive:
+      rules:
+        - name: exported
+          disabled: true  # no doc comments by preference
+        - name: package-comments
+          disabled: true  # no doc comments by preference
+        - name: var-naming
+          disabled: true  # Url vs URL etc — matches external API field names
+
+    staticcheck:
+      checks:
+        - all
+        - -SA1019  # deprecated API usage — fix when upgrading deps
+        - -ST1000  # missing package comments — no doc comments by preference
+        - -ST1001  # dot imports — used for aurora color lib, acceptable
+        - -ST1003  # naming conventions (Id→ID, Url→URL) — fix later, too noisy now
+        - -ST1018  # Unicode escape sequences — false positives on intentional Unicode chars
+
+    gosec:
+      excludes:
+        - G115   # integer overflow conversion — false positives on terminal dimensions
+        - G204   # subprocess with variable — expected in a CLI that shells out to less/browser
+        - G304   # file inclusion via variable — expected in a CLI that reads config files
+        - G702   # command injection — same as G204, expected for CLX_BROWSER env var
+        - G703   # path traversal — false positive on temp file cleanup
+
+formatters:
+  enable:
+    - gofumpt
+    - goimports
+
+issues:
+  exclude-dirs:
+    - vendor
+  exclude-files:
+    - "hn/services/mock/mock.go"  # mock data — not worth linting

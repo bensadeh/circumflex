@@ -43,7 +43,6 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 		m.viewport.SetContent(content.String())
 
 		return m, nil
-
 	}
 
 	// Handle keyboard and mouse events in the viewport

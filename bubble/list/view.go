@@ -1,12 +1,11 @@
 package list
 
 import (
-	"fmt"
-	"strings"
-
 	"clx/app"
 	"clx/bubble/ranking"
 	"clx/header"
+	"fmt"
+	"strings"
 
 	"charm.land/lipgloss/v2"
 )
@@ -45,7 +44,6 @@ func (m *Model) View() string {
 	if m.showStatusBar {
 		v := m.statusAndPaginationView()
 		availHeight -= lipgloss.Height(v)
-
 	}
 
 	content := lipgloss.NewStyle().Height(availHeight).Render(m.populatedView())
@@ -81,23 +79,22 @@ func (m *Model) titleView() string {
 }
 
 func (m *Model) statusAndPaginationView() string {
-	centerContent := ""
-	rightContent := ""
+	var centerContent string
+	var rightContent string
 	underscore := lipgloss.NewStyle().Underline(true).Render(" ")
 	underline := strings.Repeat(underscore, m.width)
 
-	if m.state == StateHelpScreen {
+	switch {
+	case m.state == StateHelpScreen:
 		centerContent = lipgloss.NewStyle().Faint(true).Render(
 			"github.com/bensadeh/circumflex • version " + app.Version)
-	} else if m.showSpinner {
+	case m.showSpinner:
 		centerContent = m.spinnerView()
-	} else {
+	default:
 		centerContent = m.statusMessage
 	}
 
-	if m.state == StateHelpScreen {
-		rightContent = ""
-	} else {
+	if m.state != StateHelpScreen {
 		rightContent = m.Paginator.View()
 	}
 

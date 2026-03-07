@@ -1,17 +1,15 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
-	"clx/categories"
-
 	"clx/app"
 	"clx/bubble"
+	"clx/categories"
 	"clx/cli"
 	"clx/indent"
 	"clx/less"
 	"clx/settings"
+	"fmt"
+	"os"
 
 	"github.com/logrusorgru/aurora/v3"
 	"github.com/spf13/cobra"

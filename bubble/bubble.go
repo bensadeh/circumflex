@@ -1,14 +1,13 @@
 package bubble
 
 import (
+	"clx/bubble/list"
 	"clx/categories"
 	"clx/cli"
-	"fmt"
-	"os"
-
-	"clx/bubble/list"
 	"clx/favorites"
 	"clx/settings"
+	"fmt"
+	"os"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"

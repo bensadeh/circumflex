@@ -3,8 +3,8 @@ package header
 import (
 	"clx/categories"
 	"fmt"
-	"strings"
 	"image/color"
+	"strings"
 
 	"charm.land/lipgloss/v2"
 )
@@ -105,7 +105,8 @@ func getColor(i int, selectedSubHeader int, numCategories int, hasFavorites bool
 }
 
 func getSelectedCategoryColor(selectedSubHeader int, numCategories int, hasFavorites bool) (color color.Color,
-	isSelected bool) {
+	isSelected bool,
+) {
 	magenta := lipgloss.Color("5")
 	yellow := lipgloss.Color("3")
 	blue := lipgloss.Color("4")

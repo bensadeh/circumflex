@@ -19,8 +19,8 @@ type Styles struct {
 	TitleBar lipgloss.Style
 	Spinner  lipgloss.Style
 
-	StatusBar    lipgloss.Style
-	StatusEmpty  lipgloss.Style
+	StatusBar   lipgloss.Style
+	StatusEmpty lipgloss.Style
 
 	NoItems lipgloss.Style
 
@@ -48,7 +48,7 @@ func DefaultStyles() (s Styles) {
 
 	s.ArabicPagination = lipgloss.NewStyle()
 
-	s.PaginationStyle = lipgloss.NewStyle().PaddingLeft(2) //nolint:gomnd
+	s.PaginationStyle = lipgloss.NewStyle().PaddingLeft(2)
 
 	s.HelpStyle = lipgloss.NewStyle().Padding(1, 0, 0, 2)
 
@@ -83,6 +83,6 @@ func getSpinner() spinner.Spinner {
 			normal.Render("fetching") + color.Foreground(magenta).Render(".") + normal.Render("  "),
 			normal.Render("fetching") + color.Foreground(magenta).Render(".") + color.Foreground(yellow).Render(".") + normal.Render(" "),
 		},
-		FPS: 1500 * time.Millisecond,
+		FPS: 500 * time.Millisecond,
 	}
 }
