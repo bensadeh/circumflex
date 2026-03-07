@@ -2,10 +2,11 @@ package reader
 
 import (
 	"clx/constants"
-	"clx/screen"
+	"os"
 	"strings"
 
 	t "github.com/MichaelMure/go-term-text"
+	"golang.org/x/term"
 )
 
 const (
@@ -28,7 +29,7 @@ func moveZeroWidthSpaceUpOneLine(text string) string {
 
 func indent(commentSection string) string {
 	indentBlock := strings.Repeat(" ", constants.ReaderViewLeftMargin)
-	screenWidth, err := screen.GetTerminalWidth()
+	screenWidth, _, err := term.GetSize(int(os.Stdout.Fd()))
 	if err != nil {
 		screenWidth = 80
 	}

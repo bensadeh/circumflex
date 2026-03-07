@@ -4,14 +4,14 @@ import (
 	"clx/constants"
 	"clx/meta"
 	"clx/syntax"
+	"os"
 	"regexp"
 	"strings"
 
 	"github.com/muesli/reflow/wordwrap"
+	"golang.org/x/term"
 
 	"github.com/charmbracelet/glamour"
-
-	terminal "github.com/wayneashleyberry/terminal-dimensions"
 
 	termtext "github.com/MichaelMure/go-term-text"
 
@@ -192,7 +192,7 @@ func renderImage(text string, lineWidth int) string {
 }
 
 func renderCode(text string) string {
-	screenWidth, _ := terminal.Width()
+	screenWidth, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	text = strings.TrimSuffix(text, "\n")
 	text = strings.TrimPrefix(text, "\n")
@@ -201,7 +201,7 @@ func renderCode(text string) string {
 	text = removeHrefs(text)
 
 	padding := termtext.WrapPad(indentLevel1)
-	text, _ = termtext.Wrap(text, int(screenWidth), padding)
+	text, _ = termtext.Wrap(text, screenWidth, padding)
 
 	return text
 }
@@ -222,7 +222,7 @@ func renderQuote(text string, lineWidth int, indentSymbol string) string {
 }
 
 func renderTable(text string) string {
-	screenWidth, _ := terminal.Width()
+	screenWidth, _, _ := term.GetSize(int(os.Stdout.Fd()))
 	text = strings.ReplaceAll(text, italicStart, "")
 	text = strings.ReplaceAll(text, italicStop, "")
 
@@ -232,7 +232,7 @@ func renderTable(text string) string {
 	text = unescapeCharacters(text)
 	text = removeImageReference(text)
 
-	r, _ := glamour.NewTermRenderer(glamour.WithAutoStyle(), glamour.WithWordWrap(int(screenWidth)))
+	r, _ := glamour.NewTermRenderer(glamour.WithAutoStyle(), glamour.WithWordWrap(screenWidth))
 
 	out, _ := r.Render(text)
 

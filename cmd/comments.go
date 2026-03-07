@@ -3,7 +3,6 @@ package cmd
 import (
 	"clx/cli"
 	"clx/less"
-	"clx/screen"
 	"clx/tree"
 	_ "embed"
 	"fmt"
@@ -12,6 +11,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/term"
 )
 
 func commentsCmd() *cobra.Command {
@@ -39,7 +39,7 @@ func commentsCmd() *cobra.Command {
 
 			config := getConfig()
 
-			screenWidth, err := screen.GetTerminalWidth()
+			screenWidth, _, err := term.GetSize(int(os.Stdout.Fd()))
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
