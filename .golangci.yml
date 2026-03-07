@@ -5,6 +5,10 @@ run:
 
 linters:
   default: all
+  exclusions:
+    paths:
+      - vendor
+      - hn/services/mock/mock.go  # mock data — not worth linting
   disable:
     # Impractical for a CLI/TUI app
     - forbidigo        # forbids fmt.Print* — a CLI app needs to print to stdout/stderr
@@ -95,9 +99,6 @@ formatters:
   enable:
     - gofumpt
     - goimports
-
-issues:
-  exclude-dirs:
-    - vendor
-  exclude-files:
-    - "hn/services/mock/mock.go"  # mock data — not worth linting
+  exclusions:
+    paths:
+      - vendor
