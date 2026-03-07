@@ -144,9 +144,17 @@ func (m *Model) handleConfirmAddFavorites() tea.Cmd {
 func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 	m.state = StateBrowsing
 
-	m.favorites.Remove(m.Index())
+	if err := m.favorites.Remove(m.Index()); err != nil {
+		return m.NewStatusMessageWithDuration("Could not remove favorite", time.Second*3)
+	}
 	m.items[category.Favorites] = m.favorites.GetItems()
-	m.favorites.Write()
+
+	writeCmd := func() tea.Msg {
+		if err := m.favorites.Write(); err != nil {
+			return message.ShowStatusMessage{Message: "Could not save favorites", Duration: time.Second * 3}
+		}
+		return nil
+	}
 
 	isOnLastItem := m.Index() == len(m.items[category.Favorites])
 	hasOnlyOneItem := len(m.items[category.Favorites]) == 0
@@ -162,7 +170,7 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 			return message.FetchAndChangeToCategory{Index: m.cat.GetCurrentIndex(), Category: m.cat.GetCurrentCategory(false), Cursor: 0}
 		}
 
-		return tea.Batch(changeCatCmd, m.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2))
+		return tea.Batch(changeCatCmd, writeCmd, m.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2))
 	}
 
 	if isOnLastItem {
@@ -171,7 +179,7 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 
 	m.updatePagination()
 
-	return m.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2)
+	return tea.Batch(writeCmd, m.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2))
 }
 
 func (m *Model) handleCancelPrompt() tea.Cmd {
@@ -219,29 +227,32 @@ func (m *Model) handleTabBackward() tea.Cmd {
 }
 
 func (m *Model) handleOpenLink() tea.Cmd {
-	if m.SelectedItem().URL == "" {
-		url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(m.SelectedItem().ID)
-		browser.Open(url)
-	} else {
-		browser.Open(m.SelectedItem().URL)
+	url := m.SelectedItem().URL
+	if url == "" {
+		url = "https://news.ycombinator.com/item?id=" + strconv.Itoa(m.SelectedItem().ID)
 	}
+	id := m.SelectedItem().ID
+	commentCount := m.SelectedItem().CommentsCount
 
 	return func() tea.Msg {
+		_ = browser.Open(url)
 		return message.OpeningLink{
-			Id:           m.SelectedItem().ID,
-			CommentCount: m.SelectedItem().CommentsCount,
+			Id:           id,
+			CommentCount: commentCount,
 		}
 	}
 }
 
 func (m *Model) handleOpenComments() tea.Cmd {
 	url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(m.SelectedItem().ID)
-	browser.Open(url)
+	id := m.SelectedItem().ID
+	commentCount := m.SelectedItem().CommentsCount
 
 	return func() tea.Msg {
+		_ = browser.Open(url)
 		return message.OpeningCommentsInBrowser{
-			Id:           m.SelectedItem().ID,
-			CommentCount: m.SelectedItem().CommentsCount,
+			Id:           id,
+			CommentCount: commentCount,
 		}
 	}
 }

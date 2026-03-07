@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"clx/cli"
-	"clx/hn/services/hybrid"
 	"clx/less"
 	"clx/reader"
 	_ "embed"
@@ -26,7 +25,7 @@ func articleCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			service := new(hybrid.Service)
+			service := newService()
 
 			item, err := service.FetchItem(id)
 			if err != nil {

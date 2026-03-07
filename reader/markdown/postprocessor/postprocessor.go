@@ -29,7 +29,10 @@ func moveZeroWidthSpaceUpOneLine(text string) string {
 
 func indent(commentSection string) string {
 	indentBlock := strings.Repeat(" ", margins.ReaderViewLeftMargin)
-	screenWidth := screen.GetTerminalWidth()
+	screenWidth, err := screen.GetTerminalWidth()
+	if err != nil {
+		screenWidth = 80
+	}
 
 	indentedCommentSection, _ := t.WrapWithPad(commentSection, screenWidth, indentBlock)
 

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"clx/favorites"
-	"clx/hn/services/hybrid"
 	"fmt"
 	"os"
 	"strconv"
@@ -24,7 +23,7 @@ func addCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			service := hybrid.Service{}
+			service := newService()
 			submission, err := service.FetchItem(id)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
@@ -33,7 +32,10 @@ func addCmd() *cobra.Command {
 
 			fav := favorites.New()
 			fav.Add(submission)
-			fav.Write()
+			if err := fav.Write(); err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				os.Exit(1)
+			}
 
 			println("Item added to favorites")
 		},

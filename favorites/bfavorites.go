@@ -17,7 +17,10 @@ func New() *Favorites {
 
 	if file.Exists(favoritesPath) {
 		favoritesJSON, _ := os.ReadFile(favoritesPath)
-		items := unmarshal(favoritesJSON)
+		items, err := unmarshal(favoritesJSON)
+		if err != nil {
+			return new(Favorites)
+		}
 
 		favoritesFromDisk := new(Favorites)
 		favoritesFromDisk.items = items
@@ -28,15 +31,15 @@ func New() *Favorites {
 	return new(Favorites)
 }
 
-func unmarshal(data []byte) []*item.Item {
+func unmarshal(data []byte) ([]*item.Item, error) {
 	var items []*item.Item
 
 	err := json.Unmarshal(data, &items)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return items
+	return items, nil
 }
 
 func (f *Favorites) GetItems() []*item.Item {
@@ -51,30 +54,26 @@ func (f *Favorites) Add(item *item.Item) {
 	f.items = append(f.items, item)
 }
 
-func (f *Favorites) Write() {
-	err := file.WriteToFile(file.PathToFavoritesFile(), serializeToJson(f.items))
+func (f *Favorites) Write() error {
+	stream, err := json.MarshalIndent(f.items, "", "    ")
 	if err != nil {
-		panic(fmt.Errorf("could not write to file: %w", err))
-	}
-}
-
-func serializeToJson(favorites []*item.Item) string {
-	stream, err := json.MarshalIndent(favorites, "", "    ")
-	if err != nil {
-		panic(fmt.Errorf("could not serialize favorites struct: %w", err))
+		return fmt.Errorf("could not serialize favorites: %w", err)
 	}
 
-	return string(stream)
+	if err := file.WriteToFile(file.PathToFavoritesFile(), string(stream)); err != nil {
+		return fmt.Errorf("could not write favorites: %w", err)
+	}
+
+	return nil
 }
 
-func (f *Favorites) Remove(index int) {
-	if index < 0 || index > len(f.items) {
-		errorString := fmt.Sprintf("Out of bounds access for slice. Tried to remove index of %d, but size of "+
-			"slice was %d", index, len(f.items))
-		panic(errorString)
+func (f *Favorites) Remove(index int) error {
+	if index < 0 || index >= len(f.items) {
+		return fmt.Errorf("out of bounds: tried to remove index %d, but size was %d", index, len(f.items))
 	}
 
 	f.items = append(f.items[:index], f.items[index+1:]...)
+	return nil
 }
 
 func (f *Favorites) UpdateStoryAndWriteToDisk(newItem *item.Item) {
@@ -94,7 +93,7 @@ func (f *Favorites) UpdateStoryAndWriteToDisk(newItem *item.Item) {
 				f.items[i].URL = newItem.URL
 				f.items[i].Domain = newItem.Domain
 
-				f.Write()
+				_ = f.Write()
 			}
 		}
 	}

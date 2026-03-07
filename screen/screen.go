@@ -1,25 +1,27 @@
 package screen
 
 import (
+	"fmt"
+
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
 
-func GetTerminalHeight() int {
+func GetTerminalHeight() (int, error) {
 	height, err := terminal.Height()
 	if err != nil {
-		panic("Could not determine terminal height")
+		return 0, fmt.Errorf("could not determine terminal height: %w", err)
 	}
 
-	return int(height)
+	return int(height), nil
 }
 
-func GetTerminalWidth() int {
+func GetTerminalWidth() (int, error) {
 	width, err := terminal.Width()
 	if err != nil {
-		panic("Could not determine terminal width")
+		return 0, fmt.Errorf("could not determine terminal width: %w", err)
 	}
 
-	return int(width)
+	return int(width), nil
 }
 
 func GetSubmissionsToShow(screenHeight int, maxStories int) int {

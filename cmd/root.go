@@ -5,6 +5,9 @@ import (
 	"clx/bubble"
 	"clx/categories"
 	"clx/cli"
+	"clx/hn"
+	"clx/hn/services/hybrid"
+	"clx/hn/services/mock"
 	"clx/indent"
 	"clx/less"
 	"clx/settings"
@@ -112,6 +115,14 @@ func getConfig() *settings.Config {
 	config.NoLessVerify = noLessVerify
 
 	return config
+}
+
+func newService() hn.Service {
+	if debugMode {
+		return mock.Service{}
+	}
+
+	return hybrid.NewService()
 }
 
 func verifyLess(noLessVerify bool) {

@@ -12,7 +12,7 @@ type Service struct{}
 func (Service) Init(_ int) {
 }
 
-func (Service) FetchItems(_ int, cat int) (items []*item.Item, error string) {
+func (Service) FetchItems(_ int, cat int) (items []*item.Item, err error) {
 	time.Sleep(time.Second * 1)
 
 	items = []*item.Item{
@@ -284,7 +284,7 @@ func (Service) FetchItems(_ int, cat int) (items []*item.Item, error string) {
 		rand.Shuffle(len(items), func(i, j int) { items[i], items[j] = items[j], items[i] })
 	}
 
-	return items, ""
+	return items, nil
 }
 
 func (Service) FetchComments(_ int) (*item.Item, error) {

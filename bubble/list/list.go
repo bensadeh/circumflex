@@ -205,7 +205,9 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		m.favorites.Add(msg.Item)
 		m.items[category.Favorites] = m.favorites.GetItems()
 
-		m.favorites.Write()
+		if err := m.favorites.Write(); err != nil {
+			cmds = append(cmds, m.NewStatusMessageWithDuration("Could not save favorites", time.Second*3))
+		}
 
 		m.updatePagination()
 
@@ -236,10 +238,10 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, m.handleEnteringCommentSection(msg)
 
 	case message.OpeningLink:
-		m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
+		_ = m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
 	case message.OpeningCommentsInBrowser:
-		m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
+		_ = m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
 	case message.EnteringReaderMode:
 		return m, m.handleEnteringReaderMode(msg)

@@ -20,7 +20,11 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 	itemsToFetch := m.getNumberOfItemsToFetch(categoryToFetch)
 
 	return func() tea.Msg {
-		stories, errMsg := m.service.FetchItems(itemsToFetch, categoryToFetch)
+		stories, err := m.service.FetchItems(itemsToFetch, categoryToFetch)
+		var errMsg string
+		if err != nil {
+			errMsg = err.Error()
+		}
 
 		return message.FetchingFinished{
 			Stories:  stories,
@@ -57,7 +61,7 @@ func getService(debugMode bool) hn.Service {
 		return mock.Service{}
 	}
 
-	return &hybrid.Service{}
+	return hybrid.NewService()
 }
 
 func getHistory(debugMode bool, doNotMarkAsRead bool) history.History {
@@ -69,13 +73,18 @@ func getHistory(debugMode bool, doNotMarkAsRead bool) history.History {
 		return history.NewNonPersistentHistory()
 	}
 
-	return history.NewPersistentHistory()
+	h, _ := history.NewPersistentHistory()
+	return h
 }
 
 func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) tea.Cmd {
 	return func() tea.Msg {
 		itemsToFetch := m.getNumberOfItemsToFetch(msg.Category)
-		stories, errMsg := m.service.FetchItems(itemsToFetch, msg.Category)
+		stories, err := m.service.FetchItems(itemsToFetch, msg.Category)
+		var errMsg string
+		if err != nil {
+			errMsg = err.Error()
+		}
 
 		return message.CategoryFetchingFinished{
 			Stories:  stories,
@@ -90,7 +99,11 @@ func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) t
 func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 	return func() tea.Msg {
 		itemsToFetch := m.getNumberOfItemsToFetch(msg.CurrentCategory)
-		stories, errMsg := m.service.FetchItems(itemsToFetch, msg.CurrentCategory)
+		stories, err := m.service.FetchItems(itemsToFetch, msg.CurrentCategory)
+		var errMsg string
+		if err != nil {
+			errMsg = err.Error()
+		}
 
 		return message.CategoryFetchingFinished{
 			Stories:  stories,
@@ -108,7 +121,7 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 
 	return func() tea.Msg {
 		lastVisited := m.history.GetLastVisited(msg.Id)
-		m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
+		_ = m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
 		story, err := m.service.FetchComments(msg.Id)
 		if err != nil {
@@ -137,7 +150,7 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 			return message.ArticleReady{Error: "Could not read article in Reader Mode"}
 		}
 
-		m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
+		_ = m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
 		return message.ArticleReady{Content: article}
 	}

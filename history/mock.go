@@ -29,6 +29,6 @@ func (Mock) GetLastCommentCount(_ int) int {
 	return 0
 }
 
-func (Mock) ClearAndWriteToDisk() {}
+func (Mock) ClearAndWriteToDisk() error { return nil }
 
-func (Mock) MarkAsReadAndWriteToDisk(_ int, _ int) {}
+func (Mock) MarkAsReadAndWriteToDisk(_ int, _ int) error { return nil }

@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.0
+
+_WIP_
+
+- Bump Bubble Tea to 2.0
+
 ## 3.9
 
 _10.01.26_

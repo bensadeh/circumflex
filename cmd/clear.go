@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"clx/history"
+	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -15,7 +17,10 @@ func clearCmd() *cobra.Command {
 		DisableFlagsInUseLine: true,
 		Run: func(cmd *cobra.Command, args []string) {
 			his := history.Persistent{}
-			his.ClearAndWriteToDisk()
+			if err := his.ClearAndWriteToDisk(); err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				os.Exit(1)
+			}
 
 			println("List of visited IDs cleared")
 		},

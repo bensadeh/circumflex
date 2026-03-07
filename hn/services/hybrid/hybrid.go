@@ -22,20 +22,29 @@ const (
 	uri = "https://hacker-news.firebaseio.com/v0"
 )
 
-type Service struct{}
+type Service struct {
+	client *resty.Client
+}
 
-func (s *Service) FetchItems(itemsToFetch int, category int) (items []*item.Item, errMsg string) {
-	listOfIDs, errMsg := fetchStoriesList(category)
-	if errMsg != "" {
-		return nil, errMsg
+func NewService() *Service {
+	client := resty.New()
+	client.SetTimeout(10 * time.Second)
+	client.SetHeader("User-Agent", app.Name+"/"+app.Version)
+	return &Service{client: client}
+}
+
+func (s *Service) FetchItems(itemsToFetch int, cat int) ([]*item.Item, error) {
+	listOfIDs, err := s.fetchStoriesList(cat)
+	if err != nil {
+		return nil, err
 	}
 
 	listOfIdsToFetch := listOfIDs[:min(len(listOfIDs), itemsToFetch)]
 
-	return fetchItemsInParallel(listOfIdsToFetch)
+	return s.fetchItemsInParallel(listOfIdsToFetch)
 }
 
-func fetchItemsInParallel(ids []int) ([]*item.Item, string) {
+func (s *Service) fetchItemsInParallel(ids []int) ([]*item.Item, error) {
 	items := make([]*item.Item, len(ids))
 	var wg sync.WaitGroup
 
@@ -43,7 +52,7 @@ func fetchItemsInParallel(ids []int) ([]*item.Item, string) {
 		wg.Add(1)
 		go func(i int, id int) {
 			defer wg.Done()
-			fetched, err := fetchItem(id)
+			fetched, err := s.fetchItem(id)
 			if err == nil {
 				items[i] = fetched
 			}
@@ -63,67 +72,76 @@ func fetchItemsInParallel(ids []int) ([]*item.Item, string) {
 		}
 	}
 
-	var errMsg string
 	if failed > 0 {
-		errMsg = fmt.Sprintf("Could not fetch %d/%d items", failed, len(ids))
+		return result, fmt.Errorf("could not fetch %d/%d items", failed, len(ids))
 	}
 
-	return result, errMsg
+	return result, nil
 }
 
-func fetchStoriesList(category int) (stories []int, errMsg string) {
-	url := fmt.Sprintf("%s/%s.json", uri, getCategory(category))
+func (s *Service) fetchStoriesList(cat int) (stories []int, err error) {
+	catName, err := getCategory(cat)
+	if err != nil {
+		return nil, err
+	}
 
-	client := resty.New()
-	client.SetTimeout(10 * time.Second)
+	url := fmt.Sprintf("%s/%s.json", uri, catName)
 
-	_, err := client.R().
+	client := s.client
+	if client == nil {
+		client = resty.New()
+		client.SetTimeout(10 * time.Second)
+	}
+
+	_, err = client.R().
 		SetHeader("User-Agent", app.Name+"/"+app.Version).
 		SetResult(&stories).
 		Get(url)
 	if err != nil {
-		return nil, err.Error()
+		return nil, err
 	}
 
-	return stories, ""
+	return stories, nil
 }
 
-func getCategory(cat int) string {
+func getCategory(cat int) (string, error) {
 	switch cat {
 	case category.Top:
-		return "topstories"
+		return "topstories", nil
 
 	case category.New:
-		return "newstories"
+		return "newstories", nil
 
 	case category.Ask:
-		return "askstories"
+		return "askstories", nil
 
 	case category.Show:
-		return "showstories"
+		return "showstories", nil
 
 	case category.Best:
-		return "beststories"
+		return "beststories", nil
 
 	default:
-		panic("Unsupported c: " + strconv.Itoa(cat))
+		return "", fmt.Errorf("unsupported category: %d", cat)
 	}
 }
 
 func (s *Service) FetchItem(id int) (*item.Item, error) {
-	return fetchItem(id)
+	return s.fetchItem(id)
 }
 
-func fetchItem(id int) (*item.Item, error) {
+func (s *Service) fetchItem(id int) (*item.Item, error) {
 	hn := new(endpoints.HN)
 
-	client := resty.New()
-	client.SetTimeout(10 * time.Second)
-	client.SetBaseURL("https://hacker-news.firebaseio.com/v0/item/")
+	client := s.client
+	if client == nil {
+		client = resty.New()
+		client.SetTimeout(10 * time.Second)
+	}
 
 	resp, err := client.R().
 		SetHeader("User-Agent", app.Name+"/"+app.Version).
-		Get(strconv.Itoa(id) + ".json")
+		Get("https://hacker-news.firebaseio.com/v0/item/" + strconv.Itoa(id) + ".json")
 	if err != nil {
 		return nil, fmt.Errorf("fetching item %d: %w", id, err)
 	}
@@ -158,13 +176,15 @@ func mapItem(hn *endpoints.HN) *item.Item {
 }
 
 func (s *Service) FetchComments(id int) (*item.Item, error) {
-	client := resty.New()
-	client.SetTimeout(10 * time.Second)
-	client.SetBaseURL("http://api.hackerwebapp.com/item/")
+	client := s.client
+	if client == nil {
+		client = resty.New()
+		client.SetTimeout(10 * time.Second)
+	}
 
 	response, err := client.R().
 		SetHeader("User-Agent", app.Name+"/"+app.Version).
-		Get(strconv.Itoa(id))
+		Get("http://api.hackerwebapp.com/item/" + strconv.Itoa(id))
 	if err != nil {
 		return nil, fmt.Errorf("fetching comments for %d: %w", id, err)
 	}

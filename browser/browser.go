@@ -1,13 +1,14 @@
 package browser
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
 )
 
-func Open(url string) {
+func Open(url string) error {
 	if browser := os.Getenv("CLX_BROWSER"); browser != "" {
 		commandAndArgs := strings.Fields(browser)
 		command := commandAndArgs[0]
@@ -16,25 +17,23 @@ func Open(url string) {
 		args = append(args, url)
 
 		cmd := exec.Command(command, args...)
-		_ = cmd.Start()
-
-		return
+		return cmd.Start()
 	}
 
 	switch runtime.GOOS {
 	case "linux", "freebsd", "openbsd", "netbsd":
 		cmd := exec.Command("xdg-open", url)
-		_ = cmd.Start()
+		return cmd.Start()
 
 	case "windows":
 		cmd := exec.Command("rundll32", "url.dll,FileProtocolHandler", url)
-		_ = cmd.Start()
+		return cmd.Start()
 
 	case "darwin":
 		cmd := exec.Command("open", url)
-		_ = cmd.Start()
+		return cmd.Start()
 
 	default:
-		panic("unsupported platform")
+		return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
 	}
 }

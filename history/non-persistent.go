@@ -16,6 +16,6 @@ func (NonPersistent) GetLastCommentCount(_ int) int {
 	return 0
 }
 
-func (NonPersistent) ClearAndWriteToDisk() {}
+func (NonPersistent) ClearAndWriteToDisk() error { return nil }
 
-func (NonPersistent) MarkAsReadAndWriteToDisk(_ int, _ int) {}
+func (NonPersistent) MarkAsReadAndWriteToDisk(_ int, _ int) error { return nil }

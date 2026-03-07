@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"clx/cli"
-	"clx/hn/services/hybrid"
 	"clx/less"
 	"clx/screen"
 	"clx/tree"
@@ -30,7 +29,7 @@ func commentsCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			service := new(hybrid.Service)
+			service := newService()
 
 			comments, err := service.FetchComments(id)
 			if err != nil {
@@ -40,7 +39,11 @@ func commentsCmd() *cobra.Command {
 
 			config := getConfig()
 
-			screenWidth := screen.GetTerminalWidth()
+			screenWidth, err := screen.GetTerminalWidth()
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				os.Exit(1)
+			}
 			commentTree := tree.Print(comments, config, screenWidth, time.Now().Unix())
 
 			lesskey := less.NewLesskey()

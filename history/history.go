@@ -11,33 +11,35 @@ type History interface {
 	Contains(id int) bool
 	GetLastVisited(id int) int64
 	GetLastCommentCount(id int) int
-	ClearAndWriteToDisk()
-	MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int)
+	ClearAndWriteToDisk() error
+	MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int) error
 }
 
-func NewPersistentHistory() History {
+func NewPersistentHistory() (History, error) {
 	h := &Persistent{VisitedStories: make(map[int]StoryInfo)}
 
 	fullPath, dirPath, fileName := getCacheFilePaths()
 
 	if !exists(fullPath) {
-		writeToDisk(h, dirPath, fileName)
+		if err := writeToDisk(h, dirPath, fileName); err != nil {
+			return h, err
+		}
 
-		return h
+		return h, nil
 	}
 
 	historyFileContent, readErr := os.ReadFile(fullPath)
 	if readErr != nil {
-		panic(readErr)
+		// Graceful degradation: treat as empty history
+		return h, nil //nolint:nilerr
 	}
 
 	deserializationErr := json.Unmarshal(historyFileContent, &h.VisitedStories)
 	if deserializationErr != nil {
-		h.ClearAndWriteToDisk()
-		_ = json.Unmarshal(historyFileContent, &h.VisitedStories)
+		_ = h.ClearAndWriteToDisk()
 	}
 
-	return h
+	return h, nil
 }
 
 func NewNonPersistentHistory() History {
@@ -48,16 +50,13 @@ func NewMockHistory() History {
 	return &Mock{}
 }
 
-func writeToDisk(h *Persistent, dirPath string, fileName string) {
+func writeToDisk(h *Persistent, dirPath string, fileName string) error {
 	visitedStoriesJSON, err := json.Marshal(h.VisitedStories)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	err = file.WriteToFileNew(dirPath, fileName, string(visitedStoriesJSON))
-	if err != nil {
-		panic(err)
-	}
+	return file.WriteToFileNew(dirPath, fileName, string(visitedStoriesJSON))
 }
 
 func getCacheFilePaths() (string, string, string) {

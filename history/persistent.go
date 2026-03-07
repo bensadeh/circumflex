@@ -37,21 +37,21 @@ func (his *Persistent) GetLastCommentCount(id int) int {
 	return 0
 }
 
-func (his *Persistent) ClearAndWriteToDisk() {
+func (his *Persistent) ClearAndWriteToDisk() error {
 	his.VisitedStories = make(map[int]StoryInfo)
 
 	_, dirPath, fileName := getCacheFilePaths()
-	writeToDisk(his, dirPath, fileName)
+	return writeToDisk(his, dirPath, fileName)
 }
 
-func (his *Persistent) MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int) {
+func (his *Persistent) MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int) error {
 	his.VisitedStories[id] = StoryInfo{
 		LastVisited:         time.Now().Unix(),
 		CommentsOnLastVisit: commentsOnLastVisit,
 	}
 
 	_, dirPath, fileName := getCacheFilePaths()
-	writeToDisk(his, dirPath, fileName)
+	return writeToDisk(his, dirPath, fileName)
 }
 
 func Initialize(isEnabled bool) *Persistent {
@@ -62,20 +62,19 @@ func Initialize(isEnabled bool) *Persistent {
 	fullPath, dirPath, fileName := getCacheFilePaths()
 
 	if !exists(fullPath) {
-		writeToDisk(h, dirPath, fileName)
+		_ = writeToDisk(h, dirPath, fileName)
 
 		return h
 	}
 
 	historyFileContent, readErr := os.ReadFile(fullPath)
 	if readErr != nil {
-		panic(readErr)
+		return h
 	}
 
 	deserializationErr := json.Unmarshal(historyFileContent, &h.VisitedStories)
 	if deserializationErr != nil {
-		h.ClearAndWriteToDisk()
-		_ = json.Unmarshal(historyFileContent, &h.VisitedStories)
+		_ = h.ClearAndWriteToDisk()
 	}
 
 	return h
