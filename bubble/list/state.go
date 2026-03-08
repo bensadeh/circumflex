@@ -6,6 +6,7 @@ const (
 	StateStartup ViewState = iota
 	StateBrowsing
 	StateLoading
+	StateRefreshing
 	StateAddFavoritesPrompt
 	StateRemoveFavoritesPrompt
 	StateHelpScreen

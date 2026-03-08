@@ -63,15 +63,12 @@ type Model struct {
 	height      int
 	Paginator   paginator.Model
 	cursor      int
-	isVisible   bool
 
 	StatusMessageLifetime time.Duration
 
 	statusMessage      string
 	statusMessageTimer *time.Timer
-
-	isBufferActive bool
-	items          [][]*item.Story
+	items              [][]*item.Story
 
 	delegate  ItemDelegate
 	history   history.History
@@ -120,7 +117,6 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 		items:     items,
 		Paginator: p,
 		spinner:   sp,
-		isVisible: true,
 		config:    config,
 		service:   service,
 		favorites: favorites,
@@ -281,7 +277,6 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		})
 
 	case message.EditorFinishedMsg:
-		m.isVisible = true
 		m.state = StateBrowsing
 
 	case message.FetchAndChangeToCategory:
@@ -294,14 +289,13 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		cmds = append(cmds, m.NewStatusMessageWithDuration(msg.Message, msg.Duration))
 
 	case message.CategoryFetchingFinished:
-		if m.isBufferActive {
+		if m.state == StateRefreshing {
 			clearAllCategories(m.items)
 		}
 		m.items[msg.Category] = msg.Stories
 		m.Paginator.Page = 0
 		m.state = StateBrowsing
 		m.StopSpinner()
-		m.isBufferActive = false
 		m.cat.SetIndex(msg.Index)
 
 		itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))

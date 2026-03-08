@@ -95,7 +95,6 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			}
 
 		case key.Matches(msg, m.keymap.EnterComments):
-			m.isVisible = false
 			m.state = StateEditorOpen
 
 			return func() tea.Msg {
@@ -106,7 +105,6 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			}
 
 		case key.Matches(msg, m.keymap.ReaderMode):
-			m.isVisible = false
 			m.state = StateEditorOpen
 
 			return func() tea.Msg {
@@ -266,12 +264,11 @@ func (m *Model) handleRefresh() tea.Cmd {
 
 	m.items[categories.Buffer] = m.items[currentCategory]
 
-	m.isBufferActive = true
 	m.Paginator.Page = 0
 	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)
 	m.updatePagination()
 
-	m.state = StateLoading
+	m.state = StateRefreshing
 	m.cursor = 0
 	m.Paginator.Page = currentPage
 

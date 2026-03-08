@@ -119,11 +119,9 @@ func TestStartup_InitializesOnWindowSizeMsg(t *testing.T) {
 
 func TestEditorFinished_RestoresState(t *testing.T) {
 	m := newTestModelReady(t)
-	m.isVisible = false
 	m.state = StateEditorOpen
 
 	m, _ = m.Update(message.EditorFinishedMsg{})
-	assert.True(t, m.isVisible)
 	assert.Equal(t, StateBrowsing, m.state)
 }
 
@@ -156,15 +154,13 @@ func TestWindowResize_UpdatesDimensions(t *testing.T) {
 
 func TestCategoryFetchingFinished_UpdatesState(t *testing.T) {
 	m := newTestModelReady(t)
-	m.state = StateLoading
+	m.state = StateRefreshing
 	m.showSpinner = true
-	m.isBufferActive = true
 
 	m, _ = m.Update(message.CategoryFetchingFinished{Index: 1, Cursor: 0, Message: ""})
 
 	assert.Equal(t, StateBrowsing, m.state)
 	assert.False(t, m.showSpinner)
-	assert.False(t, m.isBufferActive)
 }
 
 func TestShowStatusMessage_SetsMessage(t *testing.T) {
@@ -270,7 +266,6 @@ func TestEnterCommentSection(t *testing.T) {
 	m := newTestModelReady(t)
 
 	m, cmd := m.Update(keyMsg("enter"))
-	assert.False(t, m.isVisible)
 	assert.Equal(t, StateEditorOpen, m.state)
 	assert.NotNil(t, cmd)
 
@@ -405,8 +400,7 @@ func TestRefresh(t *testing.T) {
 	m := newTestModelReady(t)
 
 	m, cmd := m.Update(keyMsg("r"))
-	assert.True(t, m.isBufferActive)
-	assert.Equal(t, StateLoading, m.state)
+	assert.Equal(t, StateRefreshing, m.state)
 	assert.True(t, m.showSpinner)
 	assert.NotNil(t, cmd)
 }
@@ -466,7 +460,7 @@ func TestSpinnerTick_WhenInactive(t *testing.T) {
 
 func TestViewEmpty_WhenNotVisible(t *testing.T) {
 	m := newTestModelReady(t)
-	m.isVisible = false
+	m.state = StateEditorOpen
 
 	got := m.View()
 	assert.Empty(t, got)

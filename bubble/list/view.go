@@ -31,7 +31,7 @@ func (m *Model) View() string {
 		availHeight = m.height
 	)
 
-	if !m.isVisible {
+	if m.state == StateEditorOpen {
 		return ""
 	}
 
