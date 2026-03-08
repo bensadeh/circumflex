@@ -12,7 +12,10 @@ import (
 )
 
 func RunLess(ctx context.Context, content string, config *settings.Config) error {
-	lesskey := less.NewLesskey()
+	lesskey, err := less.NewLesskey()
+	if err != nil {
+		return err
+	}
 	defer lesskey.Remove()
 
 	config.LesskeyPath = lesskey.GetPath()

@@ -245,6 +245,10 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, m.handleEnteringReaderMode(msg)
 
 	case message.CommentTreeReady:
+		if msg.UpdatedStory != nil {
+			m.favorites.UpdateStoryAndWriteToDisk(msg.UpdatedStory)
+		}
+
 		if msg.Error != "" {
 			return m, tea.Batch(
 				m.NewStatusMessageWithDuration(msg.Error, time.Second*3),

@@ -70,8 +70,9 @@ type AddToFavorites struct {
 }
 
 type CommentTreeReady struct {
-	Content string
-	Error   string
+	Content      string
+	Error        string
+	UpdatedStory *item.Story
 }
 
 type ArticleReady struct {

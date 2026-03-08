@@ -49,7 +49,11 @@ func Root() *cobra.Command {
 				cli.EnableNerdFontsInLess()
 			}
 
-			lessKey := less.NewLesskey()
+			lessKey, err := less.NewLesskey()
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Could not create lesskey: %v\n", err)
+				os.Exit(1)
+			}
 			config.LesskeyPath = lessKey.GetPath()
 			defer lessKey.Remove()
 

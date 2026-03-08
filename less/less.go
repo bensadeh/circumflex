@@ -12,14 +12,18 @@ type Lesskey struct {
 	tempLesskeyFile *os.File
 }
 
-func NewLesskey() *Lesskey {
-	tempLesskeyFile, _ := os.CreateTemp("", "lesskey*")
+func NewLesskey() (*Lesskey, error) {
+	tempLesskeyFile, err := os.CreateTemp("", "lesskey*")
+	if err != nil {
+		return nil, err
+	}
+
 	_, _ = tempLesskeyFile.WriteString(lesskey)
 
 	key := new(Lesskey)
 	key.tempLesskeyFile = tempLesskeyFile
 
-	return key
+	return key, nil
 }
 
 func (key *Lesskey) GetPath() string {

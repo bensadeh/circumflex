@@ -127,7 +127,9 @@ func (c *Categories) GetPrevIndex(hasFavorites bool) int {
 
 func (c *Categories) GetCategories(hasFavorites bool) []int {
 	if hasFavorites {
-		return append(c.categories, Favorites)
+		categoriesWithFavorites := make([]int, len(c.categories), len(c.categories)+1)
+		copy(categoriesWithFavorites, c.categories)
+		return append(categoriesWithFavorites, Favorites)
 	}
 
 	return c.categories

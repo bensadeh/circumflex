@@ -15,21 +15,17 @@ import (
 	tea "charm.land/bubbletea/v2"
 )
 
-func (m *Model) fetchItems(cat int) ([]*item.Story, string) {
-	stories, err := m.service.FetchItems(m.getNumberOfItemsToFetch(cat), cat)
-	var errMsg string
-	if err != nil {
-		errMsg = err.Error()
-	}
-
-	return stories, errMsg
-}
-
 func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 	categoryToFetch := m.cat.GetCurrentCategory(m.favorites.HasItems())
+	service := m.service
+	numItems := m.getNumberOfItemsToFetch(categoryToFetch)
 
 	return func() tea.Msg {
-		stories, errMsg := m.fetchItems(categoryToFetch)
+		stories, err := service.FetchItems(numItems, categoryToFetch)
+		var errMsg string
+		if err != nil {
+			errMsg = err.Error()
+		}
 
 		return message.FetchingFinished{
 			Stories:  stories,
@@ -83,8 +79,15 @@ func getHistory(debugMode bool, doNotMarkAsRead bool) history.History {
 }
 
 func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) tea.Cmd {
+	service := m.service
+	numItems := m.getNumberOfItemsToFetch(msg.Category)
+
 	return func() tea.Msg {
-		stories, errMsg := m.fetchItems(msg.Category)
+		stories, err := service.FetchItems(numItems, msg.Category)
+		var errMsg string
+		if err != nil {
+			errMsg = err.Error()
+		}
 
 		return message.CategoryFetchingFinished{
 			Stories:  stories,
@@ -97,8 +100,15 @@ func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) t
 }
 
 func (m *Model) refresh(msg message.Refresh) tea.Cmd {
+	service := m.service
+	numItems := m.getNumberOfItemsToFetch(msg.CurrentCategory)
+
 	return func() tea.Msg {
-		stories, errMsg := m.fetchItems(msg.CurrentCategory)
+		stories, err := service.FetchItems(numItems, msg.CurrentCategory)
+		var errMsg string
+		if err != nil {
+			errMsg = err.Error()
+		}
 
 		return message.CategoryFetchingFinished{
 			Stories:  stories,
@@ -113,39 +123,46 @@ func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection) tea.Cmd {
 	width := m.width
 	isOnFavorites := m.cat.GetCurrentCategory(m.favorites.HasItems()) == categories.Favorites
+	hist := m.history
+	service := m.service
+	config := m.config
 
 	return func() tea.Msg {
-		lastVisited := m.history.GetLastVisited(msg.Id)
-		_ = m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
+		lastVisited := hist.GetLastVisited(msg.Id)
+		_ = hist.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
-		story, err := m.service.FetchComments(msg.Id)
+		story, err := service.FetchComments(msg.Id)
 		if err != nil {
 			return message.CommentTreeReady{Error: "Could not fetch comments: " + err.Error()}
 		}
 
+		var updatedStory *item.Story
 		if isOnFavorites {
-			m.favorites.UpdateStoryAndWriteToDisk(story)
+			updatedStory = story
 		}
 
-		commentTree := tree.Print(story, m.config, width, lastVisited)
+		commentTree := tree.Print(story, config, width, lastVisited)
 
-		return message.CommentTreeReady{Content: commentTree}
+		return message.CommentTreeReady{Content: commentTree, UpdatedStory: updatedStory}
 	}
 }
 
 func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd {
+	config := m.config
+	hist := m.history
+
 	return func() tea.Msg {
 		errorMessage := validator.GetErrorMessage(msg.Title, msg.Domain)
 		if errorMessage != "" {
 			return message.ArticleReady{Error: errorMessage}
 		}
 
-		article, err := reader.GetArticle(msg.Url, msg.Title, m.config.CommentWidth, m.config.IndentationSymbol)
+		article, err := reader.GetArticle(msg.Url, msg.Title, config.CommentWidth, config.IndentationSymbol)
 		if err != nil {
 			return message.ArticleReady{Error: "Could not read article in Reader Mode"}
 		}
 
-		_ = m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
+		_ = hist.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
 		return message.ArticleReady{Content: article}
 	}

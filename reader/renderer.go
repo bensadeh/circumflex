@@ -135,7 +135,7 @@ func renderList(text string, lineWidth int) string {
 
 	for line := range lines {
 		listToken := reListToken.FindString(line)
-		listText := strings.TrimLeft(line, listToken)
+		listText := strings.TrimPrefix(line, listToken)
 
 		paddingBuffer := strings.Repeat(" ", len(listToken))
 		padding := indentLevel1 + paddingBuffer + " "
@@ -239,7 +239,10 @@ func renderTable(text string) string {
 	text = unescapeCharacters(text)
 	text = removeImageReference(text)
 
-	r, _ := glamour.NewTermRenderer(glamour.WithAutoStyle(), glamour.WithWordWrap(screenWidth))
+	r, err := glamour.NewTermRenderer(glamour.WithAutoStyle(), glamour.WithWordWrap(screenWidth))
+	if err != nil {
+		return text
+	}
 
 	out, _ := r.Render(text)
 
@@ -310,8 +313,7 @@ func h2(text string, lineWidth int) string {
 
 func h3(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	blk := strings.Repeat(constants.Block, 0)
-	text = Red(blk).String() + " " + Bold(text).String()
+	text = Red(constants.Block+" ").String() + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -320,8 +322,7 @@ func h3(text string, lineWidth int) string {
 
 func h4(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	blk := strings.Repeat(constants.Block, 0)
-	text = Magenta(blk).String() + " " + Bold(text).String()
+	text = Magenta(constants.Block+" ").String() + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -330,8 +331,7 @@ func h4(text string, lineWidth int) string {
 
 func h5(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	blk := strings.Repeat(constants.Block, 0)
-	text = Yellow(blk).String() + " " + Bold(text).String()
+	text = Yellow(constants.Block+" ").String() + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -340,8 +340,7 @@ func h5(text string, lineWidth int) string {
 
 func h6(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	blk := strings.Repeat(constants.Block, 0)
-	text = Green(blk).String() + " " + Bold(text).String()
+	text = Green(constants.Block+" ").String() + Bold(text).String()
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -358,7 +357,8 @@ func insertSpaceAfterItemListSeparator(text string) string {
 
 func preFormatHeader(text string) string {
 	text = removeImageReference(text)
-	text = strings.TrimLeft(text, "# ")
+	text = strings.TrimLeft(text, "#")
+	text = strings.TrimPrefix(text, " ")
 	text = removeBoldAndItalicTags(text)
 	text = unescapeCharacters(text)
 	text = it(text)
