@@ -29,6 +29,20 @@ const (
 	ansiItalic = "\u001B[3m"
 )
 
+var (
+	reListToken           = regexp.MustCompile(`^\s*(-|\d+\.)`)
+	reImageRefEOL         = regexp.MustCompile(`!\[(.*?)\]\(.*?\)$`)
+	reImageRefSpace       = regexp.MustCompile(`!\[(.*?)\]\(.*?\)\s`)
+	reImageRef            = regexp.MustCompile(`!\[(.*?)\]\(.*?\)`)
+	reHref                = regexp.MustCompile(`<a href=.+>(.+)</a>`)
+	reListItemNoSpace     = regexp.MustCompile(`(^\s*-)(\S)`)
+	reCodeStartAfterNonWS = regexp.MustCompile(`([\S])(\[CLX_CODE_START\])`)
+	reListPrefix2         = regexp.MustCompile(`^` + strings.Repeat(indentLevel1, 2) + "-")
+	reListPrefix3         = regexp.MustCompile(`^` + strings.Repeat(indentLevel1, 3) + "-")
+	reListPrefix4         = regexp.MustCompile(`^` + strings.Repeat(indentLevel1, 4) + "-")
+	reListPrefix5         = regexp.MustCompile(`^` + strings.Repeat(indentLevel1, 5) + "-")
+)
+
 func createHeader(title string, domain string, lineWidth int) string {
 	return meta.GetReaderModeMetaBlock(title, domain, lineWidth)
 }
@@ -120,9 +134,7 @@ func renderList(text string, lineWidth int) string {
 	lines := strings.SplitSeq(text, "\n")
 
 	for line := range lines {
-		exp := regexp.MustCompile(`^\s*(-|\d+\.)`)
-
-		listToken := exp.FindString(line)
+		listToken := reListToken.FindString(line)
 		listText := strings.TrimLeft(line, listToken)
 
 		paddingBuffer := strings.Repeat(" ", len(listToken))
@@ -148,14 +160,9 @@ func renderImage(text string, lineWidth int) string {
 	imageLabel := normal + Red(constants.Circle).Faint().String() + Yellow(constants.Circle).Faint().String() +
 		Blue(constants.Circle).Faint().String() + normal + red + faint + italic + " Image " + normal + faint + italic
 
-	text = regexp.MustCompile(`!\[(.*?)\]\(.*?\)$`).
-		ReplaceAllString(text, imageLabel+`$1`)
-
-	text = regexp.MustCompile(`!\[(.*?)\]\(.*?\)\s`).
-		ReplaceAllString(text, imageLabel+`$1`)
-
-	text = regexp.MustCompile(`!\[(.*?)\]\(.*?\)`).
-		ReplaceAllString(text, imageLabel+`$1`)
+	text = reImageRefEOL.ReplaceAllString(text, imageLabel+`$1`)
+	text = reImageRefSpace.ReplaceAllString(text, imageLabel+`$1`)
+	text = reImageRef.ReplaceAllString(text, imageLabel+`$1`)
 
 	if text == imageLabel {
 		return indentLevel2 + text + normal
@@ -246,9 +253,7 @@ func renderTable(text string) string {
 }
 
 func removeImageReference(text string) string {
-	exp := regexp.MustCompile(`!\[(.*?)\]\(.*?\)`)
-
-	return exp.ReplaceAllString(text, `$1`)
+	return reImageRef.ReplaceAllString(text, `$1`)
 }
 
 func it(text string) string {
@@ -344,16 +349,11 @@ func h6(text string, lineWidth int) string {
 }
 
 func removeHrefs(text string) string {
-	exp := regexp.MustCompile(`<a href=.+>(.+)</a>`)
-	text = exp.ReplaceAllString(text, `$1`)
-
-	return text
+	return reHref.ReplaceAllString(text, `$1`)
 }
 
 func insertSpaceAfterItemListSeparator(text string) string {
-	exp := regexp.MustCompile(`(^\s*-)(\S)`)
-
-	return exp.ReplaceAllString(text, `$1 $2`)
+	return reListItemNoSpace.ReplaceAllString(text, `$1 $2`)
 }
 
 func preFormatHeader(text string) string {
@@ -441,8 +441,7 @@ func highlightBackticks(text string) string {
 		isOnFirstBacktick = !isOnFirstBacktick
 	}
 
-	exp := regexp.MustCompile(`([\S])(\[CLX_CODE_START\])`)
-	text = exp.ReplaceAllString(text, `$1 $2`)
+	text = reCodeStartAfterNonWS.ReplaceAllString(text, `$1 $2`)
 
 	text = strings.ReplaceAll(text, "( "+codeStart, "("+codeStart)
 
@@ -457,17 +456,10 @@ func replaceListPrefixes(text string) string {
 	var output strings.Builder
 
 	for _, line := range lines {
-		line = regexp.MustCompile(`^`+strings.Repeat(indentLevel1, 2)+"-").
-			ReplaceAllString(line, strings.Repeat(indentLevel1, 2)+"•")
-
-		line = regexp.MustCompile(`^`+strings.Repeat(indentLevel1, 3)+"-").
-			ReplaceAllString(line, strings.Repeat(indentLevel1, 3)+"◦")
-
-		line = regexp.MustCompile(`^`+strings.Repeat(indentLevel1, 4)+"-").
-			ReplaceAllString(line, strings.Repeat(indentLevel1, 4)+"▪")
-
-		line = regexp.MustCompile(`^`+strings.Repeat(indentLevel1, 5)+"-").
-			ReplaceAllString(line, strings.Repeat(indentLevel1, 5)+"▫")
+		line = reListPrefix2.ReplaceAllString(line, strings.Repeat(indentLevel1, 2)+"•")
+		line = reListPrefix3.ReplaceAllString(line, strings.Repeat(indentLevel1, 3)+"◦")
+		line = reListPrefix4.ReplaceAllString(line, strings.Repeat(indentLevel1, 4)+"▪")
+		line = reListPrefix5.ReplaceAllString(line, strings.Repeat(indentLevel1, 5)+"▫")
 
 		output.WriteString(line + "\n")
 	}

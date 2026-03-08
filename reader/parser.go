@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+var reListItem = regexp.MustCompile(`^\s*(-|\d+\. )`)
+
 const (
 	enDash     = "–"
 	emDash     = "—"
@@ -210,10 +212,7 @@ func isListItem(text string) bool {
 		return false
 	}
 
-	exp := regexp.MustCompile(`^\s*(-|\d+\. )`)
-	listToken := exp.FindString(text)
-
-	return listToken != ""
+	return reListItem.MatchString(text)
 }
 
 func isSameTypeAsPreviousItem(itemType int, blocks []*block) bool {

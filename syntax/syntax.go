@@ -31,22 +31,29 @@ const (
 	RemoveFromFavorites
 )
 
+var (
+	reYCWithSeason    = regexp.MustCompile(`\((YC ([SW]\d{2}))\)`)
+	reYCWithoutSeason = regexp.MustCompile(`\((YC [SW]\d{2})\)`)
+	reYear            = regexp.MustCompile(`\((\d{4})\)`)
+	reUnwantedNewLine = regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z0-9" \-<[:cntrl:]…])`)
+	reHTMLAnchor      = regexp.MustCompile(`<a href=".*?".*>`)
+	reURL             = regexp.MustCompile(`https?://([^,"\) \n]+)`)
+	reMention         = regexp.MustCompile(`((?:^| )\B@[\w.]+)`)
+	reVariable        = regexp.MustCompile(`(\$+[a-zA-Z_\-]+)`)
+	reDoubleDash      = regexp.MustCompile(`([a-zA-Z])--([a-zA-Z])`)
+)
+
 func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNerdFonts bool) string {
-	var expression *regexp.Regexp
-
 	if enableNerdFonts {
-		expression = regexp.MustCompile(`\((YC ([SW]\d{2}))\)`)
-
 		highlightedStartup := reset + getYCBarNerdFonts(nerdfonts.YCombinator+constants.NoBreakSpace+`$2`, highlightType, enableNerdFonts) +
 			getHighlight(highlightType)
-		return expression.ReplaceAllString(comment, highlightedStartup)
+		return reYCWithSeason.ReplaceAllString(comment, highlightedStartup)
 	}
 
-	expression = regexp.MustCompile(`\((YC [SW]\d{2})\)`)
 	highlightedStartup := reset + getYCBar(`$1`, highlightType) +
 		getHighlight(highlightType)
 
-	return expression.ReplaceAllString(comment, highlightedStartup)
+	return reYCWithoutSeason.ReplaceAllString(comment, highlightedStartup)
 }
 
 func getYCBar(text string, highlightType int) string {
@@ -76,10 +83,8 @@ func getYCBarNerdFonts(text string, highlightType int, enableNerdFonts bool) str
 }
 
 func HighlightYear(comment string, highlightType int) string {
-	expression := regexp.MustCompile(`\((\d{4})\)`)
-
 	content := getYear(`$1`, highlightType)
-	return expression.ReplaceAllString(comment, reset+content+getHighlight(highlightType))
+	return reYear.ReplaceAllString(comment, reset+content+getHighlight(highlightType))
 }
 
 func getYear(text string, highlightType int) string {
@@ -256,9 +261,7 @@ func replaceBetweenWhitespace(text string, target string, replacement string) st
 }
 
 func RemoveUnwantedNewLines(text string) string {
-	exp := regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z0-9" \-<[:cntrl:]…])`)
-
-	return exp.ReplaceAllString(text, `$1`+" "+`$3`)
+	return reUnwantedNewLine.ReplaceAllString(text, `$1`+" "+`$3`)
 }
 
 func RemoveUnwantedWhitespace(text string) string {
@@ -342,16 +345,13 @@ func ColorizeIndentSymbol(indentSymbol string, level int) string {
 }
 
 func TrimURLs(comment string, disableCommentHighlighting bool) string {
-	expression := regexp.MustCompile(`<a href=".*?".*>`)
-
 	if disableCommentHighlighting {
-		return expression.ReplaceAllString(comment, "")
+		return reHTMLAnchor.ReplaceAllString(comment, "")
 	}
 
-	comment = expression.ReplaceAllString(comment, "")
+	comment = reHTMLAnchor.ReplaceAllString(comment, "")
 
-	e := regexp.MustCompile(`https?://([^,"\) \n]+)`)
-	comment = e.ReplaceAllString(comment, aurora.Blue(`$1`).String())
+	comment = reURL.ReplaceAllString(comment, aurora.Blue(`$1`).String())
 
 	comment = strings.ReplaceAll(comment, "."+reset+" ", reset+". ")
 
@@ -383,8 +383,7 @@ func HighlightBackticks(input string) string {
 }
 
 func HighlightMentions(input string) string {
-	exp := regexp.MustCompile(`((?:^| )\B@[\w.]+)`)
-	input = exp.ReplaceAllString(input, aurora.Yellow(`$1`).String())
+	input = reMention.ReplaceAllString(input, aurora.Yellow(`$1`).String())
 
 	input = strings.ReplaceAll(input, aurora.Yellow("@dang").String(),
 		aurora.Green("@dang").String())
@@ -403,9 +402,7 @@ func HighlightVariables(input string) string {
 		return input
 	}
 
-	exp := regexp.MustCompile(`(\$+[a-zA-Z_\-]+)`)
-
-	return exp.ReplaceAllString(input, aurora.Cyan(`$1`).String())
+	return reVariable.ReplaceAllString(input, aurora.Cyan(`$1`).String())
 }
 
 func HighlightAbbreviations(input string) string {
@@ -456,9 +453,7 @@ func ReplaceSymbols(paragraph string) string {
 func replaceDoubleDashesWithEmDash(paragraph string) string {
 	paragraph = strings.ReplaceAll(paragraph, " -- ", " — ")
 
-	exp := regexp.MustCompile(`([a-zA-Z])--([a-zA-Z])`)
-
-	return exp.ReplaceAllString(paragraph, `$1`+"—"+`$2`)
+	return reDoubleDash.ReplaceAllString(paragraph, `$1`+"—"+`$2`)
 }
 
 func convertFractions(text string) string {
