@@ -218,25 +218,31 @@ func HighlightSpecialContent(title string, highlightType int, enableNerdFonts bo
 	return title
 }
 
+var smileys = []struct{ from, to string }{
+	{`:)`, "😊"},
+	{`(:`, "😊"},
+	{`:-)`, "😊"},
+	{`:D`, "😄"},
+	{`=)`, "😃"},
+	{`=D`, "😃"},
+	{`;)`, "😉"},
+	{`;-)`, "😉"},
+	{`:P`, "😜"},
+	{`;P`, "😜"},
+	{`:o`, "😮"},
+	{`:O`, "😮"},
+	{`:(`, "😔"},
+	{`:-(`, "😔"},
+	{`:/`, "😕"},
+	{`:-/`, "😕"},
+	{`-_-`, "😑"},
+	{`:|`, "😐"},
+}
+
 func ConvertSmileys(text string) string {
-	text = replaceBetweenWhitespace(text, `:)`, "😊")
-	text = replaceBetweenWhitespace(text, `(:`, "😊")
-	text = replaceBetweenWhitespace(text, `:-)`, "😊")
-	text = replaceBetweenWhitespace(text, `:D`, "😄")
-	text = replaceBetweenWhitespace(text, `=)`, "😃")
-	text = replaceBetweenWhitespace(text, `=D`, "😃")
-	text = replaceBetweenWhitespace(text, `;)`, "😉")
-	text = replaceBetweenWhitespace(text, `;-)`, "😉")
-	text = replaceBetweenWhitespace(text, `:P`, "😜")
-	text = replaceBetweenWhitespace(text, `;P`, "😜")
-	text = replaceBetweenWhitespace(text, `:o`, "😮")
-	text = replaceBetweenWhitespace(text, `:O`, "😮")
-	text = replaceBetweenWhitespace(text, `:(`, "😔")
-	text = replaceBetweenWhitespace(text, `:-(`, "😔")
-	text = replaceBetweenWhitespace(text, `:/`, "😕")
-	text = replaceBetweenWhitespace(text, `:-/`, "😕")
-	text = replaceBetweenWhitespace(text, `-_-`, "😑")
-	text = replaceBetweenWhitespace(text, `:|`, "😐")
+	for _, s := range smileys {
+		text = replaceBetweenWhitespace(text, s.from, s.to)
+	}
 
 	return text
 }
