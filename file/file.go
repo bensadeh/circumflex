@@ -12,7 +12,10 @@ const (
 )
 
 func PathToConfigDirectory() string {
-	homeDir, _ := os.UserHomeDir()
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		homeDir = os.TempDir()
+	}
 	configDir := ".config"
 	clxDir := "circumflex"
 

@@ -2,7 +2,6 @@ package categories
 
 import (
 	"fmt"
-	"os"
 	"strings"
 )
 
@@ -58,10 +57,9 @@ type Categories struct {
 	currentIndex int
 }
 
-func New(categoriesCSV string) *Categories {
+func New(categoriesCSV string) (*Categories, error) {
 	if categoriesCSV == "" {
-		println("Need at least one category")
-		os.Exit(1)
+		return nil, fmt.Errorf("need at least one category")
 	}
 	parts := strings.Split(categoriesCSV, ",")
 	var validCategories []int
@@ -72,8 +70,7 @@ func New(categoriesCSV string) *Categories {
 		value, exists := categoryFromName(part)
 
 		if !exists {
-			println(fmt.Sprintf("Unsupported category: %s", part))
-			os.Exit(1)
+			return nil, fmt.Errorf("unsupported category: %s", part)
 		}
 
 		validCategories = append(validCategories, value)
@@ -82,7 +79,7 @@ func New(categoriesCSV string) *Categories {
 	return &Categories{
 		categories:   validCategories,
 		currentIndex: 0,
-	}
+	}, nil
 }
 
 func (c *Categories) Next(hasFavorites bool) {

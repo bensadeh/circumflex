@@ -22,7 +22,7 @@ func clearCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			println("List of visited IDs cleared")
+			fmt.Println("List of visited IDs cleared")
 		},
 	}
 }

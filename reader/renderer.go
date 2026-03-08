@@ -220,7 +220,7 @@ func renderQuote(text string, lineWidth int, indentSymbol string) string {
 
 	indentBlock := " " + indentSymbol
 	text = itReversed(text)
-	text = bldInQuote(text)
+	text = bld(text)
 
 	padding := termtext.WrapPad(indentLevel1 + Faint(indentBlock).String())
 	text, _ = termtext.Wrap(text, lineWidth, padding)
@@ -280,13 +280,6 @@ func itReversed(text string) string {
 }
 
 func bld(text string) string {
-	text = strings.ReplaceAll(text, boldStart, "")
-	text = strings.ReplaceAll(text, boldStop, "")
-
-	return text
-}
-
-func bldInQuote(text string) string {
 	text = strings.ReplaceAll(text, boldStart, "")
 	text = strings.ReplaceAll(text, boldStop, "")
 

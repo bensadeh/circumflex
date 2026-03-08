@@ -5,8 +5,6 @@ import (
 	"clx/categories"
 	"clx/cli"
 	"clx/hn"
-	"clx/hn/services/hybrid"
-	"clx/hn/services/mock"
 	"clx/indent"
 	"clx/less"
 	"clx/settings"
@@ -41,7 +39,11 @@ func Root() *cobra.Command {
 			config := getConfig()
 			config.IndentationSymbol = indent.GetIndentSymbol(hideIndentSymbol)
 
-			cat := categories.New(selectedCategories)
+			cat, err := categories.New(selectedCategories)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				os.Exit(1)
+			}
 
 			verifyLess(noLessVerify)
 
@@ -122,11 +124,7 @@ func getConfig() *settings.Config {
 }
 
 func newService() hn.Service {
-	if debugMode {
-		return mock.Service{}
-	}
-
-	return hybrid.NewService()
+	return hn.NewService(debugMode)
 }
 
 func verifyLess(noLessVerify bool) {

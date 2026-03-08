@@ -14,11 +14,7 @@ func (his *Mock) NewHistory() *History {
 func (Mock) Contains(id int) bool {
 	visitedStories := []int{2, 10, 14, 18}
 
-	return contains(visitedStories, id)
-}
-
-func contains(slice []int, element int) bool {
-	return slices.Contains(slice, element)
+	return slices.Contains(visitedStories, id)
 }
 
 func (Mock) GetLastVisited(_ int) int64 {

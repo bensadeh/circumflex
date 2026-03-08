@@ -61,10 +61,13 @@ func ClearScreen(ctx context.Context) {
 }
 
 func VerifyLessVersion(minimumVersion int) (isValid bool, currentVersion string) {
-	lessVersionInfo := getLessVersionInfo()
+	lessVersionInfo, err := getLessVersionInfo()
+	if err != nil {
+		return false, ""
+	}
 
 	lessVersionInfoWords := strings.Fields(lessVersionInfo)
-	if len(lessVersionInfoWords) < 1 {
+	if len(lessVersionInfoWords) < 2 {
 		return false, ""
 	}
 
@@ -79,13 +82,13 @@ func VerifyLessVersion(minimumVersion int) (isValid bool, currentVersion string)
 	return isValid, currentVersion
 }
 
-func getLessVersionInfo() string {
+func getLessVersionInfo() (string, error) {
 	command := exec.CommandContext(context.Background(), "less", "--version")
 
-	output, commandError := command.Output()
-	if commandError != nil {
-		panic(commandError)
+	output, err := command.Output()
+	if err != nil {
+		return "", err
 	}
 
-	return string(output)
+	return string(output), nil
 }

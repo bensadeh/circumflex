@@ -1,8 +1,6 @@
 package history
 
 import (
-	"encoding/json"
-	"os"
 	"time"
 )
 
@@ -52,30 +50,4 @@ func (his *Persistent) MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int)
 
 	_, dirPath, fileName := getCacheFilePaths()
 	return writeToDisk(his, dirPath, fileName)
-}
-
-func Initialize(isEnabled bool) *Persistent {
-	h := &Persistent{
-		VisitedStories: make(map[int]StoryInfo),
-	}
-
-	fullPath, dirPath, fileName := getCacheFilePaths()
-
-	if !exists(fullPath) {
-		_ = writeToDisk(h, dirPath, fileName)
-
-		return h
-	}
-
-	historyFileContent, readErr := os.ReadFile(fullPath) //nolint:gosec // path from ~/.cache/circumflex/
-	if readErr != nil {
-		return h
-	}
-
-	deserializationErr := json.Unmarshal(historyFileContent, &h.VisitedStories)
-	if deserializationErr != nil {
-		_ = h.ClearAndWriteToDisk()
-	}
-
-	return h
 }

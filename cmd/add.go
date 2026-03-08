@@ -37,7 +37,7 @@ func addCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			println("Item added to favorites")
+			fmt.Println("Item added to favorites")
 		},
 	}
 }

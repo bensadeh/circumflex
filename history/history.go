@@ -20,7 +20,7 @@ func NewPersistentHistory() (History, error) {
 
 	fullPath, dirPath, fileName := getCacheFilePaths()
 
-	if !exists(fullPath) {
+	if !file.Exists(fullPath) {
 		if err := writeToDisk(h, dirPath, fileName); err != nil {
 			return h, err
 		}
@@ -60,7 +60,10 @@ func writeToDisk(h *Persistent, dirPath string, fileName string) error {
 }
 
 func getCacheFilePaths() (string, string, string) {
-	homeDir, _ := os.UserHomeDir()
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		homeDir = os.TempDir()
+	}
 	configDir := ".cache"
 	circumflexDir := "circumflex"
 	fileName := "history.json"
@@ -69,12 +72,4 @@ func getCacheFilePaths() (string, string, string) {
 	dirPath := path.Join(homeDir, configDir, circumflexDir)
 
 	return fullPath, dirPath, fileName
-}
-
-func exists(pathToFile string) bool {
-	if _, err := os.Stat(pathToFile); os.IsNotExist(err) {
-		return false
-	}
-
-	return true
 }

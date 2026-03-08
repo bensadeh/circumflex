@@ -44,7 +44,7 @@ func testItems() []*item.Story {
 func newTestModel(t *testing.T) *Model {
 	t.Helper()
 	config := settings.Default()
-	cat := categories.New("top,best,ask,show")
+	cat, _ := categories.New("top,best,ask,show")
 	fav := &favorites.Favorites{}
 	service := &instantMockService{}
 	hist := history.NewMockHistory()

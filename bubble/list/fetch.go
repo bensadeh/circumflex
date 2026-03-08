@@ -5,8 +5,6 @@ import (
 	"clx/categories"
 	"clx/history"
 	"clx/hn"
-	"clx/hn/services/hybrid"
-	"clx/hn/services/mock"
 	"clx/item"
 	"clx/reader"
 	"clx/tree"
@@ -58,11 +56,7 @@ func (m *Model) getNumberOfItemsToFetch(cat int) int {
 }
 
 func getService(debugMode bool) hn.Service {
-	if debugMode {
-		return mock.Service{}
-	}
-
-	return hybrid.NewService()
+	return hn.NewService(debugMode)
 }
 
 func getHistory(debugMode bool, doNotMarkAsRead bool) history.History {

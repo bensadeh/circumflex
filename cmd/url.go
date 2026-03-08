@@ -23,7 +23,7 @@ func urlCmd() *cobra.Command {
 
 			article, err := reader.GetArticle(url, "Reader Mode", config.CommentWidth, config.IndentationSymbol)
 			if err != nil {
-				println("Could not read article")
+				fmt.Fprintln(os.Stderr, "Could not read article")
 				os.Exit(1)
 			}
 

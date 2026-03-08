@@ -52,7 +52,6 @@ type FetchAndChangeToCategory struct {
 }
 
 type Refresh struct {
-	Stories         []*item.Story
 	CurrentCategory int
 	CurrentIndex    int
 }
