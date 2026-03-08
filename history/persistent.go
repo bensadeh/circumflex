@@ -67,7 +67,7 @@ func Initialize(isEnabled bool) *Persistent {
 		return h
 	}
 
-	historyFileContent, readErr := os.ReadFile(fullPath)
+	historyFileContent, readErr := os.ReadFile(fullPath) //nolint:gosec // path from ~/.cache/circumflex/
 	if readErr != nil {
 		return h
 	}

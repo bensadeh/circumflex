@@ -90,9 +90,7 @@ linters:
       excludes:
         - G115   # integer overflow conversion — false positives on terminal dimensions
         - G204   # subprocess with variable — expected in a CLI that shells out to less/browser
-        - G304   # file inclusion via variable — expected in a CLI that reads config files
         - G702   # command injection — same as G204, expected for CLX_BROWSER env var
-        - G703   # path traversal — false positive on temp file cleanup
 
 formatters:
   enable:

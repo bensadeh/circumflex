@@ -27,5 +27,5 @@ func (key *Lesskey) GetPath() string {
 }
 
 func (key *Lesskey) Remove() {
-	_ = os.Remove(key.tempLesskeyFile.Name())
+	_ = os.Remove(key.tempLesskeyFile.Name()) //nolint:gosec // temp file created by os.CreateTemp
 }

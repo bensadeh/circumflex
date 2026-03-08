@@ -70,7 +70,7 @@ func TestPersistent_WriteToDisk_RoundTrip(t *testing.T) {
 	require.NoError(t, statErr)
 
 	// Read it back
-	content, err := os.ReadFile(fullPath)
+	content, err := os.ReadFile(fullPath) //nolint:gosec // test temp dir
 	require.NoError(t, err)
 	assert.Contains(t, string(content), "42")
 }

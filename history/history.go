@@ -28,7 +28,7 @@ func NewPersistentHistory() (History, error) {
 		return h, nil
 	}
 
-	historyFileContent, readErr := os.ReadFile(fullPath)
+	historyFileContent, readErr := os.ReadFile(fullPath) //nolint:gosec // path from ~/.cache/circumflex/
 	if readErr != nil {
 		// Graceful degradation: treat as empty history
 		return h, nil //nolint:nilerr
