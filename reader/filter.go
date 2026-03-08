@@ -18,12 +18,11 @@ func (rs *ruleSet) filter(text string) string {
 	paragraphs := strings.Split(text, "\n\n")
 	output := ""
 
-	output = filterByParagraph(paragraphs, output, rs)
+	output = filterByParagraph(paragraphs, rs)
 
 	lines := strings.Split(output, "\n")
-	output = ""
 
-	output = filterByLine(lines, output, rs)
+	output = filterByLine(lines, rs)
 
 	output = strings.ReplaceAll(output, "\n\n\n\n", "\n\n\n")
 	output = strings.ReplaceAll(output, "\n\n\n", "\n\n")
@@ -33,7 +32,9 @@ func (rs *ruleSet) filter(text string) string {
 	return output
 }
 
-func filterByLine(lines []string, output string, rs *ruleSet) string {
+func filterByLine(lines []string, rs *ruleSet) string {
+	var sb strings.Builder
+
 	for i, line := range lines {
 		isOnFirstOrLastLine := i == 0 || i == len(lines)-1
 		lineNoLeadingWhitespace := strings.TrimLeft(line, " ")
@@ -48,25 +49,29 @@ func filterByLine(lines []string, output string, rs *ruleSet) string {
 		}
 
 		if isOnFirstOrLastLine {
-			output += line + "\n"
+			sb.WriteString(line)
+			sb.WriteByte('\n')
 
 			continue
 		}
 
 		if isOnLineBeforeTargetEquals(rs.endLineEqualsRules, lines, i) ||
 			isOnLineBeforeTargetContains(rs.endLineContainsRules, lines, i) {
-			output += "\n"
+			sb.WriteByte('\n')
 
 			break
 		}
 
-		output += line + "\n"
+		sb.WriteString(line)
+		sb.WriteByte('\n')
 	}
 
-	return output
+	return sb.String()
 }
 
-func filterByParagraph(paragraphs []string, output string, rs *ruleSet) string {
+func filterByParagraph(paragraphs []string, rs *ruleSet) string {
+	var sb strings.Builder
+
 	for i, paragraph := range paragraphs {
 		isOnFirstOrLastParagraph := i == 0 || i == len(paragraphs)-1
 		parNoLeadingWhitespace := strings.TrimLeft(paragraph, " ")
@@ -80,15 +85,17 @@ func filterByParagraph(paragraphs []string, output string, rs *ruleSet) string {
 		}
 
 		if isOnFirstOrLastParagraph {
-			output += paragraph + "\n\n"
+			sb.WriteString(paragraph)
+			sb.WriteString("\n\n")
 
 			continue
 		}
 
-		output += paragraph + "\n\n"
+		sb.WriteString(paragraph)
+		sb.WriteString("\n\n")
 	}
 
-	return output
+	return sb.String()
 }
 
 func (rs *ruleSet) skipLineEquals(text string) {

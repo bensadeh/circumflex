@@ -48,57 +48,57 @@ func createHeader(title string, domain string, lineWidth int) string {
 }
 
 func convertToTerminalFormat(blocks []*block, lineWidth int, indentBlock string) string {
-	output := ""
+	var sb strings.Builder
 
 	for _, b := range blocks {
 		switch b.Kind {
 		case blockText:
-			output += renderText(b.Text, lineWidth) + "\n\n"
+			sb.WriteString(renderText(b.Text, lineWidth))
 
 		case blockImage:
-			output += renderImage(b.Text, lineWidth) + "\n\n"
+			sb.WriteString(renderImage(b.Text, lineWidth))
 
 		case blockCode:
-			output += renderCode(b.Text) + "\n\n"
+			sb.WriteString(renderCode(b.Text))
 
 		case blockQuote:
-			output += renderQuote(b.Text, lineWidth, indentBlock) + "\n\n"
+			sb.WriteString(renderQuote(b.Text, lineWidth, indentBlock))
 
 		case blockTable:
-			output += renderTable(b.Text) + "\n\n"
+			sb.WriteString(renderTable(b.Text))
 
 		case blockList:
-			output += renderList(b.Text, lineWidth) + "\n\n"
+			sb.WriteString(renderList(b.Text, lineWidth))
 
 		case blockDivider:
-			output += renderDivider(lineWidth) + "\n\n"
+			sb.WriteString(renderDivider(lineWidth))
 
 		case blockH1:
-			output += h1(b.Text, lineWidth) + "\n\n"
+			sb.WriteString(h1(b.Text, lineWidth))
 
 		case blockH2:
-			output += h2(b.Text, lineWidth) + "\n\n"
+			sb.WriteString(h2(b.Text, lineWidth))
 
 		case blockH3:
-			output += h3(b.Text, lineWidth) + "\n\n"
+			sb.WriteString(h3(b.Text, lineWidth))
 
 		case blockH4:
-			output += h4(b.Text, lineWidth) + "\n\n"
+			sb.WriteString(h4(b.Text, lineWidth))
 
 		case blockH5:
-			output += h5(b.Text, lineWidth) + "\n\n"
+			sb.WriteString(h5(b.Text, lineWidth))
 
 		case blockH6:
-			output += h6(b.Text, lineWidth) + "\n\n"
+			sb.WriteString(h6(b.Text, lineWidth))
 
 		default:
-			output += renderText(b.Text, lineWidth) + "\n\n"
+			sb.WriteString(renderText(b.Text, lineWidth))
 		}
+
+		sb.WriteString("\n\n")
 	}
 
-	output = strings.TrimLeft(output, "\n")
-
-	return output
+	return strings.TrimLeft(sb.String(), "\n")
 }
 
 func renderDivider(lineWidth int) string {
@@ -130,7 +130,7 @@ func renderList(text string, lineWidth int) string {
 	text = unescapeCharacters(text)
 	text = highlightBackticks(text)
 
-	output := ""
+	var sb strings.Builder
 	lines := strings.SplitSeq(text, "\n")
 
 	for line := range lines {
@@ -143,10 +143,11 @@ func renderList(text string, lineWidth int) string {
 		wrappedIndentedItem, _ := termtext.WrapWithPadIndent(listToken+listText, lineWidth, indentLevel1, padding)
 		wrappedIndentedItem = insertSpaceAfterItemListSeparator(wrappedIndentedItem)
 
-		output += wrappedIndentedItem + "\n"
+		sb.WriteString(wrappedIndentedItem)
+		sb.WriteByte('\n')
 	}
 
-	output = replaceListPrefixes(output)
+	output := replaceListPrefixes(sb.String())
 	output = trimLeadingZero(output)
 
 	return strings.TrimRight(output, "\n")

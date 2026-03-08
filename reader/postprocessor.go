@@ -17,7 +17,7 @@ func processArticle(text string, url string) string {
 	text = filterSite(text, url)
 	text = moveZeroWidthSpaceUpOneLine(text)
 	text = indent(text)
-	text = deIndentInfoSection(text)
+	text = DeIndentInfoSection(text)
 
 	return text
 }
@@ -39,7 +39,9 @@ func indent(commentSection string) string {
 	return indentedCommentSection
 }
 
-func deIndentInfoSection(commentSection string) string {
+// DeIndentInfoSection removes one leading space from lines containing
+// info-section box-drawing characters (╭, │, ╰).
+func DeIndentInfoSection(commentSection string) string {
 	var sb strings.Builder
 
 	lines := strings.Split(commentSection, "\n")

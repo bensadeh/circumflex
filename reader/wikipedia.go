@@ -1,17 +1,9 @@
 package reader
 
-import (
-	"strconv"
-	"strings"
-)
+import "regexp"
+
+var reWikipediaRef = regexp.MustCompile(`\[\d+\]`)
 
 func removeWikipediaReferences(input string) string {
-	inputWithoutReferences := input
-
-	for i := 1; i < 256; i++ {
-		number := strconv.Itoa(i)
-		inputWithoutReferences = strings.ReplaceAll(inputWithoutReferences, "["+number+"]", "")
-	}
-
-	return inputWithoutReferences
+	return reWikipediaRef.ReplaceAllString(input, "")
 }
