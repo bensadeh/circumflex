@@ -173,7 +173,7 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 		catIndex := m.cat.GetCurrentIndex()
 		catValue := m.cat.GetCurrentCategory(false)
 		changeCatCmd := func() tea.Msg {
-			return message.FetchAndChangeToCategory{Index: catIndex, Category: catValue, Cursor: 0}
+			return message.FetchAndChangeToCategory{Index: catIndex, Category: catValue, Cursor: 0, PrevIndex: catIndex}
 		}
 
 		return tea.Batch(changeCatCmd, m.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2))
@@ -203,12 +203,17 @@ func (m *Model) handleTabForward() tea.Cmd {
 		return nil
 	}
 
+	currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
+	prevIndex := m.cat.GetCurrentIndex()
+	m.items[categories.Buffer] = m.items[currentCategory]
+
+	m.cat.Next(m.favorites.HasItems())
 	m.state = StateLoading
 	startSpinnerCmd := m.StartSpinner()
 
 	cursor := m.cursor
 	changeCatCmd := func() tea.Msg {
-		return message.FetchAndChangeToCategory{Index: nextIndex, Category: nextCat, Cursor: cursor}
+		return message.FetchAndChangeToCategory{Index: nextIndex, Category: nextCat, Cursor: cursor, PrevIndex: prevIndex}
 	}
 
 	return tea.Batch(startSpinnerCmd, changeCatCmd)
@@ -223,12 +228,17 @@ func (m *Model) handleTabBackward() tea.Cmd {
 		return nil
 	}
 
+	currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
+	currentIndex := m.cat.GetCurrentIndex()
+	m.items[categories.Buffer] = m.items[currentCategory]
+
+	m.cat.Prev(m.favorites.HasItems())
 	m.state = StateLoading
 	startSpinnerCmd := m.StartSpinner()
 
 	cursor := m.cursor
 	changeCatCmd := func() tea.Msg {
-		return message.FetchAndChangeToCategory{Index: prevIndex, Category: prevCat, Cursor: cursor}
+		return message.FetchAndChangeToCategory{Index: prevIndex, Category: prevCat, Cursor: cursor, PrevIndex: currentIndex}
 	}
 
 	return tea.Batch(startSpinnerCmd, changeCatCmd)

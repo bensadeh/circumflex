@@ -47,7 +47,7 @@ func (m *Model) View() string {
 	}
 
 	content := lipgloss.NewStyle().Height(availHeight).Render(m.populatedView())
-	totalItems := len(m.items[m.cat.GetCurrentCategory(m.favorites.HasItems())])
+	totalItems := len(m.VisibleItems())
 	rankings := ranking.GetRankings(
 		false,
 		m.Paginator.PerPage,

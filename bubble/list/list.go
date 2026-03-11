@@ -293,6 +293,17 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		cmds = append(cmds, m.NewStatusMessageWithDuration(msg.Message, msg.Duration))
 
 	case message.CategoryFetchingFinished:
+		m.items[categories.Buffer] = nil
+
+		if msg.Message != "" {
+			m.cat.SetIndex(msg.PrevIndex)
+			m.state = StateBrowsing
+			m.StopSpinner()
+			m.updatePagination()
+
+			return m, m.NewStatusMessageWithDuration(msg.Message, time.Second*3)
+		}
+
 		if m.state == StateRefreshing {
 			clearAllCategories(m.items)
 		}

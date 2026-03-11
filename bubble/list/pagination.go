@@ -87,7 +87,7 @@ func (m *Model) Select(index int) {
 
 // VisibleItems returns the total items available to be shown.
 func (m *Model) VisibleItems() []*item.Story {
-	if m.state == StateRefreshing {
+	if m.state == StateRefreshing || (m.state == StateLoading && len(m.items[categories.Buffer]) > 0) {
 		return m.items[categories.Buffer]
 	}
 

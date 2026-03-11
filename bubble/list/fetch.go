@@ -84,11 +84,12 @@ func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) t
 		}
 
 		return message.CategoryFetchingFinished{
-			Stories:  stories,
-			Category: msg.Category,
-			Index:    msg.Index,
-			Cursor:   msg.Cursor,
-			Message:  errMsg,
+			Stories:   stories,
+			Category:  msg.Category,
+			Index:     msg.Index,
+			Cursor:    msg.Cursor,
+			Message:   errMsg,
+			PrevIndex: msg.PrevIndex,
 		}
 	}
 }
@@ -105,11 +106,12 @@ func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 		}
 
 		return message.CategoryFetchingFinished{
-			Stories:  stories,
-			Category: msg.CurrentCategory,
-			Index:    msg.CurrentIndex,
-			Cursor:   0,
-			Message:  errMsg,
+			Stories:   stories,
+			Category:  msg.CurrentCategory,
+			Index:     msg.CurrentIndex,
+			Cursor:    0,
+			Message:   errMsg,
+			PrevIndex: msg.CurrentIndex,
 		}
 	}
 }
