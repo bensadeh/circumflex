@@ -4,12 +4,10 @@ import (
 	"clx/constants"
 	"clx/meta"
 	"clx/syntax"
-	"os"
 	"regexp"
 	"strings"
 
 	"github.com/muesli/reflow/wordwrap"
-	"golang.org/x/term"
 
 	"github.com/charmbracelet/glamour"
 
@@ -59,13 +57,13 @@ func convertToTerminalFormat(blocks []*block, lineWidth int, indentBlock string)
 			sb.WriteString(renderImage(b.Text, lineWidth))
 
 		case blockCode:
-			sb.WriteString(renderCode(b.Text))
+			sb.WriteString(renderCode(b.Text, lineWidth))
 
 		case blockQuote:
 			sb.WriteString(renderQuote(b.Text, lineWidth, indentBlock))
 
 		case blockTable:
-			sb.WriteString(renderTable(b.Text))
+			sb.WriteString(renderTable(b.Text, lineWidth))
 
 		case blockList:
 			sb.WriteString(renderList(b.Text, lineWidth))
@@ -199,9 +197,7 @@ func renderImage(text string, lineWidth int) string {
 	return output
 }
 
-func renderCode(text string) string {
-	screenWidth, _, _ := term.GetSize(int(os.Stdout.Fd()))
-
+func renderCode(text string, lineWidth int) string {
 	text = strings.TrimSuffix(text, "\n")
 	text = strings.TrimPrefix(text, "\n")
 
@@ -209,7 +205,7 @@ func renderCode(text string) string {
 	text = removeHrefs(text)
 
 	padding := termtext.WrapPad(indentLevel1)
-	text, _ = termtext.Wrap(text, screenWidth, padding)
+	text, _ = termtext.Wrap(text, lineWidth, padding)
 
 	return text
 }
@@ -229,8 +225,7 @@ func renderQuote(text string, lineWidth int, indentSymbol string) string {
 	return text
 }
 
-func renderTable(text string) string {
-	screenWidth, _, _ := term.GetSize(int(os.Stdout.Fd()))
+func renderTable(text string, lineWidth int) string {
 	text = strings.ReplaceAll(text, italicStart, "")
 	text = strings.ReplaceAll(text, italicStop, "")
 
@@ -240,7 +235,7 @@ func renderTable(text string) string {
 	text = unescapeCharacters(text)
 	text = removeImageReference(text)
 
-	r, err := glamour.NewTermRenderer(glamour.WithAutoStyle(), glamour.WithWordWrap(screenWidth))
+	r, err := glamour.NewTermRenderer(glamour.WithAutoStyle(), glamour.WithWordWrap(lineWidth))
 	if err != nil {
 		return text
 	}

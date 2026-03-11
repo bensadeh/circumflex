@@ -16,9 +16,7 @@ type ruleSet struct {
 
 func (rs *ruleSet) filter(text string) string {
 	paragraphs := strings.Split(text, "\n\n")
-	output := ""
-
-	output = filterByParagraph(paragraphs, rs)
+	output := filterByParagraph(paragraphs, rs)
 
 	lines := strings.Split(output, "\n")
 
