@@ -97,23 +97,28 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 		case key.Matches(msg, m.keymap.EnterComments):
 			m.state = StateEditorOpen
 
+			id := m.SelectedItem().ID
+			commentCount := m.SelectedItem().CommentsCount
+
 			return func() tea.Msg {
 				return message.EnteringCommentSection{
-					Id:           m.SelectedItem().ID,
-					CommentCount: m.SelectedItem().CommentsCount,
+					Id:           id,
+					CommentCount: commentCount,
 				}
 			}
 
 		case key.Matches(msg, m.keymap.ReaderMode):
 			m.state = StateEditorOpen
 
+			selected := m.SelectedItem()
+
 			return func() tea.Msg {
 				return message.EnteringReaderMode{
-					Url:          m.SelectedItem().URL,
-					Title:        m.SelectedItem().Title,
-					Domain:       m.SelectedItem().Domain,
-					Id:           m.SelectedItem().ID,
-					CommentCount: m.SelectedItem().CommentsCount,
+					Url:          selected.URL,
+					Title:        selected.Title,
+					Domain:       selected.Domain,
+					Id:           selected.ID,
+					CommentCount: selected.CommentsCount,
 				}
 			}
 		}
@@ -135,8 +140,9 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 func (m *Model) handleConfirmAddFavorites() tea.Cmd {
 	m.state = StateBrowsing
 
+	selectedItem := m.SelectedItem()
 	addToFavorites := func() tea.Msg {
-		return message.AddToFavorites{Item: m.SelectedItem()}
+		return message.AddToFavorites{Item: selectedItem}
 	}
 
 	return tea.Batch(addToFavorites, m.NewStatusMessageWithDuration("Item added", time.Second*2))
@@ -150,11 +156,8 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 	}
 	m.items[categories.Favorites] = m.favorites.GetItems()
 
-	writeCmd := func() tea.Msg {
-		if err := m.favorites.Write(); err != nil {
-			return message.ShowStatusMessage{Message: "Could not save favorites", Duration: time.Second * 3}
-		}
-		return nil
+	if err := m.favorites.Write(); err != nil {
+		return m.NewStatusMessageWithDuration("Could not save favorites", time.Second*3)
 	}
 
 	isOnLastItem := m.Index() == len(m.items[categories.Favorites])
@@ -167,11 +170,13 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 		m.updateCursor()
 		m.updatePagination()
 
+		catIndex := m.cat.GetCurrentIndex()
+		catValue := m.cat.GetCurrentCategory(false)
 		changeCatCmd := func() tea.Msg {
-			return message.FetchAndChangeToCategory{Index: m.cat.GetCurrentIndex(), Category: m.cat.GetCurrentCategory(false), Cursor: 0}
+			return message.FetchAndChangeToCategory{Index: catIndex, Category: catValue, Cursor: 0}
 		}
 
-		return tea.Batch(changeCatCmd, writeCmd, m.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2))
+		return tea.Batch(changeCatCmd, m.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2))
 	}
 
 	if isOnLastItem {
@@ -180,7 +185,7 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 
 	m.updatePagination()
 
-	return tea.Batch(writeCmd, m.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2))
+	return m.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2)
 }
 
 func (m *Model) handleCancelPrompt() tea.Cmd {
@@ -201,8 +206,9 @@ func (m *Model) handleTabForward() tea.Cmd {
 	m.state = StateLoading
 	startSpinnerCmd := m.StartSpinner()
 
+	cursor := m.cursor
 	changeCatCmd := func() tea.Msg {
-		return message.FetchAndChangeToCategory{Index: nextIndex, Category: nextCat, Cursor: m.cursor}
+		return message.FetchAndChangeToCategory{Index: nextIndex, Category: nextCat, Cursor: cursor}
 	}
 
 	return tea.Batch(startSpinnerCmd, changeCatCmd)
@@ -220,8 +226,9 @@ func (m *Model) handleTabBackward() tea.Cmd {
 	m.state = StateLoading
 	startSpinnerCmd := m.StartSpinner()
 
+	cursor := m.cursor
 	changeCatCmd := func() tea.Msg {
-		return message.FetchAndChangeToCategory{Index: prevIndex, Category: prevCat, Cursor: m.cursor}
+		return message.FetchAndChangeToCategory{Index: prevIndex, Category: prevCat, Cursor: cursor}
 	}
 
 	return tea.Batch(startSpinnerCmd, changeCatCmd)
@@ -260,6 +267,7 @@ func (m *Model) handleOpenComments() tea.Cmd {
 
 func (m *Model) handleRefresh() tea.Cmd {
 	currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
+	currentIndex := m.cat.GetCurrentIndex()
 	currentPage := m.Paginator.Page
 
 	m.items[categories.Buffer] = m.items[currentCategory]
@@ -273,7 +281,7 @@ func (m *Model) handleRefresh() tea.Cmd {
 	m.Paginator.Page = currentPage
 
 	changeCatCmd := func() tea.Msg {
-		return message.Refresh{CurrentIndex: m.cat.GetCurrentIndex(), CurrentCategory: currentCategory}
+		return message.Refresh{CurrentIndex: currentIndex, CurrentCategory: currentCategory}
 	}
 
 	return tea.Batch(m.StartSpinner(), changeCatCmd)
