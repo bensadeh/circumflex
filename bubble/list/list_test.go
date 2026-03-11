@@ -43,6 +43,7 @@ func testItems() []*item.Story {
 
 func newTestModel(t *testing.T) *Model {
 	t.Helper()
+	t.Setenv("HOME", t.TempDir())
 	config := settings.Default()
 	cat, _ := categories.New("top,best,ask,show")
 	fav := &favorites.Favorites{}
