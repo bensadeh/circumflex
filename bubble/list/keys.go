@@ -86,7 +86,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return m.handleOpenComments()
 
 		case key.Matches(msg, m.keymap.Refresh):
-			if m.cat.GetCurrentCategory(m.favorites.HasItems()) != categories.Favorites {
+			if m.cat.GetCurrentCategory() != categories.Favorites {
 				return m.handleRefresh()
 			}
 
@@ -97,7 +97,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return nil
 
 		case key.Matches(msg, m.keymap.RemoveFavorite):
-			if m.cat.GetCurrentCategory(m.favorites.HasItems()) == categories.Favorites {
+			if m.cat.GetCurrentCategory() == categories.Favorites {
 				m.SetPermanentStatusMessage(getRemoveItemConfirmationMessage(), false)
 				m.state = StateRemoveFavoritesPrompt
 
@@ -171,6 +171,8 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 		return m.NewStatusMessageWithDuration("Could not save favorites", time.Second*3)
 	}
 
+	m.cat.SetFavorites(m.favorites.HasItems())
+
 	isOnLastItem := m.Index() == len(m.items[categories.Favorites])
 	hasOnlyOneItem := len(m.items[categories.Favorites]) == 0
 
@@ -182,9 +184,9 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 		m.updatePagination()
 
 		catIndex := m.cat.GetCurrentIndex()
-		catValue := m.cat.GetCurrentCategory(false)
+		catValue := m.cat.GetCurrentCategory()
 		changeCatCmd := func() tea.Msg {
-			return message.FetchAndChangeToCategory{Index: catIndex, Category: catValue, Cursor: 0, PrevIndex: catIndex}
+			return message.FetchAndChangeToCategory{Index: catIndex, Category: catValue, Cursor: 0}
 		}
 
 		return tea.Batch(changeCatCmd, m.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2))
@@ -207,24 +209,20 @@ func (m *Model) handleCancelPrompt() tea.Cmd {
 }
 
 func (m *Model) handleTabForward() tea.Cmd {
-	hasFav := m.favorites.HasItems()
-
 	return m.handleTab(
-		m.cat.GetNextIndex(hasFav),
-		m.cat.GetNextCategory(hasFav),
+		m.cat.GetNextIndex(),
+		m.cat.GetNextCategory(),
 		m.changeToNextCategory,
-		func() { m.cat.Next(hasFav) },
+		func() { m.cat.Next() },
 	)
 }
 
 func (m *Model) handleTabBackward() tea.Cmd {
-	hasFav := m.favorites.HasItems()
-
 	return m.handleTab(
-		m.cat.GetPrevIndex(hasFav),
-		m.cat.GetPrevCategory(hasFav),
+		m.cat.GetPrevIndex(),
+		m.cat.GetPrevCategory(),
 		m.changeToPrevCategory,
-		func() { m.cat.Prev(hasFav) },
+		func() { m.cat.Prev() },
 	)
 }
 
@@ -235,18 +233,20 @@ func (m *Model) handleTab(targetIndex, targetCategory int, changeCategory func()
 		return nil
 	}
 
-	currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
-	currentIndex := m.cat.GetCurrentIndex()
-	m.items[categories.Buffer] = m.items[currentCategory]
+	currentCategory := m.cat.GetCurrentCategory()
+	m.transition = &transition{
+		prevIndex: m.cat.GetCurrentIndex(),
+		oldItems:  m.items[currentCategory],
+	}
 
 	advance()
 
-	m.state = StateLoading
+	m.state = StateFetching
 	startSpinnerCmd := m.StartSpinner()
 
 	cursor := m.cursor
 	changeCatCmd := func() tea.Msg {
-		return message.FetchAndChangeToCategory{Index: targetIndex, Category: targetCategory, Cursor: cursor, PrevIndex: currentIndex}
+		return message.FetchAndChangeToCategory{Index: targetIndex, Category: targetCategory, Cursor: cursor}
 	}
 
 	return tea.Batch(startSpinnerCmd, changeCatCmd)
@@ -287,17 +287,21 @@ func (m *Model) handleOpenComments() tea.Cmd {
 }
 
 func (m *Model) handleRefresh() tea.Cmd {
-	currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
+	currentCategory := m.cat.GetCurrentCategory()
 	currentIndex := m.cat.GetCurrentIndex()
 	currentPage := m.Paginator.Page
 
-	m.items[categories.Buffer] = m.items[currentCategory]
+	m.transition = &transition{
+		prevIndex: currentIndex,
+		oldItems:  m.items[currentCategory],
+		refresh:   true,
+	}
 
 	m.Paginator.Page = 0
 	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)
 	m.updatePagination()
 
-	m.state = StateRefreshing
+	m.state = StateFetching
 	m.cursor = 0
 	m.Paginator.Page = currentPage
 
@@ -313,8 +317,8 @@ func (m *Model) categoryHasStories(cat int) bool {
 }
 
 func (m *Model) changeToNextCategory() {
-	m.cat.Next(m.favorites.HasItems())
-	currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
+	m.cat.Next()
+	currentCategory := m.cat.GetCurrentCategory()
 
 	m.Paginator.Page = 0
 	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)
@@ -322,8 +326,8 @@ func (m *Model) changeToNextCategory() {
 }
 
 func (m *Model) changeToPrevCategory() {
-	m.cat.Prev(m.favorites.HasItems())
-	currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
+	m.cat.Prev()
+	currentCategory := m.cat.GetCurrentCategory()
 
 	m.Paginator.Page = 0
 	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)

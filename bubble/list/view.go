@@ -13,13 +13,9 @@ import (
 // View renders the component.
 func (m *Model) View() string {
 	if m.state == StateHelpScreen {
-		categoriesWithoutFavorites := m.cat.GetCategories(false)
-		hasFavorites := m.favorites.HasItems()
-
 		return fmt.Sprintf("%s\n%s\n%s",
 			header.GetHeader(
-				categoriesWithoutFavorites,
-				hasFavorites,
+				m.cat.GetCategories(),
 				m.cat.GetCurrentIndex(),
 				m.width),
 			m.viewport.View(),
@@ -68,12 +64,8 @@ func (m *Model) View() string {
 }
 
 func (m *Model) titleView() string {
-	categoriesWithoutFavorites := m.cat.GetCategories(false)
-	hasFavorites := m.favorites.HasItems()
-
 	return header.GetHeader(
-		categoriesWithoutFavorites,
-		hasFavorites,
+		m.cat.GetCategories(),
 		m.cat.GetCurrentIndex(),
 		m.width)
 }

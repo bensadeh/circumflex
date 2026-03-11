@@ -46,10 +46,9 @@ type FetchingFinished struct {
 }
 
 type FetchAndChangeToCategory struct {
-	Index     int
-	Category  int
-	Cursor    int
-	PrevIndex int
+	Index    int
+	Category int
+	Cursor   int
 }
 
 type Refresh struct {
@@ -58,12 +57,11 @@ type Refresh struct {
 }
 
 type CategoryFetchingFinished struct {
-	Stories   []*item.Story
-	Category  int
-	Index     int
-	Cursor    int
-	Message   string
-	PrevIndex int
+	Stories  []*item.Story
+	Category int
+	Index    int
+	Cursor   int
+	Message  string
 }
 
 type AddToFavorites struct {

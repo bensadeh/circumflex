@@ -2,6 +2,7 @@ package categories
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 )
 
@@ -12,7 +13,6 @@ const (
 	Show      = 3
 	Best      = 4
 	Favorites = 5
-	Buffer    = 6
 )
 
 // Name returns the display name for a category constant.
@@ -53,7 +53,8 @@ func categoryFromName(name string) (int, bool) {
 }
 
 type Categories struct {
-	categories   []int
+	base         []int
+	active       []int
 	currentIndex int
 }
 
@@ -80,108 +81,87 @@ func New(categoriesCSV string) (*Categories, error) {
 	}
 
 	return &Categories{
-		categories:   validCategories,
+		base:         validCategories,
+		active:       validCategories,
 		currentIndex: 0,
 	}, nil
 }
 
-func (c *Categories) Next(hasFavorites bool) {
-	c.currentIndex++
-	if hasFavorites && c.currentIndex >= len(c.categories)+1 || !hasFavorites && c.currentIndex >= len(c.categories) {
-		c.currentIndex = 0
-	}
-}
-
-func (c *Categories) Prev(hasFavorites bool) {
-	c.currentIndex--
-	if c.currentIndex < 0 {
-		if hasFavorites {
-			c.currentIndex = len(c.categories)
-		} else {
-			c.currentIndex = len(c.categories) - 1
+func (c *Categories) SetFavorites(has bool) {
+	if has {
+		c.active = append(slices.Clone(c.base), Favorites)
+	} else {
+		c.active = c.base
+		if c.currentIndex >= len(c.active) {
+			c.currentIndex = len(c.active) - 1
 		}
 	}
 }
 
-func (c *Categories) GetNextIndex(hasFavorites bool) int {
+func (c *Categories) HasFavorites() bool {
+	return slices.Contains(c.active, Favorites)
+}
+
+func (c *Categories) Base() []int {
+	return c.base
+}
+
+func (c *Categories) Next() {
+	c.currentIndex++
+	if c.currentIndex >= len(c.active) {
+		c.currentIndex = 0
+	}
+}
+
+func (c *Categories) Prev() {
+	c.currentIndex--
+	if c.currentIndex < 0 {
+		c.currentIndex = len(c.active) - 1
+	}
+}
+
+func (c *Categories) GetNextIndex() int {
 	nextIndex := c.currentIndex + 1
-	if hasFavorites && nextIndex >= len(c.categories)+1 || !hasFavorites && nextIndex >= len(c.categories) {
+	if nextIndex >= len(c.active) {
 		nextIndex = 0
 	}
 
 	return nextIndex
 }
 
-func (c *Categories) GetPrevIndex(hasFavorites bool) int {
+func (c *Categories) GetPrevIndex() int {
 	prevIndex := c.currentIndex - 1
 	if prevIndex < 0 {
-		if hasFavorites {
-			prevIndex = len(c.categories)
-		} else {
-			prevIndex = len(c.categories) - 1
-		}
+		prevIndex = len(c.active) - 1
 	}
 
 	return prevIndex
 }
 
-func (c *Categories) GetCategories(hasFavorites bool) []int {
-	if hasFavorites {
-		categoriesWithFavorites := make([]int, len(c.categories), len(c.categories)+1)
-		copy(categoriesWithFavorites, c.categories)
-
-		return append(categoriesWithFavorites, Favorites)
-	}
-
-	return c.categories
+func (c *Categories) GetCategories() []int {
+	return c.active
 }
 
-func (c *Categories) GetCurrentCategory(hasFavorites bool) int {
-	if hasFavorites {
-		categoriesWithFavorites := make([]int, len(c.categories), len(c.categories)+1)
-		copy(categoriesWithFavorites, c.categories)
-		categoriesWithFavorites = append(categoriesWithFavorites, Favorites)
-
-		return categoriesWithFavorites[c.currentIndex]
-	}
-
-	return c.categories[c.currentIndex]
+func (c *Categories) GetCurrentCategory() int {
+	return c.active[c.currentIndex]
 }
 
 func (c *Categories) GetCurrentIndex() int {
 	return c.currentIndex
 }
 
-func (c *Categories) GetNextCategory(hasFavorites bool) int {
-	nextIndex := c.currentIndex + 1
-	if hasFavorites && nextIndex >= len(c.categories)+1 || !hasFavorites && nextIndex >= len(c.categories) {
-		nextIndex = 0
-	}
-
-	if hasFavorites && nextIndex == len(c.categories) {
-		return Favorites
-	}
-
-	return c.categories[nextIndex]
+func (c *Categories) GetNextCategory() int {
+	return c.active[c.GetNextIndex()]
 }
 
-func (c *Categories) GetPrevCategory(hasFavorites bool) int {
-	prevIndex := c.currentIndex - 1
-	if prevIndex < 0 {
-		if hasFavorites {
-			prevIndex = len(c.categories)
-		} else {
-			prevIndex = len(c.categories) - 1
-		}
-	}
-
-	if hasFavorites && prevIndex == len(c.categories) {
-		return Favorites
-	}
-
-	return c.categories[prevIndex]
+func (c *Categories) GetPrevCategory() int {
+	return c.active[c.GetPrevIndex()]
 }
 
 func (c *Categories) SetIndex(index int) {
+	if index < 0 || index >= len(c.active) {
+		return
+	}
+
 	c.currentIndex = index
 }

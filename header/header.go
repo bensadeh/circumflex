@@ -8,13 +8,13 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-func GetHeader(allCategories []int, hasFavorites bool, selectedSubHeader int, width int) string {
+func GetHeader(allCategories []int, selectedSubHeader int, width int) string {
 	c := lipgloss.NewStyle().Foreground(lipgloss.Color("5"))
 	l := lipgloss.NewStyle().Foreground(lipgloss.Color("3"))
 	x := lipgloss.NewStyle().Foreground(lipgloss.Color("4"))
 
 	title := c.Render("  c") + l.Render("l") + x.Render("x  ")
-	cats := getCategories(allCategories, hasFavorites, selectedSubHeader)
+	cats := getCategories(allCategories, selectedSubHeader)
 	filler := getFiller(title, cats, width)
 
 	return title + cats + filler + "\n" + strings.Repeat("‾", width)
@@ -32,8 +32,8 @@ func getFiller(title string, categories string, width int) string {
 	return lipgloss.NewStyle().Render(filler)
 }
 
-func getCategories(allCategories []int, hasFavorites bool, selectedSubHeader int) string {
-	subHeaders := getSubHeaders(allCategories, hasFavorites)
+func getCategories(allCategories []int, selectedSubHeader int) string {
+	subHeaders := getSubHeaders(allCategories)
 	subHeaders = removeFirstElement(subHeaders)
 
 	var cats strings.Builder
@@ -47,7 +47,7 @@ func getCategories(allCategories []int, hasFavorites bool, selectedSubHeader int
 
 	for i, subHeader := range subHeaders {
 		isOnLastItem := i == len(subHeaders)-1
-		selectedCatColor, isSelected := getColor(i, selectedSubHeader, len(subHeaders), hasFavorites)
+		selectedCatColor, isSelected := getColor(i, selectedSubHeader, allCategories)
 
 		cats.WriteString(lipgloss.NewStyle().
 			Foreground(selectedCatColor).
@@ -62,14 +62,10 @@ func getCategories(allCategories []int, hasFavorites bool, selectedSubHeader int
 	return cats.String()
 }
 
-func getSubHeaders(allCategories []int, hasFavorites bool) []string {
+func getSubHeaders(allCategories []int) []string {
 	var cats []string
 	for _, cat := range allCategories {
 		cats = append(cats, categories.Name(cat))
-	}
-
-	if hasFavorites {
-		cats = append(cats, "favorites")
 	}
 
 	return cats
@@ -83,25 +79,22 @@ func removeFirstElement(list []string) []string {
 	return list[1:]
 }
 
-func getColor(i int, selectedSubHeader int, numCategories int, hasFavorites bool) (color color.Color, isSelected bool) {
+func getColor(i int, selectedSubHeader int, allCategories []int) (color color.Color, isSelected bool) {
 	if i+1 == selectedSubHeader {
-		return getSelectedCategoryColor(i+1, numCategories, hasFavorites)
+		return getSelectedCategoryColor(selectedSubHeader, allCategories[i+1])
 	}
 
 	return lipgloss.NoColor{}, false
 }
 
-func getSelectedCategoryColor(selectedSubHeader int, numCategories int, hasFavorites bool) (color color.Color,
-	isSelected bool,
-) {
+func getSelectedCategoryColor(selectedSubHeader int, cat int) (color color.Color, isSelected bool) {
+	if cat == categories.Favorites {
+		return lipgloss.Color("219"), true
+	}
+
 	magenta := lipgloss.Color("5")
 	yellow := lipgloss.Color("3")
 	blue := lipgloss.Color("4")
-	pink := lipgloss.Color("219")
-
-	if hasFavorites && selectedSubHeader == numCategories {
-		return pink, true
-	}
 
 	switch selectedSubHeader % 3 {
 	case 0:

@@ -21,9 +21,7 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-const (
-	numberOfCategories = 6
-)
+const numberOfCategories = 6
 
 // ItemDelegate encapsulates the general functionality for all list items. The
 // benefit to separating this logic from the item itself is that you can change
@@ -57,6 +55,7 @@ type Model struct {
 	Styles Styles
 
 	state       ViewState
+	transition  *transition
 	spinner     spinner.Model
 	showSpinner bool
 	width       int
@@ -99,8 +98,7 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 	p.ActiveDot = styles.ActivePaginationDot.String()
 	p.InactiveDot = styles.InactivePaginationDot.String()
 
-	bufferCategory := 1
-	items := make([][]*item.Story, numberOfCategories+bufferCategory)
+	items := make([][]*item.Story, numberOfCategories)
 
 	m := Model{
 		showTitle:             true,
@@ -156,9 +154,10 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		spinnerCmd := m.StartSpinner()
 		cmds = append(cmds, spinnerCmd)
 
-		m.state = StateLoading
+		m.state = StateFetching
 
 		m.items[categories.Favorites] = m.favorites.GetItems()
+		m.cat.SetFavorites(m.favorites.HasItems())
 
 		fetchCmd := m.FetchStoriesForFirstCategory()
 		cmds = append(cmds, fetchCmd)
@@ -203,6 +202,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	case message.AddToFavorites:
 		m.favorites.Add(msg.Item)
 		m.items[categories.Favorites] = m.favorites.GetItems()
+		m.cat.SetFavorites(m.favorites.HasItems())
 
 		if err := m.favorites.Write(); err != nil {
 			cmds = append(cmds, m.NewStatusMessageWithDuration("Could not save favorites", time.Second*3))
@@ -294,10 +294,12 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		cmds = append(cmds, m.NewStatusMessageWithDuration(msg.Message, msg.Duration))
 
 	case message.CategoryFetchingFinished:
-		m.items[categories.Buffer] = nil
-
 		if msg.Message != "" {
-			m.cat.SetIndex(msg.PrevIndex)
+			if m.transition != nil {
+				m.cat.SetIndex(m.transition.prevIndex)
+			}
+
+			m.transition = nil
 			m.state = StateBrowsing
 			m.StopSpinner()
 			m.updatePagination()
@@ -305,10 +307,11 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 			return m, m.NewStatusMessageWithDuration(msg.Message, time.Second*3)
 		}
 
-		if m.state == StateRefreshing {
+		if m.transition != nil && m.transition.refresh {
 			clearAllCategories(m.items)
 		}
 
+		m.transition = nil
 		m.items[msg.Category] = msg.Stories
 		m.Paginator.Page = 0
 		m.state = StateBrowsing

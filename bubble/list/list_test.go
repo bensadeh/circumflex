@@ -116,7 +116,7 @@ func TestStartup_InitializesOnWindowSizeMsg(t *testing.T) {
 	assert.Equal(t, StateStartup, m.state)
 
 	m, cmd := m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
-	assert.Equal(t, StateLoading, m.state)
+	assert.Equal(t, StateFetching, m.state)
 	assert.True(t, m.showSpinner)
 	assert.NotNil(t, cmd, "should return batch cmd with spinner + fetch")
 }
@@ -158,13 +158,15 @@ func TestWindowResize_UpdatesDimensions(t *testing.T) {
 
 func TestCategoryFetchingFinished_UpdatesState(t *testing.T) {
 	m := newTestModelReady(t)
-	m.state = StateRefreshing
+	m.state = StateFetching
+	m.transition = &transition{prevIndex: 0, oldItems: testItems(), refresh: true}
 	m.showSpinner = true
 
 	m, _ = m.Update(message.CategoryFetchingFinished{Index: 1, Cursor: 0, Message: ""})
 
 	assert.Equal(t, StateBrowsing, m.state)
 	assert.False(t, m.showSpinner)
+	assert.Nil(t, m.transition)
 }
 
 func TestShowStatusMessage_SetsMessage(t *testing.T) {
@@ -262,9 +264,10 @@ func TestTabToUncachedCategory(t *testing.T) {
 
 	m, cmd := m.Update(keyMsg("tab"))
 
-	assert.Equal(t, StateLoading, m.state)
+	assert.Equal(t, StateFetching, m.state)
 	assert.True(t, m.showSpinner)
 	assert.NotNil(t, cmd, "should return batch cmd with spinner + fetch")
+	assert.NotNil(t, m.transition, "should have a transition with old items")
 }
 
 func TestEnterCommentSection(t *testing.T) {
@@ -381,7 +384,7 @@ func TestAddFavoritesCancel(t *testing.T) {
 
 func TestDisabledInput_IgnoresKeys(t *testing.T) {
 	m := newTestModelReady(t)
-	m.state = StateLoading
+	m.state = StateFetching
 
 	cursorBefore := m.cursor
 	m, cmd := m.Update(keyMsg("j"))
@@ -405,9 +408,11 @@ func TestRefresh(t *testing.T) {
 	m := newTestModelReady(t)
 
 	m, cmd := m.Update(keyMsg("r"))
-	assert.Equal(t, StateRefreshing, m.state)
+	assert.Equal(t, StateFetching, m.state)
 	assert.True(t, m.showSpinner)
 	assert.NotNil(t, cmd)
+	assert.NotNil(t, m.transition)
+	assert.True(t, m.transition.refresh)
 }
 
 func TestOpenLink_ReturnsMessage(t *testing.T) {

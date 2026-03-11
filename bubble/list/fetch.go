@@ -14,7 +14,7 @@ import (
 )
 
 func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
-	categoryToFetch := m.cat.GetCurrentCategory(m.favorites.HasItems())
+	categoryToFetch := m.cat.GetCurrentCategory()
 	service := m.service
 	numItems := m.getNumberOfItemsToFetch(categoryToFetch)
 
@@ -87,12 +87,11 @@ func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) t
 		}
 
 		return message.CategoryFetchingFinished{
-			Stories:   stories,
-			Category:  msg.Category,
-			Index:     msg.Index,
-			Cursor:    msg.Cursor,
-			Message:   errMsg,
-			PrevIndex: msg.PrevIndex,
+			Stories:  stories,
+			Category: msg.Category,
+			Index:    msg.Index,
+			Cursor:   msg.Cursor,
+			Message:  errMsg,
 		}
 	}
 }
@@ -110,19 +109,18 @@ func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 		}
 
 		return message.CategoryFetchingFinished{
-			Stories:   stories,
-			Category:  msg.CurrentCategory,
-			Index:     msg.CurrentIndex,
-			Cursor:    0,
-			Message:   errMsg,
-			PrevIndex: msg.CurrentIndex,
+			Stories:  stories,
+			Category: msg.CurrentCategory,
+			Index:    msg.CurrentIndex,
+			Cursor:   0,
+			Message:  errMsg,
 		}
 	}
 }
 
 func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection) tea.Cmd {
 	width := m.width
-	isOnFavorites := m.cat.GetCurrentCategory(m.favorites.HasItems()) == categories.Favorites
+	isOnFavorites := m.cat.GetCurrentCategory() == categories.Favorites
 	hist := m.history
 	service := m.service
 	config := m.config

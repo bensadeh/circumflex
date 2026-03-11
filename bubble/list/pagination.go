@@ -1,7 +1,6 @@
 package list
 
 import (
-	"clx/categories"
 	"clx/item"
 
 	"charm.land/lipgloss/v2"
@@ -88,11 +87,11 @@ func (m *Model) Select(index int) {
 
 // VisibleItems returns the total items available to be shown.
 func (m *Model) VisibleItems() []*item.Story {
-	if m.state == StateRefreshing || (m.state == StateLoading && len(m.items[categories.Buffer]) > 0) {
-		return m.items[categories.Buffer]
+	if m.transition != nil {
+		return m.transition.oldItems
 	}
 
-	return m.items[m.cat.GetCurrentCategory(m.favorites.HasItems())]
+	return m.items[m.cat.GetCurrentCategory()]
 }
 
 // SelectedItem returns the current selected item in the list.
