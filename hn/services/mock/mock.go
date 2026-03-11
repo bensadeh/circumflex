@@ -13,7 +13,7 @@ func (Service) Init(_ int) {
 }
 
 func (Service) FetchItems(_ int, cat int) (items []*item.Story, err error) {
-	time.Sleep(time.Second * 1)
+	time.Sleep(time.Second * 2)
 
 	items = []*item.Story{
 		{

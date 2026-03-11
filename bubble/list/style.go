@@ -83,6 +83,6 @@ func getSpinner() spinner.Spinner {
 			normal.Render("fetching") + color.Foreground(magenta).Render(".") + normal.Render("  "),
 			normal.Render("fetching") + color.Foreground(magenta).Render(".") + color.Foreground(yellow).Render(".") + normal.Render(" "),
 		},
-		FPS: 500 * time.Millisecond,
+		FPS: 750 * time.Millisecond,
 	}
 }

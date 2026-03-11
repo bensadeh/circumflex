@@ -161,8 +161,8 @@ func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *item.St
 		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(true), s.MarkAsReadDesc, domain,
 			desc, syntax.MarkAsRead, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 
-	case m.state == StateLoading || m.state == StateEditorOpen:
-		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(false), s.MarkAsReadDesc, domain,
+	case m.state == StateLoading || m.state == StateRefreshing || m.state == StateEditorOpen:
+		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(true), s.MarkAsReadDesc, domain,
 			desc, syntax.MarkAsRead, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 
 	default:
