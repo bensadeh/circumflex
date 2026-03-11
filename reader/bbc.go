@@ -8,6 +8,7 @@ import (
 
 func processBBC(text string) string {
 	lines := strings.Split(text, "\n")
+
 	var sb strings.Builder
 
 	for i, line := range lines {

@@ -17,6 +17,7 @@ func New() *Favorites {
 
 	if file.Exists(favoritesPath) {
 		favoritesJSON, _ := os.ReadFile(favoritesPath) //nolint:gosec // path from ~/.config/circumflex/
+
 		items, err := unmarshal(favoritesJSON)
 		if err != nil {
 			return new(Favorites)
@@ -73,6 +74,7 @@ func (f *Favorites) Remove(index int) error {
 	}
 
 	f.items = append(f.items[:index], f.items[index+1:]...)
+
 	return nil
 }
 

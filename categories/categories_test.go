@@ -9,8 +9,10 @@ import (
 
 func newTestCategories(t *testing.T, csv string) *Categories {
 	t.Helper()
+
 	c, err := New(csv)
 	require.NoError(t, err)
+
 	return c
 }
 

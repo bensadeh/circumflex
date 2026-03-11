@@ -30,6 +30,7 @@ type entry struct {
 
 func (k *List) Init() {
 	var entries []*entry
+
 	k.keymaps = entries
 }
 

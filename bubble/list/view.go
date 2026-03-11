@@ -79,8 +79,11 @@ func (m *Model) titleView() string {
 }
 
 func (m *Model) statusAndPaginationView() string {
-	var centerContent string
-	var rightContent string
+	var (
+		centerContent string
+		rightContent  string
+	)
+
 	underscore := lipgloss.NewStyle().Underline(true).Render(" ")
 	underline := strings.Repeat(underscore, m.width)
 
@@ -138,6 +141,7 @@ func (m *Model) populatedView() string {
 
 		for i, item := range itemsToShow {
 			m.delegate.Render(&b, m, i+start, item)
+
 			if i != len(itemsToShow)-1 {
 				fmt.Fprint(&b, strings.Repeat("\n", m.delegate.Spacing()+1))
 			}
@@ -153,6 +157,7 @@ func (m *Model) populatedView() string {
 		if len(allItems) == 0 {
 			n -= m.delegate.Height() - 1
 		}
+
 		_, _ = fmt.Fprint(&b, strings.Repeat("\n", n))
 	}
 

@@ -20,6 +20,7 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 
 	return func() tea.Msg {
 		stories, err := service.FetchItems(numItems, categoryToFetch)
+
 		var errMsg string
 		if err != nil {
 			errMsg = err.Error()
@@ -69,6 +70,7 @@ func getHistory(debugMode bool, doNotMarkAsRead bool) history.History {
 	}
 
 	h, _ := history.NewPersistentHistory()
+
 	return h
 }
 
@@ -78,6 +80,7 @@ func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) t
 
 	return func() tea.Msg {
 		stories, err := service.FetchItems(numItems, msg.Category)
+
 		var errMsg string
 		if err != nil {
 			errMsg = err.Error()
@@ -100,6 +103,7 @@ func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 
 	return func() tea.Msg {
 		stories, err := service.FetchItems(numItems, msg.CurrentCategory)
+
 		var errMsg string
 		if err != nil {
 			errMsg = err.Error()

@@ -44,11 +44,13 @@ func testItems() []*item.Story {
 func newTestModel(t *testing.T) *Model {
 	t.Helper()
 	t.Setenv("HOME", t.TempDir())
+
 	config := settings.Default()
 	cat, _ := categories.New("top,best,ask,show")
 	fav := &favorites.Favorites{}
 	service := &instantMockService{}
 	hist := history.NewMockHistory()
+
 	return newModel(NewDefaultDelegate(), config, cat, fav, 80, 24, service, hist)
 }
 
@@ -92,6 +94,7 @@ func keyMsg(s string) tea.KeyPressMsg {
 	default:
 		// Single character keys like "q", "j", "k", etc.
 		r := []rune(s)
+
 		return tea.KeyPressMsg{Code: r[0], Text: s}
 	}
 }
@@ -219,6 +222,7 @@ func TestNavigationUpDown_Clamped(t *testing.T) {
 	for range 100 {
 		m, _ = m.Update(keyMsg("j"))
 	}
+
 	itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))
 	assert.LessOrEqual(t, m.cursor, itemsOnPage-1)
 }

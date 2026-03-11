@@ -20,6 +20,7 @@ func (m *Model) NewStatusMessage(s string) tea.Cmd {
 	// Wait for timeout
 	return func() tea.Msg {
 		<-m.statusMessageTimer.C
+
 		return message.StatusMessageTimeout{}
 	}
 }
@@ -36,6 +37,7 @@ func (m *Model) NewStatusMessageWithDuration(s string, d time.Duration) tea.Cmd 
 	// Wait for timeout
 	return func() tea.Msg {
 		<-m.statusMessageTimer.C
+
 		return message.StatusMessageTimeout{}
 	}
 }
@@ -61,6 +63,7 @@ func (m *Model) StartSpinner() tea.Cmd {
 	m.spinner.Style = DefaultStyles().Spinner
 
 	m.showSpinner = true
+
 	return m.spinner.Tick
 }
 

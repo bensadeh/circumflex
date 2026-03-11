@@ -33,6 +33,7 @@ func urlCmd() *cobra.Command {
 				os.Exit(1)
 			}
 			defer lesskey.Remove()
+
 			config.LesskeyPath = lesskey.GetPath()
 
 			command := cli.Less(cmd.Context(), article, config)

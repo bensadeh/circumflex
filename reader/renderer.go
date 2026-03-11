@@ -129,6 +129,7 @@ func renderList(text string, lineWidth int) string {
 	text = highlightBackticks(text)
 
 	var sb strings.Builder
+
 	lines := strings.SplitSeq(text, "\n")
 
 	for line := range lines {
@@ -442,6 +443,7 @@ func highlightBackticks(text string) string {
 
 func replaceListPrefixes(text string) string {
 	lines := strings.Split(text, "\n")
+
 	var output strings.Builder
 
 	for _, line := range lines {

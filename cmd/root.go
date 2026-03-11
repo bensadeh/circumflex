@@ -56,6 +56,7 @@ func Root() *cobra.Command {
 				fmt.Fprintf(os.Stderr, "Could not create lesskey: %v\n", err)
 				os.Exit(1)
 			}
+
 			config.LesskeyPath = lessKey.GetPath()
 			defer lessKey.Remove()
 

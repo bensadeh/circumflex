@@ -24,6 +24,7 @@ func addCmd() *cobra.Command {
 			}
 
 			service := newService()
+
 			submission, err := service.FetchItem(id)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
@@ -32,6 +33,7 @@ func addCmd() *cobra.Command {
 
 			fav := favorites.New()
 			fav.Add(submission)
+
 			if err := fav.Write(); err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)

@@ -7,7 +7,7 @@ import (
 
 type Mock struct{}
 
-func (his *Mock) NewHistory() *History {
+func (Mock) NewHistory() *History {
 	return nil
 }
 

@@ -16,6 +16,7 @@ func PathToConfigDirectory() string {
 	if err != nil {
 		homeDir = os.TempDir()
 	}
+
 	configDir := ".config"
 	clxDir := "circumflex"
 
@@ -52,6 +53,7 @@ func WriteToFile(path string, content string) error {
 	if createPathErr != nil {
 		return fmt.Errorf("could not create config file: %w", createPathErr)
 	}
+
 	defer func() { _ = file.Close() }()
 
 	_, writeFileErr := file.WriteString(content)
@@ -74,6 +76,7 @@ func WriteToDir(dirPath string, fileName string, content string) error {
 	if createPathErr != nil {
 		return fmt.Errorf("could not create config file: %w", createPathErr)
 	}
+
 	defer func() { _ = file.Close() }()
 
 	_, writeFileErr := file.WriteString(content)

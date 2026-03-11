@@ -64,6 +64,7 @@ func getCacheFilePaths() (string, string, string) {
 	if err != nil {
 		homeDir = os.TempDir()
 	}
+
 	configDir := ".cache"
 	circumflexDir := "circumflex"
 	fileName := "history.json"

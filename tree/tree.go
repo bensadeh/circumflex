@@ -130,12 +130,14 @@ func addFilterTag(level int, fullComment string) string {
 	}
 
 	var fullCommentWithFilterTags strings.Builder
+
 	lines := strings.Split(fullComment, "\n")
 
 	for i, line := range lines {
 		if i == len(lines)-1 {
 			continue
 		}
+
 		fullCommentWithFilterTags.WriteString(line + constants.InvisibleCharacterForExpansion + "\n")
 	}
 
@@ -258,6 +260,7 @@ func getAuthorLabel(author, originalPoster, parentPoster string, enableNerdFonts
 	if label == "" {
 		return ""
 	}
+
 	return colorizeLabel(author, originalPoster, parentPoster, label)
 }
 

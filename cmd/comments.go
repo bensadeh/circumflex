@@ -43,6 +43,7 @@ func commentsCmd() *cobra.Command {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
 			}
+
 			commentTree := tree.Print(comments, config, screenWidth, time.Now().Unix())
 
 			if err := cli.RunLess(cmd.Context(), commentTree, config); err != nil {

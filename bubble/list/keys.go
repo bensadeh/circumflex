@@ -15,6 +15,7 @@ import (
 
 func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	var cmds []tea.Cmd
+
 	numItems := len(m.VisibleItems())
 
 	switch msg := msg.(type) {
@@ -34,6 +35,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 		case key.Matches(msg, m.keymap.Help):
 			m.state = StateHelpScreen
+
 			return nil
 
 		case key.Matches(msg, m.keymap.Quit):
@@ -41,20 +43,24 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 		case key.Matches(msg, m.keymap.Up):
 			m.CursorUp()
+
 			return nil
 
 		case key.Matches(msg, m.keymap.Down):
 			m.CursorDown()
+
 			return nil
 
 		case key.Matches(msg, m.keymap.PrevPage):
 			m.Paginator.PrevPage()
 			m.updateCursor()
+
 			return nil
 
 		case key.Matches(msg, m.keymap.NextPage):
 			m.Paginator.NextPage()
 			m.updateCursor()
+
 			return nil
 
 		case key.Matches(msg, m.keymap.NextCategory):
@@ -65,10 +71,12 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 		case key.Matches(msg, m.keymap.GoToTop):
 			m.cursor = 0
+
 			return nil
 
 		case key.Matches(msg, m.keymap.GoToBottom):
 			m.cursor = m.Paginator.ItemsOnPage(numItems) - 1
+
 			return nil
 
 		case key.Matches(msg, m.keymap.OpenLink):
@@ -85,12 +93,14 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 		case key.Matches(msg, m.keymap.AddFavorite):
 			m.SetPermanentStatusMessage(getAddItemConfirmationMessage(), false)
 			m.state = StateAddFavoritesPrompt
+
 			return nil
 
 		case key.Matches(msg, m.keymap.RemoveFavorite):
 			if m.cat.GetCurrentCategory(m.favorites.HasItems()) == categories.Favorites {
 				m.SetPermanentStatusMessage(getRemoveItemConfirmationMessage(), false)
 				m.state = StateRemoveFavoritesPrompt
+
 				return nil
 			}
 
@@ -154,6 +164,7 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 	if err := m.favorites.Remove(m.Index()); err != nil {
 		return m.NewStatusMessageWithDuration("Could not remove favorite", time.Second*3)
 	}
+
 	m.items[categories.Favorites] = m.favorites.GetItems()
 
 	if err := m.favorites.Write(); err != nil {
@@ -191,40 +202,36 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 func (m *Model) handleCancelPrompt() tea.Cmd {
 	m.state = StateBrowsing
 	m.hideStatusMessage()
+
 	return nil
 }
 
 func (m *Model) handleTabForward() tea.Cmd {
-	nextIndex := m.cat.GetNextIndex(m.favorites.HasItems())
-	nextCat := m.cat.GetNextCategory(m.favorites.HasItems())
+	hasFav := m.favorites.HasItems()
 
-	if m.categoryHasStories(nextCat) {
-		m.changeToNextCategory()
-		return nil
-	}
-
-	currentCategory := m.cat.GetCurrentCategory(m.favorites.HasItems())
-	prevIndex := m.cat.GetCurrentIndex()
-	m.items[categories.Buffer] = m.items[currentCategory]
-
-	m.cat.Next(m.favorites.HasItems())
-	m.state = StateLoading
-	startSpinnerCmd := m.StartSpinner()
-
-	cursor := m.cursor
-	changeCatCmd := func() tea.Msg {
-		return message.FetchAndChangeToCategory{Index: nextIndex, Category: nextCat, Cursor: cursor, PrevIndex: prevIndex}
-	}
-
-	return tea.Batch(startSpinnerCmd, changeCatCmd)
+	return m.handleTab(
+		m.cat.GetNextIndex(hasFav),
+		m.cat.GetNextCategory(hasFav),
+		m.changeToNextCategory,
+		func() { m.cat.Next(hasFav) },
+	)
 }
 
 func (m *Model) handleTabBackward() tea.Cmd {
-	prevIndex := m.cat.GetPrevIndex(m.favorites.HasItems())
-	prevCat := m.cat.GetPrevCategory(m.favorites.HasItems())
+	hasFav := m.favorites.HasItems()
 
-	if m.categoryHasStories(prevCat) {
-		m.changeToPrevCategory()
+	return m.handleTab(
+		m.cat.GetPrevIndex(hasFav),
+		m.cat.GetPrevCategory(hasFav),
+		m.changeToPrevCategory,
+		func() { m.cat.Prev(hasFav) },
+	)
+}
+
+func (m *Model) handleTab(targetIndex, targetCategory int, changeCategory func(), advance func()) tea.Cmd {
+	if m.categoryHasStories(targetCategory) {
+		changeCategory()
+
 		return nil
 	}
 
@@ -232,13 +239,14 @@ func (m *Model) handleTabBackward() tea.Cmd {
 	currentIndex := m.cat.GetCurrentIndex()
 	m.items[categories.Buffer] = m.items[currentCategory]
 
-	m.cat.Prev(m.favorites.HasItems())
+	advance()
+
 	m.state = StateLoading
 	startSpinnerCmd := m.StartSpinner()
 
 	cursor := m.cursor
 	changeCatCmd := func() tea.Msg {
-		return message.FetchAndChangeToCategory{Index: prevIndex, Category: prevCat, Cursor: cursor, PrevIndex: currentIndex}
+		return message.FetchAndChangeToCategory{Index: targetIndex, Category: targetCategory, Cursor: cursor, PrevIndex: currentIndex}
 	}
 
 	return tea.Batch(startSpinnerCmd, changeCatCmd)
@@ -249,11 +257,13 @@ func (m *Model) handleOpenLink() tea.Cmd {
 	if url == "" {
 		url = "https://news.ycombinator.com/item?id=" + strconv.Itoa(m.SelectedItem().ID)
 	}
+
 	id := m.SelectedItem().ID
 	commentCount := m.SelectedItem().CommentsCount
 
 	return func() tea.Msg {
 		_ = browser.Open(context.Background(), url)
+
 		return message.OpeningLink{
 			Id:           id,
 			CommentCount: commentCount,
@@ -268,6 +278,7 @@ func (m *Model) handleOpenComments() tea.Cmd {
 
 	return func() tea.Msg {
 		_ = browser.Open(context.Background(), url)
+
 		return message.OpeningCommentsInBrowser{
 			Id:           id,
 			CommentCount: commentCount,

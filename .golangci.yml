@@ -21,9 +21,7 @@ linters:
     # Too noisy / low value
     - depguard         # dependency allow/block lists — not needed
     - godox            # flags TODO/FIXME — we want those as reminders
-    - nlreturn         # requires blank line before return — pedantic
-    - wsl              # whitespace linter — overly opinionated about blank lines
-    - wsl_v5           # same as wsl, v5 variant
+    - wsl              # whitespace linter — deprecated, replaced by wsl_v5
     - varnamelen       # minimum variable name length — too strict for idiomatic Go
     - funlen           # function length limits — handled in review
     - cyclop           # cyclomatic complexity — overlaps with gocognit
@@ -34,13 +32,11 @@ linters:
     - mnd              # magic number detector — too noisy in UI/rendering code
     - funcorder        # method ordering — too pedantic
     - prealloc         # suggests preallocating slices — micro-optimization, not worth it
-    - predeclared      # flags shadowing built-in names — caught by the actual error return refactoring
     - tagliatelle      # struct tag naming convention — json tags match external APIs
     - nonamedreturns   # forbids named returns — useful in some cases
     - inamedparam      # requires named params in interfaces — too strict
     - musttag          # requires struct tags — too strict for internal types
     - maintidx         # maintainability index — overlaps with gocognit/gocyclo
-    - recvcheck        # requires consistent receiver types — too pedantic
     - noinlineerr      # forbids inline error returns — too strict
     - iotamixing       # flags mixing iota with explicit values — rare edge case
     - perfsprint       # suggests fmt.Sprintf replacements — micro-optimization

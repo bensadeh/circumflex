@@ -29,7 +29,9 @@ func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPa
 	var rankings strings.Builder
 
 	startingRank := itemsVisible*currentPage + 1
+
 	var endingRank int
+
 	onLastPage := currentPage+1 == totalPages
 
 	if onLastPage {
@@ -48,27 +50,32 @@ func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPa
 
 func relativeRankings(itemsVisible int, itemsTotal int, currentPosition int, currentPage int, totalPages int) string {
 	rankOfCurrentlySelectedItem := itemsVisible*currentPage + currentPosition + 1
+
 	onLastPage := currentPage+1 == totalPages
 	if onLastPage {
 		itemsVisible -= totalPages*itemsVisible - itemsTotal
 	}
 
 	var rankings strings.Builder
+
 	end := itemsVisible - currentPosition
 	iterator := currentPosition
 
 	for iterator != 0 {
 		number := strconv.Itoa(iterator)
 		rankings.WriteString(aurora.Faint(number).String() + indentationFromRight + newParagraph)
+
 		iterator--
 	}
 
 	rankings.WriteString(strconv.Itoa(rankOfCurrentlySelectedItem) + " " + indentationFromRight + newParagraph)
+
 	iterator++
 
 	for iterator < end {
 		number := strconv.Itoa(iterator)
 		rankings.WriteString(aurora.Faint(number).String() + indentationFromRight + newParagraph)
+
 		iterator++
 	}
 

@@ -97,6 +97,7 @@ func DefaultKeyMap() KeyMap {
 // section. Zero-value bindings act as group separators.
 func (km KeyMap) MainMenuBindings() []key.Binding {
 	sep := key.Binding{}
+
 	return []key.Binding{
 		km.EnterComments,
 		km.ReaderMode,

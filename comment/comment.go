@@ -85,6 +85,7 @@ func Print(c string, config *settings.Config, commentWidth int, availableScreenW
 			wrappedComment, _ := text.Wrap(paragraph, availableScreenWidth)
 
 			codeLines := strings.Split(wrappedComment, "\n")
+
 			var formattedCodeLines strings.Builder
 
 			for j, codeLine := range codeLines {

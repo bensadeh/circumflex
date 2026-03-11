@@ -182,6 +182,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case spinner.TickMsg:
 		newSpinnerModel, cmd := m.spinner.Update(msg)
+
 		m.spinner = newSpinnerModel
 		if m.showSpinner {
 			cmds = append(cmds, cmd)
@@ -307,6 +308,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		if m.state == StateRefreshing {
 			clearAllCategories(m.items)
 		}
+
 		m.items[msg.Category] = msg.Stories
 		m.Paginator.Page = 0
 		m.state = StateBrowsing

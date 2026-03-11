@@ -39,6 +39,7 @@ func (his *Persistent) ClearAndWriteToDisk() error {
 	his.VisitedStories = make(map[int]StoryInfo)
 
 	_, dirPath, fileName := getCacheFilePaths()
+
 	return writeToDisk(his, dirPath, fileName)
 }
 
@@ -49,5 +50,6 @@ func (his *Persistent) MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int)
 	}
 
 	_, dirPath, fileName := getCacheFilePaths()
+
 	return writeToDisk(his, dirPath, fileName)
 }

@@ -61,8 +61,11 @@ func New(categoriesCSV string) (*Categories, error) {
 	if categoriesCSV == "" {
 		return nil, fmt.Errorf("need at least one category")
 	}
+
 	parts := strings.Split(categoriesCSV, ",")
+
 	var validCategories []int
+
 	for _, part := range parts {
 		part = strings.TrimSpace(part)
 		part = strings.ToLower(part)
@@ -126,6 +129,7 @@ func (c *Categories) GetCategories(hasFavorites bool) []int {
 	if hasFavorites {
 		categoriesWithFavorites := make([]int, len(c.categories), len(c.categories)+1)
 		copy(categoriesWithFavorites, c.categories)
+
 		return append(categoriesWithFavorites, Favorites)
 	}
 
@@ -137,6 +141,7 @@ func (c *Categories) GetCurrentCategory(hasFavorites bool) int {
 		categoriesWithFavorites := make([]int, len(c.categories), len(c.categories)+1)
 		copy(categoriesWithFavorites, c.categories)
 		categoriesWithFavorites = append(categoriesWithFavorites, Favorites)
+
 		return categoriesWithFavorites[c.currentIndex]
 	}
 
@@ -169,9 +174,11 @@ func (c *Categories) GetPrevCategory(hasFavorites bool) int {
 			prevIndex = len(c.categories) - 1
 		}
 	}
+
 	if hasFavorites && prevIndex == len(c.categories) {
 		return Favorites
 	}
+
 	return c.categories[prevIndex]
 }
 

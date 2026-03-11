@@ -35,6 +35,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() tea.View {
 	v := tea.NewView(docStyle.Render(m.list.View()))
 	v.AltScreen = true
+
 	return v
 }
 

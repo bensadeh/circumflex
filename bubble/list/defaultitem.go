@@ -85,6 +85,7 @@ func (d *DefaultDelegate) Height() int {
 	if d.ShowDescription {
 		return 2
 	}
+
 	return 1
 }
 
@@ -103,6 +104,7 @@ func (d *DefaultDelegate) Update(msg tea.Msg, m *Model) tea.Cmd {
 	if d.UpdateFunc == nil {
 		return nil
 	}
+
 	return d.UpdateFunc(msg, m)
 }
 
@@ -172,8 +174,10 @@ func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *item.St
 
 	if d.ShowDescription {
 		_, _ = fmt.Fprintf(w, "%s\n%s", title, desc)
+
 		return
 	}
+
 	_, _ = fmt.Fprintf(w, "%s", title)
 }
 

@@ -15,6 +15,7 @@ func (m *Model) updatePagination() {
 	if m.showTitle {
 		availHeight -= lipgloss.Height(m.titleView())
 	}
+
 	if m.showStatusBar {
 		// We subtract one from the height because we don't want any spacing
 		availHeight -= lipgloss.Height(m.statusAndPaginationView()) - 1

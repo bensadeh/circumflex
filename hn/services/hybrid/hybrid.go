@@ -27,6 +27,7 @@ func NewService() *Service {
 	client := resty.New()
 	client.SetTimeout(10 * time.Second)
 	client.SetHeader("User-Agent", version.Name+"/"+version.Version)
+
 	return &Service{client: client}
 }
 
@@ -43,12 +44,15 @@ func (s *Service) FetchItems(itemsToFetch int, cat int) ([]*item.Story, error) {
 
 func (s *Service) fetchItemsInParallel(ids []int) ([]*item.Story, error) {
 	items := make([]*item.Story, len(ids))
+
 	var wg sync.WaitGroup
 
 	for i, id := range ids {
 		wg.Add(1)
+
 		go func(i int, id int) {
 			defer wg.Done()
+
 			fetched, err := s.fetchItem(id)
 			if err == nil {
 				items[i] = fetched
@@ -60,6 +64,7 @@ func (s *Service) fetchItemsInParallel(ids []int) ([]*item.Story, error) {
 
 	// Filter out nil items (failed fetches)
 	var failed int
+
 	result := make([]*item.Story, 0, len(items))
 	for _, it := range items {
 		if it != nil {

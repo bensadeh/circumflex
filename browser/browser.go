@@ -18,20 +18,24 @@ func Open(ctx context.Context, url string) error {
 		args = append(args, url)
 
 		cmd := exec.CommandContext(ctx, command, args...)
+
 		return cmd.Start()
 	}
 
 	switch runtime.GOOS {
 	case "linux", "freebsd", "openbsd", "netbsd":
 		cmd := exec.CommandContext(ctx, "xdg-open", url)
+
 		return cmd.Start()
 
 	case "windows":
 		cmd := exec.CommandContext(ctx, "rundll32", "url.dll,FileProtocolHandler", url)
+
 		return cmd.Start()
 
 	case "darwin":
 		cmd := exec.CommandContext(ctx, "open", url)
+
 		return cmd.Start()
 
 	default:

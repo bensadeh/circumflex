@@ -22,8 +22,10 @@ func GetText(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Bindi
 	for _, b := range mainMenuBindings {
 		if !b.Enabled() {
 			keys.AddSeparator()
+
 			continue
 		}
+
 		keys.AddKeymap(b.Help().Desc, b.Help().Key)
 	}
 

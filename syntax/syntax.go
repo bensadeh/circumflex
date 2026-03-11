@@ -47,6 +47,7 @@ func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNer
 	if enableNerdFonts {
 		highlightedStartup := reset + getYCBarNerdFonts(nerdfonts.YCombinator+constants.NoBreakSpace+`$2`, highlightType, enableNerdFonts) +
 			getHighlight(highlightType)
+
 		return reYCWithSeason.ReplaceAllString(comment, highlightedStartup)
 	}
 
@@ -84,6 +85,7 @@ func getYCBarNerdFonts(text string, highlightType int, enableNerdFonts bool) str
 
 func HighlightYear(comment string, highlightType int) string {
 	content := getYear(`$1`, highlightType)
+
 	return reYear.ReplaceAllString(comment, reset+content+getHighlight(highlightType))
 }
 
@@ -134,20 +136,24 @@ func label(text string, fg color.Color, bg color.Color, highlightType int, enabl
 func getLeftBorder(bg color.Color, highlightType int, enableNerdFonts bool) string {
 	if enableNerdFonts {
 		borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
+
 		return borderStyle.Render(nerdfonts.LeftSeparator)
 	}
 
 	borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
+
 	return borderStyle.Render(" ")
 }
 
 func getRightBorder(bg color.Color, highlightType int, enableNerdFonts bool) string {
 	if enableNerdFonts {
 		borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
+
 		return borderStyle.Render(nerdfonts.RightSeparator)
 	}
 
 	borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
+
 	return borderStyle.Render(" ")
 }
 
