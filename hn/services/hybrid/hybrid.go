@@ -165,7 +165,7 @@ func mapItem(hn *HN) *item.Story {
 
 func (s *Service) FetchComments(id int) (*item.Story, error) {
 	response, err := s.client.R().
-		Get("http://api.hackerwebapp.com/item/" + strconv.Itoa(id))
+		Get("https://api.hackerwebapp.com/item/" + strconv.Itoa(id))
 	if err != nil {
 		return nil, fmt.Errorf("fetching comments for %d: %w", id, err)
 	}
