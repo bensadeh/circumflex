@@ -78,7 +78,7 @@ func (f *Favorites) Remove(index int) error {
 	return nil
 }
 
-func (f *Favorites) UpdateStoryAndWriteToDisk(newItem *item.Story) {
+func (f *Favorites) UpdateStoryAndWriteToDisk(newItem *item.Story) error {
 	for i, s := range f.items {
 		if s.ID == newItem.ID {
 			isFieldsUpdated := s.Title != newItem.Title || s.Points != newItem.Points ||
@@ -95,8 +95,10 @@ func (f *Favorites) UpdateStoryAndWriteToDisk(newItem *item.Story) {
 				f.items[i].URL = newItem.URL
 				f.items[i].Domain = newItem.Domain
 
-				_ = f.Write()
+				return f.Write()
 			}
 		}
 	}
+
+	return nil
 }

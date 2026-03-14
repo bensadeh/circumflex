@@ -216,13 +216,18 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 	case message.AddToFavorites:
 		m.favorites.Add(msg.Item)
-		m.items[categories.Favorites] = m.favorites.GetItems()
-		m.cat.SetFavorites(m.favorites.HasItems())
 
 		if err := m.favorites.Write(); err != nil {
-			cmds = append(cmds, m.NewStatusMessageWithDuration("Could not save favorites", time.Second*3))
+			_ = m.favorites.Remove(len(m.favorites.GetItems()) - 1)
+			m.items[categories.Favorites] = m.favorites.GetItems()
+			m.cat.SetFavorites(m.favorites.HasItems())
+			cmds = append(cmds, m.NewStatusMessageWithDuration("Could not save favorite to disk", time.Second*3))
+
+			break
 		}
 
+		m.items[categories.Favorites] = m.favorites.GetItems()
+		m.cat.SetFavorites(m.favorites.HasItems())
 		m.updatePagination()
 
 	case tea.WindowSizeMsg:
@@ -262,7 +267,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 	case message.CommentTreeReady:
 		if msg.UpdatedStory != nil {
-			m.favorites.UpdateStoryAndWriteToDisk(msg.UpdatedStory)
+			_ = m.favorites.UpdateStoryAndWriteToDisk(msg.UpdatedStory)
 		}
 
 		if msg.Error != "" {

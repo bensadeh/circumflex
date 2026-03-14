@@ -161,15 +161,20 @@ func (m *Model) handleConfirmAddFavorites() tea.Cmd {
 func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 	m.state = StateBrowsing
 
+	removedItem := m.favorites.GetItems()[m.Index()]
+
 	if err := m.favorites.Remove(m.Index()); err != nil {
 		return m.NewStatusMessageWithDuration("Could not remove favorite", time.Second*3)
 	}
 
-	m.items[categories.Favorites] = m.favorites.GetItems()
-
 	if err := m.favorites.Write(); err != nil {
-		return m.NewStatusMessageWithDuration("Could not save favorites", time.Second*3)
+		m.favorites.Add(removedItem)
+		m.items[categories.Favorites] = m.favorites.GetItems()
+
+		return m.NewStatusMessageWithDuration("Could not save favorites to disk", time.Second*3)
 	}
+
+	m.items[categories.Favorites] = m.favorites.GetItems()
 
 	m.cat.SetFavorites(m.favorites.HasItems())
 
@@ -336,11 +341,8 @@ func (m *Model) changeToPrevCategory() {
 
 func getAddItemConfirmationMessage() string {
 	normal := lipgloss.NewStyle()
-	green := normal.Copy().
-		Foreground(lipgloss.Color("2"))
-	bold := normal.Copy().
-		Foreground(lipgloss.Color("4")).
-		Bold(true)
+	green := normal.Foreground(lipgloss.Color("2"))
+	bold := normal.Foreground(lipgloss.Color("4")).Bold(true)
 
 	return green.Render("Add") + normal.Render(" to Favorites? Press ") + bold.Render("y") +
 		normal.Render(" to confirm")
@@ -348,11 +350,8 @@ func getAddItemConfirmationMessage() string {
 
 func getRemoveItemConfirmationMessage() string {
 	normal := lipgloss.NewStyle()
-	red := normal.Copy().
-		Foreground(lipgloss.Color("1"))
-	bold := normal.Copy().
-		Foreground(lipgloss.Color("4")).
-		Bold(true)
+	red := normal.Foreground(lipgloss.Color("1"))
+	bold := normal.Foreground(lipgloss.Color("4")).Bold(true)
 
 	return red.Render("Remove") + normal.Render(" from Favorites? Press ") + bold.Render("y") +
 		normal.Render(" to confirm")

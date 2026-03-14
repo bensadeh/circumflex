@@ -105,7 +105,7 @@ func TestFavorites_UpdateStoryAndWriteToDisk(t *testing.T) {
 	f.Add(&item.Story{ID: 1, Title: "Old Title", Points: 10, CommentsCount: 5})
 
 	newItem := &item.Story{ID: 1, Title: "New Title", Points: 100, CommentsCount: 50}
-	f.UpdateStoryAndWriteToDisk(newItem)
+	_ = f.UpdateStoryAndWriteToDisk(newItem)
 
 	assert.Equal(t, "New Title", f.GetItems()[0].Title)
 	assert.Equal(t, 100, f.GetItems()[0].Points)
@@ -117,7 +117,7 @@ func TestFavorites_UpdateStoryAndWriteToDisk_NoMatch(t *testing.T) {
 	f.Add(&item.Story{ID: 1, Title: "Original"})
 
 	newItem := &item.Story{ID: 99, Title: "Different"}
-	f.UpdateStoryAndWriteToDisk(newItem)
+	_ = f.UpdateStoryAndWriteToDisk(newItem)
 
 	assert.Equal(t, "Original", f.GetItems()[0].Title)
 }
