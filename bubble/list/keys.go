@@ -169,14 +169,12 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 
 	if err := m.favorites.Write(); err != nil {
 		m.favorites.Add(removedItem)
-		m.items[categories.Favorites] = m.favorites.GetItems()
+		m.syncFavorites()
 
 		return m.NewStatusMessageWithDuration("Could not save favorites to disk", time.Second*3)
 	}
 
-	m.items[categories.Favorites] = m.favorites.GetItems()
-
-	m.cat.SetFavorites(m.favorites.HasItems())
+	m.syncFavorites()
 
 	isOnLastItem := m.Index() == len(m.items[categories.Favorites])
 	hasOnlyOneItem := len(m.items[categories.Favorites]) == 0

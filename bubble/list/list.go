@@ -142,6 +142,11 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 	return &m
 }
 
+func (m *Model) syncFavorites() {
+	m.items[categories.Favorites] = m.favorites.GetItems()
+	m.cat.SetFavorites(m.favorites.HasItems())
+}
+
 func (m *Model) setSize(width, height int) {
 	m.width = width
 	m.height = height
@@ -171,8 +176,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 		m.state = StateFetching
 
-		m.items[categories.Favorites] = m.favorites.GetItems()
-		m.cat.SetFavorites(m.favorites.HasItems())
+		m.syncFavorites()
 
 		fetchCmd := m.FetchStoriesForFirstCategory()
 		cmds = append(cmds, fetchCmd)
@@ -219,15 +223,13 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 		if err := m.favorites.Write(); err != nil {
 			_ = m.favorites.Remove(len(m.favorites.GetItems()) - 1)
-			m.items[categories.Favorites] = m.favorites.GetItems()
-			m.cat.SetFavorites(m.favorites.HasItems())
+			m.syncFavorites()
 			cmds = append(cmds, m.NewStatusMessageWithDuration("Could not save favorite to disk", time.Second*3))
 
 			break
 		}
 
-		m.items[categories.Favorites] = m.favorites.GetItems()
-		m.cat.SetFavorites(m.favorites.HasItems())
+		m.syncFavorites()
 		m.updatePagination()
 
 	case tea.WindowSizeMsg:
