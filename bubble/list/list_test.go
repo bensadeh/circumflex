@@ -248,10 +248,10 @@ func TestTabToCachedCategory(t *testing.T) {
 	// Pre-populate the "best" category so tab doesn't need to fetch
 	m.items[categories.Best] = testItems()
 
-	initialIndex := m.cat.GetCurrentIndex()
+	initialIndex := m.cat.CurrentIndex()
 	m, cmd := m.Update(keyMsg("tab"))
 
-	assert.NotEqual(t, initialIndex, m.cat.GetCurrentIndex())
+	assert.NotEqual(t, initialIndex, m.cat.CurrentIndex())
 	// No fetch needed since category is cached, cmd should be nil
 	assert.Nil(t, cmd)
 }

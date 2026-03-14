@@ -91,7 +91,7 @@ func (m *Model) VisibleItems() []*item.Story {
 		return m.transition.oldItems
 	}
 
-	return m.items[m.cat.GetCurrentCategory()]
+	return m.items[m.cat.CurrentCategory()]
 }
 
 // SelectedItem returns the current selected item in the list.

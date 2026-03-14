@@ -1,10 +1,12 @@
 package main
 
-import "clx/cmd"
+import (
+	"clx/cmd"
+	"os"
+)
 
 func main() {
-	rootCmd := cmd.Root()
-	if err := rootCmd.Execute(); err != nil {
-		panic(err)
+	if err := cmd.Root().Execute(); err != nil {
+		os.Exit(1)
 	}
 }

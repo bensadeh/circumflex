@@ -120,7 +120,7 @@ func (c *Categories) Prev() {
 	}
 }
 
-func (c *Categories) GetNextIndex() int {
+func (c *Categories) NextIndex() int {
 	nextIndex := c.currentIndex + 1
 	if nextIndex >= len(c.active) {
 		nextIndex = 0
@@ -129,7 +129,7 @@ func (c *Categories) GetNextIndex() int {
 	return nextIndex
 }
 
-func (c *Categories) GetPrevIndex() int {
+func (c *Categories) PrevIndex() int {
 	prevIndex := c.currentIndex - 1
 	if prevIndex < 0 {
 		prevIndex = len(c.active) - 1
@@ -138,24 +138,24 @@ func (c *Categories) GetPrevIndex() int {
 	return prevIndex
 }
 
-func (c *Categories) GetCategories() []int {
+func (c *Categories) ActiveCategories() []int {
 	return c.active
 }
 
-func (c *Categories) GetCurrentCategory() int {
+func (c *Categories) CurrentCategory() int {
 	return c.active[c.currentIndex]
 }
 
-func (c *Categories) GetCurrentIndex() int {
+func (c *Categories) CurrentIndex() int {
 	return c.currentIndex
 }
 
-func (c *Categories) GetNextCategory() int {
-	return c.active[c.GetNextIndex()]
+func (c *Categories) NextCategory() int {
+	return c.active[c.NextIndex()]
 }
 
-func (c *Categories) GetPrevCategory() int {
-	return c.active[c.GetPrevIndex()]
+func (c *Categories) PrevCategory() int {
+	return c.active[c.PrevIndex()]
 }
 
 func (c *Categories) SetIndex(index int) {

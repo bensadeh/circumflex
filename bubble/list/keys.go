@@ -86,7 +86,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return m.handleOpenComments()
 
 		case key.Matches(msg, m.keymap.Refresh):
-			if m.cat.GetCurrentCategory() != categories.Favorites {
+			if m.cat.CurrentCategory() != categories.Favorites {
 				return m.handleRefresh()
 			}
 
@@ -97,7 +97,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return nil
 
 		case key.Matches(msg, m.keymap.RemoveFavorite):
-			if m.cat.GetCurrentCategory() == categories.Favorites {
+			if m.cat.CurrentCategory() == categories.Favorites {
 				m.SetPermanentStatusMessage(getRemoveItemConfirmationMessage(), false)
 				m.state = StateRemoveFavoritesPrompt
 
@@ -183,8 +183,8 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 		m.updateCursor()
 		m.updatePagination()
 
-		catIndex := m.cat.GetCurrentIndex()
-		catValue := m.cat.GetCurrentCategory()
+		catIndex := m.cat.CurrentIndex()
+		catValue := m.cat.CurrentCategory()
 		changeCatCmd := func() tea.Msg {
 			return message.FetchAndChangeToCategory{Index: catIndex, Category: catValue, Cursor: 0}
 		}
@@ -210,8 +210,8 @@ func (m *Model) handleCancelPrompt() tea.Cmd {
 
 func (m *Model) handleTabForward() tea.Cmd {
 	return m.handleTab(
-		m.cat.GetNextIndex(),
-		m.cat.GetNextCategory(),
+		m.cat.NextIndex(),
+		m.cat.NextCategory(),
 		m.changeToNextCategory,
 		func() { m.cat.Next() },
 	)
@@ -219,8 +219,8 @@ func (m *Model) handleTabForward() tea.Cmd {
 
 func (m *Model) handleTabBackward() tea.Cmd {
 	return m.handleTab(
-		m.cat.GetPrevIndex(),
-		m.cat.GetPrevCategory(),
+		m.cat.PrevIndex(),
+		m.cat.PrevCategory(),
 		m.changeToPrevCategory,
 		func() { m.cat.Prev() },
 	)
@@ -233,9 +233,9 @@ func (m *Model) handleTab(targetIndex, targetCategory int, changeCategory func()
 		return nil
 	}
 
-	currentCategory := m.cat.GetCurrentCategory()
+	currentCategory := m.cat.CurrentCategory()
 	m.transition = &transition{
-		prevIndex: m.cat.GetCurrentIndex(),
+		prevIndex: m.cat.CurrentIndex(),
 		oldItems:  m.items[currentCategory],
 	}
 
@@ -287,8 +287,8 @@ func (m *Model) handleOpenComments() tea.Cmd {
 }
 
 func (m *Model) handleRefresh() tea.Cmd {
-	currentCategory := m.cat.GetCurrentCategory()
-	currentIndex := m.cat.GetCurrentIndex()
+	currentCategory := m.cat.CurrentCategory()
+	currentIndex := m.cat.CurrentIndex()
 	currentPage := m.Paginator.Page
 
 	m.transition = &transition{
@@ -318,7 +318,7 @@ func (m *Model) categoryHasStories(cat int) bool {
 
 func (m *Model) changeToNextCategory() {
 	m.cat.Next()
-	currentCategory := m.cat.GetCurrentCategory()
+	currentCategory := m.cat.CurrentCategory()
 
 	m.Paginator.Page = 0
 	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)
@@ -327,7 +327,7 @@ func (m *Model) changeToNextCategory() {
 
 func (m *Model) changeToPrevCategory() {
 	m.cat.Prev()
-	currentCategory := m.cat.GetCurrentCategory()
+	currentCategory := m.cat.CurrentCategory()
 
 	m.Paginator.Page = 0
 	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)

@@ -14,7 +14,7 @@ import (
 )
 
 func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
-	categoryToFetch := m.cat.GetCurrentCategory()
+	categoryToFetch := m.cat.CurrentCategory()
 	service := m.service
 	numItems := m.getNumberOfItemsToFetch(categoryToFetch)
 
@@ -120,7 +120,7 @@ func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 
 func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection) tea.Cmd {
 	width := m.width
-	isOnFavorites := m.cat.GetCurrentCategory() == categories.Favorites
+	isOnFavorites := m.cat.CurrentCategory() == categories.Favorites
 	hist := m.history
 	service := m.service
 	config := m.config

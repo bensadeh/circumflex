@@ -15,8 +15,8 @@ func (m *Model) View() string {
 	if m.state == StateHelpScreen {
 		return fmt.Sprintf("%s\n%s\n%s",
 			header.GetHeader(
-				m.cat.GetCategories(),
-				m.cat.GetCurrentIndex(),
+				m.cat.ActiveCategories(),
+				m.cat.CurrentIndex(),
 				m.width),
 			m.viewport.View(),
 			m.statusAndPaginationView())
@@ -42,7 +42,7 @@ func (m *Model) View() string {
 		availHeight -= lipgloss.Height(v)
 	}
 
-	content := lipgloss.NewStyle().Height(availHeight).Render(m.populatedView())
+	content := m.contentStyle.Height(availHeight).Render(m.populatedView())
 	totalItems := len(m.VisibleItems())
 	rankings := ranking.GetRankings(
 		false,
@@ -65,8 +65,8 @@ func (m *Model) View() string {
 
 func (m *Model) titleView() string {
 	return header.GetHeader(
-		m.cat.GetCategories(),
-		m.cat.GetCurrentIndex(),
+		m.cat.ActiveCategories(),
+		m.cat.CurrentIndex(),
 		m.width)
 }
 
@@ -76,12 +76,12 @@ func (m *Model) statusAndPaginationView() string {
 		rightContent  string
 	)
 
-	underscore := lipgloss.NewStyle().Underline(true).Render(" ")
+	underscore := m.underlineStyle.Render(" ")
 	underline := strings.Repeat(underscore, m.width)
 
 	switch {
 	case m.state == StateHelpScreen:
-		centerContent = lipgloss.NewStyle().Faint(true).Render(
+		centerContent = m.faintStyle.Render(
 			"github.com/bensadeh/circumflex • version " + version.Version)
 	case m.showSpinner:
 		centerContent = m.spinnerView()
@@ -93,23 +93,13 @@ func (m *Model) statusAndPaginationView() string {
 		rightContent = m.Paginator.View()
 	}
 
-	left := lipgloss.NewStyle().
-		Inline(true).
-		Width(5).
-		MaxWidth(5).
-		Render("")
+	left := m.statusLeftStyle.Render("")
 
-	center := lipgloss.NewStyle().
-		Inline(true).
+	center := m.statusMidStyle.
 		Width(m.width - 5 - 5).
-		Align(lipgloss.Center).
 		Render(centerContent)
 
-	right := lipgloss.NewStyle().
-		Inline(true).
-		Width(5).
-		Align(lipgloss.Center).
-		Render(rightContent)
+	right := m.statusEndStyle.Render(rightContent)
 
 	return underline + "\n" +
 		m.Styles.StatusBar.Render(left) +

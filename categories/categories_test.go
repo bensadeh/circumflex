@@ -18,12 +18,12 @@ func newTestCategories(t *testing.T, csv string) *Categories {
 
 func TestNew_SingleCategory(t *testing.T) {
 	c := newTestCategories(t, "top")
-	assert.Equal(t, Top, c.GetCurrentCategory())
+	assert.Equal(t, Top, c.CurrentCategory())
 }
 
 func TestNew_MultipleCategories(t *testing.T) {
 	c := newTestCategories(t, "top,best,ask,show")
-	cats := c.GetCategories()
+	cats := c.ActiveCategories()
 	assert.Len(t, cats, 4)
 	assert.Equal(t, Top, cats[0])
 	assert.Equal(t, Best, cats[1])
@@ -33,7 +33,7 @@ func TestNew_MultipleCategories(t *testing.T) {
 
 func TestNew_WhitespaceHandling(t *testing.T) {
 	c := newTestCategories(t, " top , best ")
-	cats := c.GetCategories()
+	cats := c.ActiveCategories()
 	assert.Len(t, cats, 2)
 	assert.Equal(t, Top, cats[0])
 	assert.Equal(t, Best, cats[1])
@@ -41,7 +41,7 @@ func TestNew_WhitespaceHandling(t *testing.T) {
 
 func TestNew_CaseInsensitive(t *testing.T) {
 	c := newTestCategories(t, "TOP,Best,ASK")
-	cats := c.GetCategories()
+	cats := c.ActiveCategories()
 	assert.Len(t, cats, 3)
 	assert.Equal(t, Top, cats[0])
 	assert.Equal(t, Best, cats[1])
@@ -51,36 +51,36 @@ func TestNew_CaseInsensitive(t *testing.T) {
 func TestNext_WithoutFavorites(t *testing.T) {
 	c := newTestCategories(t, "top,best,ask")
 
-	assert.Equal(t, 0, c.GetCurrentIndex())
-	assert.Equal(t, Top, c.GetCurrentCategory())
+	assert.Equal(t, 0, c.CurrentIndex())
+	assert.Equal(t, Top, c.CurrentCategory())
 
 	c.Next()
-	assert.Equal(t, 1, c.GetCurrentIndex())
-	assert.Equal(t, Best, c.GetCurrentCategory())
+	assert.Equal(t, 1, c.CurrentIndex())
+	assert.Equal(t, Best, c.CurrentCategory())
 
 	c.Next()
-	assert.Equal(t, 2, c.GetCurrentIndex())
-	assert.Equal(t, Ask, c.GetCurrentCategory())
+	assert.Equal(t, 2, c.CurrentIndex())
+	assert.Equal(t, Ask, c.CurrentCategory())
 
 	// Wraps around
 	c.Next()
-	assert.Equal(t, 0, c.GetCurrentIndex())
-	assert.Equal(t, Top, c.GetCurrentCategory())
+	assert.Equal(t, 0, c.CurrentIndex())
+	assert.Equal(t, Top, c.CurrentCategory())
 }
 
 func TestPrev_WithoutFavorites(t *testing.T) {
 	c := newTestCategories(t, "top,best,ask")
 
-	assert.Equal(t, 0, c.GetCurrentIndex())
+	assert.Equal(t, 0, c.CurrentIndex())
 
 	// Wraps to last
 	c.Prev()
-	assert.Equal(t, 2, c.GetCurrentIndex())
-	assert.Equal(t, Ask, c.GetCurrentCategory())
+	assert.Equal(t, 2, c.CurrentIndex())
+	assert.Equal(t, Ask, c.CurrentCategory())
 
 	c.Prev()
-	assert.Equal(t, 1, c.GetCurrentIndex())
-	assert.Equal(t, Best, c.GetCurrentCategory())
+	assert.Equal(t, 1, c.CurrentIndex())
+	assert.Equal(t, Best, c.CurrentCategory())
 }
 
 func TestNext_WithFavorites(t *testing.T) {
@@ -89,14 +89,14 @@ func TestNext_WithFavorites(t *testing.T) {
 
 	// With favorites, there are 3 positions: top(0), best(1), favorites(2)
 	c.Next()
-	assert.Equal(t, Best, c.GetCurrentCategory())
+	assert.Equal(t, Best, c.CurrentCategory())
 
 	c.Next()
-	assert.Equal(t, Favorites, c.GetCurrentCategory())
+	assert.Equal(t, Favorites, c.CurrentCategory())
 
 	// Wraps around
 	c.Next()
-	assert.Equal(t, Top, c.GetCurrentCategory())
+	assert.Equal(t, Top, c.CurrentCategory())
 }
 
 func TestPrev_WithFavorites(t *testing.T) {
@@ -105,59 +105,59 @@ func TestPrev_WithFavorites(t *testing.T) {
 
 	// Wraps to favorites
 	c.Prev()
-	assert.Equal(t, Favorites, c.GetCurrentCategory())
+	assert.Equal(t, Favorites, c.CurrentCategory())
 
 	c.Prev()
-	assert.Equal(t, Best, c.GetCurrentCategory())
+	assert.Equal(t, Best, c.CurrentCategory())
 }
 
-func TestGetNextCategory(t *testing.T) {
+func TestNextCategory(t *testing.T) {
 	c := newTestCategories(t, "top,best,ask")
 
-	assert.Equal(t, Best, c.GetNextCategory())
+	assert.Equal(t, Best, c.NextCategory())
 
 	c.SetIndex(2)
-	assert.Equal(t, Top, c.GetNextCategory())
+	assert.Equal(t, Top, c.NextCategory())
 }
 
-func TestGetPrevCategory(t *testing.T) {
+func TestPrevCategory(t *testing.T) {
 	c := newTestCategories(t, "top,best,ask")
 
-	assert.Equal(t, Ask, c.GetPrevCategory())
+	assert.Equal(t, Ask, c.PrevCategory())
 
 	c.SetIndex(2)
-	assert.Equal(t, Best, c.GetPrevCategory())
+	assert.Equal(t, Best, c.PrevCategory())
 }
 
-func TestGetNextIndex(t *testing.T) {
+func TestNextIndex(t *testing.T) {
 	c := newTestCategories(t, "top,best,ask")
 
-	assert.Equal(t, 1, c.GetNextIndex())
+	assert.Equal(t, 1, c.NextIndex())
 
 	c.SetIndex(2)
-	assert.Equal(t, 0, c.GetNextIndex())
+	assert.Equal(t, 0, c.NextIndex())
 }
 
-func TestGetPrevIndex(t *testing.T) {
+func TestPrevIndex(t *testing.T) {
 	c := newTestCategories(t, "top,best,ask")
 
-	assert.Equal(t, 2, c.GetPrevIndex())
+	assert.Equal(t, 2, c.PrevIndex())
 
 	c.SetIndex(2)
-	assert.Equal(t, 1, c.GetPrevIndex())
+	assert.Equal(t, 1, c.PrevIndex())
 }
 
-func TestGetCategories_WithFavorites(t *testing.T) {
+func TestActiveCategories_WithFavorites(t *testing.T) {
 	c := newTestCategories(t, "top,best")
 	c.SetFavorites(true)
-	cats := c.GetCategories()
+	cats := c.ActiveCategories()
 	assert.Len(t, cats, 3)
 	assert.Equal(t, Favorites, cats[2])
 }
 
-func TestGetCategories_WithoutFavorites(t *testing.T) {
+func TestActiveCategories_WithoutFavorites(t *testing.T) {
 	c := newTestCategories(t, "top,best")
-	cats := c.GetCategories()
+	cats := c.ActiveCategories()
 	assert.Len(t, cats, 2)
 }
 
@@ -165,8 +165,8 @@ func TestSetIndex(t *testing.T) {
 	c := newTestCategories(t, "top,best,ask")
 
 	c.SetIndex(2)
-	assert.Equal(t, 2, c.GetCurrentIndex())
-	assert.Equal(t, Ask, c.GetCurrentCategory())
+	assert.Equal(t, 2, c.CurrentIndex())
+	assert.Equal(t, Ask, c.CurrentCategory())
 }
 
 func TestSetIndex_OutOfBounds(t *testing.T) {
@@ -174,10 +174,10 @@ func TestSetIndex_OutOfBounds(t *testing.T) {
 
 	c.SetIndex(1)
 	c.SetIndex(99)
-	assert.Equal(t, 1, c.GetCurrentIndex(), "should be no-op for out-of-range index")
+	assert.Equal(t, 1, c.CurrentIndex(), "should be no-op for out-of-range index")
 
 	c.SetIndex(-1)
-	assert.Equal(t, 1, c.GetCurrentIndex(), "should be no-op for negative index")
+	assert.Equal(t, 1, c.CurrentIndex(), "should be no-op for negative index")
 }
 
 func TestNew_EmptyString(t *testing.T) {
@@ -195,12 +195,12 @@ func TestSetFavorites_Idempotent(t *testing.T) {
 
 	c.SetFavorites(true)
 	c.SetFavorites(true)
-	assert.Len(t, c.GetCategories(), 3)
+	assert.Len(t, c.ActiveCategories(), 3)
 	assert.True(t, c.HasFavorites())
 
 	c.SetFavorites(false)
 	c.SetFavorites(false)
-	assert.Len(t, c.GetCategories(), 2)
+	assert.Len(t, c.ActiveCategories(), 2)
 	assert.False(t, c.HasFavorites())
 }
 
@@ -210,12 +210,12 @@ func TestSetFavorites_ClampIndex(t *testing.T) {
 
 	// Move to favorites (index 2)
 	c.SetIndex(2)
-	assert.Equal(t, Favorites, c.GetCurrentCategory())
+	assert.Equal(t, Favorites, c.CurrentCategory())
 
 	// Remove favorites — index should clamp to last valid (1)
 	c.SetFavorites(false)
-	assert.Equal(t, 1, c.GetCurrentIndex())
-	assert.Equal(t, Best, c.GetCurrentCategory())
+	assert.Equal(t, 1, c.CurrentIndex())
+	assert.Equal(t, Best, c.CurrentCategory())
 }
 
 func TestBase(t *testing.T) {

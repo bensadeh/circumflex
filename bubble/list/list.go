@@ -78,6 +78,14 @@ type Model struct {
 	keymap    KeyMap
 
 	viewport viewport.Model
+
+	// Cached styles for hot-path rendering.
+	contentStyle    lipgloss.Style
+	underlineStyle  lipgloss.Style
+	faintStyle      lipgloss.Style
+	statusLeftStyle lipgloss.Style
+	statusMidStyle  lipgloss.Style
+	statusEndStyle  lipgloss.Style
 }
 
 func New(delegate ItemDelegate, config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int) *Model {
@@ -120,6 +128,13 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 		favorites: favorites,
 		cat:       cat,
 		keymap:    DefaultKeyMap(),
+
+		contentStyle:    lipgloss.NewStyle(),
+		underlineStyle:  lipgloss.NewStyle().Underline(true),
+		faintStyle:      lipgloss.NewStyle().Faint(true),
+		statusLeftStyle: lipgloss.NewStyle().Inline(true).Width(5).MaxWidth(5),
+		statusMidStyle:  lipgloss.NewStyle().Inline(true).Align(lipgloss.Center),
+		statusEndStyle:  lipgloss.NewStyle().Inline(true).Width(5).Align(lipgloss.Center),
 	}
 
 	m.updatePagination()

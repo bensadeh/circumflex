@@ -25,6 +25,8 @@ func GetRankings(useRelativeNumbering bool, itemsVisible, itemsTotal, currentPos
 	return absoluteRankings(itemsVisible, itemsTotal, currentPage, totalPages)
 }
 
+var rankStyle = lipgloss.NewStyle().Width(6).Align(lipgloss.Right)
+
 func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPages int) string {
 	var rankings strings.Builder
 
@@ -41,7 +43,7 @@ func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPa
 	endingRank = startingRank + itemsVisible
 
 	for i := startingRank; i < endingRank; i++ {
-		rank := lipgloss.NewStyle().Width(6).Align(lipgloss.Right).Render(strconv.Itoa(i)+".") + " "
+		rank := rankStyle.Render(strconv.Itoa(i)+".") + " "
 		rankings.WriteString(rank + newParagraph)
 	}
 
