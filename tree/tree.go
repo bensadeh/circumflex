@@ -91,6 +91,12 @@ func printReplies(c *item.Story, config *settings.Config, screenWidth int, origi
 	return fullCommentWithFilterTag.String()
 }
 
+var (
+	buttonNotPressedBase = lipgloss.NewStyle().Bold(true).AlignHorizontal(lipgloss.Center)
+	buttonPressedBase    = lipgloss.NewStyle().Bold(true).Faint(true).AlignHorizontal(lipgloss.Center)
+	buttonContainerBase  = lipgloss.NewStyle().AlignHorizontal(lipgloss.Center)
+)
+
 func getButton(level int, replyCount int, commentWidth int) string {
 	if replyCount == 0 || level != 0 {
 		return ""
@@ -103,22 +109,10 @@ func getButton(level int, replyCount int, commentWidth int) string {
 
 	buttonLabel := fmt.Sprintf("%d %s", replyCount, replies)
 
-	buttonNotPressedStyle := lipgloss.NewStyle().
-		Bold(true).
-		AlignHorizontal(lipgloss.Center).
-		SetString("▶ " + buttonLabel)
+	buttonNotPressed := buttonNotPressedBase.SetString("▶ " + buttonLabel).String()
+	buttonPressed := buttonPressedBase.SetString("▼ " + buttonLabel).String()
 
-	buttonNotPressed := buttonNotPressedStyle.String()
-
-	buttonPressedStyle := lipgloss.NewStyle().
-		Bold(true).
-		Faint(true).
-		AlignHorizontal(lipgloss.Center).
-		SetString("▼ " + buttonLabel)
-
-	buttonPressed := buttonPressedStyle.String()
-
-	style := lipgloss.NewStyle().Width(commentWidth).AlignHorizontal(lipgloss.Center)
+	style := buttonContainerBase.Width(commentWidth)
 
 	return newLine + style.Render(buttonNotPressed) + constants.InvisibleCharacterForCollapse +
 		newLine + style.Render(buttonPressed) + constants.InvisibleCharacterForExpansion + newLine
