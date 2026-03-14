@@ -356,24 +356,26 @@ func preFormatHeader(text string) string {
 	return text
 }
 
-func unescapeCharacters(text string) string {
-	text = strings.ReplaceAll(text, `\|`, "|")
-	text = strings.ReplaceAll(text, `\-`, "-")
-	text = strings.ReplaceAll(text, `\_`, "_")
-	text = strings.ReplaceAll(text, `\*`, "*")
-	text = strings.ReplaceAll(text, `\\`, `\`)
-	text = strings.ReplaceAll(text, `\#`, "#")
-	text = strings.ReplaceAll(text, `\.`, ".")
-	text = strings.ReplaceAll(text, `\>`, ">")
-	text = strings.ReplaceAll(text, `\<`, "<")
-	text = strings.ReplaceAll(text, "\\`", "`")
-	text = strings.ReplaceAll(text, "...", "…")
-	text = strings.ReplaceAll(text, `\(`, "(")
-	text = strings.ReplaceAll(text, `\)`, ")")
-	text = strings.ReplaceAll(text, `\[`, "[")
-	text = strings.ReplaceAll(text, `\]`, "]")
+var unescaper = strings.NewReplacer(
+	`\|`, "|",
+	`\-`, "-",
+	`\_`, "_",
+	`\*`, "*",
+	`\\`, `\`,
+	`\#`, "#",
+	`\.`, ".",
+	`\>`, ">",
+	`\<`, "<",
+	"\\`", "`",
+	"...", "…",
+	`\(`, "(",
+	`\)`, ")",
+	`\[`, "[",
+	`\]`, "]",
+)
 
-	return text
+func unescapeCharacters(text string) string {
+	return unescaper.Replace(text)
 }
 
 func removeDoubleWhitespace(text string) string {
@@ -392,18 +394,20 @@ func removeBoldAndItalicTags(text string) string {
 	return text
 }
 
-func trimLeadingZero(text string) string {
-	text = strings.ReplaceAll(text, indentLevel2+"01", indentLevel2+" 1")
-	text = strings.ReplaceAll(text, indentLevel2+"02", indentLevel2+" 2")
-	text = strings.ReplaceAll(text, indentLevel2+"03", indentLevel2+" 3")
-	text = strings.ReplaceAll(text, indentLevel2+"04", indentLevel2+" 4")
-	text = strings.ReplaceAll(text, indentLevel2+"05", indentLevel2+" 5")
-	text = strings.ReplaceAll(text, indentLevel2+"06", indentLevel2+" 6")
-	text = strings.ReplaceAll(text, indentLevel2+"07", indentLevel2+" 7")
-	text = strings.ReplaceAll(text, indentLevel2+"08", indentLevel2+" 8")
-	text = strings.ReplaceAll(text, indentLevel2+"09", indentLevel2+" 9")
+var leadingZeroTrimmer = strings.NewReplacer(
+	indentLevel2+"01", indentLevel2+" 1",
+	indentLevel2+"02", indentLevel2+" 2",
+	indentLevel2+"03", indentLevel2+" 3",
+	indentLevel2+"04", indentLevel2+" 4",
+	indentLevel2+"05", indentLevel2+" 5",
+	indentLevel2+"06", indentLevel2+" 6",
+	indentLevel2+"07", indentLevel2+" 7",
+	indentLevel2+"08", indentLevel2+" 8",
+	indentLevel2+"09", indentLevel2+" 9",
+)
 
-	return text
+func trimLeadingZero(text string) string {
+	return leadingZeroTrimmer.Replace(text)
 }
 
 func highlightBackticks(text string) string {
