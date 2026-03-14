@@ -21,10 +21,6 @@ func (Mock) GetLastVisited(_ int) int64 {
 	return time.Now().Unix()
 }
 
-func (Mock) GetLastCommentCount(_ int) int {
-	return 0
-}
-
 func (Mock) ClearAndWriteToDisk() error { return nil }
 
 func (Mock) MarkAsReadAndWriteToDisk(_ int, _ int) error { return nil }

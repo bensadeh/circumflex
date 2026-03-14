@@ -27,14 +27,6 @@ func (his *Persistent) GetLastVisited(id int) int64 {
 	return time.Now().Unix()
 }
 
-func (his *Persistent) GetLastCommentCount(id int) int {
-	if item, contains := his.VisitedStories[id]; contains {
-		return item.CommentsOnLastVisit
-	}
-
-	return 0
-}
-
 func (his *Persistent) ClearAndWriteToDisk() error {
 	his.VisitedStories = make(map[int]StoryInfo)
 

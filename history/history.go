@@ -10,7 +10,6 @@ import (
 type History interface {
 	Contains(id int) bool
 	GetLastVisited(id int) int64
-	GetLastCommentCount(id int) int
 	ClearAndWriteToDisk() error
 	MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int) error
 }

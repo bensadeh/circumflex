@@ -33,15 +33,6 @@ func TestPersistent_GetLastVisited(t *testing.T) {
 	assert.Positive(t, ts2)
 }
 
-func TestPersistent_GetLastCommentCount(t *testing.T) {
-	h := &Persistent{VisitedStories: make(map[int]StoryInfo)}
-
-	assert.Equal(t, 0, h.GetLastCommentCount(1))
-
-	_ = h.MarkAsReadAndWriteToDisk(1, 25)
-	assert.Equal(t, 25, h.GetLastCommentCount(1))
-}
-
 func TestPersistent_ClearAndWriteToDisk(t *testing.T) {
 	h := &Persistent{VisitedStories: make(map[int]StoryInfo)}
 	h.VisitedStories[1] = StoryInfo{LastVisited: 100, CommentsOnLastVisit: 5}
@@ -80,7 +71,6 @@ func TestNonPersistent_NoOps(t *testing.T) {
 
 	assert.False(t, h.Contains(1))
 	assert.Positive(t, h.GetLastVisited(1))
-	assert.Equal(t, 0, h.GetLastCommentCount(1))
 	assert.NoError(t, h.ClearAndWriteToDisk())
 	assert.NoError(t, h.MarkAsReadAndWriteToDisk(1, 5))
 }
