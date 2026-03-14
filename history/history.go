@@ -62,17 +62,9 @@ func writeToDisk(h *Persistent, dirPath string, fileName string) error {
 }
 
 func getCacheFilePaths() (string, string, string) {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		homeDir = os.TempDir()
-	}
-
-	configDir := ".cache"
-	circumflexDir := "circumflex"
+	dirPath := file.PathToCacheDirectory()
 	fileName := "history.json"
-
-	fullPath := path.Join(homeDir, configDir, circumflexDir, fileName)
-	dirPath := path.Join(homeDir, configDir, circumflexDir)
+	fullPath := path.Join(dirPath, fileName)
 
 	return fullPath, dirPath, fileName
 }

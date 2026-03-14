@@ -9,18 +9,25 @@ import (
 const (
 	ConfigFileNameFull    = "config.env"
 	FavoritesFileNameFull = "favorites.json"
+
+	clxDir = "circumflex"
 )
 
-func PathToConfigDirectory() string {
-	homeDir, err := os.UserHomeDir()
+func homeDir() string {
+	home, err := os.UserHomeDir()
 	if err != nil {
-		homeDir = os.TempDir()
+		return os.TempDir()
 	}
 
-	configDir := ".config"
-	clxDir := "circumflex"
+	return home
+}
 
-	return path.Join(homeDir, configDir, clxDir)
+func PathToConfigDirectory() string {
+	return path.Join(homeDir(), ".config", clxDir)
+}
+
+func PathToCacheDirectory() string {
+	return path.Join(homeDir(), ".cache", clxDir)
 }
 
 func PathToConfigFile() string {
