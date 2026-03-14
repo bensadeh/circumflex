@@ -36,7 +36,9 @@ func NewPersistentHistory() (History, error) {
 
 	deserializationErr := json.Unmarshal(historyFileContent, &h.VisitedStories)
 	if deserializationErr != nil {
-		_ = h.ClearAndWriteToDisk()
+		if clearErr := h.ClearAndWriteToDisk(); clearErr != nil {
+			return h, clearErr
+		}
 	}
 
 	return h, nil

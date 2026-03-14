@@ -69,7 +69,10 @@ func getHistory(debugMode bool, doNotMarkAsRead bool) history.History {
 		return history.NewNonPersistentHistory()
 	}
 
-	h, _ := history.NewPersistentHistory()
+	h, err := history.NewPersistentHistory()
+	if err != nil {
+		return history.NewNonPersistentHistory()
+	}
 
 	return h
 }
