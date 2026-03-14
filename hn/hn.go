@@ -7,7 +7,7 @@ import (
 )
 
 type Service interface {
-	FetchItems(itemsToFetch int, category int) ([]*item.Story, error)
+	FetchItems(itemsToFetch int, category string) ([]*item.Story, error)
 	FetchItem(id int) (*item.Story, error)
 	FetchComments(id int) (*item.Story, error)
 }

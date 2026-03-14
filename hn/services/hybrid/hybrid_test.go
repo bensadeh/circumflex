@@ -1,7 +1,6 @@
 package hybrid
 
 import (
-	"clx/categories"
 	"clx/item"
 	"encoding/json"
 	"net/http"
@@ -11,31 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func TestGetCategory(t *testing.T) {
-	tests := []struct {
-		cat      int
-		expected string
-		wantErr  bool
-	}{
-		{categories.Top, "topstories", false},
-		{categories.Newest, "newstories", false},
-		{categories.Ask, "askstories", false},
-		{categories.Show, "showstories", false},
-		{categories.Best, "beststories", false},
-		{99, "", true},
-	}
-
-	for _, tt := range tests {
-		name, err := getCategory(tt.cat)
-		if tt.wantErr {
-			assert.Error(t, err)
-		} else {
-			require.NoError(t, err)
-			assert.Equal(t, tt.expected, name)
-		}
-	}
-}
 
 func TestMapItem(t *testing.T) {
 	hn := &HN{

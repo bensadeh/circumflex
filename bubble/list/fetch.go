@@ -13,13 +13,22 @@ import (
 	tea "charm.land/bubbletea/v2"
 )
 
+var categoryEndpoints = map[int]string{
+	categories.Top:    "topstories",
+	categories.Newest: "newstories",
+	categories.Ask:    "askstories",
+	categories.Show:   "showstories",
+	categories.Best:   "beststories",
+}
+
 func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 	categoryToFetch := m.cat.CurrentCategory()
 	service := m.service
 	numItems := m.getNumberOfItemsToFetch(categoryToFetch)
+	endpoint := categoryEndpoints[categoryToFetch]
 
 	return func() tea.Msg {
-		stories, err := service.FetchItems(numItems, categoryToFetch)
+		stories, err := service.FetchItems(numItems, endpoint)
 
 		var errMsg string
 		if err != nil {
@@ -80,9 +89,10 @@ func getHistory(debugMode bool, doNotMarkAsRead bool) history.History {
 func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) tea.Cmd {
 	service := m.service
 	numItems := m.getNumberOfItemsToFetch(msg.Category)
+	endpoint := categoryEndpoints[msg.Category]
 
 	return func() tea.Msg {
-		stories, err := service.FetchItems(numItems, msg.Category)
+		stories, err := service.FetchItems(numItems, endpoint)
 
 		var errMsg string
 		if err != nil {
@@ -102,9 +112,10 @@ func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) t
 func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 	service := m.service
 	numItems := m.getNumberOfItemsToFetch(msg.CurrentCategory)
+	endpoint := categoryEndpoints[msg.CurrentCategory]
 
 	return func() tea.Msg {
-		stories, err := service.FetchItems(numItems, msg.CurrentCategory)
+		stories, err := service.FetchItems(numItems, endpoint)
 
 		var errMsg string
 		if err != nil {

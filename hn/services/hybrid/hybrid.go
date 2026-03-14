@@ -2,7 +2,6 @@ package hybrid
 
 import (
 	"clx/ansi"
-	"clx/categories"
 	"clx/item"
 	"clx/version"
 	"encoding/json"
@@ -31,8 +30,8 @@ func NewService() *Service {
 	return &Service{client: client}
 }
 
-func (s *Service) FetchItems(itemsToFetch int, cat int) ([]*item.Story, error) {
-	listOfIDs, err := s.fetchStoriesList(cat)
+func (s *Service) FetchItems(itemsToFetch int, category string) ([]*item.Story, error) {
+	listOfIDs, err := s.fetchStoriesList(category)
 	if err != nil {
 		return nil, err
 	}
@@ -81,13 +80,8 @@ func (s *Service) fetchItemsInParallel(ids []int) ([]*item.Story, error) {
 	return result, nil
 }
 
-func (s *Service) fetchStoriesList(cat int) (stories []int, err error) {
-	catName, err := getCategory(cat)
-	if err != nil {
-		return nil, err
-	}
-
-	url := fmt.Sprintf("%s/%s.json", uri, catName)
+func (s *Service) fetchStoriesList(category string) (stories []int, err error) {
+	url := fmt.Sprintf("%s/%s.json", uri, category)
 
 	_, err = s.client.R().
 		SetResult(&stories).
@@ -97,28 +91,6 @@ func (s *Service) fetchStoriesList(cat int) (stories []int, err error) {
 	}
 
 	return stories, nil
-}
-
-func getCategory(cat int) (string, error) {
-	switch cat {
-	case categories.Top:
-		return "topstories", nil
-
-	case categories.Newest:
-		return "newstories", nil
-
-	case categories.Ask:
-		return "askstories", nil
-
-	case categories.Show:
-		return "showstories", nil
-
-	case categories.Best:
-		return "beststories", nil
-
-	default:
-		return "", fmt.Errorf("unsupported category: %d", cat)
-	}
 }
 
 func (s *Service) FetchItem(id int) (*item.Story, error) {

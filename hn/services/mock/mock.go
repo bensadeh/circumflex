@@ -1,7 +1,6 @@
 package mock
 
 import (
-	"clx/categories"
 	"clx/item"
 	"math/rand"
 	"time"
@@ -12,7 +11,7 @@ type Service struct{}
 func (Service) Init(_ int) {
 }
 
-func (Service) FetchItems(_ int, cat int) (items []*item.Story, err error) {
+func (Service) FetchItems(_ int, category string) (items []*item.Story, err error) {
 	time.Sleep(time.Second * 2)
 
 	items = []*item.Story{
@@ -280,7 +279,7 @@ func (Service) FetchItems(_ int, cat int) (items []*item.Story, err error) {
 	}
 
 	// Randomize list to make debugging easier
-	if cat != categories.Top {
+	if category != "topstories" {
 		rand.Shuffle(len(items), func(i, j int) { items[i], items[j] = items[j], items[i] })
 	}
 

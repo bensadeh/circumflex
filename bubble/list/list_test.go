@@ -19,7 +19,7 @@ type instantMockService struct{}
 
 func (instantMockService) Init(_ int) {}
 
-func (instantMockService) FetchItems(_ int, _ int) ([]*item.Story, error) {
+func (instantMockService) FetchItems(_ int, _ string) ([]*item.Story, error) {
 	return testItems(), nil
 }
 
