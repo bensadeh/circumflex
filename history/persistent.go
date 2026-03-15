@@ -1,10 +1,12 @@
 package history
 
 import (
+	"sync"
 	"time"
 )
 
 type Persistent struct {
+	mu             sync.RWMutex `json:"-"`
 	VisitedStories map[int]StoryInfo
 }
 
@@ -14,12 +16,18 @@ type StoryInfo struct {
 }
 
 func (his *Persistent) Contains(id int) bool {
+	his.mu.RLock()
+	defer his.mu.RUnlock()
+
 	_, contains := his.VisitedStories[id]
 
 	return contains
 }
 
 func (his *Persistent) GetLastVisited(id int) int64 {
+	his.mu.RLock()
+	defer his.mu.RUnlock()
+
 	if item, contains := his.VisitedStories[id]; contains {
 		return item.LastVisited
 	}
@@ -28,6 +36,9 @@ func (his *Persistent) GetLastVisited(id int) int64 {
 }
 
 func (his *Persistent) ClearAndWriteToDisk() error {
+	his.mu.Lock()
+	defer his.mu.Unlock()
+
 	his.VisitedStories = make(map[int]StoryInfo)
 
 	_, dirPath, fileName := getCacheFilePaths()
@@ -36,6 +47,9 @@ func (his *Persistent) ClearAndWriteToDisk() error {
 }
 
 func (his *Persistent) MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int) error {
+	his.mu.Lock()
+	defer his.mu.Unlock()
+
 	his.VisitedStories[id] = StoryInfo{
 		LastVisited:         time.Now().Unix(),
 		CommentsOnLastVisit: commentsOnLastVisit,
@@ -47,6 +61,9 @@ func (his *Persistent) MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int)
 }
 
 func (his *Persistent) MarkAsUnreadAndWriteToDisk(id int) error {
+	his.mu.Lock()
+	defer his.mu.Unlock()
+
 	delete(his.VisitedStories, id)
 
 	_, dirPath, fileName := getCacheFilePaths()

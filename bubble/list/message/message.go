@@ -37,7 +37,9 @@ type ShowStatusMessage struct {
 	Duration time.Duration
 }
 
-type StatusMessageTimeout struct{}
+type StatusMessageTimeout struct {
+	Generation int
+}
 
 type FetchingFinished struct {
 	Stories  []*item.Story

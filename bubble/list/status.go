@@ -10,42 +10,33 @@ import (
 )
 
 type statusBar struct {
-	message      string
-	messageTimer *time.Timer
-	lifetime     time.Duration
-	spinner      spinner.Model
-	showSpinner  bool
+	message     string
+	generation  int
+	lifetime    time.Duration
+	spinner     spinner.Model
+	showSpinner bool
 }
 
 func (s *statusBar) NewStatusMessage(msg string) tea.Cmd {
 	s.message = msg
-	if s.messageTimer != nil {
-		s.messageTimer.Stop()
-	}
+	s.generation++
 
-	s.messageTimer = time.NewTimer(s.lifetime)
+	gen := s.generation
 
-	return func() tea.Msg {
-		<-s.messageTimer.C
-
-		return message.StatusMessageTimeout{}
-	}
+	return tea.Tick(s.lifetime, func(time.Time) tea.Msg {
+		return message.StatusMessageTimeout{Generation: gen}
+	})
 }
 
 func (s *statusBar) NewStatusMessageWithDuration(msg string, d time.Duration) tea.Cmd {
 	s.message = lipgloss.NewStyle().Render(msg)
+	s.generation++
 
-	if s.messageTimer != nil {
-		s.messageTimer.Stop()
-	}
+	gen := s.generation
 
-	s.messageTimer = time.NewTimer(d)
-
-	return func() tea.Msg {
-		<-s.messageTimer.C
-
-		return message.StatusMessageTimeout{}
-	}
+	return tea.Tick(d, func(time.Time) tea.Msg {
+		return message.StatusMessageTimeout{Generation: gen}
+	})
 }
 
 func (s *statusBar) SetPermanentStatusMessage(msg string, faint bool) {
@@ -56,9 +47,7 @@ func (s *statusBar) SetPermanentStatusMessage(msg string, faint bool) {
 
 func (s *statusBar) hideStatusMessage() {
 	s.message = ""
-	if s.messageTimer != nil {
-		s.messageTimer.Stop()
-	}
+	s.generation++
 }
 
 func (s *statusBar) StartSpinner() tea.Cmd {
