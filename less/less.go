@@ -2,6 +2,7 @@ package less
 
 import (
 	_ "embed"
+	"fmt"
 	"os"
 )
 
@@ -18,7 +19,15 @@ func NewLesskey() (*Lesskey, error) {
 		return nil, err
 	}
 
-	_, _ = tempLesskeyFile.WriteString(lesskey)
+	if _, err := tempLesskeyFile.WriteString(lesskey); err != nil {
+		_ = tempLesskeyFile.Close()
+
+		return nil, fmt.Errorf("could not write lesskey: %w", err)
+	}
+
+	if err := tempLesskeyFile.Close(); err != nil {
+		return nil, fmt.Errorf("could not close lesskey file: %w", err)
+	}
 
 	key := new(Lesskey)
 	key.tempLesskeyFile = tempLesskeyFile
