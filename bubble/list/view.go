@@ -60,7 +60,8 @@ func (m *Model) View() string {
 		m.pager.cursor,
 		m.pager.Paginator.Page,
 		m.pager.Paginator.TotalPages,
-		readStatuses)
+		readStatuses,
+		m.pager.transition != nil)
 
 	rankingsAndContent := lipgloss.JoinHorizontal(lipgloss.Top, rankings, content)
 	sections = append(sections, rankingsAndContent)

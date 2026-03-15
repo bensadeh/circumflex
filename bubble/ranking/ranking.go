@@ -13,24 +13,25 @@ const (
 	indentationFromRight = " "
 )
 
-func GetRankings(useRelativeNumbering bool, itemsVisible, itemsTotal, currentPosition, currentPage, totalPages int, readStatuses []bool) string {
+func GetRankings(useRelativeNumbering bool, itemsVisible, itemsTotal, currentPosition, currentPage, totalPages int, readStatuses []bool, faintAll bool) string {
 	if itemsTotal == 0 {
 		return ""
 	}
 
 	if useRelativeNumbering {
-		return relativeRankings(itemsVisible, itemsTotal, currentPosition, currentPage, totalPages)
+		return relativeRankings(itemsVisible, itemsTotal, currentPosition, currentPage, totalPages, faintAll)
 	}
 
-	return absoluteRankings(itemsVisible, itemsTotal, currentPage, totalPages, readStatuses)
+	return absoluteRankings(itemsVisible, itemsTotal, currentPage, totalPages, readStatuses, faintAll)
 }
 
 var (
-	rankStyle      = lipgloss.NewStyle().Width(6).Align(lipgloss.Right)
-	rankFaintStyle = rankStyle.Faint(true)
+	rankStyle            = lipgloss.NewStyle().Width(6).Align(lipgloss.Right)
+	rankFaintStyle       = rankStyle.Faint(true)
+	rankFaintItalicStyle = rankStyle.Faint(true).Italic(true)
 )
 
-func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPages int, readStatuses []bool) string {
+func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPages int, readStatuses []bool, faintAll bool) string {
 	var rankings strings.Builder
 
 	startingRank := itemsVisible*currentPage + 1
@@ -49,7 +50,11 @@ func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPa
 		idx := i - startingRank
 
 		style := rankStyle
-		if idx < len(readStatuses) && readStatuses[idx] {
+
+		switch {
+		case faintAll:
+			style = rankFaintItalicStyle
+		case idx < len(readStatuses) && readStatuses[idx]:
 			style = rankFaintStyle
 		}
 
@@ -60,7 +65,7 @@ func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPa
 	return strings.TrimSuffix(rankings.String(), "\n\n")
 }
 
-func relativeRankings(itemsVisible int, itemsTotal int, currentPosition int, currentPage int, totalPages int) string {
+func relativeRankings(itemsVisible int, itemsTotal int, currentPosition int, currentPage int, totalPages int, faintAll bool) string {
 	rankOfCurrentlySelectedItem := itemsVisible*currentPage + currentPosition + 1
 
 	onLastPage := currentPage+1 == totalPages
@@ -80,7 +85,11 @@ func relativeRankings(itemsVisible int, itemsTotal int, currentPosition int, cur
 		iterator--
 	}
 
-	rankings.WriteString(strconv.Itoa(rankOfCurrentlySelectedItem) + " " + indentationFromRight + newParagraph)
+	if faintAll {
+		rankings.WriteString(aurora.Faint(aurora.Italic(rankOfCurrentlySelectedItem)).String() + " " + indentationFromRight + newParagraph)
+	} else {
+		rankings.WriteString(strconv.Itoa(rankOfCurrentlySelectedItem) + " " + indentationFromRight + newParagraph)
+	}
 
 	iterator++
 
