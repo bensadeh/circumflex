@@ -13,7 +13,7 @@ const (
 	indentationFromRight = " "
 )
 
-func GetRankings(useRelativeNumbering bool, itemsVisible, itemsTotal, currentPosition, currentPage, totalPages int) string {
+func GetRankings(useRelativeNumbering bool, itemsVisible, itemsTotal, currentPosition, currentPage, totalPages int, readStatuses []bool) string {
 	if itemsTotal == 0 {
 		return ""
 	}
@@ -22,12 +22,15 @@ func GetRankings(useRelativeNumbering bool, itemsVisible, itemsTotal, currentPos
 		return relativeRankings(itemsVisible, itemsTotal, currentPosition, currentPage, totalPages)
 	}
 
-	return absoluteRankings(itemsVisible, itemsTotal, currentPage, totalPages)
+	return absoluteRankings(itemsVisible, itemsTotal, currentPage, totalPages, readStatuses)
 }
 
-var rankStyle = lipgloss.NewStyle().Width(6).Align(lipgloss.Right)
+var (
+	rankStyle      = lipgloss.NewStyle().Width(6).Align(lipgloss.Right)
+	rankFaintStyle = rankStyle.Faint(true)
+)
 
-func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPages int) string {
+func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPages int, readStatuses []bool) string {
 	var rankings strings.Builder
 
 	startingRank := itemsVisible*currentPage + 1
@@ -43,7 +46,14 @@ func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPa
 	endingRank = startingRank + itemsVisible
 
 	for i := startingRank; i < endingRank; i++ {
-		rank := rankStyle.Render(strconv.Itoa(i)+".") + " "
+		idx := i - startingRank
+
+		style := rankStyle
+		if idx < len(readStatuses) && readStatuses[idx] {
+			style = rankFaintStyle
+		}
+
+		rank := style.Render(strconv.Itoa(i)+".") + " "
 		rankings.WriteString(rank + newParagraph)
 	}
 

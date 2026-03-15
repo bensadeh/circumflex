@@ -43,14 +43,24 @@ func (m *Model) View() string {
 	}
 
 	content := m.contentStyle.Height(availHeight).Render(m.populatedView())
-	totalItems := len(m.VisibleItems())
+	allItems := m.VisibleItems()
+	totalItems := len(allItems)
+
+	start, end := m.pager.Paginator.GetSliceBounds(totalItems)
+	readStatuses := make([]bool, end-start)
+
+	for i, it := range allItems[start:end] {
+		readStatuses[i] = m.history.Contains(it.ID)
+	}
+
 	rankings := ranking.GetRankings(
 		false,
 		m.pager.Paginator.PerPage,
 		totalItems,
 		m.pager.cursor,
 		m.pager.Paginator.Page,
-		m.pager.Paginator.TotalPages)
+		m.pager.Paginator.TotalPages,
+		readStatuses)
 
 	rankingsAndContent := lipgloss.JoinHorizontal(lipgloss.Top, rankings, content)
 	sections = append(sections, rankingsAndContent)
