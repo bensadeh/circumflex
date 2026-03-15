@@ -9,8 +9,13 @@ import (
 	"clx/reader"
 	"clx/tree"
 	"clx/validator"
+	"errors"
+	"net"
+	"regexp"
+	"strings"
 
 	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 )
 
 var categoryEndpoints = map[int]string{
@@ -32,7 +37,7 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 
 		var errMsg string
 		if err != nil {
-			errMsg = err.Error()
+			errMsg = friendlyError(err)
 		}
 
 		return message.FetchingFinished{
@@ -65,8 +70,8 @@ func (m *Model) getNumberOfItemsToFetch(cat int) int {
 	}
 }
 
-func getService(debugMode bool) hn.Service {
-	return hn.NewService(debugMode)
+func getService(debugMode, debugFallible bool) hn.Service {
+	return hn.NewService(debugMode, debugFallible)
 }
 
 func getHistory(debugMode bool, doNotMarkAsRead bool) history.History {
@@ -96,7 +101,7 @@ func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) t
 
 		var errMsg string
 		if err != nil {
-			errMsg = err.Error()
+			errMsg = friendlyError(err)
 		}
 
 		return message.CategoryFetchingFinished{
@@ -119,7 +124,7 @@ func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 
 		var errMsg string
 		if err != nil {
-			errMsg = err.Error()
+			errMsg = friendlyError(err)
 		}
 
 		return message.CategoryFetchingFinished{
@@ -145,7 +150,7 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 
 		story, err := service.FetchComments(msg.Id)
 		if err != nil {
-			return message.CommentTreeReady{Error: "Could not fetch comments: " + err.Error()}
+			return message.CommentTreeReady{Error: friendlyError(err)}
 		}
 
 		var updatedStory *item.Story
@@ -171,13 +176,38 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 
 		article, err := reader.GetArticle(msg.Url, msg.Title, config.CommentWidth, config.IndentationSymbol)
 		if err != nil {
-			return message.ArticleReady{Error: "Could not read article in Reader Mode"}
+			return message.ArticleReady{Error: friendlyError(err)}
 		}
 
 		_ = hist.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
 		return message.ArticleReady{Content: article}
 	}
+}
+
+func isTimeout(err error) bool {
+	var netErr net.Error
+
+	return errors.As(err, &netErr) && netErr.Timeout()
+}
+
+var statusCodeRe = regexp.MustCompile(`(status )(\d+)`)
+
+var redText = lipgloss.NewStyle().Foreground(lipgloss.ANSIColor(1))
+
+func friendlyError(err error) string {
+	if isTimeout(err) {
+		return "Timed out — check your connection and try again"
+	}
+
+	msg := strings.ToUpper(err.Error()[:1]) + err.Error()[1:]
+	msg = statusCodeRe.ReplaceAllStringFunc(msg, func(match string) string {
+		parts := statusCodeRe.FindStringSubmatch(match)
+
+		return parts[1] + redText.Render(parts[2])
+	})
+
+	return msg
 }
 
 func clearAllCategories(items [][]*item.Story) {

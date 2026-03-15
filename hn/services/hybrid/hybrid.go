@@ -107,14 +107,14 @@ func (s *Service) fetchItem(id int) (*item.Story, error) {
 	}
 
 	if resp.StatusCode() != 200 {
-		return nil, fmt.Errorf("fetching item %d: status %d", id, resp.StatusCode())
+		return nil, fmt.Errorf("server returned status %d", resp.StatusCode())
 	}
 
 	sanitizedBody := ansi.Strip(string(resp.Body()))
 
 	err = json.Unmarshal([]byte(sanitizedBody), hn)
 	if err != nil {
-		return nil, fmt.Errorf("parsing item %d: %w", id, err)
+		return nil, fmt.Errorf("unexpected response from server")
 	}
 
 	return mapItem(hn), nil
@@ -143,14 +143,14 @@ func (s *Service) FetchComments(id int) (*item.Story, error) {
 	}
 
 	if response.StatusCode() != 200 {
-		return nil, fmt.Errorf("fetching comments for %d: status %d", id, response.StatusCode())
+		return nil, fmt.Errorf("server returned status %d", response.StatusCode())
 	}
 
 	sanitizedResponse := ansi.Strip(string(response.Body()))
 
 	comments := new(Comments)
 	if err := json.Unmarshal([]byte(sanitizedResponse), comments); err != nil {
-		return nil, fmt.Errorf("parsing comments for %d: %w", id, err)
+		return nil, fmt.Errorf("unexpected response from server")
 	}
 
 	return mapComments(comments), nil

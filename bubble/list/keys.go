@@ -341,26 +341,19 @@ func (m *Model) changeToPrevCategory() {
 func (m *Model) handleToggleRead() tea.Cmd {
 	item := m.SelectedItem()
 
-	bold := lipgloss.NewStyle().Bold(true)
-	faintBold := lipgloss.NewStyle().Faint(true).Bold(true)
-
 	if m.history.Contains(item.ID) {
 		if err := m.history.MarkAsUnreadAndWriteToDisk(item.ID); err != nil {
 			return m.status.NewStatusMessageWithDuration("Could not mark as unread", time.Second*2)
 		}
 
-		msg := "Marked as " + faintBold.Render("unread")
-
-		return m.status.NewStatusMessageWithDuration(msg, time.Second*2)
+		return m.status.NewStatusMessageWithDuration("Marked as unread", time.Second*2)
 	}
 
 	if err := m.history.MarkAsReadAndWriteToDisk(item.ID, item.CommentsCount); err != nil {
 		return m.status.NewStatusMessageWithDuration("Could not mark as read", time.Second*2)
 	}
 
-	msg := "Marked as " + bold.Render("read")
-
-	return m.status.NewStatusMessageWithDuration(msg, time.Second*2)
+	return m.status.NewStatusMessageWithDuration("Marked as read", time.Second*2)
 }
 
 func getAddItemConfirmationMessage() string {

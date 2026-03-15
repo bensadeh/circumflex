@@ -12,7 +12,11 @@ type Service interface {
 	FetchComments(id int) (*item.Story, error)
 }
 
-func NewService(debugMode bool) Service {
+func NewService(debugMode, debugFallible bool) Service {
+	if debugFallible {
+		return mock.NewFallibleService()
+	}
+
 	if debugMode {
 		return mock.Service{}
 	}

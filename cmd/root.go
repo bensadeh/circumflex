@@ -24,6 +24,7 @@ var (
 	disableEmojis               bool
 	hideIndentSymbol            bool
 	debugMode                   bool
+	debugFallible               bool
 	enableNerdFont              bool
 	autoExpandComments          bool
 	noLessVerify                bool
@@ -103,6 +104,10 @@ func configureFlags(rootCmd *cobra.Command) {
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
 		"enable debug mode (offline mode) by using mock data for the endpoints")
 	rootCmd.Flag("debug-mode").Hidden = true
+
+	rootCmd.PersistentFlags().BoolVar(&debugFallible, "debug-fallible", false,
+		"enable debug mode with random failures for testing error handling")
+	rootCmd.Flag("debug-fallible").Hidden = true
 }
 
 func getConfig() *settings.Config {
@@ -119,13 +124,14 @@ func getConfig() *settings.Config {
 	config.AutoExpandComments = autoExpandComments
 	config.DisableEmojis = disableEmojis
 	config.DebugMode = debugMode
+	config.DebugFallible = debugFallible
 	config.NoLessVerify = noLessVerify
 
 	return config
 }
 
 func newService() hn.Service {
-	return hn.NewService(debugMode)
+	return hn.NewService(debugMode, debugFallible)
 }
 
 func verifyLess(noLessVerify bool) {

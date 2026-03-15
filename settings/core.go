@@ -9,6 +9,7 @@ type Config struct {
 	HideIndentSymbol            bool
 	IndentationSymbol           string
 	DebugMode                   bool
+	DebugFallible               bool
 	EnableNerdFonts             bool
 	LesskeyPath                 string
 	AutoExpandComments          bool
