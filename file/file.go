@@ -61,11 +61,15 @@ func WriteToFile(path string, content string) error {
 		return fmt.Errorf("could not create config file: %w", createPathErr)
 	}
 
-	defer func() { _ = file.Close() }()
-
 	_, writeFileErr := file.WriteString(content)
 	if writeFileErr != nil {
+		_ = file.Close()
+
 		return fmt.Errorf("could not write to file: %w", writeFileErr)
+	}
+
+	if err := file.Close(); err != nil {
+		return fmt.Errorf("could not close file after writing: %w", err)
 	}
 
 	return nil
@@ -84,11 +88,15 @@ func WriteToDir(dirPath string, fileName string, content string) error {
 		return fmt.Errorf("could not create config file: %w", createPathErr)
 	}
 
-	defer func() { _ = file.Close() }()
-
 	_, writeFileErr := file.WriteString(content)
 	if writeFileErr != nil {
+		_ = file.Close()
+
 		return fmt.Errorf("could not write to file: %w", writeFileErr)
+	}
+
+	if err := file.Close(); err != nil {
+		return fmt.Errorf("could not close file after writing: %w", err)
 	}
 
 	return nil
