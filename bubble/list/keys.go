@@ -350,14 +350,16 @@ func (m *Model) handleToggleRead() tea.Cmd {
 			return m.status.NewStatusMessageWithDuration("Could not mark as unread", time.Second*2)
 		}
 
-		return m.status.NewStatusMessageWithDuration("Marked as unread", time.Second*2)
+		return m.status.NewStatusMessageWithDuration(
+			"Marked as "+lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Render("unread"), time.Second*2)
 	}
 
 	if err := m.history.MarkAsReadAndWriteToDisk(item.ID, item.CommentsCount); err != nil {
 		return m.status.NewStatusMessageWithDuration("Could not mark as read", time.Second*2)
 	}
 
-	return m.status.NewStatusMessageWithDuration("Marked as read", time.Second*2)
+	return m.status.NewStatusMessageWithDuration(
+		"Marked as "+lipgloss.NewStyle().Foreground(lipgloss.Color("5")).Render("read"), time.Second*2)
 }
 
 func getAddItemConfirmationMessage() string {
