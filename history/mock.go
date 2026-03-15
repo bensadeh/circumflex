@@ -24,3 +24,5 @@ func (Mock) GetLastVisited(_ int) int64 {
 func (Mock) ClearAndWriteToDisk() error { return nil }
 
 func (Mock) MarkAsReadAndWriteToDisk(_ int, _ int) error { return nil }
+
+func (Mock) MarkAsUnreadAndWriteToDisk(_ int) error { return nil }

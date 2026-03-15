@@ -19,6 +19,7 @@ type KeyMap struct {
 	Refresh        key.Binding
 	AddFavorite    key.Binding
 	RemoveFavorite key.Binding
+	ToggleRead     key.Binding
 	EnterComments  key.Binding
 	ReaderMode     key.Binding
 	Confirm        key.Binding
@@ -60,6 +61,10 @@ func DefaultKeyMap() KeyMap {
 		RemoveFavorite: key.NewBinding(
 			key.WithKeys("x"),
 			key.WithHelp("x", "Remove from favorites"),
+		),
+		ToggleRead: key.NewBinding(
+			key.WithKeys("u"),
+			key.WithHelp("u", "Toggle read/unread"),
 		),
 		Help: key.NewBinding(
 			key.WithKeys("i", "?"),
@@ -110,6 +115,7 @@ func (km KeyMap) MainMenuBindings() []key.Binding {
 		sep,
 		km.AddFavorite,
 		km.RemoveFavorite,
+		km.ToggleRead,
 		sep,
 		km.Help,
 		km.Quit,

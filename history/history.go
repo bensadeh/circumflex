@@ -12,6 +12,7 @@ type History interface {
 	GetLastVisited(id int) int64
 	ClearAndWriteToDisk() error
 	MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int) error
+	MarkAsUnreadAndWriteToDisk(id int) error
 }
 
 func NewPersistentHistory() (History, error) {

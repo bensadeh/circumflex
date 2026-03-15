@@ -6,6 +6,7 @@ _WIP_
 
 - Bump Bubble Tea to 2.0
 - Replace terminal-dimensions with golang.org/x/term
+- Add `u` keybinding to toggle read/unread status on stories
 
 ## 3.9
 

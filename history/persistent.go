@@ -45,3 +45,11 @@ func (his *Persistent) MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int)
 
 	return writeToDisk(his, dirPath, fileName)
 }
+
+func (his *Persistent) MarkAsUnreadAndWriteToDisk(id int) error {
+	delete(his.VisitedStories, id)
+
+	_, dirPath, fileName := getCacheFilePaths()
+
+	return writeToDisk(his, dirPath, fileName)
+}

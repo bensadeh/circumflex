@@ -104,6 +104,11 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 				return nil
 			}
 
+		case key.Matches(msg, m.keymap.ToggleRead):
+			if m.cat.CurrentCategory() != categories.Favorites {
+				return m.handleToggleRead()
+			}
+
 		case key.Matches(msg, m.keymap.EnterComments):
 			m.state = StateEditorOpen
 
@@ -331,6 +336,31 @@ func (m *Model) changeToPrevCategory() {
 	m.pager.Paginator.Page = 0
 	m.pager.cursor = min(m.pager.cursor, len(m.pager.items[currentCategory])-1)
 	m.updatePagination()
+}
+
+func (m *Model) handleToggleRead() tea.Cmd {
+	item := m.SelectedItem()
+
+	bold := lipgloss.NewStyle().Bold(true)
+	faintBold := lipgloss.NewStyle().Faint(true).Bold(true)
+
+	if m.history.Contains(item.ID) {
+		if err := m.history.MarkAsUnreadAndWriteToDisk(item.ID); err != nil {
+			return m.status.NewStatusMessageWithDuration("Could not mark as unread", time.Second*2)
+		}
+
+		msg := "Marked as " + faintBold.Render("unread")
+
+		return m.status.NewStatusMessageWithDuration(msg, time.Second*2)
+	}
+
+	if err := m.history.MarkAsReadAndWriteToDisk(item.ID, item.CommentsCount); err != nil {
+		return m.status.NewStatusMessageWithDuration("Could not mark as read", time.Second*2)
+	}
+
+	msg := "Marked as " + bold.Render("read")
+
+	return m.status.NewStatusMessageWithDuration(msg, time.Second*2)
 }
 
 func getAddItemConfirmationMessage() string {

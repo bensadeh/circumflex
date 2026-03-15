@@ -15,3 +15,5 @@ func (NonPersistent) GetLastVisited(_ int) int64 {
 func (NonPersistent) ClearAndWriteToDisk() error { return nil }
 
 func (NonPersistent) MarkAsReadAndWriteToDisk(_ int, _ int) error { return nil }
+
+func (NonPersistent) MarkAsUnreadAndWriteToDisk(_ int) error { return nil }
