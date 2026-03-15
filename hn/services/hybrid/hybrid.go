@@ -114,7 +114,7 @@ func (s *Service) fetchItem(id int) (*item.Story, error) {
 
 	err = json.Unmarshal([]byte(sanitizedBody), hn)
 	if err != nil {
-		return nil, fmt.Errorf("unexpected response from server")
+		return nil, fmt.Errorf("unexpected response from server: %w", err)
 	}
 
 	return mapItem(hn), nil
@@ -150,7 +150,7 @@ func (s *Service) FetchComments(id int) (*item.Story, error) {
 
 	comments := new(Comments)
 	if err := json.Unmarshal([]byte(sanitizedResponse), comments); err != nil {
-		return nil, fmt.Errorf("unexpected response from server")
+		return nil, fmt.Errorf("unexpected response from server: %w", err)
 	}
 
 	return mapComments(comments), nil
