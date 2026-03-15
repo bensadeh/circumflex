@@ -351,7 +351,7 @@ func (m *Model) handleToggleRead() tea.Cmd {
 		}
 
 		return m.status.NewStatusMessageWithDuration(
-			"Marked as "+lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Render("unread"), time.Second*2)
+			"Marked as "+lipgloss.NewStyle().Foreground(lipgloss.Yellow).Render("unread"), time.Second*2)
 	}
 
 	if err := m.history.MarkAsReadAndWriteToDisk(item.ID, item.CommentsCount); err != nil {
@@ -359,13 +359,13 @@ func (m *Model) handleToggleRead() tea.Cmd {
 	}
 
 	return m.status.NewStatusMessageWithDuration(
-		"Marked as "+lipgloss.NewStyle().Foreground(lipgloss.Color("5")).Render("read"), time.Second*2)
+		"Marked as "+lipgloss.NewStyle().Foreground(lipgloss.Magenta).Render("read"), time.Second*2)
 }
 
 func getAddItemConfirmationMessage() string {
 	normal := lipgloss.NewStyle()
-	green := normal.Foreground(lipgloss.Color("2"))
-	bold := normal.Foreground(lipgloss.Color("4")).Bold(true)
+	green := normal.Foreground(lipgloss.Green)
+	bold := normal.Foreground(lipgloss.Blue).Bold(true)
 
 	return green.Render("Add") + normal.Render(" to Favorites? Press ") + bold.Render("y") +
 		normal.Render(" to confirm")
@@ -373,8 +373,8 @@ func getAddItemConfirmationMessage() string {
 
 func getRemoveItemConfirmationMessage() string {
 	normal := lipgloss.NewStyle()
-	red := normal.Foreground(lipgloss.Color("1"))
-	bold := normal.Foreground(lipgloss.Color("4")).Bold(true)
+	red := normal.Foreground(lipgloss.Red)
+	bold := normal.Foreground(lipgloss.Blue).Bold(true)
 
 	return red.Render("Remove") + normal.Render(" from Favorites? Press ") + bold.Render("y") +
 		normal.Render(" to confirm")

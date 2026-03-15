@@ -9,9 +9,9 @@ import (
 )
 
 func GetHeader(allCategories []int, selectedSubHeader int, width int) string {
-	c := lipgloss.NewStyle().Foreground(lipgloss.Color("5"))
-	l := lipgloss.NewStyle().Foreground(lipgloss.Color("3"))
-	x := lipgloss.NewStyle().Foreground(lipgloss.Color("4"))
+	c := lipgloss.NewStyle().Foreground(lipgloss.Magenta)
+	l := lipgloss.NewStyle().Foreground(lipgloss.Yellow)
+	x := lipgloss.NewStyle().Foreground(lipgloss.Blue)
 
 	title := c.Render("  c") + l.Render("l") + x.Render("x  ")
 	cats := getCategories(allCategories, selectedSubHeader)
@@ -89,12 +89,12 @@ func getColor(i int, selectedSubHeader int, allCategories []int) (color color.Co
 
 func getSelectedCategoryColor(selectedSubHeader int, cat int) (color color.Color, isSelected bool) {
 	if cat == categories.Favorites {
-		return lipgloss.Color("219"), true
+		return lipgloss.ANSIColor(219), true
 	}
 
-	magenta := lipgloss.Color("5")
-	yellow := lipgloss.Color("3")
-	blue := lipgloss.Color("4")
+	magenta := lipgloss.Magenta
+	yellow := lipgloss.Yellow
+	blue := lipgloss.Blue
 
 	switch selectedSubHeader % 3 {
 	case 0:

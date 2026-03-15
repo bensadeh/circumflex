@@ -60,26 +60,26 @@ func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNer
 func getYCBar(text string, highlightType int) string {
 	switch highlightType {
 	case Selected:
-		return lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Reverse(true).Render(text)
+		return lipgloss.NewStyle().Foreground(lipgloss.Yellow).Reverse(true).Render(text)
 
 	case MarkAsRead:
-		return lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Faint(true).Render(text)
+		return lipgloss.NewStyle().Foreground(lipgloss.Yellow).Faint(true).Render(text)
 
 	default:
-		return lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Render(text)
+		return lipgloss.NewStyle().Foreground(lipgloss.Yellow).Render(text)
 	}
 }
 
 func getYCBarNerdFonts(text string, highlightType int, enableNerdFonts bool) string {
 	switch highlightType {
 	case Selected:
-		return label(text, lipgloss.Color("3"), lipgloss.Color("16"), highlightType, enableNerdFonts)
+		return label(text, lipgloss.Yellow, lipgloss.ANSIColor(16), highlightType, enableNerdFonts)
 
 	case MarkAsRead:
-		return label(text, lipgloss.Color("16"), lipgloss.Color("11"), highlightType, enableNerdFonts)
+		return label(text, lipgloss.ANSIColor(16), lipgloss.BrightYellow, highlightType, enableNerdFonts)
 
 	default:
-		return label(text, lipgloss.Color("16"), lipgloss.Color("3"), highlightType, enableNerdFonts)
+		return label(text, lipgloss.ANSIColor(16), lipgloss.Yellow, highlightType, enableNerdFonts)
 	}
 }
 
@@ -92,13 +92,13 @@ func HighlightYear(comment string, highlightType int) string {
 func getYear(text string, highlightType int) string {
 	switch highlightType {
 	case Selected:
-		return lipgloss.NewStyle().Foreground(lipgloss.Color("5")).Reverse(true).Render(text)
+		return lipgloss.NewStyle().Foreground(lipgloss.Magenta).Reverse(true).Render(text)
 
 	case MarkAsRead:
-		return lipgloss.NewStyle().Foreground(lipgloss.Color("5")).Faint(true).Render(text)
+		return lipgloss.NewStyle().Foreground(lipgloss.Magenta).Faint(true).Render(text)
 
 	default:
-		return lipgloss.NewStyle().Foreground(lipgloss.Color("5")).Render(text)
+		return lipgloss.NewStyle().Foreground(lipgloss.Magenta).Render(text)
 	}
 }
 

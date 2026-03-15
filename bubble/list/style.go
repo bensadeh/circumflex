@@ -72,9 +72,9 @@ func getSpinner() spinner.Spinner {
 
 	color := lipgloss.NewStyle()
 
-	magenta := lipgloss.Color("5")
-	yellow := lipgloss.Color("3")
-	blue := lipgloss.Color("4")
+	magenta := lipgloss.Magenta
+	yellow := lipgloss.Yellow
+	blue := lipgloss.Blue
 
 	return spinner.Spinner{
 		Frames: []string{

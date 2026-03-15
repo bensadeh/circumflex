@@ -177,7 +177,7 @@ func isTimeout(err error) bool {
 
 var statusCodeRe = regexp.MustCompile(`(status )(\d+)`)
 
-var redText = lipgloss.NewStyle().Foreground(lipgloss.ANSIColor(1))
+var redText = lipgloss.NewStyle().Foreground(lipgloss.Red)
 
 func friendlyError(err error) string {
 	if isTimeout(err) {

@@ -52,10 +52,10 @@ func NewDefaultItemStyles() (s DefaultItemStyles) {
 	s.MarkAsReadTitle = s.NormalTitle.Copy().Italic(true).Faint(true)
 	s.MarkAsReadDesc = s.NormalDesc.Copy()
 
-	s.SelectedTitleAddToFavorites = s.NormalTitle.Copy().Foreground(lipgloss.Color("2")).Reverse(true)
+	s.SelectedTitleAddToFavorites = s.NormalTitle.Copy().Foreground(lipgloss.Green).Reverse(true)
 	s.SelectedDescAddToFavorites = s.NormalDesc.Copy()
 
-	s.SelectedTitleRemoveFromFavorites = s.NormalTitle.Copy().Foreground(lipgloss.Color("1")).Reverse(true)
+	s.SelectedTitleRemoveFromFavorites = s.NormalTitle.Copy().Foreground(lipgloss.Red).Reverse(true)
 	s.SelectedDescRemoveFromFavorites = s.NormalDesc.Copy()
 
 	s.DimmedTitle = lipgloss.NewStyle()
