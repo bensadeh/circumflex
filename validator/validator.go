@@ -1,29 +1,32 @@
 package validator
 
-import "strings"
+import (
+	"errors"
+	"strings"
+)
 
-func GetErrorMessage(title, domain string) string {
+func Validate(title, domain string) error {
 	if strings.Contains(title, "[video]") {
-		return "Reader Mode not supported for videos"
+		return errors.New("reader mode not supported for videos")
 	}
 
 	if strings.Contains(title, "[pdf]") {
-		return "Reader Mode not supported for PDFs"
+		return errors.New("reader mode not supported for PDFs")
 	}
 
 	if strings.Contains(title, "[audio]") {
-		return "Reader Mode not supported for audio"
+		return errors.New("reader mode not supported for audio")
 	}
 
 	if isInvalidDomain(domain) {
-		return "Reader Mode not supported for this domain"
+		return errors.New("reader mode not supported for this domain")
 	}
 
 	if domain == "" {
-		return "Reader Mode only supported on submissions with link"
+		return errors.New("reader mode only supported on submissions with link")
 	}
 
-	return ""
+	return nil
 }
 
 func isInvalidDomain(domain string) bool {

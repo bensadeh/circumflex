@@ -42,7 +42,7 @@ type StatusMessageTimeout struct{}
 type FetchingFinished struct {
 	Stories  []*item.Story
 	Category int
-	Message  string
+	Err      error
 }
 
 type FetchAndChangeToCategory struct {
@@ -61,7 +61,7 @@ type CategoryFetchingFinished struct {
 	Category int
 	Index    int
 	Cursor   int
-	Message  string
+	Err      error
 }
 
 type AddToFavorites struct {
@@ -70,11 +70,11 @@ type AddToFavorites struct {
 
 type CommentTreeReady struct {
 	Content      string
-	Error        string
+	Err          error
 	UpdatedStory *item.Story
 }
 
 type ArticleReady struct {
 	Content string
-	Error   string
+	Err     error
 }

@@ -35,15 +35,10 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 	return func() tea.Msg {
 		stories, err := service.FetchItems(numItems, endpoint)
 
-		var errMsg string
-		if err != nil {
-			errMsg = friendlyError(err)
-		}
-
 		return message.FetchingFinished{
 			Stories:  stories,
 			Category: categoryToFetch,
-			Message:  errMsg,
+			Err:      err,
 		}
 	}
 }
@@ -99,17 +94,12 @@ func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) t
 	return func() tea.Msg {
 		stories, err := service.FetchItems(numItems, endpoint)
 
-		var errMsg string
-		if err != nil {
-			errMsg = friendlyError(err)
-		}
-
 		return message.CategoryFetchingFinished{
 			Stories:  stories,
 			Category: msg.Category,
 			Index:    msg.Index,
 			Cursor:   msg.Cursor,
-			Message:  errMsg,
+			Err:      err,
 		}
 	}
 }
@@ -122,17 +112,12 @@ func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 	return func() tea.Msg {
 		stories, err := service.FetchItems(numItems, endpoint)
 
-		var errMsg string
-		if err != nil {
-			errMsg = friendlyError(err)
-		}
-
 		return message.CategoryFetchingFinished{
 			Stories:  stories,
 			Category: msg.CurrentCategory,
 			Index:    msg.CurrentIndex,
 			Cursor:   0,
-			Message:  errMsg,
+			Err:      err,
 		}
 	}
 }
@@ -150,7 +135,7 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 
 		story, err := service.FetchComments(msg.Id)
 		if err != nil {
-			return message.CommentTreeReady{Error: friendlyError(err)}
+			return message.CommentTreeReady{Err: err}
 		}
 
 		var updatedStory *item.Story
@@ -169,14 +154,13 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 	hist := m.history
 
 	return func() tea.Msg {
-		errorMessage := validator.GetErrorMessage(msg.Title, msg.Domain)
-		if errorMessage != "" {
-			return message.ArticleReady{Error: errorMessage}
+		if err := validator.Validate(msg.Title, msg.Domain); err != nil {
+			return message.ArticleReady{Err: err}
 		}
 
 		article, err := reader.GetArticle(msg.Url, msg.Title, config.CommentWidth, config.IndentationSymbol)
 		if err != nil {
-			return message.ArticleReady{Error: friendlyError(err)}
+			return message.ArticleReady{Err: err}
 		}
 
 		_ = hist.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)

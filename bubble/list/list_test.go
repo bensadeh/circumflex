@@ -7,6 +7,7 @@ import (
 	"clx/history"
 	"clx/item"
 	"clx/settings"
+	"errors"
 	"testing"
 	"time"
 
@@ -162,7 +163,7 @@ func TestCategoryFetchingFinished_UpdatesState(t *testing.T) {
 	m.pager.transition = &transition{prevIndex: 0, oldItems: testItems(), refresh: true}
 	m.status.showSpinner = true
 
-	m, _ = m.Update(message.CategoryFetchingFinished{Index: 1, Cursor: 0, Message: ""})
+	m, _ = m.Update(message.CategoryFetchingFinished{Index: 1, Cursor: 0})
 
 	assert.Equal(t, StateBrowsing, m.state)
 	assert.False(t, m.status.showSpinner)
@@ -332,13 +333,13 @@ func TestEnteringReaderMode_InvalidDomain(t *testing.T) {
 	msg := cmd()
 	result, ok := msg.(message.ArticleReady)
 	assert.True(t, ok, "cmd should produce ArticleReady message")
-	assert.NotEmpty(t, result.Error)
+	assert.Error(t, result.Err)
 }
 
 func TestArticleReady_WithError(t *testing.T) {
 	m := newTestModelReady(t)
 
-	_, cmd := m.Update(message.ArticleReady{Error: "Reader Mode not supported"})
+	_, cmd := m.Update(message.ArticleReady{Err: errors.New("Reader Mode not supported")})
 	assert.NotNil(t, cmd, "should return batch cmd with status message and editor finished")
 }
 

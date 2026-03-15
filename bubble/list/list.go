@@ -206,9 +206,12 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		m.status.StopSpinner()
 		m.state = StateBrowsing
 		m.updatePagination()
-		cmd := m.status.NewStatusMessage(msg.Message)
 
-		return m, cmd
+		if msg.Err != nil {
+			return m, m.status.NewStatusMessage(friendlyError(msg.Err))
+		}
+
+		return m, nil
 
 	case message.StatusMessageTimeout:
 		m.status.hideStatusMessage()
@@ -267,9 +270,9 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 			_ = m.favorites.UpdateStoryAndWriteToDisk(msg.UpdatedStory)
 		}
 
-		if msg.Error != "" {
+		if msg.Err != nil {
 			return m, tea.Batch(
-				m.status.NewStatusMessageWithDuration(msg.Error, time.Second*3),
+				m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), time.Second*3),
 				func() tea.Msg {
 					return message.EditorFinishedMsg{Err: nil}
 				},
@@ -283,9 +286,9 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		})
 
 	case message.ArticleReady:
-		if msg.Error != "" {
+		if msg.Err != nil {
 			return m, tea.Batch(
-				m.status.NewStatusMessageWithDuration(msg.Error, time.Second*3),
+				m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), time.Second*3),
 				func() tea.Msg {
 					return message.EditorFinishedMsg{Err: nil}
 				},
@@ -311,7 +314,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		cmds = append(cmds, m.status.NewStatusMessageWithDuration(msg.Message, msg.Duration))
 
 	case message.CategoryFetchingFinished:
-		if msg.Message != "" {
+		if msg.Err != nil {
 			if m.pager.transition != nil {
 				m.cat.SetIndex(m.pager.transition.prevIndex)
 			}
@@ -321,7 +324,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 			m.status.StopSpinner()
 			m.updatePagination()
 
-			return m, m.status.NewStatusMessageWithDuration(msg.Message, time.Second*3)
+			return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), time.Second*3)
 		}
 
 		if m.pager.transition != nil && m.pager.transition.refresh {
@@ -337,9 +340,6 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 		itemsOnPage := m.pager.Paginator.ItemsOnPage(len(m.VisibleItems()))
 		m.pager.cursor = min(msg.Cursor, itemsOnPage-1)
-
-		cmd := m.status.NewStatusMessage(msg.Message)
-		cmds = append(cmds, cmd)
 
 		m.updatePagination()
 	}
