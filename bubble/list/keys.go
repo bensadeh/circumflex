@@ -270,7 +270,9 @@ func (m *Model) handleOpenLink() tea.Cmd {
 	commentCount := m.SelectedItem().CommentsCount
 
 	return func() tea.Msg {
-		_ = browser.Open(context.Background(), url)
+		if err := browser.Open(context.Background(), url); err != nil {
+			return message.BrowserOpenFailed{Err: err}
+		}
 
 		return message.OpeningLink{
 			Id:           id,
@@ -285,7 +287,9 @@ func (m *Model) handleOpenComments() tea.Cmd {
 	commentCount := m.SelectedItem().CommentsCount
 
 	return func() tea.Msg {
-		_ = browser.Open(context.Background(), url)
+		if err := browser.Open(context.Background(), url); err != nil {
+			return message.BrowserOpenFailed{Err: err}
+		}
 
 		return message.OpeningCommentsInBrowser{
 			Id:           id,

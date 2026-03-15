@@ -24,6 +24,10 @@ type OpeningLink struct {
 	CommentCount int
 }
 
+type BrowserOpenFailed struct {
+	Err error
+}
+
 type EnteringReaderMode struct {
 	Url          string
 	Title        string
