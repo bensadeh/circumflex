@@ -46,11 +46,11 @@ func (m *Model) View() string {
 	totalItems := len(m.VisibleItems())
 	rankings := ranking.GetRankings(
 		false,
-		m.Paginator.PerPage,
+		m.pager.Paginator.PerPage,
 		totalItems,
-		m.cursor,
-		m.Paginator.Page,
-		m.Paginator.TotalPages)
+		m.pager.cursor,
+		m.pager.Paginator.Page,
+		m.pager.Paginator.TotalPages)
 
 	rankingsAndContent := lipgloss.JoinHorizontal(lipgloss.Top, rankings, content)
 	sections = append(sections, rankingsAndContent)
@@ -83,14 +83,14 @@ func (m *Model) statusAndPaginationView() string {
 	case m.state == StateHelpScreen:
 		centerContent = m.faintStyle.Render(
 			"github.com/bensadeh/circumflex • version " + version.Version)
-	case m.showSpinner:
-		centerContent = m.spinnerView()
+	case m.status.showSpinner:
+		centerContent = m.status.spinnerView()
 	default:
-		centerContent = m.statusMessage
+		centerContent = m.status.message
 	}
 
 	if m.state != StateHelpScreen {
-		rightContent = m.Paginator.View()
+		rightContent = m.pager.Paginator.View()
 	}
 
 	left := m.statusLeftStyle.Render("")
@@ -118,7 +118,7 @@ func (m *Model) populatedView() string {
 	}
 
 	if len(allItems) > 0 {
-		start, end := m.Paginator.GetSliceBounds(len(allItems))
+		start, end := m.pager.Paginator.GetSliceBounds(len(allItems))
 		itemsToShow := allItems[start:end]
 
 		for i, item := range itemsToShow {
@@ -133,9 +133,9 @@ func (m *Model) populatedView() string {
 	// If there aren't enough items to fill up this page (always the last page)
 	// then we need to add some newlines to fill up the space where items would
 	// have been.
-	itemsOnPage := m.Paginator.ItemsOnPage(len(allItems))
-	if itemsOnPage < m.Paginator.PerPage {
-		n := (m.Paginator.PerPage - itemsOnPage) * (m.delegate.Height() + m.delegate.Spacing())
+	itemsOnPage := m.pager.Paginator.ItemsOnPage(len(allItems))
+	if itemsOnPage < m.pager.Paginator.PerPage {
+		n := (m.pager.Paginator.PerPage - itemsOnPage) * (m.delegate.Height() + m.delegate.Spacing())
 		if len(allItems) == 0 {
 			n -= m.delegate.Height() - 1
 		}
@@ -144,8 +144,4 @@ func (m *Model) populatedView() string {
 	}
 
 	return b.String()
-}
-
-func (m *Model) spinnerView() string {
-	return m.spinner.View()
 }

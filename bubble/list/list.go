@@ -54,20 +54,11 @@ type Model struct {
 	Title  string
 	Styles Styles
 
-	state       ViewState
-	transition  *transition
-	spinner     spinner.Model
-	showSpinner bool
-	width       int
-	height      int
-	Paginator   paginator.Model
-	cursor      int
-
-	StatusMessageLifetime time.Duration
-
-	statusMessage      string
-	statusMessageTimer *time.Timer
-	items              [][]*item.Story
+	state  ViewState
+	status statusBar
+	pager  pager
+	width  int
+	height int
 
 	delegate  ItemDelegate
 	history   history.History
@@ -109,20 +100,24 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 	items := make([][]*item.Story, numberOfCategories)
 
 	m := Model{
-		showTitle:             true,
-		showStatusBar:         true,
-		Styles:                styles,
-		Title:                 "List",
-		StatusMessageLifetime: time.Second,
+		showTitle:     true,
+		showStatusBar: true,
+		Styles:        styles,
+		Title:         "List",
 
-		state:     StateStartup,
-		width:     width,
-		height:    height,
+		state:  StateStartup,
+		width:  width,
+		height: height,
+		pager: pager{
+			items:     items,
+			Paginator: p,
+		},
+		status: statusBar{
+			lifetime: time.Second,
+			spinner:  sp,
+		},
 		delegate:  delegate,
 		history:   hist,
-		items:     items,
-		Paginator: p,
-		spinner:   sp,
 		config:    config,
 		service:   service,
 		favorites: favorites,
@@ -143,7 +138,7 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 }
 
 func (m *Model) syncFavorites() {
-	m.items[categories.Favorites] = m.favorites.GetItems()
+	m.pager.items[categories.Favorites] = m.favorites.GetItems()
 	m.cat.SetFavorites(m.favorites.HasItems())
 }
 
@@ -171,7 +166,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 		var cmds []tea.Cmd
 
-		spinnerCmd := m.StartSpinner()
+		spinnerCmd := m.status.StartSpinner()
 		cmds = append(cmds, spinnerCmd)
 
 		m.state = StateFetching
@@ -199,24 +194,24 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case spinner.TickMsg:
-		newSpinnerModel, cmd := m.spinner.Update(msg)
+		newSpinnerModel, cmd := m.status.spinner.Update(msg)
 
-		m.spinner = newSpinnerModel
-		if m.showSpinner {
+		m.status.spinner = newSpinnerModel
+		if m.status.showSpinner {
 			cmds = append(cmds, cmd)
 		}
 
 	case message.FetchingFinished:
-		m.items[msg.Category] = msg.Stories
-		m.StopSpinner()
+		m.pager.items[msg.Category] = msg.Stories
+		m.status.StopSpinner()
 		m.state = StateBrowsing
 		m.updatePagination()
-		cmd := m.NewStatusMessage(msg.Message)
+		cmd := m.status.NewStatusMessage(msg.Message)
 
 		return m, cmd
 
 	case message.StatusMessageTimeout:
-		m.hideStatusMessage()
+		m.status.hideStatusMessage()
 
 	case message.AddToFavorites:
 		m.favorites.Add(msg.Item)
@@ -224,7 +219,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		if err := m.favorites.Write(); err != nil {
 			_ = m.favorites.Remove(len(m.favorites.GetItems()) - 1)
 			m.syncFavorites()
-			cmds = append(cmds, m.NewStatusMessageWithDuration("Could not save favorite to disk", time.Second*3))
+			cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not save favorite to disk", time.Second*3))
 
 			break
 		}
@@ -274,7 +269,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 		if msg.Error != "" {
 			return m, tea.Batch(
-				m.NewStatusMessageWithDuration(msg.Error, time.Second*3),
+				m.status.NewStatusMessageWithDuration(msg.Error, time.Second*3),
 				func() tea.Msg {
 					return message.EditorFinishedMsg{Err: nil}
 				},
@@ -290,7 +285,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	case message.ArticleReady:
 		if msg.Error != "" {
 			return m, tea.Batch(
-				m.NewStatusMessageWithDuration(msg.Error, time.Second*3),
+				m.status.NewStatusMessageWithDuration(msg.Error, time.Second*3),
 				func() tea.Msg {
 					return message.EditorFinishedMsg{Err: nil}
 				},
@@ -313,37 +308,37 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, m.refresh(msg)
 
 	case message.ShowStatusMessage:
-		cmds = append(cmds, m.NewStatusMessageWithDuration(msg.Message, msg.Duration))
+		cmds = append(cmds, m.status.NewStatusMessageWithDuration(msg.Message, msg.Duration))
 
 	case message.CategoryFetchingFinished:
 		if msg.Message != "" {
-			if m.transition != nil {
-				m.cat.SetIndex(m.transition.prevIndex)
+			if m.pager.transition != nil {
+				m.cat.SetIndex(m.pager.transition.prevIndex)
 			}
 
-			m.transition = nil
+			m.pager.transition = nil
 			m.state = StateBrowsing
-			m.StopSpinner()
+			m.status.StopSpinner()
 			m.updatePagination()
 
-			return m, m.NewStatusMessageWithDuration(msg.Message, time.Second*3)
+			return m, m.status.NewStatusMessageWithDuration(msg.Message, time.Second*3)
 		}
 
-		if m.transition != nil && m.transition.refresh {
-			clearAllCategories(m.items)
+		if m.pager.transition != nil && m.pager.transition.refresh {
+			clearAllCategories(m.pager.items)
 		}
 
-		m.transition = nil
-		m.items[msg.Category] = msg.Stories
-		m.Paginator.Page = 0
+		m.pager.transition = nil
+		m.pager.items[msg.Category] = msg.Stories
+		m.pager.Paginator.Page = 0
 		m.state = StateBrowsing
-		m.StopSpinner()
+		m.status.StopSpinner()
 		m.cat.SetIndex(msg.Index)
 
-		itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))
-		m.cursor = min(msg.Cursor, itemsOnPage-1)
+		itemsOnPage := m.pager.Paginator.ItemsOnPage(len(m.VisibleItems()))
+		m.pager.cursor = min(msg.Cursor, itemsOnPage-1)
 
-		cmd := m.NewStatusMessage(msg.Message)
+		cmd := m.status.NewStatusMessage(msg.Message)
 		cmds = append(cmds, cmd)
 
 		m.updatePagination()

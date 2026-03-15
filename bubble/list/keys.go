@@ -42,24 +42,24 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return tea.Quit
 
 		case key.Matches(msg, m.keymap.Up):
-			m.CursorUp()
+			m.pager.CursorUp()
 
 			return nil
 
 		case key.Matches(msg, m.keymap.Down):
-			m.CursorDown()
+			m.pager.CursorDown(m.cat.CurrentCategory())
 
 			return nil
 
 		case key.Matches(msg, m.keymap.PrevPage):
-			m.Paginator.PrevPage()
-			m.updateCursor()
+			m.pager.Paginator.PrevPage()
+			m.pager.updateCursor(m.cat.CurrentCategory())
 
 			return nil
 
 		case key.Matches(msg, m.keymap.NextPage):
-			m.Paginator.NextPage()
-			m.updateCursor()
+			m.pager.Paginator.NextPage()
+			m.pager.updateCursor(m.cat.CurrentCategory())
 
 			return nil
 
@@ -70,12 +70,12 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return m.handleTabBackward()
 
 		case key.Matches(msg, m.keymap.GoToTop):
-			m.cursor = 0
+			m.pager.cursor = 0
 
 			return nil
 
 		case key.Matches(msg, m.keymap.GoToBottom):
-			m.cursor = m.Paginator.ItemsOnPage(numItems) - 1
+			m.pager.cursor = m.pager.Paginator.ItemsOnPage(numItems) - 1
 
 			return nil
 
@@ -91,14 +91,14 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			}
 
 		case key.Matches(msg, m.keymap.AddFavorite):
-			m.SetPermanentStatusMessage(getAddItemConfirmationMessage(), false)
+			m.status.SetPermanentStatusMessage(getAddItemConfirmationMessage(), false)
 			m.state = StateAddFavoritesPrompt
 
 			return nil
 
 		case key.Matches(msg, m.keymap.RemoveFavorite):
 			if m.cat.CurrentCategory() == categories.Favorites {
-				m.SetPermanentStatusMessage(getRemoveItemConfirmationMessage(), false)
+				m.status.SetPermanentStatusMessage(getRemoveItemConfirmationMessage(), false)
 				m.state = StateRemoveFavoritesPrompt
 
 				return nil
@@ -139,9 +139,9 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	cmds = append(cmds, cmd)
 
 	// Keep the index in bounds when paginating
-	itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))
-	if m.cursor > itemsOnPage-1 {
-		m.cursor = max(0, itemsOnPage-1)
+	itemsOnPage := m.pager.Paginator.ItemsOnPage(len(m.VisibleItems()))
+	if m.pager.cursor > itemsOnPage-1 {
+		m.pager.cursor = max(0, itemsOnPage-1)
 	}
 
 	return tea.Batch(cmds...)
@@ -155,7 +155,7 @@ func (m *Model) handleConfirmAddFavorites() tea.Cmd {
 		return message.AddToFavorites{Item: selectedItem}
 	}
 
-	return tea.Batch(addToFavorites, m.NewStatusMessageWithDuration("Item added", time.Second*2))
+	return tea.Batch(addToFavorites, m.status.NewStatusMessageWithDuration("Item added", time.Second*2))
 }
 
 func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
@@ -164,26 +164,26 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 	removedItem := m.favorites.GetItems()[m.Index()]
 
 	if err := m.favorites.Remove(m.Index()); err != nil {
-		return m.NewStatusMessageWithDuration("Could not remove favorite", time.Second*3)
+		return m.status.NewStatusMessageWithDuration("Could not remove favorite", time.Second*3)
 	}
 
 	if err := m.favorites.Write(); err != nil {
 		m.favorites.Add(removedItem)
 		m.syncFavorites()
 
-		return m.NewStatusMessageWithDuration("Could not save favorites to disk", time.Second*3)
+		return m.status.NewStatusMessageWithDuration("Could not save favorites to disk", time.Second*3)
 	}
 
 	m.syncFavorites()
 
-	isOnLastItem := m.Index() == len(m.items[categories.Favorites])
-	hasOnlyOneItem := len(m.items[categories.Favorites]) == 0
+	isOnLastItem := m.Index() == len(m.pager.items[categories.Favorites])
+	hasOnlyOneItem := len(m.pager.items[categories.Favorites]) == 0
 
 	itemRemovedMessage := "Item removed"
 
 	if hasOnlyOneItem {
 		m.cat.SetIndex(0)
-		m.updateCursor()
+		m.pager.updateCursor(m.cat.CurrentCategory())
 		m.updatePagination()
 
 		catIndex := m.cat.CurrentIndex()
@@ -192,21 +192,21 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 			return message.FetchAndChangeToCategory{Index: catIndex, Category: catValue, Cursor: 0}
 		}
 
-		return tea.Batch(changeCatCmd, m.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2))
+		return tea.Batch(changeCatCmd, m.status.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2))
 	}
 
 	if isOnLastItem {
-		m.cursor--
+		m.pager.cursor--
 	}
 
 	m.updatePagination()
 
-	return m.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2)
+	return m.status.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2)
 }
 
 func (m *Model) handleCancelPrompt() tea.Cmd {
 	m.state = StateBrowsing
-	m.hideStatusMessage()
+	m.status.hideStatusMessage()
 
 	return nil
 }
@@ -230,24 +230,24 @@ func (m *Model) handleTabBackward() tea.Cmd {
 }
 
 func (m *Model) handleTab(targetIndex, targetCategory int, changeCategory func(), advance func()) tea.Cmd {
-	if m.categoryHasStories(targetCategory) {
+	if m.pager.categoryHasStories(targetCategory) {
 		changeCategory()
 
 		return nil
 	}
 
 	currentCategory := m.cat.CurrentCategory()
-	m.transition = &transition{
+	m.pager.transition = &transition{
 		prevIndex: m.cat.CurrentIndex(),
-		oldItems:  m.items[currentCategory],
+		oldItems:  m.pager.items[currentCategory],
 	}
 
 	advance()
 
 	m.state = StateFetching
-	startSpinnerCmd := m.StartSpinner()
+	startSpinnerCmd := m.status.StartSpinner()
 
-	cursor := m.cursor
+	cursor := m.pager.cursor
 	changeCatCmd := func() tea.Msg {
 		return message.FetchAndChangeToCategory{Index: targetIndex, Category: targetCategory, Cursor: cursor}
 	}
@@ -292,39 +292,35 @@ func (m *Model) handleOpenComments() tea.Cmd {
 func (m *Model) handleRefresh() tea.Cmd {
 	currentCategory := m.cat.CurrentCategory()
 	currentIndex := m.cat.CurrentIndex()
-	currentPage := m.Paginator.Page
+	currentPage := m.pager.Paginator.Page
 
-	m.transition = &transition{
+	m.pager.transition = &transition{
 		prevIndex: currentIndex,
-		oldItems:  m.items[currentCategory],
+		oldItems:  m.pager.items[currentCategory],
 		refresh:   true,
 	}
 
-	m.Paginator.Page = 0
-	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)
+	m.pager.Paginator.Page = 0
+	m.pager.cursor = min(m.pager.cursor, len(m.pager.items[currentCategory])-1)
 	m.updatePagination()
 
 	m.state = StateFetching
-	m.cursor = 0
-	m.Paginator.Page = currentPage
+	m.pager.cursor = 0
+	m.pager.Paginator.Page = currentPage
 
 	changeCatCmd := func() tea.Msg {
 		return message.Refresh{CurrentIndex: currentIndex, CurrentCategory: currentCategory}
 	}
 
-	return tea.Batch(m.StartSpinner(), changeCatCmd)
-}
-
-func (m *Model) categoryHasStories(cat int) bool {
-	return len(m.items[cat]) != 0
+	return tea.Batch(m.status.StartSpinner(), changeCatCmd)
 }
 
 func (m *Model) changeToNextCategory() {
 	m.cat.Next()
 	currentCategory := m.cat.CurrentCategory()
 
-	m.Paginator.Page = 0
-	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)
+	m.pager.Paginator.Page = 0
+	m.pager.cursor = min(m.pager.cursor, len(m.pager.items[currentCategory])-1)
 	m.updatePagination()
 }
 
@@ -332,8 +328,8 @@ func (m *Model) changeToPrevCategory() {
 	m.cat.Prev()
 	currentCategory := m.cat.CurrentCategory()
 
-	m.Paginator.Page = 0
-	m.cursor = min(m.cursor, len(m.items[currentCategory])-1)
+	m.pager.Paginator.Page = 0
+	m.pager.cursor = min(m.pager.cursor, len(m.pager.items[currentCategory])-1)
 	m.updatePagination()
 }
 

@@ -64,8 +64,8 @@ func newTestModelReady(t *testing.T) *Model {
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 
 	// Simulate fetch completion: populate items and reset state
-	m.items[categories.Top] = testItems()
-	m.StopSpinner()
+	m.pager.items[categories.Top] = testItems()
+	m.status.StopSpinner()
 	m.state = StateBrowsing
 
 	return m
@@ -117,7 +117,7 @@ func TestStartup_InitializesOnWindowSizeMsg(t *testing.T) {
 
 	m, cmd := m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 	assert.Equal(t, StateFetching, m.state)
-	assert.True(t, m.showSpinner)
+	assert.True(t, m.status.showSpinner)
 	assert.NotNil(t, cmd, "should return batch cmd with spinner + fetch")
 }
 
@@ -131,10 +131,10 @@ func TestEditorFinished_RestoresState(t *testing.T) {
 
 func TestStatusMessageTimeout_ClearsMessage(t *testing.T) {
 	m := newTestModelReady(t)
-	m.statusMessage = "some status"
+	m.status.message = "some status"
 
 	m, _ = m.Update(message.StatusMessageTimeout{})
-	assert.Empty(t, m.statusMessage)
+	assert.Empty(t, m.status.message)
 }
 
 func TestAddToFavorites_AddsItem(t *testing.T) {
@@ -159,14 +159,14 @@ func TestWindowResize_UpdatesDimensions(t *testing.T) {
 func TestCategoryFetchingFinished_UpdatesState(t *testing.T) {
 	m := newTestModelReady(t)
 	m.state = StateFetching
-	m.transition = &transition{prevIndex: 0, oldItems: testItems(), refresh: true}
-	m.showSpinner = true
+	m.pager.transition = &transition{prevIndex: 0, oldItems: testItems(), refresh: true}
+	m.status.showSpinner = true
 
 	m, _ = m.Update(message.CategoryFetchingFinished{Index: 1, Cursor: 0, Message: ""})
 
 	assert.Equal(t, StateBrowsing, m.state)
-	assert.False(t, m.showSpinner)
-	assert.Nil(t, m.transition)
+	assert.False(t, m.status.showSpinner)
+	assert.Nil(t, m.pager.transition)
 }
 
 func TestShowStatusMessage_SetsMessage(t *testing.T) {
@@ -194,23 +194,23 @@ func TestNavigationUpDown(t *testing.T) {
 	m := newTestModelReady(t)
 
 	// Start at cursor 0, move down
-	assert.Equal(t, 0, m.cursor)
+	assert.Equal(t, 0, m.pager.cursor)
 	m, _ = m.Update(keyMsg("j"))
-	assert.Equal(t, 1, m.cursor)
+	assert.Equal(t, 1, m.pager.cursor)
 
 	m, _ = m.Update(keyMsg("j"))
-	assert.Equal(t, 2, m.cursor)
+	assert.Equal(t, 2, m.pager.cursor)
 
 	// Move up
 	m, _ = m.Update(keyMsg("k"))
-	assert.Equal(t, 1, m.cursor)
+	assert.Equal(t, 1, m.pager.cursor)
 
 	// Can also use arrow keys
 	m, _ = m.Update(keyMsg("down"))
-	assert.Equal(t, 2, m.cursor)
+	assert.Equal(t, 2, m.pager.cursor)
 
 	m, _ = m.Update(keyMsg("up"))
-	assert.Equal(t, 1, m.cursor)
+	assert.Equal(t, 1, m.pager.cursor)
 }
 
 func TestNavigationUpDown_Clamped(t *testing.T) {
@@ -218,15 +218,15 @@ func TestNavigationUpDown_Clamped(t *testing.T) {
 
 	// Moving up from 0 stays at 0
 	m, _ = m.Update(keyMsg("k"))
-	assert.Equal(t, 0, m.cursor)
+	assert.Equal(t, 0, m.pager.cursor)
 
 	// Moving down past end stays at last item
 	for range 100 {
 		m, _ = m.Update(keyMsg("j"))
 	}
 
-	itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))
-	assert.LessOrEqual(t, m.cursor, itemsOnPage-1)
+	itemsOnPage := m.pager.Paginator.ItemsOnPage(len(m.VisibleItems()))
+	assert.LessOrEqual(t, m.pager.cursor, itemsOnPage-1)
 }
 
 func TestGoToTopBottom(t *testing.T) {
@@ -234,19 +234,19 @@ func TestGoToTopBottom(t *testing.T) {
 
 	// Go to bottom
 	m, _ = m.Update(keyMsg("G"))
-	itemsOnPage := m.Paginator.ItemsOnPage(len(m.VisibleItems()))
-	assert.Equal(t, itemsOnPage-1, m.cursor)
+	itemsOnPage := m.pager.Paginator.ItemsOnPage(len(m.VisibleItems()))
+	assert.Equal(t, itemsOnPage-1, m.pager.cursor)
 
 	// Go to top
 	m, _ = m.Update(keyMsg("g"))
-	assert.Equal(t, 0, m.cursor)
+	assert.Equal(t, 0, m.pager.cursor)
 }
 
 func TestTabToCachedCategory(t *testing.T) {
 	m := newTestModelReady(t)
 
 	// Pre-populate the "best" category so tab doesn't need to fetch
-	m.items[categories.Best] = testItems()
+	m.pager.items[categories.Best] = testItems()
 
 	initialIndex := m.cat.CurrentIndex()
 	m, cmd := m.Update(keyMsg("tab"))
@@ -260,14 +260,14 @@ func TestTabToUncachedCategory(t *testing.T) {
 	m := newTestModelReady(t)
 
 	// "best" category is empty (uncached)
-	assert.Empty(t, m.items[categories.Best])
+	assert.Empty(t, m.pager.items[categories.Best])
 
 	m, cmd := m.Update(keyMsg("tab"))
 
 	assert.Equal(t, StateFetching, m.state)
-	assert.True(t, m.showSpinner)
+	assert.True(t, m.status.showSpinner)
 	assert.NotNil(t, cmd, "should return batch cmd with spinner + fetch")
-	assert.NotNil(t, m.transition, "should have a transition with old items")
+	assert.NotNil(t, m.pager.transition, "should have a transition with old items")
 }
 
 func TestEnterCommentSection(t *testing.T) {
@@ -354,7 +354,7 @@ func TestAddFavoritesPrompt(t *testing.T) {
 
 	m, _ = m.Update(keyMsg("f"))
 	assert.Equal(t, StateAddFavoritesPrompt, m.state)
-	assert.NotEmpty(t, m.statusMessage)
+	assert.NotEmpty(t, m.status.message)
 }
 
 func TestAddFavoritesConfirm(t *testing.T) {
@@ -386,9 +386,9 @@ func TestDisabledInput_IgnoresKeys(t *testing.T) {
 	m := newTestModelReady(t)
 	m.state = StateFetching
 
-	cursorBefore := m.cursor
+	cursorBefore := m.pager.cursor
 	m, cmd := m.Update(keyMsg("j"))
-	assert.Equal(t, cursorBefore, m.cursor, "cursor should not move when input is disabled")
+	assert.Equal(t, cursorBefore, m.pager.cursor, "cursor should not move when input is disabled")
 	assert.Nil(t, cmd)
 }
 
@@ -409,10 +409,10 @@ func TestRefresh(t *testing.T) {
 
 	m, cmd := m.Update(keyMsg("r"))
 	assert.Equal(t, StateFetching, m.state)
-	assert.True(t, m.showSpinner)
+	assert.True(t, m.status.showSpinner)
 	assert.NotNil(t, cmd)
-	assert.NotNil(t, m.transition)
-	assert.True(t, m.transition.refresh)
+	assert.NotNil(t, m.pager.transition)
+	assert.True(t, m.pager.transition.refresh)
 }
 
 func TestOpenLink_ReturnsMessage(t *testing.T) {
@@ -426,10 +426,10 @@ func TestOpenLink_ReturnsMessage(t *testing.T) {
 
 func TestSpinnerTick_WhenActive(t *testing.T) {
 	m := newTestModelReady(t)
-	m.showSpinner = true
+	m.status.showSpinner = true
 
 	// Create a spinner tick message
-	_, cmd := m.Update(m.spinner.Tick())
+	_, cmd := m.Update(m.status.spinner.Tick())
 	// When spinner is active, should return a follow-up tick cmd
 	assert.NotNil(t, cmd)
 }
@@ -438,19 +438,19 @@ func TestSpinnerAnimation_FrameAdvances(t *testing.T) {
 	m := newTestModelReady(t)
 
 	// Start the spinner
-	startCmd := m.StartSpinner()
-	assert.True(t, m.showSpinner)
+	startCmd := m.status.StartSpinner()
+	assert.True(t, m.status.showSpinner)
 	assert.NotNil(t, startCmd)
 
 	// Record the initial spinner view
-	initialView := m.spinner.View()
+	initialView := m.status.spinner.View()
 
 	// Execute the start cmd to get the first TickMsg
 	tickMsg := startCmd()
 
 	// Process the tick - this should advance the frame
 	m, cmd := m.Update(tickMsg)
-	afterFirstTick := m.spinner.View()
+	afterFirstTick := m.status.spinner.View()
 
 	assert.NotEqual(t, initialView, afterFirstTick, "spinner frame should change after tick")
 	assert.NotNil(t, cmd, "should return next tick cmd")
@@ -458,9 +458,9 @@ func TestSpinnerAnimation_FrameAdvances(t *testing.T) {
 
 func TestSpinnerTick_WhenInactive(t *testing.T) {
 	m := newTestModelReady(t)
-	m.showSpinner = false
+	m.status.showSpinner = false
 
-	_, cmd := m.Update(m.spinner.Tick())
+	_, cmd := m.Update(m.status.spinner.Tick())
 	// When spinner is inactive, no follow-up tick should be returned
 	// cmd may be non-nil from handleBrowsing, but the spinner-specific cmd won't be appended
 	_ = cmd
@@ -493,7 +493,7 @@ func TestViewHelpScreen(t *testing.T) {
 
 func TestSpinnerView_WhenActive(t *testing.T) {
 	m := newTestModelReady(t)
-	m.showSpinner = true
+	m.status.showSpinner = true
 
 	got := m.statusAndPaginationView()
 	assert.NotEmpty(t, got)

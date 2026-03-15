@@ -9,64 +9,72 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-func (m *Model) NewStatusMessage(s string) tea.Cmd {
-	m.statusMessage = s
-	if m.statusMessageTimer != nil {
-		m.statusMessageTimer.Stop()
+type statusBar struct {
+	message      string
+	messageTimer *time.Timer
+	lifetime     time.Duration
+	spinner      spinner.Model
+	showSpinner  bool
+}
+
+func (s *statusBar) NewStatusMessage(msg string) tea.Cmd {
+	s.message = msg
+	if s.messageTimer != nil {
+		s.messageTimer.Stop()
 	}
 
-	m.statusMessageTimer = time.NewTimer(m.StatusMessageLifetime)
+	s.messageTimer = time.NewTimer(s.lifetime)
 
-	// Wait for timeout
 	return func() tea.Msg {
-		<-m.statusMessageTimer.C
+		<-s.messageTimer.C
 
 		return message.StatusMessageTimeout{}
 	}
 }
 
-func (m *Model) NewStatusMessageWithDuration(s string, d time.Duration) tea.Cmd {
-	m.statusMessage = lipgloss.NewStyle().Render(s)
+func (s *statusBar) NewStatusMessageWithDuration(msg string, d time.Duration) tea.Cmd {
+	s.message = lipgloss.NewStyle().Render(msg)
 
-	if m.statusMessageTimer != nil {
-		m.statusMessageTimer.Stop()
+	if s.messageTimer != nil {
+		s.messageTimer.Stop()
 	}
 
-	m.statusMessageTimer = time.NewTimer(d)
+	s.messageTimer = time.NewTimer(d)
 
-	// Wait for timeout
 	return func() tea.Msg {
-		<-m.statusMessageTimer.C
+		<-s.messageTimer.C
 
 		return message.StatusMessageTimeout{}
 	}
 }
 
-func (m *Model) SetPermanentStatusMessage(s string, faint bool) {
-	m.statusMessage = lipgloss.NewStyle().
+func (s *statusBar) SetPermanentStatusMessage(msg string, faint bool) {
+	s.message = lipgloss.NewStyle().
 		Faint(faint).
-		Render(s)
+		Render(msg)
 }
 
-func (m *Model) hideStatusMessage() {
-	m.statusMessage = ""
-	if m.statusMessageTimer != nil {
-		m.statusMessageTimer.Stop()
+func (s *statusBar) hideStatusMessage() {
+	s.message = ""
+	if s.messageTimer != nil {
+		s.messageTimer.Stop()
 	}
 }
 
-func (m *Model) StartSpinner() tea.Cmd {
-	// Hack: I can't get the spinner to reset properly. As a workaround, we
-	// instantiate a new spinner each time we want to show it.
-	m.spinner = spinner.New()
-	m.spinner.Spinner = getSpinner()
-	m.spinner.Style = DefaultStyles().Spinner
+func (s *statusBar) StartSpinner() tea.Cmd {
+	s.spinner = spinner.New()
+	s.spinner.Spinner = getSpinner()
+	s.spinner.Style = DefaultStyles().Spinner
 
-	m.showSpinner = true
+	s.showSpinner = true
 
-	return m.spinner.Tick
+	return s.spinner.Tick
 }
 
-func (m *Model) StopSpinner() {
-	m.showSpinner = false
+func (s *statusBar) StopSpinner() {
+	s.showSpinner = false
+}
+
+func (s *statusBar) spinnerView() string {
+	return s.spinner.View()
 }

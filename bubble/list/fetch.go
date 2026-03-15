@@ -46,22 +46,22 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 func (m *Model) getNumberOfItemsToFetch(cat int) int {
 	switch cat {
 	case categories.Top:
-		return m.Paginator.PerPage * 3
+		return m.pager.Paginator.PerPage * 3
 
 	case categories.Newest:
-		return m.Paginator.PerPage * 3
+		return m.pager.Paginator.PerPage * 3
 
 	case categories.Best:
-		return m.Paginator.PerPage * 3
+		return m.pager.Paginator.PerPage * 3
 
 	case categories.Ask:
-		return m.Paginator.PerPage
+		return m.pager.Paginator.PerPage
 
 	case categories.Show:
-		return m.Paginator.PerPage
+		return m.pager.Paginator.PerPage
 
 	default:
-		return m.Paginator.PerPage
+		return m.pager.Paginator.PerPage
 	}
 }
 
