@@ -100,7 +100,12 @@ func (m *Model) statusAndPaginationView() string {
 		centerContent = m.status.message
 	}
 
-	if m.state != StateHelpScreen {
+	switch m.state {
+	case StateHelpScreen:
+		// no pagination on help screen
+	case StateFetching:
+		rightContent = strings.Repeat(m.Styles.InactivePaginationDot.String(), 3)
+	case StateStartup, StateBrowsing, StateAddFavoritesPrompt, StateRemoveFavoritesPrompt, StateEditorOpen:
 		rightContent = m.pager.Paginator.View()
 	}
 
