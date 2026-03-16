@@ -1,9 +1,10 @@
 package reader
 
 import (
+	"clx/style"
 	"strings"
 
-	. "github.com/logrusorgru/aurora/v3"
+	"charm.land/lipgloss/v2"
 )
 
 func processBBC(text string) string {
@@ -37,10 +38,10 @@ func processBBC(text string) string {
 			break
 		}
 
-		image := Cyan("Image: ").Faint().String()
+		image := lipgloss.NewStyle().Foreground(style.ReaderBBCImageColor()).Faint(true).Render("Image: ")
 		line = strings.ReplaceAll(line, "image source", image)
 
-		caption := Yellow("Caption: ").Faint().String()
+		caption := lipgloss.NewStyle().Foreground(style.ReaderBBCCaptionColor()).Faint(true).Render("Caption: ")
 		line = strings.ReplaceAll(line, "image caption", caption)
 
 		sb.WriteString(line)

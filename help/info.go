@@ -4,10 +4,11 @@ import (
 	"clx/constants"
 	"clx/keymaps"
 	"clx/nerdfonts"
+	"clx/style"
 	"strings"
 
 	"charm.land/bubbles/v2/key"
-	. "github.com/logrusorgru/aurora/v3"
+	"charm.land/lipgloss/v2"
 
 	text "github.com/MichaelMure/go-term-text"
 )
@@ -16,7 +17,7 @@ func GetText(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Bindi
 	keys := new(keymaps.List)
 	keys.Init()
 
-	keys.AddHeader(Magenta(" Main Menu ").Underline().String())
+	keys.AddHeader(lipgloss.NewStyle().Foreground(style.HelpMainMenuColor()).Underline(true).Render(" Main Menu "))
 	keys.AddSeparator()
 
 	for _, b := range mainMenuBindings {
@@ -31,7 +32,7 @@ func GetText(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Bindi
 
 	keys.AddSeparator()
 
-	keys.AddHeader(Yellow(" Comment Section / Reader Mode ").Underline().String())
+	keys.AddHeader(lipgloss.NewStyle().Foreground(style.HelpCommentColor()).Underline(true).Render(" Comment Section / Reader Mode "))
 	keys.AddSeparator()
 	keys.AddKeymap("Down / up one line", "j, k")
 	keys.AddKeymap("Down / up one half-window", "d, u")
@@ -42,13 +43,13 @@ func GetText(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Bindi
 	keys.AddKeymap("Return to circumflex", "q")
 	keys.AddSeparator()
 
-	keys.AddHeader(Blue(" Legend ").Underline().String())
+	keys.AddHeader(lipgloss.NewStyle().Foreground(style.HelpLegendColor()).Underline(true).Render(" Legend "))
 	keys.AddSeparator()
-	keys.AddKeymap("Original Poster", Red(getOP(enableNerdFonts)).String())
-	keys.AddKeymap("Parent Poster", Magenta(getPP(enableNerdFonts)).String())
-	keys.AddKeymap("Moderator", Green(getMod(enableNerdFonts)).String())
+	keys.AddKeymap("Original Poster", style.CommentOP(getOP(enableNerdFonts)))
+	keys.AddKeymap("Parent Poster", style.CommentPP(getPP(enableNerdFonts)))
+	keys.AddKeymap("Moderator", style.CommentMod(getMod(enableNerdFonts)))
 	keys.AddSeparator()
-	keys.AddKeymap("New comment indicator", Cyan("●").String())
+	keys.AddKeymap("New comment indicator", style.CommentNewIndicator("●"))
 
 	keys.AddSeparator()
 	keys.AddSeparator()

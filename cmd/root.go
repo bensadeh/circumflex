@@ -8,11 +8,12 @@ import (
 	"clx/indent"
 	"clx/less"
 	"clx/settings"
+	"clx/style"
+	"clx/theme"
 	"clx/version"
 	"fmt"
 	"os"
 
-	"github.com/logrusorgru/aurora/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -34,7 +35,7 @@ var (
 func Root() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:     "clx",
-		Short:   "\n" + aurora.Magenta("circumflex").String() + " is a command line tool for browsing Hacker News in your terminal",
+		Short:   "\n" + style.Magenta("circumflex") + " is a command line tool for browsing Hacker News in your terminal",
 		Version: version.Version,
 		Run: func(cmd *cobra.Command, args []string) {
 			config := getConfig()
@@ -113,6 +114,10 @@ func configureFlags(rootCmd *cobra.Command) {
 func getConfig() *settings.Config {
 	config := settings.Default()
 
+	t, _ := theme.Load()
+	config.Theme = t
+	style.Init(t)
+
 	_, nerdFontsEnvIsSet := os.LookupEnv("NERDFONTS")
 
 	config.CommentWidth = commentWidth
@@ -142,10 +147,10 @@ func verifyLess(noLessVerify bool) {
 	isValid, currentLessVersion := cli.VerifyLessVersion(version.MinimumLessVersion)
 
 	if !isValid && currentLessVersion == "" {
-		flag := aurora.Bold("--no-less-verify").String()
-		lessCmd := aurora.Magenta("less").String()
-		clxCmd := aurora.Magenta("clx").String()
-		lessVersion := aurora.Yellow("?").String()
+		flag := style.Bold("--no-less-verify")
+		lessCmd := style.Magenta("less")
+		clxCmd := style.Magenta("clx")
+		lessVersion := style.Yellow("?")
 
 		fmt.Printf("Could not verify version of %s\n\n", lessCmd)
 		fmt.Printf("Required: %d\n", version.MinimumLessVersion)
@@ -156,10 +161,10 @@ func verifyLess(noLessVerify bool) {
 	}
 
 	if !isValid {
-		flag := aurora.Bold("--no-less-verify").String()
-		lessCmd := aurora.Magenta("less").String()
-		clxCmd := aurora.Magenta("clx").String()
-		lessVersion := aurora.Yellow(currentLessVersion).String()
+		flag := style.Bold("--no-less-verify")
+		lessCmd := style.Magenta("less")
+		clxCmd := style.Magenta("clx")
+		lessVersion := style.Yellow(currentLessVersion)
 
 		fmt.Printf("Your version of %s is outdated\n\n", lessCmd)
 		fmt.Printf("Required: %d\n", version.MinimumLessVersion)

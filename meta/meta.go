@@ -6,13 +6,12 @@ import (
 	"clx/item"
 	"clx/nerdfonts"
 	"clx/settings"
+	"clx/style"
 	"clx/syntax"
 	"fmt"
 	"strconv"
 
 	text "github.com/MichaelMure/go-term-text"
-
-	. "github.com/logrusorgru/aurora/v3"
 
 	"charm.land/lipgloss/v2"
 )
@@ -23,30 +22,30 @@ const (
 )
 
 func GetReaderModeMetaBlock(title string, url string, lineWidth int) string {
-	style := lipgloss.NewStyle().
+	s := lipgloss.NewStyle().
 		BorderStyle(lipgloss.RoundedBorder()).
 		PaddingLeft(1).
 		PaddingRight(1).
 		Width(lineWidth)
 
-	contentWidth := lineWidth - style.GetHorizontalBorderSize() - style.GetHorizontalPadding()
+	contentWidth := lineWidth - s.GetHorizontalBorderSize() - s.GetHorizontalPadding()
 
-	formattedTitle, _ := text.Wrap(Bold(title).String(), lineWidth)
+	formattedTitle, _ := text.Wrap(style.Bold(title), lineWidth)
 	formattedTitle = constants.InvisibleCharacterForTopLevelComments + newLine + formattedTitle
-	formattedURL := Blue(text.TruncateMax(url, contentWidth)).String()
-	info := newParagraph + Green("Reader Mode").String()
+	formattedURL := style.MetaURL(text.TruncateMax(url, contentWidth))
+	info := newParagraph + style.MetaReaderMode("Reader Mode")
 
-	return formattedTitle + newParagraph + style.Render(formattedURL+info) + newParagraph
+	return formattedTitle + newParagraph + s.Render(formattedURL+info) + newParagraph
 }
 
 func GetCommentSectionMetaBlock(c *item.Story, config *settings.Config, newComments int) string {
-	style := lipgloss.NewStyle().
+	s := lipgloss.NewStyle().
 		BorderStyle(lipgloss.RoundedBorder()).
 		PaddingLeft(1).
 		PaddingRight(1).
 		Width(config.CommentWidth)
 
-	contentWidth := config.CommentWidth - style.GetHorizontalBorderSize() - style.GetHorizontalPadding()
+	contentWidth := config.CommentWidth - s.GetHorizontalBorderSize() - s.GetHorizontalPadding()
 	columnWidth := contentWidth / 2
 
 	url := getURL(c.URL, c.Domain, contentWidth)
@@ -55,7 +54,7 @@ func GetCommentSectionMetaBlock(c *item.Story, config *settings.Config, newComme
 	leftColumn := lipgloss.NewStyle().
 		Width(columnWidth).
 		Align(lipgloss.Left)
-	leftColumnText := getAuthor(c.User, config.EnableNerdFonts) + " " + Faint(c.TimeAgo).String() + newLine +
+	leftColumnText := getAuthor(c.User, config.EnableNerdFonts) + " " + style.Faint(c.TimeAgo) + newLine +
 		getComments(c.CommentsCount, config.EnableNerdFonts) + getNewCommentsInfo(newComments, config.EnableNerdFonts)
 
 	rightColumn := lipgloss.NewStyle().
@@ -67,17 +66,17 @@ func GetCommentSectionMetaBlock(c *item.Story, config *settings.Config, newComme
 	joined := lipgloss.JoinHorizontal(lipgloss.Left, leftColumn.Render(leftColumnText),
 		rightColumn.Render(rightColumnText))
 
-	return getHeadline(c.Title, config) + newParagraph + style.Render(url+joined+rootComment)
+	return getHeadline(c.Title, config) + newParagraph + s.Render(url+joined+rootComment)
 }
 
 func getAuthor(author string, enableNerdFonts bool) string {
 	if enableNerdFonts {
 		authorLabel := fmt.Sprintf("%s %s", nerdfonts.Author, author)
 
-		return Red(authorLabel).String()
+		return style.MetaAuthor(authorLabel)
 	}
 
-	return fmt.Sprintf("by %s", Red(author).String())
+	return fmt.Sprintf("by %s", style.MetaAuthor(author))
 }
 
 func getComments(commentsCount int, enableNerdFonts bool) string {
@@ -86,10 +85,10 @@ func getComments(commentsCount int, enableNerdFonts bool) string {
 	if enableNerdFonts {
 		commentsLabel := fmt.Sprintf("%s %s", nerdfonts.Comment, comments)
 
-		return Magenta(commentsLabel).String()
+		return style.MetaComments(commentsLabel)
 	}
 
-	return fmt.Sprintf("%s comments", Magenta(comments).String())
+	return fmt.Sprintf("%s comments", style.MetaComments(comments))
 }
 
 func getScore(points int, enableNerdFonts bool) string {
@@ -98,18 +97,20 @@ func getScore(points int, enableNerdFonts bool) string {
 	if enableNerdFonts {
 		pointsLabel := fmt.Sprintf("%s %s", score, nerdfonts.Score)
 
-		return Yellow(pointsLabel).String()
+		return style.MetaScore(pointsLabel)
 	}
 
-	return fmt.Sprintf("%s points", Yellow(score).String())
+	return fmt.Sprintf("%s points", style.MetaScore(score))
 }
 
 func getID(id int, enableNerdFonts bool) string {
+	idStr := lipgloss.NewStyle().Faint(true).Foreground(style.MetaIDColor()).Render(strconv.Itoa(id))
+
 	if enableNerdFonts {
-		return fmt.Sprintf("%d %s", Faint(id).Green(), Green(nerdfonts.Tag))
+		return fmt.Sprintf("%s %s", idStr, lipgloss.NewStyle().Foreground(style.MetaIDColor()).Render(nerdfonts.Tag))
 	}
 
-	return fmt.Sprintf("%s %d", "ID", Faint(id).Green())
+	return fmt.Sprintf("%s %s", "ID", idStr)
 }
 
 func getNewCommentsInfo(newComments int, enableNerdFonts bool) string {
@@ -120,10 +121,10 @@ func getNewCommentsInfo(newComments int, enableNerdFonts bool) string {
 	comments := strconv.Itoa(newComments)
 
 	if enableNerdFonts {
-		return fmt.Sprintf(" (%s)", Cyan(comments).String())
+		return fmt.Sprintf(" (%s)", style.MetaNewComments(comments))
 	}
 
-	return fmt.Sprintf(" (%s new)", Cyan(comments).String())
+	return fmt.Sprintf(" (%s new)", style.MetaNewComments(comments))
 }
 
 func getHeadline(title string, config *settings.Config) string {
@@ -144,7 +145,7 @@ func highlightTitle(title string, disableHeadlineHighlighting bool, enableNerdFo
 		highlightedTitle = syntax.HighlightSpecialContent(highlightedTitle, syntax.HeadlineInCommentSection, enableNerdFont)
 	}
 
-	return Bold(highlightedTitle).String()
+	return style.Bold(highlightedTitle)
 }
 
 func getURL(url string, domain string, contentWidth int) string {
@@ -153,7 +154,7 @@ func getURL(url string, domain string, contentWidth int) string {
 	}
 
 	truncatedURL := text.TruncateMax(url, contentWidth)
-	formattedURL := Blue(truncatedURL).String() + newLine
+	formattedURL := style.MetaURL(truncatedURL) + newLine
 
 	return formattedURL + newLine
 }

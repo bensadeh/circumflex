@@ -352,9 +352,10 @@ func TestColorizeIndentSymbol(t *testing.T) {
 		assert.Equal(t, r1, r13)
 	})
 
-	t.Run("level beyond 18 returns reset plus plain symbol", func(t *testing.T) {
-		result := ColorizeIndentSymbol("|", 19)
-		assert.Equal(t, "\033[0m|", result)
+	t.Run("level beyond 12 continues cycling", func(t *testing.T) {
+		r7 := ColorizeIndentSymbol("|", 7)
+		r19 := ColorizeIndentSymbol("|", 19)
+		assert.Equal(t, r7, r19, "level 19 should wrap to same color as level 7")
 	})
 }
 

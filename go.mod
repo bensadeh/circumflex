@@ -7,6 +7,7 @@ require (
 	charm.land/bubbletea/v2 v2.0.1
 	charm.land/lipgloss/v2 v2.0.0
 	codeberg.org/readeck/go-readability/v2 v2.1.1
+	github.com/BurntSushi/toml v1.6.0
 	github.com/JohannesKaufmann/html-to-markdown v1.6.0
 	github.com/MichaelMure/go-term-text v0.3.1
 	github.com/PuerkitoBio/goquery v1.11.0
@@ -14,7 +15,6 @@ require (
 	github.com/charmbracelet/glamour v0.10.0
 	github.com/go-resty/resty/v2 v2.17.2
 	github.com/jedib0t/go-pretty/v6 v6.7.8
-	github.com/logrusorgru/aurora/v3 v3.0.0
 	github.com/muesli/reflow v0.3.0
 	github.com/nleeper/goment v1.4.4
 	github.com/spf13/cobra v1.10.2

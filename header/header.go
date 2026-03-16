@@ -2,6 +2,7 @@ package header
 
 import (
 	"clx/categories"
+	"clx/style"
 	"image/color"
 	"strings"
 
@@ -9,9 +10,9 @@ import (
 )
 
 func GetHeader(allCategories []int, selectedSubHeader int, width int) string {
-	c := lipgloss.NewStyle().Foreground(lipgloss.Magenta)
-	l := lipgloss.NewStyle().Foreground(lipgloss.Yellow)
-	x := lipgloss.NewStyle().Foreground(lipgloss.Blue)
+	c := lipgloss.NewStyle().Foreground(style.HeaderC())
+	l := lipgloss.NewStyle().Foreground(style.HeaderL())
+	x := lipgloss.NewStyle().Foreground(style.HeaderX())
 
 	title := c.Render("  c") + l.Render("l") + x.Render("x  ")
 	cats := getCategories(allCategories, selectedSubHeader)
@@ -79,7 +80,7 @@ func removeFirstElement(list []string) []string {
 	return list[1:]
 }
 
-func getColor(i int, selectedSubHeader int, allCategories []int) (color color.Color, isSelected bool) {
+func getColor(i int, selectedSubHeader int, allCategories []int) (clr color.Color, isSelected bool) {
 	if i+1 == selectedSubHeader {
 		return getSelectedCategoryColor(selectedSubHeader, allCategories[i+1])
 	}
@@ -87,23 +88,23 @@ func getColor(i int, selectedSubHeader int, allCategories []int) (color color.Co
 	return lipgloss.NoColor{}, false
 }
 
-func getSelectedCategoryColor(selectedSubHeader int, cat int) (color color.Color, isSelected bool) {
+func getSelectedCategoryColor(selectedSubHeader int, cat int) (clr color.Color, isSelected bool) {
 	if cat == categories.Favorites {
-		return lipgloss.ANSIColor(219), true
+		return style.HeaderFavorites(), true
 	}
 
-	magenta := lipgloss.Magenta
-	yellow := lipgloss.Yellow
-	blue := lipgloss.Blue
+	primary := style.HeaderPrimary()
+	secondary := style.HeaderSecondary()
+	tertiary := style.HeaderTertiary()
 
 	switch selectedSubHeader % 3 {
 	case 0:
-		return blue, true
+		return tertiary, true
 	case 1:
-		return magenta, true
+		return primary, true
 	case 2:
-		return yellow, true
+		return secondary, true
 	default:
-		return blue, true
+		return tertiary, true
 	}
 }

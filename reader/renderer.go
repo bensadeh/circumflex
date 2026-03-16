@@ -3,6 +3,7 @@ package reader
 import (
 	"clx/constants"
 	"clx/meta"
+	"clx/style"
 	"clx/syntax"
 	"regexp"
 	"strings"
@@ -13,7 +14,7 @@ import (
 
 	termtext "github.com/MichaelMure/go-term-text"
 
-	. "github.com/logrusorgru/aurora/v3"
+	"charm.land/lipgloss/v2"
 )
 
 const (
@@ -23,8 +24,6 @@ const (
 
 	codeStart = "[CLX_CODE_START]"
 	codeEnd   = "[CLX_CODE_END]"
-
-	ansiItalic = "\u001B[3m"
 )
 
 var (
@@ -102,7 +101,7 @@ func convertToTerminalFormat(blocks []*block, lineWidth int, indentBlock string)
 func renderDivider(lineWidth int) string {
 	divider := strings.Repeat("-", lineWidth-len(indentLevel1)*2)
 
-	return Faint(indentLevel1 + divider).String()
+	return style.Faint(indentLevel1 + divider)
 }
 
 func renderText(text string, lineWidth int) string {
@@ -153,12 +152,13 @@ func renderList(text string, lineWidth int) string {
 }
 
 func renderImage(text string, lineWidth int) string {
-	red := "\u001B[31m"
-	italic := ansiItalic
-	faint := "\u001B[2m"
-	normal := "\u001B[0m"
-	imageLabel := normal + Red(constants.Circle).Faint().String() + Yellow(constants.Circle).Faint().String() +
-		Blue(constants.Circle).Faint().String() + normal + red + faint + italic + " Image " + normal + faint + italic
+	normal := style.Reset
+	imageColor := style.ReaderImageColor()
+	imageLabel := normal +
+		lipgloss.NewStyle().Foreground(imageColor).Faint(true).Render(constants.Circle) +
+		lipgloss.NewStyle().Foreground(lipgloss.Yellow).Faint(true).Render(constants.Circle) +
+		lipgloss.NewStyle().Foreground(lipgloss.Blue).Faint(true).Render(constants.Circle) +
+		normal + lipgloss.NewStyle().Foreground(imageColor).Faint(true).Italic(true).Render(" Image ") + style.ANSIFaint + style.Italic
 
 	text = reImageRefEOL.ReplaceAllString(text, imageLabel+`$1`)
 	text = reImageRefSpace.ReplaceAllString(text, imageLabel+`$1`)
@@ -202,7 +202,7 @@ func renderCode(text string, lineWidth int) string {
 	text = strings.TrimSuffix(text, "\n")
 	text = strings.TrimPrefix(text, "\n")
 
-	text = Faint(text).String()
+	text = style.Faint(text)
 	text = removeHrefs(text)
 
 	padding := termtext.WrapPad(indentLevel1)
@@ -212,7 +212,7 @@ func renderCode(text string, lineWidth int) string {
 }
 
 func renderQuote(text string, lineWidth int, indentSymbol string) string {
-	text = Italic(text).Faint().String()
+	text = lipgloss.NewStyle().Italic(true).Faint(true).Render(text)
 	text = unescapeCharacters(text)
 	text = removeHrefs(text)
 
@@ -220,7 +220,7 @@ func renderQuote(text string, lineWidth int, indentSymbol string) string {
 	text = itReversed(text)
 	text = bld(text)
 
-	padding := termtext.WrapPad(indentLevel1 + Faint(indentBlock).String())
+	padding := termtext.WrapPad(indentLevel1 + style.Faint(indentBlock))
 	text, _ = termtext.Wrap(text, lineWidth, padding)
 
 	return text
@@ -257,21 +257,15 @@ func removeImageReference(text string) string {
 }
 
 func it(text string) string {
-	italic := ansiItalic
-	noItalic := "\u001B[23m"
-
-	text = strings.ReplaceAll(text, italicStart, italic)
-	text = strings.ReplaceAll(text, italicStop, noItalic)
+	text = strings.ReplaceAll(text, italicStart, style.Italic)
+	text = strings.ReplaceAll(text, italicStop, style.ItalicOff)
 
 	return text
 }
 
 func itReversed(text string) string {
-	italic := ansiItalic
-	noItalic := "\u001B[23m"
-
-	text = strings.ReplaceAll(text, italicStart, noItalic)
-	text = strings.ReplaceAll(text, italicStop, italic)
+	text = strings.ReplaceAll(text, italicStart, style.ItalicOff)
+	text = strings.ReplaceAll(text, italicStop, style.Italic)
 
 	return text
 }
@@ -285,7 +279,7 @@ func bld(text string) string {
 
 func h1(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = White(constants.Block+" ").String() + Bold(text).String()
+	text = style.ReaderH1(constants.Block+" ") + style.Bold(text)
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -294,7 +288,7 @@ func h1(text string, lineWidth int) string {
 
 func h2(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Blue(constants.Block+" ").String() + Bold(text).String()
+	text = style.ReaderH2(constants.Block+" ") + style.Bold(text)
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -303,7 +297,7 @@ func h2(text string, lineWidth int) string {
 
 func h3(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Red(constants.Block+" ").String() + Bold(text).String()
+	text = style.ReaderH3(constants.Block+" ") + style.Bold(text)
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -312,7 +306,7 @@ func h3(text string, lineWidth int) string {
 
 func h4(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Magenta(constants.Block+" ").String() + Bold(text).String()
+	text = style.ReaderH4(constants.Block+" ") + style.Bold(text)
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -321,7 +315,7 @@ func h4(text string, lineWidth int) string {
 
 func h5(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Yellow(constants.Block+" ").String() + Bold(text).String()
+	text = style.ReaderH5(constants.Block+" ") + style.Bold(text)
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -330,7 +324,7 @@ func h5(text string, lineWidth int) string {
 
 func h6(text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = Green(constants.Block+" ").String() + Bold(text).String()
+	text = style.ReaderH6(constants.Block+" ") + style.Bold(text)
 
 	text, _ = termtext.Wrap(text, lineWidth)
 
@@ -411,9 +405,7 @@ func trimLeadingZero(text string) string {
 }
 
 func highlightBackticks(text string) string {
-	magenta := "\u001B[35m"
-	italic := ansiItalic
-	normal := "\u001B[0m"
+	normal := style.Reset
 
 	backtick := "`"
 	numberOfBackticks := strings.Count(text, backtick)
@@ -439,7 +431,7 @@ func highlightBackticks(text string) string {
 
 	text = strings.ReplaceAll(text, "( "+codeStart, "("+codeStart)
 
-	text = strings.ReplaceAll(text, codeStart, normal+magenta+italic)
+	text = strings.ReplaceAll(text, codeStart, normal+style.CommentBacktickColor()+style.Italic)
 	text = strings.ReplaceAll(text, codeEnd, normal)
 
 	return text

@@ -3,25 +3,16 @@ package syntax
 import (
 	"clx/constants"
 	"clx/nerdfonts"
+	"clx/style"
 	"image/color"
 	"regexp"
 	"strings"
-
-	"github.com/logrusorgru/aurora/v3"
 
 	"charm.land/lipgloss/v2"
 )
 
 const (
 	newParagraph = "\n\n"
-	reset        = "\033[0m"
-	bold         = "\033[1m"
-	reverse      = "\033[7m"
-	italic       = "\033[3m"
-	magenta      = "\033[35m"
-	faint        = "\033[2m"
-	green        = "\033[32m"
-	red          = "\033[31m"
 
 	Unselected = iota
 	HeadlineInCommentSection
@@ -45,60 +36,66 @@ var (
 
 func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNerdFonts bool) string {
 	if enableNerdFonts {
-		highlightedStartup := reset + getYCBarNerdFonts(nerdfonts.YCombinator+constants.NoBreakSpace+`$2`, highlightType, enableNerdFonts) +
+		highlightedStartup := style.Reset + getYCBarNerdFonts(nerdfonts.YCombinator+constants.NoBreakSpace+`$2`, highlightType, enableNerdFonts) +
 			getHighlight(highlightType)
 
 		return reYCWithSeason.ReplaceAllString(comment, highlightedStartup)
 	}
 
-	highlightedStartup := reset + getYCBar(`$1`, highlightType) +
+	highlightedStartup := style.Reset + getYCBar(`$1`, highlightType) +
 		getHighlight(highlightType)
 
 	return reYCWithoutSeason.ReplaceAllString(comment, highlightedStartup)
 }
 
 func getYCBar(text string, highlightType int) string {
+	c := style.HeadlineYCLabelColor()
+
 	switch highlightType {
 	case Selected:
-		return lipgloss.NewStyle().Foreground(lipgloss.Yellow).Reverse(true).Render(text)
+		return lipgloss.NewStyle().Foreground(c).Reverse(true).Render(text)
 
 	case MarkAsRead:
-		return lipgloss.NewStyle().Foreground(lipgloss.Yellow).Faint(true).Render(text)
+		return lipgloss.NewStyle().Foreground(c).Faint(true).Render(text)
 
 	default:
-		return lipgloss.NewStyle().Foreground(lipgloss.Yellow).Render(text)
+		return lipgloss.NewStyle().Foreground(c).Render(text)
 	}
 }
 
 func getYCBarNerdFonts(text string, highlightType int, enableNerdFonts bool) string {
+	c := style.HeadlineYCLabelColor()
+
 	switch highlightType {
 	case Selected:
-		return label(text, lipgloss.Yellow, lipgloss.ANSIColor(16), highlightType, enableNerdFonts)
+		return label(text, c, lipgloss.ANSIColor(16), highlightType, enableNerdFonts)
 
 	case MarkAsRead:
-		return label(text, lipgloss.ANSIColor(16), lipgloss.BrightYellow, highlightType, enableNerdFonts)
+		return label(text, lipgloss.ANSIColor(16), c, highlightType, enableNerdFonts)
 
 	default:
-		return label(text, lipgloss.ANSIColor(16), lipgloss.Yellow, highlightType, enableNerdFonts)
+		return label(text, lipgloss.ANSIColor(16), c, highlightType, enableNerdFonts)
 	}
 }
 
 func HighlightYear(comment string, highlightType int) string {
 	content := getYear(`$1`, highlightType)
 
-	return reYear.ReplaceAllString(comment, reset+content+getHighlight(highlightType))
+	return reYear.ReplaceAllString(comment, style.Reset+content+getHighlight(highlightType))
 }
 
 func getYear(text string, highlightType int) string {
+	c := style.HeadlineYearColor()
+
 	switch highlightType {
 	case Selected:
-		return lipgloss.NewStyle().Foreground(lipgloss.Magenta).Reverse(true).Render(text)
+		return lipgloss.NewStyle().Foreground(c).Reverse(true).Render(text)
 
 	case MarkAsRead:
-		return lipgloss.NewStyle().Foreground(lipgloss.Magenta).Faint(true).Render(text)
+		return lipgloss.NewStyle().Foreground(c).Faint(true).Render(text)
 
 	default:
-		return lipgloss.NewStyle().Foreground(lipgloss.Magenta).Render(text)
+		return lipgloss.NewStyle().Foreground(c).Render(text)
 	}
 }
 
@@ -127,7 +124,7 @@ func label(text string, fg color.Color, bg color.Color, highlightType int, enabl
 		content.Bold(true)
 	}
 
-	return reset +
+	return style.Reset +
 		getLeftBorder(bg, highlightType, enableNerdFonts) +
 		content.Render(text) +
 		getRightBorder(bg, highlightType, enableNerdFonts)
@@ -183,11 +180,11 @@ func HighlightHackerNewsHeadlines(title string, highlightType int) string {
 
 	highlight := getHighlight(highlightType)
 
-	title = strings.ReplaceAll(title, askHN, aurora.Blue(askHN).String()+highlight)
-	title = strings.ReplaceAll(title, showHN, aurora.Red(showHN).String()+highlight)
-	title = strings.ReplaceAll(title, tellHN, aurora.Magenta(tellHN).String()+highlight)
-	title = strings.ReplaceAll(title, thankHN, aurora.Cyan(thankHN).String()+highlight)
-	title = strings.ReplaceAll(title, launchHN, aurora.Green(launchHN).String()+highlight)
+	title = strings.ReplaceAll(title, askHN, style.HeadlineAskHN(askHN)+highlight)
+	title = strings.ReplaceAll(title, showHN, style.HeadlineShowHN(showHN)+highlight)
+	title = strings.ReplaceAll(title, tellHN, style.HeadlineTellHN(tellHN)+highlight)
+	title = strings.ReplaceAll(title, thankHN, style.HeadlineThankHN(thankHN)+highlight)
+	title = strings.ReplaceAll(title, launchHN, style.HeadlineLaunchHN(launchHN)+highlight)
 
 	return title
 }
@@ -195,15 +192,15 @@ func HighlightHackerNewsHeadlines(title string, highlightType int) string {
 func getHighlight(highlightType int) string {
 	switch highlightType {
 	case HeadlineInCommentSection:
-		return bold
+		return style.ANSIBold
 	case Selected:
-		return reverse
+		return style.Reverse
 	case MarkAsRead:
-		return faint + italic
+		return style.ANSIFaint + style.Italic
 	case AddToFavorites:
-		return green + reverse
+		return "\033[32m" + style.Reverse
 	case RemoveFromFavorites:
-		return red + reverse
+		return "\033[31m" + style.Reverse
 	default:
 		return ""
 	}
@@ -213,18 +210,18 @@ func HighlightSpecialContent(title string, highlightType int, enableNerdFonts bo
 	highlight := getHighlight(highlightType)
 
 	if enableNerdFonts {
-		title = strings.ReplaceAll(title, "[audio]", aurora.Cyan(nerdfonts.Audio).String()+highlight)
-		title = strings.ReplaceAll(title, "[video]", aurora.Cyan(nerdfonts.Video).String()+highlight)
-		title = strings.ReplaceAll(title, "[pdf]", aurora.Cyan(nerdfonts.Document).String()+highlight)
-		title = strings.ReplaceAll(title, "[PDF]", aurora.Cyan(nerdfonts.Document).String()+highlight)
+		title = strings.ReplaceAll(title, "[audio]", style.HeadlineAudio(nerdfonts.Audio)+highlight)
+		title = strings.ReplaceAll(title, "[video]", style.HeadlineVideo(nerdfonts.Video)+highlight)
+		title = strings.ReplaceAll(title, "[pdf]", style.HeadlinePDF(nerdfonts.Document)+highlight)
+		title = strings.ReplaceAll(title, "[PDF]", style.HeadlinePDF(nerdfonts.Document)+highlight)
 
 		return title
 	}
 
-	title = strings.ReplaceAll(title, "[audio]", aurora.Cyan("audio").String()+highlight)
-	title = strings.ReplaceAll(title, "[video]", aurora.Cyan("video").String()+highlight)
-	title = strings.ReplaceAll(title, "[pdf]", aurora.Cyan("pdf").String()+highlight)
-	title = strings.ReplaceAll(title, "[PDF]", aurora.Cyan("PDF").String()+highlight)
+	title = strings.ReplaceAll(title, "[audio]", style.HeadlineAudio("audio")+highlight)
+	title = strings.ReplaceAll(title, "[video]", style.HeadlineVideo("video")+highlight)
+	title = strings.ReplaceAll(title, "[pdf]", style.HeadlinePDF("pdf")+highlight)
+	title = strings.ReplaceAll(title, "[PDF]", style.HeadlinePDF("PDF")+highlight)
 
 	return title
 }
@@ -283,71 +280,37 @@ func RemoveUnwantedWhitespace(text string) string {
 
 func HighlightDomain(domain string) string {
 	if domain == "" {
-		return reset
+		return style.Reset
 	}
 
-	return reset + aurora.Faint("("+domain+")").String()
+	return style.Reset + style.Faint("("+domain+")")
 }
 
 func HighlightReferences(input string) string {
-	input = strings.ReplaceAll(input, "[0]", "["+aurora.White("0").String()+"]")
-	input = strings.ReplaceAll(input, "[1]", "["+aurora.Red("1").String()+"]")
-	input = strings.ReplaceAll(input, "[2]", "["+aurora.Yellow("2").String()+"]")
-	input = strings.ReplaceAll(input, "[3]", "["+aurora.Green("3").String()+"]")
-	input = strings.ReplaceAll(input, "[4]", "["+aurora.Blue("4").String()+"]")
-	input = strings.ReplaceAll(input, "[5]", "["+aurora.Cyan("5").String()+"]")
-	input = strings.ReplaceAll(input, "[6]", "["+aurora.Magenta("6").String()+"]")
-	input = strings.ReplaceAll(input, "[7]", "["+aurora.BrightWhite("7").String()+"]")
-	input = strings.ReplaceAll(input, "[8]", "["+aurora.BrightRed("8").String()+"]")
-	input = strings.ReplaceAll(input, "[9]", "["+aurora.BrightYellow("9").String()+"]")
-	input = strings.ReplaceAll(input, "[10]", "["+aurora.BrightGreen("10").String()+"]")
+	input = strings.ReplaceAll(input, "[0]", "["+style.White("0")+"]")
+	input = strings.ReplaceAll(input, "[1]", "["+style.Red("1")+"]")
+	input = strings.ReplaceAll(input, "[2]", "["+style.Yellow("2")+"]")
+	input = strings.ReplaceAll(input, "[3]", "["+style.Green("3")+"]")
+	input = strings.ReplaceAll(input, "[4]", "["+style.Blue("4")+"]")
+	input = strings.ReplaceAll(input, "[5]", "["+style.Cyan("5")+"]")
+	input = strings.ReplaceAll(input, "[6]", "["+style.Magenta("6")+"]")
+	input = strings.ReplaceAll(input, "[7]", "["+style.BrightWhite("7")+"]")
+	input = strings.ReplaceAll(input, "[8]", "["+style.BrightRed("8")+"]")
+	input = strings.ReplaceAll(input, "[9]", "["+style.BrightYellow("9")+"]")
+	input = strings.ReplaceAll(input, "[10]", "["+style.BrightGreen("10")+"]")
 
 	return input
 }
 
 func ColorizeIndentSymbol(indentSymbol string, level int) string {
-	switch level {
-	case 0:
-		indentSymbol = ""
-	case 1:
-		indentSymbol = aurora.Red(indentSymbol).String()
-	case 2:
-		indentSymbol = aurora.Yellow(indentSymbol).String()
-	case 3:
-		indentSymbol = aurora.Green(indentSymbol).String()
-	case 4:
-		indentSymbol = aurora.Cyan(indentSymbol).String()
-	case 5:
-		indentSymbol = aurora.Blue(indentSymbol).String()
-	case 6:
-		indentSymbol = aurora.Magenta(indentSymbol).String()
-	case 7:
-		indentSymbol = aurora.BrightRed(indentSymbol).String()
-	case 8:
-		indentSymbol = aurora.BrightYellow(indentSymbol).String()
-	case 9:
-		indentSymbol = aurora.BrightGreen(indentSymbol).String()
-	case 10:
-		indentSymbol = aurora.BrightCyan(indentSymbol).String()
-	case 11:
-		indentSymbol = aurora.BrightBlue(indentSymbol).String()
-	case 12:
-		indentSymbol = aurora.BrightMagenta(indentSymbol).String()
-	case 13:
-		indentSymbol = aurora.Red(indentSymbol).String()
-	case 14:
-		indentSymbol = aurora.Yellow(indentSymbol).String()
-	case 15:
-		indentSymbol = aurora.Green(indentSymbol).String()
-	case 16:
-		indentSymbol = aurora.Cyan(indentSymbol).String()
-	case 17:
-		indentSymbol = aurora.Blue(indentSymbol).String()
-	case 18:
-		indentSymbol = aurora.Magenta(indentSymbol).String()
+	if level == 0 {
+		return style.Reset
 	}
 
-	return reset + indentSymbol
+	cycle := style.IndentCycle()
+	idx := (level - 1) % len(cycle)
+
+	return style.Reset + cycle[idx](indentSymbol)
 }
 
 func TrimURLs(comment string, disableCommentHighlighting bool) string {
@@ -357,9 +320,9 @@ func TrimURLs(comment string, disableCommentHighlighting bool) string {
 
 	comment = reHTMLAnchor.ReplaceAllString(comment, "")
 
-	comment = reURL.ReplaceAllString(comment, aurora.Blue(`$1`).String())
+	comment = reURL.ReplaceAllString(comment, style.CommentURL(`$1`))
 
-	comment = strings.ReplaceAll(comment, "."+reset+" ", reset+". ")
+	comment = strings.ReplaceAll(comment, "."+style.Reset+" ", style.Reset+". ")
 
 	return comment
 }
@@ -377,9 +340,9 @@ func HighlightBackticks(input string) string {
 
 	for range numberOfBackticks + 1 {
 		if isOnFirstBacktick {
-			input = strings.Replace(input, backtick, italic+magenta, 1)
+			input = strings.Replace(input, backtick, style.Italic+style.CommentBacktickColor(), 1)
 		} else {
-			input = strings.Replace(input, backtick, reset, 1)
+			input = strings.Replace(input, backtick, style.Reset, 1)
 		}
 
 		isOnFirstBacktick = !isOnFirstBacktick
@@ -389,12 +352,12 @@ func HighlightBackticks(input string) string {
 }
 
 func HighlightMentions(input string) string {
-	input = reMention.ReplaceAllString(input, aurora.Yellow(`$1`).String())
+	input = reMention.ReplaceAllString(input, style.CommentMention(`$1`))
 
-	input = strings.ReplaceAll(input, aurora.Yellow("@dang").String(),
-		aurora.Green("@dang").String())
-	input = strings.ReplaceAll(input, aurora.Yellow(" @dang").String(),
-		aurora.Green(" @dang").String())
+	input = strings.ReplaceAll(input, style.CommentMention("@dang"),
+		style.CommentMod("@dang"))
+	input = strings.ReplaceAll(input, style.CommentMention(" @dang"),
+		style.CommentMod(" @dang"))
 
 	return input
 }
@@ -408,15 +371,15 @@ func HighlightVariables(input string) string {
 		return input
 	}
 
-	return reVariable.ReplaceAllString(input, aurora.Cyan(`$1`).String())
+	return reVariable.ReplaceAllString(input, style.CommentVariable(`$1`))
 }
 
 func HighlightAbbreviations(input string) string {
 	iAmNotALawyer := "IANAL"
 	iAmALawyer := "IAAL"
 
-	input = strings.ReplaceAll(input, iAmNotALawyer, aurora.Red(iAmNotALawyer).String())
-	input = strings.ReplaceAll(input, iAmALawyer, aurora.Green(iAmALawyer).String())
+	input = strings.ReplaceAll(input, iAmNotALawyer, style.Red(iAmNotALawyer))
+	input = strings.ReplaceAll(input, iAmALawyer, style.Green(iAmALawyer))
 
 	return input
 }
@@ -437,8 +400,8 @@ func ReplaceHTML(input string) string {
 	input = strings.Replace(input, "<p>", "", 1)
 
 	input = strings.ReplaceAll(input, "<p>", newParagraph)
-	input = strings.ReplaceAll(input, "<i>", italic)
-	input = strings.ReplaceAll(input, "</i>", reset)
+	input = strings.ReplaceAll(input, "<i>", style.Italic)
+	input = strings.ReplaceAll(input, "</i>", style.Reset)
 	input = strings.ReplaceAll(input, "</a>", "")
 	input = strings.ReplaceAll(input, "<pre><code>", "")
 	input = strings.ReplaceAll(input, "</code></pre>", "")

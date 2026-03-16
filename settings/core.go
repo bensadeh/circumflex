@@ -1,5 +1,7 @@
 package settings
 
+import "clx/theme"
+
 type Config struct {
 	CommentWidth                int
 	DisableHeadlineHighlighting bool
@@ -14,6 +16,7 @@ type Config struct {
 	LesskeyPath                 string
 	AutoExpandComments          bool
 	NoLessVerify                bool
+	Theme                       *theme.Theme
 }
 
 func Default() *Config {

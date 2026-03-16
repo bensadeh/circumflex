@@ -1,6 +1,7 @@
 package list
 
 import (
+	"clx/style"
 	"time"
 
 	"charm.land/bubbles/v2/spinner"
@@ -72,9 +73,9 @@ func getSpinner() spinner.Spinner {
 
 	color := lipgloss.NewStyle()
 
-	magenta := lipgloss.Magenta
-	yellow := lipgloss.Yellow
-	blue := lipgloss.Blue
+	magenta := style.HeaderC()
+	yellow := style.HeaderL()
+	blue := style.HeaderX()
 
 	return spinner.Spinner{
 		Frames: []string{

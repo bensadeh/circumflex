@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"charm.land/lipgloss/v2"
-	"github.com/logrusorgru/aurora/v3"
 )
 
 const (
@@ -29,6 +28,8 @@ var (
 	rankStyle            = lipgloss.NewStyle().Width(6).Align(lipgloss.Right)
 	rankFaintStyle       = rankStyle.Faint(true)
 	rankFaintItalicStyle = rankStyle.Faint(true).Italic(true)
+	faintStyle           = lipgloss.NewStyle().Faint(true)
+	faintItalicStyle     = lipgloss.NewStyle().Faint(true).Italic(true)
 )
 
 func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPages int, readStatuses []bool, faintAll bool) string {
@@ -49,16 +50,16 @@ func absoluteRankings(itemsVisible int, itemsTotal int, currentPage int, totalPa
 	for i := startingRank; i < endingRank; i++ {
 		idx := i - startingRank
 
-		style := rankStyle
+		s := rankStyle
 
 		switch {
 		case faintAll:
-			style = rankFaintItalicStyle
+			s = rankFaintItalicStyle
 		case idx < len(readStatuses) && readStatuses[idx]:
-			style = rankFaintStyle
+			s = rankFaintStyle
 		}
 
-		rank := style.Render(strconv.Itoa(i)+".") + " "
+		rank := s.Render(strconv.Itoa(i)+".") + " "
 		rankings.WriteString(rank + newParagraph)
 	}
 
@@ -80,13 +81,13 @@ func relativeRankings(itemsVisible int, itemsTotal int, currentPosition int, cur
 
 	for iterator != 0 {
 		number := strconv.Itoa(iterator)
-		rankings.WriteString(aurora.Faint(number).String() + indentationFromRight + newParagraph)
+		rankings.WriteString(faintStyle.Render(number) + indentationFromRight + newParagraph)
 
 		iterator--
 	}
 
 	if faintAll {
-		rankings.WriteString(aurora.Faint(aurora.Italic(rankOfCurrentlySelectedItem)).String() + " " + indentationFromRight + newParagraph)
+		rankings.WriteString(faintItalicStyle.Render(strconv.Itoa(rankOfCurrentlySelectedItem)) + " " + indentationFromRight + newParagraph)
 	} else {
 		rankings.WriteString(strconv.Itoa(rankOfCurrentlySelectedItem) + " " + indentationFromRight + newParagraph)
 	}
@@ -95,7 +96,7 @@ func relativeRankings(itemsVisible int, itemsTotal int, currentPosition int, cur
 
 	for iterator < end {
 		number := strconv.Itoa(iterator)
-		rankings.WriteString(aurora.Faint(number).String() + indentationFromRight + newParagraph)
+		rankings.WriteString(faintStyle.Render(number) + indentationFromRight + newParagraph)
 
 		iterator++
 	}

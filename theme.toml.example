@@ -1,0 +1,75 @@
+# circumflex theme configuration
+#
+# Copy this file to ~/.config/circumflex/theme.toml and customize.
+# Only include the values you want to override — unspecified values
+# keep their defaults.
+#
+# Color values can be:
+#   - Named: "red", "blue", "green", "yellow", "magenta", "cyan", "white", "black"
+#   - Bright: "bright_red", "bright_blue", "bright_green", etc.
+#   - ANSI 256: "219", "33", "196"
+#   - Hex: "#ff5500", "#1a1a2e"
+
+[app]
+primary = "magenta"
+secondary = "yellow"
+tertiary = "blue"
+
+[headline]
+ask_hn = "blue"
+show_hn = "red"
+tell_hn = "magenta"
+thank_hn = "cyan"
+launch_hn = "green"
+yc_label = "yellow"
+year = "magenta"
+audio = "cyan"
+video = "cyan"
+pdf = "cyan"
+
+[comment]
+url = "blue"
+mention = "yellow"
+mod = "green"
+variable = "cyan"
+backtick = "magenta"
+op = "red"
+pp = "magenta"
+new_indicator = "cyan"
+
+[meta]
+author = "red"
+comments = "magenta"
+score = "yellow"
+id = "green"
+new_comments = "cyan"
+url = "blue"
+reader_mode = "green"
+
+[reader]
+h1 = "white"
+h2 = "blue"
+h3 = "red"
+h4 = "magenta"
+h5 = "yellow"
+h6 = "green"
+image = "red"
+bbc_image = "cyan"
+bbc_caption = "yellow"
+
+[header]
+c = "magenta"
+l = "yellow"
+x = "blue"
+favorites = "219"
+
+[help]
+main_menu = "magenta"
+comment_section = "yellow"
+legend = "blue"
+
+[indent]
+cycle = [
+  "red", "yellow", "green", "cyan", "blue", "magenta",
+  "bright_red", "bright_yellow", "bright_green", "bright_cyan", "bright_blue", "bright_magenta",
+]

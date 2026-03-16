@@ -7,6 +7,7 @@ import (
 	"clx/meta"
 	"clx/nerdfonts"
 	"clx/settings"
+	"clx/style"
 	"clx/syntax"
 	"clx/tree/formatter"
 	"fmt"
@@ -14,8 +15,6 @@ import (
 	"strings"
 
 	"charm.land/lipgloss/v2"
-
-	. "github.com/logrusorgru/aurora/v3"
 
 	text "github.com/MichaelMure/go-term-text"
 )
@@ -112,10 +111,10 @@ func getButton(level int, replyCount int, commentWidth int) string {
 	buttonNotPressed := buttonNotPressedBase.SetString("▶ " + buttonLabel).String()
 	buttonPressed := buttonPressedBase.SetString("▼ " + buttonLabel).String()
 
-	style := buttonContainerBase.Width(commentWidth)
+	s := buttonContainerBase.Width(commentWidth)
 
-	return newLine + style.Render(buttonNotPressed) + constants.InvisibleCharacterForCollapse +
-		newLine + style.Render(buttonPressed) + constants.InvisibleCharacterForExpansion + newLine
+	return newLine + s.Render(buttonNotPressed) + constants.InvisibleCharacterForCollapse +
+		newLine + s.Render(buttonPressed) + constants.InvisibleCharacterForExpansion + newLine
 }
 
 func addFilterTag(level int, fullComment string) string {
@@ -160,7 +159,7 @@ func getSeparator(level int, commentWidth int, currentCommentID int, firstCommen
 		return newLine
 	}
 
-	return Faint(strings.Repeat("▁", commentWidth)).Faint().String() + newLine + newLine
+	return style.Faint(strings.Repeat("▁", commentWidth)) + newLine + newLine
 }
 
 func getIndentString(level int) string {
@@ -190,16 +189,16 @@ func formatHeader(c *item.Story, originalPoster string, parentPoster string,
 	indentation := strings.Repeat(" ", indentSize)
 
 	return zeroWidthSpace + indentation + author + authorLabel +
-		Faint(c.TimeAgo).String() + newLine
+		style.Faint(c.TimeAgo) + newLine
 }
 
 func getAuthor(author string, lastVisited, timePosted int64) string {
-	authorInBold := Bold(author).String() + " "
+	authorInBold := style.Bold(author) + " "
 
 	commentIsNew := lastVisited < timePosted
 
 	if commentIsNew {
-		return authorInBold + Cyan("●").String() + " "
+		return authorInBold + style.CommentNewIndicator("●") + " "
 	}
 
 	return authorInBold
@@ -276,11 +275,11 @@ func computeLabel(author, originalPoster, parentPoster string, nerdFonts bool) s
 func colorizeLabel(author, originalPoster, parentPoster, label string) string {
 	switch {
 	case isMod(author):
-		return Green(label).String()
+		return style.CommentMod(label)
 	case author == originalPoster:
-		return Red(label).String()
+		return style.CommentOP(label)
 	case author == parentPoster:
-		return Magenta(label).String()
+		return style.CommentPP(label)
 	default:
 		return ""
 	}

@@ -2,18 +2,11 @@ package comment
 
 import (
 	"clx/settings"
+	"clx/style"
 	"clx/syntax"
 	"strings"
 
-	"github.com/logrusorgru/aurora/v3"
-
 	text "github.com/MichaelMure/go-term-text"
-)
-
-const (
-	reset  = "\033[0m"
-	dimmed = "\033[2m"
-	italic = "\033[3m"
 )
 
 type comment struct {
@@ -28,7 +21,7 @@ type section struct {
 
 func Print(c string, config *settings.Config, commentWidth int, availableScreenWidth int) string {
 	if c == "[deleted]" {
-		return aurora.Faint(c).String()
+		return style.Faint(c)
 	}
 
 	c = strings.Replace(c, "<p>", "", 1)
@@ -62,7 +55,7 @@ func Print(c string, config *settings.Config, commentWidth int, availableScreenW
 		case s.isQuote:
 			paragraph = strings.ReplaceAll(paragraph, "<i>", "")
 			paragraph = strings.ReplaceAll(paragraph, "</i>", "")
-			paragraph = strings.ReplaceAll(paragraph, "</a>", reset+dimmed+italic)
+			paragraph = strings.ReplaceAll(paragraph, "</a>", style.Reset+style.ANSIFaint+style.Italic)
 			paragraph = syntax.ReplaceSymbols(paragraph)
 			paragraph = convertToEmojis(paragraph, config.DisableEmojis)
 
@@ -73,10 +66,10 @@ func Print(c string, config *settings.Config, commentWidth int, availableScreenW
 			paragraph = syntax.RemoveUnwantedNewLines(paragraph)
 			paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
 
-			paragraph = italic + dimmed + paragraph + reset
+			paragraph = style.Italic + style.ANSIFaint + paragraph + style.Reset
 
 			quoteIndent := " " + config.IndentationSymbol
-			padding := text.WrapPad(dimmed + quoteIndent)
+			padding := text.WrapPad(style.ANSIFaint + quoteIndent)
 			wrappedAndPaddedComment, _ := text.Wrap(paragraph, commentWidth, padding)
 			paragraph = wrappedAndPaddedComment
 
@@ -92,12 +85,12 @@ func Print(c string, config *settings.Config, commentWidth int, availableScreenW
 				isOnLastLine := j == len(codeLines)-1
 
 				if isOnLastLine {
-					formattedCodeLines.WriteString(dimmed + codeLine + reset)
+					formattedCodeLines.WriteString(style.ANSIFaint + codeLine + style.Reset)
 
 					break
 				}
 
-				formattedCodeLines.WriteString(dimmed + codeLine + reset + "\n")
+				formattedCodeLines.WriteString(style.ANSIFaint + codeLine + style.Reset + "\n")
 			}
 
 			paragraph = formattedCodeLines.String()
