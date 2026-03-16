@@ -101,6 +101,8 @@ func TestUnmarshal_EmptyArray(t *testing.T) {
 }
 
 func TestFavorites_UpdateStoryAndWriteToDisk(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+
 	f := &Favorites{}
 	f.Add(&item.Story{ID: 1, Title: "Old Title", Points: 10, CommentsCount: 5})
 
@@ -113,6 +115,8 @@ func TestFavorites_UpdateStoryAndWriteToDisk(t *testing.T) {
 }
 
 func TestFavorites_UpdateStoryAndWriteToDisk_NoMatch(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+
 	f := &Favorites{}
 	f.Add(&item.Story{ID: 1, Title: "Original"})
 

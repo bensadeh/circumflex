@@ -10,17 +10,20 @@ import (
 )
 
 func TestPersistent_MarkAndContains(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+
 	h := &Persistent{VisitedStories: make(map[int]StoryInfo)}
 	assert.False(t, h.Contains(42))
 
 	err := h.MarkAsReadAndWriteToDisk(42, 10)
-	// May fail if cache dir doesn't exist in CI, but the in-memory state should still update
-	_ = err
+	require.NoError(t, err)
 
 	assert.True(t, h.Contains(42))
 }
 
 func TestPersistent_GetLastVisited(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+
 	h := &Persistent{VisitedStories: make(map[int]StoryInfo)}
 
 	// Unvisited story returns current time (approximately)
@@ -34,6 +37,8 @@ func TestPersistent_GetLastVisited(t *testing.T) {
 }
 
 func TestPersistent_ClearAndWriteToDisk(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+
 	h := &Persistent{VisitedStories: make(map[int]StoryInfo)}
 	h.VisitedStories[1] = StoryInfo{LastVisited: 100, CommentsOnLastVisit: 5}
 	h.VisitedStories[2] = StoryInfo{LastVisited: 200, CommentsOnLastVisit: 10}
