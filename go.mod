@@ -16,7 +16,6 @@ require (
 	github.com/go-resty/resty/v2 v2.17.2
 	github.com/jedib0t/go-pretty/v6 v6.7.8
 	github.com/muesli/reflow v0.3.0
-	github.com/nleeper/goment v1.4.4
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/term v0.40.0
@@ -54,7 +53,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
-	github.com/tkuchiki/go-timezone v0.2.3 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/yuin/goldmark v1.7.16 // indirect
 	github.com/yuin/goldmark-emoji v1.0.6 // indirect

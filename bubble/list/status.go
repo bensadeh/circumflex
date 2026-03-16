@@ -67,3 +67,9 @@ func (s *statusBar) StopSpinner() {
 func (s *statusBar) spinnerView() string {
 	return s.spinner.View()
 }
+
+func scheduleTimeRefresh() tea.Cmd {
+	return tea.Tick(time.Minute, func(time.Time) tea.Msg {
+		return message.TimeRefreshTick{}
+	})
+}

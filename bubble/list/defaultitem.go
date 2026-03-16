@@ -8,8 +8,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
-
-	"github.com/nleeper/goment"
+	"time"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
@@ -124,14 +123,14 @@ func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *item.St
 	score := getScore(item.Points, enableNerdFonts)
 	author := getAuthor(item.User, enableNerdFonts)
 	comments := getComments(item.CommentsCount, enableNerdFonts)
-	time := parseTime(item.Time, enableNerdFonts)
+	timeAgo := parseTime(item.Time, enableNerdFonts)
 
 	if enableNerdFonts {
 		spacingSize := 2
 		spacing := strings.Repeat(" ", spacingSize)
-		desc = score + spacing + comments + spacing + time + spacing + author
+		desc = score + spacing + comments + spacing + timeAgo + spacing + author
 	} else {
-		desc = score + author + time + comments
+		desc = score + author + timeAgo + comments
 	}
 
 	// Prevent text from exceeding list width
@@ -240,12 +239,41 @@ func styleTitleAndDesc(title string, titleStyle lipgloss.Style, descStyle lipglo
 }
 
 func parseTime(unixTime int64, enableNerdFonts bool) string {
-	moment, _ := goment.Unix(unixTime)
-	now, _ := goment.New()
+	relative := relativeTime(unixTime)
 
 	if enableNerdFonts {
-		return fmt.Sprintf("%s %-12s", nerdfonts.Time, moment.From(now))
+		return fmt.Sprintf("%s %-12s", nerdfonts.Time, relative)
 	}
 
-	return fmt.Sprintf("%s ", moment.From(now))
+	return fmt.Sprintf("%s ", relative)
+}
+
+func relativeTime(unixTime int64) string {
+	d := time.Since(time.Unix(unixTime, 0))
+	seconds := int(d.Seconds())
+
+	switch {
+	case seconds < 45:
+		return "a few seconds ago"
+	case seconds < 90:
+		return "a minute ago"
+	case seconds < 45*60:
+		return fmt.Sprintf("%d minutes ago", int(d.Minutes()))
+	case seconds < 90*60:
+		return "an hour ago"
+	case seconds < 22*3600:
+		return fmt.Sprintf("%d hours ago", int(d.Hours()))
+	case seconds < 36*3600:
+		return "a day ago"
+	case seconds < 26*24*3600:
+		return fmt.Sprintf("%d days ago", int(d.Hours()/24))
+	case seconds < 45*24*3600:
+		return "a month ago"
+	case seconds < 345*24*3600:
+		return fmt.Sprintf("%d months ago", int(d.Hours()/(24*30)))
+	case seconds < 545*24*3600:
+		return "a year ago"
+	default:
+		return fmt.Sprintf("%d years ago", int(d.Hours()/(24*365)))
+	}
 }

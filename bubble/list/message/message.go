@@ -84,3 +84,5 @@ type ArticleReady struct {
 	Content string
 	Err     error
 }
+
+type TimeRefreshTick struct{}

@@ -175,6 +175,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 		fetchCmd := m.FetchStoriesForFirstCategory()
 		cmds = append(cmds, fetchCmd)
+		cmds = append(cmds, scheduleTimeRefresh())
 
 		heightOfHeaderAndStatusLine := 4
 
@@ -200,6 +201,9 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		if m.status.showSpinner {
 			cmds = append(cmds, cmd)
 		}
+
+	case message.TimeRefreshTick:
+		cmds = append(cmds, scheduleTimeRefresh())
 
 	case message.FetchingFinished:
 		m.pager.items[msg.Category] = msg.Stories
