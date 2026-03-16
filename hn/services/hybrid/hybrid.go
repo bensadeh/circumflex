@@ -83,11 +83,15 @@ func (s *Service) fetchItemsInParallel(ids []int) ([]*item.Story, error) {
 func (s *Service) fetchStoriesList(category string) (stories []int, err error) {
 	url := fmt.Sprintf("%s/%s.json", uri, category)
 
-	_, err = s.client.R().
+	resp, err := s.client.R().
 		SetResult(&stories).
 		Get(url)
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("server returned status %d", resp.StatusCode())
 	}
 
 	return stories, nil

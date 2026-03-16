@@ -16,7 +16,10 @@ func New() *Favorites {
 	favoritesPath := file.PathToFavoritesFile()
 
 	if file.Exists(favoritesPath) {
-		favoritesJSON, _ := os.ReadFile(favoritesPath) //nolint:gosec // path from ~/.config/circumflex/
+		favoritesJSON, err := os.ReadFile(favoritesPath) //nolint:gosec // path from ~/.config/circumflex/
+		if err != nil {
+			return new(Favorites)
+		}
 
 		items, err := unmarshal(favoritesJSON)
 		if err != nil {

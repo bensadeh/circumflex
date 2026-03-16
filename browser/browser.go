@@ -12,6 +12,10 @@ import (
 func Open(ctx context.Context, url string) error {
 	if browser := os.Getenv("CLX_BROWSER"); browser != "" {
 		commandAndArgs := strings.Fields(browser)
+		if len(commandAndArgs) == 0 {
+			return fmt.Errorf("CLX_BROWSER is set but contains no command")
+		}
+
 		command := commandAndArgs[0]
 		args := make([]string, len(commandAndArgs)-1, len(commandAndArgs))
 		copy(args, commandAndArgs[1:])

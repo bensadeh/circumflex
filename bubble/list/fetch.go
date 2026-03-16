@@ -184,7 +184,12 @@ func friendlyError(err error) string {
 		return "Timed out — check your connection and try again"
 	}
 
-	msg := strings.ToUpper(err.Error()[:1]) + err.Error()[1:]
+	errStr := err.Error()
+	if errStr == "" {
+		return "Unknown error"
+	}
+
+	msg := strings.ToUpper(errStr[:1]) + errStr[1:]
 	msg = statusCodeRe.ReplaceAllStringFunc(msg, func(match string) string {
 		parts := statusCodeRe.FindStringSubmatch(match)
 
