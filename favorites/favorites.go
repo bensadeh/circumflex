@@ -10,29 +10,27 @@ import (
 
 type Favorites struct {
 	items []*item.Story
+	path  string
 }
 
-func New() *Favorites {
-	favoritesPath := file.PathToFavoritesFile()
+func New(path string) *Favorites {
+	f := &Favorites{path: path}
 
-	if file.Exists(favoritesPath) {
-		favoritesJSON, err := os.ReadFile(favoritesPath) //nolint:gosec // path from ~/.config/circumflex/
+	if file.Exists(path) {
+		favoritesJSON, err := os.ReadFile(path) //nolint:gosec // path from ~/.config/circumflex/
 		if err != nil {
-			return new(Favorites)
+			return f
 		}
 
 		items, err := unmarshal(favoritesJSON)
 		if err != nil {
-			return new(Favorites)
+			return f
 		}
 
-		favoritesFromDisk := new(Favorites)
-		favoritesFromDisk.items = items
-
-		return favoritesFromDisk
+		f.items = items
 	}
 
-	return new(Favorites)
+	return f
 }
 
 func unmarshal(data []byte) ([]*item.Story, error) {
@@ -64,7 +62,7 @@ func (f *Favorites) Write() error {
 		return fmt.Errorf("could not serialize favorites: %w", err)
 	}
 
-	if err := file.WriteToFile(file.PathToFavoritesFile(), string(stream)); err != nil {
+	if err := file.WriteToFile(f.path, string(stream)); err != nil {
 		return fmt.Errorf("could not write favorites: %w", err)
 	}
 

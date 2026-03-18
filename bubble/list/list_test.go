@@ -8,6 +8,7 @@ import (
 	"clx/item"
 	"clx/settings"
 	"errors"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -44,11 +45,10 @@ func testItems() []*item.Story {
 
 func newTestModel(t *testing.T) *Model {
 	t.Helper()
-	t.Setenv("HOME", t.TempDir())
 
 	config := settings.Default()
 	cat, _ := categories.New("top,best,ask,show")
-	fav := &favorites.Favorites{}
+	fav := favorites.New(filepath.Join(t.TempDir(), "favorites.json"))
 	service := &instantMockService{}
 	hist := history.NewMockHistory()
 
