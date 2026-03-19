@@ -2,6 +2,7 @@ package mock
 
 import (
 	"clx/item"
+	"context"
 	"crypto/rand"
 	"fmt"
 	"math/big"
@@ -24,18 +25,18 @@ func NewFallibleService() FallibleService {
 	return FallibleService{mock: Service{}}
 }
 
-func (f FallibleService) FetchItems(itemsToFetch int, category string) ([]*item.Story, error) {
-	return f.mock.FetchItems(itemsToFetch, category)
+func (f FallibleService) FetchItems(ctx context.Context, itemsToFetch int, category string) ([]*item.Story, error) {
+	return f.mock.FetchItems(ctx, itemsToFetch, category)
 }
 
-func (f FallibleService) FetchComments(_ int) (*item.Story, error) {
+func (f FallibleService) FetchComments(_ context.Context, _ int) (*item.Story, error) {
 	n, _ := rand.Int(rand.Reader, big.NewInt(3))
 	time.Sleep(time.Duration(1+n.Int64()) * time.Second)
 
 	return nil, randomError()
 }
 
-func (f FallibleService) FetchItem(_ int) (*item.Story, error) {
+func (f FallibleService) FetchItem(_ context.Context, _ int) (*item.Story, error) {
 	return nil, randomError()
 }
 

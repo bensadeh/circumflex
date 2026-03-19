@@ -1,6 +1,7 @@
 package list
 
 import (
+	"clx/timeago"
 	"testing"
 	"time"
 
@@ -42,7 +43,7 @@ func TestRelativeTime(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			unixTime := now.Add(-tt.offset).Unix()
-			assert.Equal(t, tt.expected, relativeTime(unixTime))
+			assert.Equal(t, tt.expected, timeago.RelativeTime(unixTime))
 		})
 	}
 }

@@ -1,15 +1,16 @@
 package hn
 
 import (
-	"clx/hn/services/hybrid"
+	"clx/hn/services/firebase"
 	"clx/hn/services/mock"
 	"clx/item"
+	"context"
 )
 
 type Service interface {
-	FetchItems(itemsToFetch int, category string) ([]*item.Story, error)
-	FetchItem(id int) (*item.Story, error)
-	FetchComments(id int) (*item.Story, error)
+	FetchItems(ctx context.Context, itemsToFetch int, category string) ([]*item.Story, error)
+	FetchItem(ctx context.Context, id int) (*item.Story, error)
+	FetchComments(ctx context.Context, id int) (*item.Story, error)
 }
 
 func NewService(debugMode, debugFallible bool) Service {
@@ -21,5 +22,5 @@ func NewService(debugMode, debugFallible bool) Service {
 		return mock.Service{}
 	}
 
-	return hybrid.NewService()
+	return firebase.NewService()
 }

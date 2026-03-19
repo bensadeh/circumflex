@@ -24,7 +24,7 @@ func Print(c string, config *settings.Config, commentWidth int, availableScreenW
 		return style.Faint(c)
 	}
 
-	c = strings.Replace(c, "<p>", "", 1)
+	c = strings.TrimPrefix(c, "<p>")
 	c = strings.ReplaceAll(c, "\n</code></pre>\n", "<p>")
 	paragraphs := strings.Split(c, "<p>")
 

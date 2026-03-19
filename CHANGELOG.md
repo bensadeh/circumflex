@@ -9,6 +9,7 @@ _WIP_
 - Add `u` keybinding to toggle read/unread status on stories
 - Improve error messages for timeouts, non-200 responses, and unexpected server responses
 - Add support for customizing the theme
+- Use the official HN Firebase API for all requests
 
 ## 3.9
 

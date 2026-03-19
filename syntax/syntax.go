@@ -397,7 +397,7 @@ func ReplaceCharacters(input string) string {
 }
 
 func ReplaceHTML(input string) string {
-	input = strings.Replace(input, "<p>", "", 1)
+	input = strings.TrimPrefix(input, "<p>")
 
 	input = strings.ReplaceAll(input, "<p>", newParagraph)
 	input = strings.ReplaceAll(input, "<i>", style.Italic)

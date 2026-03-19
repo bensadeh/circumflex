@@ -7,6 +7,7 @@ import (
 	"clx/history"
 	"clx/item"
 	"clx/settings"
+	"context"
 	"errors"
 	"path/filepath"
 	"testing"
@@ -21,15 +22,15 @@ type instantMockService struct{}
 
 func (instantMockService) Init(_ int) {}
 
-func (instantMockService) FetchItems(_ int, _ string) ([]*item.Story, error) {
+func (instantMockService) FetchItems(_ context.Context, _ int, _ string) ([]*item.Story, error) {
 	return testItems(), nil
 }
 
-func (instantMockService) FetchComments(_ int) (*item.Story, error) {
+func (instantMockService) FetchComments(_ context.Context, _ int) (*item.Story, error) {
 	return &item.Story{ID: 1, Title: "test", CommentsCount: 5}, nil
 }
 
-func (instantMockService) FetchItem(_ int) (*item.Story, error) {
+func (instantMockService) FetchItem(_ context.Context, _ int) (*item.Story, error) {
 	return &item.Story{}, nil
 }
 
@@ -275,13 +276,10 @@ func TestEnterCommentSection(t *testing.T) {
 	m := newTestModelReady(t)
 
 	m, cmd := m.Update(keyMsg("enter"))
-	assert.Equal(t, StateEditorOpen, m.state)
+	assert.Equal(t, StateFetching, m.state)
+	assert.True(t, m.status.showSpinner)
+	assert.NotNil(t, m.pager.transition)
 	assert.NotNil(t, cmd)
-
-	// Execute the returned Cmd to get the message
-	msg := cmd()
-	_, ok := msg.(message.EnteringCommentSection)
-	assert.True(t, ok, "cmd should produce EnteringCommentSection message")
 }
 
 func TestEnteringCommentSection_ReturnsCmd(t *testing.T) {

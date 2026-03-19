@@ -26,7 +26,7 @@ func articleCmd() *cobra.Command {
 
 			service := newService()
 
-			item, err := service.FetchItem(id)
+			item, err := service.FetchItem(cmd.Context(), id)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)

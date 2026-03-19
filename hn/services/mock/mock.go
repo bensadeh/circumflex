@@ -2,6 +2,7 @@ package mock
 
 import (
 	"clx/item"
+	"context"
 	"math/rand"
 	"time"
 )
@@ -11,7 +12,7 @@ type Service struct{}
 func (Service) Init(_ int) {
 }
 
-func (Service) FetchItems(_ int, category string) (items []*item.Story, err error) {
+func (Service) FetchItems(_ context.Context, _ int, category string) (items []*item.Story, err error) {
 	time.Sleep(time.Second * 2)
 
 	items = []*item.Story{
@@ -286,7 +287,7 @@ func (Service) FetchItems(_ int, category string) (items []*item.Story, err erro
 	return items, nil
 }
 
-func (Service) FetchComments(_ int) (*item.Story, error) {
+func (Service) FetchComments(_ context.Context, _ int) (*item.Story, error) {
 	return &item.Story{
 		ID:      32145667,
 		Title:   "Mauris commodo odio (YC W05) quis diam fermentum, et suscipit augue pharetra [video]",
@@ -414,6 +415,6 @@ func (Service) FetchComments(_ int) (*item.Story, error) {
 	}, nil
 }
 
-func (s Service) FetchItem(id int) (*item.Story, error) {
+func (Service) FetchItem(_ context.Context, id int) (*item.Story, error) {
 	return &item.Story{ID: id, Title: "Mock item"}, nil
 }

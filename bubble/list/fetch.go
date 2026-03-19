@@ -9,6 +9,7 @@ import (
 	"clx/reader"
 	"clx/tree"
 	"clx/validator"
+	"context"
 	"errors"
 	"net"
 	"strings"
@@ -32,7 +33,7 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 	endpoint := categoryEndpoints[categoryToFetch]
 
 	return func() tea.Msg {
-		stories, err := service.FetchItems(numItems, endpoint)
+		stories, err := service.FetchItems(context.Background(), numItems, endpoint)
 
 		return message.FetchingFinished{
 			Stories:  stories,
@@ -91,7 +92,7 @@ func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) t
 	endpoint := categoryEndpoints[msg.Category]
 
 	return func() tea.Msg {
-		stories, err := service.FetchItems(numItems, endpoint)
+		stories, err := service.FetchItems(context.Background(), numItems, endpoint)
 
 		return message.CategoryFetchingFinished{
 			Stories:  stories,
@@ -109,7 +110,7 @@ func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 	endpoint := categoryEndpoints[msg.CurrentCategory]
 
 	return func() tea.Msg {
-		stories, err := service.FetchItems(numItems, endpoint)
+		stories, err := service.FetchItems(context.Background(), numItems, endpoint)
 
 		return message.CategoryFetchingFinished{
 			Stories:  stories,
@@ -132,7 +133,7 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 		lastVisited := hist.GetLastVisited(msg.Id)
 		_ = hist.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
-		story, err := service.FetchComments(msg.Id)
+		story, err := service.FetchComments(context.Background(), msg.Id)
 		if err != nil {
 			return message.CommentTreeReady{Err: err}
 		}

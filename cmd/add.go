@@ -26,7 +26,7 @@ func addCmd() *cobra.Command {
 
 			service := newService()
 
-			submission, err := service.FetchItem(id)
+			submission, err := service.FetchItem(cmd.Context(), id)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)

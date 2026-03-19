@@ -110,24 +110,38 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			}
 
 		case key.Matches(msg, m.keymap.EnterComments):
-			m.state = StateEditorOpen
+			currentCategory := m.cat.CurrentCategory()
+			m.pager.transition = &transition{
+				prevIndex: m.cat.CurrentIndex(),
+				oldItems:  m.pager.items[currentCategory],
+			}
+			m.state = StateFetching
+			startSpinnerCmd := m.status.StartSpinner()
 
 			id := m.SelectedItem().ID
 			commentCount := m.SelectedItem().CommentsCount
 
-			return func() tea.Msg {
+			enterCommentsCmd := func() tea.Msg {
 				return message.EnteringCommentSection{
 					Id:           id,
 					CommentCount: commentCount,
 				}
 			}
 
+			return tea.Batch(startSpinnerCmd, enterCommentsCmd)
+
 		case key.Matches(msg, m.keymap.ReaderMode):
-			m.state = StateEditorOpen
+			currentCategory := m.cat.CurrentCategory()
+			m.pager.transition = &transition{
+				prevIndex: m.cat.CurrentIndex(),
+				oldItems:  m.pager.items[currentCategory],
+			}
+			m.state = StateFetching
+			startSpinnerCmd := m.status.StartSpinner()
 
 			selected := m.SelectedItem()
 
-			return func() tea.Msg {
+			enterReaderCmd := func() tea.Msg {
 				return message.EnteringReaderMode{
 					Url:          selected.URL,
 					Title:        selected.Title,
@@ -136,6 +150,8 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 					CommentCount: selected.CommentsCount,
 				}
 			}
+
+			return tea.Batch(startSpinnerCmd, enterReaderCmd)
 		}
 	}
 

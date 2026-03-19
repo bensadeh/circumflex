@@ -275,18 +275,20 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, m.handleEnteringReaderMode(msg)
 
 	case message.CommentTreeReady:
+		m.pager.transition = nil
+		m.status.StopSpinner()
+
 		if msg.UpdatedStory != nil {
 			_ = m.favorites.UpdateStoryAndWriteToDisk(msg.UpdatedStory)
 		}
 
 		if msg.Err != nil {
-			return m, tea.Batch(
-				m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), time.Second*3),
-				func() tea.Msg {
-					return message.EditorFinishedMsg{Err: nil}
-				},
-			)
+			m.state = StateBrowsing
+
+			return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), time.Second*3)
 		}
+
+		m.state = StateEditorOpen
 
 		command := cli.Less(context.Background(), msg.Content, m.config)
 
@@ -295,14 +297,16 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		})
 
 	case message.ArticleReady:
+		m.pager.transition = nil
+		m.status.StopSpinner()
+
 		if msg.Err != nil {
-			return m, tea.Batch(
-				m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), time.Second*3),
-				func() tea.Msg {
-					return message.EditorFinishedMsg{Err: nil}
-				},
-			)
+			m.state = StateBrowsing
+
+			return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), time.Second*3)
 		}
+
+		m.state = StateEditorOpen
 
 		command := cli.Less(context.Background(), msg.Content, m.config)
 
