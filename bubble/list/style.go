@@ -68,8 +68,7 @@ func DefaultStyles() (s Styles) {
 }
 
 func getSpinner() spinner.Spinner {
-	normal := lipgloss.NewStyle().
-		Faint(true)
+	normal := lipgloss.NewStyle()
 
 	color := lipgloss.NewStyle()
 
@@ -84,6 +83,6 @@ func getSpinner() spinner.Spinner {
 			normal.Render("fetching") + color.Foreground(magenta).Render(".") + normal.Render("  "),
 			normal.Render("fetching") + color.Foreground(magenta).Render(".") + color.Foreground(yellow).Render(".") + normal.Render(" "),
 		},
-		FPS: 750 * time.Millisecond,
+		FPS: 900 * time.Millisecond,
 	}
 }
