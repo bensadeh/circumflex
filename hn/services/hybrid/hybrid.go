@@ -6,6 +6,7 @@ import (
 	"clx/version"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"strconv"
 	"sync"
 	"time"
@@ -25,6 +26,7 @@ type Service struct {
 func NewService() *Service {
 	client := resty.New()
 	client.SetTimeout(10 * time.Second)
+	client.SetRedirectPolicy(resty.NoRedirectPolicy())
 	client.SetHeader("User-Agent", version.Name+"/"+version.Version)
 
 	return &Service{client: client}
@@ -91,7 +93,7 @@ func (s *Service) fetchStoriesList(category string) (stories []int, err error) {
 	}
 
 	if resp.StatusCode() != 200 {
-		return nil, fmt.Errorf("server returned status %d", resp.StatusCode())
+		return nil, fmt.Errorf("could not fetch stories, server returned status %d %s", resp.StatusCode(), http.StatusText(resp.StatusCode()))
 	}
 
 	return stories, nil
@@ -111,7 +113,7 @@ func (s *Service) fetchItem(id int) (*item.Story, error) {
 	}
 
 	if resp.StatusCode() != 200 {
-		return nil, fmt.Errorf("server returned status %d", resp.StatusCode())
+		return nil, fmt.Errorf("could not fetch item, server returned status %d %s", resp.StatusCode(), http.StatusText(resp.StatusCode()))
 	}
 
 	sanitizedBody := ansi.Strip(string(resp.Body()))
@@ -147,7 +149,7 @@ func (s *Service) FetchComments(id int) (*item.Story, error) {
 	}
 
 	if response.StatusCode() != 200 {
-		return nil, fmt.Errorf("server returned status %d", response.StatusCode())
+		return nil, fmt.Errorf("could not fetch comments, server returned status %d %s", response.StatusCode(), http.StatusText(response.StatusCode()))
 	}
 
 	sanitizedResponse := ansi.Strip(string(response.Body()))

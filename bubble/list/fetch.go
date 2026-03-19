@@ -11,7 +11,6 @@ import (
 	"clx/validator"
 	"errors"
 	"net"
-	"regexp"
 	"strings"
 
 	tea "charm.land/bubbletea/v2"
@@ -175,8 +174,6 @@ func isTimeout(err error) bool {
 	return errors.As(err, &netErr) && netErr.Timeout()
 }
 
-var statusCodeRe = regexp.MustCompile(`(status )(\d+)`)
-
 var redText = lipgloss.NewStyle().Foreground(lipgloss.Red)
 
 func friendlyError(err error) string {
@@ -190,11 +187,10 @@ func friendlyError(err error) string {
 	}
 
 	msg := strings.ToUpper(errStr[:1]) + errStr[1:]
-	msg = statusCodeRe.ReplaceAllStringFunc(msg, func(match string) string {
-		parts := statusCodeRe.FindStringSubmatch(match)
 
-		return parts[1] + redText.Render(parts[2])
-	})
+	if before, after, ok := strings.Cut(msg, "status "); ok {
+		msg = before + "status " + redText.Render(after)
+	}
 
 	return msg
 }
