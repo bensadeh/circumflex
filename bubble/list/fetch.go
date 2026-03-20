@@ -90,9 +90,10 @@ func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) t
 	service := m.service
 	numItems := m.getNumberOfItemsToFetch(msg.Category)
 	endpoint := categoryEndpoints[msg.Category]
+	ctx := m.fetchCtx
 
 	return func() tea.Msg {
-		stories, err := service.FetchItems(context.Background(), numItems, endpoint)
+		stories, err := service.FetchItems(ctx, numItems, endpoint)
 
 		return message.CategoryFetchingFinished{
 			Stories:  stories,
@@ -108,9 +109,10 @@ func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 	service := m.service
 	numItems := m.getNumberOfItemsToFetch(msg.CurrentCategory)
 	endpoint := categoryEndpoints[msg.CurrentCategory]
+	ctx := m.fetchCtx
 
 	return func() tea.Msg {
-		stories, err := service.FetchItems(context.Background(), numItems, endpoint)
+		stories, err := service.FetchItems(ctx, numItems, endpoint)
 
 		return message.CategoryFetchingFinished{
 			Stories:  stories,
@@ -128,12 +130,13 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 	hist := m.history
 	service := m.service
 	config := m.config
+	ctx := m.fetchCtx
 
 	return func() tea.Msg {
 		lastVisited := hist.GetLastVisited(msg.Id)
 		_ = hist.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
-		story, err := service.FetchComments(context.Background(), msg.Id)
+		story, err := service.FetchComments(ctx, msg.Id)
 		if err != nil {
 			return message.CommentTreeReady{Err: err}
 		}
@@ -152,13 +155,14 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd {
 	config := m.config
 	hist := m.history
+	ctx := m.fetchCtx
 
 	return func() tea.Msg {
 		if err := validator.Validate(msg.Title, msg.Domain); err != nil {
 			return message.ArticleReady{Err: err}
 		}
 
-		article, err := reader.GetArticle(msg.Url, msg.Title, config.CommentWidth, config.IndentationSymbol)
+		article, err := reader.GetArticle(ctx, msg.Url, msg.Title, config.CommentWidth, config.IndentationSymbol)
 		if err != nil {
 			return message.ArticleReady{Err: err}
 		}

@@ -11,6 +11,7 @@ import (
 	"clx/item"
 	"clx/settings"
 	"context"
+	"errors"
 	"io"
 	"time"
 
@@ -60,13 +61,15 @@ type Model struct {
 	width  int
 	height int
 
-	delegate  ItemDelegate
-	history   history.History
-	config    *settings.Config
-	service   hn.Service
-	favorites *favorites.Favorites
-	cat       *categories.Categories
-	keymap    KeyMap
+	delegate    ItemDelegate
+	history     history.History
+	config      *settings.Config
+	service     hn.Service
+	favorites   *favorites.Favorites
+	cat         *categories.Categories
+	keymap      KeyMap
+	fetchCtx    context.Context //nolint:containedctx // single active fetch context, accessed only from the Update goroutine
+	cancelFetch context.CancelFunc
 
 	viewport viewport.Model
 
@@ -148,47 +151,118 @@ func (m *Model) setSize(width, height int) {
 	m.updatePagination()
 }
 
-func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
-	windowSizeMsg, isWindowSizeMsg := msg.(tea.WindowSizeMsg)
-
-	// Since this program is using the full size of the viewport we
-	// need to wait until we've received the window dimensions before
-	// we can initialize the viewport. The initial dimensions come in
-	// quickly, though asynchronously, which is why we wait for them
-	// here.
-	if m.state == StateStartup && !isWindowSizeMsg {
+func (m *Model) handleCategoryFetchingFinished(msg message.CategoryFetchingFinished) (*Model, tea.Cmd) {
+	if msg.Err != nil && errors.Is(msg.Err, context.Canceled) {
 		return m, nil
 	}
 
-	if m.state == StateStartup && isWindowSizeMsg {
-		h, v := lipgloss.NewStyle().GetFrameSize()
-		m.setSize(windowSizeMsg.Width-h, windowSizeMsg.Height-v)
+	if msg.Err != nil {
+		if m.pager.transition != nil {
+			m.cat.SetIndex(m.pager.transition.prevIndex)
+		}
 
-		var cmds []tea.Cmd
+		m.pager.transition = nil
+		m.state = StateBrowsing
+		m.status.StopSpinner()
+		m.updatePagination()
 
-		spinnerCmd := m.status.StartSpinner()
-		cmds = append(cmds, spinnerCmd)
+		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), time.Second*3)
+	}
 
-		m.state = StateFetching
+	if m.pager.transition != nil && m.pager.transition.refresh {
+		clearAllCategories(m.pager.items)
+	}
 
-		m.syncFavorites()
+	m.pager.transition = nil
+	m.pager.items[msg.Category] = msg.Stories
+	m.pager.Paginator.Page = 0
+	m.state = StateBrowsing
+	m.status.StopSpinner()
+	m.cat.SetIndex(msg.Index)
 
-		fetchCmd := m.FetchStoriesForFirstCategory()
-		cmds = append(cmds, fetchCmd)
-		cmds = append(cmds, scheduleTimeRefresh())
+	itemsOnPage := m.pager.Paginator.ItemsOnPage(len(m.VisibleItems()))
+	m.pager.cursor = min(msg.Cursor, itemsOnPage-1)
 
-		heightOfHeaderAndStatusLine := 4
+	m.updatePagination()
 
-		m.viewport = viewport.New(viewport.WithWidth(windowSizeMsg.Width), viewport.WithHeight(windowSizeMsg.Height-heightOfHeaderAndStatusLine))
+	return m, nil
+}
 
-		content := lipgloss.NewStyle().
-			Width(windowSizeMsg.Width).
-			AlignHorizontal(lipgloss.Center).
-			SetString(help.GetHelpScreen(m.config.EnableNerdFonts, m.keymap.MainMenuBindings()))
+func (m *Model) handleFetchingFinished(msg message.FetchingFinished) (*Model, tea.Cmd) {
+	m.pager.items[msg.Category] = msg.Stories
+	m.status.StopSpinner()
+	m.state = StateBrowsing
+	m.updatePagination()
 
-		m.viewport.SetContent(content.String())
+	if msg.Err != nil {
+		return m, m.status.NewStatusMessage(friendlyError(msg.Err))
+	}
 
-		return m, tea.Batch(cmds...)
+	return m, nil
+}
+
+func (m *Model) handleWindowResize(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
+	h, v := lipgloss.NewStyle().GetFrameSize()
+	m.setSize(msg.Width-h, msg.Height-v)
+
+	headerHeight := 2
+	footerHeight := 2
+	verticalMarginHeight := headerHeight + footerHeight
+
+	m.viewport.SetWidth(msg.Width)
+	m.viewport.SetHeight(msg.Height - verticalMarginHeight)
+
+	m.width = msg.Width
+	m.height = msg.Height
+
+	content := lipgloss.NewStyle().
+		Width(msg.Width).
+		AlignHorizontal(lipgloss.Center).
+		SetString(help.GetHelpScreen(m.config.EnableNerdFonts, m.keymap.MainMenuBindings()))
+
+	m.viewport.SetContent(content.String())
+
+	return m, nil
+}
+
+func (m *Model) handleStartup(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
+	h, v := lipgloss.NewStyle().GetFrameSize()
+	m.setSize(msg.Width-h, msg.Height-v)
+
+	var cmds []tea.Cmd
+
+	spinnerCmd := m.status.StartSpinner()
+	cmds = append(cmds, spinnerCmd)
+
+	m.state = StateFetching
+
+	m.syncFavorites()
+
+	fetchCmd := m.FetchStoriesForFirstCategory()
+	cmds = append(cmds, fetchCmd)
+	cmds = append(cmds, scheduleTimeRefresh())
+
+	heightOfHeaderAndStatusLine := 4
+
+	m.viewport = viewport.New(viewport.WithWidth(msg.Width), viewport.WithHeight(msg.Height-heightOfHeaderAndStatusLine))
+
+	content := lipgloss.NewStyle().
+		Width(msg.Width).
+		AlignHorizontal(lipgloss.Center).
+		SetString(help.GetHelpScreen(m.config.EnableNerdFonts, m.keymap.MainMenuBindings()))
+
+	m.viewport.SetContent(content.String())
+
+	return m, tea.Batch(cmds...)
+}
+
+func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
+	if m.state == StateStartup {
+		if windowSizeMsg, ok := msg.(tea.WindowSizeMsg); ok {
+			return m.handleStartup(windowSizeMsg)
+		}
+
+		return m, nil
 	}
 
 	var cmds []tea.Cmd
@@ -206,16 +280,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		cmds = append(cmds, scheduleTimeRefresh())
 
 	case message.FetchingFinished:
-		m.pager.items[msg.Category] = msg.Stories
-		m.status.StopSpinner()
-		m.state = StateBrowsing
-		m.updatePagination()
-
-		if msg.Err != nil {
-			return m, m.status.NewStatusMessage(friendlyError(msg.Err))
-		}
-
-		return m, nil
+		return m.handleFetchingFinished(msg)
 
 	case message.StatusMessageTimeout:
 		if msg.Generation == m.status.generation {
@@ -237,27 +302,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		m.updatePagination()
 
 	case tea.WindowSizeMsg:
-		h, v := lipgloss.NewStyle().GetFrameSize()
-		m.setSize(msg.Width-h, msg.Height-v)
-
-		headerHeight := 2
-		footerHeight := 2
-		verticalMarginHeight := headerHeight + footerHeight
-
-		m.viewport.SetWidth(msg.Width)
-		m.viewport.SetHeight(msg.Height - verticalMarginHeight)
-
-		m.width = msg.Width
-		m.height = msg.Height
-
-		content := lipgloss.NewStyle().
-			Width(msg.Width).
-			AlignHorizontal(lipgloss.Center).
-			SetString(help.GetHelpScreen(m.config.EnableNerdFonts, m.keymap.MainMenuBindings()))
-
-		m.viewport.SetContent(content.String())
-
-		return m, nil
+		return m.handleWindowResize(msg)
 
 	case message.EnteringCommentSection:
 		return m, m.handleEnteringCommentSection(msg)
@@ -275,6 +320,10 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, m.handleEnteringReaderMode(msg)
 
 	case message.CommentTreeReady:
+		if msg.Err != nil && errors.Is(msg.Err, context.Canceled) {
+			return m, nil
+		}
+
 		m.pager.transition = nil
 		m.status.StopSpinner()
 
@@ -297,6 +346,10 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		})
 
 	case message.ArticleReady:
+		if msg.Err != nil && errors.Is(msg.Err, context.Canceled) {
+			return m, nil
+		}
+
 		m.pager.transition = nil
 		m.status.StopSpinner()
 
@@ -327,34 +380,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		cmds = append(cmds, m.status.NewStatusMessageWithDuration(msg.Message, msg.Duration))
 
 	case message.CategoryFetchingFinished:
-		if msg.Err != nil {
-			if m.pager.transition != nil {
-				m.cat.SetIndex(m.pager.transition.prevIndex)
-			}
-
-			m.pager.transition = nil
-			m.state = StateBrowsing
-			m.status.StopSpinner()
-			m.updatePagination()
-
-			return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), time.Second*3)
-		}
-
-		if m.pager.transition != nil && m.pager.transition.refresh {
-			clearAllCategories(m.pager.items)
-		}
-
-		m.pager.transition = nil
-		m.pager.items[msg.Category] = msg.Stories
-		m.pager.Paginator.Page = 0
-		m.state = StateBrowsing
-		m.status.StopSpinner()
-		m.cat.SetIndex(msg.Index)
-
-		itemsOnPage := m.pager.Paginator.ItemsOnPage(len(m.VisibleItems()))
-		m.pager.cursor = min(msg.Cursor, itemsOnPage-1)
-
-		m.updatePagination()
+		return m.handleCategoryFetchingFinished(msg)
 	}
 
 	if m.state == StateHelpScreen {

@@ -30,6 +30,9 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 		case m.state == StateAddFavoritesPrompt || m.state == StateRemoveFavoritesPrompt:
 			return m.handleCancelPrompt()
 
+		case m.state == StateFetching && key.Matches(msg, m.keymap.Cancel):
+			return m.handleCancelFetch()
+
 		case m.state != StateBrowsing:
 			return nil
 
@@ -118,6 +121,10 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			m.state = StateFetching
 			startSpinnerCmd := m.status.StartSpinner()
 
+			ctx, cancel := context.WithCancel(context.Background())
+			m.fetchCtx = ctx
+			m.cancelFetch = cancel
+
 			id := m.SelectedItem().ID
 			commentCount := m.SelectedItem().CommentsCount
 
@@ -138,6 +145,10 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			}
 			m.state = StateFetching
 			startSpinnerCmd := m.status.StartSpinner()
+
+			ctx, cancel := context.WithCancel(context.Background())
+			m.fetchCtx = ctx
+			m.cancelFetch = cancel
 
 			selected := m.SelectedItem()
 
@@ -232,6 +243,25 @@ func (m *Model) handleCancelPrompt() tea.Cmd {
 	return nil
 }
 
+func (m *Model) handleCancelFetch() tea.Cmd {
+	if m.cancelFetch != nil {
+		m.cancelFetch()
+		m.cancelFetch = nil
+	}
+
+	if m.pager.transition != nil {
+		m.cat.SetIndex(m.pager.transition.prevIndex)
+		m.pager.transition = nil
+	}
+
+	m.status.StopSpinner()
+	m.state = StateBrowsing
+	m.updatePagination()
+
+	return m.status.NewStatusMessageWithDuration(
+		lipgloss.NewStyle().Faint(true).Render("Cancelled"), time.Second*2)
+}
+
 func (m *Model) handleTabForward() tea.Cmd {
 	return m.handleTab(
 		m.cat.NextIndex(),
@@ -267,6 +297,10 @@ func (m *Model) handleTab(targetIndex, targetCategory int, changeCategory func()
 
 	m.state = StateFetching
 	startSpinnerCmd := m.status.StartSpinner()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	m.fetchCtx = ctx
+	m.cancelFetch = cancel
 
 	cursor := m.pager.cursor
 	changeCatCmd := func() tea.Msg {
@@ -332,6 +366,10 @@ func (m *Model) handleRefresh() tea.Cmd {
 	m.state = StateFetching
 	m.pager.cursor = 0
 	m.pager.Paginator.Page = currentPage
+
+	ctx, cancel := context.WithCancel(context.Background())
+	m.fetchCtx = ctx
+	m.cancelFetch = cancel
 
 	changeCatCmd := func() tea.Msg {
 		return message.Refresh{CurrentIndex: currentIndex, CurrentCategory: currentCategory}

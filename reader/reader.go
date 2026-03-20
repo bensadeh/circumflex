@@ -3,16 +3,46 @@ package reader
 import (
 	"bytes"
 	"clx/ansi"
+	"context"
 	"fmt"
+	"net/http"
+	nurl "net/url"
 	"time"
 
 	"codeberg.org/readeck/go-readability/v2"
 )
 
-func GetArticle(url string, title string, width int, indentationSymbol string) (string, error) {
-	article, httpErr := readability.FromURL(url, 6*time.Second)
-	if httpErr != nil {
-		return "", fmt.Errorf("could not fetch URL: %w", httpErr)
+func GetArticle(ctx context.Context, url string, title string, width int, indentationSymbol string) (string, error) {
+	parsedURL, err := nurl.ParseRequestURI(url)
+	if err != nil {
+		return "", fmt.Errorf("invalid URL: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return "", fmt.Errorf("could not create request: %w", err)
+	}
+
+	client := &http.Client{Timeout: 6 * time.Second}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		if ctx.Err() != nil {
+			return "", ctx.Err()
+		}
+
+		return "", fmt.Errorf("could not fetch URL: %w", err)
+	}
+
+	defer func() { _ = resp.Body.Close() }()
+
+	article, err := readability.FromReader(resp.Body, parsedURL)
+	if err != nil {
+		if ctx.Err() != nil {
+			return "", ctx.Err()
+		}
+
+		return "", fmt.Errorf("could not parse article: %w", err)
 	}
 
 	var buf bytes.Buffer

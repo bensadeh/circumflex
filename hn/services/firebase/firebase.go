@@ -84,6 +84,10 @@ func (s *Service) fetchItemsInParallel(ctx context.Context, ids []int) ([]*item.
 
 	wg.Wait()
 
+	if ctx.Err() != nil {
+		return nil, ctx.Err()
+	}
+
 	var failed int
 
 	result := make([]*item.Story, 0, len(items))
@@ -121,6 +125,10 @@ func (s *Service) FetchComments(ctx context.Context, id int) (*item.Story, error
 
 	sem := make(chan struct{}, maxConcurrency)
 	story.Comments = s.fetchCommentTree(ctx, sem, hn.Kids, 0)
+
+	if ctx.Err() != nil {
+		return nil, ctx.Err()
+	}
 
 	return story, nil
 }

@@ -23,6 +23,7 @@ type KeyMap struct {
 	EnterComments  key.Binding
 	ReaderMode     key.Binding
 	Confirm        key.Binding
+	Cancel         key.Binding
 }
 
 func DefaultKeyMap() KeyMap {
@@ -94,6 +95,9 @@ func DefaultKeyMap() KeyMap {
 		),
 		Confirm: key.NewBinding(
 			key.WithKeys("y"),
+		),
+		Cancel: key.NewBinding(
+			key.WithKeys("esc", "backspace", "ctrl+c"),
 		),
 	}
 }

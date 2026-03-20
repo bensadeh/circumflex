@@ -10,6 +10,7 @@ _WIP_
 - Improve error messages for timeouts, non-200 responses, and unexpected server responses
 - Add support for customizing the theme
 - Use the official HN Firebase API for all requests
+- Fetching can now be cancelled
 
 ## 3.9
 
