@@ -4,6 +4,7 @@ import (
 	"os"
 	"path"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -78,6 +79,42 @@ func TestNonPersistent_NoOps(t *testing.T) {
 	assert.Positive(t, h.GetLastVisited(1))
 	assert.NoError(t, h.ClearAndWriteToDisk())
 	assert.NoError(t, h.MarkAsReadAndWriteToDisk(1, 5))
+}
+
+func TestPersistent_MarkAsRead_SkipsWithinThreshold(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+
+	h := &Persistent{VisitedStories: make(map[int]StoryInfo)}
+
+	// First mark sets the timestamp
+	err := h.MarkAsReadAndWriteToDisk(1, 5)
+	require.NoError(t, err)
+
+	firstVisit := h.GetLastVisited(1)
+
+	// Marking again within 5 minutes should not update the timestamp
+	err = h.MarkAsReadAndWriteToDisk(1, 10)
+	require.NoError(t, err)
+
+	assert.Equal(t, firstVisit, h.GetLastVisited(1))
+	assert.Equal(t, 5, h.VisitedStories[1].CommentsOnLastVisit)
+}
+
+func TestPersistent_MarkAsRead_UpdatesAfterThreshold(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+
+	h := &Persistent{VisitedStories: make(map[int]StoryInfo)}
+
+	// Set a timestamp 6 minutes in the past
+	h.VisitedStories[1] = StoryInfo{
+		LastVisited:         time.Now().Unix() - 6*60,
+		CommentsOnLastVisit: 5,
+	}
+
+	err := h.MarkAsReadAndWriteToDisk(1, 15)
+	require.NoError(t, err)
+
+	assert.Equal(t, 15, h.VisitedStories[1].CommentsOnLastVisit)
 }
 
 func TestMock_ContainsKnownIDs(t *testing.T) {

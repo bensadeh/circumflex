@@ -50,6 +50,13 @@ func (his *Persistent) MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int)
 	his.mu.Lock()
 	defer his.mu.Unlock()
 
+	if existing, ok := his.VisitedStories[id]; ok {
+		elapsed := time.Since(time.Unix(existing.LastVisited, 0))
+		if elapsed < 5*time.Minute {
+			return nil
+		}
+	}
+
 	his.VisitedStories[id] = StoryInfo{
 		LastVisited:         time.Now().Unix(),
 		CommentsOnLastVisit: commentsOnLastVisit,

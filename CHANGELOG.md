@@ -11,6 +11,7 @@ _WIP_
 - Add support for customizing the theme
 - Use the official HN Firebase API for all requests
 - Fetching can now be cancelled
+- Add 5-minute threshold for updating last-read time on stories
 
 ## 3.9
 
