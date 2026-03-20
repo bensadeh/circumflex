@@ -16,19 +16,22 @@ type History interface {
 }
 
 func NewPersistentHistory() (History, error) {
-	h := &Persistent{VisitedStories: make(map[int]StoryInfo)}
+	filePath := path.Join(file.PathToCacheDirectory(), "history.json")
 
-	fullPath, dirPath, fileName := getCacheFilePaths()
+	h := &Persistent{
+		filePath:       filePath,
+		VisitedStories: make(map[int]StoryInfo),
+	}
 
-	if !file.Exists(fullPath) {
-		if err := writeToDisk(h, dirPath, fileName); err != nil {
+	if !file.Exists(filePath) {
+		if err := writeToDisk(h, filePath); err != nil {
 			return h, err
 		}
 
 		return h, nil
 	}
 
-	historyFileContent, readErr := os.ReadFile(fullPath) //nolint:gosec // path from ~/.cache/circumflex/
+	historyFileContent, readErr := os.ReadFile(filePath) //nolint:gosec // path from ~/.cache/circumflex/
 	if readErr != nil {
 		// Graceful degradation: treat as empty history
 		return h, nil //nolint:nilerr
@@ -52,19 +55,11 @@ func NewMockHistory() History {
 	return &Mock{}
 }
 
-func writeToDisk(h *Persistent, dirPath string, fileName string) error {
+func writeToDisk(h *Persistent, filePath string) error {
 	visitedStoriesJSON, err := json.Marshal(h.VisitedStories)
 	if err != nil {
 		return err
 	}
 
-	return file.WriteToDir(dirPath, fileName, string(visitedStoriesJSON))
-}
-
-func getCacheFilePaths() (string, string, string) {
-	dirPath := file.PathToCacheDirectory()
-	fileName := "history.json"
-	fullPath := path.Join(dirPath, fileName)
-
-	return fullPath, dirPath, fileName
+	return file.WriteToDir(path.Dir(filePath), path.Base(filePath), string(visitedStoriesJSON))
 }

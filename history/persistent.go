@@ -7,6 +7,7 @@ import (
 
 type Persistent struct {
 	mu             sync.RWMutex `json:"-"`
+	filePath       string       `json:"-"`
 	VisitedStories map[int]StoryInfo
 }
 
@@ -41,9 +42,7 @@ func (his *Persistent) ClearAndWriteToDisk() error {
 
 	his.VisitedStories = make(map[int]StoryInfo)
 
-	_, dirPath, fileName := getCacheFilePaths()
-
-	return writeToDisk(his, dirPath, fileName)
+	return writeToDisk(his, his.filePath)
 }
 
 func (his *Persistent) MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int) error {
@@ -62,9 +61,7 @@ func (his *Persistent) MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int)
 		CommentsOnLastVisit: commentsOnLastVisit,
 	}
 
-	_, dirPath, fileName := getCacheFilePaths()
-
-	return writeToDisk(his, dirPath, fileName)
+	return writeToDisk(his, his.filePath)
 }
 
 func (his *Persistent) MarkAsUnreadAndWriteToDisk(id int) error {
@@ -73,7 +70,5 @@ func (his *Persistent) MarkAsUnreadAndWriteToDisk(id int) error {
 
 	delete(his.VisitedStories, id)
 
-	_, dirPath, fileName := getCacheFilePaths()
-
-	return writeToDisk(his, dirPath, fileName)
+	return writeToDisk(his, his.filePath)
 }

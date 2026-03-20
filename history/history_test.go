@@ -10,10 +10,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPersistent_MarkAndContains(t *testing.T) {
-	t.Setenv("HOME", t.TempDir())
+func newTestPersistent(t *testing.T) *Persistent {
+	t.Helper()
 
-	h := &Persistent{VisitedStories: make(map[int]StoryInfo)}
+	return &Persistent{
+		filePath:       path.Join(t.TempDir(), "history.json"),
+		VisitedStories: make(map[int]StoryInfo),
+	}
+}
+
+func TestPersistent_MarkAndContains(t *testing.T) {
+	h := newTestPersistent(t)
 	assert.False(t, h.Contains(42))
 
 	err := h.MarkAsReadAndWriteToDisk(42, 10)
@@ -23,9 +30,7 @@ func TestPersistent_MarkAndContains(t *testing.T) {
 }
 
 func TestPersistent_GetLastVisited(t *testing.T) {
-	t.Setenv("HOME", t.TempDir())
-
-	h := &Persistent{VisitedStories: make(map[int]StoryInfo)}
+	h := newTestPersistent(t)
 
 	// Unvisited story returns current time (approximately)
 	ts := h.GetLastVisited(1)
@@ -38,9 +43,7 @@ func TestPersistent_GetLastVisited(t *testing.T) {
 }
 
 func TestPersistent_ClearAndWriteToDisk(t *testing.T) {
-	t.Setenv("HOME", t.TempDir())
-
-	h := &Persistent{VisitedStories: make(map[int]StoryInfo)}
+	h := newTestPersistent(t)
 	h.VisitedStories[1] = StoryInfo{LastVisited: 100, CommentsOnLastVisit: 5}
 	h.VisitedStories[2] = StoryInfo{LastVisited: 200, CommentsOnLastVisit: 10}
 
@@ -52,22 +55,23 @@ func TestPersistent_ClearAndWriteToDisk(t *testing.T) {
 }
 
 func TestPersistent_WriteToDisk_RoundTrip(t *testing.T) {
-	tmpDir := t.TempDir()
-	fileName := "test_history.json"
+	filePath := path.Join(t.TempDir(), "test_history.json")
 
-	h := &Persistent{VisitedStories: make(map[int]StoryInfo)}
+	h := &Persistent{
+		filePath:       filePath,
+		VisitedStories: make(map[int]StoryInfo),
+	}
 	h.VisitedStories[42] = StoryInfo{LastVisited: 1234567890, CommentsOnLastVisit: 15}
 
-	err := writeToDisk(h, tmpDir, fileName)
+	err := writeToDisk(h, filePath)
 	require.NoError(t, err)
 
 	// Verify file was created
-	fullPath := path.Join(tmpDir, fileName)
-	_, statErr := os.Stat(fullPath)
+	_, statErr := os.Stat(filePath)
 	require.NoError(t, statErr)
 
 	// Read it back
-	content, err := os.ReadFile(fullPath) //nolint:gosec // test temp dir
+	content, err := os.ReadFile(filePath) //nolint:gosec // test temp dir
 	require.NoError(t, err)
 	assert.Contains(t, string(content), "42")
 }
@@ -82,9 +86,7 @@ func TestNonPersistent_NoOps(t *testing.T) {
 }
 
 func TestPersistent_MarkAsRead_SkipsWithinThreshold(t *testing.T) {
-	t.Setenv("HOME", t.TempDir())
-
-	h := &Persistent{VisitedStories: make(map[int]StoryInfo)}
+	h := newTestPersistent(t)
 
 	// First mark sets the timestamp
 	err := h.MarkAsReadAndWriteToDisk(1, 5)
@@ -101,9 +103,7 @@ func TestPersistent_MarkAsRead_SkipsWithinThreshold(t *testing.T) {
 }
 
 func TestPersistent_MarkAsRead_UpdatesAfterThreshold(t *testing.T) {
-	t.Setenv("HOME", t.TempDir())
-
-	h := &Persistent{VisitedStories: make(map[int]StoryInfo)}
+	h := newTestPersistent(t)
 
 	// Set a timestamp 6 minutes in the past
 	h.VisitedStories[1] = StoryInfo{
