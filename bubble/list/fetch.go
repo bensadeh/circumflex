@@ -167,6 +167,10 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 			return message.ArticleReady{Err: err}
 		}
 
+		if ctx.Err() != nil {
+			return message.ArticleReady{Err: ctx.Err()}
+		}
+
 		_ = hist.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
 		return message.ArticleReady{Content: article}

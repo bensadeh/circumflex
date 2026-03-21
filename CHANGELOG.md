@@ -15,6 +15,7 @@ _WIP_
 - Rename Parent Poster (`PP`) label to Grandparent Poster (`GP`)
 - Auto-enable Nerd Fonts when running inside Ghostty
 - Change `--nerdfonts` flag to accept `true`/`false` for explicit control
+- Normalize header levels in reader mode so articles always start at h1
 
 ## 3.9
 

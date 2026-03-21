@@ -146,7 +146,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			m.state = StateFetching
 			startSpinnerCmd := m.status.StartSpinner()
 
-			ctx, cancel := context.WithCancel(context.Background())
+			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 			m.fetchCtx = ctx
 			m.cancelFetch = cancel
 

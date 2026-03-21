@@ -58,6 +58,7 @@ func GetArticle(ctx context.Context, url string, title string, width int, indent
 	}
 
 	markdownBlocks := convertToMarkdownBlocks(articleInMarkdown)
+	normalizeHeaders(markdownBlocks)
 
 	articleInTerminalFormal := convertToTerminalFormat(markdownBlocks, width, indentationSymbol)
 
