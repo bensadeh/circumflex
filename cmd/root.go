@@ -26,7 +26,7 @@ var (
 	hideIndentSymbol            bool
 	debugMode                   bool
 	debugFallible               bool
-	enableNerdFont              bool
+	nerdFontFlag                string
 	autoExpandComments          bool
 	noLessVerify                bool
 	selectedCategories          string
@@ -93,8 +93,8 @@ func configureFlags(rootCmd *cobra.Command) {
 		"hide the indentation bar to the left of the reply")
 	rootCmd.PersistentFlags().IntVarP(&commentWidth, "comment-width", "c", settings.Default().CommentWidth,
 		"set the comment width")
-	rootCmd.PersistentFlags().BoolVarP(&enableNerdFont, "nerdfonts", "n", false,
-		"enable Nerd Fonts")
+	rootCmd.PersistentFlags().StringVarP(&nerdFontFlag, "nerdfonts", "n", "",
+		"enable or disable Nerd Fonts (true/false, auto-enabled for Ghostty, env: NERDFONTS)")
 	rootCmd.PersistentFlags().BoolVarP(&autoExpandComments, "auto-expand", "a", false,
 		"automatically expand all replies upon entering the comment section")
 	rootCmd.PersistentFlags().BoolVar(&noLessVerify, "no-less-verify", false,
@@ -118,13 +118,11 @@ func getConfig() *settings.Config {
 	config.Theme = t
 	style.Init(t)
 
-	_, nerdFontsEnvIsSet := os.LookupEnv("NERDFONTS")
-
 	config.CommentWidth = commentWidth
 	config.DisableHeadlineHighlighting = disableHeadlineHighlighting
 	config.DisableCommentHighlighting = disableCommentHighlighting
 	config.DoNotMarkSubmissionsAsRead = disableHistory
-	config.EnableNerdFonts = nerdFontsEnvIsSet || enableNerdFont
+	config.EnableNerdFonts = resolveNerdFonts(nerdFontFlag)
 	config.HideIndentSymbol = hideIndentSymbol
 	config.AutoExpandComments = autoExpandComments
 	config.DisableEmojis = disableEmojis
@@ -133,6 +131,23 @@ func getConfig() *settings.Config {
 	config.NoLessVerify = noLessVerify
 
 	return config
+}
+
+func resolveNerdFonts(flag string) bool {
+	switch flag {
+	case "true":
+		return true
+	case "false":
+		return false
+	default:
+		_, nerdFontsEnvIsSet := os.LookupEnv("NERDFONTS")
+
+		return nerdFontsEnvIsSet || isGhostty()
+	}
+}
+
+func isGhostty() bool {
+	return os.Getenv("TERM_PROGRAM") == "ghostty"
 }
 
 func newService() hn.Service {

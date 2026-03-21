@@ -13,6 +13,8 @@ _WIP_
 - Fetching can now be cancelled
 - Add 5-minute threshold for updating last-read time on stories
 - Rename Parent Poster (`PP`) label to Grandparent Poster (`GP`)
+- Auto-enable Nerd Fonts when running inside Ghostty
+- Change `--nerdfonts` flag to accept `true`/`false` for explicit control
 
 ## 3.9
 
