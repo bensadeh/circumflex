@@ -28,61 +28,38 @@ func getFiller(title string, categories string, width int) string {
 		return ""
 	}
 
-	filler := strings.Repeat(" ", availableSpace)
-
-	return lipgloss.NewStyle().Render(filler)
+	return strings.Repeat(" ", availableSpace)
 }
 
 func getCategories(allCategories []int, selectedSubHeader int) string {
-	subHeaders := getSubHeaders(allCategories)
-	subHeaders = removeFirstElement(subHeaders)
+	cats := allCategories[1:]
 
-	var cats strings.Builder
-	cats.WriteString(lipgloss.NewStyle().
-		Underline(true).
-		Render(""))
+	var out strings.Builder
 
 	separator := lipgloss.NewStyle().
 		Faint(true).
 		Render(" • ")
 
-	for i, subHeader := range subHeaders {
-		isOnLastItem := i == len(subHeaders)-1
-		selectedCatColor, isSelected := getColor(i, selectedSubHeader, allCategories)
+	for i, cat := range cats {
+		name := categories.Name(cat)
+		selectedCatColor, isSelected := getColor(i+1, selectedSubHeader, cat)
 
-		cats.WriteString(lipgloss.NewStyle().
+		out.WriteString(lipgloss.NewStyle().
 			Foreground(selectedCatColor).
 			Faint(!isSelected).
-			Render(subHeader))
+			Render(name))
 
-		if !isOnLastItem {
-			cats.WriteString(separator)
+		if i < len(cats)-1 {
+			out.WriteString(separator)
 		}
 	}
 
-	return cats.String()
+	return out.String()
 }
 
-func getSubHeaders(allCategories []int) []string {
-	var cats []string
-	for _, cat := range allCategories {
-		cats = append(cats, categories.Name(cat))
-	}
-
-	return cats
-}
-
-func removeFirstElement(list []string) []string {
-	if len(list) == 0 {
-		return []string{}
-	}
-
-	return list[1:]
-}
-
-func getColor(i int, selectedSubHeader int, allCategories []int) (clr color.Color, isSelected bool) {
-	if i+1 == selectedSubHeader {
-		return getSelectedCategoryColor(selectedSubHeader, allCategories[i+1])
+func getColor(index int, selectedSubHeader int, cat int) (clr color.Color, isSelected bool) {
+	if index == selectedSubHeader {
+		return getSelectedCategoryColor(selectedSubHeader, cat)
 	}
 
 	return lipgloss.NoColor{}, false
@@ -104,7 +81,7 @@ func getSelectedCategoryColor(selectedSubHeader int, cat int) (clr color.Color, 
 		return primary, true
 	case 2:
 		return secondary, true
-	default:
-		return tertiary, true
 	}
+
+	return tertiary, true
 }
