@@ -3,12 +3,19 @@ package reader
 import (
 	"bytes"
 	"clx/ansi"
+	"clx/version"
 	"context"
 	"fmt"
-	"net/http"
 	nurl "net/url"
+	"time"
 
 	"codeberg.org/readeck/go-readability/v2"
+	"github.com/go-resty/resty/v2"
+)
+
+const (
+	fetchTimeout = 4 * time.Second
+	retryCount   = 2
 )
 
 func GetArticle(ctx context.Context, url string, title string, width int, indentationSymbol string) (string, error) {
@@ -17,14 +24,12 @@ func GetArticle(ctx context.Context, url string, title string, width int, indent
 		return "", fmt.Errorf("invalid URL: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		return "", fmt.Errorf("could not create request: %w", err)
-	}
+	client := resty.New()
+	client.SetTimeout(fetchTimeout)
+	client.SetRetryCount(retryCount)
+	client.SetHeader("User-Agent", version.Name+"/"+version.Version)
 
-	client := &http.Client{}
-
-	resp, err := client.Do(req)
+	resp, err := client.R().SetContext(ctx).Get(url)
 	if err != nil {
 		if ctx.Err() != nil {
 			return "", ctx.Err()
@@ -33,14 +38,8 @@ func GetArticle(ctx context.Context, url string, title string, width int, indent
 		return "", fmt.Errorf("could not fetch URL: %w", err)
 	}
 
-	defer func() { _ = resp.Body.Close() }()
-
-	article, err := readability.FromReader(resp.Body, parsedURL)
+	article, err := readability.FromReader(bytes.NewReader(resp.Body()), parsedURL)
 	if err != nil {
-		if ctx.Err() != nil {
-			return "", ctx.Err()
-		}
-
 		return "", fmt.Errorf("could not parse article: %w", err)
 	}
 
