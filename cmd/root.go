@@ -74,6 +74,7 @@ func Root() *cobra.Command {
 	rootCmd.AddCommand(articleCmd())
 	rootCmd.AddCommand(urlCmd())
 	rootCmd.AddCommand(versionCmd())
+	rootCmd.AddCommand(defaultThemeCmd())
 
 	configureFlags(rootCmd)
 
@@ -114,7 +115,12 @@ func configureFlags(rootCmd *cobra.Command) {
 func getConfig() *settings.Config {
 	config := settings.Default()
 
-	t, _ := theme.Load()
+	t, err := theme.Load()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: could not load theme config\n  %v\n", err)
+		os.Exit(1)
+	}
+
 	config.Theme = t
 	style.Init(t)
 

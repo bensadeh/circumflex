@@ -13,6 +13,7 @@ _WIP_
 - Fetching can now be cancelled
 - Add 5-minute threshold for updating last-read time on stories
 - Rename Parent Poster (`PP`) label to Grandparent Poster (`GP`)
+- Add `default-theme` subcommand to generate a default theme config file
 - Auto-enable Nerd Fonts when running inside Ghostty
 - Change `--nerdfonts` flag to accept `true`/`false` for explicit control
 - Normalize header levels in reader mode so articles always start at h1

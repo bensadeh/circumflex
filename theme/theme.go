@@ -1,6 +1,7 @@
 package theme
 
 import (
+	"fmt"
 	"image/color"
 	"os"
 	"path/filepath"
@@ -158,6 +159,51 @@ func Default() *Theme {
 			},
 		},
 	}
+}
+
+func configHeader() string {
+	return "# circumflex theme configuration\n" +
+		"#\n" +
+		"# Color values can be:\n" +
+		"#   - Named: \"red\", \"blue\", \"green\", \"yellow\", \"magenta\", \"cyan\", \"white\", \"black\"\n" +
+		"#   - Bright: \"bright_red\", \"bright_blue\", \"bright_green\", etc.\n" +
+		"#   - ANSI 256: \"219\", \"33\", \"196\"\n" +
+		"#   - Hex: \"#ff5500\", \"#1a1a2e\"\n\n"
+}
+
+func WriteDefaultConfig() (string, error) {
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+
+	dir := filepath.Join(configDir, "circumflex")
+	path := filepath.Join(dir, "theme.toml")
+
+	if _, statErr := os.Stat(path); statErr == nil {
+		return "", fmt.Errorf("config already exists at %s", path)
+	}
+
+	if mkdirErr := os.MkdirAll(dir, 0o750); mkdirErr != nil {
+		return "", mkdirErr
+	}
+
+	f, err := os.Create(filepath.Clean(path))
+	if err != nil {
+		return "", err
+	}
+
+	defer func() { _ = f.Close() }()
+
+	if _, err := f.WriteString(configHeader()); err != nil {
+		return "", err
+	}
+
+	if err := toml.NewEncoder(f).Encode(Default()); err != nil {
+		return "", err
+	}
+
+	return path, nil
 }
 
 func Load() (*Theme, error) {

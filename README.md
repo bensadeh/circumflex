@@ -204,11 +204,12 @@ Run `clx help` or `man clx` for a list of available commands and settings.
 ### Commands
 
 ```console
-add [ID]      Add item to list of favorites by ID
-comments [ID] Go directly to the comment section by ID
-article [ID]  Read the linked article associated with an item based on the ID
-url [URL]     Open a URL directly in Reader Mode
-clear         Clear the history of visited IDs
+add [ID]        Add item to list of favorites by ID
+comments [ID]   Go directly to the comment section by ID
+article [ID]    Read the linked article associated with an item based on the ID
+url [URL]       Open a URL directly in Reader Mode
+clear           Clear the history of visited IDs
+default-theme   Write default theme config to ~/.config/circumflex/theme.toml
 ```
 ### Flags
 
