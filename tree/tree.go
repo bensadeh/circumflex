@@ -57,7 +57,7 @@ func getHeader(c *item.Story, config *settings.Config, lastVisited int64) string
 }
 
 func printReplies(c *item.Story, config *settings.Config, screenWidth int, originalPoster string,
-	parentPoster string, firstCommentID int, lastVisited int64,
+	grandParentPoster string, firstCommentID int, lastVisited int64,
 ) string {
 	isDeletedAndHasNoReplies := c.Content == "[deleted]" && len(c.Comments) == 0
 	if isDeletedAndHasNoReplies {
@@ -69,7 +69,7 @@ func printReplies(c *item.Story, config *settings.Config, screenWidth int, origi
 	availableScreenWidth := screenWidth - indentSize - constants.CommentSectionLeftMargin
 	adjustedCommentWidth := config.CommentWidth - c.Level
 
-	comment := formatComment(c, config, originalPoster, parentPoster, adjustedCommentWidth, availableScreenWidth,
+	comment := formatComment(c, config, originalPoster, grandParentPoster, adjustedCommentWidth, availableScreenWidth,
 		lastVisited)
 	indentedComment, _ := text.WrapWithPad(comment, screenWidth, indentation)
 	fullComment := getSeparator(c.Level, config.CommentWidth, c.ID, firstCommentID) + indentedComment + newLine
@@ -79,11 +79,11 @@ func printReplies(c *item.Story, config *settings.Config, screenWidth int, origi
 	fullCommentWithFilterTag.WriteString(addFilterTag(c.Level, fullComment))
 
 	if c.Level == 0 {
-		parentPoster = c.User
+		grandParentPoster = c.User
 	}
 
 	for _, reply := range c.Comments {
-		fullCommentWithFilterTag.WriteString(printReplies(reply, config, screenWidth, originalPoster, parentPoster, firstCommentID,
+		fullCommentWithFilterTag.WriteString(printReplies(reply, config, screenWidth, originalPoster, grandParentPoster, firstCommentID,
 			lastVisited))
 	}
 
@@ -137,12 +137,12 @@ func addFilterTag(level int, fullComment string) string {
 	return fullCommentWithFilterTags.String()
 }
 
-func formatComment(c *item.Story, config *settings.Config, originalPoster string, parentPoster string, commentWidth int,
+func formatComment(c *item.Story, config *settings.Config, originalPoster string, grandParentPoster string, commentWidth int,
 	availableScreenWidth int, lastVisited int64,
 ) string {
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, c.Level)
 
-	header := getCommentHeader(c, originalPoster, parentPoster, lastVisited, config)
+	header := getCommentHeader(c, originalPoster, grandParentPoster, lastVisited, config)
 	formattedComment := comment.Print(c.Content, config, commentWidth, availableScreenWidth)
 
 	paddedComment, _ := text.WrapWithPad(formattedComment, availableScreenWidth, coloredIndentSymbol)
@@ -170,21 +170,21 @@ func getIndentString(level int) string {
 	return strings.Repeat(" ", level-1)
 }
 
-func getCommentHeader(c *item.Story, originalPoster string, parentPoster string, lastVisited int64, config *settings.Config) string {
+func getCommentHeader(c *item.Story, originalPoster string, grandParentPoster string, lastVisited int64, config *settings.Config) string {
 	if c.Level == 0 {
-		return formatHeader(c, originalPoster, parentPoster, true,
+		return formatHeader(c, originalPoster, grandParentPoster, true,
 			0, lastVisited, config)
 	}
 
-	return formatHeader(c, originalPoster, parentPoster, false,
+	return formatHeader(c, originalPoster, grandParentPoster, false,
 		1, lastVisited, config)
 }
 
-func formatHeader(c *item.Story, originalPoster string, parentPoster string,
+func formatHeader(c *item.Story, originalPoster string, grandParentPoster string,
 	enableZeroWidthSpace bool, indentSize int, lastVisited int64, config *settings.Config,
 ) string {
 	author := getAuthor(c.User, lastVisited, c.Time)
-	authorLabel := getAuthorLabel(c.User, originalPoster, parentPoster, config.EnableNerdFonts)
+	authorLabel := getAuthorLabel(c.User, originalPoster, grandParentPoster, config.EnableNerdFonts)
 	zeroWidthSpace := getZeroWidthSpace(enableZeroWidthSpace)
 	indentation := strings.Repeat(" ", indentSize)
 
@@ -248,16 +248,16 @@ func incrementNewCommentsCount(comments *item.Story, newCommentsSoFar *int, last
 
 var mods = []string{"dang", "tomhow"}
 
-func getAuthorLabel(author, originalPoster, parentPoster string, enableNerdFonts bool) string {
-	label := computeLabel(author, originalPoster, parentPoster, enableNerdFonts)
+func getAuthorLabel(author, originalPoster, grandParentPoster string, enableNerdFonts bool) string {
+	label := computeLabel(author, originalPoster, grandParentPoster, enableNerdFonts)
 	if label == "" {
 		return ""
 	}
 
-	return colorizeLabel(author, originalPoster, parentPoster, label)
+	return colorizeLabel(author, originalPoster, grandParentPoster, label)
 }
 
-func computeLabel(author, originalPoster, parentPoster string, nerdFonts bool) string {
+func computeLabel(author, originalPoster, grandParentPoster string, nerdFonts bool) string {
 	switch {
 	case nerdFonts:
 		return nerdfonts.Author + " "
@@ -265,21 +265,21 @@ func computeLabel(author, originalPoster, parentPoster string, nerdFonts bool) s
 		return "mod "
 	case author == originalPoster:
 		return "OP "
-	case author == parentPoster:
-		return "PP "
+	case author == grandParentPoster:
+		return "GP "
 	default:
 		return ""
 	}
 }
 
-func colorizeLabel(author, originalPoster, parentPoster, label string) string {
+func colorizeLabel(author, originalPoster, grandParentPoster, label string) string {
 	switch {
 	case isMod(author):
 		return style.CommentMod(label)
 	case author == originalPoster:
 		return style.CommentOP(label)
-	case author == parentPoster:
-		return style.CommentPP(label)
+	case author == grandParentPoster:
+		return style.CommentGP(label)
 	default:
 		return ""
 	}

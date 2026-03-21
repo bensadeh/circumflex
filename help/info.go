@@ -46,7 +46,7 @@ func GetText(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Bindi
 	keys.AddHeader(lipgloss.NewStyle().Foreground(style.HelpLegendColor()).Underline(true).Render(" Legend "))
 	keys.AddSeparator()
 	keys.AddKeymap("Original Poster", style.CommentOP(getOP(enableNerdFonts)))
-	keys.AddKeymap("Parent Poster", style.CommentPP(getPP(enableNerdFonts)))
+	keys.AddKeymap("Grandparent Poster", style.CommentGP(getGP(enableNerdFonts)))
 	keys.AddKeymap("Moderator", style.CommentMod(getMod(enableNerdFonts)))
 	keys.AddSeparator()
 	keys.AddKeymap("New comment indicator", style.CommentNewIndicator("●"))
@@ -82,12 +82,12 @@ func getOP(enableNerdFonts bool) string {
 	return "OP"
 }
 
-func getPP(enableNerdFonts bool) string {
+func getGP(enableNerdFonts bool) string {
 	if enableNerdFonts {
 		return nerdfonts.Author
 	}
 
-	return "PP"
+	return "GP"
 }
 
 func getMod(enableNerdFonts bool) string {

@@ -48,7 +48,7 @@ type CommentColors struct {
 	Variable     string `toml:"variable"`
 	Backtick     string `toml:"backtick"`
 	OP           string `toml:"op"`
-	PP           string `toml:"pp"`
+	GP           string `toml:"gp"`
 	NewIndicator string `toml:"new_indicator"`
 }
 
@@ -117,7 +117,7 @@ func Default() *Theme {
 			Variable:     "cyan",
 			Backtick:     "magenta",
 			OP:           "red",
-			PP:           "magenta",
+			GP:           "magenta",
 			NewIndicator: "cyan",
 		},
 		Meta: MetaColors{

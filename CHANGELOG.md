@@ -12,6 +12,7 @@ _WIP_
 - Use the official HN Firebase API for all requests
 - Fetching can now be cancelled
 - Add 5-minute threshold for updating last-read time on stories
+- Rename Parent Poster (`PP`) label to Grandparent Poster (`GP`)
 
 ## 3.9
 

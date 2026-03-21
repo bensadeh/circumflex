@@ -106,7 +106,7 @@ func CommentMention(s string) string      { return colored(current.Comment.Menti
 func CommentMod(s string) string          { return colored(current.Comment.Mod, s) }
 func CommentVariable(s string) string     { return colored(current.Comment.Variable, s) }
 func CommentOP(s string) string           { return colored(current.Comment.OP, s) }
-func CommentPP(s string) string           { return colored(current.Comment.PP, s) }
+func CommentGP(s string) string           { return colored(current.Comment.GP, s) }
 func CommentNewIndicator(s string) string { return colored(current.Comment.NewIndicator, s) }
 
 func CommentBacktickColor() string {

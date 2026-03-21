@@ -70,12 +70,12 @@ func TestGetAuthorLabelOP(t *testing.T) {
 	assert.Contains(t, result, "OP")
 }
 
-func TestGetAuthorLabelPP(t *testing.T) {
+func TestGetAuthorLabelGP(t *testing.T) {
 	t.Parallel()
 
 	result := getAuthorLabel("bob", "alice", "bob", false)
 
-	assert.Contains(t, result, "PP")
+	assert.Contains(t, result, "GP")
 }
 
 func TestGetAuthorLabelRegular(t *testing.T) {

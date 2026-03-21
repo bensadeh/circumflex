@@ -34,7 +34,7 @@ mod = "green"
 variable = "cyan"
 backtick = "magenta"
 op = "red"
-pp = "magenta"
+gp = "magenta"
 new_indicator = "cyan"
 
 [meta]

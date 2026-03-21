@@ -88,7 +88,7 @@ pager `less`. To present a nice and readable comment section, `circumflex` featu
 
 * Rainbow-colored indentation blocks
 * Text formatting in **bold**, _italics_ and `code` where available
-* Labels for Original Posters (`OP`), Parent Posters (`PP`) and moderators (`mod`)
+* Labels for Original Posters (`OP`), Grandparent Posters (`GP`) and moderators (`mod`)
 
 ### Navigation
 The following pair of shortcuts are recommended for browsing and navigating the 
