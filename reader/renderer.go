@@ -70,23 +70,8 @@ func convertToTerminalFormat(blocks []*block, lineWidth int, indentBlock string)
 		case blockDivider:
 			sb.WriteString(renderDivider(lineWidth))
 
-		case blockH1:
-			sb.WriteString(h1(b.Text, lineWidth))
-
-		case blockH2:
-			sb.WriteString(h2(b.Text, lineWidth))
-
-		case blockH3:
-			sb.WriteString(h3(b.Text, lineWidth))
-
-		case blockH4:
-			sb.WriteString(h4(b.Text, lineWidth))
-
-		case blockH5:
-			sb.WriteString(h5(b.Text, lineWidth))
-
-		case blockH6:
-			sb.WriteString(h6(b.Text, lineWidth))
+		case blockH1, blockH2, blockH3, blockH4, blockH5, blockH6:
+			sb.WriteString(renderHeader(b.Kind, b.Text, lineWidth))
 
 		default:
 			sb.WriteString(renderText(b.Text, lineWidth))
@@ -277,56 +262,31 @@ func bld(text string) string {
 	return text
 }
 
-func h1(text string, lineWidth int) string {
-	text = preFormatHeader(text)
-	text = style.ReaderH1(constants.Block+" ") + style.Bold(text)
+var headerIndent = [...]int{0, 0, 0, 2, 4, 6, 8, 10}
 
-	text, _ = termtext.Wrap(text, lineWidth)
-
-	return constants.InvisibleCharacterForTopLevelComments + text
+var headerStyleFuncs = [...]func(string) string{
+	0: nil, 1: nil,
+	blockH1: style.ReaderH1,
+	blockH2: style.ReaderH2,
+	blockH3: style.ReaderH3,
+	blockH4: style.ReaderH4,
+	blockH5: style.ReaderH5,
+	blockH6: style.ReaderH6,
 }
 
-func h2(text string, lineWidth int) string {
+func renderHeader(kind int, text string, lineWidth int) string {
 	text = preFormatHeader(text)
-	text = style.ReaderH2(constants.Block+" ") + style.Bold(text)
+	indent := headerIndent[kind]
+	styleFn := headerStyleFuncs[kind]
+	text = styleFn(constants.Block+" ") + style.Bold(text)
 
-	text, _ = termtext.Wrap(text, lineWidth)
+	text, _ = termtext.Wrap(text, lineWidth-indent)
 
-	return constants.InvisibleCharacterForTopLevelComments + text
-}
-
-func h3(text string, lineWidth int) string {
-	text = preFormatHeader(text)
-	text = style.ReaderH3(constants.Block+" ") + style.Bold(text)
-
-	text, _ = termtext.Wrap(text, lineWidth)
-
-	return constants.InvisibleCharacterForTopLevelComments + text
-}
-
-func h4(text string, lineWidth int) string {
-	text = preFormatHeader(text)
-	text = style.ReaderH4(constants.Block+" ") + style.Bold(text)
-
-	text, _ = termtext.Wrap(text, lineWidth)
-
-	return constants.InvisibleCharacterForTopLevelComments + text
-}
-
-func h5(text string, lineWidth int) string {
-	text = preFormatHeader(text)
-	text = style.ReaderH5(constants.Block+" ") + style.Bold(text)
-
-	text, _ = termtext.Wrap(text, lineWidth)
-
-	return constants.InvisibleCharacterForTopLevelComments + text
-}
-
-func h6(text string, lineWidth int) string {
-	text = preFormatHeader(text)
-	text = style.ReaderH6(constants.Block+" ") + style.Bold(text)
-
-	text, _ = termtext.Wrap(text, lineWidth)
+	if indent > 0 {
+		padding := strings.Repeat(" ", indent)
+		text = strings.ReplaceAll(text, "\n", "\n"+padding)
+		text = padding + text
+	}
 
 	return constants.InvisibleCharacterForTopLevelComments + text
 }

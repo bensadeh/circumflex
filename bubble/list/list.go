@@ -11,7 +11,6 @@ import (
 	"clx/item"
 	"clx/settings"
 	"context"
-	"errors"
 	"io"
 	"time"
 
@@ -70,6 +69,7 @@ type Model struct {
 	keymap      KeyMap
 	fetchCtx    context.Context //nolint:containedctx // single active fetch context, accessed only from the Update goroutine
 	cancelFetch context.CancelFunc
+	fetchID     uint64
 
 	viewport viewport.Model
 
@@ -152,7 +152,7 @@ func (m *Model) setSize(width, height int) {
 }
 
 func (m *Model) handleCategoryFetchingFinished(msg message.CategoryFetchingFinished) (*Model, tea.Cmd) {
-	if msg.Err != nil && errors.Is(msg.Err, context.Canceled) {
+	if msg.FetchID != m.fetchID {
 		return m, nil
 	}
 
@@ -320,7 +320,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, m.handleEnteringReaderMode(msg)
 
 	case message.CommentTreeReady:
-		if msg.Err != nil && errors.Is(msg.Err, context.Canceled) {
+		if msg.FetchID != m.fetchID {
 			return m, nil
 		}
 
@@ -346,7 +346,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		})
 
 	case message.ArticleReady:
-		if msg.Err != nil && errors.Is(msg.Err, context.Canceled) {
+		if msg.FetchID != m.fetchID {
 			return m, nil
 		}
 

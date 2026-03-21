@@ -91,6 +91,7 @@ func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) t
 	numItems := m.getNumberOfItemsToFetch(msg.Category)
 	endpoint := categoryEndpoints[msg.Category]
 	ctx := m.fetchCtx
+	fetchID := m.fetchID
 
 	return func() tea.Msg {
 		stories, err := service.FetchItems(ctx, numItems, endpoint)
@@ -101,6 +102,7 @@ func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) t
 			Index:    msg.Index,
 			Cursor:   msg.Cursor,
 			Err:      err,
+			FetchID:  fetchID,
 		}
 	}
 }
@@ -110,6 +112,7 @@ func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 	numItems := m.getNumberOfItemsToFetch(msg.CurrentCategory)
 	endpoint := categoryEndpoints[msg.CurrentCategory]
 	ctx := m.fetchCtx
+	fetchID := m.fetchID
 
 	return func() tea.Msg {
 		stories, err := service.FetchItems(ctx, numItems, endpoint)
@@ -120,6 +123,7 @@ func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 			Index:    msg.CurrentIndex,
 			Cursor:   0,
 			Err:      err,
+			FetchID:  fetchID,
 		}
 	}
 }
@@ -131,6 +135,7 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 	service := m.service
 	config := m.config
 	ctx := m.fetchCtx
+	fetchID := m.fetchID
 
 	return func() tea.Msg {
 		lastVisited := hist.GetLastVisited(msg.Id)
@@ -138,7 +143,7 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 
 		story, err := service.FetchComments(ctx, msg.Id)
 		if err != nil {
-			return message.CommentTreeReady{Err: err}
+			return message.CommentTreeReady{Err: err, FetchID: fetchID}
 		}
 
 		var updatedStory *item.Story
@@ -148,7 +153,7 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 
 		commentTree := tree.Print(story, config, width, lastVisited)
 
-		return message.CommentTreeReady{Content: commentTree, UpdatedStory: updatedStory}
+		return message.CommentTreeReady{Content: commentTree, UpdatedStory: updatedStory, FetchID: fetchID}
 	}
 }
 
@@ -156,24 +161,21 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 	config := m.config
 	hist := m.history
 	ctx := m.fetchCtx
+	fetchID := m.fetchID
 
 	return func() tea.Msg {
 		if err := validator.Validate(msg.Title, msg.Domain); err != nil {
-			return message.ArticleReady{Err: err}
+			return message.ArticleReady{Err: err, FetchID: fetchID}
 		}
 
 		article, err := reader.GetArticle(ctx, msg.Url, msg.Title, config.CommentWidth, config.IndentationSymbol)
 		if err != nil {
-			return message.ArticleReady{Err: err}
-		}
-
-		if ctx.Err() != nil {
-			return message.ArticleReady{Err: ctx.Err()}
+			return message.ArticleReady{Err: err, FetchID: fetchID}
 		}
 
 		_ = hist.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
-		return message.ArticleReady{Content: article}
+		return message.ArticleReady{Content: article, FetchID: fetchID}
 	}
 }
 

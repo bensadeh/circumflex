@@ -68,6 +68,7 @@ type CategoryFetchingFinished struct {
 	Index    int
 	Cursor   int
 	Err      error
+	FetchID  uint64
 }
 
 type AddToFavorites struct {
@@ -78,11 +79,13 @@ type CommentTreeReady struct {
 	Content      string
 	Err          error
 	UpdatedStory *item.Story
+	FetchID      uint64
 }
 
 type ArticleReady struct {
 	Content string
 	Err     error
+	FetchID uint64
 }
 
 type TimeRefreshTick struct{}

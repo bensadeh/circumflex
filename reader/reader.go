@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	nurl "net/url"
-	"time"
 
 	"codeberg.org/readeck/go-readability/v2"
 )
@@ -23,7 +22,7 @@ func GetArticle(ctx context.Context, url string, title string, width int, indent
 		return "", fmt.Errorf("could not create request: %w", err)
 	}
 
-	client := &http.Client{Timeout: 6 * time.Second}
+	client := &http.Client{}
 
 	resp, err := client.Do(req)
 	if err != nil {

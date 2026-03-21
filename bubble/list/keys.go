@@ -118,12 +118,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 				prevIndex: m.cat.CurrentIndex(),
 				oldItems:  m.pager.items[currentCategory],
 			}
-			m.state = StateFetching
-			startSpinnerCmd := m.status.StartSpinner()
-
-			ctx, cancel := context.WithCancel(context.Background())
-			m.fetchCtx = ctx
-			m.cancelFetch = cancel
+			startSpinnerCmd := m.startFetch(0)
 
 			id := m.SelectedItem().ID
 			commentCount := m.SelectedItem().CommentsCount
@@ -143,12 +138,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 				prevIndex: m.cat.CurrentIndex(),
 				oldItems:  m.pager.items[currentCategory],
 			}
-			m.state = StateFetching
-			startSpinnerCmd := m.status.StartSpinner()
-
-			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-			m.fetchCtx = ctx
-			m.cancelFetch = cancel
+			startSpinnerCmd := m.startFetch(15 * time.Second)
 
 			selected := m.SelectedItem()
 
@@ -243,11 +233,34 @@ func (m *Model) handleCancelPrompt() tea.Cmd {
 	return nil
 }
 
+func (m *Model) startFetch(timeout time.Duration) tea.Cmd {
+	if m.cancelFetch != nil {
+		m.cancelFetch()
+	}
+
+	m.fetchID++
+	m.state = StateFetching
+
+	if timeout > 0 {
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		m.fetchCtx = ctx
+		m.cancelFetch = cancel
+	} else {
+		ctx, cancel := context.WithCancel(context.Background())
+		m.fetchCtx = ctx
+		m.cancelFetch = cancel
+	}
+
+	return m.status.StartSpinner()
+}
+
 func (m *Model) handleCancelFetch() tea.Cmd {
 	if m.cancelFetch != nil {
 		m.cancelFetch()
 		m.cancelFetch = nil
 	}
+
+	m.fetchID++
 
 	if m.pager.transition != nil {
 		m.cat.SetIndex(m.pager.transition.prevIndex)
@@ -295,12 +308,7 @@ func (m *Model) handleTab(targetIndex, targetCategory int, changeCategory func()
 
 	advance()
 
-	m.state = StateFetching
-	startSpinnerCmd := m.status.StartSpinner()
-
-	ctx, cancel := context.WithCancel(context.Background())
-	m.fetchCtx = ctx
-	m.cancelFetch = cancel
+	startSpinnerCmd := m.startFetch(0)
 
 	cursor := m.pager.cursor
 	changeCatCmd := func() tea.Msg {
@@ -363,19 +371,16 @@ func (m *Model) handleRefresh() tea.Cmd {
 	m.pager.cursor = min(m.pager.cursor, len(m.pager.items[currentCategory])-1)
 	m.updatePagination()
 
-	m.state = StateFetching
 	m.pager.cursor = 0
 	m.pager.Paginator.Page = currentPage
 
-	ctx, cancel := context.WithCancel(context.Background())
-	m.fetchCtx = ctx
-	m.cancelFetch = cancel
+	startSpinnerCmd := m.startFetch(0)
 
 	changeCatCmd := func() tea.Msg {
 		return message.Refresh{CurrentIndex: currentIndex, CurrentCategory: currentCategory}
 	}
 
-	return tea.Batch(m.status.StartSpinner(), changeCatCmd)
+	return tea.Batch(startSpinnerCmd, changeCatCmd)
 }
 
 func (m *Model) changeToNextCategory() {
