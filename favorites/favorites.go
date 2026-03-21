@@ -17,7 +17,7 @@ func New(path string) *Favorites {
 	f := &Favorites{path: path}
 
 	if file.Exists(path) {
-		favoritesJSON, err := os.ReadFile(path) //nolint:gosec // path from ~/.config/circumflex/
+		favoritesJSON, err := os.ReadFile(path)
 		if err != nil {
 			return f
 		}

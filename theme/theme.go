@@ -184,11 +184,11 @@ func WriteDefaultConfig() (string, error) {
 		return "", fmt.Errorf("config already exists at %s", path)
 	}
 
-	if mkdirErr := os.MkdirAll(dir, 0o750); mkdirErr != nil {
-		return "", mkdirErr
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return "", err
 	}
 
-	f, err := os.Create(filepath.Clean(path))
+	f, err := os.Create(path)
 	if err != nil {
 		return "", err
 	}

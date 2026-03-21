@@ -56,7 +56,7 @@ func WriteToFile(path string, content string) error {
 		return fmt.Errorf("could not create path to config dir: %w", mkdirErr)
 	}
 
-	file, createPathErr := os.Create(path) //nolint:gosec // path from ~/.config/circumflex/
+	file, createPathErr := os.Create(path)
 	if createPathErr != nil {
 		return fmt.Errorf("could not create config file: %w", createPathErr)
 	}
@@ -83,7 +83,7 @@ func WriteToDir(dirPath string, fileName string, content string) error {
 
 	filePath := path.Join(dirPath, fileName)
 
-	file, createPathErr := os.Create(filePath) //nolint:gosec // path from ~/.cache/circumflex/
+	file, createPathErr := os.Create(filePath)
 	if createPathErr != nil {
 		return fmt.Errorf("could not create config file: %w", createPathErr)
 	}
