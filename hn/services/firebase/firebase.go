@@ -7,6 +7,7 @@ import (
 	"clx/version"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"sync"
@@ -20,7 +21,12 @@ const (
 	defaultBaseURL = "https://hacker-news.firebaseio.com/v0"
 	maxConcurrency = 25
 	httpTimeout    = 10 * time.Second
+	retryCount     = 3
+	retryWaitTime  = 200 * time.Millisecond
+	retryMaxWait   = 2 * time.Second
 )
+
+var errItemNotFound = errors.New("item not found")
 
 type Service struct {
 	client  *resty.Client
@@ -32,6 +38,12 @@ func NewService() *Service {
 	client.SetTimeout(httpTimeout)
 	client.SetRedirectPolicy(resty.NoRedirectPolicy())
 	client.SetHeader("User-Agent", version.Name+"/"+version.Version)
+	client.SetRetryCount(retryCount)
+	client.SetRetryWaitTime(retryWaitTime)
+	client.SetRetryMaxWaitTime(retryMaxWait)
+	client.AddRetryCondition(func(resp *resty.Response, _ error) bool {
+		return resp != nil && resp.StatusCode() >= http.StatusInternalServerError
+	})
 
 	return &Service{client: client, baseURL: defaultBaseURL}
 }
@@ -68,7 +80,21 @@ func (s *Service) fetchStoriesList(ctx context.Context, category string) ([]int,
 func (s *Service) fetchItemsInParallel(ctx context.Context, ids []int) ([]*item.Story, error) {
 	items := make([]*item.Story, len(ids))
 
-	var wg sync.WaitGroup
+	ctx, cancel := context.WithCancelCause(ctx)
+	defer cancel(nil)
+
+	var (
+		wg       sync.WaitGroup
+		firstErr error
+		errOnce  sync.Once
+	)
+
+	fail := func(err error) {
+		errOnce.Do(func() {
+			firstErr = err
+			cancel(err)
+		})
+	}
 
 	for i, id := range ids {
 		wg.Add(1)
@@ -77,34 +103,25 @@ func (s *Service) fetchItemsInParallel(ctx context.Context, ids []int) ([]*item.
 			defer wg.Done()
 
 			hn, err := s.fetchHNItem(ctx, id)
-			if err == nil {
-				items[i] = mapStoryItem(hn)
+			if err != nil {
+				if !errors.Is(err, errItemNotFound) {
+					fail(err)
+				}
+
+				return
 			}
+
+			items[i] = mapStoryItem(hn)
 		}(i, id)
 	}
 
 	wg.Wait()
 
-	if ctx.Err() != nil {
-		return nil, ctx.Err()
+	if firstErr != nil {
+		return nil, firstErr
 	}
 
-	var failed int
-
-	result := make([]*item.Story, 0, len(items))
-	for _, it := range items {
-		if it != nil {
-			result = append(result, it)
-		} else {
-			failed++
-		}
-	}
-
-	if failed > 0 {
-		return result, fmt.Errorf("could not fetch %d/%d items", failed, len(ids))
-	}
-
-	return result, nil
+	return filterNil(items), nil
 }
 
 func (s *Service) FetchItem(ctx context.Context, id int) (*item.Story, error) {
@@ -124,24 +141,38 @@ func (s *Service) FetchComments(ctx context.Context, id int) (*item.Story, error
 
 	story := mapRootItem(hn)
 
-	sem := make(chan struct{}, maxConcurrency)
-	story.Comments = s.fetchCommentTree(ctx, sem, hn.Kids, 0)
+	ctx, cancel := context.WithCancelCause(ctx)
+	defer cancel(nil)
 
-	if ctx.Err() != nil {
-		return nil, ctx.Err()
+	sem := make(chan struct{}, maxConcurrency)
+
+	story.Comments, err = s.fetchCommentTree(ctx, cancel, sem, hn.Kids, 0)
+	if err != nil {
+		return nil, fmt.Errorf("fetching comments for story %d: %w", id, err)
 	}
 
 	return story, nil
 }
 
-func (s *Service) fetchCommentTree(ctx context.Context, sem chan struct{}, kidIDs []int, level int) []*item.Story {
+func (s *Service) fetchCommentTree(ctx context.Context, cancel context.CancelCauseFunc, sem chan struct{}, kidIDs []int, level int) ([]*item.Story, error) {
 	if len(kidIDs) == 0 {
-		return nil
+		return nil, nil
 	}
 
 	comments := make([]*item.Story, len(kidIDs))
 
-	var wg sync.WaitGroup
+	var (
+		wg       sync.WaitGroup
+		firstErr error
+		errOnce  sync.Once
+	)
+
+	fail := func(err error) {
+		errOnce.Do(func() {
+			firstErr = err
+			cancel(err)
+		})
+	}
 
 	for i, kidID := range kidIDs {
 		wg.Add(1)
@@ -163,6 +194,10 @@ func (s *Service) fetchCommentTree(ctx context.Context, sem chan struct{}, kidID
 			<-sem
 
 			if err != nil {
+				if !errors.Is(err, errItemNotFound) {
+					fail(err)
+				}
+
 				return
 			}
 
@@ -171,14 +206,26 @@ func (s *Service) fetchCommentTree(ctx context.Context, sem chan struct{}, kidID
 			}
 
 			c := mapCommentItem(hn, level)
-			c.Comments = s.fetchCommentTree(ctx, sem, hn.Kids, level+1)
+
+			children, err := s.fetchCommentTree(ctx, cancel, sem, hn.Kids, level+1)
+			if err != nil {
+				fail(err)
+
+				return
+			}
+
+			c.Comments = children
 			comments[i] = c
 		}(i, kidID)
 	}
 
 	wg.Wait()
 
-	return filterNil(comments)
+	if firstErr != nil {
+		return nil, firstErr
+	}
+
+	return filterNil(comments), nil
 }
 
 func (s *Service) fetchHNItem(ctx context.Context, id int) (*hnItem, error) {
@@ -199,7 +246,7 @@ func (s *Service) fetchHNItem(ctx context.Context, id int) (*hnItem, error) {
 	sanitized := ansi.Strip(string(resp.Body()))
 
 	if sanitized == "null" {
-		return nil, fmt.Errorf("item %d does not exist", id)
+		return nil, fmt.Errorf("item %d: %w", id, errItemNotFound)
 	}
 
 	var hn hnItem

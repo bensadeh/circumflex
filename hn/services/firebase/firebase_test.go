@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -196,7 +197,7 @@ func TestFetchHNItem_NullResponse(t *testing.T) {
 
 	_, err := s.fetchHNItem(context.Background(), 999)
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "does not exist")
+	assert.Contains(t, err.Error(), "item not found")
 }
 
 func TestFetchComments_WithMockServer(t *testing.T) {
@@ -361,6 +362,233 @@ func TestFetchItems_WithMockServer(t *testing.T) {
 	assert.Equal(t, "First", result[0].Title)
 	assert.Equal(t, "Second", result[1].Title)
 	assert.Equal(t, "Third", result[2].Title)
+}
+
+func TestFetchComments_ItemFetchError(t *testing.T) {
+	now := time.Now()
+
+	items := map[int]hnItem{
+		1: {
+			ID: 1, Title: "Story", By: "author", Type: "story",
+			Time: now.Unix(), Kids: []int{10, 20},
+		},
+		10: {
+			ID: 10, By: "user1", Time: now.Unix(),
+			Type: "comment", Text: "Good comment", Parent: 1,
+		},
+		// Item 20 is missing — the mock server will return 404.
+	}
+
+	server := newMockServer(items)
+	defer server.Close()
+
+	s := NewService()
+	s.baseURL = server.URL
+	s.client.SetRetryCount(0) // disable retries to speed up test
+
+	_, err := s.FetchComments(context.Background(), 1)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "20")
+}
+
+func TestFetchComments_NestedFetchError(t *testing.T) {
+	now := time.Now()
+
+	items := map[int]hnItem{
+		1: {
+			ID: 1, Title: "Story", By: "author", Type: "story",
+			Time: now.Unix(), Kids: []int{10},
+		},
+		10: {
+			ID: 10, By: "user1", Time: now.Unix(),
+			Type: "comment", Text: "Parent comment", Parent: 1, Kids: []int{11},
+		},
+		// Item 11 is missing — nested fetch will fail.
+	}
+
+	server := newMockServer(items)
+	defer server.Close()
+
+	s := NewService()
+	s.baseURL = server.URL
+	s.client.SetRetryCount(0)
+
+	_, err := s.FetchComments(context.Background(), 1)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "11")
+}
+
+func TestFetchComments_NullItemSkipped(t *testing.T) {
+	now := time.Now()
+
+	items := map[int]hnItem{
+		1: {
+			ID: 1, Title: "Story", By: "author", Type: "story",
+			Time: now.Unix(), Kids: []int{10, 20},
+		},
+		10: {
+			ID: 10, By: "user1", Time: now.Unix(),
+			Type: "comment", Text: "Good comment", Parent: 1,
+		},
+		// Item 20 exists in the map but the server returns "null" (deleted item).
+	}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		path := r.URL.Path
+		path = strings.TrimPrefix(path, "/item/")
+		path = strings.TrimSuffix(path, ".json")
+
+		id, err := strconv.Atoi(path)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+
+			return
+		}
+
+		if id == 20 {
+			_, _ = w.Write([]byte("null"))
+
+			return
+		}
+
+		it, ok := items[id]
+		if !ok {
+			w.WriteHeader(http.StatusNotFound)
+
+			return
+		}
+
+		_ = json.NewEncoder(w).Encode(it)
+	}))
+	defer server.Close()
+
+	s := NewService()
+	s.baseURL = server.URL
+
+	story, err := s.FetchComments(context.Background(), 1)
+	require.NoError(t, err)
+
+	require.Len(t, story.Comments, 1)
+	assert.Equal(t, "Good comment", story.Comments[0].Content)
+}
+
+func TestFetchItems_NullItemSkipped(t *testing.T) {
+	storyIDs := []int{1, 2, 3}
+	items := map[int]hnItem{
+		1: {ID: 1, Title: "First", Score: 10, By: "user1", Time: 1700000000},
+		2: {ID: 2, Title: "Second", Score: 20, By: "user2", Time: 1700000000},
+		3: {ID: 3, Title: "Third", Score: 30, By: "user3", Time: 1700000000},
+	}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		if strings.HasSuffix(r.URL.Path, "topstories.json") {
+			_ = json.NewEncoder(w).Encode(storyIDs)
+
+			return
+		}
+
+		path := r.URL.Path
+		path = strings.TrimPrefix(path, "/item/")
+		path = strings.TrimSuffix(path, ".json")
+
+		id, _ := strconv.Atoi(path)
+
+		// Item 2 returns "null" (deleted story).
+		if id == 2 {
+			_, _ = w.Write([]byte("null"))
+
+			return
+		}
+
+		it, ok := items[id]
+		if !ok {
+			w.WriteHeader(http.StatusNotFound)
+
+			return
+		}
+
+		_ = json.NewEncoder(w).Encode(it)
+	}))
+	defer server.Close()
+
+	s := NewService()
+	s.baseURL = server.URL
+
+	result, err := s.FetchItems(context.Background(), 3, "topstories")
+	require.NoError(t, err)
+
+	assert.Len(t, result, 2)
+	assert.Equal(t, "First", result[0].Title)
+	assert.Equal(t, "Third", result[1].Title)
+}
+
+func TestFetchComments_RetrySuccess(t *testing.T) {
+	now := time.Now()
+
+	items := map[int]hnItem{
+		1: {
+			ID: 1, Title: "Story", By: "author", Type: "story",
+			Time: now.Unix(), Kids: []int{10},
+		},
+		10: {
+			ID: 10, By: "user1", Time: now.Unix(),
+			Type: "comment", Text: "Recovered comment", Parent: 1,
+		},
+	}
+
+	var mu sync.Mutex
+
+	attempts := map[int]int{}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		path := r.URL.Path
+		path = strings.TrimPrefix(path, "/item/")
+		path = strings.TrimSuffix(path, ".json")
+
+		id, err := strconv.Atoi(path)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+
+			return
+		}
+
+		mu.Lock()
+		attempts[id]++
+		attempt := attempts[id]
+		mu.Unlock()
+
+		// Fail the first request for item 10, succeed on retry.
+		if id == 10 && attempt == 1 {
+			w.WriteHeader(http.StatusInternalServerError)
+
+			return
+		}
+
+		it, ok := items[id]
+		if !ok {
+			w.WriteHeader(http.StatusNotFound)
+
+			return
+		}
+
+		_ = json.NewEncoder(w).Encode(it)
+	}))
+	defer server.Close()
+
+	s := NewService()
+	s.baseURL = server.URL
+
+	story, err := s.FetchComments(context.Background(), 1)
+	require.NoError(t, err)
+
+	require.Len(t, story.Comments, 1)
+	assert.Equal(t, "Recovered comment", story.Comments[0].Content)
 }
 
 func newMockServer(items map[int]hnItem) *httptest.Server {
