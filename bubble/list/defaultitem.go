@@ -15,6 +15,8 @@ import (
 	"github.com/muesli/reflow/truncate"
 )
 
+const nerdFontSpacing = 2
+
 type DefaultItemStyles struct {
 	NormalTitle lipgloss.Style
 	NormalDesc  lipgloss.Style
@@ -126,8 +128,7 @@ func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *item.St
 	timeAgo := parseTime(item.Time, enableNerdFonts)
 
 	if enableNerdFonts {
-		spacingSize := 2
-		spacing := strings.Repeat(" ", spacingSize)
+		spacing := strings.Repeat(" ", nerdFontSpacing)
 		desc = score + spacing + comments + spacing + timeAgo + spacing + author
 	} else {
 		desc = score + author + timeAgo + comments

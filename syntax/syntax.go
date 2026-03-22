@@ -13,6 +13,7 @@ import (
 
 const (
 	newParagraph = "\n\n"
+	ansiBlack    = 16 // ANSI 256-color black
 
 	Unselected = iota
 	HeadlineInCommentSection
@@ -68,13 +69,13 @@ func getYCBarNerdFonts(text string, highlightType int, enableNerdFonts bool) str
 
 	switch highlightType {
 	case Selected:
-		return label(text, c, lipgloss.ANSIColor(16), highlightType, enableNerdFonts)
+		return label(text, c, lipgloss.ANSIColor(ansiBlack), highlightType, enableNerdFonts)
 
 	case MarkAsRead:
-		return label(text, lipgloss.ANSIColor(16), c, highlightType, enableNerdFonts)
+		return label(text, lipgloss.ANSIColor(ansiBlack), c, highlightType, enableNerdFonts)
 
 	default:
-		return label(text, lipgloss.ANSIColor(16), c, highlightType, enableNerdFonts)
+		return label(text, lipgloss.ANSIColor(ansiBlack), c, highlightType, enableNerdFonts)
 	}
 }
 

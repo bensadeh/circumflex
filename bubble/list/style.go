@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	bullet   = "•"
-	ellipsis = "…"
+	bullet               = "•"
+	ellipsis             = "…"
+	spinnerFrameDuration = 900 * time.Millisecond
 )
 
 // Styles contains style definitions for this list component. By default, these
@@ -83,6 +84,6 @@ func getSpinner() spinner.Spinner {
 			normal.Render("fetching") + color.Foreground(magenta).Render(".") + normal.Render("  "),
 			normal.Render("fetching") + color.Foreground(magenta).Render(".") + color.Foreground(yellow).Render(".") + normal.Render(" "),
 		},
-		FPS: 900 * time.Millisecond,
+		FPS: spinnerFrameDuration,
 	}
 }

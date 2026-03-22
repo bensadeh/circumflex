@@ -2,6 +2,8 @@ package settings
 
 import "clx/theme"
 
+const defaultCommentWidth = 70
+
 type Config struct {
 	CommentWidth                int
 	DisableHeadlineHighlighting bool
@@ -21,7 +23,7 @@ type Config struct {
 
 func Default() *Config {
 	return &Config{
-		CommentWidth:      70,
+		CommentWidth:      defaultCommentWidth,
 		IndentationSymbol: " ▎",
 	}
 }

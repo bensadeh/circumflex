@@ -112,7 +112,7 @@ func (m *Model) statusAndPaginationView() string {
 	left := m.statusLeftStyle.Render("")
 
 	center := m.statusMidStyle.
-		Width(m.width - 5 - 5).
+		Width(m.width - statusBarEdgeWidth - statusBarEdgeWidth).
 		Render(centerContent)
 
 	right := m.statusEndStyle.Render(rightContent)

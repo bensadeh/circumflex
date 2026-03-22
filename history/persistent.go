@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+const readCooldown = 5 * time.Minute
+
 type Persistent struct {
 	mu             sync.RWMutex `json:"-"`
 	filePath       string       `json:"-"`
@@ -51,7 +53,7 @@ func (his *Persistent) MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int)
 
 	if existing, ok := his.VisitedStories[id]; ok {
 		elapsed := time.Since(time.Unix(existing.LastVisited, 0))
-		if elapsed < 5*time.Minute {
+		if elapsed < readCooldown {
 			return nil
 		}
 	}

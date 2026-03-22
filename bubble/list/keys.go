@@ -13,6 +13,8 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
+const readerModeTimeout = 15 * time.Second
+
 func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	var cmds []tea.Cmd
 
@@ -138,7 +140,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 				prevIndex: m.cat.CurrentIndex(),
 				oldItems:  m.pager.items[currentCategory],
 			}
-			startSpinnerCmd := m.startFetch(15 * time.Second)
+			startSpinnerCmd := m.startFetch(readerModeTimeout)
 
 			selected := m.SelectedItem()
 
@@ -177,7 +179,7 @@ func (m *Model) handleConfirmAddFavorites() tea.Cmd {
 		return message.AddToFavorites{Item: selectedItem}
 	}
 
-	return tea.Batch(addToFavorites, m.status.NewStatusMessageWithDuration("Item added", time.Second*2))
+	return tea.Batch(addToFavorites, m.status.NewStatusMessageWithDuration("Item added", statusMessageShort))
 }
 
 func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
@@ -186,14 +188,14 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 	removedItem := m.favorites.Items()[m.Index()]
 
 	if err := m.favorites.Remove(m.Index()); err != nil {
-		return m.status.NewStatusMessageWithDuration("Could not remove favorite", time.Second*3)
+		return m.status.NewStatusMessageWithDuration("Could not remove favorite", statusMessageLong)
 	}
 
 	if err := m.favorites.Write(); err != nil {
 		m.favorites.Add(removedItem)
 		m.syncFavorites()
 
-		return m.status.NewStatusMessageWithDuration("Could not save favorites to disk", time.Second*3)
+		return m.status.NewStatusMessageWithDuration("Could not save favorites to disk", statusMessageLong)
 	}
 
 	m.syncFavorites()
@@ -214,7 +216,7 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 			return message.FetchAndChangeToCategory{Index: catIndex, Category: catValue, Cursor: 0}
 		}
 
-		return tea.Batch(changeCatCmd, m.status.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2))
+		return tea.Batch(changeCatCmd, m.status.NewStatusMessageWithDuration(itemRemovedMessage, statusMessageShort))
 	}
 
 	if isOnLastItem {
@@ -223,7 +225,7 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 
 	m.updatePagination()
 
-	return m.status.NewStatusMessageWithDuration(itemRemovedMessage, time.Second*2)
+	return m.status.NewStatusMessageWithDuration(itemRemovedMessage, statusMessageShort)
 }
 
 func (m *Model) handleCancelPrompt() tea.Cmd {
@@ -272,7 +274,7 @@ func (m *Model) handleCancelFetch() tea.Cmd {
 	m.updatePagination()
 
 	return m.status.NewStatusMessageWithDuration(
-		lipgloss.NewStyle().Faint(true).Render("Cancelled"), time.Second*2)
+		lipgloss.NewStyle().Faint(true).Render("Cancelled"), statusMessageShort)
 }
 
 func (m *Model) handleTabForward() tea.Cmd {
@@ -406,19 +408,19 @@ func (m *Model) handleToggleRead() tea.Cmd {
 
 	if m.history.Contains(item.ID) {
 		if err := m.history.MarkAsUnreadAndWriteToDisk(item.ID); err != nil {
-			return m.status.NewStatusMessageWithDuration("Could not mark as unread", time.Second*2)
+			return m.status.NewStatusMessageWithDuration("Could not mark as unread", statusMessageShort)
 		}
 
 		return m.status.NewStatusMessageWithDuration(
-			"Marked as "+lipgloss.NewStyle().Foreground(lipgloss.Yellow).Render("unread"), time.Second*2)
+			"Marked as "+lipgloss.NewStyle().Foreground(lipgloss.Yellow).Render("unread"), statusMessageShort)
 	}
 
 	if err := m.history.MarkAsReadAndWriteToDisk(item.ID, item.CommentsCount); err != nil {
-		return m.status.NewStatusMessageWithDuration("Could not mark as read", time.Second*2)
+		return m.status.NewStatusMessageWithDuration("Could not mark as read", statusMessageShort)
 	}
 
 	return m.status.NewStatusMessageWithDuration(
-		"Marked as "+lipgloss.NewStyle().Foreground(lipgloss.Magenta).Render("read"), time.Second*2)
+		"Marked as "+lipgloss.NewStyle().Foreground(lipgloss.Magenta).Render("read"), statusMessageShort)
 }
 
 func getAddItemConfirmationMessage() string {

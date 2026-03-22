@@ -19,6 +19,7 @@ import (
 const (
 	defaultBaseURL = "https://hacker-news.firebaseio.com/v0"
 	maxConcurrency = 25
+	httpTimeout    = 10 * time.Second
 )
 
 type Service struct {
@@ -28,7 +29,7 @@ type Service struct {
 
 func NewService() *Service {
 	client := resty.New()
-	client.SetTimeout(10 * time.Second)
+	client.SetTimeout(httpTimeout)
 	client.SetRedirectPolicy(resty.NoRedirectPolicy())
 	client.SetHeader("User-Agent", version.Name+"/"+version.Version)
 

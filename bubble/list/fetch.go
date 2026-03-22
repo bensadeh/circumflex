@@ -18,6 +18,8 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
+const fetchPageMultiplier = 3
+
 var categoryEndpoints = map[int]string{
 	categories.Top:    "topstories",
 	categories.Newest: "newstories",
@@ -45,20 +47,8 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 
 func (m *Model) getNumberOfItemsToFetch(cat int) int {
 	switch cat {
-	case categories.Top:
-		return m.pager.Paginator.PerPage * 3
-
-	case categories.Newest:
-		return m.pager.Paginator.PerPage * 3
-
-	case categories.Best:
-		return m.pager.Paginator.PerPage * 3
-
-	case categories.Ask:
-		return m.pager.Paginator.PerPage
-
-	case categories.Show:
-		return m.pager.Paginator.PerPage
+	case categories.Top, categories.Newest, categories.Best:
+		return m.pager.Paginator.PerPage * fetchPageMultiplier
 
 	default:
 		return m.pager.Paginator.PerPage

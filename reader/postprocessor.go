@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	newLine = "\n"
+	newLine            = "\n"
+	defaultScreenWidth = 80
 )
 
 func processArticle(text string, url string) string {
@@ -32,7 +33,7 @@ func indent(commentSection string) string {
 
 	screenWidth, _, err := term.GetSize(int(os.Stdout.Fd()))
 	if err != nil {
-		screenWidth = 80
+		screenWidth = defaultScreenWidth
 	}
 
 	indentedCommentSection, _ := t.WrapWithPad(commentSection, screenWidth, indentBlock)

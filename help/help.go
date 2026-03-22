@@ -11,8 +11,10 @@ const (
 	newPar = "\n\n"
 )
 
+const helpTextWidth = 70
+
 func HelpScreen(enableNerdFonts bool, mainMenuBindings []key.Binding) string {
-	textWidth := 70
+	textWidth := helpTextWidth
 
 	var sb strings.Builder
 

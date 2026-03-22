@@ -21,7 +21,15 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-const numberOfCategories = 6
+const (
+	numberOfCategories    = 6
+	statusBarEdgeWidth    = 5
+	headerHeight          = 2
+	footerHeight          = 2
+	headerAndFooterHeight = headerHeight + footerHeight
+	statusMessageShort    = 2 * time.Second
+	statusMessageLong     = 3 * time.Second
+)
 
 // ItemDelegate encapsulates the general functionality for all list items. The
 // benefit to separating this logic from the item itself is that you can change
@@ -130,9 +138,9 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 		contentStyle:    lipgloss.NewStyle(),
 		underlineStyle:  lipgloss.NewStyle().Underline(true),
 		faintStyle:      lipgloss.NewStyle().Faint(true),
-		statusLeftStyle: lipgloss.NewStyle().Inline(true).Width(5).MaxWidth(5),
+		statusLeftStyle: lipgloss.NewStyle().Inline(true).Width(statusBarEdgeWidth).MaxWidth(statusBarEdgeWidth),
 		statusMidStyle:  lipgloss.NewStyle().Inline(true).Align(lipgloss.Center),
-		statusEndStyle:  lipgloss.NewStyle().Inline(true).Width(5).Align(lipgloss.Center),
+		statusEndStyle:  lipgloss.NewStyle().Inline(true).Width(statusBarEdgeWidth).Align(lipgloss.Center),
 	}
 
 	m.updatePagination()
@@ -166,7 +174,7 @@ func (m *Model) handleCategoryFetchingFinished(msg message.CategoryFetchingFinis
 		m.status.StopSpinner()
 		m.updatePagination()
 
-		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), time.Second*3)
+		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
 	}
 
 	if m.pager.transition != nil && m.pager.transition.refresh {
@@ -205,12 +213,8 @@ func (m *Model) handleWindowResize(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 	h, v := lipgloss.NewStyle().GetFrameSize()
 	m.setSize(msg.Width-h, msg.Height-v)
 
-	headerHeight := 2
-	footerHeight := 2
-	verticalMarginHeight := headerHeight + footerHeight
-
 	m.viewport.SetWidth(msg.Width)
-	m.viewport.SetHeight(msg.Height - verticalMarginHeight)
+	m.viewport.SetHeight(msg.Height - headerAndFooterHeight)
 
 	m.width = msg.Width
 	m.height = msg.Height
@@ -242,9 +246,7 @@ func (m *Model) handleStartup(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 	cmds = append(cmds, fetchCmd)
 	cmds = append(cmds, scheduleTimeRefresh())
 
-	heightOfHeaderAndStatusLine := 4
-
-	m.viewport = viewport.New(viewport.WithWidth(msg.Width), viewport.WithHeight(msg.Height-heightOfHeaderAndStatusLine))
+	m.viewport = viewport.New(viewport.WithWidth(msg.Width), viewport.WithHeight(msg.Height-headerAndFooterHeight))
 
 	content := lipgloss.NewStyle().
 		Width(msg.Width).
@@ -293,7 +295,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		if err := m.favorites.Write(); err != nil {
 			_ = m.favorites.Remove(len(m.favorites.Items()) - 1)
 			m.syncFavorites()
-			cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not save favorite to disk", time.Second*3))
+			cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not save favorite to disk", statusMessageLong))
 
 			break
 		}
@@ -308,7 +310,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, m.handleEnteringCommentSection(msg)
 
 	case message.BrowserOpenFailed:
-		cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not open browser", time.Second*3))
+		cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not open browser", statusMessageLong))
 
 	case message.OpeningLink:
 		_ = m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
@@ -334,7 +336,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		if msg.Err != nil {
 			m.state = StateBrowsing
 
-			return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), time.Second*3)
+			return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
 		}
 
 		m.state = StateEditorOpen
@@ -356,7 +358,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		if msg.Err != nil {
 			m.state = StateBrowsing
 
-			return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), time.Second*3)
+			return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
 		}
 
 		m.state = StateEditorOpen

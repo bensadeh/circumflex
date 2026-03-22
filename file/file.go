@@ -10,7 +10,8 @@ const (
 	ConfigFileNameFull    = "config.env"
 	FavoritesFileNameFull = "favorites.json"
 
-	clxDir = "circumflex"
+	clxDir         = "circumflex"
+	dirPermissions = 0o700
 )
 
 func homeDir() string {
@@ -51,7 +52,7 @@ func ConfigFileExists() bool {
 }
 
 func WriteToFile(path string, content string) error {
-	mkdirErr := os.MkdirAll(PathToConfigDirectory(), 0o700)
+	mkdirErr := os.MkdirAll(PathToConfigDirectory(), dirPermissions)
 	if mkdirErr != nil {
 		return fmt.Errorf("could not create path to config dir: %w", mkdirErr)
 	}
@@ -76,7 +77,7 @@ func WriteToFile(path string, content string) error {
 }
 
 func WriteToDir(dirPath string, fileName string, content string) error {
-	mkdirErr := os.MkdirAll(dirPath, 0o700)
+	mkdirErr := os.MkdirAll(dirPath, dirPermissions)
 	if mkdirErr != nil {
 		return fmt.Errorf("could not create path to config dir: %w", mkdirErr)
 	}
