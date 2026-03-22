@@ -17,12 +17,14 @@ func (Mock) Contains(id int) bool {
 	return slices.Contains(visitedStories, id)
 }
 
-func (Mock) LastVisited(_ int) int64 {
+func (Mock) CommentsLastVisited(_ int) int64 {
 	return time.Now().Unix()
 }
 
 func (Mock) ClearAndWriteToDisk() error { return nil }
 
 func (Mock) MarkAsReadAndWriteToDisk(_ int, _ int) error { return nil }
+
+func (Mock) MarkArticleAsReadAndWriteToDisk(_ int) error { return nil }
 
 func (Mock) MarkAsUnreadAndWriteToDisk(_ int) error { return nil }

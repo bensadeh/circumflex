@@ -15,6 +15,7 @@ type Persistent struct {
 
 type StoryInfo struct {
 	LastVisited         int64
+	CommentsLastVisited int64
 	CommentsOnLastVisit int
 }
 
@@ -27,11 +28,15 @@ func (his *Persistent) Contains(id int) bool {
 	return contains
 }
 
-func (his *Persistent) LastVisited(id int) int64 {
+func (his *Persistent) CommentsLastVisited(id int) int64 {
 	his.mu.RLock()
 	defer his.mu.RUnlock()
 
 	if item, contains := his.VisitedStories[id]; contains {
+		if item.CommentsLastVisited > 0 {
+			return item.CommentsLastVisited
+		}
+
 		return item.LastVisited
 	}
 
@@ -52,15 +57,44 @@ func (his *Persistent) MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int)
 	defer his.mu.Unlock()
 
 	if existing, ok := his.VisitedStories[id]; ok {
-		elapsed := time.Since(time.Unix(existing.LastVisited, 0))
+		elapsed := time.Since(time.Unix(existing.CommentsLastVisited, 0))
 		if elapsed < readCooldown {
 			return nil
 		}
 	}
 
+	now := time.Now().Unix()
+
 	his.VisitedStories[id] = StoryInfo{
-		LastVisited:         time.Now().Unix(),
+		LastVisited:         now,
+		CommentsLastVisited: now,
 		CommentsOnLastVisit: commentsOnLastVisit,
+	}
+
+	return writeToDisk(his, his.filePath)
+}
+
+func (his *Persistent) MarkArticleAsReadAndWriteToDisk(id int) error {
+	his.mu.Lock()
+	defer his.mu.Unlock()
+
+	now := time.Now().Unix()
+
+	if existing, ok := his.VisitedStories[id]; ok {
+		elapsed := time.Since(time.Unix(existing.LastVisited, 0))
+		if elapsed < readCooldown {
+			return nil
+		}
+
+		his.VisitedStories[id] = StoryInfo{
+			LastVisited:         now,
+			CommentsLastVisited: existing.CommentsLastVisited,
+			CommentsOnLastVisit: existing.CommentsOnLastVisit,
+		}
+	} else {
+		his.VisitedStories[id] = StoryInfo{
+			LastVisited: now,
+		}
 	}
 
 	return writeToDisk(his, his.filePath)

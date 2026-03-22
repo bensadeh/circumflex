@@ -313,10 +313,8 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not open browser", statusMessageLong))
 
 	case message.OpeningLink:
-		_ = m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
 	case message.OpeningCommentsInBrowser:
-		_ = m.history.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
 	case message.EnteringReaderMode:
 		return m, m.handleEnteringReaderMode(msg)

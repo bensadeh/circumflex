@@ -128,7 +128,7 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 	fetchID := m.fetchID
 
 	return func() tea.Msg {
-		lastVisited := hist.LastVisited(msg.Id)
+		lastVisited := hist.CommentsLastVisited(msg.Id)
 		_ = hist.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
 		story, err := service.FetchComments(ctx, msg.Id)
@@ -163,7 +163,7 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 			return message.ArticleReady{Err: err, FetchID: fetchID}
 		}
 
-		_ = hist.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
+		_ = hist.MarkArticleAsReadAndWriteToDisk(msg.Id)
 
 		return message.ArticleReady{Content: article, FetchID: fetchID}
 	}
