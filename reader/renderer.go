@@ -10,7 +10,8 @@ import (
 
 	"github.com/muesli/reflow/wordwrap"
 
-	"github.com/charmbracelet/glamour"
+	"charm.land/glamour/v2"
+	"charm.land/glamour/v2/styles"
 
 	termtext "github.com/MichaelMure/go-term-text"
 
@@ -221,7 +222,7 @@ func renderTable(text string, lineWidth int) string {
 	text = unescapeCharacters(text)
 	text = removeImageReference(text)
 
-	r, err := glamour.NewTermRenderer(glamour.WithAutoStyle(), glamour.WithWordWrap(lineWidth))
+	r, err := glamour.NewTermRenderer(glamour.WithStyles(styles.ASCIIStyleConfig), glamour.WithWordWrap(lineWidth))
 	if err != nil {
 		return text
 	}
