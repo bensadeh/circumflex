@@ -183,7 +183,7 @@ func (m *Model) handleConfirmAddFavorites() tea.Cmd {
 func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 	m.state = StateBrowsing
 
-	removedItem := m.favorites.GetItems()[m.Index()]
+	removedItem := m.favorites.Items()[m.Index()]
 
 	if err := m.favorites.Remove(m.Index()); err != nil {
 		return m.status.NewStatusMessageWithDuration("Could not remove favorite", time.Second*3)

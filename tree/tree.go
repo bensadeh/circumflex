@@ -53,7 +53,7 @@ func getFirstCommentID(comments []*item.Story) int {
 func getHeader(c *item.Story, config *settings.Config, lastVisited int64) string {
 	newComments := getNewCommentsCount(c, lastVisited)
 
-	return meta.GetCommentSectionMetaBlock(c, config, newComments) + newParagraph
+	return meta.CommentSectionMetaBlock(c, config, newComments) + newParagraph
 }
 
 func printReplies(c *item.Story, config *settings.Config, screenWidth int, originalPoster string,

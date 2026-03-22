@@ -13,7 +13,7 @@ import (
 	text "github.com/MichaelMure/go-term-text"
 )
 
-func GetText(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Binding) string {
+func Text(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Binding) string {
 	keys := new(keymaps.List)
 	keys.Init()
 

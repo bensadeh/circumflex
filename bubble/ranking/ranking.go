@@ -12,7 +12,7 @@ const (
 	indentationFromRight = " "
 )
 
-func GetRankings(useRelativeNumbering bool, itemsVisible, itemsTotal, currentPosition, currentPage, totalPages int, readStatuses []bool, faintAll bool) string {
+func Rankings(useRelativeNumbering bool, itemsVisible, itemsTotal, currentPosition, currentPage, totalPages int, readStatuses []bool, faintAll bool) string {
 	if itemsTotal == 0 {
 		return ""
 	}

@@ -8,7 +8,7 @@ func (NonPersistent) Contains(_ int) bool {
 	return false
 }
 
-func (NonPersistent) GetLastVisited(_ int) int64 {
+func (NonPersistent) LastVisited(_ int) int64 {
 	return time.Now().Unix()
 }
 

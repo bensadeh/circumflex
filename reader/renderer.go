@@ -41,7 +41,7 @@ var (
 )
 
 func createHeader(title string, domain string, lineWidth int) string {
-	return meta.GetReaderModeMetaBlock(title, domain, lineWidth)
+	return meta.ReaderModeMetaBlock(title, domain, lineWidth)
 }
 
 func convertToTerminalFormat(blocks []*block, lineWidth int, indentBlock string) string {

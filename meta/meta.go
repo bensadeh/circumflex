@@ -21,7 +21,7 @@ const (
 	newParagraph = "\n\n"
 )
 
-func GetReaderModeMetaBlock(title string, url string, lineWidth int) string {
+func ReaderModeMetaBlock(title string, url string, lineWidth int) string {
 	s := lipgloss.NewStyle().
 		BorderStyle(lipgloss.RoundedBorder()).
 		PaddingLeft(1).
@@ -38,7 +38,7 @@ func GetReaderModeMetaBlock(title string, url string, lineWidth int) string {
 	return formattedTitle + newParagraph + s.Render(formattedURL+info) + newParagraph
 }
 
-func GetCommentSectionMetaBlock(c *item.Story, config *settings.Config, newComments int) string {
+func CommentSectionMetaBlock(c *item.Story, config *settings.Config, newComments int) string {
 	s := lipgloss.NewStyle().
 		BorderStyle(lipgloss.RoundedBorder()).
 		PaddingLeft(1).

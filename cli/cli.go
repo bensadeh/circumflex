@@ -18,7 +18,7 @@ func RunLess(ctx context.Context, content string, config *settings.Config) error
 	}
 	defer lesskey.Remove()
 
-	config.LesskeyPath = lesskey.GetPath()
+	config.LesskeyPath = lesskey.Path()
 	command := Less(ctx, content, config)
 
 	return command.Run()

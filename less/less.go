@@ -35,7 +35,7 @@ func NewLesskey() (*Lesskey, error) {
 	return key, nil
 }
 
-func (key *Lesskey) GetPath() string {
+func (key *Lesskey) Path() string {
 	return key.tempLesskeyFile.Name()
 }
 

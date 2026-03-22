@@ -8,17 +8,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFavorites_AddAndGetItems(t *testing.T) {
+func TestFavorites_AddAndItems(t *testing.T) {
 	f := &Favorites{}
 	assert.False(t, f.HasItems())
-	assert.Empty(t, f.GetItems())
+	assert.Empty(t, f.Items())
 
 	f.Add(&item.Story{ID: 1, Title: "First"})
 	assert.True(t, f.HasItems())
-	assert.Len(t, f.GetItems(), 1)
+	assert.Len(t, f.Items(), 1)
 
 	f.Add(&item.Story{ID: 2, Title: "Second"})
-	assert.Len(t, f.GetItems(), 2)
+	assert.Len(t, f.Items(), 2)
 }
 
 func TestFavorites_Remove(t *testing.T) {
@@ -29,9 +29,9 @@ func TestFavorites_Remove(t *testing.T) {
 
 	err := f.Remove(1)
 	require.NoError(t, err)
-	assert.Len(t, f.GetItems(), 2)
-	assert.Equal(t, 1, f.GetItems()[0].ID)
-	assert.Equal(t, 3, f.GetItems()[1].ID)
+	assert.Len(t, f.Items(), 2)
+	assert.Equal(t, 1, f.Items()[0].ID)
+	assert.Equal(t, 3, f.Items()[1].ID)
 }
 
 func TestFavorites_Remove_First(t *testing.T) {
@@ -41,8 +41,8 @@ func TestFavorites_Remove_First(t *testing.T) {
 
 	err := f.Remove(0)
 	require.NoError(t, err)
-	assert.Len(t, f.GetItems(), 1)
-	assert.Equal(t, 2, f.GetItems()[0].ID)
+	assert.Len(t, f.Items(), 1)
+	assert.Equal(t, 2, f.Items()[0].ID)
 }
 
 func TestFavorites_Remove_Last(t *testing.T) {
@@ -52,8 +52,8 @@ func TestFavorites_Remove_Last(t *testing.T) {
 
 	err := f.Remove(1)
 	require.NoError(t, err)
-	assert.Len(t, f.GetItems(), 1)
-	assert.Equal(t, 1, f.GetItems()[0].ID)
+	assert.Len(t, f.Items(), 1)
+	assert.Equal(t, 1, f.Items()[0].ID)
 }
 
 func TestFavorites_Remove_OutOfBounds(t *testing.T) {
@@ -109,9 +109,9 @@ func TestFavorites_UpdateStoryAndWriteToDisk(t *testing.T) {
 	newItem := &item.Story{ID: 1, Title: "New Title", Points: 100, CommentsCount: 50}
 	_ = f.UpdateStoryAndWriteToDisk(newItem)
 
-	assert.Equal(t, "New Title", f.GetItems()[0].Title)
-	assert.Equal(t, 100, f.GetItems()[0].Points)
-	assert.Equal(t, 50, f.GetItems()[0].CommentsCount)
+	assert.Equal(t, "New Title", f.Items()[0].Title)
+	assert.Equal(t, 100, f.Items()[0].Points)
+	assert.Equal(t, 50, f.Items()[0].CommentsCount)
 }
 
 func TestFavorites_UpdateStoryAndWriteToDisk_NoMatch(t *testing.T) {
@@ -123,5 +123,5 @@ func TestFavorites_UpdateStoryAndWriteToDisk_NoMatch(t *testing.T) {
 	newItem := &item.Story{ID: 99, Title: "Different"}
 	_ = f.UpdateStoryAndWriteToDisk(newItem)
 
-	assert.Equal(t, "Original", f.GetItems()[0].Title)
+	assert.Equal(t, "Original", f.Items()[0].Title)
 }

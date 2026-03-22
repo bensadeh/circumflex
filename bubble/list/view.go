@@ -14,7 +14,7 @@ import (
 func (m *Model) View() string {
 	if m.state == StateHelpScreen {
 		return fmt.Sprintf("%s\n%s\n%s",
-			header.GetHeader(
+			header.Header(
 				m.cat.ActiveCategories(),
 				m.cat.CurrentIndex(),
 				m.width),
@@ -53,7 +53,7 @@ func (m *Model) View() string {
 		readStatuses[i] = m.history.Contains(it.ID)
 	}
 
-	rankings := ranking.GetRankings(
+	rankings := ranking.Rankings(
 		false,
 		m.pager.Paginator.PerPage,
 		totalItems,
@@ -75,7 +75,7 @@ func (m *Model) View() string {
 }
 
 func (m *Model) titleView() string {
-	return header.GetHeader(
+	return header.Header(
 		m.cat.ActiveCategories(),
 		m.cat.CurrentIndex(),
 		m.width)

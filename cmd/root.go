@@ -39,7 +39,7 @@ func Root() *cobra.Command {
 		Version: version.Version,
 		Run: func(cmd *cobra.Command, args []string) {
 			config := getConfig()
-			config.IndentationSymbol = indent.GetIndentSymbol(hideIndentSymbol)
+			config.IndentationSymbol = indent.IndentSymbol(hideIndentSymbol)
 
 			cat, err := categories.New(selectedCategories)
 			if err != nil {
@@ -59,7 +59,7 @@ func Root() *cobra.Command {
 				os.Exit(1)
 			}
 
-			config.LesskeyPath = lessKey.GetPath()
+			config.LesskeyPath = lessKey.Path()
 			defer lessKey.Remove()
 
 			bubble.Run(config, cat)

@@ -29,16 +29,16 @@ func TestPersistent_MarkAndContains(t *testing.T) {
 	assert.True(t, h.Contains(42))
 }
 
-func TestPersistent_GetLastVisited(t *testing.T) {
+func TestPersistent_LastVisited(t *testing.T) {
 	h := newTestPersistent(t)
 
 	// Unvisited story returns current time (approximately)
-	ts := h.GetLastVisited(1)
+	ts := h.LastVisited(1)
 	assert.Positive(t, ts)
 
 	// After marking, returns the marked time
 	_ = h.MarkAsReadAndWriteToDisk(1, 5)
-	ts2 := h.GetLastVisited(1)
+	ts2 := h.LastVisited(1)
 	assert.Positive(t, ts2)
 }
 
@@ -80,7 +80,7 @@ func TestNonPersistent_NoOps(t *testing.T) {
 	h := NonPersistent{}
 
 	assert.False(t, h.Contains(1))
-	assert.Positive(t, h.GetLastVisited(1))
+	assert.Positive(t, h.LastVisited(1))
 	assert.NoError(t, h.ClearAndWriteToDisk())
 	assert.NoError(t, h.MarkAsReadAndWriteToDisk(1, 5))
 }
@@ -92,13 +92,13 @@ func TestPersistent_MarkAsRead_SkipsWithinThreshold(t *testing.T) {
 	err := h.MarkAsReadAndWriteToDisk(1, 5)
 	require.NoError(t, err)
 
-	firstVisit := h.GetLastVisited(1)
+	firstVisit := h.LastVisited(1)
 
 	// Marking again within 5 minutes should not update the timestamp
 	err = h.MarkAsReadAndWriteToDisk(1, 10)
 	require.NoError(t, err)
 
-	assert.Equal(t, firstVisit, h.GetLastVisited(1))
+	assert.Equal(t, firstVisit, h.LastVisited(1))
 	assert.Equal(t, 5, h.VisitedStories[1].CommentsOnLastVisit)
 }
 

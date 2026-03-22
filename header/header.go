@@ -9,7 +9,7 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-func GetHeader(allCategories []int, selectedSubHeader int, width int) string {
+func Header(allCategories []int, selectedSubHeader int, width int) string {
 	c := lipgloss.NewStyle().Foreground(style.HeaderC())
 	l := lipgloss.NewStyle().Foreground(style.HeaderL())
 	x := lipgloss.NewStyle().Foreground(style.HeaderX())

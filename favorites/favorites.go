@@ -44,7 +44,7 @@ func unmarshal(data []byte) ([]*item.Story, error) {
 	return items, nil
 }
 
-func (f *Favorites) GetItems() []*item.Story {
+func (f *Favorites) Items() []*item.Story {
 	return f.items
 }
 

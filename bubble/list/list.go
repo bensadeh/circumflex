@@ -141,7 +141,7 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 }
 
 func (m *Model) syncFavorites() {
-	m.pager.items[categories.Favorites] = m.favorites.GetItems()
+	m.pager.items[categories.Favorites] = m.favorites.Items()
 	m.cat.SetFavorites(m.favorites.HasItems())
 }
 
@@ -218,7 +218,7 @@ func (m *Model) handleWindowResize(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 	content := lipgloss.NewStyle().
 		Width(msg.Width).
 		AlignHorizontal(lipgloss.Center).
-		SetString(help.GetHelpScreen(m.config.EnableNerdFonts, m.keymap.MainMenuBindings()))
+		SetString(help.HelpScreen(m.config.EnableNerdFonts, m.keymap.MainMenuBindings()))
 
 	m.viewport.SetContent(content.String())
 
@@ -249,7 +249,7 @@ func (m *Model) handleStartup(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 	content := lipgloss.NewStyle().
 		Width(msg.Width).
 		AlignHorizontal(lipgloss.Center).
-		SetString(help.GetHelpScreen(m.config.EnableNerdFonts, m.keymap.MainMenuBindings()))
+		SetString(help.HelpScreen(m.config.EnableNerdFonts, m.keymap.MainMenuBindings()))
 
 	m.viewport.SetContent(content.String())
 
@@ -291,7 +291,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		m.favorites.Add(msg.Item)
 
 		if err := m.favorites.Write(); err != nil {
-			_ = m.favorites.Remove(len(m.favorites.GetItems()) - 1)
+			_ = m.favorites.Remove(len(m.favorites.Items()) - 1)
 			m.syncFavorites()
 			cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not save favorite to disk", time.Second*3))
 

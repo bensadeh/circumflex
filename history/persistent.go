@@ -25,7 +25,7 @@ func (his *Persistent) Contains(id int) bool {
 	return contains
 }
 
-func (his *Persistent) GetLastVisited(id int) int64 {
+func (his *Persistent) LastVisited(id int) int64 {
 	his.mu.RLock()
 	defer his.mu.RUnlock()
 

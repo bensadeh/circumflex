@@ -9,7 +9,7 @@ import (
 
 type History interface {
 	Contains(id int) bool
-	GetLastVisited(id int) int64
+	LastVisited(id int) int64
 	ClearAndWriteToDisk() error
 	MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int) error
 	MarkAsUnreadAndWriteToDisk(id int) error

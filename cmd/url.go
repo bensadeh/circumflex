@@ -21,7 +21,7 @@ func urlCmd() *cobra.Command {
 			config := getConfig()
 			url := args[0]
 
-			article, err := reader.GetArticle(cmd.Context(), url, "Reader Mode", config.CommentWidth, config.IndentationSymbol)
+			article, err := reader.Article(cmd.Context(), url, "Reader Mode", config.CommentWidth, config.IndentationSymbol)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "Could not read article")
 				os.Exit(1)
@@ -34,7 +34,7 @@ func urlCmd() *cobra.Command {
 			}
 			defer lesskey.Remove()
 
-			config.LesskeyPath = lesskey.GetPath()
+			config.LesskeyPath = lesskey.Path()
 
 			command := cli.Less(cmd.Context(), article, config)
 

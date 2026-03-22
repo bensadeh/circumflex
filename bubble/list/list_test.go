@@ -141,13 +141,13 @@ func TestStatusMessageTimeout_ClearsMessage(t *testing.T) {
 
 func TestAddToFavorites_AddsItem(t *testing.T) {
 	m := newTestModelReady(t)
-	initialFavCount := len(m.favorites.GetItems())
+	initialFavCount := len(m.favorites.Items())
 
 	testItem := &item.Story{ID: 99, Title: "Favorite item"}
 	m, _ = m.Update(message.AddToFavorites{Item: testItem})
 
-	assert.Len(t, m.favorites.GetItems(), initialFavCount+1)
-	assert.Equal(t, 99, m.favorites.GetItems()[initialFavCount].ID)
+	assert.Len(t, m.favorites.Items(), initialFavCount+1)
+	assert.Equal(t, 99, m.favorites.Items()[initialFavCount].ID)
 }
 
 func TestWindowResize_UpdatesDimensions(t *testing.T) {

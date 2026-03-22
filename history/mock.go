@@ -17,7 +17,7 @@ func (Mock) Contains(id int) bool {
 	return slices.Contains(visitedStories, id)
 }
 
-func (Mock) GetLastVisited(_ int) int64 {
+func (Mock) LastVisited(_ int) int64 {
 	return time.Now().Unix()
 }
 
