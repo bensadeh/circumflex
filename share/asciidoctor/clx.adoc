@@ -46,11 +46,20 @@ Open link to article in browser.
 _c_::
 Open comment section in browser.
 
-_f_::
+_f_, _V_::
 Add currently highlighted submission to favorites.
 
 _x_::
 Remove currently highlighted submission from favorites.
+
+_u_::
+Toggle read/unread for the currently highlighted submission.
+
+_g_, _G_::
+Go to the top/bottom of the list.
+
+_i_, _?_::
+Bring up the help screen.
 
 _q_::
 Quit to prompt.
@@ -89,6 +98,12 @@ Open a URL directly in Reader Mode
 *clx clear*::
 Clear the history of visited __ID__s from ~/.cache/circumflex/history.json.
 
+*clx version*::
+Print the version number of *circumflex*.
+
+*clx default-theme*::
+Write default theme config to ~/.config/circumflex/theme.toml.
+
 == Options
 
 *-c* _n_, *--comment-width*=_n_::
@@ -104,22 +119,20 @@ Disable syntax highlighting for comments.
 Disable conversion of smileys to emojis.
 
 *-d, --disable-history*::
-Disable marking submissions as read.
+Disable marking stories as read.
 
 *-t, --hide-indent*::
 Hide the indentation bar to the left of the reply.
 
-*-n, --nerdfonts*::
-Use Nerd Fonts icons as decorators for some elements (requires a Nerd Font-patched font).
+*-n, --nerdfonts*=_true|false_::
+Enable or disable Nerd Fonts icons as decorators for some elements (requires a Nerd Font-patched font).
+Auto-enabled for Ghostty, which embeds Nerd Fonts. Can also be set with the *NERDFONTS* environment variable.
 
 *-a, --auto-expand*::
 Auto expand all replies upon entering the comment section (collapse comments with _h_).
 
 *-v, --version*::
 Show the current version of *circumflex*.
-
-*-q, --debug-mode*::
-Mock all endpoints and use dummy data for the submissions screen and comment section.
 
 *--no-less-verify*::
 Do not verify *less* version on startup
@@ -140,8 +153,8 @@ The entries in favorites.json are pretty-printed to make them both human-readabl
 == Environment Variables
 
 *NERDFONTS*::
-If this variable is set, *circumflex* will use Nerd Fonts icons as decorators for some elements. Same as running *clx*
-with the *--nerdfonts* flag.
+If this variable is set, *circumflex* will use Nerd Fonts icons as decorators for some elements.
+Same as running *clx* with *--nerdfonts*=_true_. Nerd Fonts are also auto-enabled in Ghostty, which embeds Nerd Fonts.
 
 *CLX_BROWSER*::
 Set to a custom command to be run when opening links. The URL to the website will be appended to
