@@ -28,6 +28,14 @@ const (
 
 var errItemNotFound = errors.New("item not found")
 
+// discardLogger silences resty's internal logging so that WARN/ERROR
+// messages on context cancellation don't corrupt the TUI.
+type discardLogger struct{}
+
+func (discardLogger) Errorf(string, ...any) {}
+func (discardLogger) Warnf(string, ...any)  {}
+func (discardLogger) Debugf(string, ...any) {}
+
 type Service struct {
 	client  *resty.Client
 	baseURL string
@@ -44,6 +52,7 @@ func NewService() *Service {
 	client.AddRetryCondition(func(resp *resty.Response, _ error) bool {
 		return resp != nil && resp.StatusCode() >= http.StatusInternalServerError
 	})
+	client.SetLogger(discardLogger{})
 
 	return &Service{client: client, baseURL: defaultBaseURL}
 }

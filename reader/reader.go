@@ -18,6 +18,14 @@ const (
 	retryCount   = 2
 )
 
+// discardLogger silences resty's internal logging so that WARN/ERROR
+// messages on context cancellation don't corrupt the TUI.
+type discardLogger struct{}
+
+func (discardLogger) Errorf(string, ...any) {}
+func (discardLogger) Warnf(string, ...any)  {}
+func (discardLogger) Debugf(string, ...any) {}
+
 func Article(ctx context.Context, url string, title string, width int, indentationSymbol string) (string, error) {
 	parsedURL, err := nurl.ParseRequestURI(url)
 	if err != nil {
@@ -28,6 +36,7 @@ func Article(ctx context.Context, url string, title string, width int, indentati
 	client.SetTimeout(fetchTimeout)
 	client.SetRetryCount(retryCount)
 	client.SetHeader("User-Agent", version.Name+"/"+version.Version)
+	client.SetLogger(discardLogger{})
 
 	resp, err := client.R().SetContext(ctx).Get(url)
 	if err != nil {
