@@ -13,12 +13,12 @@ require (
 	github.com/MichaelMure/go-term-text v0.3.1
 	github.com/PuerkitoBio/goquery v1.12.0
 	github.com/bobesa/go-domain-util v0.0.0-20250410211237-17ab3b2f4a95
-	github.com/go-resty/resty/v2 v2.17.2
 	github.com/jedib0t/go-pretty/v6 v6.7.8
 	github.com/muesli/reflow v0.3.0
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/term v0.41.0
+	resty.dev/v3 v3.0.0-beta.6
 )
 
 require (

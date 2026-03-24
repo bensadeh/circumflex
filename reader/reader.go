@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"codeberg.org/readeck/go-readability/v2"
-	"github.com/go-resty/resty/v2"
+	"resty.dev/v3"
 )
 
 const (
@@ -33,6 +33,9 @@ func Article(ctx context.Context, url string, title string, width int, indentati
 	}
 
 	client := resty.New()
+
+	defer func() { _ = client.Close() }()
+
 	client.SetTimeout(fetchTimeout)
 	client.SetRetryCount(retryCount)
 	client.SetHeader("User-Agent", version.Name+"/"+version.Version)
@@ -47,7 +50,7 @@ func Article(ctx context.Context, url string, title string, width int, indentati
 		return "", fmt.Errorf("could not fetch URL: %w", err)
 	}
 
-	article, err := readability.FromReader(bytes.NewReader(resp.Body()), parsedURL)
+	article, err := readability.FromReader(bytes.NewReader(resp.Bytes()), parsedURL)
 	if err != nil {
 		return "", fmt.Errorf("could not parse article: %w", err)
 	}

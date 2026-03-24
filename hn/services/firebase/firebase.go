@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/bobesa/go-domain-util/domainutil"
-	"github.com/go-resty/resty/v2"
+	"resty.dev/v3"
 )
 
 const (
@@ -49,7 +49,7 @@ func NewService() *Service {
 	client.SetRetryCount(retryCount)
 	client.SetRetryWaitTime(retryWaitTime)
 	client.SetRetryMaxWaitTime(retryMaxWait)
-	client.AddRetryCondition(func(resp *resty.Response, _ error) bool {
+	client.AddRetryConditions(func(resp *resty.Response, _ error) bool {
 		return resp != nil && resp.StatusCode() >= http.StatusInternalServerError
 	})
 	client.SetLogger(discardLogger{})
@@ -252,7 +252,7 @@ func (s *Service) fetchHNItem(ctx context.Context, id int) (*hnItem, error) {
 
 	// Strip ANSI escape sequences as a defensive measure against potential
 	// injection in user-submitted content (title, text fields).
-	sanitized := ansi.Strip(string(resp.Body()))
+	sanitized := ansi.Strip(string(resp.Bytes()))
 
 	if sanitized == "null" {
 		return nil, fmt.Errorf("item %d: %w", id, errItemNotFound)
