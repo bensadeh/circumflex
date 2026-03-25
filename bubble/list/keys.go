@@ -230,9 +230,9 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 
 func (m *Model) handleCancelPrompt() tea.Cmd {
 	m.state = StateBrowsing
-	m.status.hideStatusMessage()
 
-	return nil
+	return m.status.NewStatusMessageWithDuration(
+		lipgloss.NewStyle().Faint(true).Render("Cancelled"), statusMessageShort)
 }
 
 func (m *Model) startFetch(timeout time.Duration) tea.Cmd {
