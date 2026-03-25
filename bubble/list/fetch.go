@@ -18,8 +18,6 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-const fetchPageMultiplier = 3
-
 var categoryEndpoints = map[int]string{
 	categories.Top:    "topstories",
 	categories.Newest: "newstories",
@@ -48,9 +46,11 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 func (m *Model) getNumberOfItemsToFetch(cat int) int {
 	switch cat {
 	case categories.Top, categories.Newest, categories.Best:
-		return m.pager.Paginator.PerPage * fetchPageMultiplier
+		return m.pager.Paginator.PerPage * m.config.PageMultiplier
 
 	default:
+		// Ask and Show pools are ~150-200 IDs, so fetching multiple pages
+		// would exceed the pool and waste requests. Always fetch 1 page.
 		return m.pager.Paginator.PerPage
 	}
 }

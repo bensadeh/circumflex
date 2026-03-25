@@ -142,6 +142,13 @@ Set the categories in the header. Choose between top, new, best, ask and show.
 First category will be treated as the default one. Separate categories with comma.
 Default value: "top,best,ask,show"
 
+*--pages*=_n_::
+Set the number of pages to fetch per category, between 1 and 5.
+Higher values fetch more stories but increase load time.
+Only applies to top, new and best. Ask and show always fetch one page because their
+story pools are small (~150-200 stories).
+Default: 3.
+
 == Favorites
 
 Press _f_ to add the currently highlighted submission to your list of favorites.

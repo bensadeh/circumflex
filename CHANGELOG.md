@@ -9,6 +9,7 @@ _WIP_
 - Add `u` keybinding to toggle read/unread status on stories
 - Add support for customizing the theme
 - Add `default-theme` subcommand to generate a default theme config file
+- Add `--pages` flag to configure the number of pages fetched per category (1-5)
 - Auto-enable Nerd Fonts when running inside Ghostty
 
 **Changes**

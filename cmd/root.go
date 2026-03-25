@@ -29,6 +29,7 @@ var (
 	nerdFontFlag                string
 	autoExpandComments          bool
 	noLessVerify                bool
+	pageMultiplier              int
 	selectedCategories          string
 )
 
@@ -102,6 +103,8 @@ func configureFlags(rootCmd *cobra.Command) {
 		"disable checking less version on startup")
 	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", "top,best,ask,show",
 		"set the categories in the header")
+	rootCmd.PersistentFlags().IntVar(&pageMultiplier, "pages", settings.Default().PageMultiplier,
+		"set the number of pages to fetch per category (1-5)")
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
 		"enable debug mode (offline mode) by using mock data for the endpoints")
@@ -135,6 +138,7 @@ func getConfig() *settings.Config {
 	config.DebugMode = debugMode
 	config.DebugFallible = debugFallible
 	config.NoLessVerify = noLessVerify
+	config.PageMultiplier = settings.ClampPageMultiplier(pageMultiplier)
 
 	return config
 }
