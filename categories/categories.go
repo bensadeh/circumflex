@@ -6,17 +6,20 @@ import (
 	"strings"
 )
 
+// Category identifies a Hacker News story category.
+type Category int
+
 const (
-	Top       = 0
-	Newest    = 1
-	Ask       = 2
-	Show      = 3
-	Best      = 4
-	Favorites = 5
+	Top Category = iota
+	Newest
+	Ask
+	Show
+	Best
+	Favorites
 )
 
 // Name returns the display name for a category constant.
-func Name(cat int) string {
+func Name(cat Category) string {
 	switch cat {
 	case Top:
 		return "top"
@@ -35,7 +38,7 @@ func Name(cat int) string {
 	}
 }
 
-func categoryFromName(name string) (int, bool) {
+func categoryFromName(name string) (Category, bool) {
 	switch name {
 	case "top":
 		return Top, true
@@ -53,8 +56,8 @@ func categoryFromName(name string) (int, bool) {
 }
 
 type Categories struct {
-	base         []int
-	active       []int
+	base         []Category
+	active       []Category
 	currentIndex int
 }
 
@@ -65,7 +68,7 @@ func New(categoriesCSV string) (*Categories, error) {
 
 	parts := strings.Split(categoriesCSV, ",")
 
-	var validCategories []int
+	var validCategories []Category
 
 	for _, part := range parts {
 		part = strings.TrimSpace(part)
@@ -102,7 +105,7 @@ func (c *Categories) HasFavorites() bool {
 	return slices.Contains(c.active, Favorites)
 }
 
-func (c *Categories) Base() []int {
+func (c *Categories) Base() []Category {
 	return c.base
 }
 
@@ -138,11 +141,11 @@ func (c *Categories) PrevIndex() int {
 	return prevIndex
 }
 
-func (c *Categories) ActiveCategories() []int {
+func (c *Categories) ActiveCategories() []Category {
 	return c.active
 }
 
-func (c *Categories) CurrentCategory() int {
+func (c *Categories) CurrentCategory() Category {
 	return c.active[c.currentIndex]
 }
 
@@ -150,11 +153,11 @@ func (c *Categories) CurrentIndex() int {
 	return c.currentIndex
 }
 
-func (c *Categories) NextCategory() int {
+func (c *Categories) NextCategory() Category {
 	return c.active[c.NextIndex()]
 }
 
-func (c *Categories) PrevCategory() int {
+func (c *Categories) PrevCategory() Category {
 	return c.active[c.PrevIndex()]
 }
 

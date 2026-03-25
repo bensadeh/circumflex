@@ -18,7 +18,7 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-var categoryEndpoints = map[int]string{
+var categoryEndpoints = map[categories.Category]string{
 	categories.Top:    "topstories",
 	categories.Newest: "newstories",
 	categories.Ask:    "askstories",
@@ -43,16 +43,18 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 	}
 }
 
-func (m *Model) getNumberOfItemsToFetch(cat int) int {
+func (m *Model) getNumberOfItemsToFetch(cat categories.Category) int {
 	switch cat {
 	case categories.Top, categories.Newest, categories.Best:
 		return m.pager.Paginator.PerPage * m.config.PageMultiplier
 
-	default:
+	case categories.Ask, categories.Show, categories.Favorites:
 		// Ask and Show pools are ~150-200 IDs, so fetching multiple pages
 		// would exceed the pool and waste requests. Always fetch 1 page.
 		return m.pager.Paginator.PerPage
 	}
+
+	return m.pager.Paginator.PerPage
 }
 
 func getService(debugMode, debugFallible bool) hn.Service {

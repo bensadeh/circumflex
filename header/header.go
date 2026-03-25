@@ -9,7 +9,7 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-func Header(allCategories []int, selectedSubHeader int, width int) string {
+func Header(allCategories []categories.Category, selectedSubHeader int, width int) string {
 	c := lipgloss.NewStyle().Foreground(style.HeaderC())
 	l := lipgloss.NewStyle().Foreground(style.HeaderL())
 	x := lipgloss.NewStyle().Foreground(style.HeaderX())
@@ -31,7 +31,7 @@ func getFiller(title string, categories string, width int) string {
 	return strings.Repeat(" ", availableSpace)
 }
 
-func getCategories(allCategories []int, selectedSubHeader int) string {
+func getCategories(allCategories []categories.Category, selectedSubHeader int) string {
 	cats := allCategories[1:]
 
 	var out strings.Builder
@@ -57,7 +57,7 @@ func getCategories(allCategories []int, selectedSubHeader int) string {
 	return out.String()
 }
 
-func getColor(index int, selectedSubHeader int, cat int) (clr color.Color, isSelected bool) {
+func getColor(index int, selectedSubHeader int, cat categories.Category) (clr color.Color, isSelected bool) {
 	if index == selectedSubHeader {
 		return getSelectedCategoryColor(selectedSubHeader, cat)
 	}
@@ -65,7 +65,7 @@ func getColor(index int, selectedSubHeader int, cat int) (clr color.Color, isSel
 	return lipgloss.NoColor{}, false
 }
 
-func getSelectedCategoryColor(selectedSubHeader int, cat int) (clr color.Color, isSelected bool) {
+func getSelectedCategoryColor(selectedSubHeader int, cat categories.Category) (clr color.Color, isSelected bool) {
 	if cat == categories.Favorites {
 		return style.HeaderFavorites(), true
 	}

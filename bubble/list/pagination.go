@@ -1,6 +1,7 @@
 package list
 
 import (
+	"clx/categories"
 	"clx/item"
 
 	"charm.land/bubbles/v2/paginator"
@@ -14,7 +15,7 @@ type pager struct {
 	transition *transition
 }
 
-func (p *pager) updatePagination(availHeight, itemHeight, itemSpacing, currentCategory int) {
+func (p *pager) updatePagination(availHeight, itemHeight, itemSpacing int, currentCategory categories.Category) {
 	index := p.Index()
 
 	p.Paginator.PerPage = max(1, availHeight/(itemHeight+itemSpacing))
@@ -50,7 +51,7 @@ func (m *Model) updatePagination() {
 	m.pager.updatePagination(availHeight, m.delegate.Height(), m.delegate.Spacing(), m.cat.CurrentCategory())
 }
 
-func (p *pager) updateCursor(currentCategory int) {
+func (p *pager) updateCursor(currentCategory categories.Category) {
 	p.cursor = min(p.cursor, p.Paginator.ItemsOnPage(len(p.VisibleItems(currentCategory)))-1)
 }
 
@@ -62,7 +63,7 @@ func (p *pager) CursorUp() {
 	}
 }
 
-func (p *pager) CursorDown(currentCategory int) {
+func (p *pager) CursorDown(currentCategory categories.Category) {
 	itemsOnPage := p.Paginator.ItemsOnPage(len(p.VisibleItems(currentCategory)))
 
 	p.cursor++
@@ -87,7 +88,7 @@ func (p *pager) Select(index int) {
 	p.cursor = index % p.Paginator.PerPage
 }
 
-func (p *pager) VisibleItems(currentCategory int) []*item.Story {
+func (p *pager) VisibleItems(currentCategory categories.Category) []*item.Story {
 	if p.transition != nil {
 		return p.transition.oldItems
 	}
@@ -95,7 +96,7 @@ func (p *pager) VisibleItems(currentCategory int) []*item.Story {
 	return p.items[currentCategory]
 }
 
-func (p *pager) SelectedItem(currentCategory int) *item.Story {
+func (p *pager) SelectedItem(currentCategory categories.Category) *item.Story {
 	i := p.Index()
 
 	items := p.VisibleItems(currentCategory)
@@ -106,7 +107,7 @@ func (p *pager) SelectedItem(currentCategory int) *item.Story {
 	return items[i]
 }
 
-func (p *pager) categoryHasStories(cat int) bool {
+func (p *pager) categoryHasStories(cat categories.Category) bool {
 	return len(p.items[cat]) != 0
 }
 

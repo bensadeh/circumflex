@@ -1,6 +1,7 @@
 package message
 
 import (
+	"clx/categories"
 	"clx/item"
 	"time"
 )
@@ -47,24 +48,24 @@ type StatusMessageTimeout struct {
 
 type FetchingFinished struct {
 	Stories  []*item.Story
-	Category int
+	Category categories.Category
 	Err      error
 }
 
 type FetchAndChangeToCategory struct {
 	Index    int
-	Category int
+	Category categories.Category
 	Cursor   int
 }
 
 type Refresh struct {
-	CurrentCategory int
+	CurrentCategory categories.Category
 	CurrentIndex    int
 }
 
 type CategoryFetchingFinished struct {
 	Stories  []*item.Story
-	Category int
+	Category categories.Category
 	Index    int
 	Cursor   int
 	Err      error

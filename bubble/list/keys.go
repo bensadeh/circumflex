@@ -295,7 +295,7 @@ func (m *Model) handleTabBackward() tea.Cmd {
 	)
 }
 
-func (m *Model) handleTab(targetIndex, targetCategory int, changeCategory func(), advance func()) tea.Cmd {
+func (m *Model) handleTab(targetIndex int, targetCategory categories.Category, changeCategory func(), advance func()) tea.Cmd {
 	if m.pager.categoryHasStories(targetCategory) {
 		changeCategory()
 
