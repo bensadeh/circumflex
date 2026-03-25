@@ -4,19 +4,30 @@
 
 _WIP_
 
-- Bump Bubble Tea to 2.0
-- Replace terminal-dimensions with golang.org/x/term
+**New features**
+
 - Add `u` keybinding to toggle read/unread status on stories
-- Improve error messages for timeouts, non-200 responses, and unexpected server responses
 - Add support for customizing the theme
-- Use the official HN Firebase API for all requests
-- Fetching can now be cancelled
-- Add 5-minute threshold for updating last-read time on stories
-- Rename Parent Poster (`PP`) label to Grandparent Poster (`GP`)
 - Add `default-theme` subcommand to generate a default theme config file
 - Auto-enable Nerd Fonts when running inside Ghostty
+
+**Changes**
+
+- Rename Parent Poster (`PP`) label to Grandparent Poster (`GP`)
 - Change `--nerdfonts` flag to accept `true`/`false` for explicit control
+- Add 5-minute threshold for updating last-read time on stories
+
+**Improvements**
+
+- Improve error messages for timeouts, non-200 responses, and unexpected server responses
+- Fetching can now be canceled
 - Normalize header levels in reader mode so articles always start at h1
+
+**Dependencies**
+
+- Use the official HN Firebase API for all requests
+- Bump Bubble Tea to 2.0
+- Replace terminal-dimensions with golang.org/x/term
 
 ## 3.9
 
