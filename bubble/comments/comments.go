@@ -24,8 +24,9 @@ type Model struct {
 	config      *settings.Config
 	lastVisited int64
 
-	width  int
-	height int
+	width        int
+	height       int
+	contentLines int // actual content lines (excluding bottom padding)
 }
 
 // Reserve space for the mode indicator line at the bottom.
@@ -236,7 +237,8 @@ func (m *Model) findCommentAtScroll() int {
 }
 
 func (m *Model) rebuildContent() {
-	content := renderFromFlat(m.story, m.flat, m.visible, m.focusedIdx, m.config, m.width, m.height, m.lastVisited)
+	content, contentLines := renderFromFlat(m.story, m.flat, m.visible, m.focusedIdx, m.config, m.width, m.height, m.lastVisited)
+	m.contentLines = contentLines
 	m.viewport.SetContent(content)
 }
 
@@ -357,7 +359,10 @@ func (m *Model) gotoBottom() {
 		m.rebuildContent()
 	}
 
-	m.viewport.GotoBottom()
+	// Scroll so the last line of real content is at the bottom of the viewport,
+	// ignoring the bottom padding.
+	viewportHeight := m.height - footerHeight
+	m.viewport.SetYOffset(max(0, m.contentLines-viewportHeight+1))
 }
 
 func (m *Model) scrollToFocused() {
