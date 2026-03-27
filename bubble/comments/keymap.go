@@ -15,10 +15,12 @@ const (
 
 // KeyMap defines the keybindings for the comment view.
 type KeyMap struct {
-	Quit       key.Binding
-	ToggleMode key.Binding
-	GotoTop    key.Binding
-	GotoBottom key.Binding
+	Quit         key.Binding
+	ToggleMode   key.Binding
+	GotoTop      key.Binding
+	GotoBottom   key.Binding
+	NextTopLevel key.Binding
+	PrevTopLevel key.Binding
 
 	// Shared between modes: collapse/expand all in scroll, individual in navigate.
 	NextComment key.Binding
@@ -44,6 +46,14 @@ func defaultKeyMap() KeyMap {
 		GotoBottom: key.NewBinding(
 			key.WithKeys("G"),
 			key.WithHelp("G", "go to bottom"),
+		),
+		NextTopLevel: key.NewBinding(
+			key.WithKeys("n"),
+			key.WithHelp("n", "next top-level comment"),
+		),
+		PrevTopLevel: key.NewBinding(
+			key.WithKeys("N"),
+			key.WithHelp("N", "prev top-level comment"),
 		),
 		NextComment: key.NewBinding(
 			key.WithKeys("j", "down"),

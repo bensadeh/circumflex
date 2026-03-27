@@ -99,6 +99,18 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 			return nil
 		}
 
+		if m.mode == ModeScroll && key.Matches(msg, m.keymap.NextTopLevel) {
+			m.jumpToTopLevel(1)
+
+			return nil
+		}
+
+		if m.mode == ModeScroll && key.Matches(msg, m.keymap.PrevTopLevel) {
+			m.jumpToTopLevel(-1)
+
+			return nil
+		}
+
 		if key.Matches(msg, m.keymap.Collapse) {
 			if m.mode == ModeScroll {
 				m.collapseAll()
@@ -169,7 +181,7 @@ func (m *Model) View() string {
 func (m *Model) modeIndicator() string {
 	switch m.mode {
 	case ModeScroll:
-		return style.Bold("SCROLL") + style.Faint("  j/k: scroll  h/l: collapse/expand all  g/G: top/bottom  tab: navigate mode")
+		return style.Bold("SCROLL") + style.Faint("  j/k: scroll  n/N: next/prev thread  h/l: collapse/expand all  g/G: top/bottom  tab: navigate mode")
 	case ModeNavigate:
 		return style.Bold("NAVIGATE") + style.Faint("  j/k: comments  h/l: collapse/expand  g/G: top/bottom  tab: scroll mode")
 	}
@@ -282,6 +294,30 @@ func (m *Model) navigateComment(direction int) {
 	m.focusedIdx = newIdx
 	m.rebuildContent()
 	m.scrollToFocused()
+}
+
+func (m *Model) jumpToTopLevel(direction int) {
+	yOffset := m.viewport.YOffset()
+
+	if direction > 0 {
+		for _, flatIdx := range m.visible {
+			fc := m.flat[flatIdx]
+			if fc.Depth == 0 && fc.StartLine > yOffset {
+				m.viewport.SetYOffset(fc.StartLine)
+
+				return
+			}
+		}
+	} else {
+		for i := len(m.visible) - 1; i >= 0; i-- {
+			fc := m.flat[m.visible[i]]
+			if fc.Depth == 0 && fc.StartLine < yOffset {
+				m.viewport.SetYOffset(fc.StartLine)
+
+				return
+			}
+		}
+	}
 }
 
 func (m *Model) collapseAll() {
