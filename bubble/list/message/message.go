@@ -89,4 +89,14 @@ type ArticleReady struct {
 	FetchID uint64
 }
 
+type CommentTreeDataReady struct {
+	Story        *item.Story
+	LastVisited  int64
+	UpdatedStory *item.Story
+	Err          error
+	FetchID      uint64
+}
+
+type CommentViewQuitMsg struct{}
+
 type TimeRefreshTick struct{}

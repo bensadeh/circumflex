@@ -1,6 +1,7 @@
 package list
 
 import (
+	"clx/bubble/comments"
 	"clx/bubble/list/message"
 	"clx/categories"
 	"clx/cli"
@@ -79,7 +80,8 @@ type Model struct {
 	cancelFetch context.CancelFunc
 	fetchID     uint64
 
-	viewport viewport.Model
+	viewport    viewport.Model
+	commentView *comments.Model
 
 	// Cached styles for hot-path rendering.
 	contentStyle    lipgloss.Style
@@ -213,11 +215,16 @@ func (m *Model) handleWindowResize(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 	h, v := lipgloss.NewStyle().GetFrameSize()
 	m.setSize(msg.Width-h, msg.Height-v)
 
-	m.viewport.SetWidth(msg.Width)
-	m.viewport.SetHeight(msg.Height - headerAndFooterHeight)
-
 	m.width = msg.Width
 	m.height = msg.Height
+
+	if m.state == StateCommentView {
+		// Forward resize to comment view instead of help viewport.
+		return m, m.commentView.Update(msg)
+	}
+
+	m.viewport.SetWidth(msg.Width)
+	m.viewport.SetHeight(msg.Height - headerAndFooterHeight)
 
 	content := lipgloss.NewStyle().
 		Width(msg.Width).
@@ -379,8 +386,40 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	case message.ShowStatusMessage:
 		cmds = append(cmds, m.status.NewStatusMessageWithDuration(msg.Message, msg.Duration))
 
+	case message.CommentTreeDataReady:
+		if msg.FetchID != m.fetchID {
+			return m, nil
+		}
+
+		m.pager.transition = nil
+		m.status.StopSpinner()
+
+		if msg.UpdatedStory != nil {
+			_ = m.favorites.UpdateStoryAndWriteToDisk(msg.UpdatedStory)
+		}
+
+		if msg.Err != nil {
+			m.state = StateBrowsing
+
+			return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
+		}
+
+		m.commentView = comments.New(msg.Story, msg.LastVisited, m.config, m.width, m.height)
+		m.state = StateCommentView
+
+		return m, m.commentView.Init()
+
+	case message.CommentViewQuitMsg:
+		m.state = StateBrowsing
+
+		return m, nil
+
 	case message.CategoryFetchingFinished:
 		return m.handleCategoryFetchingFinished(msg)
+	}
+
+	if m.state == StateCommentView {
+		return m, m.commentView.Update(msg)
 	}
 
 	if m.state == StateHelpScreen {

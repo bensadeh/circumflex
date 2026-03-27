@@ -12,6 +12,7 @@ const (
 	StateRemoveFavoritesPrompt
 	StateHelpScreen
 	StateEditorOpen
+	StateCommentView
 )
 
 type transition struct {

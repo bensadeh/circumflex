@@ -23,6 +23,7 @@ type Config struct {
 	LesskeyPath                 string
 	AutoExpandComments          bool
 	NoLessVerify                bool
+	NativeCommentView           bool
 	PageMultiplier              int
 	Theme                       *theme.Theme
 }

@@ -29,6 +29,7 @@ var (
 	nerdFontFlag                string
 	autoExpandComments          bool
 	noLessVerify                bool
+	nativeCommentView           bool
 	pageMultiplier              int
 	selectedCategories          string
 )
@@ -105,6 +106,8 @@ func configureFlags(rootCmd *cobra.Command) {
 		"set the categories in the header")
 	rootCmd.PersistentFlags().IntVar(&pageMultiplier, "pages", settings.Default().PageMultiplier,
 		"set the number of pages to fetch per category (1-5)")
+	rootCmd.PersistentFlags().BoolVar(&nativeCommentView, "native-comments", false,
+		"use the native comment viewer instead of the less pager")
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
 		"enable debug mode (offline mode) by using mock data for the endpoints")
@@ -138,6 +141,7 @@ func getConfig() *settings.Config {
 	config.DebugMode = debugMode
 	config.DebugFallible = debugFallible
 	config.NoLessVerify = noLessVerify
+	config.NativeCommentView = nativeCommentView
 	config.PageMultiplier = settings.ClampPageMultiplier(pageMultiplier)
 
 	return config

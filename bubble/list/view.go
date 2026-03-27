@@ -31,6 +31,10 @@ func (m *Model) View() string {
 		return ""
 	}
 
+	if m.state == StateCommentView {
+		return m.commentView.View()
+	}
+
 	if m.showTitle {
 		v := m.titleView()
 		sections = append(sections, v)
@@ -107,6 +111,8 @@ func (m *Model) statusAndPaginationView() string {
 		rightContent = strings.Repeat(m.Styles.InactivePaginationDot.String(), m.config.PageMultiplier)
 	case StateStartup, StateBrowsing, StateAddFavoritesPrompt, StateRemoveFavoritesPrompt, StateEditorOpen:
 		rightContent = m.pager.Paginator.View()
+	case StateCommentView:
+		// Comment view handles its own footer.
 	}
 
 	left := m.statusLeftStyle.Render("")

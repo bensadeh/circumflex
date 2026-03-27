@@ -134,13 +134,24 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 		_ = hist.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
 
 		story, err := service.FetchComments(ctx, msg.Id)
-		if err != nil {
-			return message.CommentTreeReady{Err: err, FetchID: fetchID}
-		}
 
 		var updatedStory *item.Story
-		if isOnFavorites {
+		if err == nil && isOnFavorites {
 			updatedStory = story
+		}
+
+		if config.NativeCommentView {
+			return message.CommentTreeDataReady{
+				Story:        story,
+				LastVisited:  lastVisited,
+				UpdatedStory: updatedStory,
+				Err:          err,
+				FetchID:      fetchID,
+			}
+		}
+
+		if err != nil {
+			return message.CommentTreeReady{Err: err, FetchID: fetchID}
 		}
 
 		commentTree := tree.Print(story, config, width, lastVisited)
