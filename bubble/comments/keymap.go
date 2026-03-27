@@ -20,7 +20,7 @@ type KeyMap struct {
 	GotoTop    key.Binding
 	GotoBottom key.Binding
 
-	// Navigate mode bindings.
+	// Shared between modes: collapse/expand all in scroll, individual in navigate.
 	NextComment key.Binding
 	PrevComment key.Binding
 	Collapse    key.Binding

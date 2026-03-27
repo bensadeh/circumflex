@@ -39,10 +39,13 @@ func flattenRecursive(c *item.Story, depth int, grandParentPoster string, out *[
 		return
 	}
 
+	childCount := comment.DescendantCount(c)
+
 	fc := FlatComment{
 		Story:             c,
 		Depth:             depth,
-		ChildCount:        comment.DescendantCount(c),
+		Collapsed:         depth == 0 && childCount > 0,
+		ChildCount:        childCount,
 		GrandParentPoster: grandParentPoster,
 	}
 	*out = append(*out, fc)

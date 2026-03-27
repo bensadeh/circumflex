@@ -40,9 +40,11 @@ func New(story *item.Story, lastVisited int64, config *settings.Config, width, h
 		viewport.WithHeight(height-footerHeight),
 	)
 
-	// In scroll mode, viewport handles j/k/h/l. We'll toggle these
-	// on/off when switching modes.
+	// Viewport handles j/k in scroll mode (toggled off in navigate mode).
+	// h/l are always handled by us (collapse/expand), so disable them on viewport.
 	vp.KeyMap = viewport.DefaultKeyMap()
+	vp.KeyMap.Left.SetEnabled(false)
+	vp.KeyMap.Right.SetEnabled(false)
 
 	flat := flatten(story)
 	visible := computeVisible(flat)
@@ -97,6 +99,26 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 			return nil
 		}
 
+		if key.Matches(msg, m.keymap.Collapse) {
+			if m.mode == ModeScroll {
+				m.collapseAll()
+			} else {
+				m.collapse()
+			}
+
+			return nil
+		}
+
+		if key.Matches(msg, m.keymap.Expand) {
+			if m.mode == ModeScroll {
+				m.expandAll()
+			} else {
+				m.expand()
+			}
+
+			return nil
+		}
+
 		if m.mode == ModeNavigate {
 			return m.handleNavigateKeys(msg)
 		}
@@ -125,10 +147,6 @@ func (m *Model) handleNavigateKeys(msg tea.KeyPressMsg) tea.Cmd {
 		m.navigateComment(1)
 	case key.Matches(msg, m.keymap.PrevComment):
 		m.navigateComment(-1)
-	case key.Matches(msg, m.keymap.Collapse):
-		m.collapse()
-	case key.Matches(msg, m.keymap.Expand):
-		m.expand()
 	default:
 		// Unhandled key — let viewport process it (pgup/pgdn/etc).
 		var cmd tea.Cmd
@@ -151,7 +169,7 @@ func (m *Model) View() string {
 func (m *Model) modeIndicator() string {
 	switch m.mode {
 	case ModeScroll:
-		return style.Bold("SCROLL") + style.Faint("  j/k: scroll  g/G: top/bottom  tab: navigate mode")
+		return style.Bold("SCROLL") + style.Faint("  j/k: scroll  h/l: collapse/expand all  g/G: top/bottom  tab: navigate mode")
 	case ModeNavigate:
 		return style.Bold("NAVIGATE") + style.Faint("  j/k: comments  h/l: collapse/expand  g/G: top/bottom  tab: scroll mode")
 	}
@@ -164,11 +182,9 @@ func (m *Model) toggleMode() {
 	case ModeScroll:
 		m.mode = ModeNavigate
 
-		// Disable viewport j/k/h/l so our navigate bindings take over.
+		// Disable viewport j/k so our navigate bindings take over.
 		m.viewport.KeyMap.Up.SetEnabled(false)
 		m.viewport.KeyMap.Down.SetEnabled(false)
-		m.viewport.KeyMap.Left.SetEnabled(false)
-		m.viewport.KeyMap.Right.SetEnabled(false)
 
 		// Set focus to the comment nearest to the current scroll position.
 		if m.focusedIdx < 0 && len(m.visible) > 0 {
@@ -180,11 +196,9 @@ func (m *Model) toggleMode() {
 	case ModeNavigate:
 		m.mode = ModeScroll
 
-		// Re-enable viewport j/k/h/l.
+		// Re-enable viewport j/k.
 		m.viewport.KeyMap.Up.SetEnabled(true)
 		m.viewport.KeyMap.Down.SetEnabled(true)
-		m.viewport.KeyMap.Left.SetEnabled(true)
-		m.viewport.KeyMap.Right.SetEnabled(true)
 
 		m.focusedIdx = -1
 		m.rebuildContent()
@@ -268,6 +282,28 @@ func (m *Model) navigateComment(direction int) {
 	m.focusedIdx = newIdx
 	m.rebuildContent()
 	m.scrollToFocused()
+}
+
+func (m *Model) collapseAll() {
+	for i := range m.flat {
+		if m.flat[i].Depth == 0 && m.flat[i].ChildCount > 0 {
+			m.flat[i].Collapsed = true
+		}
+	}
+
+	m.visible = computeVisible(m.flat)
+	m.rebuildContent()
+}
+
+func (m *Model) expandAll() {
+	for i := range m.flat {
+		if m.flat[i].Depth == 0 && m.flat[i].Collapsed {
+			m.flat[i].Collapsed = false
+		}
+	}
+
+	m.visible = computeVisible(m.flat)
+	m.rebuildContent()
 }
 
 func (m *Model) gotoTop() {
