@@ -16,7 +16,7 @@ import (
 // renderFromFlat builds the full comment view content from the flat comment
 // list, respecting fold state. It updates StartLine/LineCount on each visible
 // FlatComment for navigation.
-func renderFromFlat(story *item.Story, flat []FlatComment, visible []int, focusedIdx int, config *settings.Config, screenWidth int, lastVisited int64) string {
+func renderFromFlat(story *item.Story, flat []FlatComment, visible []int, focusedIdx int, config *settings.Config, screenWidth, viewportHeight int, lastVisited int64) string {
 	leftMargin := strings.Repeat(" ", constants.CommentSectionLeftMargin)
 	contentWidth := screenWidth - constants.CommentSectionLeftMargin
 
@@ -77,6 +77,9 @@ func renderFromFlat(story *item.Story, flat []FlatComment, visible []int, focuse
 
 		fc.LineCount = lineCount - fc.StartLine
 	}
+
+	// Add bottom padding so the last comments can be scrolled to the top.
+	sb.WriteString(strings.Repeat("\n", viewportHeight))
 
 	return sb.String()
 }

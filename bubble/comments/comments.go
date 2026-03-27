@@ -236,7 +236,7 @@ func (m *Model) findCommentAtScroll() int {
 }
 
 func (m *Model) rebuildContent() {
-	content := renderFromFlat(m.story, m.flat, m.visible, m.focusedIdx, m.config, m.width, m.lastVisited)
+	content := renderFromFlat(m.story, m.flat, m.visible, m.focusedIdx, m.config, m.width, m.height, m.lastVisited)
 	m.viewport.SetContent(content)
 }
 
