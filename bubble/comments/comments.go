@@ -254,6 +254,8 @@ func (m *Model) collapse() {
 		return
 	}
 
+	screenPos := m.screenPosition(flatIdx)
+
 	fc.Collapsed = true
 	m.visible = computeVisible(m.flat)
 
@@ -262,7 +264,7 @@ func (m *Model) collapse() {
 	}
 
 	m.rebuildContent()
-	m.scrollToFocused()
+	m.restoreScreenPosition(flatIdx, screenPos)
 }
 
 func (m *Model) expand() {
@@ -277,10 +279,12 @@ func (m *Model) expand() {
 		return
 	}
 
+	screenPos := m.screenPosition(flatIdx)
+
 	fc.Collapsed = false
 	m.visible = computeVisible(m.flat)
 	m.rebuildContent()
-	m.scrollToFocused()
+	m.restoreScreenPosition(flatIdx, screenPos)
 }
 
 func (m *Model) navigateComment(direction int) {
@@ -323,6 +327,9 @@ func (m *Model) jumpToTopLevel(direction int) {
 }
 
 func (m *Model) collapseAll() {
+	anchorIdx := m.anchorComment()
+	screenPos := m.screenPosition(anchorIdx)
+
 	for i := range m.flat {
 		if m.flat[i].Depth == 0 && m.flat[i].ChildCount > 0 {
 			m.flat[i].Collapsed = true
@@ -331,9 +338,13 @@ func (m *Model) collapseAll() {
 
 	m.visible = computeVisible(m.flat)
 	m.rebuildContent()
+	m.restoreScreenPosition(anchorIdx, screenPos)
 }
 
 func (m *Model) expandAll() {
+	anchorIdx := m.anchorComment()
+	screenPos := m.screenPosition(anchorIdx)
+
 	for i := range m.flat {
 		if m.flat[i].Depth == 0 && m.flat[i].Collapsed {
 			m.flat[i].Collapsed = false
@@ -342,6 +353,42 @@ func (m *Model) expandAll() {
 
 	m.visible = computeVisible(m.flat)
 	m.rebuildContent()
+	m.restoreScreenPosition(anchorIdx, screenPos)
+}
+
+// anchorComment returns the flat index of the comment nearest to the top of
+// the viewport, used to keep the view stable across content rebuilds.
+func (m *Model) anchorComment() int {
+	yOffset := m.viewport.YOffset()
+
+	best := -1
+
+	for _, flatIdx := range m.visible {
+		fc := m.flat[flatIdx]
+		if fc.StartLine > yOffset+1 {
+			break
+		}
+
+		best = flatIdx
+	}
+
+	return best
+}
+
+func (m *Model) screenPosition(flatIdx int) int {
+	if flatIdx < 0 {
+		return 0
+	}
+
+	return m.flat[flatIdx].StartLine - m.viewport.YOffset()
+}
+
+func (m *Model) restoreScreenPosition(flatIdx, screenPos int) {
+	if flatIdx < 0 {
+		return
+	}
+
+	m.viewport.SetYOffset(max(0, m.flat[flatIdx].StartLine-screenPos))
 }
 
 func (m *Model) gotoTop() {
