@@ -17,6 +17,8 @@ const (
 type KeyMap struct {
 	Quit       key.Binding
 	ToggleMode key.Binding
+	GotoTop    key.Binding
+	GotoBottom key.Binding
 
 	// Navigate mode bindings.
 	NextComment key.Binding
@@ -34,6 +36,14 @@ func defaultKeyMap() KeyMap {
 		ToggleMode: key.NewBinding(
 			key.WithKeys("tab"),
 			key.WithHelp("tab", "toggle scroll/navigate mode"),
+		),
+		GotoTop: key.NewBinding(
+			key.WithKeys("g"),
+			key.WithHelp("g", "go to top"),
+		),
+		GotoBottom: key.NewBinding(
+			key.WithKeys("G"),
+			key.WithHelp("G", "go to bottom"),
 		),
 		NextComment: key.NewBinding(
 			key.WithKeys("j", "down"),

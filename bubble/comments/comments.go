@@ -85,6 +85,18 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 			return nil
 		}
 
+		if key.Matches(msg, m.keymap.GotoTop) {
+			m.gotoTop()
+
+			return nil
+		}
+
+		if key.Matches(msg, m.keymap.GotoBottom) {
+			m.gotoBottom()
+
+			return nil
+		}
+
 		if m.mode == ModeNavigate {
 			return m.handleNavigateKeys(msg)
 		}
@@ -139,9 +151,9 @@ func (m *Model) View() string {
 func (m *Model) modeIndicator() string {
 	switch m.mode {
 	case ModeScroll:
-		return style.Bold("SCROLL") + style.Faint("  j/k: scroll  tab: navigate mode")
+		return style.Bold("SCROLL") + style.Faint("  j/k: scroll  g/G: top/bottom  tab: navigate mode")
 	case ModeNavigate:
-		return style.Bold("NAVIGATE") + style.Faint("  j/k: comments  h: collapse  l: expand  tab: scroll mode")
+		return style.Bold("NAVIGATE") + style.Faint("  j/k: comments  h/l: collapse/expand  g/G: top/bottom  tab: scroll mode")
 	}
 
 	return ""
@@ -256,6 +268,24 @@ func (m *Model) navigateComment(direction int) {
 	m.focusedIdx = newIdx
 	m.rebuildContent()
 	m.scrollToFocused()
+}
+
+func (m *Model) gotoTop() {
+	if m.mode == ModeNavigate && len(m.visible) > 0 {
+		m.focusedIdx = 0
+		m.rebuildContent()
+	}
+
+	m.viewport.GotoTop()
+}
+
+func (m *Model) gotoBottom() {
+	if m.mode == ModeNavigate && len(m.visible) > 0 {
+		m.focusedIdx = len(m.visible) - 1
+		m.rebuildContent()
+	}
+
+	m.viewport.GotoBottom()
 }
 
 func (m *Model) scrollToFocused() {
