@@ -150,23 +150,3 @@ func TestPrintDeletedCommentWithReplies(t *testing.T) {
 
 	assert.Contains(t, result, "[deleted]")
 }
-
-func TestPrintExpandButton(t *testing.T) {
-	t.Parallel()
-
-	comments := &item.Story{
-		Title: "Test", User: "poster", Points: 10,
-		Comments: []*item.Story{
-			{
-				ID: 1, User: "bob", Content: "Has replies", Level: 0, TimeAgo: "2h ago", Time: 50,
-				Comments: []*item.Story{
-					{ID: 2, User: "carol", Content: "Reply", Level: 1, TimeAgo: "1h ago", Time: 60},
-				},
-			},
-		},
-	}
-	result := tree.Print(comments, getConfig(), 120, 100)
-
-	assert.Contains(t, result, "▶")
-	assert.Contains(t, result, "1 reply")
-}

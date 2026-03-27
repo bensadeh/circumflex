@@ -288,18 +288,29 @@ func TestEnteringCommentSection_ReturnsCmd(t *testing.T) {
 	_, cmd := m.Update(message.EnteringCommentSection{Id: 1, CommentCount: 10})
 	assert.NotNil(t, cmd, "should return cmd for async comment fetching")
 
-	// Execute the Cmd — it should produce a CommentTreeReady message
+	// Execute the Cmd — it should produce a CommentTreeDataReady message
 	msg := cmd()
-	result, ok := msg.(message.CommentTreeReady)
-	assert.True(t, ok, "cmd should produce CommentTreeReady message")
-	assert.NotEmpty(t, result.Content)
+	result, ok := msg.(message.CommentTreeDataReady)
+	assert.True(t, ok, "cmd should produce CommentTreeDataReady message")
+	assert.NotNil(t, result.Story)
 }
 
-func TestCommentTreeReady_ReturnsExecCmd(t *testing.T) {
+func TestCommentTreeDataReady_OpensCommentView(t *testing.T) {
 	m := newTestModelReady(t)
+	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 
-	_, cmd := m.Update(message.CommentTreeReady{Content: "comment tree content"})
-	assert.NotNil(t, cmd, "should return ExecProcess cmd")
+	story := &item.Story{ID: 1, Title: "test", CommentsCount: 5}
+	m, _ = m.Update(message.CommentTreeDataReady{Story: story})
+	assert.Equal(t, StateCommentView, m.state)
+	assert.NotNil(t, m.commentView)
+}
+
+func TestCommentViewQuit_RestoresState(t *testing.T) {
+	m := newTestModelReady(t)
+	m.state = StateCommentView
+
+	m, _ = m.Update(message.CommentViewQuitMsg{})
+	assert.Equal(t, StateBrowsing, m.state)
 }
 
 func TestEnteringReaderMode_ReturnsCmd(t *testing.T) {

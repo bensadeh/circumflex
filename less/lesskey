@@ -1,10 +1,1 @@
-# ^M     Clear the active filter
-# !      Change the filter to Non-match filter
-# \kl    Left arrow
-# \kr    Right arrow
-
-h    filter   ^M&!‍\r
-\kl  filter   ^M&!‍\r
-
-l    filter   ^M&!‌\r
-\kr  filter   ^M&!‌\r
+# lesskey configuration for reader mode

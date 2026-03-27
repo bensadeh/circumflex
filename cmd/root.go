@@ -27,9 +27,6 @@ var (
 	debugMode                   bool
 	debugFallible               bool
 	nerdFontFlag                string
-	autoExpandComments          bool
-	noLessVerify                bool
-	nativeCommentView           bool
 	pageMultiplier              int
 	selectedCategories          string
 )
@@ -48,8 +45,6 @@ func Root() *cobra.Command {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
 			}
-
-			verifyLess(noLessVerify)
 
 			if config.EnableNerdFonts {
 				cli.EnableNerdFontsInLess()
@@ -98,16 +93,10 @@ func configureFlags(rootCmd *cobra.Command) {
 		"set the comment width")
 	rootCmd.PersistentFlags().StringVarP(&nerdFontFlag, "nerdfonts", "n", "",
 		"enable or disable Nerd Fonts (true/false, auto-enabled for Ghostty, env: NERDFONTS)")
-	rootCmd.PersistentFlags().BoolVarP(&autoExpandComments, "auto-expand", "a", false,
-		"automatically expand all replies upon entering the comment section")
-	rootCmd.PersistentFlags().BoolVar(&noLessVerify, "no-less-verify", false,
-		"disable checking less version on startup")
 	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", "top,best,ask,show",
 		"set the categories in the header")
 	rootCmd.PersistentFlags().IntVar(&pageMultiplier, "pages", settings.Default().PageMultiplier,
 		"set the number of pages to fetch per category (1-5)")
-	rootCmd.PersistentFlags().BoolVar(&nativeCommentView, "native-comments", false,
-		"use the native comment viewer instead of the less pager")
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
 		"enable debug mode (offline mode) by using mock data for the endpoints")
@@ -136,12 +125,9 @@ func getConfig() *settings.Config {
 	config.DoNotMarkSubmissionsAsRead = disableHistory
 	config.EnableNerdFonts = resolveNerdFonts(nerdFontFlag)
 	config.HideIndentSymbol = hideIndentSymbol
-	config.AutoExpandComments = autoExpandComments
 	config.DisableEmojis = disableEmojis
 	config.DebugMode = debugMode
 	config.DebugFallible = debugFallible
-	config.NoLessVerify = noLessVerify
-	config.NativeCommentView = nativeCommentView
 	config.PageMultiplier = settings.ClampPageMultiplier(pageMultiplier)
 
 	return config
@@ -166,40 +152,4 @@ func isGhostty() bool {
 
 func newService() hn.Service {
 	return hn.NewService(debugMode, debugFallible)
-}
-
-func verifyLess(noLessVerify bool) {
-	if noLessVerify {
-		return
-	}
-
-	isValid, currentLessVersion := cli.VerifyLessVersion(version.MinimumLessVersion)
-
-	if !isValid && currentLessVersion == "" {
-		flag := style.Bold("--no-less-verify")
-		lessCmd := style.Magenta("less")
-		clxCmd := style.Magenta("clx")
-		lessVersion := style.Yellow("?")
-
-		fmt.Printf("Could not verify version of %s\n\n", lessCmd)
-		fmt.Printf("Required: %d\n", version.MinimumLessVersion)
-		fmt.Printf("Current:  %s\n\n", lessVersion)
-		fmt.Printf("Re-run %s with the %s flag to disable this check\n", clxCmd, flag)
-
-		os.Exit(1)
-	}
-
-	if !isValid {
-		flag := style.Bold("--no-less-verify")
-		lessCmd := style.Magenta("less")
-		clxCmd := style.Magenta("clx")
-		lessVersion := style.Yellow(currentLessVersion)
-
-		fmt.Printf("Your version of %s is outdated\n\n", lessCmd)
-		fmt.Printf("Required: %d\n", version.MinimumLessVersion)
-		fmt.Printf("Current:  %s\n\n", lessVersion)
-		fmt.Printf("Re-run %s with the %s flag to disable this check\n", clxCmd, flag)
-
-		os.Exit(1)
-	}
 }

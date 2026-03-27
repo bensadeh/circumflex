@@ -1,6 +1,9 @@
 package comments
 
-import "clx/item"
+import (
+	"clx/comment"
+	"clx/item"
+)
 
 // FlatComment represents a single comment in the flattened view of the tree.
 type FlatComment struct {
@@ -39,7 +42,7 @@ func flattenRecursive(c *item.Story, depth int, grandParentPoster string, out *[
 	fc := FlatComment{
 		Story:             c,
 		Depth:             depth,
-		ChildCount:        countDescendants(c),
+		ChildCount:        comment.DescendantCount(c),
 		GrandParentPoster: grandParentPoster,
 	}
 	*out = append(*out, fc)
@@ -76,19 +79,4 @@ func computeVisible(flat []FlatComment) []int {
 	}
 
 	return visible
-}
-
-func countDescendants(c *item.Story) int {
-	count := 0
-
-	for _, reply := range c.Comments {
-		if reply.Content == "[deleted]" && len(reply.Comments) == 0 {
-			continue
-		}
-
-		count++
-		count += countDescendants(reply)
-	}
-
-	return count
 }

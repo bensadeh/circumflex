@@ -76,13 +76,6 @@ type AddToFavorites struct {
 	Item *item.Story
 }
 
-type CommentTreeReady struct {
-	Content      string
-	Err          error
-	UpdatedStory *item.Story
-	FetchID      uint64
-}
-
 type ArticleReady struct {
 	Content string
 	Err     error

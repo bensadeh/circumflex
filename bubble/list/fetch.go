@@ -7,7 +7,6 @@ import (
 	"clx/hn"
 	"clx/item"
 	"clx/reader"
-	"clx/tree"
 	"clx/validator"
 	"context"
 	"errors"
@@ -121,11 +120,9 @@ func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 }
 
 func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection) tea.Cmd {
-	width := m.width
 	isOnFavorites := m.cat.CurrentCategory() == categories.Favorites
 	hist := m.history
 	service := m.service
-	config := m.config
 	ctx := m.fetchCtx
 	fetchID := m.fetchID
 
@@ -140,23 +137,13 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 			updatedStory = story
 		}
 
-		if config.NativeCommentView {
-			return message.CommentTreeDataReady{
-				Story:        story,
-				LastVisited:  lastVisited,
-				UpdatedStory: updatedStory,
-				Err:          err,
-				FetchID:      fetchID,
-			}
+		return message.CommentTreeDataReady{
+			Story:        story,
+			LastVisited:  lastVisited,
+			UpdatedStory: updatedStory,
+			Err:          err,
+			FetchID:      fetchID,
 		}
-
-		if err != nil {
-			return message.CommentTreeReady{Err: err, FetchID: fetchID}
-		}
-
-		commentTree := tree.Print(story, config, width, lastVisited)
-
-		return message.CommentTreeReady{Content: commentTree, UpdatedStory: updatedStory, FetchID: fetchID}
 	}
 }
 

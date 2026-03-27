@@ -326,32 +326,6 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	case message.EnteringReaderMode:
 		return m, m.handleEnteringReaderMode(msg)
 
-	case message.CommentTreeReady:
-		if msg.FetchID != m.fetchID {
-			return m, nil
-		}
-
-		m.pager.transition = nil
-		m.status.StopSpinner()
-
-		if msg.UpdatedStory != nil {
-			_ = m.favorites.UpdateStoryAndWriteToDisk(msg.UpdatedStory)
-		}
-
-		if msg.Err != nil {
-			m.state = StateBrowsing
-
-			return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
-		}
-
-		m.state = StateEditorOpen
-
-		command := cli.Less(context.Background(), msg.Content, m.config)
-
-		return m, tea.ExecProcess(command, func(err error) tea.Msg {
-			return message.EditorFinishedMsg{Err: err}
-		})
-
 	case message.ArticleReady:
 		if msg.FetchID != m.fetchID {
 			return m, nil

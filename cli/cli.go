@@ -7,7 +7,6 @@ import (
 	"context"
 	"os"
 	"os/exec"
-	"strconv"
 	"strings"
 )
 
@@ -36,12 +35,6 @@ func Less(ctx context.Context, input string, config *settings.Config) *exec.Cmd 
 		"-DP-",
 	}
 
-	if config.AutoExpandComments {
-		args = append(args, "+&!"+constants.InvisibleCharacterForCollapse)
-	} else {
-		args = append(args, "+&!"+constants.InvisibleCharacterForExpansion)
-	}
-
 	command := exec.CommandContext(ctx, "less", args...)
 
 	command.Stdin = strings.NewReader(input)
@@ -58,37 +51,4 @@ func ClearScreen(ctx context.Context) {
 	c := exec.CommandContext(ctx, "clear")
 	c.Stdout = os.Stdout
 	_ = c.Run()
-}
-
-func VerifyLessVersion(minimumVersion int) (isValid bool, currentVersion string) {
-	lessVersionInfo, err := getLessVersionInfo()
-	if err != nil {
-		return false, ""
-	}
-
-	lessVersionInfoWords := strings.Fields(lessVersionInfo)
-	if len(lessVersionInfoWords) < 2 {
-		return false, ""
-	}
-
-	lessVersion, err := strconv.ParseFloat(lessVersionInfoWords[1], 64)
-	if err != nil {
-		return false, ""
-	}
-
-	isValid = int(lessVersion) >= minimumVersion
-	currentVersion = lessVersionInfoWords[1]
-
-	return isValid, currentVersion
-}
-
-func getLessVersionInfo() (string, error) {
-	command := exec.CommandContext(context.Background(), "less", "--version")
-
-	output, err := command.Output()
-	if err != nil {
-		return "", err
-	}
-
-	return string(output), nil
 }
