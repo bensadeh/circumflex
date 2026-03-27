@@ -35,7 +35,6 @@ func renderFromFlat(story *item.Story, flat []FlatComment, visible []int, focuse
 
 	for vi, flatIdx := range visible {
 		fc := &flat[flatIdx]
-		fc.StartLine = lineCount
 
 		// Separator.
 		sep := comment.Separator(fc.Depth, config.CommentWidth, fc.Story.ID, firstCommentID)
@@ -44,6 +43,8 @@ func renderFromFlat(story *item.Story, flat []FlatComment, visible []int, focuse
 			sb.WriteString(indentedSep)
 			lineCount += strings.Count(indentedSep, "\n")
 		}
+
+		fc.StartLine = lineCount
 
 		// Render the comment body.
 		depthIndent := comment.IndentString(fc.Depth)
