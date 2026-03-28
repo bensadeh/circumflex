@@ -5,18 +5,21 @@ import (
 )
 
 // FlatComment represents a single comment in the flattened view of the tree.
+// It holds only tree-structural data — rendering artifacts like line positions
+// are tracked separately in LineMetrics.
 type FlatComment struct {
-	Comment    *comment.Comment
-	Depth      int
-	Collapsed  bool
-	ChildCount int // total descendants
+	Comment           *comment.Comment
+	Depth             int
+	Collapsed         bool
+	ChildCount        int // total descendants
+	GrandParentPoster string
+}
 
-	// Line tracking (set during rendering).
+// LineMetrics tracks the rendered position of a comment in the viewport.
+// Indexed by flat index; recomputed on every render.
+type LineMetrics struct {
 	StartLine int
 	LineCount int
-
-	// Grandparent poster for label resolution.
-	GrandParentPoster string
 }
 
 // flatten performs a pre-order DFS of the comment tree and returns

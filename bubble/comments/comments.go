@@ -24,9 +24,12 @@ type Model struct {
 	config      *settings.Config
 	lastVisited int64
 
-	width        int
-	height       int
-	contentLines int // actual content lines (excluding bottom padding)
+	// Rendering artifacts — recomputed on every rebuildContent call.
+	lineMetrics  []LineMetrics // indexed by flat index
+	contentLines int           // actual content lines (excluding bottom padding)
+
+	width  int
+	height int
 }
 
 // Reserve space for the mode indicator line at the bottom.
@@ -225,8 +228,7 @@ func (m *Model) findCommentAtScroll() int {
 	best := 0
 
 	for vi, flatIdx := range m.visible {
-		fc := m.flat[flatIdx]
-		if fc.StartLine <= yOffset {
+		if m.lineMetrics[flatIdx].StartLine <= yOffset {
 			best = vi
 		} else {
 			break
@@ -237,8 +239,9 @@ func (m *Model) findCommentAtScroll() int {
 }
 
 func (m *Model) rebuildContent() {
-	content, contentLines := renderFromFlat(m.thread, m.flat, m.visible, m.focusedIdx, m.config, m.width, m.height, m.lastVisited)
+	content, contentLines, metrics := renderFromFlat(m.thread, m.flat, m.visible, m.focusedIdx, m.config, m.width, m.height, m.lastVisited)
 	m.contentLines = contentLines
+	m.lineMetrics = metrics
 	m.viewport.SetContent(content)
 }
 
@@ -307,18 +310,17 @@ func (m *Model) jumpToTopLevel(direction int) {
 
 	if direction > 0 {
 		for _, flatIdx := range m.visible {
-			fc := m.flat[flatIdx]
-			if fc.Depth == 0 && fc.StartLine > yOffset+1 {
-				m.viewport.SetYOffset(max(0, fc.StartLine-1))
+			if m.flat[flatIdx].Depth == 0 && m.lineMetrics[flatIdx].StartLine > yOffset+1 {
+				m.viewport.SetYOffset(max(0, m.lineMetrics[flatIdx].StartLine-1))
 
 				return
 			}
 		}
 	} else {
 		for i := len(m.visible) - 1; i >= 0; i-- {
-			fc := m.flat[m.visible[i]]
-			if fc.Depth == 0 && fc.StartLine < yOffset {
-				m.viewport.SetYOffset(max(0, fc.StartLine-1))
+			flatIdx := m.visible[i]
+			if m.flat[flatIdx].Depth == 0 && m.lineMetrics[flatIdx].StartLine < yOffset {
+				m.viewport.SetYOffset(max(0, m.lineMetrics[flatIdx].StartLine-1))
 
 				return
 			}
@@ -364,8 +366,7 @@ func (m *Model) anchorComment() int {
 	best := -1
 
 	for _, flatIdx := range m.visible {
-		fc := m.flat[flatIdx]
-		if fc.StartLine > yOffset+1 {
+		if m.lineMetrics[flatIdx].StartLine > yOffset+1 {
 			break
 		}
 
@@ -380,7 +381,7 @@ func (m *Model) screenPosition(flatIdx int) int {
 		return 0
 	}
 
-	return m.flat[flatIdx].StartLine - m.viewport.YOffset()
+	return m.lineMetrics[flatIdx].StartLine - m.viewport.YOffset()
 }
 
 func (m *Model) restoreScreenPosition(flatIdx, screenPos int) {
@@ -388,7 +389,7 @@ func (m *Model) restoreScreenPosition(flatIdx, screenPos int) {
 		return
 	}
 
-	m.viewport.SetYOffset(max(0, m.flat[flatIdx].StartLine-screenPos))
+	m.viewport.SetYOffset(max(0, m.lineMetrics[flatIdx].StartLine-screenPos))
 }
 
 func (m *Model) gotoTop() {
@@ -418,17 +419,17 @@ func (m *Model) scrollToFocused() {
 	}
 
 	flatIdx := m.visible[m.focusedIdx]
-	fc := m.flat[flatIdx]
+	lm := m.lineMetrics[flatIdx]
 
 	top := m.viewport.YOffset()
 	bottom := top + m.viewport.VisibleLineCount()
 
 	// Only scroll if the focused comment is outside the visible area.
-	if fc.StartLine < top {
+	if lm.StartLine < top {
 		// Scrolling up — put comment a few lines below the top.
-		m.viewport.SetYOffset(max(0, fc.StartLine-2))
-	} else if fc.StartLine+fc.LineCount > bottom {
+		m.viewport.SetYOffset(max(0, lm.StartLine-2))
+	} else if lm.StartLine+lm.LineCount > bottom {
 		// Scrolling down — put the comment's start near the bottom.
-		m.viewport.SetYOffset(fc.StartLine - m.viewport.VisibleLineCount() + fc.LineCount + 2)
+		m.viewport.SetYOffset(lm.StartLine - m.viewport.VisibleLineCount() + lm.LineCount + 2)
 	}
 }

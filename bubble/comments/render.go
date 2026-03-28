@@ -13,9 +13,9 @@ import (
 )
 
 // renderFromFlat builds the full comment view content from the flat comment
-// list, respecting fold state. It updates StartLine/LineCount on each visible
-// FlatComment for navigation.
-func renderFromFlat(thread *comment.Thread, flat []FlatComment, visible []int, focusedIdx int, config *settings.Config, screenWidth, viewportHeight int, lastVisited int64) (string, int) {
+// list, respecting fold state. It returns the rendered content, the number of
+// content lines, and line metrics indexed by flat index for navigation.
+func renderFromFlat(thread *comment.Thread, flat []FlatComment, visible []int, focusedIdx int, config *settings.Config, screenWidth, viewportHeight int, lastVisited int64) (string, int, []LineMetrics) {
 	leftMargin := strings.Repeat(" ", constants.CommentSectionLeftMargin)
 	contentWidth := screenWidth - constants.CommentSectionLeftMargin
 
@@ -32,8 +32,10 @@ func renderFromFlat(thread *comment.Thread, flat []FlatComment, visible []int, f
 
 	firstCommentID := comment.FirstCommentID(thread.Comments)
 
+	metrics := make([]LineMetrics, len(flat))
+
 	for vi, flatIdx := range visible {
-		fc := &flat[flatIdx]
+		fc := flat[flatIdx]
 
 		// Separator.
 		sep := comment.Separator(fc.Depth, config.CommentWidth, fc.Comment.ID, firstCommentID)
@@ -43,7 +45,7 @@ func renderFromFlat(thread *comment.Thread, flat []FlatComment, visible []int, f
 			lineCount += strings.Count(indentedSep, "\n")
 		}
 
-		fc.StartLine = lineCount
+		startLine := lineCount
 
 		// Render the comment body.
 		depthIndent := comment.IndentString(fc.Depth)
@@ -74,7 +76,10 @@ func renderFromFlat(thread *comment.Thread, flat []FlatComment, visible []int, f
 			lineCount += strings.Count(indentedIndicator, "\n")
 		}
 
-		fc.LineCount = lineCount - fc.StartLine
+		metrics[flatIdx] = LineMetrics{
+			StartLine: startLine,
+			LineCount: lineCount - startLine,
+		}
 	}
 
 	contentLines := lineCount
@@ -82,7 +87,7 @@ func renderFromFlat(thread *comment.Thread, flat []FlatComment, visible []int, f
 	// Add bottom padding so the last comments can be scrolled to the top.
 	sb.WriteString(strings.Repeat("\n", viewportHeight))
 
-	return sb.String(), contentLines
+	return sb.String(), contentLines, metrics
 }
 
 var focusStyle = lipgloss.NewStyle().Reverse(true)
