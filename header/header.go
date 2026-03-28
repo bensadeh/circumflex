@@ -21,6 +21,17 @@ func Header(allCategories []categories.Category, selectedSubHeader int, width in
 	return title + cats + filler + "\n" + strings.Repeat("‾", width)
 }
 
+func HelpHeader(width int) string {
+	c := lipgloss.NewStyle().Foreground(style.HeaderC())
+	l := lipgloss.NewStyle().Foreground(style.HeaderL())
+	x := lipgloss.NewStyle().Foreground(style.HeaderX())
+
+	logo := c.Render("  {") + l.Render("?") + x.Render("}  ")
+	title := logo + style.Bold("Keyboard Shortcuts")
+
+	return title + "\n" + strings.Repeat("‾", width)
+}
+
 func getFiller(title string, categories string, width int) string {
 	availableSpace := width - lipgloss.Width(title+categories)
 
