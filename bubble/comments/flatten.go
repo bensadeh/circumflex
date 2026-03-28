@@ -24,6 +24,8 @@ type LineMetrics struct {
 
 // flatten performs a pre-order DFS of the comment tree and returns
 // a flat slice. Each entry retains its depth and descendant count.
+// The resulting order is load-bearing: computeVisible assumes children
+// immediately follow their parent with strictly increasing depth.
 func flatten(thread *comment.Thread) []FlatComment {
 	var result []FlatComment
 

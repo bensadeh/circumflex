@@ -52,7 +52,6 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 	vp.KeyMap.Right.SetEnabled(false)
 
 	flat := flatten(thread)
-	visible := computeVisible(flat)
 
 	newComments := comment.NewCommentsCount(thread, lastVisited)
 	header := meta.CommentSectionMetaBlock(thread, config, newComments) + "\n"
@@ -62,7 +61,6 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 		keymap:     km,
 		mode:       ModeScroll,
 		flat:       flat,
-		visible:    visible,
 		focusedIdx: -1, // no focus in scroll mode
 		title:      thread.Title,
 		rc: renderContext{
@@ -289,6 +287,7 @@ func (m *Model) findCommentAtScroll() int {
 }
 
 func (m *Model) rebuildContent() {
+	m.visible = computeVisible(m.flat)
 	content, contentLines, metrics := renderFromFlat(m.rc, m.flat, m.visible)
 	m.contentLines = contentLines
 	m.lineMetrics = metrics
@@ -310,13 +309,13 @@ func (m *Model) collapse() {
 	screenPos := m.screenPosition(flatIdx)
 
 	fc.Collapsed = true
-	m.visible = computeVisible(m.flat)
+
+	m.rebuildContent()
 
 	if m.focusedIdx >= len(m.visible) {
 		m.focusedIdx = len(m.visible) - 1
 	}
 
-	m.rebuildContent()
 	m.restoreScreenPosition(flatIdx, screenPos)
 }
 
@@ -335,7 +334,7 @@ func (m *Model) expand() {
 	screenPos := m.screenPosition(flatIdx)
 
 	fc.Collapsed = false
-	m.visible = computeVisible(m.flat)
+
 	m.rebuildContent()
 	m.restoreScreenPosition(flatIdx, screenPos)
 }
@@ -387,7 +386,6 @@ func (m *Model) collapseAll() {
 		}
 	}
 
-	m.visible = computeVisible(m.flat)
 	m.rebuildContent()
 	m.restoreScreenPosition(anchorIdx, screenPos)
 }
@@ -402,7 +400,6 @@ func (m *Model) expandAll() {
 		}
 	}
 
-	m.visible = computeVisible(m.flat)
 	m.rebuildContent()
 	m.restoreScreenPosition(anchorIdx, screenPos)
 }
