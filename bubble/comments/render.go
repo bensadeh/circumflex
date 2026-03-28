@@ -7,15 +7,15 @@ import (
 	"clx/settings"
 	"strings"
 
-	"charm.land/lipgloss/v2"
-
 	text "github.com/MichaelMure/go-term-text"
 )
 
 // renderFromFlat builds the full comment view content from the flat comment
 // list, respecting fold state. It returns the rendered content, the number of
 // content lines, and line metrics indexed by flat index for navigation.
-func renderFromFlat(thread *comment.Thread, flat []FlatComment, visible []int, focusedIdx int, config *settings.Config, screenWidth, viewportHeight int, lastVisited int64) (string, int, []LineMetrics) {
+// This function has no knowledge of focus state — focus highlighting is
+// applied separately in View().
+func renderFromFlat(thread *comment.Thread, flat []FlatComment, visible []int, config *settings.Config, screenWidth, viewportHeight int, lastVisited int64) (string, int, []LineMetrics) {
 	leftMargin := strings.Repeat(" ", constants.CommentSectionLeftMargin)
 	contentWidth := screenWidth - constants.CommentSectionLeftMargin
 
@@ -34,7 +34,7 @@ func renderFromFlat(thread *comment.Thread, flat []FlatComment, visible []int, f
 
 	metrics := make([]LineMetrics, len(flat))
 
-	for vi, flatIdx := range visible {
+	for _, flatIdx := range visible {
 		fc := flat[flatIdx]
 
 		// Separator.
@@ -58,11 +58,6 @@ func renderFromFlat(thread *comment.Thread, flat []FlatComment, visible []int, f
 
 		// Apply depth indentation then left margin.
 		withDepth, _ := text.WrapWithPad(rendered, contentWidth, depthIndent)
-
-		isFocused := vi == focusedIdx
-		if isFocused {
-			withDepth = applyFocusIndicator(withDepth)
-		}
 
 		withMargin, _ := text.WrapWithPad(withDepth+"\n", screenWidth, leftMargin)
 		sb.WriteString(withMargin)
@@ -88,17 +83,4 @@ func renderFromFlat(thread *comment.Thread, flat []FlatComment, visible []int, f
 	sb.WriteString(strings.Repeat("\n", viewportHeight))
 
 	return sb.String(), contentLines, metrics
-}
-
-var focusStyle = lipgloss.NewStyle().Reverse(true)
-
-func applyFocusIndicator(rendered string) string {
-	lines := strings.Split(rendered, "\n")
-	if len(lines) == 0 {
-		return rendered
-	}
-
-	lines[0] = focusStyle.Render(lines[0])
-
-	return strings.Join(lines, "\n")
 }

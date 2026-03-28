@@ -384,6 +384,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, m.commentView.Init()
 
 	case message.CommentViewQuitMsg:
+		m.commentView = nil
 		m.state = StateBrowsing
 
 		return m, nil

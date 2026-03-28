@@ -5,10 +5,12 @@ import (
 	"clx/comment"
 	"clx/settings"
 	"clx/style"
+	"strings"
 
 	"charm.land/bubbles/v2/key"
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 )
 
 // Model is the Bubble Tea model for the native comment view.
@@ -175,11 +177,42 @@ func (m *Model) handleNavigateKeys(msg tea.KeyPressMsg) tea.Cmd {
 	return nil
 }
 
-// View renders the comment view.
+// View renders the comment view. Focus highlighting is applied here as a
+// display overlay, keeping rendering independent of navigation state.
 func (m *Model) View() string {
-	modeIndicator := m.modeIndicator()
+	output := m.viewport.View()
+	output = m.applyFocusHighlight(output)
 
-	return m.viewport.View() + "\n" + modeIndicator
+	return output + "\n" + m.modeIndicator()
+}
+
+var focusStyle = lipgloss.NewStyle().Reverse(true)
+
+// applyFocusHighlight highlights the focused comment's header line in the
+// viewport output. This operates on the final display, not on content —
+// rendering and focus indication are fully independent.
+func (m *Model) applyFocusHighlight(viewportOutput string) string {
+	if m.mode != ModeNavigate || m.focusedIdx < 0 || m.focusedIdx >= len(m.visible) {
+		return viewportOutput
+	}
+
+	flatIdx := m.visible[m.focusedIdx]
+	lm := m.lineMetrics[flatIdx]
+
+	// Convert content-space line position to screen-space.
+	screenLine := lm.StartLine - m.viewport.YOffset()
+	if screenLine < 0 || screenLine >= m.viewport.VisibleLineCount() {
+		return viewportOutput
+	}
+
+	lines := strings.Split(viewportOutput, "\n")
+	if screenLine >= len(lines) {
+		return viewportOutput
+	}
+
+	lines[screenLine] = focusStyle.Render(lines[screenLine])
+
+	return strings.Join(lines, "\n")
 }
 
 func (m *Model) modeIndicator() string {
@@ -207,8 +240,6 @@ func (m *Model) toggleMode() {
 			m.focusedIdx = m.findCommentAtScroll()
 		}
 
-		m.rebuildContent()
-
 	case ModeNavigate:
 		m.mode = ModeScroll
 
@@ -217,7 +248,6 @@ func (m *Model) toggleMode() {
 		m.viewport.KeyMap.Down.SetEnabled(true)
 
 		m.focusedIdx = -1
-		m.rebuildContent()
 	}
 }
 
@@ -239,7 +269,7 @@ func (m *Model) findCommentAtScroll() int {
 }
 
 func (m *Model) rebuildContent() {
-	content, contentLines, metrics := renderFromFlat(m.thread, m.flat, m.visible, m.focusedIdx, m.config, m.width, m.height, m.lastVisited)
+	content, contentLines, metrics := renderFromFlat(m.thread, m.flat, m.visible, m.config, m.width, m.height, m.lastVisited)
 	m.contentLines = contentLines
 	m.lineMetrics = metrics
 	m.viewport.SetContent(content)
@@ -301,7 +331,6 @@ func (m *Model) navigateComment(direction int) {
 	}
 
 	m.focusedIdx = newIdx
-	m.rebuildContent()
 	m.scrollToFocused()
 }
 
@@ -395,7 +424,6 @@ func (m *Model) restoreScreenPosition(flatIdx, screenPos int) {
 func (m *Model) gotoTop() {
 	if m.mode == ModeNavigate && len(m.visible) > 0 {
 		m.focusedIdx = 0
-		m.rebuildContent()
 	}
 
 	m.viewport.GotoTop()
@@ -404,7 +432,6 @@ func (m *Model) gotoTop() {
 func (m *Model) gotoBottom() {
 	if m.mode == ModeNavigate && len(m.visible) > 0 {
 		m.focusedIdx = len(m.visible) - 1
-		m.rebuildContent()
 	}
 
 	// Scroll so the last line of real content is at the bottom of the viewport,
