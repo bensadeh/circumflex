@@ -5,10 +5,11 @@ import (
 )
 
 // FlatComment represents a single comment in the flattened view of the tree.
-// It holds only tree-structural data — rendering artifacts like line positions
-// are tracked separately in LineMetrics.
+// Comment is stored by value (not pointer) so mutations cannot affect the
+// original tree. Rendering artifacts like line positions are tracked
+// separately in LineMetrics.
 type FlatComment struct {
-	Comment         *comment.Comment
+	Comment         comment.Comment
 	Depth           int
 	Collapsed       bool
 	DescendantCount int // total descendants
@@ -36,6 +37,7 @@ func flatten(thread *comment.Thread) []FlatComment {
 	}
 
 	fillDescendantCounts(result)
+	collapseTopLevel(result)
 
 	return result
 }
@@ -46,7 +48,13 @@ func flattenRecursive(c *comment.Comment, depth int, topLevelAuthor string, out 
 	}
 
 	fc := FlatComment{
-		Comment:        c,
+		Comment: comment.Comment{
+			ID:      c.ID,
+			Author:  c.Author,
+			Content: c.Content,
+			Time:    c.Time,
+			TimeAgo: c.TimeAgo,
+		},
 		Depth:          depth,
 		TopLevelAuthor: topLevelAuthor,
 	}
@@ -75,7 +83,14 @@ func fillDescendantCounts(flat []FlatComment) {
 		}
 
 		flat[i].DescendantCount = count
-		flat[i].Collapsed = flat[i].Depth == 0 && count > 0
+	}
+}
+
+// collapseTopLevel sets the initial collapse state: top-level comments with
+// children start collapsed so the user sees the full set of threads first.
+func collapseTopLevel(flat []FlatComment) {
+	for i := range flat {
+		flat[i].Collapsed = flat[i].Depth == 0 && flat[i].DescendantCount > 0
 	}
 }
 

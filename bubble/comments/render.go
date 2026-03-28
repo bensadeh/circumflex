@@ -60,7 +60,7 @@ func renderFromFlat(rc renderContext, flat []FlatComment, visible []int) (string
 		availableWidth := contentWidth - depthIndentLen
 		adjustedCommentWidth := rc.config.CommentWidth - fc.Depth
 
-		rendered := comment.RenderBody(fc.Comment, fc.Depth, rc.config, rc.originalPoster, fc.TopLevelAuthor,
+		rendered := comment.RenderBody(&fc.Comment, fc.Depth, rc.config, rc.originalPoster, fc.TopLevelAuthor,
 			adjustedCommentWidth, availableWidth, rc.lastVisited)
 
 		// Apply depth indentation then left margin.
