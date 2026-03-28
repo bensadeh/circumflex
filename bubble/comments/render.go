@@ -60,7 +60,7 @@ func renderFromFlat(rc renderContext, flat []FlatComment, visible []int) (string
 		availableWidth := contentWidth - depthIndentLen
 		adjustedCommentWidth := rc.config.CommentWidth - fc.Depth
 
-		rendered := comment.RenderBody(fc.Comment, fc.Depth, rc.config, rc.originalPoster, fc.GrandParentPoster,
+		rendered := comment.RenderBody(fc.Comment, fc.Depth, rc.config, rc.originalPoster, fc.TopLevelAuthor,
 			adjustedCommentWidth, availableWidth, rc.lastVisited)
 
 		// Apply depth indentation then left margin.
@@ -71,8 +71,8 @@ func renderFromFlat(rc renderContext, flat []FlatComment, visible []int) (string
 		lineCount += strings.Count(withMargin, "\n")
 
 		// Fold indicator for collapsed comments with children.
-		if fc.Collapsed && fc.ChildCount > 0 {
-			indicator := comment.FoldIndicator(fc.ChildCount, fc.Depth)
+		if fc.Collapsed && fc.DescendantCount > 0 {
+			indicator := comment.FoldIndicator(fc.DescendantCount, fc.Depth)
 			indentedIndicator, _ := text.WrapWithPad(indicator, rc.screenWidth, leftMargin)
 			sb.WriteString(indentedIndicator)
 			lineCount += strings.Count(indentedIndicator, "\n")

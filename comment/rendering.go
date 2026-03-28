@@ -26,16 +26,16 @@ func Author(author string, lastVisited, timePosted int64) string {
 }
 
 // AuthorLabel returns a styled label for special users (mod, OP, GP).
-func AuthorLabel(author, originalPoster, grandParentPoster string, enableNerdFonts bool) string {
-	label := computeLabel(author, originalPoster, grandParentPoster, enableNerdFonts)
+func AuthorLabel(author, originalPoster, topLevelAuthor string, enableNerdFonts bool) string {
+	label := computeLabel(author, originalPoster, topLevelAuthor, enableNerdFonts)
 	if label == "" {
 		return ""
 	}
 
-	return colorizeLabel(author, originalPoster, grandParentPoster, label)
+	return colorizeLabel(author, originalPoster, topLevelAuthor, label)
 }
 
-func computeLabel(author, originalPoster, grandParentPoster string, nerdFonts bool) string {
+func computeLabel(author, originalPoster, topLevelAuthor string, nerdFonts bool) string {
 	switch {
 	case nerdFonts:
 		return nerdfonts.Author + " "
@@ -43,20 +43,20 @@ func computeLabel(author, originalPoster, grandParentPoster string, nerdFonts bo
 		return "mod "
 	case author == originalPoster:
 		return "OP "
-	case author == grandParentPoster:
+	case author == topLevelAuthor:
 		return "GP "
 	default:
 		return ""
 	}
 }
 
-func colorizeLabel(author, originalPoster, grandParentPoster, label string) string {
+func colorizeLabel(author, originalPoster, topLevelAuthor, label string) string {
 	switch {
 	case IsMod(author):
 		return style.CommentMod(label)
 	case author == originalPoster:
 		return style.CommentOP(label)
-	case author == grandParentPoster:
+	case author == topLevelAuthor:
 		return style.CommentGP(label)
 	default:
 		return ""
@@ -91,26 +91,26 @@ func IndentString(depth int) string {
 }
 
 // Header returns the formatted comment header line (author + label + time).
-func Header(c *Comment, depth int, originalPoster, grandParentPoster string, lastVisited int64, config *settings.Config) string {
+func Header(c *Comment, depth int, originalPoster, topLevelAuthor string, lastVisited int64, config *settings.Config) string {
 	indentSize := 0
 	if depth > 0 {
 		indentSize = 1
 	}
 
 	author := Author(c.Author, lastVisited, c.Time)
-	authorLabel := AuthorLabel(c.Author, originalPoster, grandParentPoster, config.EnableNerdFonts)
+	authorLabel := AuthorLabel(c.Author, originalPoster, topLevelAuthor, config.EnableNerdFonts)
 	indentation := strings.Repeat(" ", indentSize)
 
 	return indentation + author + authorLabel + style.Faint(c.TimeAgo) + "\n"
 }
 
 // RenderBody returns the formatted comment with header, indent symbol, and content.
-func RenderBody(c *Comment, depth int, config *settings.Config, originalPoster, grandParentPoster string,
+func RenderBody(c *Comment, depth int, config *settings.Config, originalPoster, topLevelAuthor string,
 	commentWidth, availableScreenWidth int, lastVisited int64,
 ) string {
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, depth)
 
-	header := Header(c, depth, originalPoster, grandParentPoster, lastVisited, config)
+	header := Header(c, depth, originalPoster, topLevelAuthor, lastVisited, config)
 	formattedComment := Print(c.Content, config, commentWidth, availableScreenWidth)
 	paddedComment, _ := text.WrapWithPad(formattedComment, availableScreenWidth, coloredIndentSymbol)
 
@@ -165,13 +165,13 @@ func FirstCommentID(comments []*Comment) int {
 }
 
 // FoldIndicator returns a styled fold indicator for collapsed comments.
-func FoldIndicator(childCount, depth int) string {
+func FoldIndicator(descendantCount, depth int) string {
 	replies := "replies"
-	if childCount == 1 {
+	if descendantCount == 1 {
 		replies = "reply"
 	}
 
-	label := fmt.Sprintf("\u25b6 %d %s hidden", childCount, replies)
+	label := fmt.Sprintf("\u25b6 %d %s hidden", descendantCount, replies)
 	indent := IndentString(depth)
 
 	return indent + style.Faint(label) + "\n"

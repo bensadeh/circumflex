@@ -32,7 +32,7 @@ func Print(thread *comment.Thread, config *settings.Config, screenWidth int, las
 }
 
 func printReplies(c *comment.Comment, depth int, config *settings.Config, screenWidth int, originalPoster string,
-	grandParentPoster string, firstCommentID int, lastVisited int64, sb *strings.Builder,
+	topLevelAuthor string, firstCommentID int, lastVisited int64, sb *strings.Builder,
 ) {
 	if c.Content == "[deleted]" && len(c.Children) == 0 {
 		return
@@ -43,7 +43,7 @@ func printReplies(c *comment.Comment, depth int, config *settings.Config, screen
 	availableScreenWidth := screenWidth - indentSize - constants.CommentSectionLeftMargin
 	adjustedCommentWidth := config.CommentWidth - depth
 
-	body := comment.RenderBody(c, depth, config, originalPoster, grandParentPoster, adjustedCommentWidth, availableScreenWidth,
+	body := comment.RenderBody(c, depth, config, originalPoster, topLevelAuthor, adjustedCommentWidth, availableScreenWidth,
 		lastVisited)
 	indentedComment, _ := text.WrapWithPad(body, screenWidth, indentation)
 
@@ -51,11 +51,11 @@ func printReplies(c *comment.Comment, depth int, config *settings.Config, screen
 	sb.WriteString(sep + indentedComment + "\n")
 
 	if depth == 0 {
-		grandParentPoster = c.Author
+		topLevelAuthor = c.Author
 	}
 
 	for _, reply := range c.Children {
-		printReplies(reply, depth+1, config, screenWidth, originalPoster, grandParentPoster, firstCommentID,
+		printReplies(reply, depth+1, config, screenWidth, originalPoster, topLevelAuthor, firstCommentID,
 			lastVisited, sb)
 	}
 }

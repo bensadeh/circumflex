@@ -8,11 +8,11 @@ import (
 // It holds only tree-structural data — rendering artifacts like line positions
 // are tracked separately in LineMetrics.
 type FlatComment struct {
-	Comment           *comment.Comment
-	Depth             int
-	Collapsed         bool
-	ChildCount        int // total descendants
-	GrandParentPoster string
+	Comment         *comment.Comment
+	Depth           int
+	Collapsed       bool
+	DescendantCount int // total descendants
+	TopLevelAuthor  string
 }
 
 // LineMetrics tracks the rendered position of a comment in the viewport.
@@ -29,32 +29,32 @@ type LineMetrics struct {
 func flatten(thread *comment.Thread) []FlatComment {
 	var result []FlatComment
 
-	grandParentPoster := ""
+	topLevelAuthor := ""
 
 	for _, child := range thread.Comments {
-		flattenRecursive(child, 0, grandParentPoster, &result)
+		flattenRecursive(child, 0, topLevelAuthor, &result)
 	}
 
 	return result
 }
 
-func flattenRecursive(c *comment.Comment, depth int, grandParentPoster string, out *[]FlatComment) {
+func flattenRecursive(c *comment.Comment, depth int, topLevelAuthor string, out *[]FlatComment) {
 	if c.Content == "[deleted]" && len(c.Children) == 0 {
 		return
 	}
 
-	childCount := comment.DescendantCount(c)
+	descendantCount := comment.DescendantCount(c)
 
 	fc := FlatComment{
-		Comment:           c,
-		Depth:             depth,
-		Collapsed:         depth == 0 && childCount > 0,
-		ChildCount:        childCount,
-		GrandParentPoster: grandParentPoster,
+		Comment:         c,
+		Depth:           depth,
+		Collapsed:       depth == 0 && descendantCount > 0,
+		DescendantCount: descendantCount,
+		TopLevelAuthor:  topLevelAuthor,
 	}
 	*out = append(*out, fc)
 
-	gp := grandParentPoster
+	gp := topLevelAuthor
 	if depth == 0 {
 		gp = c.Author
 	}
@@ -80,7 +80,7 @@ func computeVisible(flat []FlatComment) []int {
 
 		visible = append(visible, i)
 
-		if fc.Collapsed && fc.ChildCount > 0 {
+		if fc.Collapsed && fc.DescendantCount > 0 {
 			skipUntilDepth = fc.Depth
 		}
 	}

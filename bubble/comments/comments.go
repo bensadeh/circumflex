@@ -302,7 +302,7 @@ func (m *Model) collapse() {
 	flatIdx := m.visible[m.focusedIdx]
 	fc := &m.flat[flatIdx]
 
-	if fc.ChildCount == 0 || fc.Collapsed {
+	if fc.DescendantCount == 0 || fc.Collapsed {
 		return
 	}
 
@@ -381,7 +381,7 @@ func (m *Model) collapseAll() {
 	screenPos := m.screenPosition(anchorIdx)
 
 	for i := range m.flat {
-		if m.flat[i].Depth == 0 && m.flat[i].ChildCount > 0 {
+		if m.flat[i].Depth == 0 && m.flat[i].DescendantCount > 0 {
 			m.flat[i].Collapsed = true
 		}
 	}
@@ -453,7 +453,7 @@ func (m *Model) gotoBottom() {
 
 	// Scroll so the last line of real content is at the bottom of the viewport,
 	// ignoring the bottom padding.
-	m.viewport.SetYOffset(max(0, m.contentLines-m.rc.viewportHeight+1))
+	m.viewport.SetYOffset(max(0, m.contentLines-m.rc.viewportHeight))
 }
 
 func (m *Model) scrollToFocused() {
