@@ -475,7 +475,12 @@ func (m *Model) scrollToFocused() {
 		// Scrolling up — put comment a few lines below the top.
 		m.viewport.SetYOffset(max(0, lm.StartLine-2))
 	} else if lm.StartLine+lm.LineCount > bottom {
-		// Scrolling down — put the comment's start near the bottom.
-		m.viewport.SetYOffset(lm.StartLine - m.viewport.VisibleLineCount() + lm.LineCount + 2)
+		if lm.LineCount >= m.viewport.VisibleLineCount() {
+			// Comment is taller than viewport — show its start.
+			m.viewport.SetYOffset(max(0, lm.StartLine-2))
+		} else {
+			// Comment fits — scroll just enough to show it fully.
+			m.viewport.SetYOffset(lm.StartLine - m.viewport.VisibleLineCount() + lm.LineCount + 2)
+		}
 	}
 }
