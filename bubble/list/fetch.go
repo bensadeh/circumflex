@@ -3,6 +3,8 @@ package list
 import (
 	"clx/bubble/list/message"
 	"clx/categories"
+	"clx/comment"
+	"clx/convert"
 	"clx/history"
 	"clx/hn"
 	"clx/item"
@@ -137,8 +139,13 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 			updatedStory = story
 		}
 
+		var thread *comment.Thread
+		if err == nil {
+			thread = convert.StoryToThread(story)
+		}
+
 		return message.CommentTreeDataReady{
-			Story:        story,
+			Thread:       thread,
 			LastVisited:  lastVisited,
 			UpdatedStory: updatedStory,
 			Err:          err,

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"clx/cli"
+	"clx/convert"
 	"clx/tree"
 	_ "embed"
 	"fmt"
@@ -44,7 +45,8 @@ func commentsCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			commentTree := tree.Print(comments, config, screenWidth, time.Now().Unix())
+			thread := convert.StoryToThread(comments)
+			commentTree := tree.Print(thread, config, screenWidth, time.Now().Unix())
 
 			if err := cli.RunLess(cmd.Context(), commentTree, config); err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)

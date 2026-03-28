@@ -2,7 +2,7 @@ package comments
 
 import (
 	"clx/bubble/list/message"
-	"clx/item"
+	"clx/comment"
 	"clx/settings"
 	"clx/style"
 
@@ -17,7 +17,7 @@ type Model struct {
 	keymap   KeyMap
 	mode     Mode
 
-	story       *item.Story
+	thread      *comment.Thread
 	flat        []FlatComment
 	visible     []int // indices into flat
 	focusedIdx  int   // index into visible (-1 = no focus, scroll mode)
@@ -33,7 +33,7 @@ type Model struct {
 const footerHeight = 1
 
 // New creates a new comment view model.
-func New(story *item.Story, lastVisited int64, config *settings.Config, width, height int) *Model {
+func New(thread *comment.Thread, lastVisited int64, config *settings.Config, width, height int) *Model {
 	km := defaultKeyMap()
 
 	vp := viewport.New(
@@ -47,14 +47,14 @@ func New(story *item.Story, lastVisited int64, config *settings.Config, width, h
 	vp.KeyMap.Left.SetEnabled(false)
 	vp.KeyMap.Right.SetEnabled(false)
 
-	flat := flatten(story)
+	flat := flatten(thread)
 	visible := computeVisible(flat)
 
 	m := Model{
 		viewport:    vp,
 		keymap:      km,
 		mode:        ModeScroll,
-		story:       story,
+		thread:      thread,
 		flat:        flat,
 		visible:     visible,
 		focusedIdx:  -1, // no focus in scroll mode
@@ -237,7 +237,7 @@ func (m *Model) findCommentAtScroll() int {
 }
 
 func (m *Model) rebuildContent() {
-	content, contentLines := renderFromFlat(m.story, m.flat, m.visible, m.focusedIdx, m.config, m.width, m.height, m.lastVisited)
+	content, contentLines := renderFromFlat(m.thread, m.flat, m.visible, m.focusedIdx, m.config, m.width, m.height, m.lastVisited)
 	m.contentLines = contentLines
 	m.viewport.SetContent(content)
 }

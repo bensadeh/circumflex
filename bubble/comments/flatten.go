@@ -2,12 +2,11 @@ package comments
 
 import (
 	"clx/comment"
-	"clx/item"
 )
 
 // FlatComment represents a single comment in the flattened view of the tree.
 type FlatComment struct {
-	Story      *item.Story
+	Comment    *comment.Comment
 	Depth      int
 	Collapsed  bool
 	ChildCount int // total descendants
@@ -22,27 +21,27 @@ type FlatComment struct {
 
 // flatten performs a pre-order DFS of the comment tree and returns
 // a flat slice. Each entry retains its depth and descendant count.
-func flatten(story *item.Story) []FlatComment {
+func flatten(thread *comment.Thread) []FlatComment {
 	var result []FlatComment
 
 	grandParentPoster := ""
 
-	for _, child := range story.Comments {
+	for _, child := range thread.Comments {
 		flattenRecursive(child, 0, grandParentPoster, &result)
 	}
 
 	return result
 }
 
-func flattenRecursive(c *item.Story, depth int, grandParentPoster string, out *[]FlatComment) {
-	if c.Content == "[deleted]" && len(c.Comments) == 0 {
+func flattenRecursive(c *comment.Comment, depth int, grandParentPoster string, out *[]FlatComment) {
+	if c.Content == "[deleted]" && len(c.Children) == 0 {
 		return
 	}
 
 	childCount := comment.DescendantCount(c)
 
 	fc := FlatComment{
-		Story:             c,
+		Comment:           c,
 		Depth:             depth,
 		Collapsed:         depth == 0 && childCount > 0,
 		ChildCount:        childCount,
@@ -52,10 +51,10 @@ func flattenRecursive(c *item.Story, depth int, grandParentPoster string, out *[
 
 	gp := grandParentPoster
 	if depth == 0 {
-		gp = c.User
+		gp = c.Author
 	}
 
-	for _, reply := range c.Comments {
+	for _, reply := range c.Children {
 		flattenRecursive(reply, depth+1, gp, out)
 	}
 }

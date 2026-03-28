@@ -1,7 +1,6 @@
 package comment
 
 import (
-	"clx/item"
 	"clx/nerdfonts"
 	"clx/settings"
 	"clx/style"
@@ -70,46 +69,46 @@ func IsMod(author string) bool {
 }
 
 // Separator returns the visual separator between comments.
-func Separator(level, commentWidth, currentCommentID, firstCommentID int) string {
+func Separator(depth, commentWidth, currentCommentID, firstCommentID int) string {
 	if currentCommentID == firstCommentID {
 		return ""
 	}
 
-	if level != 0 {
+	if depth != 0 {
 		return "\n"
 	}
 
 	return style.Faint(strings.Repeat("\u2581", commentWidth)) + "\n\n"
 }
 
-// IndentString returns the indentation prefix for a given nesting level.
-func IndentString(level int) string {
-	if level == 0 {
+// IndentString returns the indentation prefix for a given nesting depth.
+func IndentString(depth int) string {
+	if depth == 0 {
 		return ""
 	}
 
-	return strings.Repeat(" ", level-1)
+	return strings.Repeat(" ", depth-1)
 }
 
 // Header returns the formatted comment header line (author + label + time).
-func Header(c *item.Story, originalPoster, grandParentPoster string, lastVisited int64, config *settings.Config) string {
+func Header(c *Comment, originalPoster, grandParentPoster string, lastVisited int64, config *settings.Config) string {
 	indentSize := 0
-	if c.Level > 0 {
+	if c.Depth > 0 {
 		indentSize = 1
 	}
 
-	author := Author(c.User, lastVisited, c.Time)
-	authorLabel := AuthorLabel(c.User, originalPoster, grandParentPoster, config.EnableNerdFonts)
+	author := Author(c.Author, lastVisited, c.Time)
+	authorLabel := AuthorLabel(c.Author, originalPoster, grandParentPoster, config.EnableNerdFonts)
 	indentation := strings.Repeat(" ", indentSize)
 
 	return indentation + author + authorLabel + style.Faint(c.TimeAgo) + "\n"
 }
 
 // RenderBody returns the formatted comment with header, indent symbol, and content.
-func RenderBody(c *item.Story, config *settings.Config, originalPoster, grandParentPoster string,
+func RenderBody(c *Comment, config *settings.Config, originalPoster, grandParentPoster string,
 	commentWidth, availableScreenWidth int, lastVisited int64,
 ) string {
-	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, c.Level)
+	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, c.Depth)
 
 	header := Header(c, originalPoster, grandParentPoster, lastVisited, config)
 	formattedComment := Print(c.Content, config, commentWidth, availableScreenWidth)
@@ -120,11 +119,11 @@ func RenderBody(c *item.Story, config *settings.Config, originalPoster, grandPar
 
 // DescendantCount returns the total number of descendants of a comment,
 // skipping deleted comments with no replies.
-func DescendantCount(c *item.Story) int {
+func DescendantCount(c *Comment) int {
 	count := 0
 
-	for _, reply := range c.Comments {
-		if reply.Content == "[deleted]" && len(reply.Comments) == 0 {
+	for _, reply := range c.Children {
+		if reply.Content == "[deleted]" && len(reply.Children) == 0 {
 			continue
 		}
 
@@ -136,25 +135,28 @@ func DescendantCount(c *item.Story) int {
 }
 
 // NewCommentsCount returns the number of new comments since lastVisited.
-func NewCommentsCount(story *item.Story, lastVisited int64) int {
+func NewCommentsCount(thread *Thread, lastVisited int64) int {
 	count := 0
-	countNewCommentsRecursive(story, &count, lastVisited)
+
+	for _, c := range thread.Comments {
+		countNewComments(c, &count, lastVisited)
+	}
 
 	return count
 }
 
-func countNewCommentsRecursive(story *item.Story, count *int, lastVisited int64) {
-	for _, reply := range story.Comments {
-		if lastVisited < reply.Time {
-			*count++
-		}
+func countNewComments(c *Comment, count *int, lastVisited int64) {
+	if lastVisited < c.Time {
+		*count++
+	}
 
-		countNewCommentsRecursive(reply, count, lastVisited)
+	for _, reply := range c.Children {
+		countNewComments(reply, count, lastVisited)
 	}
 }
 
 // FirstCommentID returns the ID of the first comment, or 0 if there are none.
-func FirstCommentID(comments []*item.Story) int {
+func FirstCommentID(comments []*Comment) int {
 	if len(comments) == 0 {
 		return 0
 	}

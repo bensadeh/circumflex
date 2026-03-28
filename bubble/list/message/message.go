@@ -2,6 +2,7 @@ package message
 
 import (
 	"clx/categories"
+	"clx/comment"
 	"clx/item"
 	"time"
 )
@@ -83,9 +84,9 @@ type ArticleReady struct {
 }
 
 type CommentTreeDataReady struct {
-	Story        *item.Story
+	Thread       *comment.Thread
 	LastVisited  int64
-	UpdatedStory *item.Story
+	UpdatedStory *item.Story // stays in item domain for favorites sync
 	Err          error
 	FetchID      uint64
 }

@@ -1,7 +1,6 @@
 package comment
 
 import (
-	"clx/item"
 	"strings"
 	"testing"
 
@@ -96,11 +95,11 @@ func TestIsMod(t *testing.T) {
 func TestDescendantCount(t *testing.T) {
 	t.Parallel()
 
-	root := &item.Story{
-		Comments: []*item.Story{
+	root := &Comment{
+		Children: []*Comment{
 			{
 				Content: "a",
-				Comments: []*item.Story{
+				Children: []*Comment{
 					{Content: "b"},
 				},
 			},
@@ -114,8 +113,8 @@ func TestDescendantCount(t *testing.T) {
 func TestDescendantCount_SkipsDeleted(t *testing.T) {
 	t.Parallel()
 
-	root := &item.Story{
-		Comments: []*item.Story{
+	root := &Comment{
+		Children: []*Comment{
 			{Content: "[deleted]"},
 			{Content: "alive"},
 		},
@@ -127,9 +126,9 @@ func TestDescendantCount_SkipsDeleted(t *testing.T) {
 func TestNewCommentsCount(t *testing.T) {
 	t.Parallel()
 
-	root := &item.Story{
-		Comments: []*item.Story{
-			{Time: 200, Comments: []*item.Story{
+	thread := &Thread{
+		Comments: []*Comment{
+			{Time: 200, Children: []*Comment{
 				{Time: 300},
 			}},
 			{Time: 50},
@@ -137,15 +136,15 @@ func TestNewCommentsCount(t *testing.T) {
 	}
 
 	// lastVisited=100: Time 200 and 300 are new, 50 is old
-	assert.Equal(t, 2, NewCommentsCount(root, 100))
+	assert.Equal(t, 2, NewCommentsCount(thread, 100))
 }
 
 func TestFirstCommentID(t *testing.T) {
 	t.Parallel()
 
 	assert.Equal(t, 0, FirstCommentID(nil))
-	assert.Equal(t, 0, FirstCommentID([]*item.Story{}))
-	assert.Equal(t, 42, FirstCommentID([]*item.Story{{ID: 42}, {ID: 99}}))
+	assert.Equal(t, 0, FirstCommentID([]*Comment{}))
+	assert.Equal(t, 42, FirstCommentID([]*Comment{{ID: 42}, {ID: 99}}))
 }
 
 func TestFoldIndicator(t *testing.T) {

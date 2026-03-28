@@ -3,7 +3,6 @@ package meta
 import (
 	"clx/comment"
 	"clx/constants"
-	"clx/item"
 	"clx/nerdfonts"
 	"clx/settings"
 	"clx/style"
@@ -38,7 +37,7 @@ func ReaderModeMetaBlock(title string, url string, lineWidth int) string {
 	return formattedTitle + newParagraph + s.Render(formattedURL+info) + newParagraph
 }
 
-func CommentSectionMetaBlock(c *item.Story, config *settings.Config, newComments int) string {
+func CommentSectionMetaBlock(t *comment.Thread, config *settings.Config, newComments int) string {
 	s := lipgloss.NewStyle().
 		BorderStyle(lipgloss.RoundedBorder()).
 		PaddingLeft(1).
@@ -48,25 +47,25 @@ func CommentSectionMetaBlock(c *item.Story, config *settings.Config, newComments
 	contentWidth := config.CommentWidth - s.GetHorizontalBorderSize() - s.GetHorizontalPadding()
 	columnWidth := contentWidth / 2
 
-	url := getURL(c.URL, c.Domain, contentWidth)
-	rootComment := parseRootComment(c.Content, config, contentWidth)
+	url := getURL(t.URL, t.Domain, contentWidth)
+	rootComment := parseRootComment(t.Content, config, contentWidth)
 
 	leftColumn := lipgloss.NewStyle().
 		Width(columnWidth).
 		Align(lipgloss.Left)
-	leftColumnText := getAuthor(c.User, config.EnableNerdFonts) + " " + style.Faint(c.TimeAgo) + newLine +
-		getComments(c.CommentsCount, config.EnableNerdFonts) + getNewCommentsInfo(newComments, config.EnableNerdFonts)
+	leftColumnText := getAuthor(t.Author, config.EnableNerdFonts) + " " + style.Faint(t.TimeAgo) + newLine +
+		getComments(t.CommentsCount, config.EnableNerdFonts) + getNewCommentsInfo(newComments, config.EnableNerdFonts)
 
 	rightColumn := lipgloss.NewStyle().
 		Width(columnWidth).
 		Align(lipgloss.Right)
-	rightColumnText := getID(c.ID, config.EnableNerdFonts) + newLine +
-		getScore(c.Points, config.EnableNerdFonts)
+	rightColumnText := getID(t.ID, config.EnableNerdFonts) + newLine +
+		getScore(t.Points, config.EnableNerdFonts)
 
 	joined := lipgloss.JoinHorizontal(lipgloss.Left, leftColumn.Render(leftColumnText),
 		rightColumn.Render(rightColumnText))
 
-	return getHeadline(c.Title, config) + newParagraph + s.Render(url+joined+rootComment)
+	return getHeadline(t.Title, config) + newParagraph + s.Render(url+joined+rootComment)
 }
 
 func getAuthor(author string, enableNerdFonts bool) string {

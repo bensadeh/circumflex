@@ -3,6 +3,7 @@ package list
 import (
 	"clx/bubble/list/message"
 	"clx/categories"
+	"clx/comment"
 	"clx/favorites"
 	"clx/history"
 	"clx/item"
@@ -292,15 +293,15 @@ func TestEnteringCommentSection_ReturnsCmd(t *testing.T) {
 	msg := cmd()
 	result, ok := msg.(message.CommentTreeDataReady)
 	assert.True(t, ok, "cmd should produce CommentTreeDataReady message")
-	assert.NotNil(t, result.Story)
+	assert.NotNil(t, result.Thread)
 }
 
 func TestCommentTreeDataReady_OpensCommentView(t *testing.T) {
 	m := newTestModelReady(t)
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 
-	story := &item.Story{ID: 1, Title: "test", CommentsCount: 5}
-	m, _ = m.Update(message.CommentTreeDataReady{Story: story})
+	thread := &comment.Thread{ID: 1, Title: "test", CommentsCount: 5}
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread})
 	assert.Equal(t, StateCommentView, m.state)
 	assert.NotNil(t, m.commentView)
 }

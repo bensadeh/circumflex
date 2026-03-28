@@ -3,7 +3,6 @@ package comments
 import (
 	"clx/comment"
 	"clx/constants"
-	"clx/item"
 	"clx/meta"
 	"clx/settings"
 	"strings"
@@ -16,12 +15,12 @@ import (
 // renderFromFlat builds the full comment view content from the flat comment
 // list, respecting fold state. It updates StartLine/LineCount on each visible
 // FlatComment for navigation.
-func renderFromFlat(story *item.Story, flat []FlatComment, visible []int, focusedIdx int, config *settings.Config, screenWidth, viewportHeight int, lastVisited int64) (string, int) {
+func renderFromFlat(thread *comment.Thread, flat []FlatComment, visible []int, focusedIdx int, config *settings.Config, screenWidth, viewportHeight int, lastVisited int64) (string, int) {
 	leftMargin := strings.Repeat(" ", constants.CommentSectionLeftMargin)
 	contentWidth := screenWidth - constants.CommentSectionLeftMargin
 
-	newComments := comment.NewCommentsCount(story, lastVisited)
-	headerRaw := meta.CommentSectionMetaBlock(story, config, newComments) + "\n\n"
+	newComments := comment.NewCommentsCount(thread, lastVisited)
+	headerRaw := meta.CommentSectionMetaBlock(thread, config, newComments) + "\n\n"
 
 	// Indent the header with left margin.
 	header, _ := text.WrapWithPad(headerRaw, screenWidth, leftMargin)
@@ -31,13 +30,13 @@ func renderFromFlat(story *item.Story, flat []FlatComment, visible []int, focuse
 
 	lineCount := strings.Count(header, "\n")
 
-	firstCommentID := comment.FirstCommentID(story.Comments)
+	firstCommentID := comment.FirstCommentID(thread.Comments)
 
 	for vi, flatIdx := range visible {
 		fc := &flat[flatIdx]
 
 		// Separator.
-		sep := comment.Separator(fc.Depth, config.CommentWidth, fc.Story.ID, firstCommentID)
+		sep := comment.Separator(fc.Depth, config.CommentWidth, fc.Comment.ID, firstCommentID)
 		if sep != "" {
 			indentedSep, _ := text.WrapWithPad(sep, screenWidth, leftMargin)
 			sb.WriteString(indentedSep)
@@ -52,7 +51,7 @@ func renderFromFlat(story *item.Story, flat []FlatComment, visible []int, focuse
 		availableWidth := contentWidth - depthIndentLen
 		adjustedCommentWidth := config.CommentWidth - fc.Depth
 
-		rendered := comment.RenderBody(fc.Story, config, story.User, fc.GrandParentPoster,
+		rendered := comment.RenderBody(fc.Comment, config, thread.Author, fc.GrandParentPoster,
 			adjustedCommentWidth, availableWidth, lastVisited)
 
 		// Apply depth indentation then left margin.
