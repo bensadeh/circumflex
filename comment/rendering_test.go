@@ -92,37 +92,6 @@ func TestIsMod(t *testing.T) {
 	assert.False(t, IsMod("other"))
 }
 
-func TestDescendantCount(t *testing.T) {
-	t.Parallel()
-
-	root := &Comment{
-		Children: []*Comment{
-			{
-				Content: "a",
-				Children: []*Comment{
-					{Content: "b"},
-				},
-			},
-			{Content: "c"},
-		},
-	}
-
-	assert.Equal(t, 3, DescendantCount(root))
-}
-
-func TestDescendantCount_SkipsDeleted(t *testing.T) {
-	t.Parallel()
-
-	root := &Comment{
-		Children: []*Comment{
-			{Content: "[deleted]"},
-			{Content: "alive"},
-		},
-	}
-
-	assert.Equal(t, 1, DescendantCount(root))
-}
-
 func TestNewCommentsCount(t *testing.T) {
 	t.Parallel()
 

@@ -117,23 +117,6 @@ func RenderBody(c *Comment, depth int, config *settings.Config, originalPoster, 
 	return header + paddedComment
 }
 
-// DescendantCount returns the total number of descendants of a comment,
-// skipping deleted comments with no replies.
-func DescendantCount(c *Comment) int {
-	count := 0
-
-	for _, reply := range c.Children {
-		if reply.Content == "[deleted]" && len(reply.Children) == 0 {
-			continue
-		}
-
-		count++
-		count += DescendantCount(reply)
-	}
-
-	return count
-}
-
 // NewCommentsCount returns the number of new comments since lastVisited.
 func NewCommentsCount(thread *Thread, lastVisited int64) int {
 	count := 0
