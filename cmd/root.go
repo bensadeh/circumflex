@@ -3,7 +3,6 @@ package cmd
 import (
 	"clx/bubble"
 	"clx/categories"
-	"clx/cli"
 	"clx/hn"
 	"clx/indent"
 	"clx/less"
@@ -44,10 +43,6 @@ func Root() *cobra.Command {
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
-			}
-
-			if config.EnableNerdFonts {
-				cli.EnableNerdFontsInLess()
 			}
 
 			lessKey, err := less.NewLesskey()

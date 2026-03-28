@@ -3,11 +3,9 @@ package bubble
 import (
 	"clx/bubble/list"
 	"clx/categories"
-	"clx/cli"
 	"clx/favorites"
 	"clx/file"
 	"clx/settings"
-	"context"
 	"fmt"
 	"os"
 
@@ -41,8 +39,6 @@ func (m model) View() tea.View {
 }
 
 func Run(config *settings.Config, cat *categories.Categories) {
-	cli.ClearScreen(context.Background())
-
 	m := model{list: list.New(list.NewDefaultDelegate(), config, cat, favorites.New(file.PathToFavoritesFile()), 0, 0)}
 
 	p := tea.NewProgram(m)
