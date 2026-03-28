@@ -1,18 +1,68 @@
 package cmd
 
 import (
-	"clx/cli"
+	"clx/bubble/comments"
+	"clx/bubble/list/message"
+	"clx/comment"
 	"clx/convert"
-	"clx/tree"
-	_ "embed"
 	"fmt"
 	"os"
 	"strconv"
 	"time"
 
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	"github.com/spf13/cobra"
-	"golang.org/x/term"
 )
+
+// commentModel wraps comments.Model so it can be used as a standalone Bubble Tea program.
+type commentModel struct {
+	view   *comments.Model
+	ready  bool
+	thread *comment.Thread
+	config commentLaunchConfig
+}
+
+type commentLaunchConfig struct {
+	lastVisited int64
+}
+
+func (m commentModel) Init() tea.Cmd {
+	return nil
+}
+
+func (m commentModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		if !m.ready {
+			m.ready = true
+
+			wmsg := msg
+			m.view = comments.New(m.thread, m.config.lastVisited, getConfig(), wmsg.Width, wmsg.Height)
+
+			return m, m.view.Init()
+		}
+	case message.CommentViewQuitMsg:
+		return m, tea.Quit
+	}
+
+	if m.view == nil {
+		return m, nil
+	}
+
+	return m, m.view.Update(msg)
+}
+
+func (m commentModel) View() tea.View {
+	if m.view == nil {
+		return tea.NewView("")
+	}
+
+	v := tea.NewView(lipgloss.NewStyle().Render(m.view.View()))
+	v.AltScreen = true
+
+	return v
+}
 
 func commentsCmd() *cobra.Command {
 	return &cobra.Command{
@@ -31,24 +81,23 @@ func commentsCmd() *cobra.Command {
 
 			service := newService()
 
-			comments, err := service.FetchComments(cmd.Context(), id)
+			story, err := service.FetchComments(cmd.Context(), id)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
 			}
 
-			config := getConfig()
+			thread := convert.StoryToThread(story)
 
-			screenWidth, _, err := term.GetSize(int(os.Stdout.Fd()))
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-				os.Exit(1)
+			m := commentModel{
+				thread: thread,
+				config: commentLaunchConfig{
+					lastVisited: time.Now().Unix(),
+				},
 			}
 
-			thread := convert.StoryToThread(comments)
-			commentTree := tree.Print(thread, config, screenWidth, time.Now().Unix())
-
-			if err := cli.RunLess(cmd.Context(), commentTree, config); err != nil {
+			p := tea.NewProgram(m)
+			if _, err := p.Run(); err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
 			}

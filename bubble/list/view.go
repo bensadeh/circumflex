@@ -14,10 +14,7 @@ import (
 func (m *Model) View() string {
 	if m.state == StateHelpScreen {
 		return fmt.Sprintf("%s\n%s\n%s",
-			header.Header(
-				m.cat.ActiveCategories(),
-				m.cat.CurrentIndex(),
-				m.width),
+			header.HelpHeader(m.width),
 			m.viewport.View(),
 			m.statusAndPaginationView())
 	}
