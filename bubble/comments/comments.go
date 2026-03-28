@@ -3,6 +3,7 @@ package comments
 import (
 	"clx/bubble/list/message"
 	"clx/comment"
+	"clx/meta"
 	"clx/settings"
 	"clx/style"
 	"strings"
@@ -50,6 +51,9 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 	flat := flatten(thread)
 	visible := computeVisible(flat)
 
+	newComments := comment.NewCommentsCount(thread, lastVisited)
+	header := meta.CommentSectionMetaBlock(thread, config, newComments) + "\n\n"
+
 	m := Model{
 		viewport:   vp,
 		keymap:     km,
@@ -58,7 +62,9 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 		visible:    visible,
 		focusedIdx: -1, // no focus in scroll mode
 		rc: renderContext{
-			thread:         thread,
+			header:         header,
+			originalPoster: thread.Author,
+			firstCommentID: comment.FirstCommentID(thread.Comments),
 			config:         config,
 			screenWidth:    width,
 			viewportHeight: height - footerHeight,
