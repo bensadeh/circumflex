@@ -3,6 +3,7 @@ package comments
 import (
 	"clx/bubble/list/message"
 	"clx/comment"
+	"clx/constants"
 	"clx/meta"
 	"clx/settings"
 	"clx/style"
@@ -192,7 +193,8 @@ func (m *Model) View() string {
 }
 
 func (m *Model) headerView() string {
-	title := style.Bold(m.title)
+	padding := strings.Repeat(" ", constants.CommentSectionLeftMargin)
+	title := padding + style.Bold(m.title)
 	separator := strings.Repeat("‾", m.rc.screenWidth)
 
 	return title + "\n" + separator

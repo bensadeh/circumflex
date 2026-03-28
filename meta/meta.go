@@ -6,7 +6,6 @@ import (
 	"clx/nerdfonts"
 	"clx/settings"
 	"clx/style"
-	"clx/syntax"
 	"fmt"
 	"strconv"
 
@@ -65,7 +64,7 @@ func CommentSectionMetaBlock(t *comment.Thread, config *settings.Config, newComm
 	joined := lipgloss.JoinHorizontal(lipgloss.Left, leftColumn.Render(leftColumnText),
 		rightColumn.Render(rightColumnText))
 
-	return getHeadline(t.Title, config) + newParagraph + s.Render(url+joined+rootComment)
+	return s.Render(url + joined + rootComment)
 }
 
 func getAuthor(author string, enableNerdFonts bool) string {
@@ -124,27 +123,6 @@ func getNewCommentsInfo(newComments int, enableNerdFonts bool) string {
 	}
 
 	return fmt.Sprintf(" (%s new)", style.MetaNewComments(comments))
-}
-
-func getHeadline(title string, config *settings.Config) string {
-	formattedTitle := highlightTitle(constants.InvisibleCharacterForTopLevelComments+" "+newLine+title, config.DisableHeadlineHighlighting,
-		config.EnableNerdFonts)
-	wrappedHeadline, _ := text.Wrap(formattedTitle, config.CommentWidth)
-
-	return wrappedHeadline
-}
-
-func highlightTitle(title string, disableHeadlineHighlighting bool, enableNerdFont bool) string {
-	highlightedTitle := title
-
-	if !disableHeadlineHighlighting {
-		highlightedTitle = syntax.HighlightYCStartupsInHeadlines(highlightedTitle, syntax.HeadlineInCommentSection, enableNerdFont)
-		highlightedTitle = syntax.HighlightYear(highlightedTitle, syntax.HeadlineInCommentSection)
-		highlightedTitle = syntax.HighlightHackerNewsHeadlines(highlightedTitle, syntax.HeadlineInCommentSection)
-		highlightedTitle = syntax.HighlightSpecialContent(highlightedTitle, syntax.HeadlineInCommentSection, enableNerdFont)
-	}
-
-	return style.Bold(highlightedTitle)
 }
 
 func getURL(url string, domain string, contentWidth int) string {
