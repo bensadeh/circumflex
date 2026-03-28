@@ -147,8 +147,9 @@ func FirstCommentID(comments []*Comment) int {
 	return comments[0].ID
 }
 
-// FoldIndicator returns a styled fold indicator for collapsed comments.
-func FoldIndicator(descendantCount, depth int) string {
+// FoldIndicator returns a styled fold indicator for collapsed comments,
+// centered within the given comment width.
+func FoldIndicator(descendantCount, depth, commentWidth int) string {
 	replies := "replies"
 	if descendantCount == 1 {
 		replies = "reply"
@@ -157,5 +158,7 @@ func FoldIndicator(descendantCount, depth int) string {
 	label := fmt.Sprintf("\u25b6 %d %s hidden", descendantCount, replies)
 	indent := IndentString(depth)
 
-	return indent + style.Faint(label) + "\n"
+	padding := max((commentWidth-len(label))/2, 0)
+
+	return "\n" + indent + strings.Repeat(" ", padding) + style.Faint(label) + "\n"
 }

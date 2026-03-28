@@ -120,13 +120,13 @@ func TestFoldIndicator(t *testing.T) {
 	t.Parallel()
 
 	t.Run("singular reply", func(t *testing.T) {
-		result := FoldIndicator(1, 0)
+		result := FoldIndicator(1, 0, 80)
 		assert.Contains(t, result, "1 reply")
 		assert.NotContains(t, result, "replies")
 	})
 
 	t.Run("plural replies", func(t *testing.T) {
-		result := FoldIndicator(3, 0)
+		result := FoldIndicator(3, 0, 80)
 		assert.Contains(t, result, "3 replies")
 	})
 }

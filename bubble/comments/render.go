@@ -72,7 +72,7 @@ func renderFromFlat(rc renderContext, flat []FlatComment, visible []int) (string
 
 		// Fold indicator for collapsed comments with children.
 		if fc.Collapsed && fc.DescendantCount > 0 {
-			indicator := comment.FoldIndicator(fc.DescendantCount, fc.Depth)
+			indicator := comment.FoldIndicator(fc.DescendantCount, fc.Depth, adjustedCommentWidth)
 			indentedIndicator, _ := text.WrapWithPad(indicator, rc.screenWidth, leftMargin)
 			sb.WriteString(indentedIndicator)
 			lineCount += strings.Count(indentedIndicator, "\n")
