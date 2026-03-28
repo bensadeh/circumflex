@@ -278,25 +278,19 @@ func (m *Model) toggleMode() {
 	}
 }
 
-// findCommentAtScroll returns the visible index of the top-level comment
-// closest to the current viewport scroll position.
+// findCommentAtScroll returns the visible index of the comment whose header
+// line is topmost within the current viewport.
 func (m *Model) findCommentAtScroll() int {
 	yOffset := m.viewport.YOffset()
-	best := 0
+	bottom := yOffset + m.viewport.VisibleLineCount()
 
 	for vi, flatIdx := range m.visible {
-		if m.flat[flatIdx].Depth != 0 {
-			continue
-		}
-
-		if m.lineMetrics[flatIdx].StartLine <= yOffset {
-			best = vi
-		} else {
-			break
+		if m.lineMetrics[flatIdx].StartLine >= yOffset && m.lineMetrics[flatIdx].StartLine < bottom {
+			return vi
 		}
 	}
 
-	return best
+	return 0
 }
 
 func (m *Model) rebuildContent() {
