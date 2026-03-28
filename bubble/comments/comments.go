@@ -24,14 +24,17 @@ type Model struct {
 	visible    []int // indices into flat
 	focusedIdx int   // index into visible (-1 = no focus, scroll mode)
 	rc         renderContext
+	title      string // story title for the fixed header
 
 	// Rendering artifacts — recomputed on every rebuildContent call.
 	lineMetrics  []LineMetrics // indexed by flat index
 	contentLines int           // actual content lines (excluding bottom padding)
 }
 
-// Reserve space for the mode indicator line at the bottom.
-const footerHeight = 1
+const (
+	headerHeight = 2 // title + overline separator
+	footerHeight = 2 // underline separator + mode indicator
+)
 
 // New creates a new comment view model.
 func New(thread *comment.Thread, lastVisited int64, config *settings.Config, width, height int) *Model {
@@ -39,7 +42,7 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 
 	vp := viewport.New(
 		viewport.WithWidth(width),
-		viewport.WithHeight(height-footerHeight),
+		viewport.WithHeight(height-headerHeight-footerHeight),
 	)
 
 	// Viewport handles j/k in scroll mode (toggled off in navigate mode).
@@ -52,7 +55,7 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 	visible := computeVisible(flat)
 
 	newComments := comment.NewCommentsCount(thread, lastVisited)
-	header := meta.CommentSectionMetaBlock(thread, config, newComments) + "\n\n"
+	header := meta.CommentSectionMetaBlock(thread, config, newComments) + "\n"
 
 	m := Model{
 		viewport:   vp,
@@ -61,13 +64,14 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 		flat:       flat,
 		visible:    visible,
 		focusedIdx: -1, // no focus in scroll mode
+		title:      thread.Title,
 		rc: renderContext{
 			header:         header,
 			originalPoster: thread.Author,
 			firstCommentID: comment.FirstCommentID(thread.Comments),
 			config:         config,
 			screenWidth:    width,
-			viewportHeight: height - footerHeight,
+			viewportHeight: height - headerHeight - footerHeight,
 			lastVisited:    lastVisited,
 		},
 	}
@@ -145,9 +149,9 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		}
 	case tea.WindowSizeMsg:
 		m.rc.screenWidth = msg.Width
-		m.rc.viewportHeight = msg.Height - footerHeight
+		m.rc.viewportHeight = msg.Height - headerHeight - footerHeight
 		m.viewport.SetWidth(msg.Width)
-		m.viewport.SetHeight(msg.Height - footerHeight)
+		m.viewport.SetHeight(msg.Height - headerHeight - footerHeight)
 		m.rebuildContent()
 
 		return nil
@@ -186,7 +190,14 @@ func (m *Model) View() string {
 	output := m.viewport.View()
 	output = m.applyFocusHighlight(output)
 
-	return output + "\n" + m.modeIndicator()
+	return m.headerView() + "\n" + output + "\n" + m.footerSeparator() + "\n" + m.modeIndicator()
+}
+
+func (m *Model) headerView() string {
+	title := style.Bold(m.title)
+	separator := strings.Repeat("‾", m.rc.screenWidth)
+
+	return title + "\n" + separator
 }
 
 var focusStyle = lipgloss.NewStyle().Reverse(true)
@@ -216,6 +227,12 @@ func (m *Model) applyFocusHighlight(viewportOutput string) string {
 	lines[screenLine] = focusStyle.Render(lines[screenLine])
 
 	return strings.Join(lines, "\n")
+}
+
+func (m *Model) footerSeparator() string {
+	underscore := lipgloss.NewStyle().Underline(true).Render(" ")
+
+	return strings.Repeat(underscore, m.rc.screenWidth)
 }
 
 func (m *Model) modeIndicator() string {
