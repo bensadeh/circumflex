@@ -19,19 +19,14 @@ type Model struct {
 	keymap   KeyMap
 	mode     Mode
 
-	thread      *comment.Thread
-	flat        []FlatComment
-	visible     []int // indices into flat
-	focusedIdx  int   // index into visible (-1 = no focus, scroll mode)
-	config      *settings.Config
-	lastVisited int64
+	flat       []FlatComment
+	visible    []int // indices into flat
+	focusedIdx int   // index into visible (-1 = no focus, scroll mode)
+	rc         renderContext
 
 	// Rendering artifacts — recomputed on every rebuildContent call.
 	lineMetrics  []LineMetrics // indexed by flat index
 	contentLines int           // actual content lines (excluding bottom padding)
-
-	width  int
-	height int
 }
 
 // Reserve space for the mode indicator line at the bottom.
@@ -56,17 +51,19 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 	visible := computeVisible(flat)
 
 	m := Model{
-		viewport:    vp,
-		keymap:      km,
-		mode:        ModeScroll,
-		thread:      thread,
-		flat:        flat,
-		visible:     visible,
-		focusedIdx:  -1, // no focus in scroll mode
-		config:      config,
-		lastVisited: lastVisited,
-		width:       width,
-		height:      height,
+		viewport:   vp,
+		keymap:     km,
+		mode:       ModeScroll,
+		flat:       flat,
+		visible:    visible,
+		focusedIdx: -1, // no focus in scroll mode
+		rc: renderContext{
+			thread:         thread,
+			config:         config,
+			screenWidth:    width,
+			viewportHeight: height - footerHeight,
+			lastVisited:    lastVisited,
+		},
 	}
 
 	m.rebuildContent()
@@ -141,8 +138,8 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 			return m.handleNavigateKeys(msg)
 		}
 	case tea.WindowSizeMsg:
-		m.width = msg.Width
-		m.height = msg.Height
+		m.rc.screenWidth = msg.Width
+		m.rc.viewportHeight = msg.Height - footerHeight
 		m.viewport.SetWidth(msg.Width)
 		m.viewport.SetHeight(msg.Height - footerHeight)
 		m.rebuildContent()
@@ -269,7 +266,7 @@ func (m *Model) findCommentAtScroll() int {
 }
 
 func (m *Model) rebuildContent() {
-	content, contentLines, metrics := renderFromFlat(m.thread, m.flat, m.visible, m.config, m.width, m.height, m.lastVisited)
+	content, contentLines, metrics := renderFromFlat(m.rc, m.flat, m.visible)
 	m.contentLines = contentLines
 	m.lineMetrics = metrics
 	m.viewport.SetContent(content)
@@ -436,8 +433,7 @@ func (m *Model) gotoBottom() {
 
 	// Scroll so the last line of real content is at the bottom of the viewport,
 	// ignoring the bottom padding.
-	viewportHeight := m.height - footerHeight
-	m.viewport.SetYOffset(max(0, m.contentLines-viewportHeight+1))
+	m.viewport.SetYOffset(max(0, m.contentLines-m.rc.viewportHeight+1))
 }
 
 func (m *Model) scrollToFocused() {
