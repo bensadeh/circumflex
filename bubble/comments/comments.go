@@ -147,11 +147,15 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 			return m.handleNavigateKeys(msg)
 		}
 	case tea.WindowSizeMsg:
+		anchorIdx := m.anchorComment()
+		screenPos := m.screenPosition(anchorIdx)
+
 		m.rc.screenWidth = msg.Width
 		m.rc.viewportHeight = msg.Height - headerHeight - footerHeight
 		m.viewport.SetWidth(msg.Width)
 		m.viewport.SetHeight(msg.Height - headerHeight - footerHeight)
 		m.rebuildContent()
+		m.restoreScreenPosition(anchorIdx, screenPos)
 
 		return nil
 	}
@@ -383,7 +387,7 @@ func (m *Model) collapseAll() {
 	screenPos := m.screenPosition(anchorIdx)
 
 	for i := range m.flat {
-		if m.flat[i].Depth == 0 && m.flat[i].DescendantCount > 0 {
+		if m.flat[i].DescendantCount > 0 {
 			m.flat[i].Collapsed = true
 		}
 	}
@@ -397,9 +401,7 @@ func (m *Model) expandAll() {
 	screenPos := m.screenPosition(anchorIdx)
 
 	for i := range m.flat {
-		if m.flat[i].Depth == 0 && m.flat[i].Collapsed {
-			m.flat[i].Collapsed = false
-		}
+		m.flat[i].Collapsed = false
 	}
 
 	m.rebuildContent()
