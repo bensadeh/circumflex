@@ -275,13 +275,17 @@ func (m *Model) toggleMode() {
 	}
 }
 
-// findCommentAtScroll returns the visible index of the comment closest to
-// the current viewport scroll position.
+// findCommentAtScroll returns the visible index of the top-level comment
+// closest to the current viewport scroll position.
 func (m *Model) findCommentAtScroll() int {
 	yOffset := m.viewport.YOffset()
 	best := 0
 
 	for vi, flatIdx := range m.visible {
+		if m.flat[flatIdx].Depth != 0 {
+			continue
+		}
+
 		if m.lineMetrics[flatIdx].StartLine <= yOffset {
 			best = vi
 		} else {
