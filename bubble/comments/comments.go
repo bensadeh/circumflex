@@ -366,7 +366,7 @@ func (m *Model) jumpToTopLevel(direction int) {
 	if direction > 0 {
 		for _, flatIdx := range m.visible {
 			if m.flat[flatIdx].Depth == 0 && m.lineMetrics[flatIdx].StartLine > yOffset+1 {
-				m.viewport.SetYOffset(max(0, m.lineMetrics[flatIdx].StartLine-1))
+				m.viewport.SetYOffset(m.lineMetrics[flatIdx].StartLine)
 
 				return
 			}
@@ -375,7 +375,7 @@ func (m *Model) jumpToTopLevel(direction int) {
 		for i := len(m.visible) - 1; i >= 0; i-- {
 			flatIdx := m.visible[i]
 			if m.flat[flatIdx].Depth == 0 && m.lineMetrics[flatIdx].StartLine < yOffset {
-				m.viewport.SetYOffset(max(0, m.lineMetrics[flatIdx].StartLine-1))
+				m.viewport.SetYOffset(m.lineMetrics[flatIdx].StartLine)
 
 				return
 			}
