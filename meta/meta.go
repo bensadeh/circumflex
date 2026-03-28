@@ -28,8 +28,13 @@ func ReaderModeMetaBlock(title string, url string, lineWidth int) string {
 
 	contentWidth := lineWidth - s.GetHorizontalBorderSize() - s.GetHorizontalPadding()
 
+	c := lipgloss.NewStyle().Foreground(style.HeaderC())
+	l := lipgloss.NewStyle().Foreground(style.HeaderL())
+	x := lipgloss.NewStyle().Foreground(style.HeaderX())
+
+	logo := c.Render("{") + l.Render("≡") + x.Render("}") + "  "
 	formattedTitle, _ := text.Wrap(style.Bold(title), lineWidth)
-	formattedTitle = constants.InvisibleCharacterForTopLevelComments + newLine + formattedTitle
+	formattedTitle = constants.InvisibleCharacterForTopLevelComments + newLine + logo + formattedTitle
 	formattedURL := style.MetaURL(text.TruncateMax(url, contentWidth))
 	info := newParagraph + style.MetaReaderMode("Reader Mode")
 
