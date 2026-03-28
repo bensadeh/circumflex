@@ -31,7 +31,7 @@ func TestPrintSingleComment(t *testing.T) {
 	thread := &comment.Thread{
 		Title: "Test", Author: "poster", Points: 10,
 		Comments: []*comment.Comment{
-			{ID: 1, Author: "bob", Content: "Hello world", Depth: 0, TimeAgo: "1h ago", Time: 50},
+			{ID: 1, Author: "bob", Content: "Hello world", TimeAgo: "1h ago", Time: 50},
 		},
 	}
 	result := tree.Print(thread, getConfig(), 120, 100)
@@ -46,8 +46,8 @@ func TestPrintCommentSeparator(t *testing.T) {
 	thread := &comment.Thread{
 		Title: "Test", Author: "poster", Points: 10,
 		Comments: []*comment.Comment{
-			{ID: 1, Author: "bob", Content: "First", Depth: 0, TimeAgo: "2h ago", Time: 50},
-			{ID: 2, Author: "carol", Content: "Second", Depth: 0, TimeAgo: "1h ago", Time: 60},
+			{ID: 1, Author: "bob", Content: "First", TimeAgo: "2h ago", Time: 50},
+			{ID: 2, Author: "carol", Content: "Second", TimeAgo: "1h ago", Time: 60},
 		},
 	}
 	result := tree.Print(thread, getConfig(), 120, 100)
@@ -62,9 +62,9 @@ func TestPrintNestedComments(t *testing.T) {
 		Title: "Test", Author: "poster", Points: 10,
 		Comments: []*comment.Comment{
 			{
-				ID: 1, Author: "bob", Content: "Parent", Depth: 0, TimeAgo: "2h ago", Time: 50,
+				ID: 1, Author: "bob", Content: "Parent", TimeAgo: "2h ago", Time: 50,
 				Children: []*comment.Comment{
-					{ID: 2, Author: "carol", Content: "Reply", Depth: 1, TimeAgo: "1h ago", Time: 60},
+					{ID: 2, Author: "carol", Content: "Reply", TimeAgo: "1h ago", Time: 60},
 				},
 			},
 		},
@@ -82,7 +82,7 @@ func TestPrintModLabel(t *testing.T) {
 	thread := &comment.Thread{
 		Title: "Test", Author: "poster", Points: 10,
 		Comments: []*comment.Comment{
-			{ID: 1, Author: "dang", Content: "Mod says hi", Depth: 0, TimeAgo: "1h ago", Time: 50},
+			{ID: 1, Author: "dang", Content: "Mod says hi", TimeAgo: "1h ago", Time: 50},
 		},
 	}
 	result := tree.Print(thread, getConfig(), 120, 100)
@@ -96,7 +96,7 @@ func TestPrintOPLabel(t *testing.T) {
 	thread := &comment.Thread{
 		Title: "Test", Author: "poster", Points: 10,
 		Comments: []*comment.Comment{
-			{ID: 1, Author: "poster", Content: "OP here", Depth: 0, TimeAgo: "1h ago", Time: 50},
+			{ID: 1, Author: "poster", Content: "OP here", TimeAgo: "1h ago", Time: 50},
 		},
 	}
 	result := tree.Print(thread, getConfig(), 120, 100)
@@ -110,7 +110,7 @@ func TestPrintNewCommentDot(t *testing.T) {
 	thread := &comment.Thread{
 		Title: "Test", Author: "poster", Points: 10,
 		Comments: []*comment.Comment{
-			{ID: 1, Author: "bob", Content: "New comment", Depth: 0, TimeAgo: "1m ago", Time: 200},
+			{ID: 1, Author: "bob", Content: "New comment", TimeAgo: "1m ago", Time: 200},
 		},
 	}
 	result := tree.Print(thread, getConfig(), 120, 100) // lastVisited=100 < Time=200
@@ -124,7 +124,7 @@ func TestPrintDeletedCommentSkipped(t *testing.T) {
 	thread := &comment.Thread{
 		Title: "Test", Author: "poster", Points: 10,
 		Comments: []*comment.Comment{
-			{ID: 1, Author: "deleted_user", Content: "[deleted]", Depth: 0, TimeAgo: "1h ago", Time: 50},
+			{ID: 1, Author: "deleted_user", Content: "[deleted]", TimeAgo: "1h ago", Time: 50},
 		},
 	}
 	result := tree.Print(thread, getConfig(), 120, 100)
@@ -139,9 +139,9 @@ func TestPrintDeletedCommentWithReplies(t *testing.T) {
 		Title: "Test", Author: "poster", Points: 10,
 		Comments: []*comment.Comment{
 			{
-				ID: 1, Author: "deleted_user", Content: "[deleted]", Depth: 0, TimeAgo: "1h ago", Time: 50,
+				ID: 1, Author: "deleted_user", Content: "[deleted]", TimeAgo: "1h ago", Time: 50,
 				Children: []*comment.Comment{
-					{ID: 2, Author: "carol", Content: "Reply to deleted", Depth: 1, TimeAgo: "30m ago", Time: 60},
+					{ID: 2, Author: "carol", Content: "Reply to deleted", TimeAgo: "30m ago", Time: 60},
 				},
 			},
 		},

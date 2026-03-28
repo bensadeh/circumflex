@@ -53,7 +53,7 @@ func renderFromFlat(thread *comment.Thread, flat []FlatComment, visible []int, c
 		availableWidth := contentWidth - depthIndentLen
 		adjustedCommentWidth := config.CommentWidth - fc.Depth
 
-		rendered := comment.RenderBody(fc.Comment, config, thread.Author, fc.GrandParentPoster,
+		rendered := comment.RenderBody(fc.Comment, fc.Depth, config, thread.Author, fc.GrandParentPoster,
 			adjustedCommentWidth, availableWidth, lastVisited)
 
 		// Apply depth indentation then left margin.

@@ -91,9 +91,9 @@ func IndentString(depth int) string {
 }
 
 // Header returns the formatted comment header line (author + label + time).
-func Header(c *Comment, originalPoster, grandParentPoster string, lastVisited int64, config *settings.Config) string {
+func Header(c *Comment, depth int, originalPoster, grandParentPoster string, lastVisited int64, config *settings.Config) string {
 	indentSize := 0
-	if c.Depth > 0 {
+	if depth > 0 {
 		indentSize = 1
 	}
 
@@ -105,12 +105,12 @@ func Header(c *Comment, originalPoster, grandParentPoster string, lastVisited in
 }
 
 // RenderBody returns the formatted comment with header, indent symbol, and content.
-func RenderBody(c *Comment, config *settings.Config, originalPoster, grandParentPoster string,
+func RenderBody(c *Comment, depth int, config *settings.Config, originalPoster, grandParentPoster string,
 	commentWidth, availableScreenWidth int, lastVisited int64,
 ) string {
-	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, c.Depth)
+	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, depth)
 
-	header := Header(c, originalPoster, grandParentPoster, lastVisited, config)
+	header := Header(c, depth, originalPoster, grandParentPoster, lastVisited, config)
 	formattedComment := Print(c.Content, config, commentWidth, availableScreenWidth)
 	paddedComment, _ := text.WrapWithPad(formattedComment, availableScreenWidth, coloredIndentSymbol)
 

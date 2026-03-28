@@ -7,7 +7,6 @@ type Comment struct {
 	Content  string
 	Time     int64
 	TimeAgo  string
-	Depth    int
 	Children []*Comment
 }
 

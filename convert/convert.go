@@ -42,7 +42,6 @@ func mapComment(s *item.Story) *comment.Comment {
 		Content:  s.Content,
 		Time:     s.Time,
 		TimeAgo:  s.TimeAgo,
-		Depth:    s.Level,
 		Children: mapComments(s.Comments),
 	}
 }
