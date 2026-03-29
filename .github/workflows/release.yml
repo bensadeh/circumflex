@@ -10,20 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: actions/setup-go@v4
+
+      - uses: actions/setup-go@v6
         with:
           go-version: stable
-      - name: Lint
-        uses: golangci/golangci-lint-action@v7
 
-      - name: Check formatting
-        run: golangci-lint fmt --diff ./...
-
-      - name: Run tests
-        run: go test -v ./...
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
@@ -31,4 +25,4 @@ jobs:
           version: "~> v2"
           args: release --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

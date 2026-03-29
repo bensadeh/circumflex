@@ -15,16 +15,3 @@ checksum:
   name_template: 'checksums.txt'
 snapshot:
   name_template: "{{ .Tag }}-next"
-brews:
-  - name: circumflex
-    repository:
-      owner: bensadeh
-      name: homebrew-circumflex
-    description: "circumflex is a command line tool for browsing Hacker News in your terminal"
-    homepage: "https://github.com/bensadeh/circumflex/"
-    license: "MIT"
-    dependencies:
-      - name: less
-    install: |
-      bin.install "circumflex" => "clx"
-      man1.install "#{buildpath}/share/man/clx.1"
