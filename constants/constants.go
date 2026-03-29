@@ -8,8 +8,9 @@ const (
 	HeaderLogoRightPadding         = 2
 	MainViewRightMarginPageCounter = 5
 	HelpScreenWidth                = 80
-	CommentSectionLeftMargin       = 2
-	ReaderViewLeftMargin           = 2
+	HeaderLeftMargin               = 2
+	CommentSectionLeftMargin       = HeaderLeftMargin
+	ReaderViewLeftMargin           = HeaderLeftMargin
 
 	NoBreakSpace = " "
 	Block        = "■"

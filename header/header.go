@@ -30,7 +30,7 @@ func HelpHeader(width int) string {
 	x := lipgloss.NewStyle().Foreground(style.HeaderX())
 
 	logo := c.Render("{") + l.Render("?") + x.Render("}")
-	title := strings.Repeat(" ", constants.HeaderLogoLeftPadding) + "Keyboard Shortcuts"
+	title := strings.Repeat(" ", constants.HeaderLeftMargin) + "Keyboard Shortcuts"
 	filler := strings.Repeat(" ", max(0, width-lipgloss.Width(title)-lipgloss.Width(logo)-2))
 
 	return title + filler + logo + "  " + "\n" + strings.Repeat("‾", width)

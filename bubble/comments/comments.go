@@ -3,6 +3,7 @@ package comments
 import (
 	"clx/bubble/list/message"
 	"clx/comment"
+	"clx/constants"
 	"clx/meta"
 	"clx/settings"
 	"clx/style"
@@ -207,7 +208,8 @@ func (m *Model) headerView() string {
 	x := lipgloss.NewStyle().Foreground(style.HeaderX())
 
 	logo := c.Render("{") + l.Render("…") + x.Render("}")
-	title := "  " + m.title
+	leftMargin := strings.Repeat(" ", constants.CommentSectionLeftMargin)
+	title := leftMargin + m.title
 	filler := strings.Repeat(" ", max(0, m.rc.screenWidth-lipgloss.Width(title)-lipgloss.Width(logo)-2))
 	separator := strings.Repeat("‾", m.rc.screenWidth)
 
