@@ -295,7 +295,7 @@ func TestRenderFromFlat_LineMetricsMonotonic(t *testing.T) {
 
 	visible := computeVisible(flat)
 	rc := defaultRenderContext()
-	_, _, metrics := renderFromFlat(rc, flat, visible)
+	_, _, metrics := renderFromFlat(rc, flat, visible, make([]cachedComment, len(flat)))
 
 	prevStart := -1
 
@@ -322,7 +322,7 @@ func TestRenderFromFlat_LineCountMatchesContent(t *testing.T) {
 
 	visible := computeVisible(flat)
 	rc := defaultRenderContext()
-	content, contentLines, metrics := renderFromFlat(rc, flat, visible)
+	content, contentLines, metrics := renderFromFlat(rc, flat, visible, make([]cachedComment, len(flat)))
 
 	// Total newlines = content lines + bottom padding.
 	totalNewlines := strings.Count(content, "\n")
@@ -353,7 +353,7 @@ func TestRenderFromFlat_CollapsedShowsFoldIndicator(t *testing.T) {
 
 	visible := computeVisible(flat)
 	rc := defaultRenderContext()
-	content, _, _ := renderFromFlat(rc, flat, visible)
+	content, _, _ := renderFromFlat(rc, flat, visible, make([]cachedComment, len(flat)))
 
 	assert.Contains(t, content, "1 reply hidden")
 }
@@ -373,7 +373,7 @@ func TestRenderFromFlat_NonVisibleMetricsAreZero(t *testing.T) {
 	require.Len(t, visible, 1)
 
 	rc := defaultRenderContext()
-	_, _, metrics := renderFromFlat(rc, flat, visible)
+	_, _, metrics := renderFromFlat(rc, flat, visible, make([]cachedComment, len(flat)))
 
 	assert.Equal(t, LineMetrics{}, metrics[1])
 }
