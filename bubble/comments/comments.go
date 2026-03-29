@@ -27,6 +27,7 @@ type Model struct {
 	title      string // story title for the fixed header
 
 	// Rendering artifacts — recomputed on every rebuildContent call.
+	baseContent  string        // rendered content without focus styling
 	lineMetrics  []LineMetrics // indexed by flat index
 	contentLines int           // actual content lines (excluding bottom padding)
 }
@@ -186,13 +187,10 @@ func (m *Model) handleNavigateKeys(msg tea.KeyPressMsg) tea.Cmd {
 	return nil
 }
 
-// View renders the comment view. Focus highlighting is applied here as a
-// display overlay, keeping rendering independent of navigation state.
+// View renders the comment view. Focus styling is baked into the viewport
+// content by applyFocus, so View just assembles the layout.
 func (m *Model) View() string {
-	output := m.viewport.View()
-	output = m.applyFocusHighlight(output)
-
-	return m.headerView() + "\n" + output + "\n" + m.footerSeparator() + "\n" + m.modeIndicator()
+	return m.headerView() + "\n" + m.viewport.View() + "\n" + m.footerSeparator() + "\n" + m.modeIndicator()
 }
 
 func (m *Model) headerView() string {
@@ -209,31 +207,30 @@ func (m *Model) headerView() string {
 
 var focusStyle = lipgloss.NewStyle().Reverse(true)
 
-// applyFocusHighlight highlights the focused comment's header line in the
-// viewport output. This operates on the final display, not on content —
-// rendering and focus indication are fully independent.
-func (m *Model) applyFocusHighlight(viewportOutput string) string {
+// applyFocus applies focus styling to the cached base content and updates
+// the viewport. Content rendering and focus are independent concerns:
+// rebuildContent produces unstyled base content, applyFocus layers on
+// the visual focus indicator using lipgloss.
+func (m *Model) applyFocus() {
 	if m.mode != ModeNavigate || m.focusedIdx < 0 || m.focusedIdx >= len(m.visible) {
-		return viewportOutput
+		m.viewport.SetContent(m.baseContent)
+
+		return
 	}
 
 	flatIdx := m.visible[m.focusedIdx]
 	lm := m.lineMetrics[flatIdx]
 
-	// Convert content-space line position to screen-space.
-	screenLine := lm.StartLine - m.viewport.YOffset()
-	if screenLine < 0 || screenLine >= m.viewport.VisibleLineCount() {
-		return viewportOutput
+	lines := strings.Split(m.baseContent, "\n")
+	if lm.StartLine >= len(lines) {
+		m.viewport.SetContent(m.baseContent)
+
+		return
 	}
 
-	lines := strings.Split(viewportOutput, "\n")
-	if screenLine >= len(lines) {
-		return viewportOutput
-	}
+	lines[lm.StartLine] = focusStyle.Render(lines[lm.StartLine])
 
-	lines[screenLine] = focusStyle.Render(lines[screenLine])
-
-	return strings.Join(lines, "\n")
+	m.viewport.SetContent(strings.Join(lines, "\n"))
 }
 
 func (m *Model) footerSeparator() string {
@@ -267,6 +264,8 @@ func (m *Model) toggleMode() {
 			m.focusedIdx = m.findCommentAtScroll()
 		}
 
+		m.applyFocus()
+
 	case ModeNavigate:
 		m.mode = ModeScroll
 
@@ -275,6 +274,8 @@ func (m *Model) toggleMode() {
 		m.viewport.KeyMap.Down.SetEnabled(true)
 
 		m.focusedIdx = -1
+
+		m.applyFocus()
 	}
 }
 
@@ -298,7 +299,8 @@ func (m *Model) rebuildContent() {
 	content, contentLines, metrics := renderFromFlat(m.rc, m.flat, m.visible)
 	m.contentLines = contentLines
 	m.lineMetrics = metrics
-	m.viewport.SetContent(content)
+	m.baseContent = content
+	m.applyFocus()
 }
 
 func (m *Model) collapse() {
@@ -321,6 +323,7 @@ func (m *Model) collapse() {
 
 	if m.focusedIdx >= len(m.visible) {
 		m.focusedIdx = len(m.visible) - 1
+		m.applyFocus()
 	}
 
 	m.restoreScreenPosition(flatIdx, screenPos)
@@ -357,6 +360,7 @@ func (m *Model) navigateComment(direction int) {
 	}
 
 	m.focusedIdx = newIdx
+	m.applyFocus()
 	m.scrollToFocused()
 }
 
@@ -446,6 +450,7 @@ func (m *Model) restoreScreenPosition(flatIdx, screenPos int) {
 func (m *Model) gotoTop() {
 	if m.mode == ModeNavigate && len(m.visible) > 0 {
 		m.focusedIdx = 0
+		m.applyFocus()
 	}
 
 	m.viewport.GotoTop()
@@ -454,6 +459,7 @@ func (m *Model) gotoTop() {
 func (m *Model) gotoBottom() {
 	if m.mode == ModeNavigate && len(m.visible) > 0 {
 		m.focusedIdx = len(m.visible) - 1
+		m.applyFocus()
 	}
 
 	// Scroll so the last line of real content is at the bottom of the viewport,
