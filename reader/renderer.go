@@ -141,9 +141,9 @@ func renderImage(text string, lineWidth int) string {
 	normal := style.Reset
 	imageColor := style.ReaderImageColor()
 	imageLabel := normal +
-		lipgloss.NewStyle().Foreground(imageColor).Faint(true).Render(constants.Circle) +
-		lipgloss.NewStyle().Foreground(lipgloss.Yellow).Faint(true).Render(constants.Circle) +
-		lipgloss.NewStyle().Foreground(lipgloss.Blue).Faint(true).Render(constants.Circle) +
+		lipgloss.NewStyle().Foreground(style.HeaderC()).Faint(true).Render(constants.Circle) +
+		lipgloss.NewStyle().Foreground(style.HeaderL()).Faint(true).Render(constants.Circle) +
+		lipgloss.NewStyle().Foreground(style.HeaderX()).Faint(true).Render(constants.Circle) +
 		normal + lipgloss.NewStyle().Foreground(imageColor).Faint(true).Italic(true).Render(" Image ") + style.ANSIFaint + style.Italic
 
 	text = reImageRefEOL.ReplaceAllString(text, imageLabel+`$1`)

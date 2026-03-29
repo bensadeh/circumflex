@@ -29,12 +29,11 @@ func HelpHeader(width int) string {
 	l := lipgloss.NewStyle().Foreground(style.HeaderL())
 	x := lipgloss.NewStyle().Foreground(style.HeaderX())
 
-	leftPad := strings.Repeat(" ", constants.HeaderLogoLeftPadding)
-	rightPad := strings.Repeat(" ", constants.HeaderLogoRightPadding)
-	logo := leftPad + c.Render("{") + l.Render("?") + x.Render("}") + rightPad
-	title := logo + "Keyboard Shortcuts"
+	logo := c.Render("{") + l.Render("?") + x.Render("}")
+	title := strings.Repeat(" ", constants.HeaderLogoLeftPadding) + "Keyboard Shortcuts"
+	filler := strings.Repeat(" ", max(0, width-lipgloss.Width(title)-lipgloss.Width(logo)-2))
 
-	return title + "\n" + strings.Repeat("‾", width)
+	return title + filler + logo + "  " + "\n" + strings.Repeat("‾", width)
 }
 
 func getFiller(title string, categories string, width int) string {

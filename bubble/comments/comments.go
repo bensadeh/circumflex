@@ -206,11 +206,12 @@ func (m *Model) headerView() string {
 	l := lipgloss.NewStyle().Foreground(style.HeaderL())
 	x := lipgloss.NewStyle().Foreground(style.HeaderX())
 
-	logo := c.Render("  {") + l.Render("…") + x.Render("}  ")
-	title := logo + m.title
+	logo := c.Render("{") + l.Render("…") + x.Render("}")
+	title := "  " + m.title
+	filler := strings.Repeat(" ", max(0, m.rc.screenWidth-lipgloss.Width(title)-lipgloss.Width(logo)-2))
 	separator := strings.Repeat("‾", m.rc.screenWidth)
 
-	return title + "\n" + separator
+	return title + filler + logo + "  " + "\n" + separator
 }
 
 var focusStyle = lipgloss.NewStyle().Reverse(true)
