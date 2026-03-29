@@ -52,12 +52,12 @@ func Article(ctx context.Context, url string, title string, width int, indentati
 
 	article, err := readability.FromReader(bytes.NewReader(resp.Bytes()), parsedURL)
 	if err != nil {
-		return "", fmt.Errorf("could not parse article: %w", err)
+		return "", fmt.Errorf("could not parse article from %s", parsedURL.Host)
 	}
 
 	var buf bytes.Buffer
 	if err := article.RenderHTML(&buf); err != nil {
-		return "", fmt.Errorf("could not render article: %w", err)
+		return "", fmt.Errorf("could not extract readable content from %s", parsedURL.Host)
 	}
 
 	articleContentInRawHtmlAndSanitized := ansi.Strip(buf.String())
