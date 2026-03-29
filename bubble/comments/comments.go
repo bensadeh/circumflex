@@ -33,8 +33,9 @@ type Model struct {
 }
 
 const (
-	headerHeight = 2 // title + overline separator
-	footerHeight = 2 // underline separator + mode indicator
+	headerHeight  = 2 // title + overline separator
+	footerHeight  = 2 // underline separator + mode indicator
+	scrollPadding = 2 // breathing room above/below when scrolling to a comment
 )
 
 // New creates a new comment view model.
@@ -481,14 +482,14 @@ func (m *Model) scrollToFocused() {
 	// Only scroll if the focused comment is outside the visible area.
 	if lm.StartLine < top {
 		// Scrolling up — put comment a few lines below the top.
-		m.viewport.SetYOffset(max(0, lm.StartLine-2))
+		m.viewport.SetYOffset(max(0, lm.StartLine-scrollPadding))
 	} else if lm.StartLine+lm.LineCount > bottom {
 		if lm.LineCount >= m.viewport.VisibleLineCount() {
 			// Comment is taller than viewport — show its start.
-			m.viewport.SetYOffset(max(0, lm.StartLine-2))
+			m.viewport.SetYOffset(max(0, lm.StartLine-scrollPadding))
 		} else {
 			// Comment fits — scroll just enough to show it fully.
-			m.viewport.SetYOffset(lm.StartLine - m.viewport.VisibleLineCount() + lm.LineCount + 2)
+			m.viewport.SetYOffset(lm.StartLine - m.viewport.VisibleLineCount() + lm.LineCount + scrollPadding)
 		}
 	}
 }
