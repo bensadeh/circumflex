@@ -1,7 +1,11 @@
 package constants
 
 const (
-	MainViewLeftMargin             = 7
+	RankWidth                      = 6
+	RankRightPadding               = 1
+	MainViewLeftMargin             = RankWidth + RankRightPadding
+	HeaderLogoLeftPadding          = 2
+	HeaderLogoRightPadding         = 2
 	MainViewRightMarginPageCounter = 5
 	CommentSectionLeftMargin       = 3
 	ReaderViewLeftMargin           = 2

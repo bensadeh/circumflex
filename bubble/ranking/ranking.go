@@ -1,6 +1,7 @@
 package ranking
 
 import (
+	"clx/constants"
 	"strconv"
 	"strings"
 
@@ -10,7 +11,6 @@ import (
 const (
 	newParagraph         = "\n\n\n"
 	indentationFromRight = " "
-	rankWidth            = 6
 )
 
 func Rankings(useRelativeNumbering bool, itemsVisible, itemsTotal, currentPosition, currentPage, totalPages int, readStatuses []bool, faintAll bool) string {
@@ -26,7 +26,7 @@ func Rankings(useRelativeNumbering bool, itemsVisible, itemsTotal, currentPositi
 }
 
 var (
-	rankStyle            = lipgloss.NewStyle().Width(rankWidth).Align(lipgloss.Right)
+	rankStyle            = lipgloss.NewStyle().Width(constants.RankWidth).Align(lipgloss.Right)
 	rankFaintStyle       = rankStyle.Faint(true)
 	rankFaintItalicStyle = rankStyle.Faint(true).Italic(true)
 	faintStyle           = lipgloss.NewStyle().Faint(true)

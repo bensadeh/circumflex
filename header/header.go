@@ -2,6 +2,7 @@ package header
 
 import (
 	"clx/categories"
+	"clx/constants"
 	"clx/style"
 	"image/color"
 	"strings"
@@ -14,7 +15,9 @@ func Header(allCategories []categories.Category, selectedSubHeader int, width in
 	l := lipgloss.NewStyle().Foreground(style.HeaderL())
 	x := lipgloss.NewStyle().Foreground(style.HeaderX())
 
-	title := c.Render("  c") + l.Render("l") + x.Render("x  ")
+	leftPad := strings.Repeat(" ", constants.HeaderLogoLeftPadding)
+	rightPad := strings.Repeat(" ", constants.HeaderLogoRightPadding)
+	title := leftPad + c.Render("c") + l.Render("l") + x.Render("x") + rightPad
 	cats := getCategories(allCategories, selectedSubHeader)
 	filler := getFiller(title, cats, width)
 
@@ -26,7 +29,9 @@ func HelpHeader(width int) string {
 	l := lipgloss.NewStyle().Foreground(style.HeaderL())
 	x := lipgloss.NewStyle().Foreground(style.HeaderX())
 
-	logo := c.Render("  {") + l.Render("?") + x.Render("}  ")
+	leftPad := strings.Repeat(" ", constants.HeaderLogoLeftPadding)
+	rightPad := strings.Repeat(" ", constants.HeaderLogoRightPadding)
+	logo := leftPad + c.Render("{") + l.Render("?") + x.Render("}") + rightPad
 	title := logo + style.Bold("Keyboard Shortcuts")
 
 	return title + "\n" + strings.Repeat("‾", width)
