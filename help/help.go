@@ -14,7 +14,6 @@ const (
 func HelpScreen(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Binding) string {
 	var sb strings.Builder
 
-	sb.WriteString(constants.InvisibleCharacterForTopLevelComments + newPar)
 	sb.WriteString(constants.InvisibleCharacterForTopLevelComments + Text(screenWidth, enableNerdFonts, mainMenuBindings) + newPar)
 
 	return sb.String()
