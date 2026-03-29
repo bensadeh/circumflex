@@ -1,10 +1,8 @@
 package cmd
 
 import (
-	"clx/cli"
-	"clx/less"
+	readerView "clx/bubble/reader"
 	"clx/reader"
-	_ "embed"
 	"fmt"
 	"os"
 
@@ -27,19 +25,8 @@ func urlCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			lesskey, err := less.NewLesskey()
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Could not create lesskey: %v\n", err)
-				os.Exit(1)
-			}
-			defer lesskey.Remove()
-
-			config.LesskeyPath = lesskey.Path()
-
-			command := cli.Less(cmd.Context(), article, config)
-
-			if err := command.Run(); err != nil {
-				fmt.Fprintf(os.Stderr, "Could not run less: %v\n", err)
+			if err := readerView.Run(article, "Reader Mode"); err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
 			}
 		},

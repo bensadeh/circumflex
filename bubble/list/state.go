@@ -11,7 +11,7 @@ const (
 	StateAddFavoritesPrompt
 	StateRemoveFavoritesPrompt
 	StateHelpScreen
-	StateEditorOpen
+	StateReaderView
 	StateCommentView
 )
 

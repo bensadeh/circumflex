@@ -24,8 +24,8 @@ func (m *Model) View() string {
 		availHeight = m.height
 	)
 
-	if m.state == StateEditorOpen {
-		return ""
+	if m.state == StateReaderView {
+		return m.readerView.View()
 	}
 
 	if m.state == StateCommentView {
@@ -106,7 +106,7 @@ func (m *Model) statusAndPaginationView() string {
 		// no pagination on help screen
 	case StateFetching:
 		rightContent = strings.Repeat(m.Styles.InactivePaginationDot.String(), m.config.PageMultiplier)
-	case StateStartup, StateBrowsing, StateAddFavoritesPrompt, StateRemoveFavoritesPrompt, StateEditorOpen:
+	case StateStartup, StateBrowsing, StateAddFavoritesPrompt, StateRemoveFavoritesPrompt, StateReaderView:
 		rightContent = m.pager.Paginator.View()
 	case StateCommentView:
 		// Comment view handles its own footer.

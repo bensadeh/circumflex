@@ -20,7 +20,6 @@ type Config struct {
 	DebugMode                   bool
 	DebugFallible               bool
 	EnableNerdFonts             bool
-	LesskeyPath                 string
 	PageMultiplier              int
 	Theme                       *theme.Theme
 }

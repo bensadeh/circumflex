@@ -11,8 +11,7 @@ const (
 	CommentSectionLeftMargin       = 2
 	ReaderViewLeftMargin           = 2
 
-	InvisibleCharacterForTopLevelComments = "\u200b"
-	NoBreakSpace                          = " "
-	Block                                 = "■"
-	Circle                                = "●"
+	NoBreakSpace = " "
+	Block        = "■"
+	Circle       = "●"
 )

@@ -2,6 +2,7 @@ package list
 
 import (
 	"clx/bubble/list/message"
+	"clx/bubble/reader"
 	"clx/categories"
 	"clx/comment"
 	"clx/favorites"
@@ -124,11 +125,11 @@ func TestStartup_InitializesOnWindowSizeMsg(t *testing.T) {
 	assert.NotNil(t, cmd, "should return batch cmd with spinner + fetch")
 }
 
-func TestEditorFinished_RestoresState(t *testing.T) {
+func TestReaderViewQuit_RestoresState(t *testing.T) {
 	m := newTestModelReady(t)
-	m.state = StateEditorOpen
+	m.state = StateReaderView
 
-	m, _ = m.Update(message.EditorFinishedMsg{})
+	m, _ = m.Update(message.ReaderViewQuitMsg{})
 	assert.Equal(t, StateBrowsing, m.state)
 }
 
@@ -356,8 +357,9 @@ func TestArticleReady_WithError(t *testing.T) {
 func TestArticleReady_WithContent(t *testing.T) {
 	m := newTestModelReady(t)
 
-	_, cmd := m.Update(message.ArticleReady{Content: "article content"})
-	assert.NotNil(t, cmd, "should return ExecProcess cmd")
+	m, _ = m.Update(message.ArticleReady{Content: "article content", Title: "Test"})
+	assert.Equal(t, StateReaderView, m.state)
+	assert.NotNil(t, m.readerView, "should create reader view")
 }
 
 func TestAddFavoritesPrompt(t *testing.T) {
@@ -479,12 +481,13 @@ func TestSpinnerTick_WhenInactive(t *testing.T) {
 
 // --- Phase 0b: View snapshot tests ---
 
-func TestViewEmpty_WhenNotVisible(t *testing.T) {
+func TestViewReaderView_HasContent(t *testing.T) {
 	m := newTestModelReady(t)
-	m.state = StateEditorOpen
+	m.readerView = reader.New("test content", "Test Title", 80, 24)
+	m.state = StateReaderView
 
 	got := m.View()
-	assert.Empty(t, got)
+	assert.NotEmpty(t, got)
 }
 
 func TestViewBrowsing_HasContent(t *testing.T) {

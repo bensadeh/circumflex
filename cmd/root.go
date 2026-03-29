@@ -5,7 +5,6 @@ import (
 	"clx/categories"
 	"clx/hn"
 	"clx/indent"
-	"clx/less"
 	"clx/settings"
 	"clx/style"
 	"clx/theme"
@@ -44,15 +43,6 @@ func Root() *cobra.Command {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
 			}
-
-			lessKey, err := less.NewLesskey()
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Could not create lesskey: %v\n", err)
-				os.Exit(1)
-			}
-
-			config.LesskeyPath = lessKey.Path()
-			defer lessKey.Remove()
 
 			bubble.Run(config, cat)
 		},

@@ -3,8 +3,8 @@ package list
 import (
 	"clx/bubble/comments"
 	"clx/bubble/list/message"
+	"clx/bubble/reader"
 	"clx/categories"
-	"clx/cli"
 	"clx/favorites"
 	"clx/help"
 	"clx/history"
@@ -82,6 +82,7 @@ type Model struct {
 
 	viewport    viewport.Model
 	commentView *comments.Model
+	readerView  *reader.Model
 
 	// Cached styles for hot-path rendering.
 	contentStyle    lipgloss.Style
@@ -218,8 +219,11 @@ func (m *Model) handleWindowResize(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 	m.width = msg.Width
 	m.height = msg.Height
 
+	if m.state == StateReaderView {
+		return m, m.readerView.Update(msg)
+	}
+
 	if m.state == StateCommentView {
-		// Forward resize to comment view instead of help viewport.
 		return m, m.commentView.Update(msg)
 	}
 
@@ -338,16 +342,16 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 			return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
 		}
 
-		m.state = StateEditorOpen
+		m.readerView = reader.New(msg.Content, msg.Title, m.width, m.height)
+		m.state = StateReaderView
 
-		command := cli.Less(context.Background(), msg.Content, m.config)
+		return m, m.readerView.Init()
 
-		return m, tea.ExecProcess(command, func(err error) tea.Msg {
-			return message.EditorFinishedMsg{Err: err}
-		})
-
-	case message.EditorFinishedMsg:
+	case message.ReaderViewQuitMsg:
+		m.readerView = nil
 		m.state = StateBrowsing
+
+		return m, nil
 
 	case message.FetchAndChangeToCategory:
 		return m, m.fetchAndChangeToCategory(msg)
@@ -389,6 +393,10 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 	case message.CategoryFetchingFinished:
 		return m.handleCategoryFetchingFinished(msg)
+	}
+
+	if m.state == StateReaderView {
+		return m, m.readerView.Update(msg)
 	}
 
 	if m.state == StateCommentView {

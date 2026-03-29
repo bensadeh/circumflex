@@ -2,7 +2,6 @@ package meta
 
 import (
 	"clx/comment"
-	"clx/constants"
 	"clx/nerdfonts"
 	"clx/settings"
 	"clx/style"
@@ -19,7 +18,7 @@ const (
 	newParagraph = "\n\n"
 )
 
-func ReaderModeMetaBlock(title string, url string, lineWidth int) string {
+func ReaderModeMetaBlock(url string, lineWidth int) string {
 	s := lipgloss.NewStyle().
 		BorderStyle(lipgloss.RoundedBorder()).
 		PaddingLeft(1).
@@ -28,17 +27,10 @@ func ReaderModeMetaBlock(title string, url string, lineWidth int) string {
 
 	contentWidth := lineWidth - s.GetHorizontalBorderSize() - s.GetHorizontalPadding()
 
-	c := lipgloss.NewStyle().Foreground(style.HeaderC())
-	l := lipgloss.NewStyle().Foreground(style.HeaderL())
-	x := lipgloss.NewStyle().Foreground(style.HeaderX())
-
-	logo := c.Render("{") + l.Render("≡") + x.Render("}") + "  "
-	formattedTitle, _ := text.Wrap(style.Bold(title), lineWidth)
-	formattedTitle = constants.InvisibleCharacterForTopLevelComments + newLine + logo + formattedTitle
 	formattedURL := style.MetaURL(text.TruncateMax(url, contentWidth))
 	info := newParagraph + style.MetaReaderMode("Reader Mode")
 
-	return formattedTitle + newParagraph + s.Render(formattedURL+info) + newParagraph
+	return s.Render(formattedURL+info) + newParagraph
 }
 
 func CommentSectionMetaBlock(t *comment.Thread, config *settings.Config, newComments int) string {

@@ -41,8 +41,8 @@ var (
 	reListPrefix5         = regexp.MustCompile(`^` + strings.Repeat(indentLevel1, 5) + "-")
 )
 
-func createHeader(title string, domain string, lineWidth int) string {
-	return meta.ReaderModeMetaBlock(title, domain, lineWidth)
+func createHeader(domain string, lineWidth int) string {
+	return meta.ReaderModeMetaBlock(domain, lineWidth)
 }
 
 func convertToTerminalFormat(blocks []*block, lineWidth int, indentBlock string) string {
@@ -289,7 +289,7 @@ func renderHeader(kind int, text string, lineWidth int) string {
 		text = padding + text
 	}
 
-	return constants.InvisibleCharacterForTopLevelComments + text
+	return text
 }
 
 func removeHrefs(text string) string {

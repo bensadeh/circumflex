@@ -7,9 +7,7 @@ import (
 	"time"
 )
 
-type EditorFinishedMsg struct {
-	Err error
-}
+type ReaderViewQuitMsg struct{}
 
 type EnteringCommentSection struct {
 	Id           int
@@ -79,6 +77,7 @@ type AddToFavorites struct {
 
 type ArticleReady struct {
 	Content string
+	Title   string
 	Err     error
 	FetchID uint64
 }

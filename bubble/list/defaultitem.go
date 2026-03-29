@@ -163,7 +163,7 @@ func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *item.St
 		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(true), s.MarkAsReadDesc, domain,
 			desc, syntax.MarkAsRead, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 
-	case m.pager.transition != nil || m.state == StateEditorOpen:
+	case m.pager.transition != nil || m.state == StateReaderView:
 		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(true), s.MarkAsReadDesc, domain,
 			desc, syntax.MarkAsRead, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 

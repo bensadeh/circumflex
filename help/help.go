@@ -1,7 +1,6 @@
 package help
 
 import (
-	"clx/constants"
 	"strings"
 
 	"charm.land/bubbles/v2/key"
@@ -14,7 +13,7 @@ const (
 func HelpScreen(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Binding) string {
 	var sb strings.Builder
 
-	sb.WriteString(constants.InvisibleCharacterForTopLevelComments + Text(screenWidth, enableNerdFonts, mainMenuBindings) + newPar)
+	sb.WriteString(Text(screenWidth, enableNerdFonts, mainMenuBindings) + newPar)
 
 	return sb.String()
 }

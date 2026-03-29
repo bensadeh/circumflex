@@ -1,9 +1,8 @@
 package cmd
 
 import (
-	"clx/cli"
+	readerView "clx/bubble/reader"
 	"clx/reader"
-	_ "embed"
 	"fmt"
 	"os"
 	"strconv"
@@ -45,7 +44,7 @@ func articleCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			if err := cli.RunLess(cmd.Context(), article, config); err != nil {
+			if err := readerView.Run(article, item.Title); err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
 			}

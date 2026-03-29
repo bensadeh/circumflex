@@ -16,16 +16,10 @@ const (
 
 func processArticle(text string, url string) string {
 	text = filterSite(text, url)
-	text = moveZeroWidthSpaceUpOneLine(text)
 	text = indent(text)
 	text = DeIndentInfoSection(text)
 
 	return text
-}
-
-func moveZeroWidthSpaceUpOneLine(text string) string {
-	return strings.ReplaceAll(text, newLine+constants.InvisibleCharacterForTopLevelComments,
-		constants.InvisibleCharacterForTopLevelComments+newLine)
 }
 
 func indent(commentSection string) string {

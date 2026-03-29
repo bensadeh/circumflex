@@ -72,7 +72,7 @@ func Article(ctx context.Context, url string, title string, width int, indentati
 
 	articleInTerminalFormal := convertToTerminalFormat(markdownBlocks, width, indentationSymbol)
 
-	header := createHeader(title, url, width)
+	header := createHeader(url, width)
 
 	articleInTerminalFormal = processArticle(header+articleInTerminalFormal, url)
 

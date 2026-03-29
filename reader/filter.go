@@ -2,7 +2,6 @@ package reader
 
 import (
 	"clx/ansi"
-	"clx/constants"
 	"strings"
 )
 
@@ -116,7 +115,6 @@ func equals(targets []string, line string) bool {
 	for _, target := range targets {
 		line = ansi.Strip(line)
 		line = strings.TrimSpace(line)
-		line = strings.TrimLeft(line, constants.InvisibleCharacterForTopLevelComments)
 
 		if line == target {
 			return true
@@ -142,7 +140,6 @@ func isOnLineBeforeTargetEquals(targets []string, lines []string, i int) bool {
 		nextLine := lines[i+1]
 		nextLine = ansi.Strip(nextLine)
 		nextLine = strings.TrimSpace(nextLine)
-		nextLine = strings.TrimLeft(nextLine, constants.InvisibleCharacterForTopLevelComments)
 
 		if nextLine == target {
 			return true
