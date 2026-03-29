@@ -168,6 +168,22 @@ func IndentCycle() []func(string) string {
 	return funcs
 }
 
+// Footer colors.
+
+func FooterReadMode() color.Color     { return theme.ParseColor(current.Footer.ReadMode) }
+func FooterNavigateMode() color.Color { return theme.ParseColor(current.Footer.NavigateMode) }
+
+const modeWidth = 10
+
+func ModeIndicator(mode string, modeColor color.Color, leftMargin int, bindings string) string {
+	modeStyle := lipgloss.NewStyle().
+		Foreground(modeColor).
+		Width(modeWidth).
+		MarginLeft(leftMargin)
+
+	return modeStyle.Render(mode) + Faint(bindings)
+}
+
 // Helpers.
 
 func ansiColorCode(colorName string) string {

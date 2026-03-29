@@ -19,6 +19,7 @@ type Theme struct {
 	Meta     MetaColors     `toml:"meta"`
 	Reader   ReaderColors   `toml:"reader"`
 	Header   HeaderColors   `toml:"header"`
+	Footer   FooterColors   `toml:"footer"`
 	Help     HelpColors     `toml:"help"`
 	Indent   IndentColors   `toml:"indent"`
 }
@@ -88,6 +89,11 @@ type HelpColors struct {
 	Legend         string `toml:"legend"`
 }
 
+type FooterColors struct {
+	ReadMode     string `toml:"read_mode"`
+	NavigateMode string `toml:"navigate_mode"`
+}
+
 type IndentColors struct {
 	Cycle []string `toml:"cycle"`
 }
@@ -146,6 +152,10 @@ func Default() *Theme {
 			L:         "yellow",
 			X:         "blue",
 			Favorites: "219",
+		},
+		Footer: FooterColors{
+			ReadMode:     "magenta",
+			NavigateMode: "yellow",
 		},
 		Help: HelpColors{
 			MainMenu:       "magenta",
