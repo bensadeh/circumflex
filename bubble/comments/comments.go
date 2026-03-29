@@ -26,8 +26,8 @@ type Model struct {
 	rc         renderContext
 	title      string // story title for the fixed header
 
-	// Per-comment render cache — invalidated on window resize.
-	renderCache []cachedComment
+	// Pre-rendered comment blocks — rebuilt on window resize.
+	prerendered []renderedComment
 
 	// Rendering artifacts — recomputed on every rebuildContent call.
 	baseContent  string        // rendered content without focus styling
@@ -61,6 +61,16 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 	newComments := comment.NewCommentsCount(thread, lastVisited)
 	header := meta.CommentSectionMetaBlock(thread, config, newComments) + "\n"
 
+	rc := renderContext{
+		header:         header,
+		originalPoster: thread.Author,
+		firstCommentID: comment.FirstCommentID(thread.Comments),
+		config:         config,
+		screenWidth:    width,
+		viewportHeight: height - headerHeight - footerHeight,
+		lastVisited:    lastVisited,
+	}
+
 	m := Model{
 		viewport:    vp,
 		keymap:      km,
@@ -68,16 +78,8 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 		flat:        flat,
 		focusedIdx:  -1, // no focus in scroll mode
 		title:       thread.Title,
-		renderCache: make([]cachedComment, len(flat)),
-		rc: renderContext{
-			header:         header,
-			originalPoster: thread.Author,
-			firstCommentID: comment.FirstCommentID(thread.Comments),
-			config:         config,
-			screenWidth:    width,
-			viewportHeight: height - headerHeight - footerHeight,
-			lastVisited:    lastVisited,
-		},
+		prerendered: prerenderComments(rc, flat),
+		rc:          rc,
 	}
 
 	m.rebuildContent()
@@ -159,7 +161,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		m.rc.viewportHeight = msg.Height - headerHeight - footerHeight
 		m.viewport.SetWidth(msg.Width)
 		m.viewport.SetHeight(msg.Height - headerHeight - footerHeight)
-		m.renderCache = make([]cachedComment, len(m.flat))
+		m.prerendered = prerenderComments(m.rc, m.flat)
 		m.rebuildContent()
 		m.restoreScreenPosition(anchorIdx, screenPos)
 
@@ -302,7 +304,7 @@ func (m *Model) findCommentAtScroll() int {
 
 func (m *Model) rebuildContent() {
 	m.visible = computeVisible(m.flat)
-	content, contentLines, metrics := renderFromFlat(m.rc, m.flat, m.visible, m.renderCache)
+	content, contentLines, metrics := renderFromFlat(m.rc, m.flat, m.visible, m.prerendered)
 	m.contentLines = contentLines
 	m.lineMetrics = metrics
 	m.baseContent = content
