@@ -6,7 +6,6 @@ import (
 	"charm.land/lipgloss/v2"
 
 	termText "github.com/MichaelMure/go-term-text"
-	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 const (
@@ -64,8 +63,7 @@ func (k *List) Print(screenWidth int) string {
 	for _, item := range k.keymaps {
 		switch item.category {
 		case header:
-			centeredHeader := text.AlignCenter.Apply(item.header, screenWidth)
-			output.WriteString(centeredHeader + newline)
+			output.WriteString(item.header + newline)
 		case separator:
 			output.WriteString(newline)
 		case keymap:

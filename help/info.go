@@ -17,7 +17,7 @@ func Text(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Binding)
 	keys := new(keymaps.List)
 	keys.Init()
 
-	keys.AddHeader(lipgloss.NewStyle().Foreground(style.HelpMainMenuColor()).Underline(true).Render(" Main Menu "))
+	keys.AddHeader(lipgloss.NewStyle().Foreground(style.HelpMainMenuColor()).Render("Main Menu"))
 	keys.AddSeparator()
 
 	for _, b := range mainMenuBindings {
@@ -32,7 +32,7 @@ func Text(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Binding)
 
 	keys.AddSeparator()
 
-	keys.AddHeader(lipgloss.NewStyle().Foreground(style.HelpCommentColor()).Underline(true).Render(" Comment Section / Reader Mode "))
+	keys.AddHeader(lipgloss.NewStyle().Foreground(style.HelpCommentColor()).Render("Comment Section / Reader Mode"))
 	keys.AddSeparator()
 	keys.AddKeymap("Down / up one line", "j, k")
 	keys.AddKeymap("Down / up one half-window", "d, u")
@@ -43,7 +43,7 @@ func Text(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Binding)
 	keys.AddKeymap("Return to circumflex", "q")
 	keys.AddSeparator()
 
-	keys.AddHeader(lipgloss.NewStyle().Foreground(style.HelpLegendColor()).Underline(true).Render(" Legend "))
+	keys.AddHeader(lipgloss.NewStyle().Foreground(style.HelpLegendColor()).Render("Legend"))
 	keys.AddSeparator()
 	keys.AddKeymap("Original Poster", style.CommentOP(getOP(enableNerdFonts)))
 	keys.AddKeymap("Grandparent Poster", style.CommentGP(getGP(enableNerdFonts)))
