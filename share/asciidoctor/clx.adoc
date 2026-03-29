@@ -175,5 +175,5 @@ CLX_BROWSER and ran as a single command.
 
 Ben Sadeh (github.com/bensadeh/circumflex)
 
-Released under the GNU Affero General Public License v3.0
+Released under the MIT License
 

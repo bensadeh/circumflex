@@ -24,6 +24,10 @@ _WIP_
 - Fetching can now be canceled
 - Normalize header levels in reader mode so articles always start at h1
 
+**License**
+
+- Change license from AGPL-3.0 to MIT
+
 **Dependencies**
 
 - Use the official HN Firebase API for all requests
