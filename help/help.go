@@ -11,15 +11,11 @@ const (
 	newPar = "\n\n"
 )
 
-const helpTextWidth = 70
-
-func HelpScreen(enableNerdFonts bool, mainMenuBindings []key.Binding) string {
-	textWidth := helpTextWidth
-
+func HelpScreen(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Binding) string {
 	var sb strings.Builder
 
 	sb.WriteString(constants.InvisibleCharacterForTopLevelComments + newPar)
-	sb.WriteString(constants.InvisibleCharacterForTopLevelComments + Text(textWidth, enableNerdFonts, mainMenuBindings) + newPar)
+	sb.WriteString(constants.InvisibleCharacterForTopLevelComments + Text(screenWidth, enableNerdFonts, mainMenuBindings) + newPar)
 
 	return sb.String()
 }

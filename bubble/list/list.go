@@ -228,8 +228,7 @@ func (m *Model) handleWindowResize(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 
 	content := lipgloss.NewStyle().
 		Width(msg.Width).
-		AlignHorizontal(lipgloss.Center).
-		SetString(help.HelpScreen(m.config.EnableNerdFonts, m.keymap.MainMenuBindings()))
+		SetString(help.HelpScreen(msg.Width, m.config.EnableNerdFonts, m.keymap.MainMenuBindings()))
 
 	m.viewport.SetContent(content.String())
 
@@ -257,8 +256,7 @@ func (m *Model) handleStartup(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 
 	content := lipgloss.NewStyle().
 		Width(msg.Width).
-		AlignHorizontal(lipgloss.Center).
-		SetString(help.HelpScreen(m.config.EnableNerdFonts, m.keymap.MainMenuBindings()))
+		SetString(help.HelpScreen(msg.Width, m.config.EnableNerdFonts, m.keymap.MainMenuBindings()))
 
 	m.viewport.SetContent(content.String())
 

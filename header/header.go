@@ -32,7 +32,7 @@ func HelpHeader(width int) string {
 	leftPad := strings.Repeat(" ", constants.HeaderLogoLeftPadding)
 	rightPad := strings.Repeat(" ", constants.HeaderLogoRightPadding)
 	logo := leftPad + c.Render("{") + l.Render("?") + x.Render("}") + rightPad
-	title := logo + style.Bold("Keyboard Shortcuts")
+	title := logo + "Keyboard Shortcuts"
 
 	return title + "\n" + strings.Repeat("‾", width)
 }

@@ -201,7 +201,7 @@ func (m *Model) headerView() string {
 	x := lipgloss.NewStyle().Foreground(style.HeaderX())
 
 	logo := c.Render("  {") + l.Render("…") + x.Render("}  ")
-	title := logo + style.Bold(m.title)
+	title := logo + m.title
 	separator := strings.Repeat("‾", m.rc.screenWidth)
 
 	return title + "\n" + separator

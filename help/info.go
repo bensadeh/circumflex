@@ -54,22 +54,11 @@ func Text(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Binding)
 	keys.AddSeparator()
 	keys.AddSeparator()
 
-	keymapsWidth := 80
-	listOfKeymaps := keys.Print(keymapsWidth)
-	listOfKeymapsCentered := alignCenter(listOfKeymaps, screenWidth, keymapsWidth)
+	contentWidth := min(constants.HelpScreenWidth, screenWidth-constants.MainViewLeftMargin)
+	listOfKeymaps := keys.Print(contentWidth)
 
-	return listOfKeymapsCentered
-}
-
-func alignCenter(input string, screenWidth int, keymapsWidth int) string {
-	padding := screenWidth/2 - keymapsWidth/2 - constants.MainViewLeftMargin
-
-	if padding < 0 {
-		return input
-	}
-
-	padToCenterAlign := strings.Repeat(" ", padding)
-	output, _ := text.WrapWithPad(input, screenWidth, padToCenterAlign)
+	leftMargin := strings.Repeat(" ", constants.MainViewLeftMargin)
+	output, _ := text.WrapWithPad(listOfKeymaps, screenWidth, leftMargin)
 
 	return output
 }

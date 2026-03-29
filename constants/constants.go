@@ -7,6 +7,7 @@ const (
 	HeaderLogoLeftPadding          = 2
 	HeaderLogoRightPadding         = 2
 	MainViewRightMarginPageCounter = 5
+	HelpScreenWidth                = 80
 	CommentSectionLeftMargin       = 3
 	ReaderViewLeftMargin           = 2
 
