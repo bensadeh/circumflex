@@ -8,7 +8,7 @@ const (
 	HeaderLogoRightPadding         = 2
 	MainViewRightMarginPageCounter = 5
 	HelpScreenWidth                = 80
-	CommentSectionLeftMargin       = 3
+	CommentSectionLeftMargin       = 2
 	ReaderViewLeftMargin           = 2
 
 	InvisibleCharacterForTopLevelComments = "\u200b"
