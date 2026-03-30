@@ -30,7 +30,7 @@ func newThread(comments ...*comment.Comment) *comment.Thread {
 	}
 }
 
-func expandAll(flat []FlatComment) {
+func expandAll(flat []flatComment) {
 	for i := range flat {
 		flat[i].Collapsed = false
 	}
@@ -202,7 +202,7 @@ func TestFlatten_EmptyThread(t *testing.T) {
 func TestComputeVisible_AllExpanded(t *testing.T) {
 	t.Parallel()
 
-	flat := []FlatComment{
+	flat := []flatComment{
 		{Depth: 0, DescendantCount: 2},
 		{Depth: 1, DescendantCount: 1},
 		{Depth: 2, DescendantCount: 0},
@@ -214,7 +214,7 @@ func TestComputeVisible_AllExpanded(t *testing.T) {
 func TestComputeVisible_CollapsedSkipsDescendants(t *testing.T) {
 	t.Parallel()
 
-	flat := []FlatComment{
+	flat := []flatComment{
 		{Depth: 0, Collapsed: true, DescendantCount: 3}, // A
 		{Depth: 1, DescendantCount: 1},                  // B (hidden)
 		{Depth: 2, DescendantCount: 0},                  // C (hidden)
@@ -228,7 +228,7 @@ func TestComputeVisible_CollapsedSkipsDescendants(t *testing.T) {
 func TestComputeVisible_NestedCollapse(t *testing.T) {
 	t.Parallel()
 
-	flat := []FlatComment{
+	flat := []flatComment{
 		{Depth: 0, Collapsed: true, DescendantCount: 2}, // A (collapsed)
 		{Depth: 1, Collapsed: true, DescendantCount: 1}, // B (collapsed, but hidden by A)
 		{Depth: 2, DescendantCount: 0},                  // C (hidden)
@@ -241,7 +241,7 @@ func TestComputeVisible_NestedCollapse(t *testing.T) {
 func TestComputeVisible_MidTreeCollapse(t *testing.T) {
 	t.Parallel()
 
-	flat := []FlatComment{
+	flat := []flatComment{
 		{Depth: 0, DescendantCount: 3},                  // A
 		{Depth: 1, Collapsed: true, DescendantCount: 1}, // B (collapsed)
 		{Depth: 2, DescendantCount: 0},                  // C (hidden by B)
@@ -260,7 +260,7 @@ func TestComputeVisible_Empty(t *testing.T) {
 func TestComputeVisible_CollapsedLeafNoEffect(t *testing.T) {
 	t.Parallel()
 
-	flat := []FlatComment{
+	flat := []flatComment{
 		{Depth: 0, Collapsed: true, DescendantCount: 0},
 		{Depth: 0, DescendantCount: 0},
 	}
@@ -375,5 +375,5 @@ func TestRenderFromFlat_NonVisibleMetricsAreZero(t *testing.T) {
 	rc := defaultRenderContext()
 	_, _, metrics := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat), -1)
 
-	assert.Equal(t, LineMetrics{}, metrics[1])
+	assert.Equal(t, lineMetrics{}, metrics[1])
 }

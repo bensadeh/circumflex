@@ -62,5 +62,5 @@ func writeToDisk(h *Persistent, filePath string) error {
 		return err
 	}
 
-	return file.WriteToDir(filepath.Dir(filePath), filepath.Base(filePath), string(visitedStoriesJSON))
+	return file.WriteToFile(filePath, string(visitedStoriesJSON))
 }

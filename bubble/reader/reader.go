@@ -17,7 +17,7 @@ import (
 // Model is the Bubble Tea model for the built-in reader view.
 type Model struct {
 	viewport viewport.Model
-	keymap   KeyMap
+	keymap   keyMap
 
 	headerLines    []int  // line indices containing ■ (section headers)
 	title          string // article title for the fixed header

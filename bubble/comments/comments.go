@@ -20,10 +20,10 @@ import (
 // Model is the Bubble Tea model for the native comment view.
 type Model struct {
 	viewport viewport.Model
-	keymap   KeyMap
-	mode     Mode
+	keymap   keyMap
+	mode     mode
 
-	flat       []FlatComment
+	flat       []flatComment
 	visible    []int // indices into flat
 	focusedIdx int   // index into visible (-1 = no focus, scroll mode)
 	rc         renderContext
@@ -34,7 +34,7 @@ type Model struct {
 	prerendered []renderedComment
 
 	// Rendering artifacts — recomputed on every rebuildContent or updateViewport call.
-	lineMetrics  []LineMetrics // indexed by flat index
+	lineMetrics  []lineMetrics // indexed by flat index
 	contentLines int           // actual content lines (excluding bottom padding)
 }
 
@@ -82,7 +82,7 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 	m := Model{
 		viewport:    vp,
 		keymap:      km,
-		mode:        ModeScroll,
+		mode:        modeScroll,
 		flat:        flat,
 		focusedIdx:  -1, // no focus in scroll mode
 		title:       thread.Title,
@@ -190,7 +190,7 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 	}
 
 	if key.Matches(msg, m.keymap.Collapse) {
-		if m.mode == ModeScroll {
+		if m.mode == modeScroll {
 			m.collapseAll()
 		} else {
 			m.setCollapsed(true)
@@ -200,7 +200,7 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 	}
 
 	if key.Matches(msg, m.keymap.Expand) {
-		if m.mode == ModeScroll {
+		if m.mode == modeScroll {
 			m.expandAll()
 		} else {
 			m.setCollapsed(false)
@@ -210,7 +210,7 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 	}
 
 	if key.Matches(msg, m.keymap.ToggleCollapse) {
-		if m.mode == ModeScroll {
+		if m.mode == modeScroll {
 			m.toggleCollapseAll()
 		} else {
 			m.toggleCollapse()
@@ -219,31 +219,31 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		return nil
 	}
 
-	if m.mode == ModeScroll && key.Matches(msg, m.keymap.HalfPageDown) {
+	if m.mode == modeScroll && key.Matches(msg, m.keymap.HalfPageDown) {
 		m.halfPageDown()
 
 		return nil
 	}
 
-	if m.mode == ModeScroll && key.Matches(msg, m.keymap.HalfPageUp) {
+	if m.mode == modeScroll && key.Matches(msg, m.keymap.HalfPageUp) {
 		m.halfPageUp()
 
 		return nil
 	}
 
-	if m.mode == ModeScroll && key.Matches(msg, m.keymap.PageDown) {
+	if m.mode == modeScroll && key.Matches(msg, m.keymap.PageDown) {
 		m.pageDown()
 
 		return nil
 	}
 
-	if m.mode == ModeScroll && key.Matches(msg, m.keymap.PageUp) {
+	if m.mode == modeScroll && key.Matches(msg, m.keymap.PageUp) {
 		m.pageUp()
 
 		return nil
 	}
 
-	if m.mode == ModeNavigate {
+	if m.mode == modeNavigate {
 		return m.handleNavigateKeys(msg)
 	}
 
@@ -309,7 +309,7 @@ func (m *Model) headerView() string {
 // header variant for the focused comment.
 func (m *Model) updateViewport() {
 	focusedFlatIdx := -1
-	if m.mode == ModeNavigate && m.focusedIdx >= 0 && m.focusedIdx < len(m.visible) {
+	if m.mode == modeNavigate && m.focusedIdx >= 0 && m.focusedIdx < len(m.visible) {
 		focusedFlatIdx = m.visible[m.focusedIdx]
 	}
 
@@ -327,13 +327,13 @@ func (m *Model) footerSeparator() string {
 
 func (m *Model) modeIndicator() string {
 	switch m.mode {
-	case ModeScroll:
+	case modeScroll:
 		return style.ModeIndicator(style.Logo("{", "≡", "}"), []style.Binding{
 			{Key: "⇥", Desc: "navigate mode"},
 			{Key: "n/N", Desc: "next/prev thread"},
 			{Key: "↩", Desc: "collapse/expand all"},
 		})
-	case ModeNavigate:
+	case modeNavigate:
 		return style.ModeIndicator(style.Logo("{", "…", "}"), []style.Binding{
 			{Key: "⇥", Desc: "read mode    "},
 			{Key: "n/N", Desc: "next/prev thread"},
@@ -346,8 +346,8 @@ func (m *Model) modeIndicator() string {
 
 func (m *Model) toggleMode() {
 	switch m.mode {
-	case ModeScroll:
-		m.mode = ModeNavigate
+	case modeScroll:
+		m.mode = modeNavigate
 
 		// Disable viewport j/k so our navigate bindings take over.
 		m.viewport.KeyMap.Up.SetEnabled(false)
@@ -360,8 +360,8 @@ func (m *Model) toggleMode() {
 
 		m.updateViewport()
 
-	case ModeNavigate:
-		m.mode = ModeScroll
+	case modeNavigate:
+		m.mode = modeScroll
 
 		// Re-enable viewport j/k.
 		m.viewport.KeyMap.Up.SetEnabled(true)
@@ -479,7 +479,7 @@ func (m *Model) jumpToTopLevel(direction int) {
 }
 
 func (m *Model) setFocusIfNavigating(visibleIdx int) {
-	if m.mode != ModeNavigate {
+	if m.mode != modeNavigate {
 		return
 	}
 
@@ -598,7 +598,7 @@ func (m *Model) pageUp() {
 }
 
 func (m *Model) gotoTop() {
-	if m.mode == ModeNavigate && len(m.visible) > 0 {
+	if m.mode == modeNavigate && len(m.visible) > 0 {
 		m.focusedIdx = 0
 		m.updateViewport()
 	}
@@ -607,7 +607,7 @@ func (m *Model) gotoTop() {
 }
 
 func (m *Model) gotoBottom() {
-	if m.mode == ModeNavigate && len(m.visible) > 0 {
+	if m.mode == modeNavigate && len(m.visible) > 0 {
 		m.focusedIdx = len(m.visible) - 1
 		m.updateViewport()
 	}

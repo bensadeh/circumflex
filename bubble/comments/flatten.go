@@ -4,11 +4,11 @@ import (
 	"clx/comment"
 )
 
-// FlatComment represents a single comment in the flattened view of the tree.
+// flatComment represents a single comment in the flattened view of the tree.
 // Comment is stored by value (not pointer) so mutations cannot affect the
 // original tree. Rendering artifacts like line positions are tracked
-// separately in LineMetrics.
-type FlatComment struct {
+// separately in lineMetrics.
+type flatComment struct {
 	Comment         comment.Comment
 	Depth           int
 	Collapsed       bool
@@ -16,9 +16,9 @@ type FlatComment struct {
 	TopLevelAuthor  string
 }
 
-// LineMetrics tracks the rendered position of a comment in the viewport.
+// lineMetrics tracks the rendered position of a comment in the viewport.
 // Indexed by flat index; recomputed on every render.
-type LineMetrics struct {
+type lineMetrics struct {
 	StartLine int
 	LineCount int
 }
@@ -27,8 +27,8 @@ type LineMetrics struct {
 // a flat slice. Each entry retains its depth and descendant count.
 // The resulting order is load-bearing: computeVisible assumes children
 // immediately follow their parent with strictly increasing depth.
-func flatten(thread *comment.Thread) []FlatComment {
-	var result []FlatComment
+func flatten(thread *comment.Thread) []flatComment {
+	var result []flatComment
 
 	topLevelAuthor := ""
 
@@ -42,7 +42,7 @@ func flatten(thread *comment.Thread) []FlatComment {
 	return result
 }
 
-func flattenRecursive(c *comment.Comment, depth int, topLevelAuthor string, out *[]FlatComment) {
+func flattenRecursive(c *comment.Comment, depth int, topLevelAuthor string, out *[]flatComment) {
 	if c.Content == "[deleted]" && len(c.Children) == 0 {
 		return
 	}
@@ -50,7 +50,7 @@ func flattenRecursive(c *comment.Comment, depth int, topLevelAuthor string, out 
 	copied := *c
 	copied.Children = nil
 
-	fc := FlatComment{
+	fc := flatComment{
 		Comment:        copied,
 		Depth:          depth,
 		TopLevelAuthor: topLevelAuthor,
@@ -70,7 +70,7 @@ func flattenRecursive(c *comment.Comment, depth int, topLevelAuthor string, out 
 // fillDescendantCounts computes descendant counts by walking backwards.
 // Each node's count is the sum of its direct children's counts plus the
 // number of direct children. O(n) instead of O(n²).
-func fillDescendantCounts(flat []FlatComment) {
+func fillDescendantCounts(flat []flatComment) {
 	for i := len(flat) - 1; i >= 0; i-- {
 		count := 0
 
@@ -84,7 +84,7 @@ func fillDescendantCounts(flat []FlatComment) {
 
 // collapseTopLevel sets the initial collapse state: top-level comments with
 // children start collapsed so the user sees the full set of threads first.
-func collapseTopLevel(flat []FlatComment) {
+func collapseTopLevel(flat []flatComment) {
 	for i := range flat {
 		flat[i].Collapsed = flat[i].Depth == 0 && flat[i].DescendantCount > 0
 	}
@@ -92,7 +92,7 @@ func collapseTopLevel(flat []FlatComment) {
 
 // computeVisible returns indices into flat[] for comments that should be
 // displayed, skipping children of collapsed nodes.
-func computeVisible(flat []FlatComment) []int {
+func computeVisible(flat []flatComment) []int {
 	visible := make([]int, 0, len(flat))
 
 	skipUntilDepth := -1

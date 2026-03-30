@@ -2,8 +2,8 @@ package list
 
 import "charm.land/bubbles/v2/key"
 
-// KeyMap defines all keybindings for the list view.
-type KeyMap struct {
+// keyMap defines all keybindings for the list view.
+type keyMap struct {
 	Help           key.Binding
 	Quit           key.Binding
 	Up             key.Binding
@@ -26,8 +26,8 @@ type KeyMap struct {
 	Cancel         key.Binding
 }
 
-func DefaultKeyMap() KeyMap {
-	return KeyMap{
+func defaultKeyMap() keyMap {
+	return keyMap{
 		EnterComments: key.NewBinding(
 			key.WithKeys("enter"),
 			key.WithHelp("Enter", "View comment section"),
@@ -104,7 +104,7 @@ func DefaultKeyMap() KeyMap {
 
 // MainMenuBindings returns the bindings shown in the help screen's "Main Menu"
 // section. Zero-value bindings act as group separators.
-func (km KeyMap) MainMenuBindings() []key.Binding {
+func (km keyMap) MainMenuBindings() []key.Binding {
 	sep := key.Binding{}
 
 	return []key.Binding{

@@ -2,8 +2,8 @@ package reader
 
 import "charm.land/bubbles/v2/key"
 
-// KeyMap defines the keybindings for the reader view.
-type KeyMap struct {
+// keyMap defines the keybindings for the reader view.
+type keyMap struct {
 	Quit         key.Binding
 	Help         key.Binding
 	GotoTop      key.Binding
@@ -16,8 +16,8 @@ type KeyMap struct {
 	PageUp       key.Binding
 }
 
-func defaultKeyMap() KeyMap {
-	return KeyMap{
+func defaultKeyMap() keyMap {
+	return keyMap{
 		Quit: key.NewBinding(
 			key.WithKeys("q", "esc"),
 			key.WithHelp("q/esc", "back"),

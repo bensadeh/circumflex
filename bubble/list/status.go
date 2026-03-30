@@ -41,7 +41,7 @@ func (s *statusBar) hideStatusMessage() {
 func (s *statusBar) StartSpinner() tea.Cmd {
 	s.spinner = spinner.New()
 	s.spinner.Spinner = getSpinner()
-	s.spinner.Style = DefaultStyles().Spinner
+	s.spinner.Style = defaultStyles().Spinner
 
 	s.showSpinner = true
 

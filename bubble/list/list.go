@@ -57,7 +57,7 @@ type ItemDelegate interface {
 
 // Model contains the state of this component.
 type Model struct {
-	Styles Styles
+	styles styles
 
 	state  ViewState
 	status statusBar
@@ -71,7 +71,7 @@ type Model struct {
 	service     hn.Service
 	favorites   *favorites.Favorites
 	cat         *categories.Categories
-	keymap      KeyMap
+	keymap      keyMap
 	fetchCtx    context.Context //nolint:containedctx // single active fetch context, accessed only from the Update goroutine
 	cancelFetch context.CancelFunc
 	fetchID     uint64
@@ -95,21 +95,21 @@ func New(delegate ItemDelegate, config *settings.Config, cat *categories.Categor
 }
 
 func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int, service hn.Service, hist history.History) *Model {
-	styles := DefaultStyles()
+	s := defaultStyles()
 
 	sp := spinner.New()
 	sp.Spinner = getSpinner()
-	sp.Style = styles.Spinner
+	sp.Style = s.Spinner
 
 	p := paginator.New()
 	p.Type = paginator.Dots
-	p.ActiveDot = styles.ActivePaginationDot.String()
-	p.InactiveDot = styles.InactivePaginationDot.String()
+	p.ActiveDot = s.ActivePaginationDot.String()
+	p.InactiveDot = s.InactivePaginationDot.String()
 
 	items := make([][]*item.Story, numberOfCategories)
 
 	m := Model{
-		Styles: styles,
+		styles: s,
 
 		state:  StateStartup,
 		width:  width,
@@ -127,7 +127,7 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 		service:   service,
 		favorites: favorites,
 		cat:       cat,
-		keymap:    DefaultKeyMap(),
+		keymap:    defaultKeyMap(),
 
 		contentStyle:    lipgloss.NewStyle(),
 		underlineStyle:  lipgloss.NewStyle().Underline(true),

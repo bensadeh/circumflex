@@ -42,7 +42,7 @@ type renderedComment struct {
 
 // prerenderComments renders every comment in flat upfront, so that subsequent
 // collapse/expand operations only concatenate pre-rendered strings.
-func prerenderComments(rc renderContext, flat []FlatComment) []renderedComment {
+func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 	leftMargin := strings.Repeat(" ", constants.CommentSectionLeftMargin)
 	contentWidth := rc.screenWidth - constants.CommentSectionLeftMargin
 
@@ -106,7 +106,7 @@ func prerenderComments(rc renderContext, flat []FlatComment) []renderedComment {
 // The pre-rendered slice (indexed by flat index, built by prerenderComments)
 // avoids re-running the expensive syntax-highlighting and text-wrapping
 // pipeline on every collapse/expand or focus change.
-func renderFromFlat(rc renderContext, flat []FlatComment, visible []int, prerendered []renderedComment, focusedFlatIdx int) (string, int, []LineMetrics) {
+func renderFromFlat(rc renderContext, flat []flatComment, visible []int, prerendered []renderedComment, focusedFlatIdx int) (string, int, []lineMetrics) {
 	leftMargin := strings.Repeat(" ", constants.CommentSectionLeftMargin)
 
 	// Indent the pre-computed header with left margin.
@@ -118,7 +118,7 @@ func renderFromFlat(rc renderContext, flat []FlatComment, visible []int, prerend
 
 	lineCount := strings.Count(header, "\n") + 1
 
-	metrics := make([]LineMetrics, len(flat))
+	metrics := make([]lineMetrics, len(flat))
 
 	for _, flatIdx := range visible {
 		fc := flat[flatIdx]
@@ -147,7 +147,7 @@ func renderFromFlat(rc renderContext, flat []FlatComment, visible []int, prerend
 			lineCount += pre.foldLines
 		}
 
-		metrics[flatIdx] = LineMetrics{
+		metrics[flatIdx] = lineMetrics{
 			StartLine: startLine,
 			LineCount: lineCount - startLine,
 		}

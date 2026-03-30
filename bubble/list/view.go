@@ -96,7 +96,7 @@ func (m *Model) statusAndPaginationView() string {
 
 	switch m.state {
 	case StateFetching:
-		rightContent = strings.Repeat(m.Styles.InactivePaginationDot.String(), m.config.PageMultiplier)
+		rightContent = strings.Repeat(m.styles.InactivePaginationDot.String(), m.config.PageMultiplier)
 	case StateStartup, StateBrowsing, StateAddFavoritesPrompt, StateRemoveFavoritesPrompt, StateReaderView:
 		rightContent = m.pager.Paginator.View()
 	case StateCommentView, StateHelpScreen:
@@ -121,7 +121,7 @@ func (m *Model) populatedView() string {
 
 	// Empty states
 	if len(allItems) == 0 {
-		return m.Styles.NoItems.Render("")
+		return m.styles.NoItems.Render("")
 	}
 
 	start, end := m.pager.Paginator.GetSliceBounds(len(allItems))
