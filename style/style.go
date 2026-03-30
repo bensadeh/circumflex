@@ -174,7 +174,7 @@ func IndentCycle() []func(string) string {
 func FooterReadMode() color.Color     { return theme.ParseColor(current.Footer.ReadMode) }
 func FooterNavigateMode() color.Color { return theme.ParseColor(current.Footer.NavigateMode) }
 
-const modeWidth = 10
+const modeWidth = 9
 
 type Binding struct {
 	Key  string
