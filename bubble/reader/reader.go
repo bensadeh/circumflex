@@ -158,7 +158,7 @@ func (m *Model) footerSeparator() string {
 }
 
 func (m *Model) modeIndicator() string {
-	return style.ModeIndicator("READ", style.FooterReadMode(), constants.ReaderViewLeftMargin, "j/k: scroll  n/N: next/prev section  g/G: top/bottom  q: back")
+	return style.ModeIndicator("READ", style.FooterReadMode(), constants.ReaderViewLeftMargin, "n/N: next/prev section")
 }
 
 func (m *Model) gotoBottom() {

@@ -154,8 +154,8 @@ func Default() *Theme {
 			Favorites: "219",
 		},
 		Footer: FooterColors{
-			ReadMode:     "magenta",
-			NavigateMode: "yellow",
+			ReadMode:     "green",
+			NavigateMode: "cyan",
 		},
 		Help: HelpColors{
 			MainMenu:       "magenta",

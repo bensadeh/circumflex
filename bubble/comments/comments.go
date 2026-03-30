@@ -253,9 +253,9 @@ func (m *Model) footerSeparator() string {
 func (m *Model) modeIndicator() string {
 	switch m.mode {
 	case ModeScroll:
-		return style.ModeIndicator("READ", style.FooterReadMode(), constants.CommentSectionLeftMargin, "j/k: scroll  n/N: next/prev thread  h/l: collapse/expand all  g/G: top/bottom  tab: navigate")
+		return style.ModeIndicator("READ", style.FooterReadMode(), constants.CommentSectionLeftMargin, "tab: navigate  n/N: next/prev thread  h/l: collapse/expand all")
 	case ModeNavigate:
-		return style.ModeIndicator("NAVIGATE", style.FooterNavigateMode(), constants.CommentSectionLeftMargin, "j/k: comments  h/l: collapse/expand  g/G: top/bottom  tab: read mode")
+		return style.ModeIndicator("NAVIGATE", style.FooterNavigateMode(), constants.CommentSectionLeftMargin, "tab: read mode  h/l: collapse/expand")
 	}
 
 	return ""
