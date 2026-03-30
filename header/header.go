@@ -84,9 +84,7 @@ func getSelectedCategoryColor(selectedSubHeader int, cat categories.Category) (c
 		return tertiary, true
 	case 1:
 		return primary, true
-	case 2:
+	default:
 		return secondary, true
 	}
-
-	return tertiary, true
 }

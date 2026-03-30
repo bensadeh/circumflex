@@ -90,7 +90,7 @@ type Model struct {
 
 func New(delegate ItemDelegate, config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int) *Model {
 	return newModel(delegate, config, cat, favorites, width, height,
-		getService(config.DebugMode, config.DebugFallible),
+		hn.NewService(config.DebugMode, config.DebugFallible),
 		getHistory(config.DebugMode || config.DebugFallible, config.DoNotMarkSubmissionsAsRead))
 }
 

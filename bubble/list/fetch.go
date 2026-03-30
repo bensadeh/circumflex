@@ -6,7 +6,6 @@ import (
 	"clx/comment"
 	"clx/convert"
 	"clx/history"
-	"clx/hn"
 	"clx/item"
 	"clx/reader"
 	"clx/validator"
@@ -56,10 +55,6 @@ func (m *Model) getNumberOfItemsToFetch(cat categories.Category) int {
 	}
 
 	return m.pager.Paginator.PerPage
-}
-
-func getService(debugMode, debugFallible bool) hn.Service {
-	return hn.NewService(debugMode, debugFallible)
 }
 
 func getHistory(debugMode bool, doNotMarkAsRead bool) history.History {

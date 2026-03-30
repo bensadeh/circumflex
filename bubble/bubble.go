@@ -10,10 +10,7 @@ import (
 	"os"
 
 	tea "charm.land/bubbletea/v2"
-	"charm.land/lipgloss/v2"
 )
-
-var docStyle = lipgloss.NewStyle()
 
 type model struct {
 	list *list.Model
@@ -36,7 +33,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() tea.View {
-	v := tea.NewView(docStyle.Render(m.list.View()))
+	v := tea.NewView(m.list.View())
 	v.AltScreen = true
 
 	return v

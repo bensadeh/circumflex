@@ -57,7 +57,6 @@ func TestMapRootItem(t *testing.T) {
 		Score:       200,
 		By:          "author",
 		Time:        time.Now().Add(-2 * time.Hour).Unix(),
-		Type:        "story",
 		URL:         "https://example.com",
 		Text:        "<p>Self post content",
 		Descendants: 15,
@@ -82,7 +81,6 @@ func TestMapCommentItem(t *testing.T) {
 		By:   "commenter",
 		Time: time.Now().Add(-30 * time.Minute).Unix(),
 		Text: "This is a comment",
-		Type: "comment",
 	}
 
 	comment := mapCommentItem(hn)
@@ -98,7 +96,6 @@ func TestMapCommentItem_Deleted(t *testing.T) {
 		ID:      101,
 		Time:    time.Now().Unix(),
 		Deleted: true,
-		Type:    "comment",
 	}
 
 	comment := mapCommentItem(hn)
@@ -149,7 +146,6 @@ func TestFetchHNItem_WithMockServer(t *testing.T) {
 		By:    "pg",
 		Time:  1700000000,
 		URL:   "https://example.com",
-		Type:  "story",
 	}
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -203,20 +199,20 @@ func TestFetchComments_WithMockServer(t *testing.T) {
 	items := map[int]hnItem{
 		1: {
 			ID: 1, Title: "Root Story", Score: 100, By: "author",
-			Time: now.Add(-time.Hour).Unix(), Type: "story",
-			URL: "https://example.com", Descendants: 3, Kids: []int{10, 20},
+			Time: now.Add(-time.Hour).Unix(),
+			URL:  "https://example.com", Descendants: 3, Kids: []int{10, 20},
 		},
 		10: {
 			ID: 10, By: "user1", Time: now.Add(-30 * time.Minute).Unix(),
-			Type: "comment", Text: "First comment", Parent: 1, Kids: []int{11},
+			Text: "First comment", Kids: []int{11},
 		},
 		11: {
 			ID: 11, By: "user2", Time: now.Add(-15 * time.Minute).Unix(),
-			Type: "comment", Text: "Nested reply", Parent: 10,
+			Text: "Nested reply",
 		},
 		20: {
 			ID: 20, By: "user3", Time: now.Add(-20 * time.Minute).Unix(),
-			Type: "comment", Text: "Second comment", Parent: 1,
+			Text: "Second comment",
 		},
 	}
 
@@ -252,16 +248,16 @@ func TestFetchComments_DeletedComment(t *testing.T) {
 
 	items := map[int]hnItem{
 		1: {
-			ID: 1, Title: "Story", By: "author", Type: "story",
+			ID: 1, Title: "Story", By: "author",
 			Time: now.Unix(), Kids: []int{10},
 		},
 		10: {
 			ID: 10, Deleted: true, Time: now.Unix(),
-			Type: "comment", Parent: 1, Kids: []int{11},
+			Kids: []int{11},
 		},
 		11: {
 			ID: 11, By: "user", Time: now.Unix(),
-			Type: "comment", Text: "Reply to deleted", Parent: 10,
+			Text: "Reply to deleted",
 		},
 	}
 
@@ -286,16 +282,16 @@ func TestFetchComments_DeadComment(t *testing.T) {
 
 	items := map[int]hnItem{
 		1: {
-			ID: 1, Title: "Story", By: "author", Type: "story",
+			ID: 1, Title: "Story", By: "author",
 			Time: now.Unix(), Kids: []int{10, 20},
 		},
 		10: {
 			ID: 10, Dead: true, By: "spammer", Time: now.Unix(),
-			Type: "comment", Text: "Spam content", Parent: 1,
+			Text: "Spam content",
 		},
 		20: {
 			ID: 20, By: "user", Time: now.Unix(),
-			Type: "comment", Text: "Good comment", Parent: 1,
+			Text: "Good comment",
 		},
 	}
 
@@ -363,12 +359,12 @@ func TestFetchComments_ItemFetchError(t *testing.T) {
 
 	items := map[int]hnItem{
 		1: {
-			ID: 1, Title: "Story", By: "author", Type: "story",
+			ID: 1, Title: "Story", By: "author",
 			Time: now.Unix(), Kids: []int{10, 20},
 		},
 		10: {
 			ID: 10, By: "user1", Time: now.Unix(),
-			Type: "comment", Text: "Good comment", Parent: 1,
+			Text: "Good comment",
 		},
 		// Item 20 is missing — the mock server will return 404.
 	}
@@ -390,12 +386,12 @@ func TestFetchComments_NestedFetchError(t *testing.T) {
 
 	items := map[int]hnItem{
 		1: {
-			ID: 1, Title: "Story", By: "author", Type: "story",
+			ID: 1, Title: "Story", By: "author",
 			Time: now.Unix(), Kids: []int{10},
 		},
 		10: {
 			ID: 10, By: "user1", Time: now.Unix(),
-			Type: "comment", Text: "Parent comment", Parent: 1, Kids: []int{11},
+			Text: "Parent comment", Kids: []int{11},
 		},
 		// Item 11 is missing — nested fetch will fail.
 	}
@@ -417,12 +413,12 @@ func TestFetchComments_NullItemSkipped(t *testing.T) {
 
 	items := map[int]hnItem{
 		1: {
-			ID: 1, Title: "Story", By: "author", Type: "story",
+			ID: 1, Title: "Story", By: "author",
 			Time: now.Unix(), Kids: []int{10, 20},
 		},
 		10: {
 			ID: 10, By: "user1", Time: now.Unix(),
-			Type: "comment", Text: "Good comment", Parent: 1,
+			Text: "Good comment",
 		},
 		// Item 20 exists in the map but the server returns "null" (deleted item).
 	}
@@ -525,12 +521,12 @@ func TestFetchComments_RetrySuccess(t *testing.T) {
 
 	items := map[int]hnItem{
 		1: {
-			ID: 1, Title: "Story", By: "author", Type: "story",
+			ID: 1, Title: "Story", By: "author",
 			Time: now.Unix(), Kids: []int{10},
 		},
 		10: {
 			ID: 10, By: "user1", Time: now.Unix(),
-			Type: "comment", Text: "Recovered comment", Parent: 1,
+			Text: "Recovered comment",
 		},
 	}
 

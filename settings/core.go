@@ -15,7 +15,6 @@ type Config struct {
 	DisableCommentHighlighting  bool
 	DisableEmojis               bool
 	DoNotMarkSubmissionsAsRead  bool
-	HideIndentSymbol            bool
 	IndentationSymbol           string
 	DebugMode                   bool
 	DebugFallible               bool

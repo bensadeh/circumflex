@@ -111,10 +111,7 @@ func (m *Model) statusAndPaginationView() string {
 
 	right := m.statusEndStyle.Render(rightContent)
 
-	return underline + "\n" +
-		m.Styles.StatusBar.Render(left) +
-		m.Styles.StatusBar.Render(center) +
-		m.Styles.StatusBar.Render(right)
+	return underline + "\n" + left + center + right
 }
 
 func (m *Model) populatedView() string {
@@ -144,9 +141,6 @@ func (m *Model) populatedView() string {
 	itemsOnPage := m.pager.Paginator.ItemsOnPage(len(allItems))
 	if itemsOnPage < m.pager.Paginator.PerPage {
 		n := (m.pager.Paginator.PerPage - itemsOnPage) * (m.delegate.Height() + m.delegate.Spacing())
-		if len(allItems) == 0 {
-			n -= m.delegate.Height() - 1
-		}
 
 		_, _ = fmt.Fprint(&b, strings.Repeat("\n", n))
 	}
