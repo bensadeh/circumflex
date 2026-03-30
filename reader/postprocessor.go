@@ -15,9 +15,9 @@ func processArticle(text string, url string, width int) string {
 	return text
 }
 
-func indent(commentSection string, screenWidth int) string {
+func indent(commentSection string, contentWidth int) string {
 	indentBlock := strings.Repeat(" ", constants.ReaderViewLeftMargin)
-	indentedCommentSection, _ := t.WrapWithPad(commentSection, screenWidth, indentBlock)
+	indentedCommentSection, _ := t.WrapWithPad(commentSection, contentWidth+constants.ReaderViewLeftMargin, indentBlock)
 
 	return indentedCommentSection
 }

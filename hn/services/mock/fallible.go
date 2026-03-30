@@ -13,8 +13,9 @@ import (
 // simulating a real HTTP client timeout.
 type timeoutError struct{}
 
-func (e *timeoutError) Error() string { return "Client.Timeout exceeded while awaiting headers" }
-func (e *timeoutError) Timeout() bool { return true }
+func (e *timeoutError) Error() string   { return "Client.Timeout exceeded while awaiting headers" }
+func (e *timeoutError) Timeout() bool   { return true }
+func (e *timeoutError) Temporary() bool { return false }
 
 type FallibleService struct {
 	mock Service

@@ -10,7 +10,7 @@ func Validate(title, domain string) error {
 		return errors.New("reader mode not supported for videos")
 	}
 
-	if strings.Contains(title, "[pdf]") {
+	if strings.Contains(title, "[pdf]") || strings.Contains(title, "[PDF]") {
 		return errors.New("reader mode not supported for PDFs")
 	}
 

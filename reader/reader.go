@@ -50,6 +50,10 @@ func Article(ctx context.Context, url string, width int, indentationSymbol strin
 		return "", fmt.Errorf("could not fetch URL: %w", err)
 	}
 
+	if resp.StatusCode() >= 400 {
+		return "", fmt.Errorf("server returned status %d for %s", resp.StatusCode(), parsedURL.Host)
+	}
+
 	article, err := readability.FromReader(bytes.NewReader(resp.Bytes()), parsedURL)
 	if err != nil {
 		return "", fmt.Errorf("could not parse article from %s", parsedURL.Host)

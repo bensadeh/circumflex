@@ -5,6 +5,7 @@ import (
 	"clx/bubble/list/message"
 	"clx/comment"
 	"clx/convert"
+	"clx/settings"
 	"fmt"
 	"os"
 	"strconv"
@@ -17,14 +18,11 @@ import (
 
 // commentModel wraps comments.Model so it can be used as a standalone Bubble Tea program.
 type commentModel struct {
-	view   *comments.Model
-	ready  bool
-	thread *comment.Thread
-	config commentLaunchConfig
-}
-
-type commentLaunchConfig struct {
+	view        *comments.Model
+	ready       bool
+	thread      *comment.Thread
 	lastVisited int64
+	config      *settings.Config
 }
 
 func (m commentModel) Init() tea.Cmd {
@@ -41,8 +39,7 @@ func (m commentModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if !m.ready {
 			m.ready = true
 
-			wmsg := msg
-			m.view = comments.New(m.thread, m.config.lastVisited, getConfig(), wmsg.Width, wmsg.Height)
+			m.view = comments.New(m.thread, m.lastVisited, m.config, msg.Width, msg.Height)
 
 			return m, m.view.Init()
 		}
@@ -93,11 +90,12 @@ func commentsCmd() *cobra.Command {
 
 			thread := convert.StoryToThread(story)
 
+			config := getConfig()
+
 			m := commentModel{
-				thread: thread,
-				config: commentLaunchConfig{
-					lastVisited: time.Now().Unix(),
-				},
+				thread:      thread,
+				lastVisited: time.Now().Unix(),
+				config:      config,
 			}
 
 			p := tea.NewProgram(m)
