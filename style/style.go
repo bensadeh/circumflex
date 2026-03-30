@@ -181,36 +181,24 @@ func IndentCycle() []func(string) string {
 	return funcs
 }
 
-// Footer colors.
-
-func FooterReadMode() color.Color     { return theme.ParseColor(current.Footer.ReadMode) }
-func FooterNavigateMode() color.Color { return theme.ParseColor(current.Footer.NavigateMode) }
-
-const modeWidth = 9
+// Footer.
 
 type Binding struct {
 	Key  string
 	Desc string
 }
 
-func ModeIndicator(mode string, modeColor color.Color, leftMargin, screenWidth int, logo string, bindings []Binding) string {
-	modeStyle := lipgloss.NewStyle().
-		Foreground(modeColor).
-		Width(modeWidth).
-		Align(lipgloss.Center).
-		MarginLeft(leftMargin)
+func ModeIndicator(logo string, bindings []Binding) string {
+	leftPad := strings.Repeat(" ", 2)
+	rightPad := strings.Repeat(" ", 2)
+	logoBlock := leftPad + logo + rightPad
 
 	parts := make([]string, len(bindings))
 	for i, b := range bindings {
 		parts[i] = b.Key + Faint(": "+b.Desc)
 	}
 
-	left := modeStyle.Render(mode) + Faint("│ ") + strings.Join(parts, "  ")
-	leftWidth := lipgloss.Width(left)
-	logoWidth := lipgloss.Width(logo)
-	filler := strings.Repeat(" ", max(0, screenWidth-leftWidth-logoWidth-1))
-
-	return left + filler + logo + " "
+	return logoBlock + strings.Join(parts, "  ")
 }
 
 // Helpers.

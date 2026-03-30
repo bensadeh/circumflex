@@ -59,6 +59,7 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 	vp.KeyMap.HalfPageUp.SetEnabled(false)
 	vp.KeyMap.PageDown.SetEnabled(false)
 	vp.KeyMap.PageUp.SetEnabled(false)
+	vp.MouseWheelEnabled = false
 
 	flat := flatten(thread)
 
@@ -101,6 +102,19 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
 		return m.handleKeyPress(msg)
+	case tea.MouseWheelMsg:
+		delta := m.viewport.MouseWheelDelta
+		maxOffset := max(0, m.contentLines-m.rc.viewportHeight)
+
+		switch msg.Button {
+		case tea.MouseWheelDown:
+			m.viewport.SetYOffset(min(m.viewport.YOffset()+delta, maxOffset))
+		case tea.MouseWheelUp:
+			m.viewport.SetYOffset(max(0, m.viewport.YOffset()-delta))
+		}
+
+		return nil
+
 	case tea.WindowSizeMsg:
 		anchorIdx := m.anchorComment()
 		screenPos := m.screenPosition(anchorIdx)
@@ -213,9 +227,12 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 	}
 
 	// In scroll mode, delegate unhandled keys to the viewport.
+	before := m.viewport.YOffset()
+
 	var cmd tea.Cmd
 
 	m.viewport, cmd = m.viewport.Update(msg)
+	m.clampScroll(before)
 
 	return cmd
 }
@@ -228,9 +245,12 @@ func (m *Model) handleNavigateKeys(msg tea.KeyPressMsg) tea.Cmd {
 		m.navigateComment(-1)
 	default:
 		// Unhandled key — let viewport process it (pgup/pgdn/etc).
+		before := m.viewport.YOffset()
+
 		var cmd tea.Cmd
 
 		m.viewport, cmd = m.viewport.Update(msg)
+		m.clampScroll(before)
 
 		return cmd
 	}
@@ -275,13 +295,13 @@ func (m *Model) footerSeparator() string {
 func (m *Model) modeIndicator() string {
 	switch m.mode {
 	case ModeScroll:
-		return style.ModeIndicator("READ", style.FooterReadMode(), constants.CommentSectionLeftMargin, m.rc.screenWidth, style.Logo("{", "…", "}"), []style.Binding{
-			{Key: "⇥", Desc: "navigate"},
+		return style.ModeIndicator(style.Logo("{", "≡", "}"), []style.Binding{
+			{Key: "⇥", Desc: "navigate mode"},
 			{Key: "n/N", Desc: "next/prev thread"},
 			{Key: "↩", Desc: "collapse/expand all"},
 		})
 	case ModeNavigate:
-		return style.ModeIndicator("NAVIGATE", style.FooterNavigateMode(), constants.CommentSectionLeftMargin, m.rc.screenWidth, style.Logo("{", "…", "}"), []style.Binding{
+		return style.ModeIndicator(style.Logo("{", "…", "}"), []style.Binding{
 			{Key: "⇥", Desc: "read mode"},
 			{Key: "↩", Desc: "collapse/expand thread"},
 		})
@@ -522,6 +542,18 @@ func (m *Model) restoreScreenPosition(flatIdx, screenPos int) {
 	}
 
 	m.viewport.SetYOffset(max(0, m.lineMetrics[flatIdx].StartLine-screenPos))
+}
+
+// clampScroll prevents scrolling down past the last content line while still
+// allowing upward scrolling from a position beyond the clamp point (e.g. after
+// an n/N top-level jump).
+func (m *Model) clampScroll(before int) {
+	maxOffset := max(0, m.contentLines-m.rc.viewportHeight)
+	after := m.viewport.YOffset()
+
+	if after > before && after > maxOffset {
+		m.viewport.SetYOffset(max(before, maxOffset))
+	}
 }
 
 func (m *Model) halfPageDown() {

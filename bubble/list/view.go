@@ -14,10 +14,21 @@ import (
 // View renders the component.
 func (m *Model) View() string {
 	if m.state == StateHelpScreen {
-		return fmt.Sprintf("%s\n%s\n%s",
+		underscore := m.underlineStyle.Render(" ")
+		underline := strings.Repeat(underscore, m.width)
+		logo := style.ModeIndicator(style.Logo("{", "⌨", "}"), []style.Binding{})
+		logoWidth := lipgloss.Width(logo)
+		versionText := "github.com/bensadeh/circumflex • version " + version.Version
+		textWidth := lipgloss.Width(versionText)
+		centerPos := (m.width - textWidth) / 2
+		gap := strings.Repeat(" ", max(0, centerPos-logoWidth))
+		footer := logo + gap + style.Faint(versionText)
+
+		return fmt.Sprintf("%s\n%s\n%s\n%s",
 			header.HelpHeader(m.width),
 			m.viewport.View(),
-			m.statusAndPaginationView())
+			underline,
+			footer)
 	}
 
 	var (
@@ -93,11 +104,6 @@ func (m *Model) statusAndPaginationView() string {
 	underline := strings.Repeat(underscore, m.width)
 
 	switch {
-	case m.state == StateHelpScreen:
-		logo := style.Logo("{", "⌨", "}")
-		centerContent = m.faintStyle.Render(
-			"github.com/bensadeh/circumflex • version " + version.Version)
-		rightContent = logo
 	case m.status.showSpinner:
 		centerContent = m.status.spinnerView()
 	default:
@@ -105,14 +111,12 @@ func (m *Model) statusAndPaginationView() string {
 	}
 
 	switch m.state {
-	case StateHelpScreen:
-		// pagination already handled above
 	case StateFetching:
 		rightContent = strings.Repeat(m.Styles.InactivePaginationDot.String(), m.config.PageMultiplier)
 	case StateStartup, StateBrowsing, StateAddFavoritesPrompt, StateRemoveFavoritesPrompt, StateReaderView:
 		rightContent = m.pager.Paginator.View()
-	case StateCommentView:
-		// Comment view handles its own footer.
+	case StateCommentView, StateHelpScreen:
+		// These views handle their own footer.
 	}
 
 	left := m.statusLeftStyle.Render("")

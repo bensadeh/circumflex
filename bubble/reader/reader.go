@@ -44,6 +44,7 @@ func New(content, title string, width, height int) *Model {
 	vp.KeyMap.HalfPageUp.SetEnabled(false)
 	vp.KeyMap.PageDown.SetEnabled(false)
 	vp.KeyMap.PageUp.SetEnabled(false)
+	vp.MouseWheelEnabled = false
 
 	lines := strings.Split(content, "\n")
 	contentLineCount := len(lines)
@@ -63,7 +64,7 @@ func New(content, title string, width, height int) *Model {
 
 	// Add bottom padding so G scrolls the last content line to the bottom.
 	padding := strings.Repeat("\n", vpHeight)
-	padded := content + padding
+	padded := strings.TrimRight(content, "\n") + padding
 
 	vp.SetContent(padded)
 
@@ -75,11 +76,6 @@ func New(content, title string, width, height int) *Model {
 		contentLines:   contentLineCount,
 		screenWidth:    width,
 		viewportHeight: vpHeight,
-	}
-
-	// Jump to the first header on open.
-	if len(headers) > 0 {
-		vp.SetYOffset(headers[0])
 	}
 
 	return m
@@ -150,6 +146,19 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 			return nil
 		}
 
+	case tea.MouseWheelMsg:
+		delta := m.viewport.MouseWheelDelta
+		maxOffset := max(0, m.contentLines-m.viewportHeight)
+
+		switch msg.Button {
+		case tea.MouseWheelDown:
+			m.viewport.SetYOffset(min(m.viewport.YOffset()+delta, maxOffset))
+		case tea.MouseWheelUp:
+			m.viewport.SetYOffset(max(0, m.viewport.YOffset()-delta))
+		}
+
+		return nil
+
 	case tea.WindowSizeMsg:
 		m.screenWidth = msg.Width
 		m.viewportHeight = msg.Height - headerHeight - footerHeight
@@ -159,9 +168,12 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		return nil
 	}
 
+	before := m.viewport.YOffset()
+
 	var cmd tea.Cmd
 
 	m.viewport, cmd = m.viewport.Update(msg)
+	m.clampScroll(before)
 
 	return cmd
 }
@@ -186,9 +198,21 @@ func (m *Model) footerSeparator() string {
 }
 
 func (m *Model) modeIndicator() string {
-	return style.ModeIndicator("READ", style.FooterReadMode(), constants.ReaderViewLeftMargin, m.screenWidth, style.Logo("{", "≡", "}"), []style.Binding{
+	return style.ModeIndicator(style.Logo("{", "≡", "}"), []style.Binding{
 		{Key: "n/N", Desc: "next/prev section"},
 	})
+}
+
+// clampScroll prevents scrolling down past the last content line while still
+// allowing upward scrolling from a position beyond the clamp point (e.g. after
+// an n/N header jump).
+func (m *Model) clampScroll(before int) {
+	maxOffset := max(0, m.contentLines-m.viewportHeight)
+	after := m.viewport.YOffset()
+
+	if after > before && after > maxOffset {
+		m.viewport.SetYOffset(max(before, maxOffset))
+	}
 }
 
 func (m *Model) halfPageDown() {
