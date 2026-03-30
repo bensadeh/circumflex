@@ -138,17 +138,19 @@ func (m *Model) View() string {
 }
 
 func (m *Model) headerView() string {
+	leftMargin := strings.Repeat(" ", constants.ReaderViewLeftMargin)
+	title := leftMargin + m.title
+	separator := strings.Repeat("‾", m.screenWidth)
+
+	return title + "\n" + separator
+}
+
+func (m *Model) logo() string {
 	c := lipgloss.NewStyle().Foreground(style.HeaderC())
 	l := lipgloss.NewStyle().Foreground(style.HeaderL())
 	x := lipgloss.NewStyle().Foreground(style.HeaderX())
 
-	logo := c.Render("{") + l.Render("≡") + x.Render("}")
-	leftMargin := strings.Repeat(" ", constants.ReaderViewLeftMargin)
-	title := leftMargin + m.title
-	filler := strings.Repeat(" ", max(0, m.screenWidth-lipgloss.Width(title)-lipgloss.Width(logo)-2))
-	separator := strings.Repeat("‾", m.screenWidth)
-
-	return title + filler + logo + "  " + "\n" + separator
+	return c.Render("{") + l.Render("≡") + x.Render("}")
 }
 
 func (m *Model) footerSeparator() string {
@@ -158,7 +160,7 @@ func (m *Model) footerSeparator() string {
 }
 
 func (m *Model) modeIndicator() string {
-	return style.ModeIndicator("READ", style.FooterReadMode(), constants.ReaderViewLeftMargin, []style.Binding{
+	return style.ModeIndicator("READ", style.FooterReadMode(), constants.ReaderViewLeftMargin, m.screenWidth, m.logo(), []style.Binding{
 		{Key: "n/N", Desc: "next/prev section"},
 	})
 }

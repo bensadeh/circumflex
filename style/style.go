@@ -181,7 +181,7 @@ type Binding struct {
 	Desc string
 }
 
-func ModeIndicator(mode string, modeColor color.Color, leftMargin int, bindings []Binding) string {
+func ModeIndicator(mode string, modeColor color.Color, leftMargin, screenWidth int, logo string, bindings []Binding) string {
 	modeStyle := lipgloss.NewStyle().
 		Foreground(modeColor).
 		Width(modeWidth).
@@ -193,7 +193,12 @@ func ModeIndicator(mode string, modeColor color.Color, leftMargin int, bindings 
 		parts[i] = b.Key + Faint(": "+b.Desc)
 	}
 
-	return modeStyle.Render(mode) + Faint("│ ") + strings.Join(parts, "  ")
+	left := modeStyle.Render(mode) + Faint("│ ") + strings.Join(parts, "  ")
+	leftWidth := lipgloss.Width(left)
+	logoWidth := lipgloss.Width(logo)
+	filler := strings.Repeat(" ", max(0, screenWidth-leftWidth-logoWidth-1))
+
+	return left + filler + logo + " "
 }
 
 // Helpers.

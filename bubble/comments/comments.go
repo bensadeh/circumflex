@@ -218,17 +218,19 @@ func (m *Model) View() string {
 }
 
 func (m *Model) headerView() string {
+	leftMargin := strings.Repeat(" ", constants.CommentSectionLeftMargin)
+	title := leftMargin + m.title
+	separator := strings.Repeat("‾", m.rc.screenWidth)
+
+	return title + "\n" + separator
+}
+
+func (m *Model) logo() string {
 	c := lipgloss.NewStyle().Foreground(style.HeaderC())
 	l := lipgloss.NewStyle().Foreground(style.HeaderL())
 	x := lipgloss.NewStyle().Foreground(style.HeaderX())
 
-	logo := c.Render("{") + l.Render("…") + x.Render("}")
-	leftMargin := strings.Repeat(" ", constants.CommentSectionLeftMargin)
-	title := leftMargin + m.title
-	filler := strings.Repeat(" ", max(0, m.rc.screenWidth-lipgloss.Width(title)-lipgloss.Width(logo)-2))
-	separator := strings.Repeat("‾", m.rc.screenWidth)
-
-	return title + filler + logo + "  " + "\n" + separator
+	return c.Render("{") + l.Render("…") + x.Render("}")
 }
 
 var focusStyle = lipgloss.NewStyle().Reverse(true)
@@ -268,13 +270,13 @@ func (m *Model) footerSeparator() string {
 func (m *Model) modeIndicator() string {
 	switch m.mode {
 	case ModeScroll:
-		return style.ModeIndicator("READ", style.FooterReadMode(), constants.CommentSectionLeftMargin, []style.Binding{
+		return style.ModeIndicator("READ", style.FooterReadMode(), constants.CommentSectionLeftMargin, m.rc.screenWidth, m.logo(), []style.Binding{
 			{Key: "⇥", Desc: "navigate"},
 			{Key: "n/N", Desc: "next/prev thread"},
 			{Key: "↩", Desc: "collapse/expand all"},
 		})
 	case ModeNavigate:
-		return style.ModeIndicator("NAVIGATE", style.FooterNavigateMode(), constants.CommentSectionLeftMargin, []style.Binding{
+		return style.ModeIndicator("NAVIGATE", style.FooterNavigateMode(), constants.CommentSectionLeftMargin, m.rc.screenWidth, m.logo(), []style.Binding{
 			{Key: "⇥", Desc: "read mode"},
 			{Key: "↩", Desc: "collapse/expand thread"},
 		})
