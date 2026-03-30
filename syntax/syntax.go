@@ -1,6 +1,7 @@
 package syntax
 
 import (
+	"clx/ansi"
 	"clx/constants"
 	"clx/nerdfonts"
 	"clx/style"
@@ -37,13 +38,13 @@ var (
 
 func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNerdFonts bool) string {
 	if enableNerdFonts {
-		highlightedStartup := style.Reset + getYCBarNerdFonts(nerdfonts.YCombinator+constants.NoBreakSpace+`$2`, highlightType) +
+		highlightedStartup := ansi.Reset + getYCBarNerdFonts(nerdfonts.YCombinator+constants.NoBreakSpace+`$2`, highlightType) +
 			getHighlight(highlightType)
 
 		return reYCWithSeason.ReplaceAllString(comment, highlightedStartup)
 	}
 
-	highlightedStartup := style.Reset + getYCBar(`$1`, highlightType) +
+	highlightedStartup := ansi.Reset + getYCBar(`$1`, highlightType) +
 		getHighlight(highlightType)
 
 	return reYCWithoutSeason.ReplaceAllString(comment, highlightedStartup)
@@ -78,7 +79,7 @@ func getYCBarNerdFonts(text string, highlightType int) string {
 func HighlightYear(comment string, highlightType int) string {
 	content := getYear(`$1`, highlightType)
 
-	return reYear.ReplaceAllString(comment, style.Reset+content+getHighlight(highlightType))
+	return reYear.ReplaceAllString(comment, ansi.Reset+content+getHighlight(highlightType))
 }
 
 func getYear(text string, highlightType int) string {
@@ -111,7 +112,7 @@ func label(text string, fg color.Color, bg color.Color, highlightType int) strin
 		content.Bold(true)
 	}
 
-	return style.Reset +
+	return ansi.Reset +
 		getLeftBorder(bg, highlightType) +
 		content.Render(text) +
 		getRightBorder(bg, highlightType)
@@ -158,15 +159,15 @@ func HighlightHackerNewsHeadlines(title string, highlightType int) string {
 func getHighlight(highlightType int) string {
 	switch highlightType {
 	case HeadlineInCommentSection:
-		return style.ANSIBold
+		return ansi.Bold
 	case Selected:
-		return style.Reverse
+		return ansi.Reverse
 	case MarkAsRead:
-		return style.ANSIFaint + style.Italic
+		return ansi.Faint + ansi.Italic
 	case AddToFavorites:
-		return "\033[32m" + style.Reverse
+		return ansi.Green + ansi.Reverse
 	case RemoveFromFavorites:
-		return "\033[31m" + style.Reverse
+		return ansi.Red + ansi.Reverse
 	default:
 		return ""
 	}
@@ -246,10 +247,10 @@ func RemoveUnwantedWhitespace(text string) string {
 
 func HighlightDomain(domain string) string {
 	if domain == "" {
-		return style.Reset
+		return ansi.Reset
 	}
 
-	return style.Reset + style.Faint("("+domain+")")
+	return ansi.Reset + style.Faint("("+domain+")")
 }
 
 func HighlightReferences(input string) string {
@@ -270,13 +271,13 @@ func HighlightReferences(input string) string {
 
 func ColorizeIndentSymbol(indentSymbol string, level int) string {
 	if level == 0 {
-		return style.Reset
+		return ansi.Reset
 	}
 
 	cycle := style.IndentCycle()
 	idx := (level - 1) % len(cycle)
 
-	return style.Reset + cycle[idx](indentSymbol)
+	return ansi.Reset + cycle[idx](indentSymbol)
 }
 
 func TrimURLs(comment string, disableCommentHighlighting bool) string {
@@ -288,33 +289,30 @@ func TrimURLs(comment string, disableCommentHighlighting bool) string {
 
 	comment = reURL.ReplaceAllString(comment, style.CommentURL(`$1`))
 
-	comment = strings.ReplaceAll(comment, "."+style.Reset+" ", style.Reset+". ")
+	comment = strings.ReplaceAll(comment, "."+ansi.Reset+" ", ansi.Reset+". ")
 
 	return comment
 }
 
 func HighlightBackticks(input string) string {
-	backtick := "`"
-	numberOfBackticks := strings.Count(input, backtick)
-	numberOfBackticksIsOdd := numberOfBackticks%2 != 0
-
-	if numberOfBackticks == 0 || numberOfBackticksIsOdd {
+	numberOfBackticks := strings.Count(input, "`")
+	if numberOfBackticks == 0 || numberOfBackticks%2 != 0 {
 		return input
 	}
 
-	isOnFirstBacktick := true
+	parts := strings.Split(input, "`")
 
-	for range numberOfBackticks + 1 {
-		if isOnFirstBacktick {
-			input = strings.Replace(input, backtick, style.Italic+style.CommentBacktickColor(), 1)
+	var result strings.Builder
+
+	for i, part := range parts {
+		if i%2 == 1 {
+			result.WriteString(style.CommentBacktick(part))
 		} else {
-			input = strings.Replace(input, backtick, style.Reset, 1)
+			result.WriteString(part)
 		}
-
-		isOnFirstBacktick = !isOnFirstBacktick
 	}
 
-	return input
+	return result.String()
 }
 
 func HighlightMentions(input string) string {
@@ -366,8 +364,8 @@ func ReplaceHTML(input string) string {
 	input = strings.TrimPrefix(input, "<p>")
 
 	input = strings.ReplaceAll(input, "<p>", newParagraph)
-	input = strings.ReplaceAll(input, "<i>", style.Italic)
-	input = strings.ReplaceAll(input, "</i>", style.Reset)
+	input = strings.ReplaceAll(input, "<i>", ansi.Italic)
+	input = strings.ReplaceAll(input, "</i>", ansi.Reset)
 	input = strings.ReplaceAll(input, "</a>", "")
 	input = strings.ReplaceAll(input, "<pre><code>", "")
 	input = strings.ReplaceAll(input, "</code></pre>", "")

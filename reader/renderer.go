@@ -1,6 +1,7 @@
 package reader
 
 import (
+	"clx/ansi"
 	"clx/constants"
 	"clx/meta"
 	"clx/style"
@@ -136,13 +137,13 @@ func renderList(text string, lineWidth int) string {
 }
 
 func renderImage(text string, lineWidth int) string {
-	normal := style.Reset
+	normal := ansi.Reset
 	imageColor := style.ReaderImageColor()
 	imageLabel := normal +
 		lipgloss.NewStyle().Foreground(style.HeaderC()).Faint(true).Render(constants.Circle) +
 		lipgloss.NewStyle().Foreground(style.HeaderL()).Faint(true).Render(constants.Circle) +
 		lipgloss.NewStyle().Foreground(style.HeaderX()).Faint(true).Render(constants.Circle) +
-		normal + lipgloss.NewStyle().Foreground(imageColor).Faint(true).Italic(true).Render(" Image ") + style.ANSIFaint + style.Italic
+		normal + lipgloss.NewStyle().Foreground(imageColor).Faint(true).Italic(true).Render(" Image ") + ansi.Faint + ansi.Italic
 
 	text = reImageRefEOL.ReplaceAllString(text, imageLabel+`$1`)
 	text = reImageRefSpace.ReplaceAllString(text, imageLabel+`$1`)
@@ -236,15 +237,15 @@ func removeImageReference(text string) string {
 }
 
 func it(text string) string {
-	text = strings.ReplaceAll(text, italicStart, style.Italic)
-	text = strings.ReplaceAll(text, italicStop, style.ItalicOff)
+	text = strings.ReplaceAll(text, italicStart, ansi.Italic)
+	text = strings.ReplaceAll(text, italicStop, ansi.ItalicOff)
 
 	return text
 }
 
 func itReversed(text string) string {
-	text = strings.ReplaceAll(text, italicStart, style.ItalicOff)
-	text = strings.ReplaceAll(text, italicStop, style.Italic)
+	text = strings.ReplaceAll(text, italicStart, ansi.ItalicOff)
+	text = strings.ReplaceAll(text, italicStop, ansi.Italic)
 
 	return text
 }
@@ -349,13 +350,8 @@ func trimLeadingZero(text string) string {
 }
 
 func highlightBackticks(text string) string {
-	normal := style.Reset
-
-	backtick := "`"
-	numberOfBackticks := strings.Count(text, backtick)
-	numberOfBackticksIsOdd := numberOfBackticks%2 != 0
-
-	if numberOfBackticks == 0 || numberOfBackticksIsOdd {
+	numberOfBackticks := strings.Count(text, "`")
+	if numberOfBackticks == 0 || numberOfBackticks%2 != 0 {
 		return text
 	}
 
@@ -363,20 +359,32 @@ func highlightBackticks(text string) string {
 
 	for range numberOfBackticks + 1 {
 		if isOnFirstBacktick {
-			text = strings.Replace(text, backtick, codeStart, 1)
+			text = strings.Replace(text, "`", codeStart, 1)
 		} else {
-			text = strings.Replace(text, backtick, codeEnd, 1)
+			text = strings.Replace(text, "`", codeEnd, 1)
 		}
 
 		isOnFirstBacktick = !isOnFirstBacktick
 	}
 
 	text = reCodeStartAfterNonWS.ReplaceAllString(text, `$1 $2`)
-
 	text = strings.ReplaceAll(text, "( "+codeStart, "("+codeStart)
 
-	text = strings.ReplaceAll(text, codeStart, normal+style.CommentBacktickColor()+style.Italic)
-	text = strings.ReplaceAll(text, codeEnd, normal)
+	for {
+		start := strings.Index(text, codeStart)
+		if start == -1 {
+			break
+		}
+
+		end := strings.Index(text[start:], codeEnd)
+		if end == -1 {
+			break
+		}
+
+		end += start
+		content := text[start+len(codeStart) : end]
+		text = text[:start] + ansi.Reset + style.CommentBacktick(content) + text[end+len(codeEnd):]
+	}
 
 	return text
 }

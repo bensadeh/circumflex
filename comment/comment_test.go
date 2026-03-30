@@ -1,8 +1,8 @@
 package comment
 
 import (
+	"clx/ansi"
 	"clx/settings"
-	"clx/style"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -91,8 +91,8 @@ func TestPrintCodeBlock(t *testing.T) {
 	input := "<pre><code>fmt.Println(\"hello\")\n</code></pre>"
 	result := Print(input, cfg, 70, 80)
 
-	assert.Contains(t, result, style.ANSIFaint, "code block should contain dimmed ANSI")
-	assert.Contains(t, result, style.Reset, "code block should contain reset ANSI")
+	assert.Contains(t, result, ansi.Faint, "code block should contain dimmed ANSI")
+	assert.Contains(t, result, ansi.Reset, "code block should contain reset ANSI")
 	assert.Contains(t, result, "fmt.Println")
 }
 
@@ -106,8 +106,8 @@ func TestPrintQuoteBlock(t *testing.T) {
 	input := "<p>intro<p>>This is quoted"
 	result := Print(input, cfg, 70, 80)
 
-	assert.Contains(t, result, style.Italic, "quote should contain italic ANSI")
-	assert.Contains(t, result, style.ANSIFaint, "quote should contain dimmed ANSI")
+	assert.Contains(t, result, ansi.Italic, "quote should contain italic ANSI")
+	assert.Contains(t, result, ansi.Faint, "quote should contain dimmed ANSI")
 	assert.Contains(t, result, "This is quoted")
 }
 

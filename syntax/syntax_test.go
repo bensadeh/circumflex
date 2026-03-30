@@ -188,11 +188,10 @@ func TestHighlightBackticks(t *testing.T) {
 		assert.Equal(t, input, HighlightBackticks(input))
 	})
 
-	t.Run("single pair wraps in italic+magenta and reset", func(t *testing.T) {
+	t.Run("single pair wraps in styled output", func(t *testing.T) {
 		result := HighlightBackticks("use `code` here")
-		assert.Contains(t, result, "\033[3m\033[35m")
 		assert.Contains(t, result, "code")
-		assert.Contains(t, result, "\033[0m")
+		assert.Contains(t, result, "\033[") // contains ANSI styling
 		assert.NotContains(t, result, "`")
 	})
 

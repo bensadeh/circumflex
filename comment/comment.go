@@ -1,6 +1,7 @@
 package comment
 
 import (
+	"clx/ansi"
 	"clx/settings"
 	"clx/style"
 	"clx/syntax"
@@ -55,7 +56,7 @@ func Print(c string, config *settings.Config, commentWidth int, availableScreenW
 		case s.isQuote:
 			paragraph = strings.ReplaceAll(paragraph, "<i>", "")
 			paragraph = strings.ReplaceAll(paragraph, "</i>", "")
-			paragraph = strings.ReplaceAll(paragraph, "</a>", style.Reset+style.ANSIFaint+style.Italic)
+			paragraph = strings.ReplaceAll(paragraph, "</a>", ansi.Reset+ansi.Faint+ansi.Italic)
 			paragraph = syntax.ReplaceSymbols(paragraph)
 			paragraph = convertToEmojis(paragraph, config.DisableEmojis)
 
@@ -66,10 +67,10 @@ func Print(c string, config *settings.Config, commentWidth int, availableScreenW
 			paragraph = syntax.RemoveUnwantedNewLines(paragraph)
 			paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
 
-			paragraph = style.Italic + style.ANSIFaint + paragraph + style.Reset
+			paragraph = ansi.Italic + ansi.Faint + paragraph + ansi.Reset
 
 			quoteIndent := " " + config.IndentationSymbol
-			padding := text.WrapPad(style.ANSIFaint + quoteIndent)
+			padding := text.WrapPad(ansi.Faint + quoteIndent)
 			wrappedAndPaddedComment, _ := text.Wrap(paragraph, commentWidth, padding)
 			paragraph = wrappedAndPaddedComment
 
@@ -85,12 +86,12 @@ func Print(c string, config *settings.Config, commentWidth int, availableScreenW
 				isOnLastLine := j == len(codeLines)-1
 
 				if isOnLastLine {
-					formattedCodeLines.WriteString(style.ANSIFaint + codeLine + style.Reset)
+					formattedCodeLines.WriteString(ansi.Faint + codeLine + ansi.Reset)
 
 					break
 				}
 
-				formattedCodeLines.WriteString(style.ANSIFaint + codeLine + style.Reset + "\n")
+				formattedCodeLines.WriteString(ansi.Faint + codeLine + ansi.Reset + "\n")
 			}
 
 			paragraph = formattedCodeLines.String()

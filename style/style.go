@@ -2,9 +2,7 @@ package style
 
 import (
 	"clx/theme"
-	"fmt"
 	"image/color"
-	"strconv"
 	"strings"
 
 	"charm.land/lipgloss/v2"
@@ -104,8 +102,8 @@ func CommentOP(s string) string           { return colored(current.Comment.OP, s
 func CommentGP(s string) string           { return colored(current.Comment.GP, s) }
 func CommentNewIndicator(s string) string { return colored(current.Comment.NewIndicator, s) }
 
-func CommentBacktickColor() string {
-	return ansiColorCode(current.Comment.Backtick)
+func CommentBacktick(s string) string {
+	return lipgloss.NewStyle().Foreground(theme.ParseColor(current.Comment.Backtick)).Italic(true).Render(s)
 }
 
 // Meta colors.
@@ -178,43 +176,4 @@ func ModeIndicator(logo string, bindings []Binding) string {
 	}
 
 	return logoBlock + strings.Join(parts, "  ")
-}
-
-// Helpers.
-
-var namedANSI = map[string]string{
-	"red":            "\033[31m",
-	"green":          "\033[32m",
-	"yellow":         "\033[33m",
-	"blue":           "\033[34m",
-	"magenta":        "\033[35m",
-	"cyan":           "\033[36m",
-	"white":          "\033[37m",
-	"bright_red":     "\033[91m",
-	"bright_green":   "\033[92m",
-	"bright_yellow":  "\033[93m",
-	"bright_blue":    "\033[94m",
-	"bright_magenta": "\033[95m",
-	"bright_cyan":    "\033[96m",
-	"bright_white":   "\033[97m",
-}
-
-func ansiColorCode(colorStr string) string {
-	if code, ok := namedANSI[colorStr]; ok {
-		return code
-	}
-
-	if strings.HasPrefix(colorStr, "#") && len(colorStr) == 7 {
-		r, _ := strconv.ParseUint(colorStr[1:3], 16, 8)
-		g, _ := strconv.ParseUint(colorStr[3:5], 16, 8)
-		b, _ := strconv.ParseUint(colorStr[5:7], 16, 8)
-
-		return fmt.Sprintf("\033[38;2;%d;%d;%dm", r, g, b)
-	}
-
-	if n, err := strconv.Atoi(colorStr); err == nil && n >= 0 && n <= 255 {
-		return fmt.Sprintf("\033[38;5;%dm", n)
-	}
-
-	return "\033[35m"
 }
