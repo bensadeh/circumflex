@@ -38,7 +38,7 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 
 		content := lipgloss.NewStyle().
 			Width(msg.Width).
-			SetString(help.HelpScreen(msg.Width, m.config.EnableNerdFonts, m.keymap.MainMenuBindings()))
+			SetString(help.MainMenuHelpScreen(msg.Width, m.keymap.MainMenuBindings()))
 
 		m.viewport.SetContent(content.String())
 

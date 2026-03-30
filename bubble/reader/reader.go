@@ -3,6 +3,8 @@ package reader
 import (
 	"clx/bubble/list/message"
 	"clx/constants"
+	"clx/header"
+	"clx/help"
 	"clx/style"
 	"strings"
 
@@ -23,6 +25,7 @@ type Model struct {
 	screenWidth    int
 	viewportHeight int
 	standalone     bool // when true, quit sends tea.Quit instead of ReaderViewQuitMsg
+	showHelp       bool
 }
 
 const (
@@ -87,63 +90,13 @@ func (m *Model) Init() tea.Cmd {
 func (m *Model) Update(msg tea.Msg) tea.Cmd {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
-		if key.Matches(msg, m.keymap.Quit) {
-			if m.standalone {
-				return tea.Quit
-			}
-
-			return func() tea.Msg { return message.ReaderViewQuitMsg{} }
-		}
-
-		if key.Matches(msg, m.keymap.GotoTop) {
-			m.viewport.GotoTop()
-
-			return nil
-		}
-
-		if key.Matches(msg, m.keymap.GotoBottom) {
-			m.gotoBottom()
-
-			return nil
-		}
-
-		if key.Matches(msg, m.keymap.HalfPageDown) {
-			m.halfPageDown()
-
-			return nil
-		}
-
-		if key.Matches(msg, m.keymap.HalfPageUp) {
-			m.halfPageUp()
-
-			return nil
-		}
-
-		if key.Matches(msg, m.keymap.PageDown) {
-			m.pageDown()
-
-			return nil
-		}
-
-		if key.Matches(msg, m.keymap.PageUp) {
-			m.pageUp()
-
-			return nil
-		}
-
-		if key.Matches(msg, m.keymap.NextHeader) {
-			m.jumpToHeader(1)
-
-			return nil
-		}
-
-		if key.Matches(msg, m.keymap.PrevHeader) {
-			m.jumpToHeader(-1)
-
-			return nil
-		}
+		return m.handleKeyPress(msg)
 
 	case tea.MouseWheelMsg:
+		if m.showHelp {
+			return nil
+		}
+
 		delta := m.viewport.MouseWheelDelta
 		maxOffset := max(0, m.contentLines-m.viewportHeight)
 
@@ -175,8 +128,101 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 	return cmd
 }
 
+func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
+	if m.showHelp {
+		if key.Matches(msg, m.keymap.Quit, m.keymap.Help) {
+			m.showHelp = false
+		}
+
+		return nil
+	}
+
+	if key.Matches(msg, m.keymap.Quit) {
+		if m.standalone {
+			return tea.Quit
+		}
+
+		return func() tea.Msg { return message.ReaderViewQuitMsg{} }
+	}
+
+	if key.Matches(msg, m.keymap.GotoTop) {
+		m.viewport.GotoTop()
+
+		return nil
+	}
+
+	if key.Matches(msg, m.keymap.GotoBottom) {
+		m.gotoBottom()
+
+		return nil
+	}
+
+	if key.Matches(msg, m.keymap.HalfPageDown) {
+		m.halfPageDown()
+
+		return nil
+	}
+
+	if key.Matches(msg, m.keymap.HalfPageUp) {
+		m.halfPageUp()
+
+		return nil
+	}
+
+	if key.Matches(msg, m.keymap.PageDown) {
+		m.pageDown()
+
+		return nil
+	}
+
+	if key.Matches(msg, m.keymap.PageUp) {
+		m.pageUp()
+
+		return nil
+	}
+
+	if key.Matches(msg, m.keymap.NextHeader) {
+		m.jumpToHeader(1)
+
+		return nil
+	}
+
+	if key.Matches(msg, m.keymap.PrevHeader) {
+		m.jumpToHeader(-1)
+
+		return nil
+	}
+
+	if key.Matches(msg, m.keymap.Help) {
+		m.showHelp = true
+
+		return nil
+	}
+
+	before := m.viewport.YOffset()
+
+	var cmd tea.Cmd
+
+	m.viewport, cmd = m.viewport.Update(msg)
+	m.clampScroll(before)
+
+	return cmd
+}
+
 // View renders the reader view.
 func (m *Model) View() string {
+	if m.showHelp {
+		content := help.FitToHeight(
+			help.ReaderHelpScreen(m.screenWidth),
+			m.viewportHeight,
+		)
+
+		return header.HelpHeader("Reader Mode", m.screenWidth) + "\n" +
+			content + "\n" +
+			m.footerSeparator() + "\n" +
+			help.Footer(m.screenWidth)
+	}
+
 	return m.headerView() + "\n" + m.viewport.View() + "\n" + m.footerSeparator() + "\n" + m.modeIndicator()
 }
 

@@ -26,6 +26,8 @@ type KeyMap struct {
 	PageDown     key.Binding
 	PageUp       key.Binding
 
+	Help key.Binding
+
 	// Shared between modes: collapse/expand all in scroll, individual in navigate.
 	NextComment    key.Binding
 	PrevComment    key.Binding
@@ -39,6 +41,10 @@ func defaultKeyMap() KeyMap {
 		Quit: key.NewBinding(
 			key.WithKeys("q", "esc"),
 			key.WithHelp("q/esc", "back"),
+		),
+		Help: key.NewBinding(
+			key.WithKeys("i", "?"),
+			key.WithHelp("i, ?", "help"),
 		),
 		ToggleMode: key.NewBinding(
 			key.WithKeys("tab"),

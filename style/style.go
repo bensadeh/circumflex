@@ -160,15 +160,6 @@ func Logo(a, b, c string) string {
 	return cs.Render(a) + ls.Render(b) + xs.Render(c)
 }
 
-// Help colors.
-
-func HelpMainMenu(s string) string       { return colored(current.Help.MainMenu, s) }
-func HelpCommentSection(s string) string { return colored(current.Help.CommentSection, s) }
-func HelpLegend(s string) string         { return colored(current.Help.Legend, s) }
-func HelpMainMenuColor() color.Color     { return theme.ParseColor(current.Help.MainMenu) }
-func HelpCommentColor() color.Color      { return theme.ParseColor(current.Help.CommentSection) }
-func HelpLegendColor() color.Color       { return theme.ParseColor(current.Help.Legend) }
-
 // Indent colors.
 
 func IndentCycle() []func(string) string {

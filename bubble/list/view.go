@@ -3,8 +3,7 @@ package list
 import (
 	"clx/bubble/ranking"
 	"clx/header"
-	"clx/style"
-	"clx/version"
+	"clx/help"
 	"fmt"
 	"strings"
 
@@ -16,19 +15,12 @@ func (m *Model) View() string {
 	if m.state == StateHelpScreen {
 		underscore := m.underlineStyle.Render(" ")
 		underline := strings.Repeat(underscore, m.width)
-		logo := style.ModeIndicator(style.Logo("{", "⌨", "}"), []style.Binding{})
-		logoWidth := lipgloss.Width(logo)
-		versionText := "github.com/bensadeh/circumflex • version " + version.Version
-		textWidth := lipgloss.Width(versionText)
-		centerPos := (m.width - textWidth) / 2
-		gap := strings.Repeat(" ", max(0, centerPos-logoWidth))
-		footer := logo + gap + style.Faint(versionText)
 
 		return fmt.Sprintf("%s\n%s\n%s\n%s",
-			header.HelpHeader(m.width),
+			header.HelpHeader("Keyboard Shortcuts", m.width),
 			m.viewport.View(),
 			underline,
-			footer)
+			help.Footer(m.width))
 	}
 
 	var (

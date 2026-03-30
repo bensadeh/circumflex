@@ -4,6 +4,8 @@ import (
 	"clx/bubble/list/message"
 	"clx/comment"
 	"clx/constants"
+	"clx/header"
+	"clx/help"
 	"clx/meta"
 	"clx/settings"
 	"clx/style"
@@ -26,6 +28,7 @@ type Model struct {
 	focusedIdx int   // index into visible (-1 = no focus, scroll mode)
 	rc         renderContext
 	title      string // story title for the fixed header
+	showHelp   bool
 
 	// Pre-rendered comment blocks — rebuilt on window resize.
 	prerendered []renderedComment
@@ -103,6 +106,10 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 	case tea.KeyPressMsg:
 		return m.handleKeyPress(msg)
 	case tea.MouseWheelMsg:
+		if m.showHelp {
+			return nil
+		}
+
 		delta := m.viewport.MouseWheelDelta
 		maxOffset := max(0, m.contentLines-m.rc.viewportHeight)
 
@@ -134,8 +141,22 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 }
 
 func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
+	if m.showHelp {
+		if key.Matches(msg, m.keymap.Quit, m.keymap.Help) {
+			m.showHelp = false
+		}
+
+		return nil
+	}
+
 	if key.Matches(msg, m.keymap.Quit) {
 		return func() tea.Msg { return message.CommentViewQuitMsg{} }
+	}
+
+	if key.Matches(msg, m.keymap.Help) {
+		m.showHelp = true
+
+		return nil
 	}
 
 	if key.Matches(msg, m.keymap.ToggleMode) {
@@ -260,6 +281,18 @@ func (m *Model) handleNavigateKeys(msg tea.KeyPressMsg) tea.Cmd {
 
 // View renders the comment view.
 func (m *Model) View() string {
+	if m.showHelp {
+		content := help.FitToHeight(
+			help.CommentHelpScreen(m.rc.screenWidth, m.rc.config.EnableNerdFonts),
+			m.rc.viewportHeight,
+		)
+
+		return header.HelpHeader("Comment Section", m.rc.screenWidth) + "\n" +
+			content + "\n" +
+			m.footerSeparator() + "\n" +
+			help.Footer(m.rc.screenWidth)
+	}
+
 	return m.headerView() + "\n" + m.viewport.View() + "\n" + m.footerSeparator() + "\n" + m.modeIndicator()
 }
 

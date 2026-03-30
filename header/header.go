@@ -20,10 +20,10 @@ func Header(allCategories []categories.Category, selectedSubHeader int, width in
 	return title + cats + filler + "\n" + strings.Repeat("‾", width)
 }
 
-func HelpHeader(width int) string {
-	title := strings.Repeat(" ", constants.HeaderLeftMargin) + "Keyboard Shortcuts"
+func HelpHeader(title string, width int) string {
+	padded := strings.Repeat(" ", constants.HeaderLeftMargin) + title
 
-	return title + "\n" + strings.Repeat("‾", width)
+	return padded + "\n" + strings.Repeat("‾", width)
 }
 
 func getFiller(title string, categories string, width int) string {

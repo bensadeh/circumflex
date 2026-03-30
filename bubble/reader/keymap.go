@@ -5,6 +5,7 @@ import "charm.land/bubbles/v2/key"
 // KeyMap defines the keybindings for the reader view.
 type KeyMap struct {
 	Quit         key.Binding
+	Help         key.Binding
 	GotoTop      key.Binding
 	GotoBottom   key.Binding
 	NextHeader   key.Binding
@@ -20,6 +21,10 @@ func defaultKeyMap() KeyMap {
 		Quit: key.NewBinding(
 			key.WithKeys("q", "esc"),
 			key.WithHelp("q/esc", "back"),
+		),
+		Help: key.NewBinding(
+			key.WithKeys("i", "?"),
+			key.WithHelp("i, ?", "help"),
 		),
 		GotoTop: key.NewBinding(
 			key.WithKeys("g"),

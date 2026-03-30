@@ -63,7 +63,7 @@ func (k *List) Print(screenWidth int) string {
 	for _, item := range k.keymaps {
 		switch item.category {
 		case header:
-			output.WriteString(item.header + newline)
+			output.WriteString(lipgloss.NewStyle().Foreground(lipgloss.Blue).Render(item.header) + newline)
 		case separator:
 			output.WriteString(newline)
 		case keymap:

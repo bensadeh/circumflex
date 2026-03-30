@@ -8,17 +8,13 @@ import (
 	"strings"
 
 	"charm.land/bubbles/v2/key"
-	"charm.land/lipgloss/v2"
 
 	text "github.com/MichaelMure/go-term-text"
 )
 
-func Text(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Binding) string {
+func MainMenuText(screenWidth int, mainMenuBindings []key.Binding) string {
 	keys := new(keymaps.List)
 	keys.Init()
-
-	keys.AddHeader(lipgloss.NewStyle().Foreground(style.HelpMainMenuColor()).Render("Main Menu"))
-	keys.AddSeparator()
 
 	for _, b := range mainMenuBindings {
 		if !b.Enabled() {
@@ -31,19 +27,68 @@ func Text(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Binding)
 	}
 
 	keys.AddSeparator()
+	keys.AddSeparator()
 
-	keys.AddHeader(lipgloss.NewStyle().Foreground(style.HelpCommentColor()).Render("Comment Section / Reader Mode"))
+	return formatKeymaps(keys, screenWidth)
+}
+
+func ReaderText(screenWidth int) string {
+	keys := new(keymaps.List)
+	keys.Init()
+
+	keys.AddKeymap("Down / up one line", "j, k")
+	keys.AddKeymap("Down / up half page", "d, u")
+	keys.AddSeparator()
+	keys.AddKeymap("Page down / up", "space/f, b")
+	keys.AddKeymap("Go to top / bottom", "g, G")
+	keys.AddKeymap("Next / prev section", "n, N")
+	keys.AddSeparator()
+	keys.AddKeymap("Help", "i, ?")
+	keys.AddKeymap("Back", "q, esc")
+
+	keys.AddSeparator()
+	keys.AddSeparator()
+
+	return formatKeymaps(keys, screenWidth)
+}
+
+func CommentText(screenWidth int, enableNerdFonts bool) string {
+	keys := new(keymaps.List)
+	keys.Init()
+
+	keys.AddHeader("Scroll Mode")
 	keys.AddSeparator()
 	keys.AddKeymap("Down / up one line", "j, k")
-	keys.AddKeymap("Down / up one half-window", "d, u")
+	keys.AddKeymap("Down / up half page", "d, u")
 	keys.AddSeparator()
-	keys.AddKeymap("Hide / show all replies", "h, l")
+	keys.AddKeymap("Page down / up", "space/f, b")
+	keys.AddKeymap("Go to top / bottom", "g, G")
 	keys.AddKeymap("Next / prev top-level comment", "n, N")
 	keys.AddSeparator()
-	keys.AddKeymap("Return to circumflex", "q")
+	keys.AddKeymap("Collapse / expand all", "h, l")
+	keys.AddKeymap("Toggle collapse all", "enter")
+	keys.AddSeparator()
+	keys.AddKeymap("Switch to navigate mode", "tab")
+	keys.AddKeymap("Help", "i, ?")
+	keys.AddKeymap("Back", "q, esc")
+
 	keys.AddSeparator()
 
-	keys.AddHeader(lipgloss.NewStyle().Foreground(style.HelpLegendColor()).Render("Legend"))
+	keys.AddHeader("Navigate Mode")
+	keys.AddSeparator()
+	keys.AddKeymap("Next / prev comment", "j, k")
+	keys.AddKeymap("Next / prev top-level comment", "n, N")
+	keys.AddSeparator()
+	keys.AddKeymap("Collapse / expand", "h, l")
+	keys.AddKeymap("Toggle collapse", "enter")
+	keys.AddSeparator()
+	keys.AddKeymap("Switch to scroll mode", "tab")
+	keys.AddKeymap("Help", "i, ?")
+	keys.AddKeymap("Back", "q, esc")
+
+	keys.AddSeparator()
+
+	keys.AddHeader("Legend")
 	keys.AddSeparator()
 	keys.AddKeymap("Original Poster", style.CommentOP(getOP(enableNerdFonts)))
 	keys.AddKeymap("Grandparent Poster", style.CommentGP(getGP(enableNerdFonts)))
@@ -54,6 +99,10 @@ func Text(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Binding)
 	keys.AddSeparator()
 	keys.AddSeparator()
 
+	return formatKeymaps(keys, screenWidth)
+}
+
+func formatKeymaps(keys *keymaps.List, screenWidth int) string {
 	contentWidth := min(constants.HelpScreenWidth, screenWidth-constants.HeaderLeftMargin)
 	listOfKeymaps := keys.Print(contentWidth)
 
