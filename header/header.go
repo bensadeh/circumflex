@@ -11,13 +11,9 @@ import (
 )
 
 func Header(allCategories []categories.Category, selectedSubHeader int, width int) string {
-	c := lipgloss.NewStyle().Foreground(style.HeaderC())
-	l := lipgloss.NewStyle().Foreground(style.HeaderL())
-	x := lipgloss.NewStyle().Foreground(style.HeaderX())
-
 	leftPad := strings.Repeat(" ", constants.HeaderLogoLeftPadding)
 	rightPad := strings.Repeat(" ", constants.HeaderLogoRightPadding)
-	title := leftPad + c.Render("c") + l.Render("l") + x.Render("x") + rightPad
+	title := leftPad + style.Logo("c", "l", "x") + rightPad
 	cats := getCategories(allCategories, selectedSubHeader)
 	filler := getFiller(title, cats, width)
 
@@ -25,15 +21,9 @@ func Header(allCategories []categories.Category, selectedSubHeader int, width in
 }
 
 func HelpHeader(width int) string {
-	c := lipgloss.NewStyle().Foreground(style.HeaderC())
-	l := lipgloss.NewStyle().Foreground(style.HeaderL())
-	x := lipgloss.NewStyle().Foreground(style.HeaderX())
-
-	logo := c.Render("{") + l.Render("?") + x.Render("}")
 	title := strings.Repeat(" ", constants.HeaderLeftMargin) + "Keyboard Shortcuts"
-	filler := strings.Repeat(" ", max(0, width-lipgloss.Width(title)-lipgloss.Width(logo)-2))
 
-	return title + filler + logo + "  " + "\n" + strings.Repeat("‾", width)
+	return title + "\n" + strings.Repeat("‾", width)
 }
 
 func getFiller(title string, categories string, width int) string {

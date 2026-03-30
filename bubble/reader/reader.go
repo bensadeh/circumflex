@@ -145,14 +145,6 @@ func (m *Model) headerView() string {
 	return title + "\n" + separator
 }
 
-func (m *Model) logo() string {
-	c := lipgloss.NewStyle().Foreground(style.HeaderC())
-	l := lipgloss.NewStyle().Foreground(style.HeaderL())
-	x := lipgloss.NewStyle().Foreground(style.HeaderX())
-
-	return c.Render("{") + l.Render("≡") + x.Render("}")
-}
-
 func (m *Model) footerSeparator() string {
 	underscore := lipgloss.NewStyle().Underline(true).Render(" ")
 
@@ -160,7 +152,7 @@ func (m *Model) footerSeparator() string {
 }
 
 func (m *Model) modeIndicator() string {
-	return style.ModeIndicator("READ", style.FooterReadMode(), constants.ReaderViewLeftMargin, m.screenWidth, m.logo(), []style.Binding{
+	return style.ModeIndicator("READ", style.FooterReadMode(), constants.ReaderViewLeftMargin, m.screenWidth, style.Logo("{", "≡", "}"), []style.Binding{
 		{Key: "n/N", Desc: "next/prev section"},
 	})
 }

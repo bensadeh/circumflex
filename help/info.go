@@ -54,10 +54,10 @@ func Text(screenWidth int, enableNerdFonts bool, mainMenuBindings []key.Binding)
 	keys.AddSeparator()
 	keys.AddSeparator()
 
-	contentWidth := min(constants.HelpScreenWidth, screenWidth-constants.MainViewLeftMargin)
+	contentWidth := min(constants.HelpScreenWidth, screenWidth-constants.HeaderLeftMargin)
 	listOfKeymaps := keys.Print(contentWidth)
 
-	leftMargin := strings.Repeat(" ", constants.MainViewLeftMargin)
+	leftMargin := strings.Repeat(" ", constants.HeaderLeftMargin)
 	output, _ := text.WrapWithPad(listOfKeymaps, screenWidth, leftMargin)
 
 	return output

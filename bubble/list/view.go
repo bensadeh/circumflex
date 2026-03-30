@@ -3,6 +3,7 @@ package list
 import (
 	"clx/bubble/ranking"
 	"clx/header"
+	"clx/style"
 	"clx/version"
 	"fmt"
 	"strings"
@@ -93,8 +94,10 @@ func (m *Model) statusAndPaginationView() string {
 
 	switch {
 	case m.state == StateHelpScreen:
+		logo := style.Logo("{", "⌨", "}")
 		centerContent = m.faintStyle.Render(
 			"github.com/bensadeh/circumflex • version " + version.Version)
+		rightContent = logo
 	case m.status.showSpinner:
 		centerContent = m.status.spinnerView()
 	default:
@@ -103,7 +106,7 @@ func (m *Model) statusAndPaginationView() string {
 
 	switch m.state {
 	case StateHelpScreen:
-		// no pagination on help screen
+		// pagination already handled above
 	case StateFetching:
 		rightContent = strings.Repeat(m.Styles.InactivePaginationDot.String(), m.config.PageMultiplier)
 	case StateStartup, StateBrowsing, StateAddFavoritesPrompt, StateRemoveFavoritesPrompt, StateReaderView:

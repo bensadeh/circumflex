@@ -152,6 +152,14 @@ func HeaderPrimary() color.Color   { return theme.ParseColor(current.App.Primary
 func HeaderSecondary() color.Color { return theme.ParseColor(current.App.Secondary) }
 func HeaderTertiary() color.Color  { return theme.ParseColor(current.App.Tertiary) }
 
+func Logo(a, b, c string) string {
+	cs := lipgloss.NewStyle().Foreground(HeaderC())
+	ls := lipgloss.NewStyle().Foreground(HeaderL())
+	xs := lipgloss.NewStyle().Foreground(HeaderX())
+
+	return cs.Render(a) + ls.Render(b) + xs.Render(c)
+}
+
 // Help colors.
 
 func HelpMainMenu(s string) string       { return colored(current.Help.MainMenu, s) }

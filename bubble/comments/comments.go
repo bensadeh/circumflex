@@ -223,14 +223,6 @@ func (m *Model) headerView() string {
 	return title + "\n" + separator
 }
 
-func (m *Model) logo() string {
-	c := lipgloss.NewStyle().Foreground(style.HeaderC())
-	l := lipgloss.NewStyle().Foreground(style.HeaderL())
-	x := lipgloss.NewStyle().Foreground(style.HeaderX())
-
-	return c.Render("{") + l.Render("…") + x.Render("}")
-}
-
 // updateViewport re-renders the viewport content with the current focus state.
 // This is cheap: it concatenates pre-rendered strings, picking the focused
 // header variant for the focused comment.
@@ -255,13 +247,13 @@ func (m *Model) footerSeparator() string {
 func (m *Model) modeIndicator() string {
 	switch m.mode {
 	case ModeScroll:
-		return style.ModeIndicator("READ", style.FooterReadMode(), constants.CommentSectionLeftMargin, m.rc.screenWidth, m.logo(), []style.Binding{
+		return style.ModeIndicator("READ", style.FooterReadMode(), constants.CommentSectionLeftMargin, m.rc.screenWidth, style.Logo("{", "…", "}"), []style.Binding{
 			{Key: "⇥", Desc: "navigate"},
 			{Key: "n/N", Desc: "next/prev thread"},
 			{Key: "↩", Desc: "collapse/expand all"},
 		})
 	case ModeNavigate:
-		return style.ModeIndicator("NAVIGATE", style.FooterNavigateMode(), constants.CommentSectionLeftMargin, m.rc.screenWidth, m.logo(), []style.Binding{
+		return style.ModeIndicator("NAVIGATE", style.FooterNavigateMode(), constants.CommentSectionLeftMargin, m.rc.screenWidth, style.Logo("{", "…", "}"), []style.Binding{
 			{Key: "⇥", Desc: "read mode"},
 			{Key: "↩", Desc: "collapse/expand thread"},
 		})
