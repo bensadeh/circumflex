@@ -35,7 +35,7 @@ const (
 
 // New creates a new reader view model.
 func New(content, title string, width, height int) *Model {
-	vpHeight := height - headerHeight - footerHeight
+	vpHeight := max(0, height-headerHeight-footerHeight)
 
 	vp := viewport.New(
 		viewport.WithWidth(width),

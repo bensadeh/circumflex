@@ -3,7 +3,7 @@ package file
 import (
 	"fmt"
 	"os"
-	"path"
+	"path/filepath"
 )
 
 const (
@@ -13,25 +13,26 @@ const (
 	dirPermissions = 0o700
 )
 
-func homeDir() string {
-	home, err := os.UserHomeDir()
+func PathToConfigDirectory() string {
+	dir, err := os.UserConfigDir()
 	if err != nil {
-		return os.TempDir()
+		return filepath.Join(os.TempDir(), clxDir)
 	}
 
-	return home
-}
-
-func PathToConfigDirectory() string {
-	return path.Join(homeDir(), ".config", clxDir)
+	return filepath.Join(dir, clxDir)
 }
 
 func PathToCacheDirectory() string {
-	return path.Join(homeDir(), ".cache", clxDir)
+	dir, err := os.UserCacheDir()
+	if err != nil {
+		return filepath.Join(os.TempDir(), clxDir)
+	}
+
+	return filepath.Join(dir, clxDir)
 }
 
 func PathToFavoritesFile() string {
-	return path.Join(PathToConfigDirectory(), FavoritesFileNameFull)
+	return filepath.Join(PathToConfigDirectory(), FavoritesFileNameFull)
 }
 
 func Exists(pathToFile string) bool {
@@ -41,7 +42,7 @@ func Exists(pathToFile string) bool {
 }
 
 func WriteToFile(filePath string, content string) error {
-	dir := path.Dir(filePath)
+	dir := filepath.Dir(filePath)
 
 	mkdirErr := os.MkdirAll(dir, dirPermissions)
 	if mkdirErr != nil {
@@ -73,7 +74,7 @@ func WriteToDir(dirPath string, fileName string, content string) error {
 		return fmt.Errorf("could not create path to config dir: %w", mkdirErr)
 	}
 
-	filePath := path.Join(dirPath, fileName)
+	filePath := filepath.Join(dirPath, fileName)
 
 	file, createPathErr := os.Create(filePath)
 	if createPathErr != nil {

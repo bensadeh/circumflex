@@ -4,7 +4,7 @@ import (
 	"clx/file"
 	"encoding/json"
 	"os"
-	"path"
+	"path/filepath"
 )
 
 type History interface {
@@ -17,7 +17,7 @@ type History interface {
 }
 
 func NewPersistentHistory() (History, error) {
-	filePath := path.Join(file.PathToCacheDirectory(), "history.json")
+	filePath := filepath.Join(file.PathToCacheDirectory(), "history.json")
 
 	h := &Persistent{
 		filePath:       filePath,
@@ -62,5 +62,5 @@ func writeToDisk(h *Persistent, filePath string) error {
 		return err
 	}
 
-	return file.WriteToDir(path.Dir(filePath), path.Base(filePath), string(visitedStoriesJSON))
+	return file.WriteToDir(filepath.Dir(filePath), filepath.Base(filePath), string(visitedStoriesJSON))
 }

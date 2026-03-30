@@ -36,7 +36,6 @@ func Root() *cobra.Command {
 		Version: version.Version,
 		Run: func(cmd *cobra.Command, args []string) {
 			config := getConfig()
-			config.IndentationSymbol = indent.Symbol(hideIndentSymbol)
 
 			cat, err := categories.New(selectedCategories)
 			if err != nil {
@@ -109,7 +108,7 @@ func getConfig() *settings.Config {
 	config.DisableCommentHighlighting = disableCommentHighlighting
 	config.DoNotMarkSubmissionsAsRead = disableHistory
 	config.EnableNerdFonts = resolveNerdFonts(nerdFontFlag)
-	config.HideIndentSymbol = hideIndentSymbol
+	config.IndentationSymbol = indent.Symbol(hideIndentSymbol)
 	config.DisableEmojis = disableEmojis
 	config.DebugMode = debugMode
 	config.DebugFallible = debugFallible

@@ -190,14 +190,15 @@ func (m *Model) handleCategoryFetchingFinished(msg message.CategoryFetchingFinis
 }
 
 func (m *Model) handleFetchingFinished(msg message.FetchingFinished) (*Model, tea.Cmd) {
-	m.pager.items[msg.Category] = msg.Stories
 	m.status.StopSpinner()
 	m.state = StateBrowsing
-	m.updatePagination()
 
 	if msg.Err != nil {
 		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
 	}
+
+	m.pager.items[msg.Category] = msg.Stories
+	m.updatePagination()
 
 	return m, nil
 }
