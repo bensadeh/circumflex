@@ -30,8 +30,7 @@ type Model struct {
 	// Pre-rendered comment blocks — rebuilt on window resize.
 	prerendered []renderedComment
 
-	// Rendering artifacts — recomputed on every rebuildContent call.
-	baseContent  string        // rendered content without focus styling
+	// Rendering artifacts — recomputed on every rebuildContent or updateViewport call.
 	lineMetrics  []LineMetrics // indexed by flat index
 	contentLines int           // actual content lines (excluding bottom padding)
 }
@@ -211,8 +210,7 @@ func (m *Model) handleNavigateKeys(msg tea.KeyPressMsg) tea.Cmd {
 	return nil
 }
 
-// View renders the comment view. Focus styling is baked into the viewport
-// content by applyFocus, so View just assembles the layout.
+// View renders the comment view.
 func (m *Model) View() string {
 	return m.headerView() + "\n" + m.viewport.View() + "\n" + m.footerSeparator() + "\n" + m.modeIndicator()
 }
@@ -233,32 +231,19 @@ func (m *Model) logo() string {
 	return c.Render("{") + l.Render("…") + x.Render("}")
 }
 
-var focusStyle = lipgloss.NewStyle().Reverse(true)
-
-// applyFocus applies focus styling to the cached base content and updates
-// the viewport. Content rendering and focus are independent concerns:
-// rebuildContent produces unstyled base content, applyFocus layers on
-// the visual focus indicator using lipgloss.
-func (m *Model) applyFocus() {
-	if m.mode != ModeNavigate || m.focusedIdx < 0 || m.focusedIdx >= len(m.visible) {
-		m.viewport.SetContent(m.baseContent)
-
-		return
+// updateViewport re-renders the viewport content with the current focus state.
+// This is cheap: it concatenates pre-rendered strings, picking the focused
+// header variant for the focused comment.
+func (m *Model) updateViewport() {
+	focusedFlatIdx := -1
+	if m.mode == ModeNavigate && m.focusedIdx >= 0 && m.focusedIdx < len(m.visible) {
+		focusedFlatIdx = m.visible[m.focusedIdx]
 	}
 
-	flatIdx := m.visible[m.focusedIdx]
-	lm := m.lineMetrics[flatIdx]
-
-	lines := strings.Split(m.baseContent, "\n")
-	if lm.StartLine >= len(lines) {
-		m.viewport.SetContent(m.baseContent)
-
-		return
-	}
-
-	lines[lm.StartLine] = focusStyle.Render(lines[lm.StartLine])
-
-	m.viewport.SetContent(strings.Join(lines, "\n"))
+	content, contentLines, metrics := renderFromFlat(m.rc, m.flat, m.visible, m.prerendered, focusedFlatIdx)
+	m.contentLines = contentLines
+	m.lineMetrics = metrics
+	m.viewport.SetContent(content)
 }
 
 func (m *Model) footerSeparator() string {
@@ -299,7 +284,7 @@ func (m *Model) toggleMode() {
 			m.focusedIdx = m.findCommentAtScroll()
 		}
 
-		m.applyFocus()
+		m.updateViewport()
 
 	case ModeNavigate:
 		m.mode = ModeScroll
@@ -310,7 +295,7 @@ func (m *Model) toggleMode() {
 
 		m.focusedIdx = -1
 
-		m.applyFocus()
+		m.updateViewport()
 	}
 }
 
@@ -331,11 +316,7 @@ func (m *Model) findCommentAtScroll() int {
 
 func (m *Model) rebuildContent() {
 	m.visible = computeVisible(m.flat)
-	content, contentLines, metrics := renderFromFlat(m.rc, m.flat, m.visible, m.prerendered)
-	m.contentLines = contentLines
-	m.lineMetrics = metrics
-	m.baseContent = content
-	m.applyFocus()
+	m.updateViewport()
 }
 
 func (m *Model) collapse() {
@@ -358,7 +339,7 @@ func (m *Model) collapse() {
 
 	if m.focusedIdx >= len(m.visible) {
 		m.focusedIdx = len(m.visible) - 1
-		m.applyFocus()
+		m.updateViewport()
 	}
 
 	m.restoreScreenPosition(flatIdx, screenPos)
@@ -414,7 +395,7 @@ func (m *Model) navigateComment(direction int) {
 	}
 
 	m.focusedIdx = newIdx
-	m.applyFocus()
+	m.updateViewport()
 	m.scrollToFocused()
 }
 
@@ -522,7 +503,7 @@ func (m *Model) restoreScreenPosition(flatIdx, screenPos int) {
 func (m *Model) gotoTop() {
 	if m.mode == ModeNavigate && len(m.visible) > 0 {
 		m.focusedIdx = 0
-		m.applyFocus()
+		m.updateViewport()
 	}
 
 	m.viewport.GotoTop()
@@ -531,7 +512,7 @@ func (m *Model) gotoTop() {
 func (m *Model) gotoBottom() {
 	if m.mode == ModeNavigate && len(m.visible) > 0 {
 		m.focusedIdx = len(m.visible) - 1
-		m.applyFocus()
+		m.updateViewport()
 	}
 
 	// Scroll so the last line of real content is at the bottom of the viewport,

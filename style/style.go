@@ -80,6 +80,10 @@ func Bold(s string) string {
 	return lipgloss.NewStyle().Bold(true).Render(s)
 }
 
+func BoldReverse(s string) string {
+	return lipgloss.NewStyle().Bold(true).Reverse(true).Render(s)
+}
+
 func Faint(s string) string {
 	return lipgloss.NewStyle().Faint(true).Render(s)
 }

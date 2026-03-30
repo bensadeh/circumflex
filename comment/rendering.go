@@ -15,14 +15,20 @@ import (
 var mods = []string{"dang", "tomhow"}
 
 // Author returns the formatted author name with an optional new-comment indicator.
-func Author(author string, lastVisited, timePosted int64) string {
-	authorInBold := style.Bold(author) + " "
-
-	if lastVisited < timePosted {
-		return authorInBold + style.CommentNewIndicator("\u25cf") + " "
+// When focused is true, the author name is rendered with reverse video.
+func Author(author string, lastVisited, timePosted int64, focused bool) string {
+	var styledAuthor string
+	if focused {
+		styledAuthor = style.BoldReverse(author) + " "
+	} else {
+		styledAuthor = style.Bold(author) + " "
 	}
 
-	return authorInBold
+	if lastVisited < timePosted {
+		return styledAuthor + style.CommentNewIndicator("\u25cf") + " "
+	}
+
+	return styledAuthor
 }
 
 // AuthorLabel returns a styled label for special users (mod, OP, GP).
@@ -91,30 +97,29 @@ func IndentString(depth int) string {
 }
 
 // Header returns the formatted comment header line (author + label + time).
-func Header(c *Comment, depth int, originalPoster, topLevelAuthor string, lastVisited int64, config *settings.Config) string {
+func Header(c *Comment, depth int, originalPoster, topLevelAuthor string, lastVisited int64, config *settings.Config, focused bool) string {
 	indentSize := 0
 	if depth > 0 {
 		indentSize = 1
 	}
 
-	author := Author(c.Author, lastVisited, c.Time)
+	author := Author(c.Author, lastVisited, c.Time, focused)
 	authorLabel := AuthorLabel(c.Author, originalPoster, topLevelAuthor, config.EnableNerdFonts)
 	indentation := strings.Repeat(" ", indentSize)
 
 	return indentation + author + authorLabel + style.Faint(c.TimeAgo) + "\n"
 }
 
-// RenderBody returns the formatted comment with header, indent symbol, and content.
-func RenderBody(c *Comment, depth int, config *settings.Config, originalPoster, topLevelAuthor string,
-	commentWidth, availableScreenWidth int, lastVisited int64,
+// RenderContent returns the formatted comment body (without header), with indent symbol.
+func RenderContent(c *Comment, depth int, config *settings.Config,
+	commentWidth, availableScreenWidth int,
 ) string {
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, depth)
 
-	header := Header(c, depth, originalPoster, topLevelAuthor, lastVisited, config)
 	formattedComment := Print(c.Content, config, commentWidth, availableScreenWidth)
 	paddedComment, _ := text.WrapWithPad(formattedComment, availableScreenWidth, coloredIndentSymbol)
 
-	return header + paddedComment
+	return paddedComment
 }
 
 // NewCommentsCount returns the number of new comments since lastVisited.

@@ -37,7 +37,7 @@ func TestSeparator(t *testing.T) {
 func TestAuthorOldComment(t *testing.T) {
 	t.Parallel()
 
-	result := Author("alice", 100, 50)
+	result := Author("alice", 100, 50, false)
 
 	assert.Contains(t, result, "alice")
 	assert.NotContains(t, result, "\u25cf")
@@ -46,7 +46,7 @@ func TestAuthorOldComment(t *testing.T) {
 func TestAuthorNewComment(t *testing.T) {
 	t.Parallel()
 
-	result := Author("alice", 50, 100)
+	result := Author("alice", 50, 100, false)
 
 	assert.Contains(t, result, "alice")
 	assert.Contains(t, result, "\u25cf")

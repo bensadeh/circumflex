@@ -25,14 +25,19 @@ type renderContext struct {
 // renderedComment holds the pre-rendered output for a single flat comment.
 // Built once by prerenderComments and reused by renderFromFlat on every
 // collapse/expand, avoiding the expensive syntax/wrapping pipeline.
-// Rebuilt on window resize.
+// Header and content are stored separately so that focus highlighting can
+// swap in a pre-rendered focused header without re-running the expensive
+// content pipeline. Rebuilt on window resize.
 type renderedComment struct {
-	sep       string // rendered separator (before the comment body)
-	sepLines  int
-	body      string // rendered comment body with indentation and margins
-	bodyLines int
-	fold      string // fold indicator (empty if no descendants)
-	foldLines int
+	sep           string // rendered separator (before the comment body)
+	sepLines      int
+	header        string // rendered header (author + label + time) with margins
+	headerFocused string // same header but with author highlighted
+	headerLines   int    // line count is identical for both variants
+	content       string // rendered comment content with indentation and margins
+	contentLines  int
+	fold          string // fold indicator (empty if no descendants)
+	foldLines     int
 }
 
 // prerenderComments renders every comment in flat upfront, so that subsequent
@@ -55,19 +60,29 @@ func prerenderComments(rc renderContext, flat []FlatComment) []renderedComment {
 			out.sepLines = strings.Count(indentedSep, "\n")
 		}
 
-		// Render the comment body.
 		depthIndent := comment.IndentString(fc.Depth)
 		depthIndentLen := len(depthIndent)
 		availableWidth := contentWidth - depthIndentLen
 		adjustedCommentWidth := rc.config.CommentWidth - fc.Depth
 
-		body := comment.RenderBody(&fc.Comment, fc.Depth, rc.config, rc.originalPoster, fc.TopLevelAuthor,
-			adjustedCommentWidth, availableWidth, rc.lastVisited)
+		// Pre-render both header variants (normal and focused).
+		header := comment.Header(&fc.Comment, fc.Depth, rc.originalPoster, fc.TopLevelAuthor, rc.lastVisited, rc.config, false)
+		headerWithDepth, _ := text.WrapWithPad(header, contentWidth, depthIndent)
+		headerWithMargin, _ := text.WrapWithPad(headerWithDepth, rc.screenWidth, leftMargin)
+		out.header = headerWithMargin
+		out.headerLines = strings.Count(headerWithMargin, "\n")
 
-		withDepth, _ := text.WrapWithPad(body, contentWidth, depthIndent)
-		withMargin, _ := text.WrapWithPad(withDepth+"\n", rc.screenWidth, leftMargin)
-		out.body = withMargin
-		out.bodyLines = strings.Count(withMargin, "\n")
+		focusedHeader := comment.Header(&fc.Comment, fc.Depth, rc.originalPoster, fc.TopLevelAuthor, rc.lastVisited, rc.config, true)
+		focusedWithDepth, _ := text.WrapWithPad(focusedHeader, contentWidth, depthIndent)
+		focusedWithMargin, _ := text.WrapWithPad(focusedWithDepth, rc.screenWidth, leftMargin)
+		out.headerFocused = focusedWithMargin
+
+		// Render the comment content (expensive: syntax highlighting + wrapping).
+		content := comment.RenderContent(&fc.Comment, fc.Depth, rc.config, adjustedCommentWidth, availableWidth)
+		contentWithDepth, _ := text.WrapWithPad(content+"\n", contentWidth, depthIndent)
+		contentWithMargin, _ := text.WrapWithPad(contentWithDepth, rc.screenWidth, leftMargin)
+		out.content = contentWithMargin
+		out.contentLines = strings.Count(contentWithMargin, "\n")
 
 		// Pre-render fold indicator.
 		if fc.DescendantCount > 0 {
@@ -84,13 +99,14 @@ func prerenderComments(rc renderContext, flat []FlatComment) []renderedComment {
 // renderFromFlat builds the full comment view content from the flat comment
 // list, respecting fold state. It returns the rendered content, the number of
 // content lines, and line metrics indexed by flat index for navigation.
-// This function has no knowledge of focus state — focus highlighting is
-// applied separately in View().
+//
+// focusedFlatIdx selects which comment gets the focused header variant;
+// pass -1 when no comment is focused (scroll mode).
 //
 // The pre-rendered slice (indexed by flat index, built by prerenderComments)
 // avoids re-running the expensive syntax-highlighting and text-wrapping
-// pipeline on every collapse/expand.
-func renderFromFlat(rc renderContext, flat []FlatComment, visible []int, prerendered []renderedComment) (string, int, []LineMetrics) {
+// pipeline on every collapse/expand or focus change.
+func renderFromFlat(rc renderContext, flat []FlatComment, visible []int, prerendered []renderedComment, focusedFlatIdx int) (string, int, []LineMetrics) {
 	leftMargin := strings.Repeat(" ", constants.CommentSectionLeftMargin)
 
 	// Indent the pre-computed header with left margin.
@@ -112,8 +128,17 @@ func renderFromFlat(rc renderContext, flat []FlatComment, visible []int, prerend
 
 		startLine := lineCount
 
-		sb.WriteString(pre.body)
-		lineCount += pre.bodyLines
+		// Pick the focused or normal header variant.
+		if flatIdx == focusedFlatIdx {
+			sb.WriteString(pre.headerFocused)
+		} else {
+			sb.WriteString(pre.header)
+		}
+
+		lineCount += pre.headerLines
+
+		sb.WriteString(pre.content)
+		lineCount += pre.contentLines
 
 		// Fold indicator for collapsed comments with children.
 		if fc.Collapsed && fc.DescendantCount > 0 {
