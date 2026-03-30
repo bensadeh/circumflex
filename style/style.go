@@ -3,6 +3,7 @@ package style
 import (
 	"clx/theme"
 	"image/color"
+	"strings"
 
 	"charm.land/lipgloss/v2"
 )
@@ -175,13 +176,24 @@ func FooterNavigateMode() color.Color { return theme.ParseColor(current.Footer.N
 
 const modeWidth = 10
 
-func ModeIndicator(mode string, modeColor color.Color, leftMargin int, bindings string) string {
+type Binding struct {
+	Key  string
+	Desc string
+}
+
+func ModeIndicator(mode string, modeColor color.Color, leftMargin int, bindings []Binding) string {
 	modeStyle := lipgloss.NewStyle().
 		Foreground(modeColor).
 		Width(modeWidth).
+		Align(lipgloss.Center).
 		MarginLeft(leftMargin)
 
-	return modeStyle.Render(mode) + Faint(bindings)
+	parts := make([]string, len(bindings))
+	for i, b := range bindings {
+		parts[i] = b.Key + Faint(": "+b.Desc)
+	}
+
+	return modeStyle.Render(mode) + Faint("│ ") + strings.Join(parts, "  ")
 }
 
 // Helpers.

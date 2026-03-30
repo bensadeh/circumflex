@@ -23,10 +23,11 @@ type KeyMap struct {
 	PrevTopLevel key.Binding
 
 	// Shared between modes: collapse/expand all in scroll, individual in navigate.
-	NextComment key.Binding
-	PrevComment key.Binding
-	Collapse    key.Binding
-	Expand      key.Binding
+	NextComment    key.Binding
+	PrevComment    key.Binding
+	Collapse       key.Binding
+	Expand         key.Binding
+	ToggleCollapse key.Binding
 }
 
 func defaultKeyMap() KeyMap {
@@ -70,6 +71,10 @@ func defaultKeyMap() KeyMap {
 		Expand: key.NewBinding(
 			key.WithKeys("l", "right"),
 			key.WithHelp("l/→", "expand"),
+		),
+		ToggleCollapse: key.NewBinding(
+			key.WithKeys("enter"),
+			key.WithHelp("enter", "toggle collapse"),
 		),
 	}
 }

@@ -97,63 +97,7 @@ func (m *Model) Init() tea.Cmd {
 func (m *Model) Update(msg tea.Msg) tea.Cmd {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
-		if key.Matches(msg, m.keymap.Quit) {
-			return func() tea.Msg { return message.CommentViewQuitMsg{} }
-		}
-
-		if key.Matches(msg, m.keymap.ToggleMode) {
-			m.toggleMode()
-
-			return nil
-		}
-
-		if key.Matches(msg, m.keymap.GotoTop) {
-			m.gotoTop()
-
-			return nil
-		}
-
-		if key.Matches(msg, m.keymap.GotoBottom) {
-			m.gotoBottom()
-
-			return nil
-		}
-
-		if m.mode == ModeScroll && key.Matches(msg, m.keymap.NextTopLevel) {
-			m.jumpToTopLevel(1)
-
-			return nil
-		}
-
-		if m.mode == ModeScroll && key.Matches(msg, m.keymap.PrevTopLevel) {
-			m.jumpToTopLevel(-1)
-
-			return nil
-		}
-
-		if key.Matches(msg, m.keymap.Collapse) {
-			if m.mode == ModeScroll {
-				m.collapseAll()
-			} else {
-				m.collapse()
-			}
-
-			return nil
-		}
-
-		if key.Matches(msg, m.keymap.Expand) {
-			if m.mode == ModeScroll {
-				m.expandAll()
-			} else {
-				m.expand()
-			}
-
-			return nil
-		}
-
-		if m.mode == ModeNavigate {
-			return m.handleNavigateKeys(msg)
-		}
+		return m.handleKeyPress(msg)
 	case tea.WindowSizeMsg:
 		anchorIdx := m.anchorComment()
 		screenPos := m.screenPosition(anchorIdx)
@@ -169,8 +113,79 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		return nil
 	}
 
-	// In scroll mode (or for unhandled keys in navigate mode),
-	// delegate to the viewport.
+	return nil
+}
+
+func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
+	if key.Matches(msg, m.keymap.Quit) {
+		return func() tea.Msg { return message.CommentViewQuitMsg{} }
+	}
+
+	if key.Matches(msg, m.keymap.ToggleMode) {
+		m.toggleMode()
+
+		return nil
+	}
+
+	if key.Matches(msg, m.keymap.GotoTop) {
+		m.gotoTop()
+
+		return nil
+	}
+
+	if key.Matches(msg, m.keymap.GotoBottom) {
+		m.gotoBottom()
+
+		return nil
+	}
+
+	if m.mode == ModeScroll && key.Matches(msg, m.keymap.NextTopLevel) {
+		m.jumpToTopLevel(1)
+
+		return nil
+	}
+
+	if m.mode == ModeScroll && key.Matches(msg, m.keymap.PrevTopLevel) {
+		m.jumpToTopLevel(-1)
+
+		return nil
+	}
+
+	if key.Matches(msg, m.keymap.Collapse) {
+		if m.mode == ModeScroll {
+			m.collapseAll()
+		} else {
+			m.collapse()
+		}
+
+		return nil
+	}
+
+	if key.Matches(msg, m.keymap.Expand) {
+		if m.mode == ModeScroll {
+			m.expandAll()
+		} else {
+			m.expand()
+		}
+
+		return nil
+	}
+
+	if key.Matches(msg, m.keymap.ToggleCollapse) {
+		if m.mode == ModeScroll {
+			m.toggleCollapseAll()
+		} else {
+			m.toggleCollapse()
+		}
+
+		return nil
+	}
+
+	if m.mode == ModeNavigate {
+		return m.handleNavigateKeys(msg)
+	}
+
+	// In scroll mode, delegate unhandled keys to the viewport.
 	var cmd tea.Cmd
 
 	m.viewport, cmd = m.viewport.Update(msg)
@@ -253,9 +268,16 @@ func (m *Model) footerSeparator() string {
 func (m *Model) modeIndicator() string {
 	switch m.mode {
 	case ModeScroll:
-		return style.ModeIndicator("READ", style.FooterReadMode(), constants.CommentSectionLeftMargin, "tab: navigate  n/N: next/prev thread  h/l: collapse/expand all")
+		return style.ModeIndicator("READ", style.FooterReadMode(), constants.CommentSectionLeftMargin, []style.Binding{
+			{Key: "⇥", Desc: "navigate"},
+			{Key: "n/N", Desc: "next/prev thread"},
+			{Key: "↩", Desc: "collapse/expand all"},
+		})
 	case ModeNavigate:
-		return style.ModeIndicator("NAVIGATE", style.FooterNavigateMode(), constants.CommentSectionLeftMargin, "tab: read mode  h/l: collapse/expand")
+		return style.ModeIndicator("NAVIGATE", style.FooterNavigateMode(), constants.CommentSectionLeftMargin, []style.Binding{
+			{Key: "⇥", Desc: "read mode"},
+			{Key: "↩", Desc: "collapse/expand thread"},
+		})
 	}
 
 	return ""
@@ -340,6 +362,25 @@ func (m *Model) collapse() {
 	m.restoreScreenPosition(flatIdx, screenPos)
 }
 
+func (m *Model) toggleCollapse() {
+	if len(m.visible) == 0 || m.focusedIdx < 0 {
+		return
+	}
+
+	flatIdx := m.visible[m.focusedIdx]
+	fc := &m.flat[flatIdx]
+
+	if fc.DescendantCount == 0 {
+		return
+	}
+
+	if fc.Collapsed {
+		m.expand()
+	} else {
+		m.collapse()
+	}
+}
+
 func (m *Model) expand() {
 	if len(m.visible) == 0 || m.focusedIdx < 0 {
 		return
@@ -395,6 +436,24 @@ func (m *Model) jumpToTopLevel(direction int) {
 				return
 			}
 		}
+	}
+}
+
+func (m *Model) toggleCollapseAll() {
+	allCollapsed := true
+
+	for i := range m.flat {
+		if m.flat[i].DescendantCount > 0 && !m.flat[i].Collapsed {
+			allCollapsed = false
+
+			break
+		}
+	}
+
+	if allCollapsed {
+		m.expandAll()
+	} else {
+		m.collapseAll()
 	}
 }
 
