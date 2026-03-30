@@ -23,12 +23,14 @@ type Model struct {
 	keymap   keyMap
 	mode     mode
 
-	flat       []flatComment
-	visible    []int // indices into flat
-	focusedIdx int   // index into visible (-1 = no focus, scroll mode)
-	rc         renderContext
-	title      string // story title for the fixed header
-	showHelp   bool
+	flat          []flatComment
+	visible       []int // indices into flat
+	focusedIdx    int   // index into visible (-1 = no focus, scroll mode)
+	expandedDepth int   // in scroll mode: h/l expand/collapse one level at a time
+	maxDepth      int   // deepest comment depth in the tree
+	rc            renderContext
+	title         string // story title for the fixed header
+	showHelp      bool
 
 	// Pre-rendered comment blocks — rebuilt on window resize.
 	prerendered []renderedComment
@@ -79,15 +81,24 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 		lastVisited:    lastVisited,
 	}
 
+	md := 0
+	for _, fc := range flat {
+		if fc.Depth > md {
+			md = fc.Depth
+		}
+	}
+
 	m := Model{
-		viewport:    vp,
-		keymap:      km,
-		mode:        modeScroll,
-		flat:        flat,
-		focusedIdx:  -1, // no focus in scroll mode
-		title:       thread.Title,
-		prerendered: prerenderComments(rc, flat),
-		rc:          rc,
+		viewport:      vp,
+		keymap:        km,
+		mode:          modeScroll,
+		flat:          flat,
+		focusedIdx:    -1, // no focus in scroll mode
+		expandedDepth: 0,  // initial: only top-level visible
+		maxDepth:      md,
+		title:         thread.Title,
+		prerendered:   prerenderComments(rc, flat),
+		rc:            rc,
 	}
 
 	m.rebuildContent()
@@ -191,7 +202,7 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 
 	if key.Matches(msg, m.keymap.Collapse) {
 		if m.mode == modeScroll {
-			m.collapseAll()
+			m.collapseLevel()
 		} else {
 			m.setCollapsed(true)
 		}
@@ -201,7 +212,7 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 
 	if key.Matches(msg, m.keymap.Expand) {
 		if m.mode == modeScroll {
-			m.expandAll()
+			m.expandLevel()
 		} else {
 			m.setCollapsed(false)
 		}
@@ -506,29 +517,49 @@ func (m *Model) toggleCollapseAll() {
 }
 
 func (m *Model) collapseAll() {
+	m.expandedDepth = 0
+	m.setCollapseToDepth()
+}
+
+func (m *Model) expandAll() {
+	m.expandedDepth = m.maxDepth + 1
+	m.setCollapseToDepth()
+}
+
+// setCollapseToDepth sets collapse state based on expandedDepth:
+// comments at depth < expandedDepth are uncollapsed; the rest are collapsed.
+func (m *Model) setCollapseToDepth() {
 	anchorIdx := m.anchorComment()
 	screenPos := m.screenPosition(anchorIdx)
 
 	for i := range m.flat {
-		if m.flat[i].DescendantCount > 0 {
-			m.flat[i].Collapsed = true
+		if m.flat[i].DescendantCount == 0 {
+			continue
 		}
+
+		m.flat[i].Collapsed = m.flat[i].Depth >= m.expandedDepth
 	}
 
 	m.rebuildContent()
 	m.restoreScreenPosition(anchorIdx, screenPos)
 }
 
-func (m *Model) expandAll() {
-	anchorIdx := m.anchorComment()
-	screenPos := m.screenPosition(anchorIdx)
-
-	for i := range m.flat {
-		m.flat[i].Collapsed = false
+func (m *Model) expandLevel() {
+	if m.expandedDepth > m.maxDepth {
+		return
 	}
 
-	m.rebuildContent()
-	m.restoreScreenPosition(anchorIdx, screenPos)
+	m.expandedDepth++
+	m.setCollapseToDepth()
+}
+
+func (m *Model) collapseLevel() {
+	if m.expandedDepth <= 0 {
+		return
+	}
+
+	m.expandedDepth--
+	m.setCollapseToDepth()
 }
 
 // anchorComment returns the flat index of the comment nearest to the top of

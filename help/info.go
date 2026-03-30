@@ -62,7 +62,7 @@ func CommentText(screenWidth int, enableNerdFonts bool) string {
 	keys.AddKeymap("Go to top / bottom", "g, G")
 	keys.AddKeymap("Next / prev top-level comment", "n, N")
 	keys.AddSeparator()
-	keys.AddKeymap("Collapse / expand all", "h, l")
+	keys.AddKeymap("Collapse / expand one level", "h, l")
 	keys.AddKeymap("Toggle collapse all", "enter")
 	keys.AddSeparator()
 	keys.AddKeymap("Switch to navigate mode", "tab")
