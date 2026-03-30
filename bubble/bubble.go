@@ -24,6 +24,10 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if msg, ok := msg.(tea.KeyPressMsg); ok && msg.Mod == tea.ModCtrl && msg.Code == 'c' {
+		return m, tea.Quit
+	}
+
 	var cmd tea.Cmd
 
 	m.list, cmd = m.list.Update(msg)

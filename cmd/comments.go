@@ -32,6 +32,10 @@ func (m commentModel) Init() tea.Cmd {
 }
 
 func (m commentModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if msg, ok := msg.(tea.KeyPressMsg); ok && msg.Mod == tea.ModCtrl && msg.Code == 'c' {
+		return m, tea.Quit
+	}
+
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		if !m.ready {
