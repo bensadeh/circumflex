@@ -445,7 +445,7 @@ func (m *Model) jumpToTopLevel(direction int) {
 
 	if direction > 0 {
 		for vi, flatIdx := range m.visible {
-			if m.flat[flatIdx].Depth == 0 && m.lineMetrics[flatIdx].StartLine > yOffset+1 {
+			if m.flat[flatIdx].Depth == 0 && m.lineMetrics[flatIdx].StartLine > yOffset {
 				m.viewport.SetYOffset(m.lineMetrics[flatIdx].StartLine)
 				m.setFocusIfNavigating(vi)
 

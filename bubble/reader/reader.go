@@ -245,7 +245,7 @@ func (m *Model) jumpToHeader(direction int) {
 
 	if direction > 0 {
 		for _, line := range m.headerLines {
-			if line > yOffset+1 {
+			if line > yOffset {
 				m.viewport.SetYOffset(line)
 
 				return
