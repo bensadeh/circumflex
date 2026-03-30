@@ -39,8 +39,18 @@ func New(content, title string, width, height int) *Model {
 		viewport.WithHeight(vpHeight),
 	)
 
+	vp.KeyMap = viewport.DefaultKeyMap()
+	vp.KeyMap.HalfPageDown.SetEnabled(false)
+	vp.KeyMap.HalfPageUp.SetEnabled(false)
+	vp.KeyMap.PageDown.SetEnabled(false)
+	vp.KeyMap.PageUp.SetEnabled(false)
+
 	lines := strings.Split(content, "\n")
 	contentLineCount := len(lines)
+
+	if contentLineCount > 0 && lines[contentLineCount-1] == "" {
+		contentLineCount--
+	}
 
 	// Scan for header lines (lines containing the ■ block character).
 	var headers []int
@@ -104,6 +114,30 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 			return nil
 		}
 
+		if key.Matches(msg, m.keymap.HalfPageDown) {
+			m.halfPageDown()
+
+			return nil
+		}
+
+		if key.Matches(msg, m.keymap.HalfPageUp) {
+			m.halfPageUp()
+
+			return nil
+		}
+
+		if key.Matches(msg, m.keymap.PageDown) {
+			m.pageDown()
+
+			return nil
+		}
+
+		if key.Matches(msg, m.keymap.PageUp) {
+			m.pageUp()
+
+			return nil
+		}
+
 		if key.Matches(msg, m.keymap.NextHeader) {
 			m.jumpToHeader(1)
 
@@ -155,6 +189,26 @@ func (m *Model) modeIndicator() string {
 	return style.ModeIndicator("READ", style.FooterReadMode(), constants.ReaderViewLeftMargin, m.screenWidth, style.Logo("{", "≡", "}"), []style.Binding{
 		{Key: "n/N", Desc: "next/prev section"},
 	})
+}
+
+func (m *Model) halfPageDown() {
+	halfPage := m.viewportHeight / 2
+	maxOffset := max(0, m.contentLines-m.viewportHeight)
+	m.viewport.SetYOffset(min(m.viewport.YOffset()+halfPage, maxOffset))
+}
+
+func (m *Model) halfPageUp() {
+	halfPage := m.viewportHeight / 2
+	m.viewport.SetYOffset(max(0, m.viewport.YOffset()-halfPage))
+}
+
+func (m *Model) pageDown() {
+	maxOffset := max(0, m.contentLines-m.viewportHeight)
+	m.viewport.SetYOffset(min(m.viewport.YOffset()+m.viewportHeight, maxOffset))
+}
+
+func (m *Model) pageUp() {
+	m.viewport.SetYOffset(max(0, m.viewport.YOffset()-m.viewportHeight))
 }
 
 func (m *Model) gotoBottom() {

@@ -4,11 +4,15 @@ import "charm.land/bubbles/v2/key"
 
 // KeyMap defines the keybindings for the reader view.
 type KeyMap struct {
-	Quit       key.Binding
-	GotoTop    key.Binding
-	GotoBottom key.Binding
-	NextHeader key.Binding
-	PrevHeader key.Binding
+	Quit         key.Binding
+	GotoTop      key.Binding
+	GotoBottom   key.Binding
+	NextHeader   key.Binding
+	PrevHeader   key.Binding
+	HalfPageDown key.Binding
+	HalfPageUp   key.Binding
+	PageDown     key.Binding
+	PageUp       key.Binding
 }
 
 func defaultKeyMap() KeyMap {
@@ -32,6 +36,22 @@ func defaultKeyMap() KeyMap {
 		PrevHeader: key.NewBinding(
 			key.WithKeys("N"),
 			key.WithHelp("N", "prev section"),
+		),
+		HalfPageDown: key.NewBinding(
+			key.WithKeys("d"),
+			key.WithHelp("d", "half page down"),
+		),
+		HalfPageUp: key.NewBinding(
+			key.WithKeys("u"),
+			key.WithHelp("u", "half page up"),
+		),
+		PageDown: key.NewBinding(
+			key.WithKeys("pgdown", "space", "f"),
+			key.WithHelp("space/f", "page down"),
+		),
+		PageUp: key.NewBinding(
+			key.WithKeys("pgup", "b"),
+			key.WithHelp("b", "page up"),
 		),
 	}
 }

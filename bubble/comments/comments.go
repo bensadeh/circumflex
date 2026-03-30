@@ -55,6 +55,10 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 	vp.KeyMap = viewport.DefaultKeyMap()
 	vp.KeyMap.Left.SetEnabled(false)
 	vp.KeyMap.Right.SetEnabled(false)
+	vp.KeyMap.HalfPageDown.SetEnabled(false)
+	vp.KeyMap.HalfPageUp.SetEnabled(false)
+	vp.KeyMap.PageDown.SetEnabled(false)
+	vp.KeyMap.PageUp.SetEnabled(false)
 
 	flat := flatten(thread)
 
@@ -176,6 +180,30 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		} else {
 			m.toggleCollapse()
 		}
+
+		return nil
+	}
+
+	if m.mode == ModeScroll && key.Matches(msg, m.keymap.HalfPageDown) {
+		m.halfPageDown()
+
+		return nil
+	}
+
+	if m.mode == ModeScroll && key.Matches(msg, m.keymap.HalfPageUp) {
+		m.halfPageUp()
+
+		return nil
+	}
+
+	if m.mode == ModeScroll && key.Matches(msg, m.keymap.PageDown) {
+		m.pageDown()
+
+		return nil
+	}
+
+	if m.mode == ModeScroll && key.Matches(msg, m.keymap.PageUp) {
+		m.pageUp()
 
 		return nil
 	}
@@ -494,6 +522,26 @@ func (m *Model) restoreScreenPosition(flatIdx, screenPos int) {
 	}
 
 	m.viewport.SetYOffset(max(0, m.lineMetrics[flatIdx].StartLine-screenPos))
+}
+
+func (m *Model) halfPageDown() {
+	halfPage := m.rc.viewportHeight / 2
+	maxOffset := max(0, m.contentLines-m.rc.viewportHeight)
+	m.viewport.SetYOffset(min(m.viewport.YOffset()+halfPage, maxOffset))
+}
+
+func (m *Model) halfPageUp() {
+	halfPage := m.rc.viewportHeight / 2
+	m.viewport.SetYOffset(max(0, m.viewport.YOffset()-halfPage))
+}
+
+func (m *Model) pageDown() {
+	maxOffset := max(0, m.contentLines-m.rc.viewportHeight)
+	m.viewport.SetYOffset(min(m.viewport.YOffset()+m.rc.viewportHeight, maxOffset))
+}
+
+func (m *Model) pageUp() {
+	m.viewport.SetYOffset(max(0, m.viewport.YOffset()-m.rc.viewportHeight))
 }
 
 func (m *Model) gotoTop() {

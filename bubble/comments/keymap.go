@@ -21,6 +21,10 @@ type KeyMap struct {
 	GotoBottom   key.Binding
 	NextTopLevel key.Binding
 	PrevTopLevel key.Binding
+	HalfPageDown key.Binding
+	HalfPageUp   key.Binding
+	PageDown     key.Binding
+	PageUp       key.Binding
 
 	// Shared between modes: collapse/expand all in scroll, individual in navigate.
 	NextComment    key.Binding
@@ -55,6 +59,22 @@ func defaultKeyMap() KeyMap {
 		PrevTopLevel: key.NewBinding(
 			key.WithKeys("N"),
 			key.WithHelp("N", "prev top-level comment"),
+		),
+		HalfPageDown: key.NewBinding(
+			key.WithKeys("d"),
+			key.WithHelp("d", "half page down"),
+		),
+		HalfPageUp: key.NewBinding(
+			key.WithKeys("u"),
+			key.WithHelp("u", "half page up"),
+		),
+		PageDown: key.NewBinding(
+			key.WithKeys("pgdown", "space", "f"),
+			key.WithHelp("space/f", "page down"),
+		),
+		PageUp: key.NewBinding(
+			key.WithKeys("pgup", "b"),
+			key.WithHelp("b", "page up"),
 		),
 		NextComment: key.NewBinding(
 			key.WithKeys("j", "down"),
