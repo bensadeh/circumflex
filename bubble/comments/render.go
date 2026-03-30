@@ -114,8 +114,9 @@ func renderFromFlat(rc renderContext, flat []FlatComment, visible []int, prerend
 
 	var sb strings.Builder
 	sb.WriteString(header)
+	sb.WriteString("\n")
 
-	lineCount := strings.Count(header, "\n")
+	lineCount := strings.Count(header, "\n") + 1
 
 	metrics := make([]LineMetrics, len(flat))
 

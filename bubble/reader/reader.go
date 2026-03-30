@@ -46,12 +46,9 @@ func New(content, title string, width, height int) *Model {
 	vp.KeyMap.PageUp.SetEnabled(false)
 	vp.MouseWheelEnabled = false
 
-	lines := strings.Split(content, "\n")
+	trimmed := strings.TrimRight(content, "\n")
+	lines := strings.Split(trimmed, "\n")
 	contentLineCount := len(lines)
-
-	if contentLineCount > 0 && lines[contentLineCount-1] == "" {
-		contentLineCount--
-	}
 
 	// Scan for header lines (lines containing the ■ block character).
 	var headers []int
@@ -64,7 +61,7 @@ func New(content, title string, width, height int) *Model {
 
 	// Add bottom padding so G scrolls the last content line to the bottom.
 	padding := strings.Repeat("\n", vpHeight)
-	padded := strings.TrimRight(content, "\n") + padding
+	padded := trimmed + padding
 
 	vp.SetContent(padded)
 

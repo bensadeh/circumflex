@@ -156,13 +156,13 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		return nil
 	}
 
-	if m.mode == ModeScroll && key.Matches(msg, m.keymap.NextTopLevel) {
+	if key.Matches(msg, m.keymap.NextTopLevel) {
 		m.jumpToTopLevel(1)
 
 		return nil
 	}
 
-	if m.mode == ModeScroll && key.Matches(msg, m.keymap.PrevTopLevel) {
+	if key.Matches(msg, m.keymap.PrevTopLevel) {
 		m.jumpToTopLevel(-1)
 
 		return nil
@@ -302,7 +302,8 @@ func (m *Model) modeIndicator() string {
 		})
 	case ModeNavigate:
 		return style.ModeIndicator(style.Logo("{", "…", "}"), []style.Binding{
-			{Key: "⇥", Desc: "read mode"},
+			{Key: "⇥", Desc: "read mode    "},
+			{Key: "n/N", Desc: "next/prev thread"},
 			{Key: "↩", Desc: "collapse/expand thread"},
 		})
 	}
@@ -443,9 +444,10 @@ func (m *Model) jumpToTopLevel(direction int) {
 	yOffset := m.viewport.YOffset()
 
 	if direction > 0 {
-		for _, flatIdx := range m.visible {
+		for vi, flatIdx := range m.visible {
 			if m.flat[flatIdx].Depth == 0 && m.lineMetrics[flatIdx].StartLine > yOffset+1 {
 				m.viewport.SetYOffset(m.lineMetrics[flatIdx].StartLine)
+				m.setFocusIfNavigating(vi)
 
 				return
 			}
@@ -455,6 +457,7 @@ func (m *Model) jumpToTopLevel(direction int) {
 			flatIdx := m.visible[i]
 			if m.flat[flatIdx].Depth == 0 && m.lineMetrics[flatIdx].StartLine < yOffset {
 				m.viewport.SetYOffset(m.lineMetrics[flatIdx].StartLine)
+				m.setFocusIfNavigating(i)
 
 				return
 			}
@@ -464,6 +467,15 @@ func (m *Model) jumpToTopLevel(direction int) {
 			m.viewport.SetYOffset(0)
 		}
 	}
+}
+
+func (m *Model) setFocusIfNavigating(visibleIdx int) {
+	if m.mode != ModeNavigate {
+		return
+	}
+
+	m.focusedIdx = visibleIdx
+	m.updateViewport()
 }
 
 func (m *Model) toggleCollapseAll() {
