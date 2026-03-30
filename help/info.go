@@ -87,9 +87,9 @@ func CommentText(screenWidth int, enableNerdFonts bool) string {
 
 	keys.AddHeader("Legend")
 	keys.AddSeparator()
-	keys.AddKeymap("Original Poster", style.CommentOP(getOP(enableNerdFonts)))
-	keys.AddKeymap("Grandparent Poster", style.CommentGP(getGP(enableNerdFonts)))
-	keys.AddKeymap("Moderator", style.CommentMod(getMod(enableNerdFonts)))
+	keys.AddKeymap("Original Poster", style.CommentOP(labelText("OP", enableNerdFonts)))
+	keys.AddKeymap("Grandparent Poster", style.CommentGP(labelText("GP", enableNerdFonts)))
+	keys.AddKeymap("Moderator", style.CommentMod(labelText("mod", enableNerdFonts)))
 	keys.AddSeparator()
 	keys.AddKeymap("New comment indicator", style.CommentNewIndicator("●"))
 
@@ -109,26 +109,10 @@ func formatKeymaps(keys *keymaps.List, screenWidth int) string {
 	return output
 }
 
-func getOP(enableNerdFonts bool) string {
+func labelText(fallback string, enableNerdFonts bool) string {
 	if enableNerdFonts {
 		return nerdfonts.Author
 	}
 
-	return "OP"
-}
-
-func getGP(enableNerdFonts bool) string {
-	if enableNerdFonts {
-		return nerdfonts.Author
-	}
-
-	return "GP"
-}
-
-func getMod(enableNerdFonts bool) string {
-	if enableNerdFonts {
-		return nerdfonts.Author
-	}
-
-	return "mod"
+	return fallback
 }

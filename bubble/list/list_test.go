@@ -287,7 +287,7 @@ func TestEnterCommentSection(t *testing.T) {
 func TestEnteringCommentSection_ReturnsCmd(t *testing.T) {
 	m := newTestModelReady(t)
 
-	_, cmd := m.Update(message.EnteringCommentSection{Id: 1, CommentCount: 10})
+	_, cmd := m.Update(message.EnteringCommentSection{ID: 1, CommentCount: 10})
 	assert.NotNil(t, cmd, "should return cmd for async comment fetching")
 
 	// Execute the Cmd — it should produce a CommentTreeDataReady message
@@ -319,10 +319,10 @@ func TestEnteringReaderMode_ReturnsCmd(t *testing.T) {
 	m := newTestModelReady(t)
 
 	_, cmd := m.Update(message.EnteringReaderMode{
-		Url:          "https://example.com",
+		URL:          "https://example.com",
 		Title:        "Test Article",
 		Domain:       "example.com",
-		Id:           1,
+		ID:           1,
 		CommentCount: 10,
 	})
 	assert.NotNil(t, cmd, "should return cmd for async article fetching")
@@ -332,10 +332,10 @@ func TestEnteringReaderMode_InvalidDomain(t *testing.T) {
 	m := newTestModelReady(t)
 
 	_, cmd := m.Update(message.EnteringReaderMode{
-		Url:          "https://youtube.com/watch?v=123",
+		URL:          "https://youtube.com/watch?v=123",
 		Title:        "Test Video",
 		Domain:       "youtube.com",
-		Id:           1,
+		ID:           1,
 		CommentCount: 10,
 	})
 	assert.NotNil(t, cmd)

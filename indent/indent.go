@@ -8,7 +8,7 @@ const (
 	compatibilityIndent = "┃"
 )
 
-func IndentSymbol(hideIndentSymbol bool) string {
+func Symbol(hideIndentSymbol bool) string {
 	if hideIndentSymbol {
 		return noIndent
 	}

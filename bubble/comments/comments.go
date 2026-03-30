@@ -193,7 +193,7 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		if m.mode == ModeScroll {
 			m.collapseAll()
 		} else {
-			m.collapse()
+			m.setCollapsed(true)
 		}
 
 		return nil
@@ -203,7 +203,7 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		if m.mode == ModeScroll {
 			m.expandAll()
 		} else {
-			m.expand()
+			m.setCollapsed(false)
 		}
 
 		return nil
@@ -320,9 +320,9 @@ func (m *Model) updateViewport() {
 }
 
 func (m *Model) footerSeparator() string {
-	underscore := lipgloss.NewStyle().Underline(true).Render(" ")
-
-	return strings.Repeat(underscore, m.rc.screenWidth)
+	return lipgloss.NewStyle().Underline(true).
+		Width(m.rc.screenWidth).
+		Render(strings.Repeat(" ", m.rc.screenWidth))
 }
 
 func (m *Model) modeIndicator() string {
@@ -393,7 +393,7 @@ func (m *Model) rebuildContent() {
 	m.updateViewport()
 }
 
-func (m *Model) collapse() {
+func (m *Model) setCollapsed(collapsed bool) {
 	if len(m.visible) == 0 || m.focusedIdx < 0 {
 		return
 	}
@@ -401,13 +401,13 @@ func (m *Model) collapse() {
 	flatIdx := m.visible[m.focusedIdx]
 	fc := &m.flat[flatIdx]
 
-	if fc.DescendantCount == 0 || fc.Collapsed {
+	if fc.DescendantCount == 0 || fc.Collapsed == collapsed {
 		return
 	}
 
 	screenPos := m.screenPosition(flatIdx)
 
-	fc.Collapsed = true
+	fc.Collapsed = collapsed
 
 	m.rebuildContent()
 
@@ -431,31 +431,7 @@ func (m *Model) toggleCollapse() {
 		return
 	}
 
-	if fc.Collapsed {
-		m.expand()
-	} else {
-		m.collapse()
-	}
-}
-
-func (m *Model) expand() {
-	if len(m.visible) == 0 || m.focusedIdx < 0 {
-		return
-	}
-
-	flatIdx := m.visible[m.focusedIdx]
-	fc := &m.flat[flatIdx]
-
-	if !fc.Collapsed {
-		return
-	}
-
-	screenPos := m.screenPosition(flatIdx)
-
-	fc.Collapsed = false
-
-	m.rebuildContent()
-	m.restoreScreenPosition(flatIdx, screenPos)
+	m.setCollapsed(!fc.Collapsed)
 }
 
 func (m *Model) navigateComment(direction int) {

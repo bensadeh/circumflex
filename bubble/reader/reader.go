@@ -235,9 +235,9 @@ func (m *Model) headerView() string {
 }
 
 func (m *Model) footerSeparator() string {
-	underscore := lipgloss.NewStyle().Underline(true).Render(" ")
-
-	return strings.Repeat(underscore, m.screenWidth)
+	return lipgloss.NewStyle().Underline(true).
+		Width(m.screenWidth).
+		Render(strings.Repeat(" ", m.screenWidth))
 }
 
 func (m *Model) modeIndicator() string {

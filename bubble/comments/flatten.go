@@ -47,14 +47,11 @@ func flattenRecursive(c *comment.Comment, depth int, topLevelAuthor string, out 
 		return
 	}
 
+	copied := *c
+	copied.Children = nil
+
 	fc := FlatComment{
-		Comment: comment.Comment{
-			ID:      c.ID,
-			Author:  c.Author,
-			Content: c.Content,
-			Time:    c.Time,
-			TimeAgo: c.TimeAgo,
-		},
+		Comment:        copied,
 		Depth:          depth,
 		TopLevelAuthor: topLevelAuthor,
 	}
@@ -70,16 +67,15 @@ func flattenRecursive(c *comment.Comment, depth int, topLevelAuthor string, out 
 	}
 }
 
-// fillDescendantCounts computes descendant counts directly from the flat
-// array. In the DFS ordering, a node's descendants are the contiguous entries
-// after it with strictly greater depth. This avoids walking the original tree,
-// keeping the pruning decision in flattenRecursive as the single source of truth.
+// fillDescendantCounts computes descendant counts by walking backwards.
+// Each node's count is the sum of its direct children's counts plus the
+// number of direct children. O(n) instead of O(n²).
 func fillDescendantCounts(flat []FlatComment) {
-	for i := range flat {
+	for i := len(flat) - 1; i >= 0; i-- {
 		count := 0
 
-		for j := i + 1; j < len(flat) && flat[j].Depth > flat[i].Depth; j++ {
-			count++
+		for j := i + 1; j < len(flat) && flat[j].Depth > flat[i].Depth; j += flat[j].DescendantCount + 1 {
+			count += flat[j].DescendantCount + 1
 		}
 
 		flat[i].DescendantCount = count

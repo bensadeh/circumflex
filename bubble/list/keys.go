@@ -127,7 +127,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			enterCommentsCmd := func() tea.Msg {
 				return message.EnteringCommentSection{
-					Id:           id,
+					ID:           id,
 					CommentCount: commentCount,
 				}
 			}
@@ -146,10 +146,10 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			enterReaderCmd := func() tea.Msg {
 				return message.EnteringReaderMode{
-					Url:          selected.URL,
+					URL:          selected.URL,
 					Title:        selected.Title,
 					Domain:       selected.Domain,
-					Id:           selected.ID,
+					ID:           selected.ID,
 					CommentCount: selected.CommentsCount,
 				}
 			}

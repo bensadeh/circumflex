@@ -37,7 +37,7 @@ var (
 
 func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNerdFonts bool) string {
 	if enableNerdFonts {
-		highlightedStartup := style.Reset + getYCBarNerdFonts(nerdfonts.YCombinator+constants.NoBreakSpace+`$2`, highlightType, enableNerdFonts) +
+		highlightedStartup := style.Reset + getYCBarNerdFonts(nerdfonts.YCombinator+constants.NoBreakSpace+`$2`, highlightType) +
 			getHighlight(highlightType)
 
 		return reYCWithSeason.ReplaceAllString(comment, highlightedStartup)
@@ -64,19 +64,15 @@ func getYCBar(text string, highlightType int) string {
 	}
 }
 
-func getYCBarNerdFonts(text string, highlightType int, enableNerdFonts bool) string {
+func getYCBarNerdFonts(text string, highlightType int) string {
 	c := style.HeadlineYCLabelColor()
+	black := lipgloss.ANSIColor(ansiBlack)
 
-	switch highlightType {
-	case Selected:
-		return label(text, c, lipgloss.ANSIColor(ansiBlack), highlightType, enableNerdFonts)
-
-	case MarkAsRead:
-		return label(text, lipgloss.ANSIColor(ansiBlack), c, highlightType, enableNerdFonts)
-
-	default:
-		return label(text, lipgloss.ANSIColor(ansiBlack), c, highlightType, enableNerdFonts)
+	if highlightType == Selected {
+		return label(text, c, black, highlightType)
 	}
+
+	return label(text, black, c, highlightType)
 }
 
 func HighlightYear(comment string, highlightType int) string {
@@ -100,20 +96,10 @@ func getYear(text string, highlightType int) string {
 	}
 }
 
-func label(text string, fg color.Color, bg color.Color, highlightType int, enableNerdFonts bool) string {
+func label(text string, fg color.Color, bg color.Color, highlightType int) string {
 	content := lipgloss.NewStyle().
 		Foreground(fg).
 		Background(bg)
-
-	border := lipgloss.NewStyle().
-		Foreground(bg)
-
-	if highlightType == Selected {
-		border.
-			Foreground(lipgloss.NoColor{}).
-			Background(bg).
-			Reverse(true)
-	}
 
 	if highlightType == MarkAsRead {
 		content.
@@ -126,41 +112,20 @@ func label(text string, fg color.Color, bg color.Color, highlightType int, enabl
 	}
 
 	return style.Reset +
-		getLeftBorder(bg, highlightType, enableNerdFonts) +
+		getLeftBorder(bg, highlightType) +
 		content.Render(text) +
-		getRightBorder(bg, highlightType, enableNerdFonts)
+		getRightBorder(bg, highlightType)
 }
 
-func getLeftBorder(bg color.Color, highlightType int, enableNerdFonts bool) string {
-	if enableNerdFonts {
-		borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
-
-		return borderStyle.Render(nerdfonts.LeftSeparator)
-	}
-
-	borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
-
-	return borderStyle.Render(" ")
+func getLeftBorder(bg color.Color, highlightType int) string {
+	return borderStyle(bg, highlightType).Render(nerdfonts.LeftSeparator)
 }
 
-func getRightBorder(bg color.Color, highlightType int, enableNerdFonts bool) string {
-	if enableNerdFonts {
-		borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
-
-		return borderStyle.Render(nerdfonts.RightSeparator)
-	}
-
-	borderStyle := getBorderStyle(bg, highlightType, enableNerdFonts)
-
-	return borderStyle.Render(" ")
+func getRightBorder(bg color.Color, highlightType int) string {
+	return borderStyle(bg, highlightType).Render(nerdfonts.RightSeparator)
 }
 
-func getBorderStyle(bg color.Color, highlightType int, enableNerdFonts bool) lipgloss.Style {
-	if !enableNerdFonts {
-		return lipgloss.NewStyle().
-			Background(bg)
-	}
-
+func borderStyle(bg color.Color, highlightType int) lipgloss.Style {
 	if highlightType == Selected {
 		return lipgloss.NewStyle().
 			Foreground(lipgloss.NoColor{}).

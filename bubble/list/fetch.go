@@ -129,10 +129,10 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 	fetchID := m.fetchID
 
 	return func() tea.Msg {
-		lastVisited := hist.CommentsLastVisited(msg.Id)
-		_ = hist.MarkAsReadAndWriteToDisk(msg.Id, msg.CommentCount)
+		lastVisited := hist.CommentsLastVisited(msg.ID)
+		_ = hist.MarkAsReadAndWriteToDisk(msg.ID, msg.CommentCount)
 
-		story, err := service.FetchComments(ctx, msg.Id)
+		story, err := service.FetchComments(ctx, msg.ID)
 
 		var updatedStory *item.Story
 		if err == nil && isOnFavorites {
@@ -166,12 +166,12 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 			return message.ArticleReady{Err: err, FetchID: fetchID}
 		}
 
-		article, err := reader.Article(ctx, msg.Url, config.CommentWidth, config.IndentationSymbol)
+		article, err := reader.Article(ctx, msg.URL, config.CommentWidth, config.IndentationSymbol)
 		if err != nil {
 			return message.ArticleReady{Err: err, FetchID: fetchID}
 		}
 
-		_ = hist.MarkArticleAsReadAndWriteToDisk(msg.Id)
+		_ = hist.MarkArticleAsReadAndWriteToDisk(msg.ID)
 
 		return message.ArticleReady{Content: article, Title: title, FetchID: fetchID}
 	}

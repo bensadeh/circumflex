@@ -10,7 +10,7 @@ import (
 type ReaderViewQuitMsg struct{}
 
 type EnteringCommentSection struct {
-	Id           int
+	ID           int
 	CommentCount int
 }
 
@@ -19,10 +19,10 @@ type BrowserOpenFailed struct {
 }
 
 type EnteringReaderMode struct {
-	Url          string
+	URL          string
 	Title        string
 	Domain       string
-	Id           int
+	ID           int
 	CommentCount int
 }
 

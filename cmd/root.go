@@ -36,7 +36,7 @@ func Root() *cobra.Command {
 		Version: version.Version,
 		Run: func(cmd *cobra.Command, args []string) {
 			config := getConfig()
-			config.IndentationSymbol = indent.IndentSymbol(hideIndentSymbol)
+			config.IndentationSymbol = indent.Symbol(hideIndentSymbol)
 
 			cat, err := categories.New(selectedCategories)
 			if err != nil {
