@@ -203,11 +203,7 @@ func (m *Model) handleFetchingFinished(msg message.FetchingFinished) (*Model, te
 }
 
 func (m *Model) handleWindowResize(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
-	h, v := lipgloss.NewStyle().GetFrameSize()
-	m.setSize(msg.Width-h, msg.Height-v)
-
-	m.width = msg.Width
-	m.height = msg.Height
+	m.setSize(msg.Width, msg.Height)
 
 	if m.state == StateReaderView {
 		return m, m.readerView.Update(msg)
@@ -230,8 +226,7 @@ func (m *Model) handleWindowResize(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 }
 
 func (m *Model) handleStartup(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
-	h, v := lipgloss.NewStyle().GetFrameSize()
-	m.setSize(msg.Width-h, msg.Height-v)
+	m.setSize(msg.Width, msg.Height)
 
 	var cmds []tea.Cmd
 

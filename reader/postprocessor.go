@@ -2,34 +2,21 @@ package reader
 
 import (
 	"clx/constants"
-	"os"
 	"strings"
 
 	t "github.com/MichaelMure/go-term-text"
-	"golang.org/x/term"
 )
 
-const (
-	newLine            = "\n"
-	defaultScreenWidth = 80
-)
-
-func processArticle(text string, url string) string {
+func processArticle(text string, url string, width int) string {
 	text = filterSite(text, url)
-	text = indent(text)
+	text = indent(text, width)
 	text = DeIndentInfoSection(text)
 
 	return text
 }
 
-func indent(commentSection string) string {
+func indent(commentSection string, screenWidth int) string {
 	indentBlock := strings.Repeat(" ", constants.ReaderViewLeftMargin)
-
-	screenWidth, _, err := term.GetSize(int(os.Stdout.Fd()))
-	if err != nil {
-		screenWidth = defaultScreenWidth
-	}
-
 	indentedCommentSection, _ := t.WrapWithPad(commentSection, screenWidth, indentBlock)
 
 	return indentedCommentSection

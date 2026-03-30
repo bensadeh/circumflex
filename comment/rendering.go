@@ -43,13 +43,23 @@ func AuthorLabel(author, originalPoster, topLevelAuthor string, enableNerdFonts 
 
 func computeLabel(author, originalPoster, topLevelAuthor string, nerdFonts bool) string {
 	switch {
-	case nerdFonts:
-		return nerdfonts.Author + " "
 	case IsMod(author):
+		if nerdFonts {
+			return nerdfonts.Author + " "
+		}
+
 		return "mod "
 	case author == originalPoster:
+		if nerdFonts {
+			return nerdfonts.Author + " "
+		}
+
 		return "OP "
 	case author == topLevelAuthor:
+		if nerdFonts {
+			return nerdfonts.Author + " "
+		}
+
 		return "GP "
 	default:
 		return ""

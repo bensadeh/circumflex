@@ -23,14 +23,10 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 		}
 
 	case tea.WindowSizeMsg:
-		h, v := lipgloss.NewStyle().GetFrameSize()
-		m.setSize(msg.Width-h, msg.Height-v)
+		m.setSize(msg.Width, msg.Height)
 
 		m.viewport.SetWidth(msg.Width)
 		m.viewport.SetHeight(msg.Height)
-
-		m.width = msg.Width
-		m.height = msg.Height
 
 		content := lipgloss.NewStyle().
 			Width(msg.Width).

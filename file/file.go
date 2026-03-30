@@ -35,22 +35,22 @@ func PathToFavoritesFile() string {
 }
 
 func Exists(pathToFile string) bool {
-	if _, err := os.Stat(pathToFile); os.IsNotExist(err) {
-		return false
-	}
+	_, err := os.Stat(pathToFile)
 
-	return true
+	return err == nil
 }
 
-func WriteToFile(path string, content string) error {
-	mkdirErr := os.MkdirAll(PathToConfigDirectory(), dirPermissions)
+func WriteToFile(filePath string, content string) error {
+	dir := path.Dir(filePath)
+
+	mkdirErr := os.MkdirAll(dir, dirPermissions)
 	if mkdirErr != nil {
-		return fmt.Errorf("could not create path to config dir: %w", mkdirErr)
+		return fmt.Errorf("could not create directory %s: %w", dir, mkdirErr)
 	}
 
-	file, createPathErr := os.Create(path)
+	file, createPathErr := os.Create(filePath)
 	if createPathErr != nil {
-		return fmt.Errorf("could not create config file: %w", createPathErr)
+		return fmt.Errorf("could not create file: %w", createPathErr)
 	}
 
 	_, writeFileErr := file.WriteString(content)

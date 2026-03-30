@@ -74,7 +74,7 @@ func Article(ctx context.Context, url string, width int, indentationSymbol strin
 
 	header := createHeader(url, width)
 
-	articleInTerminalFormal = processArticle(header+articleInTerminalFormal, url)
+	articleInTerminalFormal = processArticle(header+articleInTerminalFormal, url, width)
 
 	return articleInTerminalFormal, nil
 }
