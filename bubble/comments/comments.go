@@ -411,6 +411,10 @@ func (m *Model) jumpToTopLevel(direction int) {
 				return
 			}
 		}
+
+		if yOffset > 0 {
+			m.viewport.SetYOffset(0)
+		}
 	}
 }
 

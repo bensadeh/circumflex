@@ -184,6 +184,10 @@ func (m *Model) jumpToHeader(direction int) {
 				return
 			}
 		}
+
+		if yOffset > 0 {
+			m.viewport.SetYOffset(0)
+		}
 	}
 }
 
