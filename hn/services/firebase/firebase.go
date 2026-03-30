@@ -155,7 +155,7 @@ func (s *Service) FetchComments(ctx context.Context, id int) (*item.Story, error
 
 	sem := make(chan struct{}, maxConcurrency)
 
-	story.Comments, err = s.fetchCommentTree(ctx, cancel, sem, hn.Kids, 0)
+	story.Comments, err = s.fetchCommentTree(ctx, cancel, sem, hn.Kids)
 	if err != nil {
 		return nil, fmt.Errorf("fetching comments for story %d: %w", id, err)
 	}
@@ -163,7 +163,7 @@ func (s *Service) FetchComments(ctx context.Context, id int) (*item.Story, error
 	return story, nil
 }
 
-func (s *Service) fetchCommentTree(ctx context.Context, cancel context.CancelCauseFunc, sem chan struct{}, kidIDs []int, level int) ([]*item.Story, error) {
+func (s *Service) fetchCommentTree(ctx context.Context, cancel context.CancelCauseFunc, sem chan struct{}, kidIDs []int) ([]*item.Story, error) {
 	if len(kidIDs) == 0 {
 		return nil, nil
 	}
@@ -214,9 +214,9 @@ func (s *Service) fetchCommentTree(ctx context.Context, cancel context.CancelCau
 				return
 			}
 
-			c := mapCommentItem(hn, level)
+			c := mapCommentItem(hn)
 
-			children, err := s.fetchCommentTree(ctx, cancel, sem, hn.Kids, level+1)
+			children, err := s.fetchCommentTree(ctx, cancel, sem, hn.Kids)
 			if err != nil {
 				fail(err)
 
@@ -287,7 +287,6 @@ func mapRootItem(hn *hnItem) *item.Story {
 		User:          hn.By,
 		Time:          hn.Time,
 		TimeAgo:       timeago.RelativeTime(hn.Time),
-		Type:          hn.Type,
 		URL:           hn.URL,
 		Domain:        domainutil.Domain(hn.URL),
 		Content:       hn.Text,
@@ -295,7 +294,7 @@ func mapRootItem(hn *hnItem) *item.Story {
 	}
 }
 
-func mapCommentItem(hn *hnItem, level int) *item.Story {
+func mapCommentItem(hn *hnItem) *item.Story {
 	content := hn.Text
 	if hn.Deleted {
 		content = "[deleted]"
@@ -306,8 +305,6 @@ func mapCommentItem(hn *hnItem, level int) *item.Story {
 		User:    hn.By,
 		Time:    hn.Time,
 		TimeAgo: timeago.RelativeTime(hn.Time),
-		Type:    hn.Type,
-		Level:   level,
 		Content: content,
 	}
 }

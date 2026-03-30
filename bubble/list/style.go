@@ -21,19 +21,13 @@ type Styles struct {
 	TitleBar lipgloss.Style
 	Spinner  lipgloss.Style
 
-	StatusBar   lipgloss.Style
-	StatusEmpty lipgloss.Style
+	StatusBar lipgloss.Style
 
 	NoItems lipgloss.Style
-
-	PaginationStyle lipgloss.Style
-	HelpStyle       lipgloss.Style
 
 	// Styled characters.
 	ActivePaginationDot   lipgloss.Style
 	InactivePaginationDot lipgloss.Style
-	ArabicPagination      lipgloss.Style
-	DividerDot            lipgloss.Style
 }
 
 // DefaultStyles returns a set of default style definitions for this list
@@ -43,16 +37,8 @@ func DefaultStyles() (s Styles) {
 
 	s.Spinner = lipgloss.NewStyle()
 
-	s.StatusEmpty = lipgloss.NewStyle()
-
 	s.NoItems = lipgloss.NewStyle().
 		Foreground(compat.AdaptiveColor{Light: lipgloss.Color("#909090"), Dark: lipgloss.Color("#626262")})
-
-	s.ArabicPagination = lipgloss.NewStyle()
-
-	s.PaginationStyle = lipgloss.NewStyle().PaddingLeft(2)
-
-	s.HelpStyle = lipgloss.NewStyle().Padding(1, 0, 0, 2)
 
 	s.ActivePaginationDot = lipgloss.NewStyle().
 		SetString(bullet)
@@ -60,10 +46,6 @@ func DefaultStyles() (s Styles) {
 	s.InactivePaginationDot = lipgloss.NewStyle().
 		Faint(true).
 		SetString(bullet)
-
-	s.DividerDot = lipgloss.NewStyle().
-		Faint(true).
-		SetString(" " + bullet + " ")
 
 	return s
 }

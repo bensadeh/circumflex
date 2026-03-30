@@ -52,24 +52,12 @@ func BrightRed(s string) string {
 	return lipgloss.NewStyle().Foreground(lipgloss.BrightRed).Render(s)
 }
 
-func BrightBlue(s string) string {
-	return lipgloss.NewStyle().Foreground(lipgloss.BrightBlue).Render(s)
-}
-
 func BrightGreen(s string) string {
 	return lipgloss.NewStyle().Foreground(lipgloss.BrightGreen).Render(s)
 }
 
 func BrightYellow(s string) string {
 	return lipgloss.NewStyle().Foreground(lipgloss.BrightYellow).Render(s)
-}
-
-func BrightCyan(s string) string {
-	return lipgloss.NewStyle().Foreground(lipgloss.BrightCyan).Render(s)
-}
-
-func BrightMagenta(s string) string {
-	return lipgloss.NewStyle().Foreground(lipgloss.BrightMagenta).Render(s)
 }
 
 func BrightWhite(s string) string {
@@ -136,8 +124,6 @@ func ReaderH3(s string) string           { return colored(current.Reader.H3, s) 
 func ReaderH4(s string) string           { return colored(current.Reader.H4, s) }
 func ReaderH5(s string) string           { return colored(current.Reader.H5, s) }
 func ReaderH6(s string) string           { return colored(current.Reader.H6, s) }
-func ReaderBBCImage(s string) string     { return colored(current.Reader.BBCImage, s) }
-func ReaderBBCCaption(s string) string   { return colored(current.Reader.BBCCaption, s) }
 func ReaderBBCImageColor() color.Color   { return theme.ParseColor(current.Reader.BBCImage) }
 func ReaderBBCCaptionColor() color.Color { return theme.ParseColor(current.Reader.BBCCaption) }
 func ReaderImageColor() color.Color      { return theme.ParseColor(current.Reader.Image) }

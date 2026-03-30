@@ -12,24 +12,12 @@ import (
 type statusBar struct {
 	message     string
 	generation  int
-	lifetime    time.Duration
 	spinner     spinner.Model
 	showSpinner bool
 }
 
-func (s *statusBar) NewStatusMessage(msg string) tea.Cmd {
-	s.message = msg
-	s.generation++
-
-	gen := s.generation
-
-	return tea.Tick(s.lifetime, func(time.Time) tea.Msg {
-		return message.StatusMessageTimeout{Generation: gen}
-	})
-}
-
 func (s *statusBar) NewStatusMessageWithDuration(msg string, d time.Duration) tea.Cmd {
-	s.message = lipgloss.NewStyle().Render(msg)
+	s.message = msg
 	s.generation++
 
 	gen := s.generation

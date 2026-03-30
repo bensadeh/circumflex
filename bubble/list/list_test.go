@@ -428,13 +428,13 @@ func TestRefresh(t *testing.T) {
 	assert.True(t, m.pager.transition.refresh)
 }
 
-func TestOpenLink_ReturnsMessage(t *testing.T) {
+func TestOpenLink_ReturnsCmd(t *testing.T) {
 	m := newTestModelReady(t)
 
-	// Test the message handler directly instead of pressing "o",
-	// because handleOpenLink() calls browser.Open() synchronously.
-	_, _ = m.Update(message.OpeningLink{Id: 1, CommentCount: 10})
-	// History should be marked as read
+	// handleOpenLink returns a tea.Cmd that calls browser.Open;
+	// we verify it produces a command without executing it.
+	cmd := m.handleOpenLink()
+	assert.NotNil(t, cmd)
 }
 
 func TestSpinnerTick_WhenActive(t *testing.T) {

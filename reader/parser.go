@@ -20,9 +20,6 @@ func convertToMarkdownBlocks(text string) []*block {
 	text = strings.ReplaceAll(text, enDash, normalDash)
 	text = strings.ReplaceAll(text, emDash, normalDash)
 
-	text = strings.ReplaceAll(text, boldStart, "")
-	text = strings.ReplaceAll(text, boldStop, "")
-
 	lines := strings.Split(text+"\n", "\n")
 	temp := new(tempBuffer)
 
@@ -34,7 +31,6 @@ func convertToMarkdownBlocks(text string) []*block {
 
 	for _, line := range lines {
 		lineWithoutFormatting := strings.TrimLeft(line, " ")
-		lineWithoutFormatting = strings.ReplaceAll(lineWithoutFormatting, boldStart, "")
 		lineWithoutFormatting = strings.ReplaceAll(lineWithoutFormatting, italicStart, "")
 
 		if isInsideCode {

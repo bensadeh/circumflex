@@ -9,9 +9,6 @@ import (
 
 type Service struct{}
 
-func (Service) Init(_ int) {
-}
-
 func (Service) FetchItems(_ context.Context, _ int, category string) (items []*item.Story, err error) {
 	time.Sleep(time.Second * 2)
 
@@ -295,46 +292,39 @@ func (Service) FetchComments(_ context.Context, _ int) (*item.Story, error) {
 		User:    "riemann",
 		TimeAgo: "6 hours ago",
 		URL:     "https://en.wikipedia.org/wiki/Riemann_hypothesis",
-		Level:   0,
 		Domain:  "google.com",
 		Comments: []*item.Story{
 			{
 				ID:      28,
 				User:    "euler",
 				TimeAgo: "1 hour ago",
-				Level:   0,
 				Comments: []*item.Story{
 					{
 						ID:      23,
 						User:    "hilbert",
 						TimeAgo: "40 minutes ago",
-						Level:   1,
 						Comments: []*item.Story{
 							{
 								ID:      33,
 								User:    "riemann",
 								TimeAgo: "27 minutes ago",
-								Level:   2,
 								Comments: []*item.Story{
 									{
 										ID:      33,
 										User:    "gauss",
 										TimeAgo: "26 minutes ago",
-										Level:   3,
 										Comments: []*item.Story{
 											{
 												ID:      33,
 												Time:    time.Now().Add(time.Minute).Unix(),
 												User:    "cantor",
 												TimeAgo: "10 minutes ago",
-												Level:   4,
 												Comments: []*item.Story{
 													{
 														ID:      33,
 														Time:    time.Now().Add(time.Minute).Unix(),
 														User:    "euler",
 														TimeAgo: "4 minutes ago",
-														Level:   5,
 														Content: "Duis accumsan eros sit amet libero facilisis, id placerat tellus auctor.",
 													},
 												},
@@ -356,7 +346,6 @@ func (Service) FetchComments(_ context.Context, _ int) (*item.Story, error) {
 						ID:      33,
 						User:    "ramanujan",
 						TimeAgo: "27 minutes ago",
-						Level:   1,
 						Content: "Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe " +
 							"eveniet, ut et voluptates repudiandae.",
 					},
@@ -368,7 +357,6 @@ func (Service) FetchComments(_ context.Context, _ int) (*item.Story, error) {
 				ID:       1,
 				User:     "wolfgang",
 				TimeAgo:  "6 minutes ago",
-				Level:    0,
 				Comments: nil,
 				Content: "<p>Vivamus elementum auctor congue. Etiam[1] nulla nisl, varius vehicula[2] quam vel, aliquet " +
 					"iaculis enim. Donec felis elit[3], sollicitudin viverra velit eget, posuere[4] vestibulum eros. " +
@@ -384,13 +372,11 @@ func (Service) FetchComments(_ context.Context, _ int) (*item.Story, error) {
 				ID:      5,
 				User:    "hamilton",
 				TimeAgo: "2 hours ago",
-				Level:   0,
 				Comments: []*item.Story{
 					{
 						ID:            41,
 						User:          "euler",
 						TimeAgo:       "1 hour ago",
-						Level:         1,
 						Comments:      nil,
 						Content:       "<p>&gt; Godot doesn’t fight you when you’re building scenes. Making a scene feels a lot like creating a class using composition, and scenes can even inherit from other scenes (using another scene as the the root node of a scene allows you to inherit from it and override its properties in the editor and in code), allowing you to express patterns you’re intimately familiar with from object-oriented programming.<p>I personally find the approach of nodes everywhere a bit odd.<p><pre><code>  EnemyObject\n    PathfindingObject\n      PathfindingBehavior (attached script)\n    ShootingObject\n      ShootingBehavior (attached script)\n    TalkingObject\n      TalkingBehavior (attached script)\n</code></pre>\nIt kind of feels like it would be nicer to be able to attach a number of scripts to the object that I actually want to control, instead of having Nodes that I don&#x27;t really see much of a use for, apart from them being script containers.</a>",
 						CommentsCount: 0,
@@ -403,7 +389,6 @@ func (Service) FetchComments(_ context.Context, _ int) (*item.Story, error) {
 				ID:            4,
 				User:          "hamilton",
 				TimeAgo:       "1 hour ago",
-				Level:         0,
 				Comments:      nil,
 				Content:       "<p> This comment tests parsing of YC-funded companies: xxxxxxCompany (YC S07)",
 				CommentsCount: 0,

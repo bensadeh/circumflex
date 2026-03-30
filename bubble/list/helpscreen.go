@@ -26,12 +26,8 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 		h, v := lipgloss.NewStyle().GetFrameSize()
 		m.setSize(msg.Width-h, msg.Height-v)
 
-		headerHeight := lipgloss.Height("")
-		footerHeight := lipgloss.Height("")
-		verticalMarginHeight := headerHeight + footerHeight
-
 		m.viewport.SetWidth(msg.Width)
-		m.viewport.SetHeight(msg.Height - verticalMarginHeight)
+		m.viewport.SetHeight(msg.Height)
 
 		m.width = msg.Width
 		m.height = msg.Height

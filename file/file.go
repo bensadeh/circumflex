@@ -7,7 +7,6 @@ import (
 )
 
 const (
-	ConfigFileNameFull    = "config.env"
 	FavoritesFileNameFull = "favorites.json"
 
 	clxDir         = "circumflex"
@@ -31,10 +30,6 @@ func PathToCacheDirectory() string {
 	return path.Join(homeDir(), ".cache", clxDir)
 }
 
-func PathToConfigFile() string {
-	return path.Join(PathToConfigDirectory(), ConfigFileNameFull)
-}
-
 func PathToFavoritesFile() string {
 	return path.Join(PathToConfigDirectory(), FavoritesFileNameFull)
 }
@@ -45,10 +40,6 @@ func Exists(pathToFile string) bool {
 	}
 
 	return true
-}
-
-func ConfigFileExists() bool {
-	return Exists(PathToConfigFile())
 }
 
 func WriteToFile(path string, content string) error {

@@ -38,15 +38,10 @@ func (p *pager) updatePagination(availHeight, itemHeight, itemSpacing int, curre
 
 func (m *Model) updatePagination() {
 	availHeight := m.height
+	availHeight -= lipgloss.Height(m.titleView())
 
-	if m.showTitle {
-		availHeight -= lipgloss.Height(m.titleView())
-	}
-
-	if m.showStatusBar {
-		// We subtract one from the height because we don't want any spacing
-		availHeight -= lipgloss.Height(m.statusAndPaginationView()) - 1
-	}
+	// We subtract one from the height because we don't want any spacing
+	availHeight -= lipgloss.Height(m.statusAndPaginationView()) - 1
 
 	m.pager.updatePagination(availHeight, m.delegate.Height(), m.delegate.Spacing(), m.cat.CurrentCategory())
 }

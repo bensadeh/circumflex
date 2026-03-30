@@ -123,15 +123,6 @@ func TestConvertToMarkdownBlocks_EmptyInput(t *testing.T) {
 	assert.Empty(t, blocks)
 }
 
-func TestConvertToMarkdownBlocks_StripsBoldMarkers(t *testing.T) {
-	input := boldStart + "some bold text" + boldStop
-	blocks := convertToMarkdownBlocks(input)
-
-	require.Len(t, blocks, 1)
-	assert.NotContains(t, blocks[0].Text, boldStart)
-	assert.NotContains(t, blocks[0].Text, boldStop)
-}
-
 func TestConvertToMarkdownBlocks_ReplacesEnDashAndEmDash(t *testing.T) {
 	input := "word–word—word"
 	blocks := convertToMarkdownBlocks(input)
@@ -284,12 +275,6 @@ func TestIt_ReplacesItalicMarkers(t *testing.T) {
 	assert.Contains(t, result, "\u001B[3m")
 	assert.Contains(t, result, "\u001B[23m")
 	assert.Contains(t, result, "italic text")
-}
-
-func TestBld_RemovesBoldMarkers(t *testing.T) {
-	input := boldStart + "bold text" + boldStop
-	result := bld(input)
-	assert.Equal(t, "bold text", result)
 }
 
 func TestPreFormatHeader(t *testing.T) {

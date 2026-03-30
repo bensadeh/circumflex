@@ -27,12 +27,6 @@ type entry struct {
 	category    int
 }
 
-func (k *List) Init() {
-	var entries []*entry
-
-	k.keymaps = entries
-}
-
 func (k *List) AddHeader(text string) {
 	item := new(entry)
 	item.header = text

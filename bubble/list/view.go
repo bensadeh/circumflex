@@ -36,16 +36,12 @@ func (m *Model) View() string {
 		return m.commentView.View()
 	}
 
-	if m.showTitle {
-		v := m.titleView()
-		sections = append(sections, v)
-		availHeight -= lipgloss.Height(v)
-	}
+	v := m.titleView()
+	sections = append(sections, v)
+	availHeight -= lipgloss.Height(v)
 
-	if m.showStatusBar {
-		v := m.statusAndPaginationView()
-		availHeight -= lipgloss.Height(v)
-	}
+	statusView := m.statusAndPaginationView()
+	availHeight -= lipgloss.Height(statusView)
 
 	content := m.contentStyle.Height(availHeight).Render(m.populatedView())
 	allItems := m.VisibleItems()
@@ -70,11 +66,7 @@ func (m *Model) View() string {
 
 	rankingsAndContent := lipgloss.JoinHorizontal(lipgloss.Top, rankings, content)
 	sections = append(sections, rankingsAndContent)
-
-	if m.showStatusBar {
-		v := m.statusAndPaginationView()
-		sections = append(sections, v)
-	}
+	sections = append(sections, statusView)
 
 	return lipgloss.JoinVertical(lipgloss.Left, sections...)
 }
@@ -135,16 +127,14 @@ func (m *Model) populatedView() string {
 		return m.Styles.NoItems.Render("")
 	}
 
-	if len(allItems) > 0 {
-		start, end := m.pager.Paginator.GetSliceBounds(len(allItems))
-		itemsToShow := allItems[start:end]
+	start, end := m.pager.Paginator.GetSliceBounds(len(allItems))
+	itemsToShow := allItems[start:end]
 
-		for i, item := range itemsToShow {
-			m.delegate.Render(&b, m, i+start, item)
+	for i, item := range itemsToShow {
+		m.delegate.Render(&b, m, i+start, item)
 
-			if i != len(itemsToShow)-1 {
-				fmt.Fprint(&b, strings.Repeat("\n", m.delegate.Spacing()+1))
-			}
+		if i != len(itemsToShow)-1 {
+			fmt.Fprint(&b, strings.Repeat("\n", m.delegate.Spacing()+1))
 		}
 	}
 

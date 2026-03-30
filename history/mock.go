@@ -7,10 +7,6 @@ import (
 
 type Mock struct{}
 
-func (Mock) NewHistory() *History {
-	return nil
-}
-
 func (Mock) Contains(id int) bool {
 	visitedStories := []int{2, 10, 14, 18}
 

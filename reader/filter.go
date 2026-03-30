@@ -6,11 +6,10 @@ import (
 )
 
 type ruleSet struct {
-	skipLineContainsRules []string
-	skipLineEqualsRules   []string
-	skipParContainsRules  []string
-	endLineContainsRules  []string
-	endLineEqualsRules    []string
+	skipLineEqualsRules  []string
+	skipParContainsRules []string
+	endLineContainsRules []string
+	endLineEqualsRules   []string
 }
 
 func (rs *ruleSet) filter(text string) string {
@@ -40,8 +39,7 @@ func filterByLine(lines []string, rs *ruleSet) string {
 			continue
 		}
 
-		if equals(rs.skipLineEqualsRules, line) ||
-			contains(rs.skipLineContainsRules, line) {
+		if equals(rs.skipLineEqualsRules, line) {
 			continue
 		}
 

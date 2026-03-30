@@ -166,7 +166,7 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 			return message.ArticleReady{Err: err, FetchID: fetchID}
 		}
 
-		article, err := reader.Article(ctx, msg.Url, msg.Title, config.CommentWidth, config.IndentationSymbol)
+		article, err := reader.Article(ctx, msg.Url, config.CommentWidth, config.IndentationSymbol)
 		if err != nil {
 			return message.ArticleReady{Err: err, FetchID: fetchID}
 		}

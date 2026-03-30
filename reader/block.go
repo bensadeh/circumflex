@@ -17,8 +17,6 @@ const (
 
 	italicStart = "(CLX-ITALIC)"
 	italicStop  = "(CLX-ITALIC-STOP)"
-	boldStart   = "(CLX-BOLD)"
-	boldStop    = "(CLX-BOLD-STOP)"
 )
 
 type block struct {

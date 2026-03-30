@@ -26,7 +26,7 @@ func (discardLogger) Errorf(string, ...any) {}
 func (discardLogger) Warnf(string, ...any)  {}
 func (discardLogger) Debugf(string, ...any) {}
 
-func Article(ctx context.Context, url string, title string, width int, indentationSymbol string) (string, error) {
+func Article(ctx context.Context, url string, width int, indentationSymbol string) (string, error) {
 	parsedURL, err := nurl.ParseRequestURI(url)
 	if err != nil {
 		return "", fmt.Errorf("invalid URL: %w", err)

@@ -32,7 +32,7 @@ func convertToMarkdown(article string) (string, error) {
 		Replacement: func(content string, s *goquery.Selection, opt *md.Options) *string {
 			content = strings.TrimSpace(content)
 
-			return new(boldStart + content + boldStop)
+			return &content
 		},
 	}
 

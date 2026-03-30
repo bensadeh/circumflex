@@ -57,10 +57,6 @@ type ItemDelegate interface {
 
 // Model contains the state of this component.
 type Model struct {
-	showTitle     bool
-	showStatusBar bool
-
-	Title  string
 	Styles Styles
 
 	state  ViewState
@@ -87,7 +83,6 @@ type Model struct {
 	// Cached styles for hot-path rendering.
 	contentStyle    lipgloss.Style
 	underlineStyle  lipgloss.Style
-	faintStyle      lipgloss.Style
 	statusLeftStyle lipgloss.Style
 	statusMidStyle  lipgloss.Style
 	statusEndStyle  lipgloss.Style
@@ -114,10 +109,7 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 	items := make([][]*item.Story, numberOfCategories)
 
 	m := Model{
-		showTitle:     true,
-		showStatusBar: true,
-		Styles:        styles,
-		Title:         "List",
+		Styles: styles,
 
 		state:  StateStartup,
 		width:  width,
@@ -127,8 +119,7 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 			Paginator: p,
 		},
 		status: statusBar{
-			lifetime: time.Second,
-			spinner:  sp,
+			spinner: sp,
 		},
 		delegate:  delegate,
 		history:   hist,
@@ -140,7 +131,6 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 
 		contentStyle:    lipgloss.NewStyle(),
 		underlineStyle:  lipgloss.NewStyle().Underline(true),
-		faintStyle:      lipgloss.NewStyle().Faint(true),
 		statusLeftStyle: lipgloss.NewStyle().Inline(true).Width(statusBarEdgeWidth).MaxWidth(statusBarEdgeWidth),
 		statusMidStyle:  lipgloss.NewStyle().Inline(true).Align(lipgloss.Center),
 		statusEndStyle:  lipgloss.NewStyle().Inline(true).Width(statusBarEdgeWidth).Align(lipgloss.Center),
@@ -206,7 +196,7 @@ func (m *Model) handleFetchingFinished(msg message.FetchingFinished) (*Model, te
 	m.updatePagination()
 
 	if msg.Err != nil {
-		return m, m.status.NewStatusMessage(friendlyError(msg.Err))
+		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
 	}
 
 	return m, nil
@@ -320,10 +310,6 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 	case message.BrowserOpenFailed:
 		cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not open browser", statusMessageLong))
-
-	case message.OpeningLink:
-
-	case message.OpeningCommentsInBrowser:
 
 	case message.EnteringReaderMode:
 		return m, m.handleEnteringReaderMode(msg)

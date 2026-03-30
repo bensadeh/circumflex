@@ -12,7 +12,6 @@ func TestKeymaps(t *testing.T) {
 	t.Parallel()
 
 	keys := new(keymaps.List)
-	keys.Init()
 
 	keys.AddHeader("Header")
 	keys.AddSeparator()

@@ -14,7 +14,6 @@ import (
 
 func MainMenuText(screenWidth int, mainMenuBindings []key.Binding) string {
 	keys := new(keymaps.List)
-	keys.Init()
 
 	for _, b := range mainMenuBindings {
 		if !b.Enabled() {
@@ -34,7 +33,6 @@ func MainMenuText(screenWidth int, mainMenuBindings []key.Binding) string {
 
 func ReaderText(screenWidth int) string {
 	keys := new(keymaps.List)
-	keys.Init()
 
 	keys.AddKeymap("Down / up one line", "j, k")
 	keys.AddKeymap("Down / up half page", "d, u")
@@ -54,7 +52,6 @@ func ReaderText(screenWidth int) string {
 
 func CommentText(screenWidth int, enableNerdFonts bool) string {
 	keys := new(keymaps.List)
-	keys.Init()
 
 	keys.AddHeader("Scroll Mode")
 	keys.AddSeparator()

@@ -92,7 +92,6 @@ func renderDivider(lineWidth int) string {
 
 func renderText(text string, lineWidth int) string {
 	text = it(text)
-	text = bld(text)
 	text = removeHrefs(text)
 	text = unescapeCharacters(text)
 	text = removeImageReference(text)
@@ -107,7 +106,6 @@ func renderText(text string, lineWidth int) string {
 
 func renderList(text string, lineWidth int) string {
 	text = it(text)
-	text = bld(text)
 	text = removeImageReference(text)
 	text = removeHrefs(text)
 	text = unescapeCharacters(text)
@@ -175,7 +173,6 @@ func renderImage(text string, lineWidth int) string {
 	output += normal
 
 	output = it(output)
-	output = bld(output)
 	output = removeDoubleWhitespace(output)
 
 	padding := termtext.WrapPad(indentLevel1)
@@ -204,7 +201,6 @@ func renderQuote(text string, lineWidth int, indentSymbol string) string {
 
 	indentBlock := " " + indentSymbol
 	text = itReversed(text)
-	text = bld(text)
 
 	padding := termtext.WrapPad(indentLevel1 + style.Faint(indentBlock))
 	text, _ = termtext.Wrap(text, lineWidth, padding)
@@ -215,9 +211,6 @@ func renderQuote(text string, lineWidth int, indentSymbol string) string {
 func renderTable(text string, lineWidth int) string {
 	text = strings.ReplaceAll(text, italicStart, "")
 	text = strings.ReplaceAll(text, italicStop, "")
-
-	text = strings.ReplaceAll(text, boldStart, "")
-	text = strings.ReplaceAll(text, boldStop, "")
 
 	text = unescapeCharacters(text)
 	text = removeImageReference(text)
@@ -252,13 +245,6 @@ func it(text string) string {
 func itReversed(text string) string {
 	text = strings.ReplaceAll(text, italicStart, style.ItalicOff)
 	text = strings.ReplaceAll(text, italicStop, style.Italic)
-
-	return text
-}
-
-func bld(text string) string {
-	text = strings.ReplaceAll(text, boldStart, "")
-	text = strings.ReplaceAll(text, boldStop, "")
 
 	return text
 }
@@ -304,7 +290,7 @@ func preFormatHeader(text string) string {
 	text = removeImageReference(text)
 	text = strings.TrimLeft(text, "#")
 	text = strings.TrimPrefix(text, " ")
-	text = removeBoldAndItalicTags(text)
+	text = removeItalicTags(text)
 	text = unescapeCharacters(text)
 	text = it(text)
 
@@ -339,10 +325,7 @@ func removeDoubleWhitespace(text string) string {
 	return text
 }
 
-func removeBoldAndItalicTags(text string) string {
-	text = strings.ReplaceAll(text, boldStart, "")
-	text = strings.ReplaceAll(text, boldStop, "")
-
+func removeItalicTags(text string) string {
 	text = strings.ReplaceAll(text, italicStart, "")
 	text = strings.ReplaceAll(text, italicStop, "")
 

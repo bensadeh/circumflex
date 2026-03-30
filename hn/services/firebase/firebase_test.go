@@ -69,7 +69,6 @@ func TestMapRootItem(t *testing.T) {
 	assert.Equal(t, "Test Story", story.Title)
 	assert.Equal(t, 200, story.Points)
 	assert.Equal(t, "author", story.User)
-	assert.Equal(t, "story", story.Type)
 	assert.Equal(t, "https://example.com", story.URL)
 	assert.Equal(t, "example.com", story.Domain)
 	assert.Equal(t, "<p>Self post content", story.Content)
@@ -86,13 +85,11 @@ func TestMapCommentItem(t *testing.T) {
 		Type: "comment",
 	}
 
-	comment := mapCommentItem(hn, 2)
+	comment := mapCommentItem(hn)
 
 	assert.Equal(t, 100, comment.ID)
 	assert.Equal(t, "commenter", comment.User)
 	assert.Equal(t, "This is a comment", comment.Content)
-	assert.Equal(t, "comment", comment.Type)
-	assert.Equal(t, 2, comment.Level)
 	assert.Contains(t, comment.TimeAgo, "minutes ago")
 }
 
@@ -104,7 +101,7 @@ func TestMapCommentItem_Deleted(t *testing.T) {
 		Type:    "comment",
 	}
 
-	comment := mapCommentItem(hn, 0)
+	comment := mapCommentItem(hn)
 
 	assert.Equal(t, "[deleted]", comment.Content)
 	assert.Empty(t, comment.User)
@@ -242,15 +239,12 @@ func TestFetchComments_WithMockServer(t *testing.T) {
 
 	assert.Equal(t, "First comment", story.Comments[0].Content)
 	assert.Equal(t, "user1", story.Comments[0].User)
-	assert.Equal(t, 0, story.Comments[0].Level)
 
 	require.Len(t, story.Comments[0].Comments, 1)
 	assert.Equal(t, "Nested reply", story.Comments[0].Comments[0].Content)
 	assert.Equal(t, "user2", story.Comments[0].Comments[0].User)
-	assert.Equal(t, 1, story.Comments[0].Comments[0].Level)
 
 	assert.Equal(t, "Second comment", story.Comments[1].Content)
-	assert.Equal(t, 0, story.Comments[1].Level)
 }
 
 func TestFetchComments_DeletedComment(t *testing.T) {

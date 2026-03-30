@@ -32,9 +32,6 @@ type DefaultItemStyles struct {
 
 	SelectedTitleRemoveFromFavorites lipgloss.Style
 	SelectedDescRemoveFromFavorites  lipgloss.Style
-
-	DimmedTitle lipgloss.Style
-	DimmedDesc  lipgloss.Style
 }
 
 func NewDefaultItemStyles() (s DefaultItemStyles) {
@@ -59,40 +56,25 @@ func NewDefaultItemStyles() (s DefaultItemStyles) {
 	s.SelectedTitleRemoveFromFavorites = s.NormalTitle.Copy().Foreground(lipgloss.Red).Reverse(true)
 	s.SelectedDescRemoveFromFavorites = s.NormalDesc.Copy()
 
-	s.DimmedTitle = lipgloss.NewStyle()
-	s.DimmedDesc = s.DimmedTitle.Copy()
-
 	return s
 }
 
 type DefaultDelegate struct {
-	ShowDescription bool
-	Styles          DefaultItemStyles
-	UpdateFunc      func(tea.Msg, *Model) tea.Cmd
-	spacing         int
+	Styles  DefaultItemStyles
+	spacing int
 }
 
 // NewDefaultDelegate creates a new delegate with default styles.
 func NewDefaultDelegate() *DefaultDelegate {
 	return &DefaultDelegate{
-		ShowDescription: true,
-		Styles:          NewDefaultItemStyles(),
-		spacing:         1,
+		Styles:  NewDefaultItemStyles(),
+		spacing: 1,
 	}
 }
 
 // Height returns the delegate's preferred height.
 func (d *DefaultDelegate) Height() int {
-	if d.ShowDescription {
-		return 2
-	}
-
-	return 1
-}
-
-// SetSpacing set the delegate's spacing.
-func (d *DefaultDelegate) SetSpacing(i int) {
-	d.spacing = i
+	return 2
 }
 
 // Spacing returns the delegate's spacing.
@@ -100,13 +82,9 @@ func (d *DefaultDelegate) Spacing() int {
 	return d.spacing
 }
 
-// Update checks whether the delegate's UpdateFunc is set and calls it.
-func (d *DefaultDelegate) Update(msg tea.Msg, m *Model) tea.Cmd {
-	if d.UpdateFunc == nil {
-		return nil
-	}
-
-	return d.UpdateFunc(msg, m)
+// Update is a no-op; satisfies the ItemDelegate interface.
+func (d *DefaultDelegate) Update(tea.Msg, *Model) tea.Cmd {
+	return nil
 }
 
 // Render prints an item.
@@ -172,13 +150,7 @@ func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *item.St
 			desc, syntax.Unselected, m.config.DisableHeadlineHighlighting, enableNerdFonts)
 	}
 
-	if d.ShowDescription {
-		_, _ = fmt.Fprintf(w, "%s\n%s", title, desc)
-
-		return
-	}
-
-	_, _ = fmt.Fprintf(w, "%s", title)
+	_, _ = fmt.Fprintf(w, "%s\n%s", title, desc)
 }
 
 func getComments(numberOfComments int, enableNerdFonts bool) string {

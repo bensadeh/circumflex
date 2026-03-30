@@ -321,40 +321,31 @@ func (m *Model) handleTab(targetIndex int, targetCategory categories.Category, c
 }
 
 func (m *Model) handleOpenLink() tea.Cmd {
-	url := m.SelectedItem().URL
-	if url == "" {
-		url = "https://news.ycombinator.com/item?id=" + strconv.Itoa(m.SelectedItem().ID)
-	}
+	selected := m.SelectedItem()
 
-	id := m.SelectedItem().ID
-	commentCount := m.SelectedItem().CommentsCount
+	url := selected.URL
+	if url == "" {
+		url = "https://news.ycombinator.com/item?id=" + strconv.Itoa(selected.ID)
+	}
 
 	return func() tea.Msg {
 		if err := browser.Open(context.Background(), url); err != nil {
 			return message.BrowserOpenFailed{Err: err}
 		}
 
-		return message.OpeningLink{
-			Id:           id,
-			CommentCount: commentCount,
-		}
+		return nil
 	}
 }
 
 func (m *Model) handleOpenComments() tea.Cmd {
 	url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(m.SelectedItem().ID)
-	id := m.SelectedItem().ID
-	commentCount := m.SelectedItem().CommentsCount
 
 	return func() tea.Msg {
 		if err := browser.Open(context.Background(), url); err != nil {
 			return message.BrowserOpenFailed{Err: err}
 		}
 
-		return message.OpeningCommentsInBrowser{
-			Id:           id,
-			CommentCount: commentCount,
-		}
+		return nil
 	}
 }
 
