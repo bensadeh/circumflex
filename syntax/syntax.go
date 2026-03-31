@@ -2,7 +2,6 @@ package syntax
 
 import (
 	"clx/ansi"
-	"clx/constants"
 	"clx/nerdfonts"
 	"clx/style"
 	"image/color"
@@ -14,6 +13,7 @@ import (
 
 const (
 	newParagraph = "\n\n"
+	noBreakSpace = "\u00a0"
 	ansiBlack    = 16 // ANSI 256-color black
 
 	Unselected = iota
@@ -38,7 +38,7 @@ var (
 
 func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNerdFonts bool) string {
 	if enableNerdFonts {
-		highlightedStartup := ansi.Reset + getYCBarNerdFonts(nerdfonts.YCombinator+constants.NoBreakSpace+`$2`, highlightType) +
+		highlightedStartup := ansi.Reset + getYCBarNerdFonts(nerdfonts.YCombinator+noBreakSpace+`$2`, highlightType) +
 			getHighlight(highlightType)
 
 		return reYCWithSeason.ReplaceAllString(comment, highlightedStartup)

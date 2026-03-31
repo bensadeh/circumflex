@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"clx/favorites"
-	"clx/file"
+	"clx/settings"
 	"fmt"
 	"os"
 	"strconv"
@@ -32,7 +32,7 @@ func addCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			fav := favorites.New(file.PathToFavoritesFile())
+			fav := favorites.New(settings.FavoritesPath())
 			fav.Add(submission)
 
 			if err := fav.Write(); err != nil {

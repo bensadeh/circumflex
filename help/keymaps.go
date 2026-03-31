@@ -1,0 +1,84 @@
+package help
+
+import (
+	"strings"
+
+	"charm.land/lipgloss/v2"
+
+	termText "github.com/MichaelMure/go-term-text"
+)
+
+const (
+	header    = 0
+	separator = 1
+	keymap    = 2
+
+	newline = "\n"
+)
+
+type keyList struct {
+	keymaps []*entry
+}
+
+type entry struct {
+	header      string
+	description string
+	key         string
+	category    int
+}
+
+func (k *keyList) addHeader(text string) {
+	item := new(entry)
+	item.header = text
+	item.category = header
+
+	k.keymaps = append(k.keymaps, item)
+}
+
+func (k *keyList) addSeparator() {
+	item := new(entry)
+	item.category = separator
+
+	k.keymaps = append(k.keymaps, item)
+}
+
+func (k *keyList) addKeymap(description string, key string) {
+	item := new(entry)
+	item.description = description
+	item.key = key
+	item.category = keymap
+
+	k.keymaps = append(k.keymaps, item)
+}
+
+func (k *keyList) print(screenWidth int) string {
+	var output strings.Builder
+
+	for _, item := range k.keymaps {
+		switch item.category {
+		case header:
+			output.WriteString(lipgloss.NewStyle().Foreground(lipgloss.Blue).Render(item.header) + newline)
+		case separator:
+			output.WriteString(newline)
+		case keymap:
+			dots := getDotSeparators(item.description, item.key, screenWidth)
+			output.WriteString(lipgloss.NewStyle().Bold(true).Render(item.key) + lipgloss.NewStyle().Faint(true).Render(dots) + item.description + newline)
+		}
+	}
+
+	return output.String()
+}
+
+func getDotSeparators(description string, key string, screenWidth int) string {
+	descriptionLength := termText.Len(description)
+	keyLength := termText.Len(key)
+	space := " "
+	spaceLength := termText.Len(space)
+	numberOfDotSeparators := screenWidth - descriptionLength - keyLength - spaceLength - spaceLength
+
+	if numberOfDotSeparators < 0 {
+		return ""
+	}
+
+	return space + strings.Repeat(".", numberOfDotSeparators) + space
+}

@@ -2,7 +2,7 @@ package header
 
 import (
 	"clx/categories"
-	"clx/constants"
+	"clx/layout"
 	"clx/style"
 	"image/color"
 	"strings"
@@ -11,8 +11,8 @@ import (
 )
 
 func Header(allCategories []categories.Category, selectedSubHeader int, width int) string {
-	leftPad := strings.Repeat(" ", constants.HeaderLogoLeftPadding)
-	rightPad := strings.Repeat(" ", constants.HeaderLogoRightPadding)
+	leftPad := strings.Repeat(" ", layout.HeaderLogoLeftPadding)
+	rightPad := strings.Repeat(" ", layout.HeaderLogoRightPadding)
 	title := leftPad + style.Logo("c", "l", "x") + rightPad
 	cats := getCategories(allCategories, selectedSubHeader)
 	filler := getFiller(title, cats, width)
@@ -21,7 +21,7 @@ func Header(allCategories []categories.Category, selectedSubHeader int, width in
 }
 
 func HelpHeader(title string, width int) string {
-	padded := strings.Repeat(" ", constants.HeaderLeftMargin) + title
+	padded := strings.Repeat(" ", layout.HeaderLeftMargin) + title
 
 	return padded + "\n" + strings.Repeat("‾", width)
 }

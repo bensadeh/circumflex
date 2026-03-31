@@ -1,14 +1,13 @@
 package cmd
 
 import (
-	"clx/bubble"
 	"clx/categories"
 	"clx/hn"
-	"clx/indent"
 	"clx/settings"
 	"clx/style"
 	"clx/theme"
 	"clx/version"
+	"clx/view"
 	"fmt"
 	"os"
 
@@ -43,7 +42,7 @@ func Root() *cobra.Command {
 				os.Exit(1)
 			}
 
-			bubble.Run(config, cat)
+			view.Run(config, cat)
 		},
 	}
 
@@ -108,7 +107,7 @@ func getConfig() *settings.Config {
 	config.DisableCommentHighlighting = disableCommentHighlighting
 	config.DoNotMarkSubmissionsAsRead = disableHistory
 	config.EnableNerdFonts = resolveNerdFonts(nerdFontFlag)
-	config.IndentationSymbol = indent.Symbol(hideIndentSymbol)
+	config.IndentationSymbol = indentSymbol(hideIndentSymbol)
 	config.DisableEmojis = disableEmojis
 	config.DebugMode = debugMode
 	config.DebugFallible = debugFallible
@@ -136,4 +135,16 @@ func isGhostty() bool {
 
 func newService() hn.Service {
 	return hn.NewService(debugMode, debugFallible)
+}
+
+func indentSymbol(hide bool) string {
+	if hide {
+		return " "
+	}
+
+	if os.Getenv("TERM_PROGRAM") == "Apple_Terminal" {
+		return "┃"
+	}
+
+	return "▎"
 }

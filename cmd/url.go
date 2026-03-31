@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	readerView "clx/bubble/reader"
-	"clx/reader"
+	"clx/article"
+	"clx/view/reader"
 	"fmt"
 	"os"
 
@@ -19,13 +19,13 @@ func urlCmd() *cobra.Command {
 			config := getConfig()
 			url := args[0]
 
-			article, err := reader.Article(cmd.Context(), url, config.CommentWidth, config.IndentationSymbol)
+			content, err := article.Fetch(cmd.Context(), url, config.CommentWidth, config.IndentationSymbol)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "Could not read article")
 				os.Exit(1)
 			}
 
-			if err := readerView.Run(article, "Reader Mode"); err != nil {
+			if err := reader.Run(content, "Reader Mode"); err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
 			}

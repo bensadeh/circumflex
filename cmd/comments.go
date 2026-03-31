@@ -1,11 +1,10 @@
 package cmd
 
 import (
-	"clx/bubble/comments"
-	"clx/bubble/list/message"
 	"clx/comment"
-	"clx/convert"
 	"clx/settings"
+	"clx/view/comments"
+	"clx/view/message"
 	"fmt"
 	"os"
 	"strconv"
@@ -88,7 +87,7 @@ func commentsCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			thread := convert.StoryToThread(story)
+			thread := comment.StoryToThread(story)
 
 			config := getConfig()
 

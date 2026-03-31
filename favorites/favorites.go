@@ -1,11 +1,11 @@
 package favorites
 
 import (
-	"clx/file"
 	"clx/item"
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
 type Favorites struct {
@@ -16,7 +16,7 @@ type Favorites struct {
 func New(path string) *Favorites {
 	f := &Favorites{path: path}
 
-	if file.Exists(path) {
+	if fileExists(path) {
 		favoritesJSON, err := os.ReadFile(path)
 		if err != nil {
 			return f
@@ -62,7 +62,7 @@ func (f *Favorites) Write() error {
 		return fmt.Errorf("could not serialize favorites: %w", err)
 	}
 
-	if err := file.WriteToFile(f.path, string(stream)); err != nil {
+	if err := writeFile(f.path, string(stream)); err != nil {
 		return fmt.Errorf("could not write favorites: %w", err)
 	}
 
@@ -102,4 +102,18 @@ func (f *Favorites) UpdateStoryAndWriteToDisk(newItem *item.Story) error {
 	}
 
 	return nil
+}
+
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+
+	return err == nil
+}
+
+func writeFile(path string, content string) error {
+	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+		return err
+	}
+
+	return os.WriteFile(path, []byte(content), 0o600)
 }

@@ -1,8 +1,7 @@
 package help
 
 import (
-	"clx/constants"
-	"clx/keymaps"
+	"clx/layout"
 	"clx/nerdfonts"
 	"clx/style"
 	"strings"
@@ -13,97 +12,97 @@ import (
 )
 
 func MainMenuText(screenWidth int, mainMenuBindings []key.Binding) string {
-	keys := new(keymaps.List)
+	keys := new(keyList)
 
 	for _, b := range mainMenuBindings {
 		if !b.Enabled() {
-			keys.AddSeparator()
+			keys.addSeparator()
 
 			continue
 		}
 
-		keys.AddKeymap(b.Help().Desc, b.Help().Key)
+		keys.addKeymap(b.Help().Desc, b.Help().Key)
 	}
 
-	keys.AddSeparator()
-	keys.AddSeparator()
+	keys.addSeparator()
+	keys.addSeparator()
 
 	return formatKeymaps(keys, screenWidth)
 }
 
 func ReaderText(screenWidth int) string {
-	keys := new(keymaps.List)
+	keys := new(keyList)
 
-	keys.AddKeymap("Down / up one line", "j, k")
-	keys.AddKeymap("Down / up half page", "d, u")
-	keys.AddSeparator()
-	keys.AddKeymap("Page down / up", "space/f, b")
-	keys.AddKeymap("Go to top / bottom", "g, G")
-	keys.AddKeymap("Next / prev section", "n, N")
-	keys.AddSeparator()
-	keys.AddKeymap("Help", "i, ?")
-	keys.AddKeymap("Back", "q, esc")
+	keys.addKeymap("Down / up one line", "j, k")
+	keys.addKeymap("Down / up half page", "d, u")
+	keys.addSeparator()
+	keys.addKeymap("Page down / up", "space/f, b")
+	keys.addKeymap("Go to top / bottom", "g, G")
+	keys.addKeymap("Next / prev section", "n, N")
+	keys.addSeparator()
+	keys.addKeymap("Help", "i, ?")
+	keys.addKeymap("Back", "q, esc")
 
-	keys.AddSeparator()
-	keys.AddSeparator()
+	keys.addSeparator()
+	keys.addSeparator()
 
 	return formatKeymaps(keys, screenWidth)
 }
 
 func CommentText(screenWidth int, enableNerdFonts bool) string {
-	keys := new(keymaps.List)
+	keys := new(keyList)
 
-	keys.AddHeader("Scroll Mode")
-	keys.AddSeparator()
-	keys.AddKeymap("Down / up one line", "j, k")
-	keys.AddKeymap("Down / up half page", "d, u")
-	keys.AddSeparator()
-	keys.AddKeymap("Page down / up", "space/f, b")
-	keys.AddKeymap("Go to top / bottom", "g, G")
-	keys.AddKeymap("Next / prev top-level comment", "n, N")
-	keys.AddSeparator()
-	keys.AddKeymap("Collapse / expand one level", "h, l")
-	keys.AddKeymap("Toggle collapse all", "enter")
-	keys.AddSeparator()
-	keys.AddKeymap("Switch to navigate mode", "tab")
-	keys.AddKeymap("Help", "i, ?")
-	keys.AddKeymap("Back", "q, esc")
+	keys.addHeader("Scroll Mode")
+	keys.addSeparator()
+	keys.addKeymap("Down / up one line", "j, k")
+	keys.addKeymap("Down / up half page", "d, u")
+	keys.addSeparator()
+	keys.addKeymap("Page down / up", "space/f, b")
+	keys.addKeymap("Go to top / bottom", "g, G")
+	keys.addKeymap("Next / prev top-level comment", "n, N")
+	keys.addSeparator()
+	keys.addKeymap("Collapse / expand one level", "h, l")
+	keys.addKeymap("Toggle collapse all", "enter")
+	keys.addSeparator()
+	keys.addKeymap("Switch to navigate mode", "tab")
+	keys.addKeymap("Help", "i, ?")
+	keys.addKeymap("Back", "q, esc")
 
-	keys.AddSeparator()
+	keys.addSeparator()
 
-	keys.AddHeader("Navigate Mode")
-	keys.AddSeparator()
-	keys.AddKeymap("Next / prev comment", "j, k")
-	keys.AddKeymap("Next / prev top-level comment", "n, N")
-	keys.AddSeparator()
-	keys.AddKeymap("Collapse / expand", "h, l")
-	keys.AddKeymap("Toggle collapse", "enter")
-	keys.AddSeparator()
-	keys.AddKeymap("Switch to scroll mode", "tab")
-	keys.AddKeymap("Help", "i, ?")
-	keys.AddKeymap("Back", "q, esc")
+	keys.addHeader("Navigate Mode")
+	keys.addSeparator()
+	keys.addKeymap("Next / prev comment", "j, k")
+	keys.addKeymap("Next / prev top-level comment", "n, N")
+	keys.addSeparator()
+	keys.addKeymap("Collapse / expand", "h, l")
+	keys.addKeymap("Toggle collapse", "enter")
+	keys.addSeparator()
+	keys.addKeymap("Switch to scroll mode", "tab")
+	keys.addKeymap("Help", "i, ?")
+	keys.addKeymap("Back", "q, esc")
 
-	keys.AddSeparator()
+	keys.addSeparator()
 
-	keys.AddHeader("Legend")
-	keys.AddSeparator()
-	keys.AddKeymap("Original Poster", style.CommentOP(labelText("OP", enableNerdFonts)))
-	keys.AddKeymap("Grandparent Poster", style.CommentGP(labelText("GP", enableNerdFonts)))
-	keys.AddKeymap("Moderator", style.CommentMod(labelText("mod", enableNerdFonts)))
-	keys.AddSeparator()
-	keys.AddKeymap("New comment indicator", style.CommentNewIndicator("●"))
+	keys.addHeader("Legend")
+	keys.addSeparator()
+	keys.addKeymap("Original Poster", style.CommentOP(labelText("OP", enableNerdFonts)))
+	keys.addKeymap("Grandparent Poster", style.CommentGP(labelText("GP", enableNerdFonts)))
+	keys.addKeymap("Moderator", style.CommentMod(labelText("mod", enableNerdFonts)))
+	keys.addSeparator()
+	keys.addKeymap("New comment indicator", style.CommentNewIndicator("●"))
 
-	keys.AddSeparator()
-	keys.AddSeparator()
+	keys.addSeparator()
+	keys.addSeparator()
 
 	return formatKeymaps(keys, screenWidth)
 }
 
-func formatKeymaps(keys *keymaps.List, screenWidth int) string {
-	contentWidth := min(constants.HelpScreenWidth, screenWidth-constants.HeaderLeftMargin)
-	listOfKeymaps := keys.Print(contentWidth)
+func formatKeymaps(keys *keyList, screenWidth int) string {
+	contentWidth := min(layout.HelpScreenWidth, screenWidth-layout.HeaderLeftMargin)
+	listOfKeymaps := keys.print(contentWidth)
 
-	leftMargin := strings.Repeat(" ", constants.HeaderLeftMargin)
+	leftMargin := strings.Repeat(" ", layout.HeaderLeftMargin)
 	output, _ := text.WrapWithPad(listOfKeymaps, screenWidth, leftMargin)
 
 	return output

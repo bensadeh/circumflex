@@ -1,7 +1,7 @@
 package history
 
 import (
-	"clx/file"
+	"clx/settings"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -17,14 +17,14 @@ type History interface {
 }
 
 func NewPersistentHistory() (History, error) {
-	filePath := filepath.Join(file.PathToCacheDirectory(), "history.json")
+	filePath := filepath.Join(settings.CachePath(), "history.json")
 
 	h := &Persistent{
 		filePath:       filePath,
 		VisitedStories: make(map[int]StoryInfo),
 	}
 
-	if !file.Exists(filePath) {
+	if !fileExists(filePath) {
 		if err := writeToDisk(h, filePath); err != nil {
 			return h, err
 		}
@@ -62,5 +62,19 @@ func writeToDisk(h *Persistent, filePath string) error {
 		return err
 	}
 
-	return file.WriteToFile(filePath, string(visitedStoriesJSON))
+	return writeFile(filePath, string(visitedStoriesJSON))
+}
+
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+
+	return err == nil
+}
+
+func writeFile(path string, content string) error {
+	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+		return err
+	}
+
+	return os.WriteFile(path, []byte(content), 0o600)
 }
