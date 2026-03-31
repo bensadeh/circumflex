@@ -1,6 +1,7 @@
 package comments
 
 import (
+	"clx/ansi"
 	"clx/comment"
 	"clx/header"
 	"clx/help"
@@ -9,7 +10,9 @@ import (
 	"clx/settings"
 	"clx/style"
 	"clx/view/message"
+	"fmt"
 	"strings"
+	"unicode/utf8"
 
 	"charm.land/bubbles/v2/key"
 	"charm.land/bubbles/v2/viewport"
@@ -337,22 +340,54 @@ func (m *Model) footerSeparator() string {
 }
 
 func (m *Model) modeIndicator() string {
+	var left string
+
 	switch m.mode {
 	case modeScroll:
-		return style.ModeIndicator(style.Logo("{", "≡", "}"), []style.Binding{
+		left = style.ModeIndicator(style.Logo("{", "≡", "}"), []style.Binding{
 			{Key: "⇥", Desc: "navigate mode"},
 			{Key: "n/N", Desc: "next/prev thread"},
 			{Key: "↩", Desc: "collapse/expand all"},
 		})
 	case modeNavigate:
-		return style.ModeIndicator(style.Logo("{", "…", "}"), []style.Binding{
+		left = style.ModeIndicator(style.Logo("{", "…", "}"), []style.Binding{
 			{Key: "⇥", Desc: "read mode    "},
 			{Key: "n/N", Desc: "next/prev thread"},
 			{Key: "↩", Desc: "collapse/expand thread"},
 		})
 	}
 
-	return ""
+	if m.mode == modeScroll {
+		right := m.depthIndicator()
+		if right != "" {
+			leftWidth := utf8.RuneCountInString(ansi.Strip(left))
+			rightWidth := utf8.RuneCountInString(ansi.Strip(right))
+			padding := max(1, m.rc.screenWidth-leftWidth-rightWidth)
+
+			return left + strings.Repeat(" ", padding) + right
+		}
+	}
+
+	return left
+}
+
+func (m *Model) depthIndicator() string {
+	level := m.expandedDepth
+	numStr := fmt.Sprintf("%d", level)
+
+	cycle := style.IndentCycle()
+
+	if level == 0 {
+		return ""
+	}
+
+	if len(cycle) == 0 {
+		return "\u22ee" + style.Faint(numStr) + " "
+	}
+
+	colorFn := cycle[(level-1)%len(cycle)]
+
+	return "\u22ee" + colorFn(numStr) + " "
 }
 
 func (m *Model) toggleMode() {
@@ -379,6 +414,10 @@ func (m *Model) toggleMode() {
 		m.viewport.KeyMap.Down.SetEnabled(true)
 
 		m.focusedIdx = -1
+
+		// Sync expandedDepth to the actual collapse state so the depth
+		// indicator matches what's on screen without changing the view.
+		m.syncExpandedDepth()
 
 		m.updateViewport()
 	}
@@ -421,6 +460,7 @@ func (m *Model) setCollapsed(collapsed bool) {
 	fc.Collapsed = collapsed
 
 	m.rebuildContent()
+	m.syncExpandedDepth()
 
 	if m.focusedIdx >= len(m.visible) {
 		m.focusedIdx = len(m.visible) - 1
@@ -581,6 +621,21 @@ func (m *Model) setCollapseToDepth() {
 	// No next sibling — position at the end of the ancestor.
 	lm := m.lineMetrics[ancestorIdx]
 	m.viewport.SetYOffset(lm.StartLine + lm.LineCount)
+}
+
+// syncExpandedDepth derives expandedDepth from the actual collapse state,
+// so the depth indicator matches what's on screen after navigate mode
+// may have individually collapsed/expanded comments.
+func (m *Model) syncExpandedDepth() {
+	maxUncollapsed := -1
+
+	for i := range m.flat {
+		if m.flat[i].DescendantCount > 0 && !m.flat[i].Collapsed && m.flat[i].Depth > maxUncollapsed {
+			maxUncollapsed = m.flat[i].Depth
+		}
+	}
+
+	m.expandedDepth = maxUncollapsed + 1
 }
 
 func (m *Model) expandLevel() {
