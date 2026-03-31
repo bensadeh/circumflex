@@ -38,7 +38,7 @@ func flatten(thread *comment.Thread) []flatComment {
 	}
 
 	fillDescendantCounts(result)
-	collapseTopLevel(result)
+	collapseAll(result)
 
 	return result
 }
@@ -83,11 +83,12 @@ func fillDescendantCounts(flat []flatComment) {
 	}
 }
 
-// collapseTopLevel sets the initial collapse state: top-level comments with
-// children start collapsed so the user sees the full set of threads first.
-func collapseTopLevel(flat []flatComment) {
+// collapseAll sets the initial collapse state: every comment with children
+// starts collapsed so the user sees only the top-level threads first.
+// This must stay consistent with expandedDepth: 0 in the Model constructor.
+func collapseAll(flat []flatComment) {
 	for i := range flat {
-		flat[i].Collapsed = flat[i].Depth == 0 && flat[i].DescendantCount > 0
+		flat[i].Collapsed = flat[i].DescendantCount > 0
 	}
 }
 
