@@ -346,14 +346,12 @@ func (m *Model) modeIndicator() string {
 	case modeScroll:
 		left = style.ModeIndicator(style.Logo("{", "≡", "}"), []style.Binding{
 			{Key: "⇥", Desc: "navigate mode"},
-			{Key: "n/N", Desc: "next/prev thread"},
-			{Key: "↩", Desc: "collapse/expand all"},
+			{Key: "i", Desc: "help"},
 		})
 	case modeNavigate:
 		left = style.ModeIndicator(style.Logo("{", "…", "}"), []style.Binding{
 			{Key: "⇥", Desc: "read mode    "},
-			{Key: "n/N", Desc: "next/prev thread"},
-			{Key: "↩", Desc: "collapse/expand thread"},
+			{Key: "i", Desc: "help"},
 		})
 	}
 

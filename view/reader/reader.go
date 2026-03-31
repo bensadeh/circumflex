@@ -244,7 +244,7 @@ func (m *Model) footerSeparator() string {
 
 func (m *Model) modeIndicator() string {
 	return style.ModeIndicator(style.Logo("{", "≡", "}"), []style.Binding{
-		{Key: "n/N", Desc: "next/prev section"},
+		{Key: "i", Desc: "help"},
 	})
 }
 
