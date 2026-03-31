@@ -130,6 +130,8 @@ func renderFromFlat(rc renderContext, flat []flatComment, visible []int, prerend
 		fc := flat[flatIdx]
 		pre := &prerendered[flatIdx]
 
+		sepStart := lineCount
+
 		sb.WriteString(pre.sep)
 		lineCount += pre.sepLines
 
@@ -159,6 +161,7 @@ func renderFromFlat(rc renderContext, flat []flatComment, visible []int, prerend
 		}
 
 		metrics[flatIdx] = lineMetrics{
+			SepStart:  sepStart,
 			StartLine: startLine,
 			LineCount: lineCount - startLine,
 		}

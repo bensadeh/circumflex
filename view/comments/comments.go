@@ -550,33 +550,36 @@ func (m *Model) setCollapseToDepth() {
 		return
 	}
 
-	// The anchor was collapsed away. Find its parent top-level comment,
-	// then position the viewport at the next top-level comment so the
-	// user continues downward rather than jumping back up.
-	parentIdx := -1
+	// The anchor was collapsed away. Find the nearest visible ancestor,
+	// then position the viewport at the next visible comment at the same
+	// depth or shallower (the next sibling or uncle). This works at any
+	// nesting level so collapsing never jumps out further than necessary.
+	ancestorIdx := -1
 
-	for i := anchorIdx; i >= 0; i-- {
-		if m.flat[i].Depth == 0 {
-			parentIdx = i
+	for i := anchorIdx - 1; i >= 0; i-- {
+		if m.lineMetrics[i].LineCount > 0 {
+			ancestorIdx = i
 
 			break
 		}
 	}
 
-	if parentIdx < 0 {
+	if ancestorIdx < 0 {
 		return
 	}
 
+	ancestorDepth := m.flat[ancestorIdx].Depth
+
 	for _, flatIdx := range m.visible {
-		if flatIdx > parentIdx && m.flat[flatIdx].Depth == 0 {
-			m.viewport.SetYOffset(m.lineMetrics[flatIdx].StartLine)
+		if flatIdx > ancestorIdx && m.flat[flatIdx].Depth <= ancestorDepth {
+			m.viewport.SetYOffset(m.lineMetrics[flatIdx].SepStart)
 
 			return
 		}
 	}
 
-	// Last top-level comment — position at its end.
-	lm := m.lineMetrics[parentIdx]
+	// No next sibling — position at the end of the ancestor.
+	lm := m.lineMetrics[ancestorIdx]
 	m.viewport.SetYOffset(lm.StartLine + lm.LineCount)
 }
 

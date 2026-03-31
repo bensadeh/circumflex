@@ -19,8 +19,9 @@ type flatComment struct {
 // lineMetrics tracks the rendered position of a comment in the viewport.
 // Indexed by flat index; recomputed on every render.
 type lineMetrics struct {
-	StartLine int
-	LineCount int
+	SepStart  int // first line of the separator (before header)
+	StartLine int // first line of the header
+	LineCount int // lines from header through content (excludes separator)
 }
 
 // flatten performs a pre-order DFS of the comment tree and returns
