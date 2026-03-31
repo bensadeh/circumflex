@@ -12,3 +12,14 @@ const (
 	CommentSectionLeftMargin       = HeaderLeftMargin
 	ReaderViewLeftMargin           = HeaderLeftMargin
 )
+
+// ReaderContentWidth returns the usable article width given the full
+// screen width and an upper-bound cap.
+func ReaderContentWidth(screenWidth, maxWidth int) int {
+	w := screenWidth - 2*ReaderViewLeftMargin
+	if w <= 0 {
+		return maxWidth
+	}
+
+	return min(w, maxWidth)
+}

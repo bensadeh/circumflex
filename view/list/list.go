@@ -324,7 +324,12 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 			return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
 		}
 
-		m.readerView = reader.New(msg.Content, msg.Title, m.width, m.height)
+		if msg.Parsed != nil {
+			m.readerView = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.config.IndentationSymbol, m.width, m.height)
+		} else {
+			m.readerView = reader.New(msg.Content, msg.Title, m.width, m.height)
+		}
+
 		m.state = StateReaderView
 
 		return m, m.readerView.Init()

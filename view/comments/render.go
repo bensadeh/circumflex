@@ -20,6 +20,8 @@ type renderContext struct {
 	screenWidth    int
 	viewportHeight int
 	lastVisited    int64
+	thread         *comment.Thread // retained for recomputing header on resize
+	newComments    int
 }
 
 // renderedComment holds the pre-rendered output for a single flat comment.
@@ -46,6 +48,7 @@ type renderedComment struct {
 func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 	leftMargin := strings.Repeat(" ", layout.CommentSectionLeftMargin)
 	contentWidth := rc.screenWidth - layout.CommentSectionLeftMargin
+	commentWidth := min(contentWidth, rc.config.CommentWidth)
 
 	rendered := make([]renderedComment, len(flat))
 
@@ -54,7 +57,7 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 		out := &rendered[i]
 
 		// Separator.
-		sep := comment.Separator(fc.Depth, rc.config.CommentWidth, fc.Comment.ID, rc.firstCommentID)
+		sep := comment.Separator(fc.Depth, commentWidth, fc.Comment.ID, rc.firstCommentID)
 		if sep != "" {
 			indentedSep, _ := text.WrapWithPad(sep, rc.screenWidth, leftMargin)
 			out.sep = indentedSep
@@ -64,7 +67,7 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 		depthIndent := comment.IndentString(fc.Depth)
 		depthIndentLen := len(depthIndent)
 		availableWidth := contentWidth - depthIndentLen
-		adjustedCommentWidth := rc.config.CommentWidth - fc.Depth
+		adjustedCommentWidth := commentWidth - fc.Depth
 
 		// Pre-render both header variants (normal and focused).
 		header := comment.Header(&fc.Comment, fc.Depth, rc.originalPoster, fc.TopLevelAuthor, rc.lastVisited, rc.config, false)

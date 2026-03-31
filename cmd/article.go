@@ -38,7 +38,7 @@ func articleCmd() *cobra.Command {
 
 			config := getConfig()
 
-			content, err := article.Fetch(cmd.Context(), item.URL, readerWidth(config.CommentWidth), config.IndentationSymbol)
+			content, err := article.Fetch(cmd.Context(), item.URL, readerWidth(config.ArticleWidth), config.IndentationSymbol)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error reading article: %v\n", err)
 				os.Exit(1)

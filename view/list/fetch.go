@@ -6,7 +6,6 @@ import (
 	"clx/comment"
 	"clx/history"
 	"clx/item"
-	"clx/layout"
 	"clx/view/message"
 	"context"
 	"errors"
@@ -149,36 +148,25 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 }
 
 func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd {
-	config := m.config
 	hist := m.history
 	ctx := m.fetchCtx
 	fetchID := m.fetchID
 	title := msg.Title
-	readerWidth := m.readerWidth()
 
 	return func() tea.Msg {
 		if err := article.Validate(msg.Title, msg.Domain); err != nil {
 			return message.ArticleReady{Err: err, FetchID: fetchID}
 		}
 
-		article, err := article.Fetch(ctx, msg.URL, readerWidth, config.IndentationSymbol)
+		parsed, err := article.Parse(ctx, msg.URL)
 		if err != nil {
 			return message.ArticleReady{Err: err, FetchID: fetchID}
 		}
 
 		_ = hist.MarkArticleAsReadAndWriteToDisk(msg.ID)
 
-		return message.ArticleReady{Content: article, Title: title, FetchID: fetchID}
+		return message.ArticleReady{Parsed: parsed, Title: title, FetchID: fetchID}
 	}
-}
-
-func (m *Model) readerWidth() int {
-	w := m.width - 2*layout.ReaderViewLeftMargin
-	if w <= 0 {
-		return m.config.CommentWidth
-	}
-
-	return w
 }
 
 func isTimeout(err error) bool {

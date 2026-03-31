@@ -1,6 +1,7 @@
 package message
 
 import (
+	"clx/article"
 	"clx/categories"
 	"clx/comment"
 	"clx/item"
@@ -66,6 +67,7 @@ type AddToFavorites struct {
 }
 
 type ArticleReady struct {
+	Parsed  *article.Parsed
 	Content string
 	Title   string
 	Err     error

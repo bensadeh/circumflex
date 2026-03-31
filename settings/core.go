@@ -4,6 +4,7 @@ import "clx/theme"
 
 const (
 	defaultCommentWidth   = 70
+	defaultArticleWidth   = 80
 	defaultPageMultiplier = 3
 	minPageMultiplier     = 1
 	maxPageMultiplier     = 5
@@ -11,6 +12,7 @@ const (
 
 type Config struct {
 	CommentWidth                int
+	ArticleWidth                int
 	DisableHeadlineHighlighting bool
 	DisableCommentHighlighting  bool
 	DisableEmojis               bool
@@ -26,6 +28,7 @@ type Config struct {
 func Default() *Config {
 	return &Config{
 		CommentWidth:      defaultCommentWidth,
+		ArticleWidth:      defaultArticleWidth,
 		PageMultiplier:    defaultPageMultiplier,
 		IndentationSymbol: " ▎",
 	}

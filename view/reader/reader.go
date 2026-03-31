@@ -1,6 +1,7 @@
 package reader
 
 import (
+	"clx/article"
 	"clx/header"
 	"clx/help"
 	"clx/layout"
@@ -28,6 +29,11 @@ type Model struct {
 	viewportHeight int
 	standalone     bool // when true, quit sends tea.Quit instead of ReaderViewQuitMsg
 	showHelp       bool
+
+	// Fields for re-rendering on resize.
+	parsed       *article.Parsed // nil when created with pre-rendered content
+	maxWidth     int             // ArticleWidth cap
+	indentSymbol string
 }
 
 const (
@@ -35,8 +41,38 @@ const (
 	footerHeight = 2 // underline separator + keybinding hints
 )
 
-// New creates a new reader view model.
+// New creates a new reader view model with pre-rendered content.
 func New(content, title string, width, height int) *Model {
+	m := &Model{
+		keymap:      defaultKeyMap(),
+		title:       title,
+		screenWidth: width,
+	}
+
+	m.initViewport(content, width, height)
+
+	return m
+}
+
+// NewWithArticle creates a reader view that can re-render on resize.
+func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, indentSymbol string, width, height int) *Model {
+	content := parsed.Render(layout.ReaderContentWidth(width, maxWidth), indentSymbol)
+
+	m := &Model{
+		keymap:       defaultKeyMap(),
+		title:        title,
+		screenWidth:  width,
+		parsed:       parsed,
+		maxWidth:     maxWidth,
+		indentSymbol: indentSymbol,
+	}
+
+	m.initViewport(content, width, height)
+
+	return m
+}
+
+func (m *Model) initViewport(content string, width, height int) {
 	vpHeight := max(0, height-headerHeight-footerHeight)
 
 	vp := viewport.New(
@@ -70,17 +106,10 @@ func New(content, title string, width, height int) *Model {
 
 	vp.SetContent(padded)
 
-	m := &Model{
-		viewport:       vp,
-		keymap:         defaultKeyMap(),
-		headerLines:    headers,
-		title:          title,
-		contentLines:   contentLineCount,
-		screenWidth:    width,
-		viewportHeight: vpHeight,
-	}
-
-	return m
+	m.viewport = vp
+	m.headerLines = headers
+	m.contentLines = contentLineCount
+	m.viewportHeight = vpHeight
 }
 
 // Init returns nil; no initial commands needed.
@@ -117,6 +146,10 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		m.viewport.SetWidth(msg.Width)
 		m.viewport.SetHeight(m.viewportHeight)
 
+		if m.parsed != nil {
+			m.rerender()
+		}
+
 		return nil
 	}
 
@@ -128,6 +161,34 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 	m.clampScroll(before)
 
 	return cmd
+}
+
+// rerender re-renders the article at the current screen width and updates
+// the viewport content, preserving the scroll position.
+func (m *Model) rerender() {
+	yOffset := m.viewport.YOffset()
+
+	content := m.parsed.Render(layout.ReaderContentWidth(m.screenWidth, m.maxWidth), m.indentSymbol)
+	trimmed := strings.TrimRight(content, "\n")
+	lines := strings.Split(trimmed, "\n")
+
+	m.contentLines = len(lines)
+
+	var headers []int
+
+	for i, line := range lines {
+		if strings.Contains(line, sectionMarker) {
+			headers = append(headers, i)
+		}
+	}
+
+	m.headerLines = headers
+
+	padding := strings.Repeat("\n", m.viewportHeight)
+	m.viewport.SetContent(trimmed + padding)
+
+	maxOffset := max(0, m.contentLines-m.viewportHeight)
+	m.viewport.SetYOffset(min(yOffset, maxOffset))
 }
 
 func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {

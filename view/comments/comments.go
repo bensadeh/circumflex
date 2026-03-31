@@ -72,7 +72,8 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 	flat := flatten(thread)
 
 	newComments := comment.NewCommentsCount(thread, lastVisited)
-	header := meta.CommentSectionMetaBlock(thread, config, newComments) + "\n"
+	commentWidth := min(width-layout.CommentSectionLeftMargin, config.CommentWidth)
+	header := meta.CommentSectionMetaBlock(thread, config, newComments, commentWidth) + "\n"
 
 	rc := renderContext{
 		header:         header,
@@ -82,6 +83,8 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 		screenWidth:    width,
 		viewportHeight: height - headerHeight - footerHeight,
 		lastVisited:    lastVisited,
+		thread:         thread,
+		newComments:    newComments,
 	}
 
 	md := 0
@@ -144,6 +147,10 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		m.rc.viewportHeight = msg.Height - headerHeight - footerHeight
 		m.viewport.SetWidth(msg.Width)
 		m.viewport.SetHeight(msg.Height - headerHeight - footerHeight)
+
+		commentWidth := min(msg.Width-layout.CommentSectionLeftMargin, m.rc.config.CommentWidth)
+		m.rc.header = meta.CommentSectionMetaBlock(m.rc.thread, m.rc.config, m.rc.newComments, commentWidth) + "\n"
+
 		m.prerendered = prerenderComments(m.rc, m.flat)
 		m.rebuildContent()
 		m.restoreScreenPosition(anchorIdx, screenPos)

@@ -33,14 +33,14 @@ func ReaderModeMetaBlock(url string, lineWidth int) string {
 	return s.Render(formattedURL+info) + newParagraph
 }
 
-func CommentSectionMetaBlock(t *comment.Thread, config *settings.Config, newComments int) string {
+func CommentSectionMetaBlock(t *comment.Thread, config *settings.Config, newComments int, width int) string {
 	s := lipgloss.NewStyle().
 		BorderStyle(lipgloss.RoundedBorder()).
 		PaddingLeft(1).
 		PaddingRight(1).
-		Width(config.CommentWidth)
+		Width(width)
 
-	contentWidth := config.CommentWidth - s.GetHorizontalBorderSize() - s.GetHorizontalPadding()
+	contentWidth := width - s.GetHorizontalBorderSize() - s.GetHorizontalPadding()
 	columnWidth := contentWidth / 2
 
 	url := getURL(t.URL, t.Domain, contentWidth)

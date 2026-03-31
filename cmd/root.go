@@ -19,6 +19,7 @@ import (
 var (
 	disableHeadlineHighlighting bool
 	commentWidth                int
+	articleWidth                int
 	disableCommentHighlighting  bool
 	disableHistory              bool
 	disableEmojis               bool
@@ -76,6 +77,8 @@ func configureFlags(rootCmd *cobra.Command) {
 		"hide the indentation bar to the left of the reply")
 	rootCmd.PersistentFlags().IntVarP(&commentWidth, "comment-width", "c", settings.Default().CommentWidth,
 		"set the comment width")
+	rootCmd.PersistentFlags().IntVarP(&articleWidth, "article-width", "a", settings.Default().ArticleWidth,
+		"set the article width in reader mode")
 	rootCmd.PersistentFlags().StringVarP(&nerdFontFlag, "nerdfonts", "n", "",
 		"enable or disable Nerd Fonts (true/false, auto-enabled for Ghostty, env: NERDFONTS)")
 	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", "top,best,ask,show",
@@ -105,6 +108,7 @@ func getConfig() *settings.Config {
 	style.Init(t)
 
 	config.CommentWidth = commentWidth
+	config.ArticleWidth = articleWidth
 	config.DisableHeadlineHighlighting = disableHeadlineHighlighting
 	config.DisableCommentHighlighting = disableCommentHighlighting
 	config.DoNotMarkSubmissionsAsRead = disableHistory
@@ -139,18 +143,13 @@ func newService() hn.Service {
 	return hn.NewService(debugMode, debugFallible)
 }
 
-func readerWidth(fallback int) int {
+func readerWidth(maxWidth int) int {
 	w, _, err := term.GetSize(int(os.Stdout.Fd()))
 	if err != nil || w <= 0 {
-		return fallback
+		return maxWidth
 	}
 
-	w -= 2 * layout.ReaderViewLeftMargin
-	if w <= 0 {
-		return fallback
-	}
-
-	return w
+	return layout.ReaderContentWidth(w, maxWidth)
 }
 
 func indentSymbol(hide bool) string {

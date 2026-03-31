@@ -26,10 +26,27 @@ func (discardLogger) Errorf(string, ...any) {}
 func (discardLogger) Warnf(string, ...any)  {}
 func (discardLogger) Debugf(string, ...any) {}
 
-func Fetch(ctx context.Context, url string, width int, indentationSymbol string) (string, error) {
+// Parsed holds the intermediate representation of a fetched article,
+// allowing re-rendering at different widths without re-fetching.
+type Parsed struct {
+	blocks []*block
+	url    string
+}
+
+// Render formats the parsed article for terminal display at the given width.
+func (p *Parsed) Render(width int, indentationSymbol string) string {
+	content := convertToTerminalFormat(p.blocks, width, indentationSymbol)
+	header := createHeader(p.url, width)
+
+	return processArticle(header+content, p.url, width)
+}
+
+// Parse fetches and parses an article, returning the intermediate
+// representation that can be rendered at any width.
+func Parse(ctx context.Context, url string) (*Parsed, error) {
 	parsedURL, err := nurl.ParseRequestURI(url)
 	if err != nil {
-		return "", fmt.Errorf("invalid URL: %w", err)
+		return nil, fmt.Errorf("invalid URL: %w", err)
 	}
 
 	client := resty.New()
@@ -44,41 +61,46 @@ func Fetch(ctx context.Context, url string, width int, indentationSymbol string)
 	resp, err := client.R().SetContext(ctx).Get(url)
 	if err != nil {
 		if ctx.Err() != nil {
-			return "", ctx.Err()
+			return nil, ctx.Err()
 		}
 
-		return "", fmt.Errorf("could not fetch URL: %w", err)
+		return nil, fmt.Errorf("could not fetch URL: %w", err)
 	}
 
 	if resp.StatusCode() >= 400 {
-		return "", fmt.Errorf("server returned status %d for %s", resp.StatusCode(), parsedURL.Host)
+		return nil, fmt.Errorf("server returned status %d for %s", resp.StatusCode(), parsedURL.Host)
 	}
 
-	article, err := readability.FromReader(bytes.NewReader(resp.Bytes()), parsedURL)
+	a, err := readability.FromReader(bytes.NewReader(resp.Bytes()), parsedURL)
 	if err != nil {
-		return "", fmt.Errorf("could not parse article from %s", parsedURL.Host)
+		return nil, fmt.Errorf("could not parse article from %s", parsedURL.Host)
 	}
 
 	var buf bytes.Buffer
-	if err := article.RenderHTML(&buf); err != nil {
-		return "", fmt.Errorf("could not extract readable content from %s", parsedURL.Host)
+	if err := a.RenderHTML(&buf); err != nil {
+		return nil, fmt.Errorf("could not extract readable content from %s", parsedURL.Host)
 	}
 
-	articleContentInRawHtmlAndSanitized := ansi.Strip(buf.String())
+	raw := ansi.Strip(buf.String())
 
-	articleInMarkdown, mdErr := convertToMarkdown(articleContentInRawHtmlAndSanitized)
+	md, mdErr := convertToMarkdown(raw)
 	if mdErr != nil {
-		return "", fmt.Errorf("could not convert to Markdown: %w", mdErr)
+		return nil, fmt.Errorf("could not convert to Markdown: %w", mdErr)
 	}
 
-	markdownBlocks := convertToMarkdownBlocks(articleInMarkdown)
-	normalizeHeaders(markdownBlocks)
+	blocks := convertToMarkdownBlocks(md)
+	normalizeHeaders(blocks)
 
-	articleInTerminalFormal := convertToTerminalFormat(markdownBlocks, width, indentationSymbol)
+	return &Parsed{blocks: blocks, url: url}, nil
+}
 
-	header := createHeader(url, width)
+// Fetch fetches, parses, and renders an article in one step.
+// Convenience wrapper used by standalone commands.
+func Fetch(ctx context.Context, url string, width int, indentationSymbol string) (string, error) {
+	p, err := Parse(ctx, url)
+	if err != nil {
+		return "", err
+	}
 
-	articleInTerminalFormal = processArticle(header+articleInTerminalFormal, url, width)
-
-	return articleInTerminalFormal, nil
+	return p.Render(width, indentationSymbol), nil
 }
