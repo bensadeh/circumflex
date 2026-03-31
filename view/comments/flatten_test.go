@@ -355,7 +355,7 @@ func TestRenderFromFlat_CollapsedShowsFoldIndicator(t *testing.T) {
 	rc := defaultRenderContext()
 	content, _, _ := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat), -1)
 
-	assert.Contains(t, content, "1 reply hidden")
+	assert.Contains(t, content, "1 reply")
 }
 
 func TestRenderFromFlat_NonVisibleMetricsAreZero(t *testing.T) {

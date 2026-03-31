@@ -29,15 +29,16 @@ type renderContext struct {
 // swap in a pre-rendered focused header without re-running the expensive
 // content pipeline. Rebuilt on window resize.
 type renderedComment struct {
-	sep           string // rendered separator (before the comment body)
-	sepLines      int
-	header        string // rendered header (author + label + time) with margins
-	headerFocused string // same header but with author highlighted
-	headerLines   int    // line count is identical for both variants
-	content       string // rendered comment content with indentation and margins
-	contentLines  int
-	fold          string // fold indicator (empty if no descendants)
-	foldLines     int
+	sep              string // rendered separator (before the comment body)
+	sepLines         int
+	header           string // rendered header (author + label + time) with margins
+	headerFocused    string // same header but with author highlighted
+	headerLines      int    // line count is identical for both variants
+	content          string // rendered comment content with indentation and margins
+	contentLines     int
+	repliesCollapsed string // replies indicator when collapsed (empty if no descendants)
+	repliesExpanded  string // replies indicator when expanded (empty if no descendants)
+	repliesLines     int    // line count is identical for both variants
 }
 
 // prerenderComments renders every comment in flat upfront, so that subsequent
@@ -84,12 +85,17 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 		out.content = contentWithMargin
 		out.contentLines = strings.Count(contentWithMargin, "\n")
 
-		// Pre-render fold indicator.
+		// Pre-render replies indicator (both collapsed and expanded variants).
 		if fc.DescendantCount > 0 {
-			indicator := comment.FoldIndicator(fc.DescendantCount, fc.Depth, adjustedCommentWidth)
-			indentedIndicator, _ := text.WrapWithPad(indicator, rc.screenWidth, leftMargin)
-			out.fold = indentedIndicator
-			out.foldLines = strings.Count(indentedIndicator, "\n")
+			collapsed := comment.RepliesIndicator(fc.DescendantCount, fc.Depth, adjustedCommentWidth, true)
+			indentedCollapsed, _ := text.WrapWithPad(collapsed, rc.screenWidth, leftMargin)
+			out.repliesCollapsed = indentedCollapsed
+
+			expanded := comment.RepliesIndicator(fc.DescendantCount, fc.Depth, adjustedCommentWidth, false)
+			indentedExpanded, _ := text.WrapWithPad(expanded, rc.screenWidth, leftMargin)
+			out.repliesExpanded = indentedExpanded
+
+			out.repliesLines = strings.Count(indentedCollapsed, "\n")
 		}
 	}
 
@@ -141,10 +147,15 @@ func renderFromFlat(rc renderContext, flat []flatComment, visible []int, prerend
 		sb.WriteString(pre.content)
 		lineCount += pre.contentLines
 
-		// Fold indicator for collapsed comments with children.
-		if fc.Collapsed && fc.DescendantCount > 0 {
-			sb.WriteString(pre.fold)
-			lineCount += pre.foldLines
+		// Replies indicator: always shown for comments with children.
+		if fc.DescendantCount > 0 {
+			if fc.Collapsed {
+				sb.WriteString(pre.repliesCollapsed)
+			} else {
+				sb.WriteString(pre.repliesExpanded)
+			}
+
+			lineCount += pre.repliesLines
 		}
 
 		metrics[flatIdx] = lineMetrics{

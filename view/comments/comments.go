@@ -541,7 +541,43 @@ func (m *Model) setCollapseToDepth() {
 	}
 
 	m.rebuildContent()
-	m.restoreScreenPosition(anchorIdx, screenPos)
+
+	// If the anchor is still visible after the collapse, restore its exact
+	// screen position so the viewport stays stable.
+	if anchorIdx >= 0 && m.lineMetrics[anchorIdx].LineCount > 0 {
+		m.restoreScreenPosition(anchorIdx, screenPos)
+
+		return
+	}
+
+	// The anchor was collapsed away. Find its parent top-level comment,
+	// then position the viewport at the next top-level comment so the
+	// user continues downward rather than jumping back up.
+	parentIdx := -1
+
+	for i := anchorIdx; i >= 0; i-- {
+		if m.flat[i].Depth == 0 {
+			parentIdx = i
+
+			break
+		}
+	}
+
+	if parentIdx < 0 {
+		return
+	}
+
+	for _, flatIdx := range m.visible {
+		if flatIdx > parentIdx && m.flat[flatIdx].Depth == 0 {
+			m.viewport.SetYOffset(m.lineMetrics[flatIdx].StartLine)
+
+			return
+		}
+	}
+
+	// Last top-level comment — position at its end.
+	lm := m.lineMetrics[parentIdx]
+	m.viewport.SetYOffset(lm.StartLine + lm.LineCount)
 }
 
 func (m *Model) expandLevel() {

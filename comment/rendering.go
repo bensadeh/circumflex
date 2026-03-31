@@ -162,17 +162,21 @@ func FirstCommentID(comments []*Comment) int {
 	return comments[0].ID
 }
 
-// FoldIndicator returns a styled fold indicator for collapsed comments,
-// centered within the given comment width.
-func FoldIndicator(descendantCount, depth, commentWidth int) string {
+// RepliesIndicator returns a styled, centered replies indicator line.
+// The label has the same visible width regardless of collapsed state.
+func RepliesIndicator(descendantCount, depth, commentWidth int, collapsed bool) string {
 	replies := "replies"
 	if descendantCount == 1 {
 		replies = "reply"
 	}
 
-	label := fmt.Sprintf("\u25b6 %d %s hidden", descendantCount, replies)
-	indent := IndentString(depth)
+	arrow := "\u25bc" // ▼ expanded
+	if collapsed {
+		arrow = "\u25b6" // ▶ collapsed
+	}
 
+	label := fmt.Sprintf("%s %d %s", arrow, descendantCount, replies)
+	indent := IndentString(depth)
 	padding := max((commentWidth-len(label))/2, 0)
 
 	return "\n" + indent + strings.Repeat(" ", padding) + style.Faint(label) + "\n"

@@ -1,6 +1,7 @@
 package comment
 
 import (
+	"clx/ansi"
 	"strings"
 	"testing"
 
@@ -116,17 +117,23 @@ func TestFirstCommentID(t *testing.T) {
 	assert.Equal(t, 42, FirstCommentID([]*Comment{{ID: 42}, {ID: 99}}))
 }
 
-func TestFoldIndicator(t *testing.T) {
+func TestRepliesIndicator(t *testing.T) {
 	t.Parallel()
 
 	t.Run("singular reply", func(t *testing.T) {
-		result := FoldIndicator(1, 0, 80)
+		result := RepliesIndicator(1, 0, 80, true)
 		assert.Contains(t, result, "1 reply")
 		assert.NotContains(t, result, "replies")
 	})
 
 	t.Run("plural replies", func(t *testing.T) {
-		result := FoldIndicator(3, 0, 80)
+		result := RepliesIndicator(3, 0, 80, false)
 		assert.Contains(t, result, "3 replies")
+	})
+
+	t.Run("collapsed and expanded have same visible length", func(t *testing.T) {
+		collapsed := ansi.Strip(RepliesIndicator(5, 0, 80, true))
+		expanded := ansi.Strip(RepliesIndicator(5, 0, 80, false))
+		assert.Len(t, expanded, len(collapsed))
 	})
 }
