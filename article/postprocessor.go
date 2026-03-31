@@ -3,8 +3,6 @@ package article
 import (
 	"clx/layout"
 	"strings"
-
-	t "github.com/MichaelMure/go-term-text"
 )
 
 func processArticle(text string, url string, width int) string {
@@ -15,11 +13,15 @@ func processArticle(text string, url string, width int) string {
 	return text
 }
 
-func indent(commentSection string, contentWidth int) string {
+func indent(commentSection string, _ int) string {
 	indentBlock := strings.Repeat(" ", layout.ReaderViewLeftMargin)
-	indentedCommentSection, _ := t.WrapWithPad(commentSection, contentWidth+layout.ReaderViewLeftMargin, indentBlock)
 
-	return indentedCommentSection
+	lines := strings.Split(commentSection, "\n")
+	for i, line := range lines {
+		lines[i] = indentBlock + line
+	}
+
+	return strings.Join(lines, "\n")
 }
 
 // DeIndentInfoSection removes one leading space from lines containing

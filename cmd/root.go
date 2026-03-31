@@ -3,6 +3,7 @@ package cmd
 import (
 	"clx/categories"
 	"clx/hn"
+	"clx/layout"
 	"clx/settings"
 	"clx/style"
 	"clx/theme"
@@ -12,6 +13,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/term"
 )
 
 var (
@@ -135,6 +137,20 @@ func isGhostty() bool {
 
 func newService() hn.Service {
 	return hn.NewService(debugMode, debugFallible)
+}
+
+func readerWidth(fallback int) int {
+	w, _, err := term.GetSize(int(os.Stdout.Fd()))
+	if err != nil || w <= 0 {
+		return fallback
+	}
+
+	w -= 2 * layout.ReaderViewLeftMargin
+	if w <= 0 {
+		return fallback
+	}
+
+	return w
 }
 
 func indentSymbol(hide bool) string {
