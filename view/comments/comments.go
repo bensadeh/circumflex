@@ -658,13 +658,15 @@ func (m *Model) collapseLevel() {
 
 // anchorComment returns the flat index of the comment nearest to the top of
 // the viewport, used to keep the view stable across content rebuilds.
+// Uses SepStart so a comment whose separator is visible at the viewport
+// top is chosen as the anchor rather than the previous comment.
 func (m *Model) anchorComment() int {
 	yOffset := m.viewport.YOffset()
 
 	best := -1
 
 	for _, flatIdx := range m.visible {
-		if m.lineMetrics[flatIdx].StartLine > yOffset+1 {
+		if m.lineMetrics[flatIdx].SepStart > yOffset {
 			break
 		}
 
