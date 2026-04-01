@@ -18,6 +18,7 @@ import (
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	termtext "github.com/MichaelMure/go-term-text"
 	"github.com/muesli/reflow/truncate"
 )
 
@@ -74,7 +75,7 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 
 	newComments := comment.NewCommentsCount(thread, lastVisited)
 	commentWidth := min(width-layout.CommentSectionLeftMargin, config.CommentWidth)
-	header := meta.CommentSectionMetaBlock(thread, config, newComments, commentWidth) + "\n"
+	header := buildCommentHeader(thread, config, newComments, commentWidth) + "\n"
 
 	rc := renderContext{
 		header:         header,
@@ -150,7 +151,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		m.viewport.SetHeight(msg.Height - headerHeight - footerHeight)
 
 		commentWidth := min(msg.Width-layout.CommentSectionLeftMargin, m.rc.config.CommentWidth)
-		m.rc.header = meta.CommentSectionMetaBlock(m.rc.thread, m.rc.config, m.rc.newComments, commentWidth) + "\n"
+		m.rc.header = buildCommentHeader(m.rc.thread, m.rc.config, m.rc.newComments, commentWidth) + "\n"
 
 		m.prerendered = prerenderComments(m.rc, m.flat)
 		m.rebuildContent()
@@ -775,4 +776,21 @@ func (m *Model) scrollToFocused() {
 			m.viewport.SetYOffset(lm.StartLine - m.viewport.VisibleLineCount() + lm.LineCount + scrollPadding)
 		}
 	}
+}
+
+func buildCommentHeader(t *comment.Thread, config *settings.Config, newComments int, width int) string {
+	rootComment := renderRootComment(t.Content, config, width-4)
+
+	return meta.CommentSectionMetaBlock(t.URL, t.Domain, t.Author, t.TimeAgo, t.ID, t.CommentsCount, t.Points, newComments, config.EnableNerdFonts, rootComment, width)
+}
+
+func renderRootComment(c string, config *settings.Config, contentWidth int) string {
+	if c == "" {
+		return ""
+	}
+
+	rootComment := comment.Print(c, config, contentWidth, contentWidth)
+	wrappedComment, _ := termtext.Wrap(rootComment, contentWidth)
+
+	return "\n\n" + wrappedComment
 }
