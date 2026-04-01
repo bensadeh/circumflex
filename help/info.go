@@ -52,7 +52,7 @@ func ReaderText(screenWidth int) string {
 func CommentText(screenWidth int, enableNerdFonts bool) string {
 	keys := new(keyList)
 
-	keys.addHeader("Scroll Mode")
+	keys.addHeader("Read Mode")
 	keys.addSeparator()
 	keys.addKeymap("Down / up one line", "j, k")
 	keys.addKeymap("Down / up half page", "d, u")
@@ -73,12 +73,14 @@ func CommentText(screenWidth int, enableNerdFonts bool) string {
 	keys.addHeader("Navigate Mode")
 	keys.addSeparator()
 	keys.addKeymap("Next / prev comment", "j, k")
+	keys.addKeymap("Down / up half page", "d, u")
+	keys.addSeparator()
 	keys.addKeymap("Next / prev top-level comment", "n, N")
 	keys.addSeparator()
 	keys.addKeymap("Collapse / expand", "h, l")
 	keys.addKeymap("Toggle collapse", "enter")
 	keys.addSeparator()
-	keys.addKeymap("Switch to scroll mode", "tab")
+	keys.addKeymap("Switch to read mode", "tab")
 	keys.addKeymap("Help", "i, ?")
 	keys.addKeymap("Back", "q, esc")
 

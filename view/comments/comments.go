@@ -98,7 +98,7 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 	m := Model{
 		viewport:      vp,
 		keymap:        km,
-		mode:          modeScroll,
+		mode:          modeRead,
 		flat:          flat,
 		focusedIdx:    -1, // no focus in scroll mode
 		expandedDepth: 0,  // initial: only top-level visible
@@ -212,7 +212,7 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 	}
 
 	if key.Matches(msg, m.keymap.Collapse) {
-		if m.mode == modeScroll {
+		if m.mode == modeRead {
 			m.collapseLevel()
 		} else {
 			m.setCollapsed(true)
@@ -222,7 +222,7 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 	}
 
 	if key.Matches(msg, m.keymap.Expand) {
-		if m.mode == modeScroll {
+		if m.mode == modeRead {
 			m.expandLevel()
 		} else {
 			m.setCollapsed(false)
@@ -232,7 +232,7 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 	}
 
 	if key.Matches(msg, m.keymap.ToggleCollapse) {
-		if m.mode == modeScroll {
+		if m.mode == modeRead {
 			m.toggleCollapseAll()
 		} else {
 			m.toggleCollapse()
@@ -241,25 +241,25 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		return nil
 	}
 
-	if m.mode == modeScroll && key.Matches(msg, m.keymap.HalfPageDown) {
+	if m.mode == modeRead && key.Matches(msg, m.keymap.HalfPageDown) {
 		m.halfPageDown()
 
 		return nil
 	}
 
-	if m.mode == modeScroll && key.Matches(msg, m.keymap.HalfPageUp) {
+	if m.mode == modeRead && key.Matches(msg, m.keymap.HalfPageUp) {
 		m.halfPageUp()
 
 		return nil
 	}
 
-	if m.mode == modeScroll && key.Matches(msg, m.keymap.PageDown) {
+	if m.mode == modeRead && key.Matches(msg, m.keymap.PageDown) {
 		m.pageDown()
 
 		return nil
 	}
 
-	if m.mode == modeScroll && key.Matches(msg, m.keymap.PageUp) {
+	if m.mode == modeRead && key.Matches(msg, m.keymap.PageUp) {
 		m.pageUp()
 
 		return nil
@@ -269,7 +269,7 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		return m.handleNavigateKeys(msg)
 	}
 
-	// In scroll mode, delegate unhandled keys to the viewport.
+	// In read mode, delegate unhandled keys to the viewport.
 	before := m.viewport.YOffset()
 
 	var cmd tea.Cmd
@@ -286,6 +286,12 @@ func (m *Model) handleNavigateKeys(msg tea.KeyPressMsg) tea.Cmd {
 		m.navigateComment(1)
 	case key.Matches(msg, m.keymap.PrevComment):
 		m.navigateComment(-1)
+	case key.Matches(msg, m.keymap.HalfPageDown):
+		m.halfPageDown()
+		m.snapFocusToVisible(1)
+	case key.Matches(msg, m.keymap.HalfPageUp):
+		m.halfPageUp()
+		m.snapFocusToVisible(-1)
 	default:
 		// Unhandled key — let viewport process it (pgup/pgdn/etc).
 		before := m.viewport.YOffset()
@@ -362,7 +368,7 @@ func (m *Model) modeIndicator() string {
 	var left string
 
 	switch m.mode {
-	case modeScroll:
+	case modeRead:
 		left = style.ModeIndicator([]style.Binding{
 			{Key: "⇥", Desc: "navigate mode"},
 		})
@@ -377,7 +383,7 @@ func (m *Model) modeIndicator() string {
 	// In scroll mode, reserve a fixed-width slot for the depth indicator
 	// so that "i: help" stays in place as levels expand/collapse.
 	diSlot := 0
-	if m.mode == modeScroll && m.maxDepth > 0 {
+	if m.mode == modeRead && m.maxDepth > 0 {
 		diSlot = 1 + 1 + len(fmt.Sprintf("%d", m.maxDepth)) + 1 // " ⋮" + digits + " "
 	}
 
@@ -421,7 +427,7 @@ func (m *Model) depthIndicator() string {
 
 func (m *Model) toggleMode() {
 	switch m.mode {
-	case modeScroll:
+	case modeRead:
 		m.mode = modeNavigate
 
 		// Disable viewport j/k so our navigate bindings take over.
@@ -436,7 +442,7 @@ func (m *Model) toggleMode() {
 		m.updateViewport()
 
 	case modeNavigate:
-		m.mode = modeScroll
+		m.mode = modeRead
 
 		// Re-enable viewport j/k.
 		m.viewport.KeyMap.Up.SetEnabled(true)
@@ -465,6 +471,47 @@ func (m *Model) findCommentAtScroll() int {
 	}
 
 	return 0
+}
+
+// snapFocusToVisible adjusts focusedIdx after a half-page scroll if the
+// focused comment's header is no longer on screen. direction > 0 picks the
+// topmost visible comment; direction < 0 picks the bottommost.
+func (m *Model) snapFocusToVisible(direction int) {
+	if len(m.visible) == 0 || m.focusedIdx < 0 {
+		return
+	}
+
+	flatIdx := m.visible[m.focusedIdx]
+	top := m.viewport.YOffset()
+	bottom := top + m.viewport.VisibleLineCount()
+
+	// Still on screen — nothing to do.
+	if m.lineMetrics[flatIdx].StartLine >= top && m.lineMetrics[flatIdx].StartLine < bottom {
+		return
+	}
+
+	if direction > 0 {
+		// Scrolled down — pick the topmost visible comment.
+		for vi, fi := range m.visible {
+			if m.lineMetrics[fi].StartLine >= top && m.lineMetrics[fi].StartLine < bottom {
+				m.focusedIdx = vi
+				m.updateViewport()
+
+				return
+			}
+		}
+	} else {
+		// Scrolled up — pick the bottommost visible comment.
+		for vi := len(m.visible) - 1; vi >= 0; vi-- {
+			fi := m.visible[vi]
+			if m.lineMetrics[fi].StartLine >= top && m.lineMetrics[fi].StartLine < bottom {
+				m.focusedIdx = vi
+				m.updateViewport()
+
+				return
+			}
+		}
+	}
 }
 
 func (m *Model) rebuildContent() {

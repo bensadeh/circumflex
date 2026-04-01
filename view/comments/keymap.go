@@ -6,8 +6,8 @@ import "charm.land/bubbles/v2/key"
 type mode int
 
 const (
-	// modeScroll is the default less-like mode where j/k scroll lines.
-	modeScroll mode = iota
+	// modeRead is the default less-like mode where j/k scroll lines.
+	modeRead mode = iota
 	// modeNavigate is the comment traversal mode where j/k jump between
 	// comments and h/l collapse/expand.
 	modeNavigate
@@ -48,7 +48,7 @@ func defaultKeyMap() keyMap {
 		),
 		ToggleMode: key.NewBinding(
 			key.WithKeys("tab"),
-			key.WithHelp("tab", "toggle scroll/navigate mode"),
+			key.WithHelp("tab", "toggle read/navigate mode"),
 		),
 		GotoTop: key.NewBinding(
 			key.WithKeys("g"),
