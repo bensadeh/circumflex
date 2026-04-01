@@ -37,9 +37,10 @@ func metaBlock(url, domain, author, timeAgo string, id, points int, enableNerdFo
 		BorderStyle(lipgloss.RoundedBorder()).
 		PaddingLeft(1).
 		PaddingRight(1).
-		Width(width)
+		MarginLeft(1).
+		Width(width + borderSize)
 
-	contentWidth := width - boxOverhead
+	contentWidth := width - paddingSize
 	columnWidth := contentWidth / 2
 
 	urlLine := getURL(url, domain, contentWidth)

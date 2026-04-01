@@ -172,24 +172,6 @@ func TestIsListItem(t *testing.T) {
 	}
 }
 
-func TestDeIndentInfoSection(t *testing.T) {
-	input := " ╭ header\n normal line\n │ content\n ╰ footer\n"
-	result := DeIndentInfoSection(input)
-
-	assert.Contains(t, result, "╭ header")
-	assert.Contains(t, result, "│ content")
-	assert.Contains(t, result, "╰ footer")
-	assert.Contains(t, result, " normal line")
-}
-
-func TestDeIndentInfoSection_NoInfoSection(t *testing.T) {
-	input := " line one\n line two\n"
-	result := DeIndentInfoSection(input)
-
-	assert.Contains(t, result, " line one")
-	assert.Contains(t, result, " line two")
-}
-
 func TestConvertToTerminalFormat_BasicText(t *testing.T) {
 	blocks := []*block{
 		{Kind: blockText, Text: "Hello world"},

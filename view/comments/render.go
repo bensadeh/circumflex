@@ -116,16 +116,11 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 // avoids re-running the expensive syntax-highlighting and text-wrapping
 // pipeline on every collapse/expand or focus change.
 func renderFromFlat(rc renderContext, flat []flatComment, visible []int, prerendered []renderedComment, focusedFlatIdx int) (string, int, []lineMetrics) {
-	leftMargin := strings.Repeat(" ", layout.CommentSectionLeftMargin)
-
-	// Indent the pre-computed header with left margin.
-	header, _ := text.WrapWithPad(rc.header, rc.screenWidth, leftMargin)
-
 	var sb strings.Builder
-	sb.WriteString(header)
+	sb.WriteString(rc.header)
 	sb.WriteString("\n")
 
-	lineCount := strings.Count(header, "\n") + 1
+	lineCount := strings.Count(rc.header, "\n") + 1
 
 	metrics := make([]lineMetrics, len(flat))
 

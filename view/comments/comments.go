@@ -73,7 +73,7 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 	flat := flatten(thread)
 
 	newComments := comment.NewCommentsCount(thread, lastVisited)
-	commentWidth := min(width-layout.CommentSectionLeftMargin, config.CommentWidth)
+	commentWidth := min(width-2*layout.CommentSectionLeftMargin, config.CommentWidth)
 	header := buildCommentHeader(thread, config, newComments, commentWidth) + "\n"
 
 	rc := renderContext{
@@ -149,7 +149,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		m.viewport.SetWidth(msg.Width)
 		m.viewport.SetHeight(msg.Height - headerHeight - footerHeight)
 
-		commentWidth := min(msg.Width-layout.CommentSectionLeftMargin, m.rc.config.CommentWidth)
+		commentWidth := min(msg.Width-2*layout.CommentSectionLeftMargin, m.rc.config.CommentWidth)
 		m.rc.header = buildCommentHeader(m.rc.thread, m.rc.config, m.rc.newComments, commentWidth) + "\n"
 
 		m.prerendered = prerenderComments(m.rc, m.flat)
@@ -800,12 +800,10 @@ func (m *Model) scrollToFocused() {
 }
 
 func buildCommentHeader(t *comment.Thread, config *settings.Config, newComments int, width int) string {
-	rootComment := renderRootComment(t.Content, config, width-boxOverhead)
+	rootComment := renderRootComment(t.Content, config, width-2) // subtract padding (1 left + 1 right)
 
 	return meta.CommentSectionMetaBlock(t.URL, t.Domain, t.Author, t.TimeAgo, t.ID, t.CommentsCount, t.Points, newComments, config.EnableNerdFonts, rootComment, width)
 }
-
-const boxOverhead = 4 // meta block border (2) + padding (2)
 
 func renderRootComment(c string, config *settings.Config, contentWidth int) string {
 	if c == "" {
