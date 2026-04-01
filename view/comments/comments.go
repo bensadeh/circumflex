@@ -74,7 +74,19 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 
 	newComments := comment.NewCommentsCount(thread, lastVisited)
 	commentWidth := min(width-2*layout.CommentSectionLeftMargin, config.CommentWidth)
-	header := buildCommentHeader(thread, config, newComments, commentWidth) + "\n"
+
+	sf := storyFields{
+		URL:           thread.URL,
+		Domain:        thread.Domain,
+		Author:        thread.Author,
+		TimeAgo:       thread.TimeAgo,
+		ID:            thread.ID,
+		CommentsCount: thread.CommentsCount,
+		Points:        thread.Points,
+		Content:       thread.Content,
+	}
+
+	header := buildCommentHeader(sf, config, newComments, commentWidth) + "\n"
 
 	rc := renderContext{
 		header:         header,
@@ -84,7 +96,7 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 		screenWidth:    width,
 		viewportHeight: height - headerHeight - footerHeight,
 		lastVisited:    lastVisited,
-		thread:         thread,
+		story:          sf,
 		newComments:    newComments,
 	}
 
@@ -150,7 +162,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		m.viewport.SetHeight(msg.Height - headerHeight - footerHeight)
 
 		commentWidth := min(msg.Width-2*layout.CommentSectionLeftMargin, m.rc.config.CommentWidth)
-		m.rc.header = buildCommentHeader(m.rc.thread, m.rc.config, m.rc.newComments, commentWidth) + "\n"
+		m.rc.header = buildCommentHeader(m.rc.story, m.rc.config, m.rc.newComments, commentWidth) + "\n"
 
 		m.prerendered = prerenderComments(m.rc, m.flat)
 		m.rebuildContent()
@@ -850,10 +862,10 @@ func (m *Model) scrollToFocused() {
 	}
 }
 
-func buildCommentHeader(t *comment.Thread, config *settings.Config, newComments int, width int) string {
-	rootComment := renderRootComment(t.Content, config, width-2) // subtract padding (1 left + 1 right)
+func buildCommentHeader(s storyFields, config *settings.Config, newComments int, width int) string {
+	rootComment := renderRootComment(s.Content, config, width-2) // subtract padding (1 left + 1 right)
 
-	return meta.CommentSectionMetaBlock(t.URL, t.Domain, t.Author, t.TimeAgo, t.ID, t.CommentsCount, t.Points, newComments, config.EnableNerdFonts, rootComment, width)
+	return meta.CommentSectionMetaBlock(s.URL, s.Domain, s.Author, s.TimeAgo, s.ID, s.CommentsCount, s.Points, newComments, config.EnableNerdFonts, rootComment, width)
 }
 
 func renderRootComment(c string, config *settings.Config, contentWidth int) string {

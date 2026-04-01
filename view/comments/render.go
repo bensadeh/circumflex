@@ -20,8 +20,21 @@ type renderContext struct {
 	screenWidth    int
 	viewportHeight int
 	lastVisited    int64
-	thread         *comment.Thread // retained for recomputing header on resize
+	story          storyFields // scalar fields needed for header rebuild on resize
 	newComments    int
+}
+
+// storyFields holds the thread metadata needed to rebuild the comment header
+// on window resize, without retaining the full comment tree.
+type storyFields struct {
+	URL           string
+	Domain        string
+	Author        string
+	TimeAgo       string
+	ID            int
+	CommentsCount int
+	Points        int
+	Content       string
 }
 
 // renderedComment holds the pre-rendered output for a single flat comment.
