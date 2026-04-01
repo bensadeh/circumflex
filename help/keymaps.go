@@ -57,12 +57,12 @@ func (k *keyList) print(screenWidth int) string {
 	for _, item := range k.keymaps {
 		switch item.category {
 		case header:
-			output.WriteString(lipgloss.NewStyle().Foreground(lipgloss.Blue).Render(item.header) + newline)
+			output.WriteString(lipgloss.NewStyle().Bold(true).Render(item.header) + newline)
 		case separator:
 			output.WriteString(newline)
 		case keymap:
 			dots := getDotSeparators(item.description, item.key, screenWidth)
-			output.WriteString(lipgloss.NewStyle().Bold(true).Render(item.key) + lipgloss.NewStyle().Faint(true).Render(dots) + item.description + newline)
+			output.WriteString(item.key + lipgloss.NewStyle().Faint(true).Render(dots) + item.description + newline)
 		}
 	}
 
