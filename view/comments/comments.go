@@ -581,7 +581,7 @@ func (m *Model) collapseAll() {
 }
 
 func (m *Model) expandAll() {
-	m.expandedDepth = m.maxDepth + 1
+	m.expandedDepth = m.maxDepth
 	m.setCollapseToDepth()
 }
 
@@ -658,7 +658,7 @@ func (m *Model) syncExpandedDepth() {
 }
 
 func (m *Model) expandLevel() {
-	if m.expandedDepth > m.maxDepth {
+	if m.expandedDepth >= m.maxDepth {
 		return
 	}
 
