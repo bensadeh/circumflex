@@ -779,18 +779,20 @@ func (m *Model) scrollToFocused() {
 }
 
 func buildCommentHeader(t *comment.Thread, config *settings.Config, newComments int, width int) string {
-	rootComment := renderRootComment(t.Content, config, width-4)
+	rootComment := renderRootComment(t.Content, config, width-boxOverhead)
 
 	return meta.CommentSectionMetaBlock(t.URL, t.Domain, t.Author, t.TimeAgo, t.ID, t.CommentsCount, t.Points, newComments, config.EnableNerdFonts, rootComment, width)
 }
+
+const boxOverhead = 4 // meta block border (2) + padding (2)
 
 func renderRootComment(c string, config *settings.Config, contentWidth int) string {
 	if c == "" {
 		return ""
 	}
 
-	rootComment := comment.Print(c, config, contentWidth, contentWidth)
-	wrappedComment, _ := termtext.Wrap(rootComment, contentWidth)
+	rendered := comment.Print(c, config, contentWidth, contentWidth)
+	wrapped, _ := termtext.Wrap(rendered, contentWidth)
 
-	return "\n\n" + wrappedComment
+	return "\n\n" + wrapped
 }

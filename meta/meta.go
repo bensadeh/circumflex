@@ -14,6 +14,10 @@ import (
 const (
 	newLine      = "\n"
 	newParagraph = "\n\n"
+
+	borderSize  = 2
+	paddingSize = 2
+	boxOverhead = borderSize + paddingSize
 )
 
 func ReaderModeMetaBlock(url, author, timeAgo string, id, points int, enableNerdFonts bool, width int) string {
@@ -35,7 +39,7 @@ func metaBlock(url, domain, author, timeAgo string, id, points int, enableNerdFo
 		PaddingRight(1).
 		Width(width)
 
-	contentWidth := contentWidth(width)
+	contentWidth := width - boxOverhead
 	columnWidth := contentWidth / 2
 
 	urlLine := getURL(url, domain, contentWidth)
@@ -56,10 +60,6 @@ func metaBlock(url, domain, author, timeAgo string, id, points int, enableNerdFo
 		rightColumn.Render(rightColumnText))
 
 	return s.Render(urlLine + joined + footer)
-}
-
-func contentWidth(width int) int {
-	return width - 4 // rounded border (2) + padding left/right (2)
 }
 
 func readerModeLabel(enableNerdFonts bool) string {
