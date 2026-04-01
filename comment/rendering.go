@@ -124,7 +124,7 @@ func Header(c *Comment, depth int, originalPoster, topLevelAuthor string, lastVi
 func RenderContent(c *Comment, depth int, config *settings.Config,
 	commentWidth, availableScreenWidth int,
 ) string {
-	coloredIndentSymbol := syntax.ColorizeIndentSymbol(config.IndentationSymbol, depth)
+	coloredIndentSymbol := syntax.ColorizeIndentSymbol(settings.IndentationSymbol, depth)
 
 	formattedComment := Print(c.Content, config, commentWidth, availableScreenWidth)
 	paddedComment, _ := text.WrapWithPad(formattedComment, availableScreenWidth, coloredIndentSymbol)

@@ -44,10 +44,9 @@ type Model struct {
 	showHelp       bool
 
 	// Fields for re-rendering on resize.
-	parsed       *article.Parsed // nil when created with pre-rendered content
-	maxWidth     int             // ArticleWidth cap
-	indentSymbol string
-	articleMeta  Meta
+	parsed      *article.Parsed // nil when created with pre-rendered content
+	maxWidth    int             // ArticleWidth cap
+	articleMeta Meta
 }
 
 const (
@@ -69,19 +68,18 @@ func New(content, title string, width, height int) *Model {
 }
 
 // NewWithArticle creates a reader view that can re-render on resize.
-func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, indentSymbol string, width, height int, m2 Meta) *Model {
+func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, height int, m2 Meta) *Model {
 	contentWidth := layout.ReaderContentWidth(width, maxWidth)
 	header := meta.ReaderModeMetaBlock(m2.URL, m2.Author, m2.TimeAgo, m2.ID, m2.Points, m2.NerdFonts, contentWidth)
-	content := parsed.RenderWithHeader(contentWidth, indentSymbol, header)
+	content := parsed.RenderWithHeader(contentWidth, header)
 
 	m := &Model{
-		keymap:       defaultKeyMap(),
-		title:        title,
-		screenWidth:  width,
-		parsed:       parsed,
-		maxWidth:     maxWidth,
-		indentSymbol: indentSymbol,
-		articleMeta:  m2,
+		keymap:      defaultKeyMap(),
+		title:       title,
+		screenWidth: width,
+		parsed:      parsed,
+		maxWidth:    maxWidth,
+		articleMeta: m2,
 	}
 
 	m.initViewport(content, width, height)
@@ -187,7 +185,7 @@ func (m *Model) rerender() {
 
 	contentWidth := layout.ReaderContentWidth(m.screenWidth, m.maxWidth)
 	hdr := meta.ReaderModeMetaBlock(m.articleMeta.URL, m.articleMeta.Author, m.articleMeta.TimeAgo, m.articleMeta.ID, m.articleMeta.Points, m.articleMeta.NerdFonts, contentWidth)
-	content := m.parsed.RenderWithHeader(contentWidth, m.indentSymbol, hdr)
+	content := m.parsed.RenderWithHeader(contentWidth, hdr)
 	trimmed := strings.TrimRight(content, "\n")
 	lines := strings.Split(trimmed, "\n")
 

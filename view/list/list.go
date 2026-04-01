@@ -325,7 +325,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		}
 
 		if msg.Parsed != nil {
-			m.readerView = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.config.IndentationSymbol, m.width, m.height, reader.Meta{
+			m.readerView = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.width, m.height, reader.Meta{
 				URL:       msg.URL,
 				Author:    msg.Author,
 				TimeAgo:   msg.TimeAgo,

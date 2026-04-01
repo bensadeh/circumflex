@@ -36,8 +36,7 @@ func TestIsQuote(t *testing.T) {
 
 func defaultConfig() *settings.Config {
 	return &settings.Config{
-		CommentWidth:      70,
-		IndentationSymbol: "▎",
+		CommentWidth: 70,
 	}
 }
 

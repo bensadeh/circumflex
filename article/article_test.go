@@ -177,7 +177,7 @@ func TestConvertToTerminalFormat_BasicText(t *testing.T) {
 		{Kind: blockText, Text: "Hello world"},
 	}
 
-	result := convertToTerminalFormat(blocks, 80, "│")
+	result := convertToTerminalFormat(blocks, 80)
 	assert.Contains(t, result, "Hello world")
 }
 
@@ -187,7 +187,7 @@ func TestConvertToTerminalFormat_MultiplBlocks(t *testing.T) {
 		{Kind: blockText, Text: "Second paragraph"},
 	}
 
-	result := convertToTerminalFormat(blocks, 80, "│")
+	result := convertToTerminalFormat(blocks, 80)
 	assert.Contains(t, result, "First paragraph")
 	assert.Contains(t, result, "Second paragraph")
 	// Blocks are separated by double newlines
@@ -199,7 +199,7 @@ func TestConvertToTerminalFormat_Code(t *testing.T) {
 		{Kind: blockCode, Text: "\nfmt.Println()\n"},
 	}
 
-	result := convertToTerminalFormat(blocks, 80, "│")
+	result := convertToTerminalFormat(blocks, 80)
 	assert.Contains(t, result, "fmt.Println()")
 }
 
@@ -208,7 +208,7 @@ func TestConvertToTerminalFormat_Divider(t *testing.T) {
 		{Kind: blockDivider, Text: "* * *"},
 	}
 
-	result := convertToTerminalFormat(blocks, 80, "│")
+	result := convertToTerminalFormat(blocks, 80)
 	assert.Contains(t, result, strings.Repeat("-", 72))
 }
 

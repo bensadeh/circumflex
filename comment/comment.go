@@ -91,7 +91,7 @@ func formatQuote(paragraph string, config *settings.Config, commentWidth int) st
 
 	paragraph = ansi.Italic + ansi.Faint + paragraph + ansi.Reset
 
-	quoteIndent := " " + config.IndentationSymbol
+	quoteIndent := " " + settings.IndentationSymbol
 	padding := text.WrapPad(ansi.Faint + quoteIndent)
 	wrapped, _ := text.Wrap(paragraph, commentWidth, padding)
 

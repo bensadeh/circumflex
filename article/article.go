@@ -35,14 +35,14 @@ type Parsed struct {
 
 // Render formats the parsed article for terminal display at the given width,
 // using the default meta header.
-func (p *Parsed) Render(width int, indentationSymbol string) string {
-	return p.RenderWithHeader(width, indentationSymbol, createHeader(p.url, width))
+func (p *Parsed) Render(width int) string {
+	return p.RenderWithHeader(width, createHeader(p.url, width))
 }
 
 // RenderWithHeader formats the parsed article with a custom header block
 // prepended before postprocessing.
-func (p *Parsed) RenderWithHeader(width int, indentationSymbol, header string) string {
-	content := convertToTerminalFormat(p.blocks, width, indentationSymbol)
+func (p *Parsed) RenderWithHeader(width int, header string) string {
+	content := convertToTerminalFormat(p.blocks, width)
 
 	return header + processArticle(content, p.url, width)
 }
@@ -102,11 +102,11 @@ func Parse(ctx context.Context, url string) (*Parsed, error) {
 
 // Fetch fetches, parses, and renders an article in one step.
 // Convenience wrapper used by standalone commands.
-func Fetch(ctx context.Context, url string, width int, indentationSymbol string) (string, error) {
+func Fetch(ctx context.Context, url string, width int) (string, error) {
 	p, err := Parse(ctx, url)
 	if err != nil {
 		return "", err
 	}
 
-	return p.Render(width, indentationSymbol), nil
+	return p.Render(width), nil
 }

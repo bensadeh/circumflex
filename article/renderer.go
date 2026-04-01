@@ -2,6 +2,7 @@ package article
 
 import (
 	"clx/ansi"
+	"clx/settings"
 	"clx/style"
 	"clx/syntax"
 	"regexp"
@@ -60,7 +61,7 @@ func createHeader(url string, lineWidth int) string {
 	return s.Render(formattedURL+info) + "\n\n"
 }
 
-func convertToTerminalFormat(blocks []*block, lineWidth int, indentBlock string) string {
+func convertToTerminalFormat(blocks []*block, lineWidth int) string {
 	var sb strings.Builder
 
 	for _, b := range blocks {
@@ -75,7 +76,7 @@ func convertToTerminalFormat(blocks []*block, lineWidth int, indentBlock string)
 			sb.WriteString(renderCode(b.Text, lineWidth))
 
 		case blockQuote:
-			sb.WriteString(renderQuote(b.Text, lineWidth, indentBlock))
+			sb.WriteString(renderQuote(b.Text, lineWidth))
 
 		case blockTable:
 			sb.WriteString(renderTable(b.Text, lineWidth))
@@ -209,12 +210,12 @@ func renderCode(text string, lineWidth int) string {
 	return text
 }
 
-func renderQuote(text string, lineWidth int, indentSymbol string) string {
+func renderQuote(text string, lineWidth int) string {
 	text = lipgloss.NewStyle().Italic(true).Faint(true).Render(text)
 	text = unescapeCharacters(text)
 	text = removeHrefs(text)
 
-	indentBlock := " " + indentSymbol
+	indentBlock := " " + settings.IndentationSymbol
 	text = itReversed(text)
 
 	padding := termtext.WrapPad(indentLevel1 + style.Faint(indentBlock))

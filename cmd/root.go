@@ -102,7 +102,6 @@ func getConfig() *settings.Config {
 	config.ArticleWidth = articleWidth
 	config.DoNotMarkSubmissionsAsRead = disableHistory
 	config.EnableNerdFonts = resolveNerdFonts(nerdFontFlag)
-	config.IndentationSymbol = indentSymbol()
 	config.DisableEmojis = disableEmojis
 	config.DebugMode = debugMode
 	config.DebugFallible = debugFallible
@@ -130,14 +129,6 @@ func isGhostty() bool {
 
 func newService() hn.Service {
 	return hn.NewService(debugMode, debugFallible)
-}
-
-func indentSymbol() string {
-	if os.Getenv("TERM_PROGRAM") == "Apple_Terminal" {
-		return "┃"
-	}
-
-	return "▎"
 }
 
 func readerWidth(maxWidth int) int {
