@@ -10,14 +10,17 @@ import (
 	text "github.com/MichaelMure/go-term-text"
 )
 
-type comment struct {
-	sections []*section
-}
+type sectionKind int
+
+const (
+	sectionParagraph sectionKind = iota
+	sectionCode
+	sectionQuote
+)
 
 type section struct {
-	isCodeBlock bool
-	isQuote     bool
-	content     string
+	kind    sectionKind
+	content string
 }
 
 func Print(c string, config *settings.Config, commentWidth int, availableScreenWidth int) string {
@@ -25,98 +28,108 @@ func Print(c string, config *settings.Config, commentWidth int, availableScreenW
 		return style.Faint(c)
 	}
 
-	c = strings.TrimPrefix(c, "<p>")
-	c = strings.ReplaceAll(c, "\n</code></pre>\n", "<p>")
-	paragraphs := strings.Split(c, "<p>")
-
-	comment := new(comment)
-	comment.sections = make([]*section, len(paragraphs))
-
-	for i, paragraph := range paragraphs {
-		s := new(section)
-		s.content = syntax.ReplaceCharacters(paragraph)
-
-		if strings.Contains(s.content, "<pre><code>") {
-			s.isCodeBlock = true
-		}
-
-		if isQuote(s.content) {
-			s.isQuote = true
-		}
-
-		comment.sections[i] = s
-	}
+	sections := parseSections(c)
 
 	var output strings.Builder
 
-	for i, s := range comment.sections {
-		paragraph := s.content
-
-		switch {
-		case s.isQuote:
-			paragraph = strings.ReplaceAll(paragraph, "<i>", "")
-			paragraph = strings.ReplaceAll(paragraph, "</i>", "")
-			paragraph = strings.ReplaceAll(paragraph, "</a>", ansi.Reset+ansi.Faint+ansi.Italic)
-			paragraph = syntax.ReplaceSymbols(paragraph)
-			paragraph = convertToEmojis(paragraph, config.DisableEmojis)
-
-			paragraph = strings.Replace(paragraph, ">>", "", 1)
-			paragraph = strings.Replace(paragraph, ">", "", 1)
-			paragraph = strings.TrimLeft(paragraph, " ")
-			paragraph = syntax.TrimURLs(paragraph, false)
-			paragraph = syntax.RemoveUnwantedNewLines(paragraph)
-			paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
-
-			paragraph = ansi.Italic + ansi.Faint + paragraph + ansi.Reset
-
-			quoteIndent := " " + config.IndentationSymbol
-			padding := text.WrapPad(ansi.Faint + quoteIndent)
-			wrappedAndPaddedComment, _ := text.Wrap(paragraph, commentWidth, padding)
-			paragraph = wrappedAndPaddedComment
-
-		case s.isCodeBlock:
-			paragraph = syntax.ReplaceHTML(paragraph)
-			wrappedComment, _ := text.Wrap(paragraph, availableScreenWidth)
-
-			codeLines := strings.Split(wrappedComment, "\n")
-
-			var formattedCodeLines strings.Builder
-
-			for j, codeLine := range codeLines {
-				isOnLastLine := j == len(codeLines)-1
-
-				if isOnLastLine {
-					formattedCodeLines.WriteString(ansi.Faint + codeLine + ansi.Reset)
-
-					break
-				}
-
-				formattedCodeLines.WriteString(ansi.Faint + codeLine + ansi.Reset + "\n")
-			}
-
-			paragraph = formattedCodeLines.String()
-
-		default:
-			paragraph = syntax.ReplaceSymbols(paragraph)
-			paragraph = convertToEmojis(paragraph, config.DisableEmojis)
-
-			paragraph = syntax.ReplaceHTML(paragraph)
-			paragraph = strings.TrimLeft(paragraph, " ")
-			paragraph = highlightCommentSyntax(paragraph, config.DisableCommentHighlighting, config.EnableNerdFonts)
-
-			paragraph = syntax.TrimURLs(paragraph, config.DisableCommentHighlighting)
-			paragraph = syntax.RemoveUnwantedNewLines(paragraph)
-			paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
-
-			wrappedAndPaddedComment, _ := text.Wrap(paragraph, commentWidth)
-			paragraph = wrappedAndPaddedComment
+	for i, s := range sections {
+		switch s.kind {
+		case sectionQuote:
+			output.WriteString(formatQuote(s.content, config, commentWidth))
+		case sectionCode:
+			output.WriteString(formatCodeBlock(s.content, availableScreenWidth))
+		case sectionParagraph:
+			output.WriteString(formatParagraph(s.content, config, commentWidth))
 		}
 
-		separator := getParagraphSeparator(i, len(comment.sections))
-		output.WriteString(paragraph + separator)
+		if i < len(sections)-1 {
+			output.WriteString("\n\n")
+		}
 	}
 
 	return output.String()
+}
+
+func parseSections(html string) []section {
+	html = strings.TrimPrefix(html, "<p>")
+	html = strings.ReplaceAll(html, "\n</code></pre>\n", "<p>")
+	paragraphs := strings.Split(html, "<p>")
+
+	sections := make([]section, 0, len(paragraphs))
+
+	for _, p := range paragraphs {
+		content := syntax.ReplaceCharacters(p)
+
+		kind := sectionParagraph
+
+		switch {
+		case strings.Contains(content, "<pre><code>"):
+			kind = sectionCode
+		case isQuote(content):
+			kind = sectionQuote
+		}
+
+		sections = append(sections, section{kind: kind, content: content})
+	}
+
+	return sections
+}
+
+func formatQuote(paragraph string, config *settings.Config, commentWidth int) string {
+	paragraph = strings.ReplaceAll(paragraph, "<i>", "")
+	paragraph = strings.ReplaceAll(paragraph, "</i>", "")
+	paragraph = strings.ReplaceAll(paragraph, "</a>", ansi.Reset+ansi.Faint+ansi.Italic)
+	paragraph = syntax.ReplaceSymbols(paragraph)
+	paragraph = convertToEmojis(paragraph, config.DisableEmojis)
+
+	paragraph = strings.Replace(paragraph, ">>", "", 1)
+	paragraph = strings.Replace(paragraph, ">", "", 1)
+	paragraph = strings.TrimLeft(paragraph, " ")
+	paragraph = syntax.TrimURLs(paragraph, false)
+	paragraph = syntax.RemoveUnwantedNewLines(paragraph)
+	paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
+
+	paragraph = ansi.Italic + ansi.Faint + paragraph + ansi.Reset
+
+	quoteIndent := " " + config.IndentationSymbol
+	padding := text.WrapPad(ansi.Faint + quoteIndent)
+	wrapped, _ := text.Wrap(paragraph, commentWidth, padding)
+
+	return wrapped
+}
+
+func formatCodeBlock(paragraph string, availableWidth int) string {
+	paragraph = syntax.ReplaceHTML(paragraph)
+
+	wrapped, _ := text.Wrap(paragraph, availableWidth)
+	lines := strings.Split(wrapped, "\n")
+
+	var sb strings.Builder
+
+	for i, line := range lines {
+		sb.WriteString(ansi.Faint + line + ansi.Reset)
+
+		if i < len(lines)-1 {
+			sb.WriteString("\n")
+		}
+	}
+
+	return sb.String()
+}
+
+func formatParagraph(paragraph string, config *settings.Config, commentWidth int) string {
+	paragraph = syntax.ReplaceSymbols(paragraph)
+	paragraph = convertToEmojis(paragraph, config.DisableEmojis)
+	paragraph = syntax.ReplaceHTML(paragraph)
+	paragraph = strings.TrimLeft(paragraph, " ")
+	paragraph = highlightCommentSyntax(paragraph, config.DisableCommentHighlighting, config.EnableNerdFonts)
+	paragraph = syntax.TrimURLs(paragraph, config.DisableCommentHighlighting)
+	paragraph = syntax.RemoveUnwantedNewLines(paragraph)
+	paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
+
+	wrapped, _ := text.Wrap(paragraph, commentWidth)
+
+	return wrapped
 }
 
 func convertToEmojis(paragraph string, disableEmojis bool) string {
@@ -124,9 +137,7 @@ func convertToEmojis(paragraph string, disableEmojis bool) string {
 		return paragraph
 	}
 
-	paragraph = syntax.ConvertSmileys(paragraph)
-
-	return paragraph
+	return syntax.ConvertSmileys(paragraph)
 }
 
 func isQuote(text string) bool {
@@ -136,16 +147,6 @@ func isQuote(text string) bool {
 		strings.HasPrefix(text, " "+quoteMark) ||
 		strings.HasPrefix(text, "<i>"+quoteMark) ||
 		strings.HasPrefix(text, "<i> "+quoteMark)
-}
-
-func getParagraphSeparator(index int, sliceLength int) string {
-	isAtLastParagraph := index == sliceLength-1
-
-	if isAtLastParagraph {
-		return ""
-	}
-
-	return "\n\n"
 }
 
 func highlightCommentSyntax(input string, disableCommentHighlighting bool, enableNerdFonts bool) string {

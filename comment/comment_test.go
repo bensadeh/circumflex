@@ -34,29 +34,6 @@ func TestIsQuote(t *testing.T) {
 	}
 }
 
-func TestGetParagraphSeparator(t *testing.T) {
-	t.Parallel()
-
-	t.Run("last paragraph returns empty", func(t *testing.T) {
-		t.Parallel()
-
-		assert.Empty(t, getParagraphSeparator(2, 3))
-	})
-
-	t.Run("single paragraph returns empty", func(t *testing.T) {
-		t.Parallel()
-
-		assert.Empty(t, getParagraphSeparator(0, 1))
-	})
-
-	t.Run("non-last paragraph returns double newline", func(t *testing.T) {
-		t.Parallel()
-
-		assert.Equal(t, "\n\n", getParagraphSeparator(0, 3))
-		assert.Equal(t, "\n\n", getParagraphSeparator(1, 3))
-	})
-}
-
 func defaultConfig() *settings.Config {
 	return &settings.Config{
 		CommentWidth:      70,
