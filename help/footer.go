@@ -9,12 +9,9 @@ import (
 )
 
 func Footer(width int) string {
-	logo := style.ModeIndicator(style.Logo("{", "⌨", "}"), []style.Binding{})
-	logoWidth := lipgloss.Width(logo)
 	versionText := "github.com/bensadeh/circumflex • version " + version.Version
 	textWidth := lipgloss.Width(versionText)
-	centerPos := (width - textWidth) / 2
-	gap := strings.Repeat(" ", max(0, centerPos-logoWidth))
+	leftPad := strings.Repeat(" ", max(0, (width-textWidth)/2))
 
-	return logo + gap + style.Faint(versionText)
+	return leftPad + style.Faint(versionText)
 }

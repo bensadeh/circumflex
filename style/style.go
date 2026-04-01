@@ -165,15 +165,15 @@ type Binding struct {
 	Desc string
 }
 
-func ModeIndicator(logo string, bindings []Binding) string {
-	leftPad := strings.Repeat(" ", 2)
-	rightPad := strings.Repeat(" ", 2)
-	logoBlock := leftPad + logo + rightPad
-
+func ModeIndicator(bindings []Binding) string {
 	parts := make([]string, len(bindings))
 	for i, b := range bindings {
-		parts[i] = b.Key + Faint(": "+b.Desc)
+		parts[i] = RenderBinding(b)
 	}
 
-	return logoBlock + strings.Join(parts, "  ")
+	return strings.Repeat(" ", 2) + strings.Join(parts, "  ")
+}
+
+func RenderBinding(b Binding) string {
+	return b.Key + Faint(": "+b.Desc)
 }

@@ -1,7 +1,6 @@
 package comments
 
 import (
-	"clx/ansi"
 	"clx/comment"
 	"clx/header"
 	"clx/help"
@@ -13,7 +12,6 @@ import (
 	"clx/view/message"
 	"fmt"
 	"strings"
-	"unicode/utf8"
 
 	"charm.land/bubbles/v2/key"
 	"charm.land/bubbles/v2/viewport"
@@ -365,29 +363,41 @@ func (m *Model) modeIndicator() string {
 
 	switch m.mode {
 	case modeScroll:
-		left = style.ModeIndicator(style.Logo("{", "≡", "}"), []style.Binding{
+		left = style.ModeIndicator([]style.Binding{
 			{Key: "⇥", Desc: "navigate mode"},
-			{Key: "i", Desc: "help"},
 		})
 	case modeNavigate:
-		left = style.ModeIndicator(style.Logo("{", "…", "}"), []style.Binding{
-			{Key: "⇥", Desc: "read mode    "},
-			{Key: "i", Desc: "help"},
+		left = style.ModeIndicator([]style.Binding{
+			{Key: "⇥", Desc: "read mode"},
 		})
 	}
 
-	if m.mode == modeScroll {
-		right := m.depthIndicator()
-		if right != "" {
-			leftWidth := utf8.RuneCountInString(ansi.Strip(left))
-			rightWidth := utf8.RuneCountInString(ansi.Strip(right))
-			padding := max(1, m.rc.screenWidth-leftWidth-rightWidth)
+	help := style.RenderBinding(style.Binding{Key: "i", Desc: "help"})
 
-			return left + strings.Repeat(" ", padding) + right
+	// In scroll mode, reserve a fixed-width slot for the depth indicator
+	// so that "i: help" stays in place as levels expand/collapse.
+	diSlot := 0
+	if m.mode == modeScroll && m.maxDepth > 0 {
+		diSlot = 1 + 1 + len(fmt.Sprintf("%d", m.maxDepth)) + 1 // " ⋮" + digits + " "
+	}
+
+	commentWidth := min(m.rc.screenWidth-layout.CommentSectionLeftMargin, m.rc.config.CommentWidth)
+	totalWidth := layout.CommentSectionLeftMargin + commentWidth
+	padding := max(1, totalWidth-lipgloss.Width(left)-lipgloss.Width(help)-diSlot)
+
+	result := left + strings.Repeat(" ", padding) + help
+
+	if diSlot > 0 {
+		di := m.depthIndicator()
+		if di != "" {
+			used := 1 + lipgloss.Width(di)
+			result += " " + di + strings.Repeat(" ", max(0, diSlot-used))
+		} else {
+			result += strings.Repeat(" ", diSlot)
 		}
 	}
 
-	return left
+	return result
 }
 
 func (m *Model) depthIndicator() string {

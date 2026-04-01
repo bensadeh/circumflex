@@ -334,9 +334,18 @@ func (m *Model) footerSeparator() string {
 }
 
 func (m *Model) modeIndicator() string {
-	return style.ModeIndicator(style.Logo("{", "≡", "}"), []style.Binding{
-		{Key: "i", Desc: "help"},
-	})
+	left := style.ModeIndicator(nil)
+	right := style.RenderBinding(style.Binding{Key: "i", Desc: "help"})
+
+	totalWidth := m.screenWidth
+	if m.maxWidth > 0 {
+		contentWidth := layout.ReaderContentWidth(m.screenWidth, m.maxWidth)
+		totalWidth = layout.ReaderViewLeftMargin + contentWidth
+	}
+
+	padding := max(1, totalWidth-lipgloss.Width(left)-lipgloss.Width(right))
+
+	return left + strings.Repeat(" ", padding) + right
 }
 
 // clampScroll prevents scrolling down past the last content line while still
