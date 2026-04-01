@@ -151,7 +151,6 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 	hist := m.history
 	ctx := m.fetchCtx
 	fetchID := m.fetchID
-	title := msg.Title
 
 	return func() tea.Msg {
 		if err := article.Validate(msg.Title, msg.Domain); err != nil {
@@ -165,7 +164,16 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 
 		_ = hist.MarkArticleAsReadAndWriteToDisk(msg.ID)
 
-		return message.ArticleReady{Parsed: parsed, Title: title, FetchID: fetchID}
+		return message.ArticleReady{
+			Parsed:  parsed,
+			Title:   msg.Title,
+			URL:     msg.URL,
+			Author:  msg.Author,
+			TimeAgo: msg.TimeAgo,
+			ID:      msg.ID,
+			Points:  msg.Points,
+			FetchID: fetchID,
+		}
 	}
 }
 

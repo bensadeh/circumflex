@@ -25,6 +25,9 @@ type EnteringReaderMode struct {
 	Domain       string
 	ID           int
 	CommentCount int
+	Author       string
+	TimeAgo      string
+	Points       int
 }
 
 type ShowStatusMessage struct {
@@ -70,6 +73,11 @@ type ArticleReady struct {
 	Parsed  *article.Parsed
 	Content string
 	Title   string
+	URL     string
+	Author  string
+	TimeAgo string
+	ID      int
+	Points  int
 	Err     error
 	FetchID uint64
 }

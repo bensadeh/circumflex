@@ -33,10 +33,16 @@ type Parsed struct {
 	url    string
 }
 
-// Render formats the parsed article for terminal display at the given width.
+// Render formats the parsed article for terminal display at the given width,
+// using the default meta header.
 func (p *Parsed) Render(width int, indentationSymbol string) string {
+	return p.RenderWithHeader(width, indentationSymbol, createHeader(p.url, width))
+}
+
+// RenderWithHeader formats the parsed article with a custom header block
+// prepended before postprocessing.
+func (p *Parsed) RenderWithHeader(width int, indentationSymbol, header string) string {
 	content := convertToTerminalFormat(p.blocks, width, indentationSymbol)
-	header := createHeader(p.url, width)
 
 	return processArticle(header+content, p.url, width)
 }

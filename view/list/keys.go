@@ -1,6 +1,7 @@
 package list
 
 import (
+	"clx/article"
 	"clx/browser"
 	"clx/categories"
 	"clx/view/message"
@@ -135,14 +136,18 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return tea.Batch(startSpinnerCmd, enterCommentsCmd)
 
 		case key.Matches(msg, m.keymap.ReaderMode):
+			selected := m.SelectedItem()
+
+			if err := article.Validate(selected.Title, selected.Domain); err != nil {
+				return m.status.NewStatusMessageWithDuration(friendlyError(err), statusMessageLong)
+			}
+
 			currentCategory := m.cat.CurrentCategory()
 			m.pager.transition = &transition{
 				prevIndex: m.cat.CurrentIndex(),
 				oldItems:  m.pager.items[currentCategory],
 			}
 			startSpinnerCmd := m.startFetch(readerModeTimeout)
-
-			selected := m.SelectedItem()
 
 			enterReaderCmd := func() tea.Msg {
 				return message.EnteringReaderMode{
@@ -151,6 +156,9 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 					Domain:       selected.Domain,
 					ID:           selected.ID,
 					CommentCount: selected.CommentsCount,
+					Author:       selected.User,
+					TimeAgo:      selected.TimeAgo,
+					Points:       selected.Points,
 				}
 			}
 

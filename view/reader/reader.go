@@ -5,6 +5,7 @@ import (
 	"clx/header"
 	"clx/help"
 	"clx/layout"
+	"clx/meta"
 	"clx/style"
 	"clx/view/message"
 	"strings"
@@ -17,6 +18,16 @@ import (
 )
 
 const sectionMarker = "■"
+
+// Meta holds HN metadata displayed in the reader mode header block.
+type Meta struct {
+	URL       string
+	Author    string
+	TimeAgo   string
+	ID        int
+	Points    int
+	NerdFonts bool
+}
 
 // Model is the Bubble Tea model for the built-in reader view.
 type Model struct {
@@ -35,6 +46,7 @@ type Model struct {
 	parsed       *article.Parsed // nil when created with pre-rendered content
 	maxWidth     int             // ArticleWidth cap
 	indentSymbol string
+	articleMeta  Meta
 }
 
 const (
@@ -56,8 +68,10 @@ func New(content, title string, width, height int) *Model {
 }
 
 // NewWithArticle creates a reader view that can re-render on resize.
-func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, indentSymbol string, width, height int) *Model {
-	content := parsed.Render(layout.ReaderContentWidth(width, maxWidth), indentSymbol)
+func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, indentSymbol string, width, height int, m2 Meta) *Model {
+	contentWidth := layout.ReaderContentWidth(width, maxWidth)
+	header := meta.ReaderModeMetaBlock(m2.URL, m2.Author, m2.TimeAgo, m2.ID, m2.Points, m2.NerdFonts, contentWidth)
+	content := parsed.RenderWithHeader(contentWidth, indentSymbol, header)
 
 	m := &Model{
 		keymap:       defaultKeyMap(),
@@ -66,6 +80,7 @@ func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, indentSy
 		parsed:       parsed,
 		maxWidth:     maxWidth,
 		indentSymbol: indentSymbol,
+		articleMeta:  m2,
 	}
 
 	m.initViewport(content, width, height)
@@ -169,7 +184,9 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 func (m *Model) rerender() {
 	yOffset := m.viewport.YOffset()
 
-	content := m.parsed.Render(layout.ReaderContentWidth(m.screenWidth, m.maxWidth), m.indentSymbol)
+	contentWidth := layout.ReaderContentWidth(m.screenWidth, m.maxWidth)
+	hdr := meta.ReaderModeMetaBlock(m.articleMeta.URL, m.articleMeta.Author, m.articleMeta.TimeAgo, m.articleMeta.ID, m.articleMeta.Points, m.articleMeta.NerdFonts, contentWidth)
+	content := m.parsed.RenderWithHeader(contentWidth, m.indentSymbol, hdr)
 	trimmed := strings.TrimRight(content, "\n")
 	lines := strings.Split(trimmed, "\n")
 

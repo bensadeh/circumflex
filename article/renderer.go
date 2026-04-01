@@ -2,7 +2,6 @@ package article
 
 import (
 	"clx/ansi"
-	"clx/meta"
 	"clx/style"
 	"clx/syntax"
 	"regexp"
@@ -46,8 +45,19 @@ var (
 	reListPrefix5         = regexp.MustCompile(`^` + strings.Repeat(indentLevel1, 5) + "-")
 )
 
-func createHeader(domain string, lineWidth int) string {
-	return meta.ReaderModeMetaBlock(domain, lineWidth)
+func createHeader(url string, lineWidth int) string {
+	s := lipgloss.NewStyle().
+		BorderStyle(lipgloss.RoundedBorder()).
+		PaddingLeft(1).
+		PaddingRight(1).
+		Width(lineWidth)
+
+	contentWidth := lineWidth - s.GetHorizontalBorderSize() - s.GetHorizontalPadding()
+
+	formattedURL := style.MetaURL(termtext.TruncateMax(url, contentWidth))
+	info := "\n\n" + style.MetaReaderMode("Reader Mode")
+
+	return s.Render(formattedURL+info) + "\n\n"
 }
 
 func convertToTerminalFormat(blocks []*block, lineWidth int, indentBlock string) string {

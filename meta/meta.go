@@ -18,19 +18,34 @@ const (
 	newParagraph = "\n\n"
 )
 
-func ReaderModeMetaBlock(url string, lineWidth int) string {
+func ReaderModeMetaBlock(url string, author string, timeAgo string, id, points int, enableNerdFonts bool, width int) string {
 	s := lipgloss.NewStyle().
 		BorderStyle(lipgloss.RoundedBorder()).
 		PaddingLeft(1).
 		PaddingRight(1).
-		Width(lineWidth)
+		Width(width)
 
-	contentWidth := lineWidth - s.GetHorizontalBorderSize() - s.GetHorizontalPadding()
+	contentWidth := width - s.GetHorizontalBorderSize() - s.GetHorizontalPadding()
+	columnWidth := contentWidth / 2
 
-	formattedURL := style.MetaURL(text.TruncateMax(url, contentWidth))
-	info := newParagraph + style.MetaReaderMode("Reader Mode")
+	formattedURL := style.MetaURL(text.TruncateMax(url, contentWidth)) + newLine + newLine
 
-	return s.Render(formattedURL+info) + newParagraph
+	leftColumn := lipgloss.NewStyle().
+		Width(columnWidth).
+		Align(lipgloss.Left)
+	leftColumnText := getAuthor(author, enableNerdFonts) + " " + style.Faint(timeAgo) + newLine +
+		getReaderModeLabel(enableNerdFonts)
+
+	rightColumn := lipgloss.NewStyle().
+		Width(columnWidth).
+		Align(lipgloss.Right)
+	rightColumnText := getID(id, enableNerdFonts) + newLine +
+		getScore(points, enableNerdFonts)
+
+	joined := lipgloss.JoinHorizontal(lipgloss.Left, leftColumn.Render(leftColumnText),
+		rightColumn.Render(rightColumnText))
+
+	return s.Render(formattedURL+joined) + newParagraph
 }
 
 func CommentSectionMetaBlock(t *comment.Thread, config *settings.Config, newComments int, width int) string {
@@ -106,6 +121,14 @@ func getID(id int, enableNerdFonts bool) string {
 	}
 
 	return fmt.Sprintf("%s %s", "ID", idStr)
+}
+
+func getReaderModeLabel(enableNerdFonts bool) string {
+	if enableNerdFonts {
+		return style.MetaReaderMode(nerdfonts.Document + " Reader Mode")
+	}
+
+	return style.MetaReaderMode("Reader Mode")
 }
 
 func getNewCommentsInfo(newComments int, enableNerdFonts bool) string {
