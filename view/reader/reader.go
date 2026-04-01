@@ -7,6 +7,7 @@ import (
 	"clx/layout"
 	"clx/meta"
 	"clx/style"
+	"clx/syntax"
 	"clx/view/message"
 	"strings"
 
@@ -21,12 +22,13 @@ const sectionMarker = "■"
 
 // Meta holds HN metadata displayed in the reader mode header block.
 type Meta struct {
-	URL       string
-	Author    string
-	TimeAgo   string
-	ID        int
-	Points    int
-	NerdFonts bool
+	URL                         string
+	Author                      string
+	TimeAgo                     string
+	ID                          int
+	Points                      int
+	NerdFonts                   bool
+	DisableHeadlineHighlighting bool
 }
 
 // Model is the Bubble Tea model for the built-in reader view.
@@ -310,7 +312,16 @@ func (m *Model) View() string {
 func (m *Model) headerView() string {
 	leftMargin := strings.Repeat(" ", layout.ReaderViewLeftMargin)
 	maxTitleWidth := uint(max(0, m.screenWidth-layout.ReaderViewLeftMargin))
-	title := leftMargin + truncate.StringWithTail(m.title, maxTitleWidth, "…")
+	title := truncate.StringWithTail(m.title, maxTitleWidth, "…")
+
+	if !m.articleMeta.DisableHeadlineHighlighting {
+		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Unselected, m.articleMeta.NerdFonts)
+		title = syntax.HighlightYear(title, syntax.Unselected)
+		title = syntax.HighlightHackerNewsHeadlines(title, syntax.Unselected)
+		title = syntax.HighlightSpecialContent(title, syntax.Unselected, m.articleMeta.NerdFonts)
+	}
+
+	title = leftMargin + title
 	separator := strings.Repeat("‾", m.screenWidth)
 
 	return title + "\n" + separator

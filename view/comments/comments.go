@@ -9,6 +9,7 @@ import (
 	"clx/meta"
 	"clx/settings"
 	"clx/style"
+	"clx/syntax"
 	"clx/view/message"
 	"fmt"
 	"strings"
@@ -322,7 +323,17 @@ func (m *Model) View() string {
 func (m *Model) headerView() string {
 	leftMargin := strings.Repeat(" ", layout.CommentSectionLeftMargin)
 	maxTitleWidth := uint(max(0, m.rc.screenWidth-layout.CommentSectionLeftMargin))
-	title := leftMargin + truncate.StringWithTail(m.title, maxTitleWidth, "…")
+	title := truncate.StringWithTail(m.title, maxTitleWidth, "…")
+
+	if !m.rc.config.DisableHeadlineHighlighting {
+		nf := m.rc.config.EnableNerdFonts
+		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Unselected, nf)
+		title = syntax.HighlightYear(title, syntax.Unselected)
+		title = syntax.HighlightHackerNewsHeadlines(title, syntax.Unselected)
+		title = syntax.HighlightSpecialContent(title, syntax.Unselected, nf)
+	}
+
+	title = leftMargin + title
 	separator := strings.Repeat("‾", m.rc.screenWidth)
 
 	return title + "\n" + separator

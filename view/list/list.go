@@ -326,12 +326,13 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 		if msg.Parsed != nil {
 			m.readerView = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.config.IndentationSymbol, m.width, m.height, reader.Meta{
-				URL:       msg.URL,
-				Author:    msg.Author,
-				TimeAgo:   msg.TimeAgo,
-				ID:        msg.ID,
-				Points:    msg.Points,
-				NerdFonts: m.config.EnableNerdFonts,
+				URL:                         msg.URL,
+				Author:                      msg.Author,
+				TimeAgo:                     msg.TimeAgo,
+				ID:                          msg.ID,
+				Points:                      msg.Points,
+				NerdFonts:                   m.config.EnableNerdFonts,
+				DisableHeadlineHighlighting: m.config.DisableHeadlineHighlighting,
 			})
 		} else {
 			m.readerView = reader.New(msg.Content, msg.Title, m.width, m.height)
