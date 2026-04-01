@@ -380,11 +380,11 @@ func (m *Model) modeIndicator() string {
 
 	help := style.RenderBinding(style.Binding{Key: "i", Desc: "help"})
 
-	// In scroll mode, reserve a fixed-width slot for the depth indicator
-	// so that "i: help" stays in place as levels expand/collapse.
+	// Reserve a fixed-width slot for the depth indicator so that
+	// "i: help" stays in place across modes and depth changes.
 	diSlot := 0
-	if m.mode == modeRead && m.maxDepth > 0 {
-		diSlot = 1 + 1 + len(fmt.Sprintf("%d", m.maxDepth)) + 1 // " ⋮" + digits + " "
+	if m.maxDepth > 0 {
+		diSlot = 1 + 1 + len(fmt.Sprintf("%d", m.maxDepth)) // " ⋮" + digits
 	}
 
 	commentWidth := min(m.rc.screenWidth-layout.CommentSectionLeftMargin, m.rc.config.CommentWidth)
@@ -394,7 +394,11 @@ func (m *Model) modeIndicator() string {
 	result := left + strings.Repeat(" ", padding) + help
 
 	if diSlot > 0 {
-		di := m.depthIndicator()
+		di := ""
+		if m.mode == modeRead {
+			di = m.depthIndicator()
+		}
+
 		if di != "" {
 			used := 1 + lipgloss.Width(di)
 			result += " " + di + strings.Repeat(" ", max(0, diSlot-used))
@@ -417,12 +421,12 @@ func (m *Model) depthIndicator() string {
 	}
 
 	if len(cycle) == 0 {
-		return "\u22ee" + style.Faint(numStr) + " "
+		return "\u22ee" + style.Faint(numStr)
 	}
 
 	colorFn := cycle[(level-1)%len(cycle)]
 
-	return "\u22ee" + colorFn(numStr) + " "
+	return "\u22ee" + colorFn(numStr)
 }
 
 func (m *Model) toggleMode() {
