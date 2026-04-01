@@ -18,6 +18,10 @@ _WIP_
 - Change `--nerdfonts` flag to accept `true`/`false` for explicit control
 - Add 5-minute threshold for updating last-read time on stories
 
+**Removed**
+
+- Remove `--plain-headlines`, `--plain-comments`, and `--hide-indent` flags
+
 **Improvements**
 
 - Improve error messages for timeouts, non-200 responses, and unexpected server responses

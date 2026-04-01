@@ -247,13 +247,10 @@ default-theme   Write default theme config to ~/.config/circumflex/theme.toml
                               (default 70)
 -e, --disable-emojis        Disable conversion of smileys to emojis
 -d, --disable-history       Disable marking stories as read
--t, --hide-indent           Hide the indentation bar to the left of the reply
 -n, --nerdfonts             Enable Nerd Fonts
     --no-less-verify        Disable checking less version on startup
     --pages=[int]           Set the number of pages to fetch per category
                               (1-5, default 3, top/new/best only)
--o, --plain-comments        Disable syntax highlighting for comments
--p, --plain-headlines       Disable syntax highlighting for headlines
 -v, --version               Print current version
 ```
 

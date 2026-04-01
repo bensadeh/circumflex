@@ -17,18 +17,15 @@ import (
 )
 
 var (
-	disableHeadlineHighlighting bool
-	commentWidth                int
-	articleWidth                int
-	disableCommentHighlighting  bool
-	disableHistory              bool
-	disableEmojis               bool
-	hideIndentSymbol            bool
-	debugMode                   bool
-	debugFallible               bool
-	nerdFontFlag                string
-	pageMultiplier              int
-	selectedCategories          string
+	commentWidth       int
+	articleWidth       int
+	disableHistory     bool
+	disableEmojis      bool
+	debugMode          bool
+	debugFallible      bool
+	nerdFontFlag       string
+	pageMultiplier     int
+	selectedCategories string
 )
 
 func Root() *cobra.Command {
@@ -65,16 +62,10 @@ func Root() *cobra.Command {
 }
 
 func configureFlags(rootCmd *cobra.Command) {
-	rootCmd.PersistentFlags().BoolVarP(&disableHeadlineHighlighting, "plain-headlines", "p", false,
-		"disable syntax highlighting for headlines")
-	rootCmd.PersistentFlags().BoolVarP(&disableCommentHighlighting, "plain-comments", "o", false,
-		"disable syntax highlighting for comments")
 	rootCmd.PersistentFlags().BoolVarP(&disableHistory, "disable-history", "d", false,
 		"disable marking stories as read")
 	rootCmd.PersistentFlags().BoolVarP(&disableEmojis, "disable-emojis", "e", false,
 		"disable conversion of smileys to emojis")
-	rootCmd.PersistentFlags().BoolVarP(&hideIndentSymbol, "hide-indent", "t", false,
-		"hide the indentation bar to the left of the reply")
 	rootCmd.PersistentFlags().IntVarP(&commentWidth, "comment-width", "c", settings.Default().CommentWidth,
 		"set the comment width")
 	rootCmd.PersistentFlags().IntVarP(&articleWidth, "article-width", "a", settings.Default().ArticleWidth,
@@ -109,11 +100,9 @@ func getConfig() *settings.Config {
 
 	config.CommentWidth = commentWidth
 	config.ArticleWidth = articleWidth
-	config.DisableHeadlineHighlighting = disableHeadlineHighlighting
-	config.DisableCommentHighlighting = disableCommentHighlighting
 	config.DoNotMarkSubmissionsAsRead = disableHistory
 	config.EnableNerdFonts = resolveNerdFonts(nerdFontFlag)
-	config.IndentationSymbol = indentSymbol(hideIndentSymbol)
+	config.IndentationSymbol = indentSymbol()
 	config.DisableEmojis = disableEmojis
 	config.DebugMode = debugMode
 	config.DebugFallible = debugFallible
@@ -143,6 +132,14 @@ func newService() hn.Service {
 	return hn.NewService(debugMode, debugFallible)
 }
 
+func indentSymbol() string {
+	if os.Getenv("TERM_PROGRAM") == "Apple_Terminal" {
+		return "┃"
+	}
+
+	return "▎"
+}
+
 func readerWidth(maxWidth int) int {
 	w, _, err := term.GetSize(int(os.Stdout.Fd()))
 	if err != nil || w <= 0 {
@@ -150,16 +147,4 @@ func readerWidth(maxWidth int) int {
 	}
 
 	return layout.ReaderContentWidth(w, maxWidth)
-}
-
-func indentSymbol(hide bool) string {
-	if hide {
-		return " "
-	}
-
-	if os.Getenv("TERM_PROGRAM") == "Apple_Terminal" {
-		return "┃"
-	}
-
-	return "▎"
 }

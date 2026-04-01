@@ -11,26 +11,23 @@ const (
 )
 
 type Config struct {
-	CommentWidth                int
-	ArticleWidth                int
-	DisableHeadlineHighlighting bool
-	DisableCommentHighlighting  bool
-	DisableEmojis               bool
-	DoNotMarkSubmissionsAsRead  bool
-	IndentationSymbol           string
-	DebugMode                   bool
-	DebugFallible               bool
-	EnableNerdFonts             bool
-	PageMultiplier              int
-	Theme                       *theme.Theme
+	CommentWidth               int
+	ArticleWidth               int
+	IndentationSymbol          string
+	DisableEmojis              bool
+	DoNotMarkSubmissionsAsRead bool
+	DebugMode                  bool
+	DebugFallible              bool
+	EnableNerdFonts            bool
+	PageMultiplier             int
+	Theme                      *theme.Theme
 }
 
 func Default() *Config {
 	return &Config{
-		CommentWidth:      defaultCommentWidth,
-		ArticleWidth:      defaultArticleWidth,
-		PageMultiplier:    defaultPageMultiplier,
-		IndentationSymbol: " ▎",
+		CommentWidth:   defaultCommentWidth,
+		ArticleWidth:   defaultArticleWidth,
+		PageMultiplier: defaultPageMultiplier,
 	}
 }
 

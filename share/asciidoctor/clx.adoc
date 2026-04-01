@@ -109,20 +109,11 @@ Write default theme config to ~/.config/circumflex/theme.toml.
 *-c* _n_, *--comment-width*=_n_::
 Set the comment width to _n_ columns.
 
-*-p, --plain-headlines*::
-Disable syntax highlighting for headlines.
-
-*-o, --plain-comments*::
-Disable syntax highlighting for comments.
-
 *-e, --disable-emojis*::
 Disable conversion of smileys to emojis.
 
 *-d, --disable-history*::
 Disable marking stories as read.
-
-*-t, --hide-indent*::
-Hide the indentation bar to the left of the reply.
 
 *-n, --nerdfonts*=_true|false_::
 Enable or disable Nerd Fonts icons as decorators for some elements (requires a Nerd Font-patched font).

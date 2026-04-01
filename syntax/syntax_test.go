@@ -361,27 +361,27 @@ func TestColorizeIndentSymbol(t *testing.T) {
 func TestTrimURLs(t *testing.T) {
 	t.Run("strips HTML anchor tag", func(t *testing.T) {
 		input := `<a href="https://example.com">https://example.com</a>`
-		result := TrimURLs(input, false)
+		result := TrimURLs(input, true)
 		assert.NotContains(t, result, "<a href")
 	})
 
 	t.Run("highlights URLs when enabled", func(t *testing.T) {
 		input := "visit https://example.com/page today"
-		result := TrimURLs(input, false)
+		result := TrimURLs(input, true)
 		assert.Contains(t, result, "example.com/page")
 		assert.NotEqual(t, input, result)
 	})
 
 	t.Run("no highlighting when disabled", func(t *testing.T) {
 		input := "visit https://example.com/page today"
-		result := TrimURLs(input, true)
+		result := TrimURLs(input, false)
 		// With highlighting disabled, the URL text is still present
 		assert.Contains(t, result, "example.com/page")
 	})
 
 	t.Run("anchor with rel attr stripped", func(t *testing.T) {
 		input := `<a href="https://example.com" rel="nofollow">https://example.com`
-		result := TrimURLs(input, false)
+		result := TrimURLs(input, true)
 		assert.NotContains(t, result, "<a href")
 		assert.Contains(t, result, "example.com")
 	})

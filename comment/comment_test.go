@@ -37,7 +37,7 @@ func TestIsQuote(t *testing.T) {
 func defaultConfig() *settings.Config {
 	return &settings.Config{
 		CommentWidth:      70,
-		IndentationSymbol: " \u258e",
+		IndentationSymbol: "▎",
 	}
 }
 
@@ -111,28 +111,15 @@ func TestPrintEnableEmojis(t *testing.T) {
 	assert.NotContains(t, result, ":)")
 }
 
-func TestPrintDisableCommentHighlighting(t *testing.T) {
+func TestPrintCommentHighlighting(t *testing.T) {
 	t.Parallel()
 
 	cfg := defaultConfig()
-	cfg.DisableCommentHighlighting = true
 
 	input := "check `code` here"
 	result := Print(input, cfg, 70, 80)
 
-	assert.Contains(t, result, "`code`", "backticks should remain unhighlighted")
-}
-
-func TestPrintEnableCommentHighlighting(t *testing.T) {
-	t.Parallel()
-
-	cfg := defaultConfig()
-	cfg.DisableCommentHighlighting = false
-
-	input := "check `code` here"
-	result := Print(input, cfg, 70, 80)
-
-	// When highlighting is enabled, backticks are replaced with ANSI styling.
+	// Backticks are replaced with ANSI styling.
 	assert.NotContains(t, result, "`code`")
 }
 

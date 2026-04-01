@@ -114,7 +114,7 @@ func renderText(text string, lineWidth int) string {
 	text = syntax.RemoveUnwantedNewLines(text)
 	text = highlightBackticks(text)
 	text = syntax.HighlightMentions(text)
-	text = syntax.TrimURLs(text, true)
+	text = syntax.TrimURLs(text, false)
 
 	return wordwrap.String(text, lineWidth)
 }

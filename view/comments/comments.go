@@ -341,13 +341,11 @@ func (m *Model) headerView() string {
 	maxTitleWidth := uint(max(0, m.rc.screenWidth-layout.CommentSectionLeftMargin))
 	title := truncate.StringWithTail(m.title, maxTitleWidth, "…")
 
-	if !m.rc.config.DisableHeadlineHighlighting {
-		nf := m.rc.config.EnableNerdFonts
-		title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Unselected, nf)
-		title = syntax.HighlightYear(title, syntax.Unselected)
-		title = syntax.HighlightHackerNewsHeadlines(title, syntax.Unselected)
-		title = syntax.HighlightSpecialContent(title, syntax.Unselected, nf)
-	}
+	nf := m.rc.config.EnableNerdFonts
+	title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Unselected, nf)
+	title = syntax.HighlightYear(title, syntax.Unselected)
+	title = syntax.HighlightHackerNewsHeadlines(title, syntax.Unselected)
+	title = syntax.HighlightSpecialContent(title, syntax.Unselected, nf)
 
 	title = leftMargin + title
 	separator := strings.Repeat("‾", m.rc.screenWidth)

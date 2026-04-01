@@ -280,12 +280,12 @@ func ColorizeIndentSymbol(indentSymbol string, level int) string {
 	return ansi.Reset + cycle[idx](indentSymbol)
 }
 
-func TrimURLs(comment string, disableCommentHighlighting bool) string {
-	if disableCommentHighlighting {
-		return reHTMLAnchor.ReplaceAllString(comment, "")
-	}
-
+func TrimURLs(comment string, highlightURLs bool) string {
 	comment = reHTMLAnchor.ReplaceAllString(comment, "")
+
+	if !highlightURLs {
+		return comment
+	}
 
 	comment = reURL.ReplaceAllString(comment, style.CommentURL(`$1`))
 

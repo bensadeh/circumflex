@@ -85,7 +85,7 @@ func formatQuote(paragraph string, config *settings.Config, commentWidth int) st
 	paragraph = strings.Replace(paragraph, ">>", "", 1)
 	paragraph = strings.Replace(paragraph, ">", "", 1)
 	paragraph = strings.TrimLeft(paragraph, " ")
-	paragraph = syntax.TrimURLs(paragraph, false)
+	paragraph = syntax.TrimURLs(paragraph, true)
 	paragraph = syntax.RemoveUnwantedNewLines(paragraph)
 	paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
 
@@ -122,8 +122,8 @@ func formatParagraph(paragraph string, config *settings.Config, commentWidth int
 	paragraph = convertToEmojis(paragraph, config.DisableEmojis)
 	paragraph = syntax.ReplaceHTML(paragraph)
 	paragraph = strings.TrimLeft(paragraph, " ")
-	paragraph = highlightCommentSyntax(paragraph, config.DisableCommentHighlighting, config.EnableNerdFonts)
-	paragraph = syntax.TrimURLs(paragraph, config.DisableCommentHighlighting)
+	paragraph = highlightCommentSyntax(paragraph, config.EnableNerdFonts)
+	paragraph = syntax.TrimURLs(paragraph, true)
 	paragraph = syntax.RemoveUnwantedNewLines(paragraph)
 	paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
 
@@ -149,11 +149,7 @@ func isQuote(text string) bool {
 		strings.HasPrefix(text, "<i> "+quoteMark)
 }
 
-func highlightCommentSyntax(input string, disableCommentHighlighting bool, enableNerdFonts bool) string {
-	if disableCommentHighlighting {
-		return input
-	}
-
+func highlightCommentSyntax(input string, enableNerdFonts bool) string {
 	input = syntax.HighlightBackticks(input)
 	input = syntax.HighlightMentions(input)
 	input = syntax.HighlightVariables(input)

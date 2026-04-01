@@ -127,27 +127,27 @@ func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *item.St
 	switch {
 	case isSelected && m.state == StateAddFavoritesPrompt:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitleAddToFavorites, s.SelectedDescAddToFavorites, domain,
-			desc, syntax.AddToFavorites, m.config.DisableHeadlineHighlighting, enableNerdFonts)
+			desc, syntax.AddToFavorites, enableNerdFonts)
 
 	case isSelected && m.state == StateRemoveFavoritesPrompt:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitleRemoveFromFavorites, s.SelectedDescRemoveFromFavorites, domain,
-			desc, syntax.RemoveFromFavorites, m.config.DisableHeadlineHighlighting, enableNerdFonts)
+			desc, syntax.RemoveFromFavorites, enableNerdFonts)
 
 	case isSelected && m.state == StateBrowsing:
 		title, desc = styleTitleAndDesc(title, s.SelectedTitle, s.SelectedDesc, domain,
-			desc, syntax.Selected, m.config.DisableHeadlineHighlighting, enableNerdFonts)
+			desc, syntax.Selected, enableNerdFonts)
 
 	case markAsRead && m.cat.CurrentCategory() != categories.Favorites:
 		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(true), s.MarkAsReadDesc, domain,
-			desc, syntax.MarkAsRead, m.config.DisableHeadlineHighlighting, enableNerdFonts)
+			desc, syntax.MarkAsRead, enableNerdFonts)
 
 	case m.pager.transition != nil || m.state == StateReaderView:
 		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(true), s.MarkAsReadDesc, domain,
-			desc, syntax.MarkAsRead, m.config.DisableHeadlineHighlighting, enableNerdFonts)
+			desc, syntax.MarkAsRead, enableNerdFonts)
 
 	default:
 		title, desc = styleTitleAndDesc(title, s.NormalTitle, s.NormalDesc, domain,
-			desc, syntax.Unselected, m.config.DisableHeadlineHighlighting, enableNerdFonts)
+			desc, syntax.Unselected, enableNerdFonts)
 	}
 
 	_, _ = fmt.Fprintf(w, "%s\n%s", title, desc)
@@ -194,16 +194,13 @@ func getAuthor(author string, enableNerdFonts bool) string {
 }
 
 func styleTitleAndDesc(title string, titleStyle lipgloss.Style, descStyle lipgloss.Style, domain string, desc string,
-	syntaxStyle int, disableHeadlineHighlighting bool, enableNerdFont bool,
+	syntaxStyle int, enableNerdFont bool,
 ) (string, string) {
 	title = titleStyle.Render(title)
-
-	if !disableHeadlineHighlighting {
-		title = syntax.HighlightYCStartupsInHeadlines(title, syntaxStyle, enableNerdFont)
-		title = syntax.HighlightYear(title, syntaxStyle)
-		title = syntax.HighlightHackerNewsHeadlines(title, syntaxStyle)
-		title = syntax.HighlightSpecialContent(title, syntaxStyle, enableNerdFont)
-	}
+	title = syntax.HighlightYCStartupsInHeadlines(title, syntaxStyle, enableNerdFont)
+	title = syntax.HighlightYear(title, syntaxStyle)
+	title = syntax.HighlightHackerNewsHeadlines(title, syntaxStyle)
+	title = syntax.HighlightSpecialContent(title, syntaxStyle, enableNerdFont)
 
 	title = title + " " + domain
 	desc = descStyle.Render(desc)
