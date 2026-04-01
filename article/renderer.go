@@ -86,7 +86,7 @@ func convertToTerminalFormat(blocks []*block, lineWidth int, indentBlock string)
 		sb.WriteString("\n\n")
 	}
 
-	return strings.TrimLeft(sb.String(), "\n")
+	return strings.Trim(sb.String(), "\n")
 }
 
 func renderDivider(lineWidth int) string {

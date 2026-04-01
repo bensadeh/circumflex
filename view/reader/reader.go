@@ -13,6 +13,7 @@ import (
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	"github.com/muesli/reflow/truncate"
 )
 
 const sectionMarker = "■"
@@ -291,7 +292,8 @@ func (m *Model) View() string {
 
 func (m *Model) headerView() string {
 	leftMargin := strings.Repeat(" ", layout.ReaderViewLeftMargin)
-	title := leftMargin + m.title
+	maxTitleWidth := uint(max(0, m.screenWidth-layout.ReaderViewLeftMargin))
+	title := leftMargin + truncate.StringWithTail(m.title, maxTitleWidth, "…")
 	separator := strings.Repeat("‾", m.screenWidth)
 
 	return title + "\n" + separator
