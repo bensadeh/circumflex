@@ -24,7 +24,7 @@ func Author(author string, lastVisited, timePosted int64, focused bool) string {
 	}
 
 	if lastVisited < timePosted {
-		return styledAuthor + style.CommentNewIndicator("\u25cf") + " "
+		return styledAuthor + style.CommentNewIndicator("●") + " "
 	}
 
 	return styledAuthor
@@ -93,7 +93,7 @@ func Separator(depth, commentWidth, currentCommentID, firstCommentID int) string
 		return "\n"
 	}
 
-	return style.Faint(strings.Repeat("\u2581", commentWidth)) + "\n\n"
+	return style.Faint(strings.Repeat("▁", commentWidth)) + "\n\n"
 }
 
 // IndentString returns the indentation prefix for a given nesting depth.
@@ -167,14 +167,14 @@ func RepliesIndicator(descendantCount, depth, commentWidth int, collapsed bool) 
 		replies = "reply"
 	}
 
-	arrow := "\u25bc" // ▼ expanded
+	arrow := "▼"
 	if collapsed {
-		arrow = "\u25b6" // ▶ collapsed
+		arrow = "▶"
 	}
 
 	label := fmt.Sprintf("%s %d %s", arrow, descendantCount, replies)
 	indent := IndentString(depth)
 	padding := max((commentWidth-len(label))/2, 0)
 
-	return "\n" + indent + strings.Repeat(" ", padding) + style.Faint(label) + "\n"
+	return indent + strings.Repeat(" ", padding) + style.Faint(label) + "\n"
 }
