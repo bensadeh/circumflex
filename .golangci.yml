@@ -89,6 +89,7 @@ linters:
         - G204   # subprocess with variable — expected in a CLI that shells out to less/browser
         - G301   # directory permissions >0750 — config dirs need 0755 for user access
         - G304   # file path from variable — paths are constructed internally, not from user input
+        - G404   # weak random number generator — only used for spinner animation
         - G702   # command injection — same as G204, expected for CLX_BROWSER env var
 
 formatters:

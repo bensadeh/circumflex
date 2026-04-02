@@ -72,10 +72,16 @@ func (m *Model) View() string {
 }
 
 func (m *Model) titleView() string {
+	var sv string
+	if m.status.showSpinner {
+		sv = m.status.spinnerView()
+	}
+
 	return header.Header(
 		m.cat.ActiveCategories(),
 		m.cat.CurrentIndex(),
-		m.width)
+		m.width,
+		sv)
 }
 
 func (m *Model) statusAndPaginationView() string {
@@ -87,12 +93,7 @@ func (m *Model) statusAndPaginationView() string {
 	underscore := m.underlineStyle.Render(" ")
 	underline := strings.Repeat(underscore, m.width)
 
-	switch {
-	case m.status.showSpinner:
-		centerContent = m.status.spinnerView()
-	default:
-		centerContent = m.status.message
-	}
+	centerContent = m.status.message
 
 	switch m.state {
 	case StateFetching:

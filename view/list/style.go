@@ -1,18 +1,13 @@
 package list
 
 import (
-	"clx/style"
-	"time"
-
-	"charm.land/bubbles/v2/spinner"
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/compat"
 )
 
 const (
-	bullet               = "•"
-	ellipsis             = "…"
-	spinnerFrameDuration = 900 * time.Millisecond
+	bullet   = "•"
+	ellipsis = "…"
 )
 
 // styles contains style definitions for this list component. By default, these
@@ -43,24 +38,4 @@ func defaultStyles() (s styles) {
 		SetString(bullet)
 
 	return s
-}
-
-func getSpinner() spinner.Spinner {
-	normal := lipgloss.NewStyle()
-
-	color := lipgloss.NewStyle()
-
-	magenta := style.HeaderC()
-	yellow := style.HeaderL()
-	blue := style.HeaderX()
-
-	return spinner.Spinner{
-		Frames: []string{
-			normal.Render("fetching") + color.Foreground(magenta).Render(".") + color.Foreground(yellow).Render(".") + color.Foreground(blue).Render("."),
-			normal.Render("fetching   "),
-			normal.Render("fetching") + color.Foreground(magenta).Render(".") + normal.Render("  "),
-			normal.Render("fetching") + color.Foreground(magenta).Render(".") + color.Foreground(yellow).Render(".") + normal.Render(" "),
-		},
-		FPS: spinnerFrameDuration,
-	}
 }

@@ -1,6 +1,7 @@
 package list
 
 import (
+	clxspinner "clx/spinner"
 	"clx/view/message"
 	"time"
 
@@ -40,16 +41,18 @@ func (s *statusBar) hideStatusMessage() {
 
 func (s *statusBar) StartSpinner() tea.Cmd {
 	s.spinner = spinner.New()
-	s.spinner.Spinner = getSpinner()
+	s.spinner.Spinner = clxspinner.Random()
 	s.spinner.Style = defaultStyles().Spinner
 
 	s.showSpinner = true
+	s.message = lipgloss.NewStyle().Faint(true).Render("fetching")
 
 	return s.spinner.Tick
 }
 
 func (s *statusBar) StopSpinner() {
 	s.showSpinner = false
+	s.message = ""
 }
 
 func (s *statusBar) spinnerView() string {

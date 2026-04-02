@@ -10,10 +10,17 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-func Header(allCategories []categories.Category, selectedSubHeader int, width int) string {
+func Header(allCategories []categories.Category, selectedSubHeader int, width int, spinnerView string) string {
 	leftPad := strings.Repeat(" ", layout.HeaderLogoLeftPadding)
 	rightPad := strings.Repeat(" ", layout.HeaderLogoRightPadding)
-	title := leftPad + style.Logo("c", "l", "x") + rightPad
+
+	var title string
+	if spinnerView != "" {
+		title = spinnerView
+	} else {
+		title = leftPad + style.Logo("c", "l", "x") + rightPad
+	}
+
 	cats := getCategories(allCategories, selectedSubHeader)
 	filler := getFiller(title, cats, width)
 

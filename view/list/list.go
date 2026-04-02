@@ -8,6 +8,7 @@ import (
 	"clx/hn"
 	"clx/item"
 	"clx/settings"
+	clxspinner "clx/spinner"
 	"clx/view/comments"
 	"clx/view/message"
 	"clx/view/reader"
@@ -98,7 +99,7 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 	s := defaultStyles()
 
 	sp := spinner.New()
-	sp.Spinner = getSpinner()
+	sp.Spinner = clxspinner.Random()
 	sp.Style = s.Spinner
 
 	p := paginator.New()
