@@ -211,7 +211,7 @@ func isListItem(text string) bool {
 	return reListItem.MatchString(text)
 }
 
-func isSameTypeAsPreviousItem(itemType int, blocks []*block) bool {
+func isSameTypeAsPreviousItem(itemType blockKind, blocks []*block) bool {
 	if len(blocks) == 0 {
 		return false
 	}
@@ -235,7 +235,7 @@ func appendNonEmptyBuffer(temp *tempBuffer, blocks []*block) ([]*block, error) {
 }
 
 type tempBuffer struct {
-	kind int
+	kind blockKind
 	text string
 }
 

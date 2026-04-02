@@ -277,7 +277,7 @@ var headerStyleFuncs = [...]func(string) string{
 	blockH6: style.ReaderH6,
 }
 
-func renderHeader(kind int, text string, lineWidth int) string {
+func renderHeader(kind blockKind, text string, lineWidth int) string {
 	text = preFormatHeader(text)
 	indent := headerIndent[kind]
 	styleFn := headerStyleFuncs[kind]

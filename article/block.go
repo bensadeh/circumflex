@@ -1,25 +1,28 @@
 package article
 
+// blockKind identifies the type of a parsed content block.
+type blockKind int
+
 const (
-	blockText    = 0
-	blockImage   = 1
-	blockH1      = 2
-	blockH2      = 3
-	blockH3      = 4
-	blockH4      = 5
-	blockH5      = 6
-	blockH6      = 7
-	blockQuote   = 8
-	blockCode    = 9
-	blockList    = 10
-	blockTable   = 11
-	blockDivider = 12
+	blockText blockKind = iota
+	blockImage
+	blockH1
+	blockH2
+	blockH3
+	blockH4
+	blockH5
+	blockH6
+	blockQuote
+	blockCode
+	blockList
+	blockTable
+	blockDivider
 
 	italicStart = "(CLX-ITALIC)"
 	italicStop  = "(CLX-ITALIC-STOP)"
 )
 
 type block struct {
-	Kind int
+	Kind blockKind
 	Text string
 }

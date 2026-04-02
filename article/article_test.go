@@ -39,7 +39,7 @@ func TestConvertToMarkdownBlocks_TextJoinsLines(t *testing.T) {
 func TestConvertToMarkdownBlocks_Headers(t *testing.T) {
 	tests := []struct {
 		input    string
-		kind     int
+		kind     blockKind
 		wantText string
 	}{
 		{"# Title", blockH1, "# Title"},

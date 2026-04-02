@@ -13,12 +13,12 @@ func TestNormalizeHeaders(t *testing.T) {
 	tests := []struct {
 		name   string
 		blocks []*block
-		want   []int
+		want   []blockKind
 	}{
 		{
 			name:   "no blocks",
 			blocks: []*block{},
-			want:   []int{},
+			want:   []blockKind{},
 		},
 		{
 			name: "no headers",
@@ -26,7 +26,7 @@ func TestNormalizeHeaders(t *testing.T) {
 				{Kind: blockText, Text: "hello"},
 				{Kind: blockCode, Text: "code"},
 			},
-			want: []int{blockText, blockCode},
+			want: []blockKind{blockText, blockCode},
 		},
 		{
 			name: "already normalized h1 h2 h3",
@@ -35,7 +35,7 @@ func TestNormalizeHeaders(t *testing.T) {
 				{Kind: blockH2, Text: "## B"},
 				{Kind: blockH3, Text: "### C"},
 			},
-			want: []int{blockH1, blockH2, blockH3},
+			want: []blockKind{blockH1, blockH2, blockH3},
 		},
 		{
 			name: "shift up h3 h4",
@@ -43,7 +43,7 @@ func TestNormalizeHeaders(t *testing.T) {
 				{Kind: blockH3, Text: "### A"},
 				{Kind: blockH4, Text: "#### B"},
 			},
-			want: []int{blockH1, blockH2},
+			want: []blockKind{blockH1, blockH2},
 		},
 		{
 			name: "gap collapse h1 h2 h4",
@@ -52,7 +52,7 @@ func TestNormalizeHeaders(t *testing.T) {
 				{Kind: blockH2, Text: "## B"},
 				{Kind: blockH4, Text: "#### C"},
 			},
-			want: []int{blockH1, blockH2, blockH3},
+			want: []blockKind{blockH1, blockH2, blockH3},
 		},
 		{
 			name: "shift and collapse h3 h5 h6",
@@ -61,14 +61,14 @@ func TestNormalizeHeaders(t *testing.T) {
 				{Kind: blockH5, Text: "##### B"},
 				{Kind: blockH6, Text: "###### C"},
 			},
-			want: []int{blockH1, blockH2, blockH3},
+			want: []blockKind{blockH1, blockH2, blockH3},
 		},
 		{
 			name: "single header h4 becomes h1",
 			blocks: []*block{
 				{Kind: blockH4, Text: "#### Only"},
 			},
-			want: []int{blockH1},
+			want: []blockKind{blockH1},
 		},
 		{
 			name: "mixed blocks only headers remapped",
@@ -79,7 +79,7 @@ func TestNormalizeHeaders(t *testing.T) {
 				{Kind: blockH4, Text: "#### Sub"},
 				{Kind: blockList, Text: "- item"},
 			},
-			want: []int{blockText, blockH1, blockCode, blockH2, blockList},
+			want: []blockKind{blockText, blockH1, blockCode, blockH2, blockList},
 		},
 		{
 			name: "all six levels stay unchanged",
@@ -91,7 +91,7 @@ func TestNormalizeHeaders(t *testing.T) {
 				{Kind: blockH5, Text: "##### E"},
 				{Kind: blockH6, Text: "###### F"},
 			},
-			want: []int{blockH1, blockH2, blockH3, blockH4, blockH5, blockH6},
+			want: []blockKind{blockH1, blockH2, blockH3, blockH4, blockH5, blockH6},
 		},
 		{
 			name: "duplicate levels",
@@ -100,7 +100,7 @@ func TestNormalizeHeaders(t *testing.T) {
 				{Kind: blockH3, Text: "### B"},
 				{Kind: blockH5, Text: "##### C"},
 			},
-			want: []int{blockH1, blockH1, blockH2},
+			want: []blockKind{blockH1, blockH1, blockH2},
 		},
 	}
 
@@ -123,7 +123,7 @@ func TestIsHeader(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		kind int
+		kind blockKind
 		want bool
 	}{
 		{blockText, false},

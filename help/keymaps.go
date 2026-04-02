@@ -8,10 +8,13 @@ import (
 	termText "github.com/MichaelMure/go-term-text"
 )
 
+// entryKind identifies the type of a help screen entry.
+type entryKind int
+
 const (
-	header    = 0
-	separator = 1
-	keymap    = 2
+	header entryKind = iota
+	separator
+	keymap
 
 	newline = "\n"
 )
@@ -24,7 +27,7 @@ type entry struct {
 	header      string
 	description string
 	key         string
-	category    int
+	category    entryKind
 }
 
 func (k *keyList) addHeader(text string) {

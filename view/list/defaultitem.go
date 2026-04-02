@@ -196,7 +196,7 @@ func getAuthor(author string, enableNerdFonts bool) string {
 }
 
 func styleTitleAndDesc(title string, titleStyle lipgloss.Style, descStyle lipgloss.Style, domain string, desc string,
-	syntaxStyle int, enableNerdFont bool,
+	syntaxStyle syntax.HighlightType, enableNerdFont bool,
 ) (string, string) {
 	title = titleStyle.Render(title)
 	title = syntax.HighlightYCStartupsInHeadlines(title, syntaxStyle, enableNerdFont)

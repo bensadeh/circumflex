@@ -12,12 +12,17 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
+// HighlightType selects the visual treatment applied to a headline.
+type HighlightType int
+
 const (
 	newParagraph = "\n\n"
 	noBreakSpace = "\u00a0"
 	ansiBlack    = 16 // ANSI 256-color black
+)
 
-	Unselected = iota
+const (
+	Unselected HighlightType = iota
 	HeadlineInCommentSection
 	Selected
 	MarkAsRead
@@ -37,7 +42,7 @@ var (
 	reDoubleDash      = regexp.MustCompile(`([a-zA-Z])--([a-zA-Z])`)
 )
 
-func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNerdFonts bool) string {
+func HighlightYCStartupsInHeadlines(comment string, highlightType HighlightType, enableNerdFonts bool) string {
 	if enableNerdFonts {
 		highlightedStartup := ansi.Reset + getYCBarNerdFonts(nerdfonts.YCombinator+noBreakSpace+`$2`, highlightType) +
 			getHighlight(highlightType)
@@ -51,7 +56,7 @@ func HighlightYCStartupsInHeadlines(comment string, highlightType int, enableNer
 	return reYCWithoutSeason.ReplaceAllString(comment, highlightedStartup)
 }
 
-func getYCBar(text string, highlightType int) string {
+func getYCBar(text string, highlightType HighlightType) string {
 	c := style.HeadlineYCLabelColor()
 
 	switch highlightType {
@@ -61,12 +66,14 @@ func getYCBar(text string, highlightType int) string {
 	case MarkAsRead:
 		return lipgloss.NewStyle().Foreground(c).Faint(true).Render(text)
 
-	default:
+	case Unselected, HeadlineInCommentSection, AddToFavorites, RemoveFromFavorites:
 		return lipgloss.NewStyle().Foreground(c).Render(text)
 	}
+
+	return lipgloss.NewStyle().Foreground(c).Render(text)
 }
 
-func getYCBarNerdFonts(text string, highlightType int) string {
+func getYCBarNerdFonts(text string, highlightType HighlightType) string {
 	c := style.HeadlineYCLabelColor()
 	black := lipgloss.ANSIColor(ansiBlack)
 
@@ -77,13 +84,13 @@ func getYCBarNerdFonts(text string, highlightType int) string {
 	return label(text, black, c, highlightType)
 }
 
-func HighlightYear(comment string, highlightType int) string {
+func HighlightYear(comment string, highlightType HighlightType) string {
 	content := getYear(`$1`, highlightType)
 
 	return reYear.ReplaceAllString(comment, ansi.Reset+content+getHighlight(highlightType))
 }
 
-func getYear(text string, highlightType int) string {
+func getYear(text string, highlightType HighlightType) string {
 	c := style.HeadlineYearColor()
 
 	switch highlightType {
@@ -93,12 +100,14 @@ func getYear(text string, highlightType int) string {
 	case MarkAsRead:
 		return lipgloss.NewStyle().Foreground(c).Faint(true).Render(text)
 
-	default:
+	case Unselected, HeadlineInCommentSection, AddToFavorites, RemoveFromFavorites:
 		return lipgloss.NewStyle().Foreground(c).Render(text)
 	}
+
+	return lipgloss.NewStyle().Foreground(c).Render(text)
 }
 
-func label(text string, fg color.Color, bg color.Color, highlightType int) string {
+func label(text string, fg color.Color, bg color.Color, highlightType HighlightType) string {
 	content := lipgloss.NewStyle().
 		Foreground(fg).
 		Background(bg)
@@ -119,15 +128,15 @@ func label(text string, fg color.Color, bg color.Color, highlightType int) strin
 		getRightBorder(bg, highlightType)
 }
 
-func getLeftBorder(bg color.Color, highlightType int) string {
+func getLeftBorder(bg color.Color, highlightType HighlightType) string {
 	return borderStyle(bg, highlightType).Render(nerdfonts.LeftSeparator)
 }
 
-func getRightBorder(bg color.Color, highlightType int) string {
+func getRightBorder(bg color.Color, highlightType HighlightType) string {
 	return borderStyle(bg, highlightType).Render(nerdfonts.RightSeparator)
 }
 
-func borderStyle(bg color.Color, highlightType int) lipgloss.Style {
+func borderStyle(bg color.Color, highlightType HighlightType) lipgloss.Style {
 	if highlightType == Selected {
 		return lipgloss.NewStyle().
 			Foreground(lipgloss.NoColor{}).
@@ -139,7 +148,7 @@ func borderStyle(bg color.Color, highlightType int) lipgloss.Style {
 		Foreground(bg)
 }
 
-func HighlightHackerNewsHeadlines(title string, highlightType int) string {
+func HighlightHackerNewsHeadlines(title string, highlightType HighlightType) string {
 	askHN := "Ask HN:"
 	showHN := "Show HN:"
 	tellHN := "Tell HN:"
@@ -157,7 +166,7 @@ func HighlightHackerNewsHeadlines(title string, highlightType int) string {
 	return title
 }
 
-func getHighlight(highlightType int) string {
+func getHighlight(highlightType HighlightType) string {
 	switch highlightType {
 	case HeadlineInCommentSection:
 		return ansi.Bold
@@ -169,9 +178,11 @@ func getHighlight(highlightType int) string {
 		return ansi.Green + ansi.Reverse
 	case RemoveFromFavorites:
 		return ansi.Red + ansi.Reverse
-	default:
+	case Unselected:
 		return ""
 	}
+
+	return ""
 }
 
 // ReplaceSpecialContentTags substitutes [video], [audio], [pdf], [PDF] with
@@ -190,7 +201,7 @@ func ReplaceSpecialContentTags(title string, enableNerdFonts bool) string {
 	return title
 }
 
-func HighlightSpecialContent(title string, highlightType int, enableNerdFonts bool) string {
+func HighlightSpecialContent(title string, highlightType HighlightType, enableNerdFonts bool) string {
 	highlight := getHighlight(highlightType)
 
 	if enableNerdFonts {
