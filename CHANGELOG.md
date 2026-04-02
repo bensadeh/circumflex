@@ -24,6 +24,7 @@ _WIP_
 
 **Improvements**
 
+- Highlight YC Fall (F) and Spring (X) startup batches in headlines
 - Improve error messages for timeouts, non-200 responses, and unexpected server responses
 - Fetching can now be canceled
 - Normalize header levels in reader mode so articles always start at h1

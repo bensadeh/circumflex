@@ -25,8 +25,8 @@ const (
 )
 
 var (
-	reYCWithSeason    = regexp.MustCompile(`\((YC ([SW]\d{2}))\)`)
-	reYCWithoutSeason = regexp.MustCompile(`\((YC [SW]\d{2})\)`)
+	reYCWithSeason    = regexp.MustCompile(`\((YC ([SWFX]\d{2}))\)`)
+	reYCWithoutSeason = regexp.MustCompile(`\((YC [SWFX]\d{2})\)`)
 	reYear            = regexp.MustCompile(`\((\d{4})\)`)
 	reUnwantedNewLine = regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z0-9" \-<[:cntrl:]…])`)
 	reHTMLAnchor      = regexp.MustCompile(`<a href=".*?".*>`)
