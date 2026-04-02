@@ -1,9 +1,10 @@
 package comments
 
 import (
-	"clx/comment"
-	"clx/layout"
 	"strings"
+
+	"github.com/bensadeh/circumflex/comment"
+	"github.com/bensadeh/circumflex/layout"
 
 	text "github.com/MichaelMure/go-term-text"
 )

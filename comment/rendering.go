@@ -1,12 +1,13 @@
 package comment
 
 import (
-	"clx/nerdfonts"
-	"clx/style"
-	"clx/syntax"
 	"fmt"
 	"slices"
 	"strings"
+
+	"github.com/bensadeh/circumflex/nerdfonts"
+	"github.com/bensadeh/circumflex/style"
+	"github.com/bensadeh/circumflex/syntax"
 
 	text "github.com/MichaelMure/go-term-text"
 )

@@ -1,9 +1,10 @@
 package list
 
 import (
-	clxspinner "clx/spinner"
-	"clx/view/message"
 	"time"
+
+	clxspinner "github.com/bensadeh/circumflex/spinner"
+	"github.com/bensadeh/circumflex/view/message"
 
 	"charm.land/bubbles/v2/spinner"
 	tea "charm.land/bubbletea/v2"

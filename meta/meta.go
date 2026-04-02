@@ -1,10 +1,11 @@
 package meta
 
 import (
-	"clx/nerdfonts"
-	"clx/style"
 	"fmt"
 	"strconv"
+
+	"github.com/bensadeh/circumflex/nerdfonts"
+	"github.com/bensadeh/circumflex/style"
 
 	text "github.com/MichaelMure/go-term-text"
 

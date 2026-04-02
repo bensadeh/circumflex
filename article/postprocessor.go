@@ -1,8 +1,9 @@
 package article
 
 import (
-	"clx/layout"
 	"strings"
+
+	"github.com/bensadeh/circumflex/layout"
 )
 
 func processArticle(text string, url string, width int) string {

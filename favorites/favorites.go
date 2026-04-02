@@ -1,11 +1,12 @@
 package favorites
 
 import (
-	"clx/item"
 	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/bensadeh/circumflex/item"
 )
 
 type Favorites struct {

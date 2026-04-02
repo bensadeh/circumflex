@@ -1,12 +1,13 @@
 package view
 
 import (
-	"clx/categories"
-	"clx/favorites"
-	"clx/settings"
-	"clx/view/list"
 	"fmt"
 	"os"
+
+	"github.com/bensadeh/circumflex/categories"
+	"github.com/bensadeh/circumflex/favorites"
+	"github.com/bensadeh/circumflex/settings"
+	"github.com/bensadeh/circumflex/view/list"
 
 	tea "charm.land/bubbletea/v2"
 )

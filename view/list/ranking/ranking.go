@@ -1,9 +1,10 @@
 package ranking
 
 import (
-	"clx/layout"
 	"strconv"
 	"strings"
+
+	"github.com/bensadeh/circumflex/layout"
 
 	"charm.land/lipgloss/v2"
 )

@@ -1,19 +1,20 @@
 package list
 
 import (
-	"clx/categories"
-	"clx/comment"
-	"clx/favorites"
-	"clx/history"
-	"clx/item"
-	"clx/settings"
-	"clx/view/message"
-	"clx/view/reader"
 	"context"
 	"errors"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/bensadeh/circumflex/categories"
+	"github.com/bensadeh/circumflex/comment"
+	"github.com/bensadeh/circumflex/favorites"
+	"github.com/bensadeh/circumflex/history"
+	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/settings"
+	"github.com/bensadeh/circumflex/view/message"
+	"github.com/bensadeh/circumflex/view/reader"
 
 	tea "charm.land/bubbletea/v2"
 	"github.com/stretchr/testify/assert"

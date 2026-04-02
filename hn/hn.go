@@ -1,10 +1,11 @@
 package hn
 
 import (
-	"clx/hn/services/firebase"
-	"clx/hn/services/mock"
-	"clx/item"
 	"context"
+
+	"github.com/bensadeh/circumflex/hn/services/firebase"
+	"github.com/bensadeh/circumflex/hn/services/mock"
+	"github.com/bensadeh/circumflex/item"
 )
 
 type Service interface {

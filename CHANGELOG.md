@@ -6,6 +6,7 @@ _WIP_
 
 **New features**
 
+- Add support for `go install`
 - Add `u` keybinding to toggle read/unread status on stories
 - Add support for customizing the theme
 - Add `default-theme` subcommand to generate a default theme config file

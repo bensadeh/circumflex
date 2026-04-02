@@ -1,8 +1,6 @@
 package firebase
 
 import (
-	"clx/item"
-	"clx/timeago"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -12,6 +10,9 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/timeago"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

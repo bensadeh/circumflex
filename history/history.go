@@ -1,10 +1,11 @@
 package history
 
 import (
-	"clx/settings"
 	"encoding/json"
 	"os"
 	"path/filepath"
+
+	"github.com/bensadeh/circumflex/settings"
 )
 
 type History interface {

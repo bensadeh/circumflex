@@ -1,7 +1,7 @@
 package comment
 
 import (
-	"clx/item"
+	"github.com/bensadeh/circumflex/item"
 )
 
 // StoryToThread maps an item.Story (API layer) to a Thread (rendering layer).

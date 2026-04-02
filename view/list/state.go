@@ -1,6 +1,6 @@
 package list
 
-import "clx/item"
+import "github.com/bensadeh/circumflex/item"
 
 type ViewState int
 

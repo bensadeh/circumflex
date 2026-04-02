@@ -1,10 +1,11 @@
 package spinner
 
 import (
-	"clx/style"
 	"image/color"
 	"math/rand/v2"
 	"time"
+
+	"github.com/bensadeh/circumflex/style"
 
 	"charm.land/bubbles/v2/spinner"
 	"charm.land/lipgloss/v2"

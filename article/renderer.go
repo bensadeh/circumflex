@@ -1,11 +1,12 @@
 package article
 
 import (
-	"clx/ansi"
-	"clx/style"
-	"clx/syntax"
 	"regexp"
 	"strings"
+
+	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/style"
+	"github.com/bensadeh/circumflex/syntax"
 
 	"github.com/muesli/reflow/wordwrap"
 

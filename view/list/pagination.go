@@ -1,8 +1,8 @@
 package list
 
 import (
-	"clx/categories"
-	"clx/item"
+	"github.com/bensadeh/circumflex/categories"
+	"github.com/bensadeh/circumflex/item"
 
 	"charm.land/bubbles/v2/paginator"
 	"charm.land/lipgloss/v2"

@@ -1,14 +1,15 @@
 package cmd
 
 import (
-	"clx/comment"
-	"clx/settings"
-	"clx/view/comments"
-	"clx/view/message"
 	"fmt"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/bensadeh/circumflex/comment"
+	"github.com/bensadeh/circumflex/settings"
+	"github.com/bensadeh/circumflex/view/comments"
+	"github.com/bensadeh/circumflex/view/message"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"

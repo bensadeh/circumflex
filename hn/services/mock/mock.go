@@ -1,10 +1,11 @@
 package mock
 
 import (
-	"clx/item"
 	"context"
 	"math/rand"
 	"time"
+
+	"github.com/bensadeh/circumflex/item"
 )
 
 type Service struct{}

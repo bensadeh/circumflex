@@ -1,8 +1,9 @@
 package article
 
 import (
-	"clx/ansi"
 	"strings"
+
+	"github.com/bensadeh/circumflex/ansi"
 )
 
 type ruleSet struct {

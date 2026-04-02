@@ -1,12 +1,13 @@
 package syntax
 
 import (
-	"clx/ansi"
-	"clx/nerdfonts"
-	"clx/style"
 	"image/color"
 	"regexp"
 	"strings"
+
+	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/nerdfonts"
+	"github.com/bensadeh/circumflex/style"
 
 	"charm.land/lipgloss/v2"
 )

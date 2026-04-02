@@ -1,11 +1,12 @@
 package list
 
 import (
-	"clx/header"
-	"clx/help"
-	"clx/view/list/ranking"
 	"fmt"
 	"strings"
+
+	"github.com/bensadeh/circumflex/header"
+	"github.com/bensadeh/circumflex/help"
+	"github.com/bensadeh/circumflex/view/list/ranking"
 
 	"charm.land/lipgloss/v2"
 )

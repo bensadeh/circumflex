@@ -1,8 +1,9 @@
 package ansi_test
 
 import (
-	"clx/ansi"
 	"testing"
+
+	"github.com/bensadeh/circumflex/ansi"
 )
 
 func TestStrip(t *testing.T) {

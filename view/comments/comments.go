@@ -1,17 +1,18 @@
 package comments
 
 import (
-	"clx/ansi"
-	"clx/comment"
-	"clx/header"
-	"clx/help"
-	"clx/layout"
-	"clx/meta"
-	"clx/style"
-	"clx/syntax"
-	"clx/view/message"
 	"fmt"
 	"strings"
+
+	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/comment"
+	"github.com/bensadeh/circumflex/header"
+	"github.com/bensadeh/circumflex/help"
+	"github.com/bensadeh/circumflex/layout"
+	"github.com/bensadeh/circumflex/meta"
+	"github.com/bensadeh/circumflex/style"
+	"github.com/bensadeh/circumflex/syntax"
+	"github.com/bensadeh/circumflex/view/message"
 
 	"charm.land/bubbles/v2/key"
 	"charm.land/bubbles/v2/viewport"

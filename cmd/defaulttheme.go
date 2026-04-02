@@ -1,9 +1,10 @@
 package cmd
 
 import (
-	"clx/theme"
 	"fmt"
 	"os"
+
+	"github.com/bensadeh/circumflex/theme"
 
 	"github.com/spf13/cobra"
 )

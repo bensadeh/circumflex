@@ -62,18 +62,16 @@ nix-shell -p circumflex
 
 # AUR
 yay -S circumflex
+
+# Go
+go install github.com/bensadeh/circumflex/cmd/clx@latest
 ```
 
 #### From source
 
 ```console
-# Go
-go run main.go
+go build ./cmd/clx
 ```
-
-> [!IMPORTANT]
-> When building from source, make sure that you are using the latest version
-> of [`less`](http://greenwoodsoftware.com/less/).
 
 ## Comment section
 

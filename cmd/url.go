@@ -1,10 +1,11 @@
 package cmd
 
 import (
-	"clx/article"
-	"clx/view/reader"
 	"fmt"
 	"os"
+
+	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/view/reader"
 
 	"github.com/spf13/cobra"
 )

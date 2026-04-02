@@ -1,20 +1,21 @@
 package list
 
 import (
-	"clx/categories"
-	"clx/favorites"
-	"clx/help"
-	"clx/history"
-	"clx/hn"
-	"clx/item"
-	"clx/settings"
-	clxspinner "clx/spinner"
-	"clx/view/comments"
-	"clx/view/message"
-	"clx/view/reader"
 	"context"
 	"io"
 	"time"
+
+	"github.com/bensadeh/circumflex/categories"
+	"github.com/bensadeh/circumflex/favorites"
+	"github.com/bensadeh/circumflex/help"
+	"github.com/bensadeh/circumflex/history"
+	"github.com/bensadeh/circumflex/hn"
+	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/settings"
+	clxspinner "github.com/bensadeh/circumflex/spinner"
+	"github.com/bensadeh/circumflex/view/comments"
+	"github.com/bensadeh/circumflex/view/message"
+	"github.com/bensadeh/circumflex/view/reader"
 
 	"charm.land/bubbles/v2/paginator"
 	"charm.land/bubbles/v2/spinner"

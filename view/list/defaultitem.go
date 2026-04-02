@@ -1,14 +1,15 @@
 package list
 
 import (
-	"clx/categories"
-	"clx/item"
-	"clx/nerdfonts"
-	"clx/syntax"
-	"clx/timeago"
 	"fmt"
 	"io"
 	"strings"
+
+	"github.com/bensadeh/circumflex/categories"
+	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/nerdfonts"
+	"github.com/bensadeh/circumflex/syntax"
+	"github.com/bensadeh/circumflex/timeago"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"

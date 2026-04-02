@@ -1,9 +1,10 @@
 package list
 
 import (
-	"clx/timeago"
 	"testing"
 	"time"
+
+	"github.com/bensadeh/circumflex/timeago"
 
 	"github.com/stretchr/testify/assert"
 )

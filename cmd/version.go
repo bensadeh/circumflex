@@ -1,8 +1,9 @@
 package cmd
 
 import (
-	"clx/version"
 	"fmt"
+
+	"github.com/bensadeh/circumflex/version"
 
 	"github.com/spf13/cobra"
 )

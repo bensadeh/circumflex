@@ -1,16 +1,17 @@
 package cmd
 
 import (
-	"clx/categories"
-	"clx/hn"
-	"clx/layout"
-	"clx/settings"
-	"clx/style"
-	"clx/theme"
-	"clx/version"
-	"clx/view"
 	"fmt"
 	"os"
+
+	"github.com/bensadeh/circumflex/categories"
+	"github.com/bensadeh/circumflex/hn"
+	"github.com/bensadeh/circumflex/layout"
+	"github.com/bensadeh/circumflex/settings"
+	"github.com/bensadeh/circumflex/style"
+	"github.com/bensadeh/circumflex/theme"
+	"github.com/bensadeh/circumflex/version"
+	"github.com/bensadeh/circumflex/view"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/term"

@@ -1,13 +1,14 @@
 package list
 
 import (
-	"clx/article"
-	"clx/browser"
-	"clx/categories"
-	"clx/view/message"
 	"context"
 	"strconv"
 	"time"
+
+	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/browser"
+	"github.com/bensadeh/circumflex/categories"
+	"github.com/bensadeh/circumflex/view/message"
 
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"

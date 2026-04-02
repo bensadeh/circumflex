@@ -1,9 +1,10 @@
 package style
 
 import (
-	"clx/theme"
 	"image/color"
 	"strings"
+
+	"github.com/bensadeh/circumflex/theme"
 
 	"charm.land/lipgloss/v2"
 )

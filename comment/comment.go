@@ -1,10 +1,11 @@
 package comment
 
 import (
-	"clx/ansi"
-	"clx/style"
-	"clx/syntax"
 	"strings"
+
+	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/style"
+	"github.com/bensadeh/circumflex/syntax"
 
 	text "github.com/MichaelMure/go-term-text"
 )

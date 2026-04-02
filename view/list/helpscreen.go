@@ -1,7 +1,7 @@
 package list
 
 import (
-	"clx/help"
+	"github.com/bensadeh/circumflex/help"
 
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"

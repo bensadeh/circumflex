@@ -1,7 +1,7 @@
 package comments
 
 import (
-	"clx/comment"
+	"github.com/bensadeh/circumflex/comment"
 )
 
 // flatComment represents a single comment in the flattened view of the tree.

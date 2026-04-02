@@ -1,8 +1,9 @@
 package comment
 
 import (
-	"clx/ansi"
 	"testing"
+
+	"github.com/bensadeh/circumflex/ansi"
 
 	"github.com/stretchr/testify/assert"
 )

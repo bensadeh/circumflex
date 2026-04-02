@@ -1,9 +1,10 @@
 package help
 
 import (
-	"clx/style"
-	"clx/version"
 	"strings"
+
+	"github.com/bensadeh/circumflex/style"
+	"github.com/bensadeh/circumflex/version"
 
 	"charm.land/lipgloss/v2"
 )

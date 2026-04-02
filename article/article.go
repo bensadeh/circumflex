@@ -2,12 +2,13 @@ package article
 
 import (
 	"bytes"
-	"clx/ansi"
-	"clx/version"
 	"context"
 	"fmt"
 	nurl "net/url"
 	"time"
+
+	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/version"
 
 	"codeberg.org/readeck/go-readability/v2"
 	"resty.dev/v3"

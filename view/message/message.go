@@ -1,11 +1,12 @@
 package message
 
 import (
-	"clx/article"
-	"clx/categories"
-	"clx/comment"
-	"clx/item"
 	"time"
+
+	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/categories"
+	"github.com/bensadeh/circumflex/comment"
+	"github.com/bensadeh/circumflex/item"
 )
 
 type ReaderViewQuitMsg struct{}

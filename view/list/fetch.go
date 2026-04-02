@@ -1,16 +1,17 @@
 package list
 
 import (
-	"clx/article"
-	"clx/categories"
-	"clx/comment"
-	"clx/history"
-	"clx/item"
-	"clx/view/message"
 	"context"
 	"errors"
 	"net"
 	"strings"
+
+	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/categories"
+	"github.com/bensadeh/circumflex/comment"
+	"github.com/bensadeh/circumflex/history"
+	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/view/message"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"

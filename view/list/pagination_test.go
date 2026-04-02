@@ -1,8 +1,9 @@
 package list
 
 import (
-	"clx/item"
 	"testing"
+
+	"github.com/bensadeh/circumflex/item"
 
 	"charm.land/bubbles/v2/paginator"
 	"github.com/stretchr/testify/assert"

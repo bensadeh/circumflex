@@ -1,9 +1,10 @@
 package comments
 
 import (
-	"clx/comment"
 	"strings"
 	"testing"
+
+	"github.com/bensadeh/circumflex/comment"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

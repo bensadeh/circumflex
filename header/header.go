@@ -1,11 +1,12 @@
 package header
 
 import (
-	"clx/categories"
-	"clx/layout"
-	"clx/style"
 	"image/color"
 	"strings"
+
+	"github.com/bensadeh/circumflex/categories"
+	"github.com/bensadeh/circumflex/layout"
+	"github.com/bensadeh/circumflex/style"
 
 	"charm.land/lipgloss/v2"
 )

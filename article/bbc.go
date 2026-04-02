@@ -1,8 +1,9 @@
 package article
 
 import (
-	"clx/style"
 	"strings"
+
+	"github.com/bensadeh/circumflex/style"
 
 	"charm.land/lipgloss/v2"
 )

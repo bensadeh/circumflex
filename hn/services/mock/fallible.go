@@ -1,12 +1,13 @@
 package mock
 
 import (
-	"clx/item"
 	"context"
 	"crypto/rand"
 	"fmt"
 	"math/big"
 	"time"
+
+	"github.com/bensadeh/circumflex/item"
 )
 
 // timeoutError satisfies net.Error with Timeout() returning true,

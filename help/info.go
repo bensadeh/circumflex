@@ -1,10 +1,11 @@
 package help
 
 import (
-	"clx/layout"
-	"clx/nerdfonts"
-	"clx/style"
 	"strings"
+
+	"github.com/bensadeh/circumflex/layout"
+	"github.com/bensadeh/circumflex/nerdfonts"
+	"github.com/bensadeh/circumflex/style"
 
 	"charm.land/bubbles/v2/key"
 

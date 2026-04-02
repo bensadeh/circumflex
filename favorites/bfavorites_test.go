@@ -1,8 +1,9 @@
 package favorites
 
 import (
-	"clx/item"
 	"testing"
+
+	"github.com/bensadeh/circumflex/item"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

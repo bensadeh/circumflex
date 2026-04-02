@@ -1,10 +1,6 @@
 package firebase
 
 import (
-	"clx/ansi"
-	"clx/item"
-	"clx/timeago"
-	"clx/version"
 	"context"
 	"encoding/json"
 	"errors"
@@ -12,6 +8,11 @@ import (
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/timeago"
+	"github.com/bensadeh/circumflex/version"
 
 	"github.com/bobesa/go-domain-util/domainutil"
 	"resty.dev/v3"

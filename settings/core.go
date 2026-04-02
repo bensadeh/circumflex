@@ -1,6 +1,6 @@
 package settings
 
-import "clx/theme"
+import "github.com/bensadeh/circumflex/theme"
 
 const (
 	defaultCommentWidth   = 70

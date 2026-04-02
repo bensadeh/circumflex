@@ -1,8 +1,9 @@
 package main
 
 import (
-	"clx/cmd"
 	"os"
+
+	"github.com/bensadeh/circumflex/cmd"
 )
 
 func main() {

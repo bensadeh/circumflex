@@ -1,11 +1,12 @@
 package cmd
 
 import (
-	"clx/favorites"
-	"clx/settings"
 	"fmt"
 	"os"
 	"strconv"
+
+	"github.com/bensadeh/circumflex/favorites"
+	"github.com/bensadeh/circumflex/settings"
 
 	"github.com/spf13/cobra"
 )
