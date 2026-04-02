@@ -37,7 +37,7 @@ _WIP_
 
 - Use the official HN Firebase API for all requests
 - Bump Bubble Tea to 2.0
-- Replace terminal-dimensions with golang.org/x/term
+- Removed `less` as a dependency
 
 ## 3.9
 
