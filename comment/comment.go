@@ -22,7 +22,7 @@ type section struct {
 	content string
 }
 
-func Print(commentHTML string, commentWidth int, availableScreenWidth int, enableNerdFonts bool) string {
+func Render(commentHTML string, commentWidth int, availableScreenWidth int, enableNerdFonts bool) string {
 	if commentHTML == "[deleted]" {
 		return style.Faint(commentHTML)
 	}

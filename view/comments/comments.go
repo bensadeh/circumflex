@@ -873,7 +873,7 @@ func renderRootComment(c string, contentWidth int, enableNerdFonts bool) string 
 		return ""
 	}
 
-	rendered := comment.Print(c, contentWidth, contentWidth, enableNerdFonts)
+	rendered := comment.Render(c, contentWidth, contentWidth, enableNerdFonts)
 	wrapped, _ := termtext.Wrap(rendered, contentWidth)
 
 	return "\n\n" + wrapped

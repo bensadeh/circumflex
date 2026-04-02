@@ -123,7 +123,7 @@ func Header(c *Comment, depth int, originalPoster, topLevelAuthor string, lastVi
 func RenderContent(c *Comment, depth int, commentWidth, availableScreenWidth int, enableNerdFonts bool) string {
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(style.IndentSymbol, depth)
 
-	formattedComment := Print(c.Content, commentWidth, availableScreenWidth, enableNerdFonts)
+	formattedComment := Render(c.Content, commentWidth, availableScreenWidth, enableNerdFonts)
 	paddedComment, _ := text.WrapWithPad(formattedComment, availableScreenWidth, coloredIndentSymbol)
 
 	return paddedComment
