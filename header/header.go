@@ -28,7 +28,7 @@ func Header(allCategories []categories.Category, selectedSubHeader int, width in
 }
 
 func HelpHeader(title string, width int) string {
-	padded := strings.Repeat(" ", layout.HeaderLeftMargin) + title
+	padded := strings.Repeat(" ", layout.HeaderLeftMargin) + lipgloss.NewStyle().Bold(true).Render(title)
 
 	return padded + "\n" + strings.Repeat("‾", width)
 }

@@ -1,6 +1,7 @@
 package comments
 
 import (
+	"clx/ansi"
 	"clx/comment"
 	"clx/header"
 	"clx/help"
@@ -342,12 +343,12 @@ func (m *Model) headerView() string {
 	title := truncate.StringWithTail(m.title, maxTitleWidth, "…")
 
 	nf := m.rc.config.EnableNerdFonts
-	title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Unselected, nf)
-	title = syntax.HighlightYear(title, syntax.Unselected)
-	title = syntax.HighlightHackerNewsHeadlines(title, syntax.Unselected)
-	title = syntax.HighlightSpecialContent(title, syntax.Unselected, nf)
+	title = syntax.HighlightYCStartupsInHeadlines(title, syntax.HeadlineInCommentSection, nf)
+	title = syntax.HighlightYear(title, syntax.HeadlineInCommentSection)
+	title = syntax.HighlightHackerNewsHeadlines(title, syntax.HeadlineInCommentSection)
+	title = syntax.HighlightSpecialContent(title, syntax.HeadlineInCommentSection, nf)
 
-	title = leftMargin + title
+	title = leftMargin + ansi.Bold + title + ansi.Reset
 	separator := strings.Repeat("‾", m.rc.screenWidth)
 
 	return title + "\n" + separator

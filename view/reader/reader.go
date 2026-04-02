@@ -1,6 +1,7 @@
 package reader
 
 import (
+	"clx/ansi"
 	"clx/article"
 	"clx/header"
 	"clx/help"
@@ -311,12 +312,12 @@ func (m *Model) headerView() string {
 	maxTitleWidth := uint(max(0, m.screenWidth-layout.ReaderViewLeftMargin))
 	title := truncate.StringWithTail(m.title, maxTitleWidth, "…")
 
-	title = syntax.HighlightYCStartupsInHeadlines(title, syntax.Unselected, m.articleMeta.NerdFonts)
-	title = syntax.HighlightYear(title, syntax.Unselected)
-	title = syntax.HighlightHackerNewsHeadlines(title, syntax.Unselected)
-	title = syntax.HighlightSpecialContent(title, syntax.Unselected, m.articleMeta.NerdFonts)
+	title = syntax.HighlightYCStartupsInHeadlines(title, syntax.HeadlineInCommentSection, m.articleMeta.NerdFonts)
+	title = syntax.HighlightYear(title, syntax.HeadlineInCommentSection)
+	title = syntax.HighlightHackerNewsHeadlines(title, syntax.HeadlineInCommentSection)
+	title = syntax.HighlightSpecialContent(title, syntax.HeadlineInCommentSection, m.articleMeta.NerdFonts)
 
-	title = leftMargin + title
+	title = leftMargin + ansi.Bold + title + ansi.Reset
 	separator := strings.Repeat("‾", m.screenWidth)
 
 	return title + "\n" + separator
