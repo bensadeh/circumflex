@@ -151,7 +151,7 @@ Headlines containing the text `Ask HN`, `Tell HN`, `Show HN` and `Launch HN` are
 
 ### YC-funded startups
 
-[Twice a year](https://www.ycombinator.com/companies/), Y Combinator funds start-ups through its accelerator program.
+Y Combinator funds start-ups through its accelerator program.
 `circumflex` highlights these startups to signalize their affiliation with YC.
 
 <p align="center">
