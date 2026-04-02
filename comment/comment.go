@@ -2,7 +2,6 @@ package comment
 
 import (
 	"clx/ansi"
-	"clx/settings"
 	"clx/style"
 	"clx/syntax"
 	"strings"
@@ -23,7 +22,7 @@ type section struct {
 	content string
 }
 
-func Print(c string, config *settings.Config, commentWidth int, availableScreenWidth int) string {
+func Print(c string, commentWidth int, availableScreenWidth int, enableNerdFonts bool) string {
 	if c == "[deleted]" {
 		return style.Faint(c)
 	}
@@ -35,11 +34,11 @@ func Print(c string, config *settings.Config, commentWidth int, availableScreenW
 	for i, s := range sections {
 		switch s.kind {
 		case sectionQuote:
-			output.WriteString(formatQuote(s.content, config, commentWidth))
+			output.WriteString(formatQuote(s.content, commentWidth))
 		case sectionCode:
 			output.WriteString(formatCodeBlock(s.content, availableScreenWidth))
 		case sectionParagraph:
-			output.WriteString(formatParagraph(s.content, config, commentWidth))
+			output.WriteString(formatParagraph(s.content, commentWidth, enableNerdFonts))
 		}
 
 		if i < len(sections)-1 {
@@ -75,12 +74,12 @@ func parseSections(html string) []section {
 	return sections
 }
 
-func formatQuote(paragraph string, config *settings.Config, commentWidth int) string {
+func formatQuote(paragraph string, commentWidth int) string {
 	paragraph = strings.ReplaceAll(paragraph, "<i>", "")
 	paragraph = strings.ReplaceAll(paragraph, "</i>", "")
 	paragraph = strings.ReplaceAll(paragraph, "</a>", ansi.Reset+ansi.Faint+ansi.Italic)
 	paragraph = syntax.ReplaceSymbols(paragraph)
-	paragraph = convertToEmojis(paragraph, config.DisableEmojis)
+	paragraph = syntax.ConvertSmileys(paragraph)
 
 	paragraph = strings.Replace(paragraph, ">>", "", 1)
 	paragraph = strings.Replace(paragraph, ">", "", 1)
@@ -91,7 +90,7 @@ func formatQuote(paragraph string, config *settings.Config, commentWidth int) st
 
 	paragraph = ansi.Italic + ansi.Faint + paragraph + ansi.Reset
 
-	quoteIndent := " " + settings.IndentationSymbol
+	quoteIndent := " " + style.IndentSymbol
 	padding := text.WrapPad(ansi.Faint + quoteIndent)
 	wrapped, _ := text.Wrap(paragraph, commentWidth, padding)
 
@@ -117,12 +116,12 @@ func formatCodeBlock(paragraph string, availableWidth int) string {
 	return sb.String()
 }
 
-func formatParagraph(paragraph string, config *settings.Config, commentWidth int) string {
+func formatParagraph(paragraph string, commentWidth int, enableNerdFonts bool) string {
 	paragraph = syntax.ReplaceSymbols(paragraph)
-	paragraph = convertToEmojis(paragraph, config.DisableEmojis)
+	paragraph = syntax.ConvertSmileys(paragraph)
 	paragraph = syntax.ReplaceHTML(paragraph)
 	paragraph = strings.TrimLeft(paragraph, " ")
-	paragraph = highlightCommentSyntax(paragraph, config.EnableNerdFonts)
+	paragraph = highlightCommentSyntax(paragraph, enableNerdFonts)
 	paragraph = syntax.TrimURLs(paragraph, true)
 	paragraph = syntax.RemoveUnwantedNewLines(paragraph)
 	paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
@@ -130,14 +129,6 @@ func formatParagraph(paragraph string, config *settings.Config, commentWidth int
 	wrapped, _ := text.Wrap(paragraph, commentWidth)
 
 	return wrapped
-}
-
-func convertToEmojis(paragraph string, disableEmojis bool) string {
-	if disableEmojis {
-		return paragraph
-	}
-
-	return syntax.ConvertSmileys(paragraph)
 }
 
 func isQuote(text string) bool {

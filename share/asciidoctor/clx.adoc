@@ -109,9 +109,6 @@ Write default theme config to ~/.config/circumflex/theme.toml.
 *-c* _n_, *--comment-width*=_n_::
 Set the comment width to _n_ columns.
 
-*-e, --disable-emojis*::
-Disable conversion of smileys to emojis.
-
 *-d, --disable-history*::
 Disable marking stories as read.
 

@@ -2,7 +2,6 @@ package article
 
 import (
 	"clx/ansi"
-	"clx/settings"
 	"clx/style"
 	"clx/syntax"
 	"regexp"
@@ -215,7 +214,7 @@ func renderQuote(text string, lineWidth int) string {
 	text = unescapeCharacters(text)
 	text = removeHrefs(text)
 
-	indentBlock := " " + settings.IndentationSymbol
+	indentBlock := " " + style.IndentSymbol
 	text = itReversed(text)
 
 	padding := termtext.WrapPad(indentLevel1 + style.Faint(indentBlock))

@@ -2,7 +2,6 @@ package comment
 
 import (
 	"clx/ansi"
-	"clx/settings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -34,17 +33,10 @@ func TestIsQuote(t *testing.T) {
 	}
 }
 
-func defaultConfig() *settings.Config {
-	return &settings.Config{
-		CommentWidth: 70,
-	}
-}
-
 func TestPrintDeleted(t *testing.T) {
 	t.Parallel()
 
-	cfg := defaultConfig()
-	result := Print("[deleted]", cfg, 70, 80)
+	result := Print("[deleted]", 70, 80, false)
 
 	assert.Contains(t, result, "[deleted]")
 	assert.Contains(t, result, "\033[2m", "should contain faint ANSI escape")
@@ -53,8 +45,7 @@ func TestPrintDeleted(t *testing.T) {
 func TestPrintSimpleText(t *testing.T) {
 	t.Parallel()
 
-	cfg := defaultConfig()
-	result := Print("Hello &amp; world", cfg, 70, 80)
+	result := Print("Hello &amp; world", 70, 80, false)
 
 	assert.Contains(t, result, "Hello & world")
 	assert.NotContains(t, result, "&amp;")
@@ -63,9 +54,8 @@ func TestPrintSimpleText(t *testing.T) {
 func TestPrintCodeBlock(t *testing.T) {
 	t.Parallel()
 
-	cfg := defaultConfig()
 	input := "<pre><code>fmt.Println(\"hello\")\n</code></pre>"
-	result := Print(input, cfg, 70, 80)
+	result := Print(input, 70, 80, false)
 
 	assert.Contains(t, result, ansi.Faint, "code block should contain dimmed ANSI")
 	assert.Contains(t, result, ansi.Reset, "code block should contain reset ANSI")
@@ -75,37 +65,20 @@ func TestPrintCodeBlock(t *testing.T) {
 func TestPrintQuoteBlock(t *testing.T) {
 	t.Parallel()
 
-	cfg := defaultConfig()
-
 	// HN API wraps each paragraph with <p>. The first <p> is stripped,
 	// subsequent <p> tags split into separate paragraphs.
 	input := "<p>intro<p>>This is quoted"
-	result := Print(input, cfg, 70, 80)
+	result := Print(input, 70, 80, false)
 
 	assert.Contains(t, result, ansi.Italic, "quote should contain italic ANSI")
 	assert.Contains(t, result, ansi.Faint, "quote should contain dimmed ANSI")
 	assert.Contains(t, result, "This is quoted")
 }
 
-func TestPrintDisableEmojis(t *testing.T) {
+func TestPrintConvertsSmileys(t *testing.T) {
 	t.Parallel()
 
-	cfg := defaultConfig()
-	cfg.DisableEmojis = true
-
-	result := Print("hello :)", cfg, 70, 80)
-
-	assert.Contains(t, result, ":)")
-	assert.NotContains(t, result, "\U0001f60a")
-}
-
-func TestPrintEnableEmojis(t *testing.T) {
-	t.Parallel()
-
-	cfg := defaultConfig()
-	cfg.DisableEmojis = false
-
-	result := Print("hello :)", cfg, 70, 80)
+	result := Print("hello :)", 70, 80, false)
 
 	assert.NotContains(t, result, ":)")
 }
@@ -113,10 +86,8 @@ func TestPrintEnableEmojis(t *testing.T) {
 func TestPrintCommentHighlighting(t *testing.T) {
 	t.Parallel()
 
-	cfg := defaultConfig()
-
 	input := "check `code` here"
-	result := Print(input, cfg, 70, 80)
+	result := Print(input, 70, 80, false)
 
 	// Backticks are replaced with ANSI styling.
 	assert.NotContains(t, result, "`code`")
@@ -125,12 +96,10 @@ func TestPrintCommentHighlighting(t *testing.T) {
 func TestPrintMultipleParagraphs(t *testing.T) {
 	t.Parallel()
 
-	cfg := defaultConfig()
-
 	// HN API prefixes each paragraph with <p>. The first is stripped;
 	// the second acts as the paragraph separator.
 	input := "<p>first paragraph<p>second paragraph"
-	result := Print(input, cfg, 70, 80)
+	result := Print(input, 70, 80, false)
 
 	assert.Contains(t, result, "first paragraph")
 	assert.Contains(t, result, "second paragraph")

@@ -3,7 +3,6 @@ package comments
 import (
 	"clx/comment"
 	"clx/layout"
-	"clx/settings"
 	"strings"
 
 	text "github.com/MichaelMure/go-term-text"
@@ -13,15 +12,16 @@ import (
 // These values don't change between rebuilds unless the window is resized
 // or the model is re-created.
 type renderContext struct {
-	header         string // pre-computed meta block (raw, before margin wrapping)
-	originalPoster string
-	firstCommentID int
-	config         *settings.Config
-	screenWidth    int
-	viewportHeight int
-	lastVisited    int64
-	story          storyFields // scalar fields needed for header rebuild on resize
-	newComments    int
+	header          string // pre-computed meta block (raw, before margin wrapping)
+	originalPoster  string
+	firstCommentID  int
+	commentWidth    int
+	enableNerdFonts bool
+	screenWidth     int
+	viewportHeight  int
+	lastVisited     int64
+	story           storyFields // scalar fields needed for header rebuild on resize
+	newComments     int
 }
 
 // storyFields holds the thread metadata needed to rebuild the comment header
@@ -61,7 +61,7 @@ type renderedComment struct {
 func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 	leftMargin := strings.Repeat(" ", layout.CommentSectionLeftMargin)
 	contentWidth := rc.screenWidth - layout.CommentSectionLeftMargin
-	commentWidth := min(contentWidth, rc.config.CommentWidth)
+	commentWidth := min(contentWidth, rc.commentWidth)
 
 	rendered := make([]renderedComment, len(flat))
 
@@ -83,19 +83,19 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 		adjustedCommentWidth := commentWidth - fc.Depth
 
 		// Pre-render both header variants (normal and focused).
-		header := comment.Header(&fc.Comment, fc.Depth, rc.originalPoster, fc.TopLevelAuthor, rc.lastVisited, rc.config, false)
+		header := comment.Header(&fc.Comment, fc.Depth, rc.originalPoster, fc.TopLevelAuthor, rc.lastVisited, rc.enableNerdFonts, false)
 		headerWithDepth, _ := text.WrapWithPad(header, contentWidth, depthIndent)
 		headerWithMargin, _ := text.WrapWithPad(headerWithDepth, rc.screenWidth, leftMargin)
 		out.header = headerWithMargin
 		out.headerLines = strings.Count(headerWithMargin, "\n")
 
-		focusedHeader := comment.Header(&fc.Comment, fc.Depth, rc.originalPoster, fc.TopLevelAuthor, rc.lastVisited, rc.config, true)
+		focusedHeader := comment.Header(&fc.Comment, fc.Depth, rc.originalPoster, fc.TopLevelAuthor, rc.lastVisited, rc.enableNerdFonts, true)
 		focusedWithDepth, _ := text.WrapWithPad(focusedHeader, contentWidth, depthIndent)
 		focusedWithMargin, _ := text.WrapWithPad(focusedWithDepth, rc.screenWidth, leftMargin)
 		out.headerFocused = focusedWithMargin
 
 		// Render the comment content (expensive: syntax highlighting + wrapping).
-		content := comment.RenderContent(&fc.Comment, fc.Depth, rc.config, adjustedCommentWidth, availableWidth)
+		content := comment.RenderContent(&fc.Comment, fc.Depth, adjustedCommentWidth, availableWidth, rc.enableNerdFonts)
 		contentWithDepth, _ := text.WrapWithPad(content+"\n", contentWidth, depthIndent)
 		contentWithMargin, _ := text.WrapWithPad(contentWithDepth, rc.screenWidth, leftMargin)
 		out.content = contentWithMargin

@@ -20,7 +20,6 @@ var (
 	commentWidth       int
 	articleWidth       int
 	disableHistory     bool
-	disableEmojis      bool
 	debugMode          bool
 	debugFallible      bool
 	nerdFontFlag       string
@@ -64,8 +63,6 @@ func Root() *cobra.Command {
 func configureFlags(rootCmd *cobra.Command) {
 	rootCmd.PersistentFlags().BoolVarP(&disableHistory, "disable-history", "d", false,
 		"disable marking stories as read")
-	rootCmd.PersistentFlags().BoolVarP(&disableEmojis, "disable-emojis", "e", false,
-		"disable conversion of smileys to emojis")
 	rootCmd.PersistentFlags().IntVarP(&commentWidth, "comment-width", "c", settings.Default().CommentWidth,
 		"set the comment width")
 	rootCmd.PersistentFlags().IntVarP(&articleWidth, "article-width", "a", settings.Default().ArticleWidth,
@@ -102,7 +99,6 @@ func getConfig() *settings.Config {
 	config.ArticleWidth = articleWidth
 	config.DoNotMarkSubmissionsAsRead = disableHistory
 	config.EnableNerdFonts = resolveNerdFonts(nerdFontFlag)
-	config.DisableEmojis = disableEmojis
 	config.DebugMode = debugMode
 	config.DebugFallible = debugFallible
 	config.PageMultiplier = settings.ClampPageMultiplier(pageMultiplier)

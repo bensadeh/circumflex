@@ -20,7 +20,7 @@ _WIP_
 
 **Removed**
 
-- Remove `--plain-headlines`, `--plain-comments`, and `--hide-indent` flags
+- Remove `--plain-headlines`, `--plain-comments`, `--hide-indent`, and `--disable-emojis` flags
 
 **Improvements**
 

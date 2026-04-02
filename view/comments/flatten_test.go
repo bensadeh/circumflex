@@ -2,7 +2,6 @@ package comments
 
 import (
 	"clx/comment"
-	"clx/settings"
 	"strings"
 	"testing"
 
@@ -273,11 +272,12 @@ func TestComputeVisible_CollapsedLeafNoEffect(t *testing.T) {
 
 func defaultRenderContext() renderContext {
 	return renderContext{
-		originalPoster: "op",
-		firstCommentID: 1,
-		config:         settings.Default(),
-		screenWidth:    80,
-		viewportHeight: 40,
+		originalPoster:  "op",
+		firstCommentID:  1,
+		commentWidth:    70,
+		enableNerdFonts: false,
+		screenWidth:     80,
+		viewportHeight:  40,
 	}
 }
 

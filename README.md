@@ -245,7 +245,6 @@ default-theme   Write default theme config to ~/.config/circumflex/theme.toml
                               (default:   "top,best,ask,show")
 -c, --comment-width=[int]   Set the comment width 
                               (default 70)
--e, --disable-emojis        Disable conversion of smileys to emojis
 -d, --disable-history       Disable marking stories as read
 -n, --nerdfonts             Enable Nerd Fonts
     --no-less-verify        Disable checking less version on startup

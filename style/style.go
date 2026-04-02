@@ -8,6 +8,8 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
+const IndentSymbol = "▎"
+
 var current = theme.Default()
 
 func Init(t *theme.Theme) {

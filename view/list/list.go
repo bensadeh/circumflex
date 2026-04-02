@@ -375,7 +375,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 			return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
 		}
 
-		m.commentView = comments.New(msg.Thread, msg.LastVisited, m.config, m.width, m.height)
+		m.commentView = comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.EnableNerdFonts, m.width, m.height)
 		m.state = StateCommentView
 
 		return m, m.commentView.Init()

@@ -7,7 +7,6 @@ import (
 	"clx/help"
 	"clx/layout"
 	"clx/meta"
-	"clx/settings"
 	"clx/style"
 	"clx/syntax"
 	"clx/view/message"
@@ -52,7 +51,7 @@ const (
 )
 
 // New creates a new comment view model.
-func New(thread *comment.Thread, lastVisited int64, config *settings.Config, width, height int) *Model {
+func New(thread *comment.Thread, lastVisited int64, commentWidth int, enableNerdFonts bool, width, height int) *Model {
 	km := defaultKeyMap()
 
 	vp := viewport.New(
@@ -74,7 +73,7 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 	flat := flatten(thread)
 
 	newComments := comment.NewCommentsCount(thread, lastVisited)
-	commentWidth := min(width-2*layout.CommentSectionLeftMargin, config.CommentWidth)
+	clampedWidth := min(width-2*layout.CommentSectionLeftMargin, commentWidth)
 
 	sf := storyFields{
 		URL:           thread.URL,
@@ -87,18 +86,19 @@ func New(thread *comment.Thread, lastVisited int64, config *settings.Config, wid
 		Content:       thread.Content,
 	}
 
-	header := buildCommentHeader(sf, config, newComments, commentWidth) + "\n"
+	hdr := buildCommentHeader(sf, enableNerdFonts, newComments, clampedWidth) + "\n"
 
 	rc := renderContext{
-		header:         header,
-		originalPoster: thread.Author,
-		firstCommentID: comment.FirstCommentID(thread.Comments),
-		config:         config,
-		screenWidth:    width,
-		viewportHeight: height - headerHeight - footerHeight,
-		lastVisited:    lastVisited,
-		story:          sf,
-		newComments:    newComments,
+		header:          hdr,
+		originalPoster:  thread.Author,
+		firstCommentID:  comment.FirstCommentID(thread.Comments),
+		commentWidth:    commentWidth,
+		enableNerdFonts: enableNerdFonts,
+		screenWidth:     width,
+		viewportHeight:  height - headerHeight - footerHeight,
+		lastVisited:     lastVisited,
+		story:           sf,
+		newComments:     newComments,
 	}
 
 	md := 0
@@ -162,8 +162,8 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		m.viewport.SetWidth(msg.Width)
 		m.viewport.SetHeight(msg.Height - headerHeight - footerHeight)
 
-		commentWidth := min(msg.Width-2*layout.CommentSectionLeftMargin, m.rc.config.CommentWidth)
-		m.rc.header = buildCommentHeader(m.rc.story, m.rc.config, m.rc.newComments, commentWidth) + "\n"
+		cw := min(msg.Width-2*layout.CommentSectionLeftMargin, m.rc.commentWidth)
+		m.rc.header = buildCommentHeader(m.rc.story, m.rc.enableNerdFonts, m.rc.newComments, cw) + "\n"
 
 		m.prerendered = prerenderComments(m.rc, m.flat)
 		m.rebuildContent()
@@ -324,7 +324,7 @@ func (m *Model) handleNavigateKeys(msg tea.KeyPressMsg) tea.Cmd {
 func (m *Model) View() string {
 	if m.showHelp {
 		content := help.FitToHeight(
-			help.CommentHelpScreen(m.rc.screenWidth, m.rc.config.EnableNerdFonts),
+			help.CommentHelpScreen(m.rc.screenWidth, m.rc.enableNerdFonts),
 			m.rc.viewportHeight,
 		)
 
@@ -342,7 +342,7 @@ func (m *Model) headerView() string {
 	maxTitleWidth := uint(max(0, m.rc.screenWidth-layout.CommentSectionLeftMargin))
 	title := truncate.StringWithTail(m.title, maxTitleWidth, "…")
 
-	nf := m.rc.config.EnableNerdFonts
+	nf := m.rc.enableNerdFonts
 	title = syntax.HighlightYCStartupsInHeadlines(title, syntax.HeadlineInCommentSection, nf)
 	title = syntax.HighlightYear(title, syntax.HeadlineInCommentSection)
 	title = syntax.HighlightHackerNewsHeadlines(title, syntax.HeadlineInCommentSection)
@@ -398,7 +398,7 @@ func (m *Model) modeIndicator() string {
 		diSlot = 1 + 1 + len(fmt.Sprintf("%d", m.maxDepth)) // " ⋮" + digits
 	}
 
-	commentWidth := min(m.rc.screenWidth-layout.CommentSectionLeftMargin, m.rc.config.CommentWidth)
+	commentWidth := min(m.rc.screenWidth-layout.CommentSectionLeftMargin, m.rc.commentWidth)
 	totalWidth := layout.CommentSectionLeftMargin + commentWidth
 	padding := max(1, totalWidth-lipgloss.Width(left)-lipgloss.Width(help)-diSlot)
 
@@ -861,18 +861,18 @@ func (m *Model) scrollToFocused() {
 	}
 }
 
-func buildCommentHeader(s storyFields, config *settings.Config, newComments int, width int) string {
-	rootComment := renderRootComment(s.Content, config, width-2) // subtract padding (1 left + 1 right)
+func buildCommentHeader(s storyFields, enableNerdFonts bool, newComments int, width int) string {
+	rootComment := renderRootComment(s.Content, width-2, enableNerdFonts) // subtract padding (1 left + 1 right)
 
-	return meta.CommentSectionMetaBlock(s.URL, s.Domain, s.Author, s.TimeAgo, s.ID, s.CommentsCount, s.Points, newComments, config.EnableNerdFonts, rootComment, width)
+	return meta.CommentSectionMetaBlock(s.URL, s.Domain, s.Author, s.TimeAgo, s.ID, s.CommentsCount, s.Points, newComments, enableNerdFonts, rootComment, width)
 }
 
-func renderRootComment(c string, config *settings.Config, contentWidth int) string {
+func renderRootComment(c string, contentWidth int, enableNerdFonts bool) string {
 	if c == "" {
 		return ""
 	}
 
-	rendered := comment.Print(c, config, contentWidth, contentWidth)
+	rendered := comment.Print(c, contentWidth, contentWidth, enableNerdFonts)
 	wrapped, _ := termtext.Wrap(rendered, contentWidth)
 
 	return "\n\n" + wrapped

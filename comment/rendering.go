@@ -2,7 +2,6 @@ package comment
 
 import (
 	"clx/nerdfonts"
-	"clx/settings"
 	"clx/style"
 	"clx/syntax"
 	"fmt"
@@ -107,26 +106,24 @@ func IndentString(depth int) string {
 }
 
 // Header returns the formatted comment header line (author + label + time).
-func Header(c *Comment, depth int, originalPoster, topLevelAuthor string, lastVisited int64, config *settings.Config, focused bool) string {
+func Header(c *Comment, depth int, originalPoster, topLevelAuthor string, lastVisited int64, enableNerdFonts bool, focused bool) string {
 	indentSize := 0
 	if depth > 0 {
 		indentSize = 1
 	}
 
 	author := Author(c.Author, lastVisited, c.Time, focused)
-	authorLabel := AuthorLabel(c.Author, originalPoster, topLevelAuthor, config.EnableNerdFonts)
+	authorLabel := AuthorLabel(c.Author, originalPoster, topLevelAuthor, enableNerdFonts)
 	indentation := strings.Repeat(" ", indentSize)
 
 	return indentation + author + authorLabel + style.Faint(c.TimeAgo) + "\n"
 }
 
 // RenderContent returns the formatted comment body (without header), with indent symbol.
-func RenderContent(c *Comment, depth int, config *settings.Config,
-	commentWidth, availableScreenWidth int,
-) string {
-	coloredIndentSymbol := syntax.ColorizeIndentSymbol(settings.IndentationSymbol, depth)
+func RenderContent(c *Comment, depth int, commentWidth, availableScreenWidth int, enableNerdFonts bool) string {
+	coloredIndentSymbol := syntax.ColorizeIndentSymbol(style.IndentSymbol, depth)
 
-	formattedComment := Print(c.Content, config, commentWidth, availableScreenWidth)
+	formattedComment := Print(c.Content, commentWidth, availableScreenWidth, enableNerdFonts)
 	paddedComment, _ := text.WrapWithPad(formattedComment, availableScreenWidth, coloredIndentSymbol)
 
 	return paddedComment

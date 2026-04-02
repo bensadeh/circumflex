@@ -8,14 +8,11 @@ const (
 	defaultPageMultiplier = 3
 	minPageMultiplier     = 1
 	maxPageMultiplier     = 5
-
-	IndentationSymbol = "▎"
 )
 
 type Config struct {
 	CommentWidth               int
 	ArticleWidth               int
-	DisableEmojis              bool
 	DoNotMarkSubmissionsAsRead bool
 	DebugMode                  bool
 	DebugFallible              bool
