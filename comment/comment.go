@@ -22,12 +22,12 @@ type section struct {
 	content string
 }
 
-func Print(c string, commentWidth int, availableScreenWidth int, enableNerdFonts bool) string {
-	if c == "[deleted]" {
-		return style.Faint(c)
+func Print(commentHTML string, commentWidth int, availableScreenWidth int, enableNerdFonts bool) string {
+	if commentHTML == "[deleted]" {
+		return style.Faint(commentHTML)
 	}
 
-	sections := parseSections(c)
+	sections := parseSections(commentHTML)
 
 	var output strings.Builder
 
@@ -74,33 +74,33 @@ func parseSections(html string) []section {
 	return sections
 }
 
-func formatQuote(paragraph string, commentWidth int) string {
-	paragraph = strings.ReplaceAll(paragraph, "<i>", "")
-	paragraph = strings.ReplaceAll(paragraph, "</i>", "")
-	paragraph = strings.ReplaceAll(paragraph, "</a>", ansi.Reset+ansi.Faint+ansi.Italic)
-	paragraph = syntax.ReplaceSymbols(paragraph)
-	paragraph = syntax.ConvertSmileys(paragraph)
+func formatQuote(content string, commentWidth int) string {
+	content = strings.ReplaceAll(content, "<i>", "")
+	content = strings.ReplaceAll(content, "</i>", "")
+	content = strings.ReplaceAll(content, "</a>", ansi.Reset+ansi.Faint+ansi.Italic)
+	content = syntax.ReplaceSymbols(content)
+	content = syntax.ConvertSmileys(content)
 
-	paragraph = strings.Replace(paragraph, ">>", "", 1)
-	paragraph = strings.Replace(paragraph, ">", "", 1)
-	paragraph = strings.TrimLeft(paragraph, " ")
-	paragraph = syntax.TrimURLs(paragraph, true)
-	paragraph = syntax.RemoveUnwantedNewLines(paragraph)
-	paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
+	content = strings.Replace(content, ">>", "", 1)
+	content = strings.Replace(content, ">", "", 1)
+	content = strings.TrimLeft(content, " ")
+	content = syntax.TrimURLs(content, true)
+	content = syntax.RemoveUnwantedNewLines(content)
+	content = syntax.RemoveUnwantedWhitespace(content)
 
-	paragraph = ansi.Italic + ansi.Faint + paragraph + ansi.Reset
+	content = ansi.Italic + ansi.Faint + content + ansi.Reset
 
 	quoteIndent := " " + style.IndentSymbol
 	padding := text.WrapPad(ansi.Faint + quoteIndent)
-	wrapped, _ := text.Wrap(paragraph, commentWidth, padding)
+	wrapped, _ := text.Wrap(content, commentWidth, padding)
 
 	return wrapped
 }
 
-func formatCodeBlock(paragraph string, availableWidth int) string {
-	paragraph = syntax.ReplaceHTML(paragraph)
+func formatCodeBlock(content string, availableWidth int) string {
+	content = syntax.ReplaceHTML(content)
 
-	wrapped, _ := text.Wrap(paragraph, availableWidth)
+	wrapped, _ := text.Wrap(content, availableWidth)
 	lines := strings.Split(wrapped, "\n")
 
 	var sb strings.Builder
@@ -116,28 +116,28 @@ func formatCodeBlock(paragraph string, availableWidth int) string {
 	return sb.String()
 }
 
-func formatParagraph(paragraph string, commentWidth int, enableNerdFonts bool) string {
-	paragraph = syntax.ReplaceSymbols(paragraph)
-	paragraph = syntax.ConvertSmileys(paragraph)
-	paragraph = syntax.ReplaceHTML(paragraph)
-	paragraph = strings.TrimLeft(paragraph, " ")
-	paragraph = highlightCommentSyntax(paragraph, enableNerdFonts)
-	paragraph = syntax.TrimURLs(paragraph, true)
-	paragraph = syntax.RemoveUnwantedNewLines(paragraph)
-	paragraph = syntax.RemoveUnwantedWhitespace(paragraph)
+func formatParagraph(content string, commentWidth int, enableNerdFonts bool) string {
+	content = syntax.ReplaceSymbols(content)
+	content = syntax.ConvertSmileys(content)
+	content = syntax.ReplaceHTML(content)
+	content = strings.TrimLeft(content, " ")
+	content = highlightCommentSyntax(content, enableNerdFonts)
+	content = syntax.TrimURLs(content, true)
+	content = syntax.RemoveUnwantedNewLines(content)
+	content = syntax.RemoveUnwantedWhitespace(content)
 
-	wrapped, _ := text.Wrap(paragraph, commentWidth)
+	wrapped, _ := text.Wrap(content, commentWidth)
 
 	return wrapped
 }
 
-func isQuote(text string) bool {
+func isQuote(s string) bool {
 	quoteMark := ">"
 
-	return strings.HasPrefix(text, quoteMark) ||
-		strings.HasPrefix(text, " "+quoteMark) ||
-		strings.HasPrefix(text, "<i>"+quoteMark) ||
-		strings.HasPrefix(text, "<i> "+quoteMark)
+	return strings.HasPrefix(s, quoteMark) ||
+		strings.HasPrefix(s, " "+quoteMark) ||
+		strings.HasPrefix(s, "<i>"+quoteMark) ||
+		strings.HasPrefix(s, "<i> "+quoteMark)
 }
 
 func highlightCommentSyntax(input string, enableNerdFonts bool) string {
