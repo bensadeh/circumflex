@@ -97,6 +97,7 @@ func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *item.St
 	enableNerdFonts := m.config.EnableNerdFonts
 
 	title = item.Title
+	title = syntax.ReplaceSpecialContentTags(title, enableNerdFonts)
 
 	domain = syntax.HighlightDomain(item.Domain)
 

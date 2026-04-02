@@ -173,14 +173,29 @@ func getHighlight(highlightType int) string {
 	}
 }
 
+// ReplaceSpecialContentTags substitutes [video], [audio], [pdf], [PDF] with
+// their compact nerdfont icons. Call this BEFORE truncation so the shorter
+// icons are accounted for in width calculations.
+func ReplaceSpecialContentTags(title string, enableNerdFonts bool) string {
+	if !enableNerdFonts {
+		return title
+	}
+
+	title = strings.ReplaceAll(title, "[audio]", nerdfonts.Audio)
+	title = strings.ReplaceAll(title, "[video]", nerdfonts.Video)
+	title = strings.ReplaceAll(title, "[pdf]", nerdfonts.Document)
+	title = strings.ReplaceAll(title, "[PDF]", nerdfonts.Document)
+
+	return title
+}
+
 func HighlightSpecialContent(title string, highlightType int, enableNerdFonts bool) string {
 	highlight := getHighlight(highlightType)
 
 	if enableNerdFonts {
-		title = strings.ReplaceAll(title, "[audio]", style.HeadlineAudio(nerdfonts.Audio)+highlight)
-		title = strings.ReplaceAll(title, "[video]", style.HeadlineVideo(nerdfonts.Video)+highlight)
-		title = strings.ReplaceAll(title, "[pdf]", style.HeadlinePDF(nerdfonts.Document)+highlight)
-		title = strings.ReplaceAll(title, "[PDF]", style.HeadlinePDF(nerdfonts.Document)+highlight)
+		title = strings.ReplaceAll(title, nerdfonts.Audio, style.HeadlineAudio(nerdfonts.Audio)+highlight)
+		title = strings.ReplaceAll(title, nerdfonts.Video, style.HeadlineVideo(nerdfonts.Video)+highlight)
+		title = strings.ReplaceAll(title, nerdfonts.Document, style.HeadlinePDF(nerdfonts.Document)+highlight)
 
 		return title
 	}

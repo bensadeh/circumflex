@@ -340,7 +340,8 @@ func (m *Model) View() string {
 func (m *Model) headerView() string {
 	leftMargin := strings.Repeat(" ", layout.CommentSectionLeftMargin)
 	maxTitleWidth := uint(max(0, m.rc.screenWidth-layout.CommentSectionLeftMargin))
-	title := truncate.StringWithTail(m.title, maxTitleWidth, "…")
+	title := syntax.ReplaceSpecialContentTags(m.title, m.rc.enableNerdFonts)
+	title = truncate.StringWithTail(title, maxTitleWidth, "…")
 
 	nf := m.rc.enableNerdFonts
 	title = syntax.HighlightYCStartupsInHeadlines(title, syntax.HeadlineInCommentSection, nf)
