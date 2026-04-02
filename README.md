@@ -45,10 +45,6 @@
 * [Settings](#settings)
 * [Keymaps](#keymaps)
 
-###
-
-* [Under the hood](#under-the-hood)
-
 ***
 
 ## Installing
