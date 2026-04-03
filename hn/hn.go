@@ -11,7 +11,7 @@ import (
 type Service interface {
 	FetchItems(ctx context.Context, itemsToFetch int, category string) ([]*item.Story, error)
 	FetchItem(ctx context.Context, id int) (*item.Story, error)
-	FetchComments(ctx context.Context, id int) (*item.Story, error)
+	FetchComments(ctx context.Context, id int, onProgress func(fetched, total int)) (*item.Story, error)
 }
 
 func NewService(debugMode, debugFallible bool) Service {

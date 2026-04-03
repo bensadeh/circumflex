@@ -80,7 +80,7 @@ func commentsCmd() *cobra.Command {
 
 			service := newService()
 
-			story, err := service.FetchComments(cmd.Context(), id)
+			story, err := service.FetchComments(cmd.Context(), id, nil)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)

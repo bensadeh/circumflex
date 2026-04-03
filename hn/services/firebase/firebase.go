@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/bensadeh/circumflex/ansi"
@@ -143,7 +144,7 @@ func (s *Service) FetchItem(ctx context.Context, id int) (*item.Story, error) {
 	return mapStoryItem(hn), nil
 }
 
-func (s *Service) FetchComments(ctx context.Context, id int) (*item.Story, error) {
+func (s *Service) FetchComments(ctx context.Context, id int, onProgress func(fetched, total int)) (*item.Story, error) {
 	hn, err := s.fetchHNItem(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("fetching story %d: %w", id, err)
@@ -156,7 +157,9 @@ func (s *Service) FetchComments(ctx context.Context, id int) (*item.Story, error
 
 	sem := make(chan struct{}, maxConcurrency)
 
-	story.Comments, err = s.fetchCommentTree(ctx, cancel, sem, hn.Kids)
+	var fetched atomic.Int64
+
+	story.Comments, err = s.fetchCommentTree(ctx, cancel, sem, hn.Kids, &fetched, hn.Descendants, onProgress)
 	if err != nil {
 		return nil, fmt.Errorf("fetching comments for story %d: %w", id, err)
 	}
@@ -164,7 +167,7 @@ func (s *Service) FetchComments(ctx context.Context, id int) (*item.Story, error
 	return story, nil
 }
 
-func (s *Service) fetchCommentTree(ctx context.Context, cancel context.CancelCauseFunc, sem chan struct{}, kidIDs []int) ([]*item.Story, error) {
+func (s *Service) fetchCommentTree(ctx context.Context, cancel context.CancelCauseFunc, sem chan struct{}, kidIDs []int, fetched *atomic.Int64, total int, onProgress func(fetched, total int)) ([]*item.Story, error) {
 	if len(kidIDs) == 0 {
 		return nil, nil
 	}
@@ -211,13 +214,17 @@ func (s *Service) fetchCommentTree(ctx context.Context, cancel context.CancelCau
 				return
 			}
 
+			if onProgress != nil {
+				onProgress(int(fetched.Add(1)), total)
+			}
+
 			if hn.Dead {
 				return
 			}
 
 			c := mapCommentItem(hn)
 
-			children, err := s.fetchCommentTree(ctx, cancel, sem, hn.Kids)
+			children, err := s.fetchCommentTree(ctx, cancel, sem, hn.Kids, fetched, total, onProgress)
 			if err != nil {
 				fail(err)
 

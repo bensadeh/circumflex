@@ -30,7 +30,7 @@ func (f FallibleService) FetchItems(ctx context.Context, itemsToFetch int, categ
 	return f.mock.FetchItems(ctx, itemsToFetch, category)
 }
 
-func (f FallibleService) FetchComments(_ context.Context, _ int) (*item.Story, error) {
+func (f FallibleService) FetchComments(_ context.Context, _ int, _ func(fetched, total int)) (*item.Story, error) {
 	n, _ := rand.Int(rand.Reader, big.NewInt(3))
 	time.Sleep(time.Duration(1+n.Int64()) * time.Second)
 

@@ -12,6 +12,7 @@ _WIP_
 - Add `default-theme` subcommand to generate a default theme config file
 - Add `--pages` flag to configure the number of pages fetched per category (1-5)
 - Auto-enable Nerd Fonts when running inside Ghostty
+- Show terminal progress bar during fetching via OSC 9;4 
 
 **Changes**
 

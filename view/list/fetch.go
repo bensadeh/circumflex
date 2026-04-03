@@ -3,7 +3,9 @@ package list
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net"
+	"os"
 	"strings"
 
 	"github.com/bensadeh/circumflex/article"
@@ -32,7 +34,14 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 	endpoint := categoryEndpoints[categoryToFetch]
 
 	return func() tea.Msg {
+		setProgressIndeterminate()
+
 		stories, err := service.FetchItems(context.Background(), numItems, endpoint)
+		if err != nil {
+			setProgressError()
+		} else {
+			clearProgress()
+		}
 
 		return message.FetchingFinished{
 			Stories:  stories,
@@ -81,7 +90,14 @@ func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) t
 	fetchID := m.fetchID
 
 	return func() tea.Msg {
+		setProgressIndeterminate()
+
 		stories, err := service.FetchItems(ctx, numItems, endpoint)
+		if err != nil {
+			setProgressError()
+		} else {
+			clearProgress()
+		}
 
 		return message.CategoryFetchingFinished{
 			Stories:  stories,
@@ -102,7 +118,14 @@ func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 	fetchID := m.fetchID
 
 	return func() tea.Msg {
+		setProgressIndeterminate()
+
 		stories, err := service.FetchItems(ctx, numItems, endpoint)
+		if err != nil {
+			setProgressError()
+		} else {
+			clearProgress()
+		}
 
 		return message.CategoryFetchingFinished{
 			Stories:  stories,
@@ -125,13 +148,26 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 	return func() tea.Msg {
 		lastVisited := hist.CommentsLastVisited(msg.ID)
 
-		story, err := service.FetchComments(ctx, msg.ID)
+		onProgress := func(fetched, total int) {
+			if total <= 0 {
+				return
+			}
+
+			pct := min(fetched*100/total, 100)
+			fmt.Fprintf(os.Stderr, "\033]9;4;1;%d\a", pct)
+		}
+
+		story, err := service.FetchComments(ctx, msg.ID, onProgress)
 		if err != nil {
+			setProgressError()
+
 			return message.CommentTreeDataReady{
 				Err:     err,
 				FetchID: fetchID,
 			}
 		}
+
+		clearProgress()
 
 		_ = hist.MarkAsReadAndWriteToDisk(msg.ID, msg.CommentCount)
 
@@ -159,10 +195,16 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 			return message.ArticleReady{Err: err, FetchID: fetchID}
 		}
 
+		setProgressIndeterminate()
+
 		parsed, err := article.Parse(ctx, msg.URL)
 		if err != nil {
+			setProgressError()
+
 			return message.ArticleReady{Err: err, FetchID: fetchID}
 		}
+
+		clearProgress()
 
 		_ = hist.MarkArticleAsReadAndWriteToDisk(msg.ID)
 
@@ -178,6 +220,14 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 		}
 	}
 }
+
+// Terminal progress bar via OSC 9;4 (supported by Ghostty, ConEmu and others;
+// silently ignored by terminals that don't recognise the sequence).
+// Writes to stderr to avoid interfering with Bubble Tea's stdout.
+
+func setProgressIndeterminate() { fmt.Fprint(os.Stderr, "\033]9;4;3;0\a") }
+func setProgressError()         { fmt.Fprint(os.Stderr, "\033]9;4;2;100\a") }
+func clearProgress()            { fmt.Fprint(os.Stderr, "\033]9;4;0\a") }
 
 func isTimeout(err error) bool {
 	var netErr net.Error

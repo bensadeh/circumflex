@@ -285,7 +285,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 	return items, nil
 }
 
-func (Service) FetchComments(_ context.Context, _ int) (*item.Story, error) {
+func (Service) FetchComments(_ context.Context, _ int, _ func(fetched, total int)) (*item.Story, error) {
 	return &item.Story{
 		ID:      32145667,
 		Title:   "Mauris commodo odio (YC W05) quis diam fermentum, et suscipit augue pharetra [video]",

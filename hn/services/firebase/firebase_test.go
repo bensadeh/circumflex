@@ -223,7 +223,7 @@ func TestFetchComments_WithMockServer(t *testing.T) {
 	s := NewService()
 	s.baseURL = server.URL
 
-	story, err := s.FetchComments(context.Background(), 1)
+	story, err := s.FetchComments(context.Background(), 1, nil)
 	require.NoError(t, err)
 
 	assert.Equal(t, 1, story.ID)
@@ -268,7 +268,7 @@ func TestFetchComments_DeletedComment(t *testing.T) {
 	s := NewService()
 	s.baseURL = server.URL
 
-	story, err := s.FetchComments(context.Background(), 1)
+	story, err := s.FetchComments(context.Background(), 1, nil)
 	require.NoError(t, err)
 
 	require.Len(t, story.Comments, 1)
@@ -302,7 +302,7 @@ func TestFetchComments_DeadComment(t *testing.T) {
 	s := NewService()
 	s.baseURL = server.URL
 
-	story, err := s.FetchComments(context.Background(), 1)
+	story, err := s.FetchComments(context.Background(), 1, nil)
 	require.NoError(t, err)
 
 	require.Len(t, story.Comments, 1)
@@ -377,7 +377,7 @@ func TestFetchComments_ItemFetchError(t *testing.T) {
 	s.baseURL = server.URL
 	s.client.SetRetryCount(0) // disable retries to speed up test
 
-	_, err := s.FetchComments(context.Background(), 1)
+	_, err := s.FetchComments(context.Background(), 1, nil)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "20")
 }
@@ -404,7 +404,7 @@ func TestFetchComments_NestedFetchError(t *testing.T) {
 	s.baseURL = server.URL
 	s.client.SetRetryCount(0)
 
-	_, err := s.FetchComments(context.Background(), 1)
+	_, err := s.FetchComments(context.Background(), 1, nil)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "11")
 }
@@ -458,7 +458,7 @@ func TestFetchComments_NullItemSkipped(t *testing.T) {
 	s := NewService()
 	s.baseURL = server.URL
 
-	story, err := s.FetchComments(context.Background(), 1)
+	story, err := s.FetchComments(context.Background(), 1, nil)
 	require.NoError(t, err)
 
 	require.Len(t, story.Comments, 1)
@@ -575,7 +575,7 @@ func TestFetchComments_RetrySuccess(t *testing.T) {
 	s := NewService()
 	s.baseURL = server.URL
 
-	story, err := s.FetchComments(context.Background(), 1)
+	story, err := s.FetchComments(context.Background(), 1, nil)
 	require.NoError(t, err)
 
 	require.Len(t, story.Comments, 1)

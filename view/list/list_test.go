@@ -29,7 +29,7 @@ func (instantMockService) FetchItems(_ context.Context, _ int, _ string) ([]*ite
 	return testItems(), nil
 }
 
-func (instantMockService) FetchComments(_ context.Context, _ int) (*item.Story, error) {
+func (instantMockService) FetchComments(_ context.Context, _ int, _ func(int, int)) (*item.Story, error) {
 	return &item.Story{ID: 1, Title: "test", CommentsCount: 5}, nil
 }
 
