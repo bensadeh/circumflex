@@ -14,7 +14,7 @@ import (
 func articleCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:                   "article [id]",
-		Short:                 "Read the linked article associated with an item based on the ID",
+		Short:                 "Read the linked article of a story",
 		Args:                  cobra.ExactArgs(1),
 		DisableFlagsInUseLine: true,
 		Run: func(cmd *cobra.Command, args []string) {
