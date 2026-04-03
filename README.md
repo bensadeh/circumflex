@@ -52,25 +52,23 @@ go run ./cmd/clx
 
 Press <kbd>Enter</kbd> to view the comment section.
 
-Comments are pretty-printed with text formatting, syntax highlighting for quotes, `@mentions`, `$variables`, URLs
-and references, as well as labels for Original Posters (`OP`), Grandparent Posters (`GP`) and moderators (`mod`).
+The comment section has two modes: `read mode` and `navigate mode`.
+
+In `read mode`, you can scroll using the usual vim bindings. You can also jump between top-level comments (<kbd>
+n</kbd>/<kbd>N</kbd>), and you can expand and collapse threads by quote level (<kbd>h</kbd>/<kbd>l</kbd>) or all at
+once (<kbd>Enter</kbd>).
+
+In `navigate mode`, you can individually select comments and collapse specific threads. This is useful in longer threads
+with many replies.
 
 <p align="center">
   <img src="screenshots/comment_view.png" width="500" alt="comment section"/>
 </p>
 
-Comment section has two modes: `read mode` and `navigate mode`.
-
-In `read mode`, you can scroll using the usual vim
-bindings. You can also jump between top-level comments (<kbd>n</kbd>/<kbd>N</kbd>), and you can expand and collapse
-threads by quote level (<kbd>h</kbd>/<kbd>l</kbd>) or all at once (<kbd>Enter</kbd>).
-
-In `navigate mode`, you can
-individually select comments and collapse specific threads. This is useful in longer threads with many replies.
 
 `circumflex` is read-only and does not support for logging in, voting or commenting.
 
-### Reader mode
+### Reader Mode
 
 Press <kbd>Space</kbd> to read the linked article in Reader Mode. Just like in the comment section, you can jump between
 headers using <kbd>n</kbd>/<kbd>N</kbd>, and you can scroll using the usual vim bindings.
