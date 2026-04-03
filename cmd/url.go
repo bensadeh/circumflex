@@ -12,7 +12,7 @@ import (
 
 func urlCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:                   "url",
+		Use:                   "url [url]",
 		Short:                 "Open the provided url in reader mode in the terminal",
 		Args:                  cobra.ExactArgs(1),
 		DisableFlagsInUseLine: true,

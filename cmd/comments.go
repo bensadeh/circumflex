@@ -67,7 +67,7 @@ func (m commentModel) View() tea.View {
 
 func commentsCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "comments",
+		Use:   "comments [id]",
 		Short: "Go directly to the comment section by ID",
 		Long: "Directly enter the comment section for a given item without going through the main " +
 			"view first",

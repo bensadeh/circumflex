@@ -13,7 +13,7 @@ import (
 
 func articleCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:                   "article",
+		Use:                   "article [id]",
 		Short:                 "Read the linked article associated with an item based on the ID",
 		Args:                  cobra.ExactArgs(1),
 		DisableFlagsInUseLine: true,

@@ -13,7 +13,7 @@ import (
 
 func addCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:                   "add",
+		Use:                   "add [id]",
 		Short:                 "Add item to list of favorites by ID",
 		Long:                  "Add item to list of favorites by ID",
 		Args:                  cobra.ExactArgs(1),

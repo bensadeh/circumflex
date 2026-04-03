@@ -13,6 +13,9 @@ const (
 	ItalicOff = "\033[23m"
 	Red       = "\033[31m"
 	Green     = "\033[32m"
+	Yellow    = "\033[33m"
+	Blue      = "\033[34m"
+	Cyan      = "\033[36m"
 )
 
 // jsonByte returns a regex fragment matching the JSON unicode escape for a
