@@ -4,8 +4,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/bensadeh/circumflex/ansi"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -121,20 +119,19 @@ func TestFirstCommentID(t *testing.T) {
 func TestRepliesIndicator(t *testing.T) {
 	t.Parallel()
 
-	t.Run("singular reply", func(t *testing.T) {
+	t.Run("singular reply hidden", func(t *testing.T) {
 		result := RepliesIndicator(1, 0, 80, true)
-		assert.Contains(t, result, "1 reply")
+		assert.Contains(t, result, "1 reply hidden")
 		assert.NotContains(t, result, "replies")
 	})
 
-	t.Run("plural replies", func(t *testing.T) {
-		result := RepliesIndicator(3, 0, 80, false)
-		assert.Contains(t, result, "3 replies")
+	t.Run("plural replies hidden", func(t *testing.T) {
+		result := RepliesIndicator(3, 0, 80, true)
+		assert.Contains(t, result, "3 replies hidden")
 	})
 
-	t.Run("collapsed and expanded have same visible length", func(t *testing.T) {
-		collapsed := ansi.Strip(RepliesIndicator(5, 0, 80, true))
-		expanded := ansi.Strip(RepliesIndicator(5, 0, 80, false))
-		assert.Len(t, expanded, len(collapsed))
+	t.Run("expanded returns empty", func(t *testing.T) {
+		result := RepliesIndicator(5, 0, 80, false)
+		assert.Empty(t, result)
 	})
 }

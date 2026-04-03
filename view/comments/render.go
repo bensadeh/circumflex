@@ -53,8 +53,7 @@ type renderedComment struct {
 	content          string // rendered comment content with indentation and margins
 	contentLines     int
 	repliesCollapsed string // replies indicator when collapsed (empty if no descendants)
-	repliesExpanded  string // replies indicator when expanded (empty if no descendants)
-	repliesLines     int    // line count is identical for both variants
+	repliesLines     int    // line count of collapsed indicator
 }
 
 // prerenderComments renders every comment in flat upfront, so that subsequent
@@ -102,16 +101,11 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 		out.content = contentWithMargin
 		out.contentLines = strings.Count(contentWithMargin, "\n")
 
-		// Pre-render replies indicator (both collapsed and expanded variants).
+		// Pre-render replies indicator (only shown when collapsed).
 		if fc.DescendantCount > 0 {
 			collapsed := comment.RepliesIndicator(fc.DescendantCount, fc.Depth, adjustedCommentWidth, true)
 			indentedCollapsed, _ := text.WrapWithPad(collapsed, rc.screenWidth, leftMargin)
 			out.repliesCollapsed = indentedCollapsed
-
-			expanded := comment.RepliesIndicator(fc.DescendantCount, fc.Depth, adjustedCommentWidth, false)
-			indentedExpanded, _ := text.WrapWithPad(expanded, rc.screenWidth, leftMargin)
-			out.repliesExpanded = indentedExpanded
-
 			out.repliesLines = strings.Count(indentedCollapsed, "\n")
 		}
 	}
@@ -161,14 +155,9 @@ func renderFromFlat(rc renderContext, flat []flatComment, visible []int, prerend
 		sb.WriteString(pre.content)
 		lineCount += pre.contentLines
 
-		// Replies indicator: always shown for comments with children.
-		if fc.DescendantCount > 0 {
-			if fc.Collapsed {
-				sb.WriteString(pre.repliesCollapsed)
-			} else {
-				sb.WriteString(pre.repliesExpanded)
-			}
-
+		// Replies indicator: only shown when replies are collapsed.
+		if fc.DescendantCount > 0 && fc.Collapsed {
+			sb.WriteString(pre.repliesCollapsed)
 			lineCount += pre.repliesLines
 		}
 

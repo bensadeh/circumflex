@@ -79,6 +79,10 @@ func Faint(s string) string {
 	return lipgloss.NewStyle().Faint(true).Render(s)
 }
 
+func FaintItalic(s string) string {
+	return lipgloss.NewStyle().Faint(true).Italic(true).Render(s)
+}
+
 // Semantic helpers — theme-aware.
 
 // Headline colors.

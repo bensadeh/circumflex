@@ -160,22 +160,25 @@ func FirstCommentID(comments []*Comment) int {
 	return comments[0].ID
 }
 
-// RepliesIndicator returns a styled, centered replies indicator line.
-// The label has the same visible width regardless of collapsed state.
+// RepliesIndicator returns a styled, left-aligned replies indicator line when
+// replies are collapsed. When expanded, it returns an empty string.
 func RepliesIndicator(descendantCount, depth, commentWidth int, collapsed bool) string {
+	if !collapsed {
+		return ""
+	}
+
 	replies := "replies"
 	if descendantCount == 1 {
 		replies = "reply"
 	}
 
-	arrow := "▼"
-	if collapsed {
-		arrow = "▶"
+	label := fmt.Sprintf("↩ %d %s hidden", descendantCount, replies)
+	indent := IndentString(depth)
+
+	extra := " "
+	if depth > 0 {
+		extra = "  "
 	}
 
-	label := fmt.Sprintf("%s %d %s", arrow, descendantCount, replies)
-	indent := IndentString(depth)
-	padding := max((commentWidth-len(label))/2, 0)
-
-	return indent + strings.Repeat(" ", padding) + style.Faint(label) + "\n"
+	return "\n" + indent + extra + style.FaintItalic(label) + "\n"
 }
