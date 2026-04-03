@@ -27,7 +27,8 @@ var (
 	disableHistory     bool
 	debugMode          bool
 	debugFallible      bool
-	nerdFontFlag       string
+	nerdFontFlag       bool
+	nerdFontChanged    bool
 	pageMultiplier     int
 	selectedCategories string
 )
@@ -38,6 +39,9 @@ func Root() *cobra.Command {
 		Short:        style.Magenta("circumflex") + " is a command line tool for browsing Hacker News in your terminal",
 		Version:      version.Version,
 		SilenceUsage: true,
+		PersistentPreRun: func(cmd *cobra.Command, _ []string) {
+			nerdFontChanged = cmd.Flags().Changed("nerdfonts")
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			config := getConfig()
 
@@ -158,13 +162,13 @@ func configureFlags(rootCmd *cobra.Command) {
 		"set the comment width")
 	rootCmd.PersistentFlags().IntVarP(&articleWidth, "article-width", "a", settings.Default().ArticleWidth,
 		"set the article width in reader mode")
-	rootCmd.PersistentFlags().StringVarP(&nerdFontFlag, "nerdfonts", "n", "",
-		"enable or disable Nerd Fonts\n(true/false, auto-enabled for Ghostty, env: "+ansi.Green+"NERDFONTS"+ansi.Reset+")")
+	rootCmd.PersistentFlags().BoolVarP(&nerdFontFlag, "nerdfonts", "n", false,
+		"enable or disable Nerd Fonts")
 	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", "top,best,ask,show",
 		"set the categories in the header\n(available: "+strings.Join(categories.AvailableNames(), ", ")+")\n(default \"top,best,ask,show\")")
 	rootCmd.Flag("categories").DefValue = ""
 	rootCmd.PersistentFlags().IntVar(&pageMultiplier, "pages", settings.Default().PageMultiplier,
-		"set the number of pages to fetch per category (1-5)")
+		"set the number of pages to fetch per category (min 1, max 5)")
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
 		"enable debug mode (offline mode) by using mock data for the endpoints")
@@ -190,7 +194,7 @@ func getConfig() *settings.Config {
 	config.CommentWidth = commentWidth
 	config.ArticleWidth = articleWidth
 	config.DoNotMarkSubmissionsAsRead = disableHistory
-	config.EnableNerdFonts = resolveNerdFonts(nerdFontFlag)
+	config.EnableNerdFonts = resolveNerdFonts(nerdFontFlag, nerdFontChanged)
 	config.DebugMode = debugMode
 	config.DebugFallible = debugFallible
 	config.PageMultiplier = settings.ClampPageMultiplier(pageMultiplier)
@@ -198,17 +202,12 @@ func getConfig() *settings.Config {
 	return config
 }
 
-func resolveNerdFonts(flag string) bool {
-	switch flag {
-	case "true":
-		return true
-	case "false":
-		return false
-	default:
-		_, nerdFontsEnvIsSet := os.LookupEnv("NERDFONTS")
-
-		return nerdFontsEnvIsSet || isGhostty()
+func resolveNerdFonts(flag, changed bool) bool {
+	if changed {
+		return flag
 	}
+
+	return isGhostty()
 }
 
 func isGhostty() bool {

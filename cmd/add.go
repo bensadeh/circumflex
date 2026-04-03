@@ -15,7 +15,6 @@ func addCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:                   "add [id]",
 		Short:                 "Add item to list of favorites",
-		Long:                  "Add item to list of favorites",
 		Args:                  cobra.ExactArgs(1),
 		DisableFlagsInUseLine: true,
 		Run: func(cmd *cobra.Command, args []string) {
