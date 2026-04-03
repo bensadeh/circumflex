@@ -4,8 +4,6 @@ import (
 	"strings"
 
 	"charm.land/lipgloss/v2"
-
-	termText "github.com/MichaelMure/go-term-text"
 )
 
 // entryKind identifies the type of a help screen entry.
@@ -73,10 +71,10 @@ func (k *keyList) print(screenWidth int) string {
 }
 
 func getDotSeparators(description string, key string, screenWidth int) string {
-	descriptionLength := termText.Len(description)
-	keyLength := termText.Len(key)
+	descriptionLength := lipgloss.Width(description)
+	keyLength := lipgloss.Width(key)
 	space := " "
-	spaceLength := termText.Len(space)
+	spaceLength := lipgloss.Width(space)
 	numberOfDotSeparators := screenWidth - descriptionLength - keyLength - spaceLength - spaceLength
 
 	if numberOfDotSeparators < 0 {

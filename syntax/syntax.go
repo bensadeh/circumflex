@@ -35,7 +35,7 @@ var (
 	reYCWithoutSeason = regexp.MustCompile(`\((YC [SWFX]\d{2})\)`)
 	reYear            = regexp.MustCompile(`\((\d{4})\)`)
 	reUnwantedNewLine = regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z0-9" \-<[:cntrl:]…])`)
-	reHTMLAnchor      = regexp.MustCompile(`<a href=".*?".*>`)
+	reHTMLAnchor      = regexp.MustCompile(`<a href=".*?"[^>]*>`)
 	reURL             = regexp.MustCompile(`https?://([^,"\) \n]+)`)
 	reMention         = regexp.MustCompile(`((?:^| )\B@[\w.]+)`)
 	reVariable        = regexp.MustCompile(`(\$+[a-zA-Z_\-]+)`)
@@ -314,7 +314,11 @@ func TrimURLs(comment string, highlightURLs bool) string {
 		return comment
 	}
 
-	comment = reURL.ReplaceAllString(comment, style.CommentURL(`$1`))
+	comment = reURL.ReplaceAllStringFunc(comment, func(match string) string {
+		display := reURL.FindStringSubmatch(match)[1]
+
+		return style.CommentURL(display, match)
+	})
 
 	comment = strings.ReplaceAll(comment, "."+ansi.Reset+" ", ansi.Reset+". ")
 

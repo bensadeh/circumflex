@@ -18,7 +18,6 @@ import (
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	termtext "github.com/MichaelMure/go-term-text"
 	"github.com/muesli/reflow/truncate"
 )
 
@@ -875,7 +874,6 @@ func renderRootComment(c string, contentWidth int, enableNerdFonts bool) string 
 	}
 
 	rendered := comment.Render(c, contentWidth, contentWidth, enableNerdFonts)
-	wrapped, _ := termtext.Wrap(rendered, contentWidth)
 
-	return "\n\n" + wrapped
+	return "\n\n" + lipgloss.Wrap(rendered, contentWidth, "")
 }

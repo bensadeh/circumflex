@@ -8,13 +8,11 @@ import (
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/syntax"
 
+	xansi "github.com/charmbracelet/x/ansi"
 	"github.com/muesli/reflow/wordwrap"
 
 	"charm.land/glamour/v2"
 	"charm.land/glamour/v2/styles"
-
-	termtext "github.com/MichaelMure/go-term-text"
-
 	"charm.land/lipgloss/v2"
 )
 
@@ -55,7 +53,7 @@ func createHeader(url string, lineWidth int) string {
 
 	contentWidth := lineWidth - s.GetHorizontalBorderSize() - s.GetHorizontalPadding()
 
-	formattedURL := style.MetaURL(termtext.TruncateMax(url, contentWidth))
+	formattedURL := style.MetaURL(xansi.Truncate(url, contentWidth, ""), url)
 	info := "\n\n" + style.MetaReaderMode("Reader Mode")
 
 	return s.Render(formattedURL+info) + "\n\n"
@@ -138,7 +136,19 @@ func renderList(text string, lineWidth int) string {
 		paddingBuffer := strings.Repeat(" ", len(listToken))
 		padding := indentLevel1 + paddingBuffer + " "
 
-		wrappedIndentedItem, _ := termtext.WrapWithPadIndent(listToken+listText, lineWidth, indentLevel1, padding)
+		padWidth := len(indentLevel1)
+		wrapped := lipgloss.Wrap(listToken+listText, lineWidth-padWidth, "")
+
+		lines := strings.Split(wrapped, "\n")
+		for j, line := range lines {
+			if j == 0 {
+				lines[j] = indentLevel1 + line
+			} else {
+				lines[j] = padding + line
+			}
+		}
+
+		wrappedIndentedItem := strings.Join(lines, "\n")
 		wrappedIndentedItem = insertSpaceAfterItemListSeparator(wrappedIndentedItem)
 
 		sb.WriteString(wrappedIndentedItem)
@@ -191,10 +201,10 @@ func renderImage(text string, lineWidth int) string {
 	output = it(output)
 	output = removeDoubleWhitespace(output)
 
-	padding := termtext.WrapPad(indentLevel1)
-	output, _ = termtext.Wrap(output, lineWidth, padding)
+	padWidth := len(indentLevel1)
+	output = lipgloss.Wrap(output, lineWidth-padWidth, "")
 
-	return output
+	return style.PrefixLines(output, indentLevel1)
 }
 
 func renderCode(text string, lineWidth int) string {
@@ -204,10 +214,10 @@ func renderCode(text string, lineWidth int) string {
 	text = style.Faint(text)
 	text = removeHrefs(text)
 
-	padding := termtext.WrapPad(indentLevel1)
-	text, _ = termtext.Wrap(text, lineWidth, padding)
+	padWidth := len(indentLevel1)
+	text = lipgloss.Wrap(text, lineWidth-padWidth, "")
 
-	return text
+	return style.PrefixLines(text, indentLevel1)
 }
 
 func renderQuote(text string, lineWidth int) string {
@@ -218,10 +228,11 @@ func renderQuote(text string, lineWidth int) string {
 	indentBlock := " " + style.IndentSymbol
 	text = itReversed(text)
 
-	padding := termtext.WrapPad(indentLevel1 + style.Faint(indentBlock))
-	text, _ = termtext.Wrap(text, lineWidth, padding)
+	pad := indentLevel1 + style.Faint(indentBlock)
+	padWidth := lipgloss.Width(pad)
+	text = lipgloss.Wrap(text, lineWidth-padWidth, "")
 
-	return text
+	return style.PrefixLines(text, pad)
 }
 
 func renderTable(text string, lineWidth int) string {
@@ -283,7 +294,7 @@ func renderHeader(kind blockKind, text string, lineWidth int) string {
 	styleFn := headerStyleFuncs[kind]
 	text = styleFn(sectionMarker+" ") + style.Bold(text)
 
-	text, _ = termtext.Wrap(text, lineWidth-indent)
+	text = lipgloss.Wrap(text, lineWidth-indent, "")
 
 	if indent > 0 {
 		padding := strings.Repeat(" ", indent)

@@ -3,11 +3,10 @@ package comment
 import (
 	"strings"
 
+	"charm.land/lipgloss/v2"
 	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/syntax"
-
-	text "github.com/MichaelMure/go-term-text"
 )
 
 type sectionKind int
@@ -92,16 +91,17 @@ func formatQuote(content string, commentWidth int) string {
 	content = ansi.Italic + ansi.Faint + content + ansi.Reset
 
 	quoteIndent := " " + style.IndentSymbol
-	padding := text.WrapPad(ansi.Faint + quoteIndent)
-	wrapped, _ := text.Wrap(content, commentWidth, padding)
+	padStr := ansi.Faint + quoteIndent
+	padWidth := lipgloss.Width(padStr)
+	wrapped := lipgloss.Wrap(content, commentWidth-padWidth, "")
 
-	return wrapped
+	return style.PrefixLines(wrapped, padStr)
 }
 
 func formatCodeBlock(content string, availableWidth int) string {
 	content = syntax.ReplaceHTML(content)
 
-	wrapped, _ := text.Wrap(content, availableWidth)
+	wrapped := lipgloss.Wrap(content, availableWidth, "")
 	lines := strings.Split(wrapped, "\n")
 
 	var sb strings.Builder
@@ -127,9 +127,7 @@ func formatParagraph(content string, commentWidth int, enableNerdFonts bool) str
 	content = syntax.RemoveUnwantedNewLines(content)
 	content = syntax.RemoveUnwantedWhitespace(content)
 
-	wrapped, _ := text.Wrap(content, commentWidth)
-
-	return wrapped
+	return lipgloss.Wrap(content, commentWidth, "")
 }
 
 func isQuote(s string) bool {

@@ -5,8 +5,7 @@ import (
 
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/layout"
-
-	text "github.com/MichaelMure/go-term-text"
+	"github.com/bensadeh/circumflex/style"
 )
 
 // renderContext holds the stable parameters for rendering a comment view.
@@ -72,7 +71,7 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 		// Separator.
 		sep := comment.Separator(fc.Depth, commentWidth, fc.Comment.ID, rc.firstCommentID)
 		if sep != "" {
-			indentedSep, _ := text.WrapWithPad(sep, rc.screenWidth, leftMargin)
+			indentedSep := style.PrefixLines(sep, leftMargin)
 			out.sep = indentedSep
 			out.sepLines = strings.Count(indentedSep, "\n")
 		}
@@ -82,29 +81,27 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 		availableWidth := contentWidth - depthIndentLen
 		adjustedCommentWidth := commentWidth - fc.Depth
 
+		pad := leftMargin + depthIndent
+
 		// Pre-render both header variants (normal and focused).
 		header := comment.Header(&fc.Comment, fc.Depth, rc.originalPoster, fc.TopLevelAuthor, rc.lastVisited, rc.enableNerdFonts, false)
-		headerWithDepth, _ := text.WrapWithPad(header, contentWidth, depthIndent)
-		headerWithMargin, _ := text.WrapWithPad(headerWithDepth, rc.screenWidth, leftMargin)
+		headerWithMargin := style.PrefixLines(header, pad)
 		out.header = headerWithMargin
 		out.headerLines = strings.Count(headerWithMargin, "\n")
 
 		focusedHeader := comment.Header(&fc.Comment, fc.Depth, rc.originalPoster, fc.TopLevelAuthor, rc.lastVisited, rc.enableNerdFonts, true)
-		focusedWithDepth, _ := text.WrapWithPad(focusedHeader, contentWidth, depthIndent)
-		focusedWithMargin, _ := text.WrapWithPad(focusedWithDepth, rc.screenWidth, leftMargin)
-		out.headerFocused = focusedWithMargin
+		out.headerFocused = style.PrefixLines(focusedHeader, pad)
 
 		// Render the comment content (expensive: syntax highlighting + wrapping).
 		content := comment.RenderContent(&fc.Comment, fc.Depth, adjustedCommentWidth, availableWidth, rc.enableNerdFonts)
-		contentWithDepth, _ := text.WrapWithPad(content+"\n", contentWidth, depthIndent)
-		contentWithMargin, _ := text.WrapWithPad(contentWithDepth, rc.screenWidth, leftMargin)
+		contentWithMargin := style.PrefixLines(content+"\n", pad)
 		out.content = contentWithMargin
 		out.contentLines = strings.Count(contentWithMargin, "\n")
 
 		// Pre-render replies indicator (only shown when collapsed).
 		if fc.DescendantCount > 0 {
 			collapsed := comment.RepliesIndicator(fc.DescendantCount, fc.Depth, adjustedCommentWidth, true)
-			indentedCollapsed, _ := text.WrapWithPad(collapsed, rc.screenWidth, leftMargin)
+			indentedCollapsed := style.PrefixLines(collapsed, leftMargin)
 			out.repliesCollapsed = indentedCollapsed
 			out.repliesLines = strings.Count(indentedCollapsed, "\n")
 		}

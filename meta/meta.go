@@ -7,9 +7,8 @@ import (
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/style"
 
-	text "github.com/MichaelMure/go-term-text"
-
 	"charm.land/lipgloss/v2"
+	xansi "github.com/charmbracelet/x/ansi"
 )
 
 const (
@@ -135,8 +134,8 @@ func getURL(url, domain string, contentWidth int) string {
 		return ""
 	}
 
-	truncatedURL := text.TruncateMax(url, contentWidth)
-	formattedURL := style.MetaURL(truncatedURL) + newLine
+	truncatedURL := xansi.Truncate(url, contentWidth, "")
+	formattedURL := style.MetaURL(truncatedURL, url) + newLine
 
 	return formattedURL + newLine
 }

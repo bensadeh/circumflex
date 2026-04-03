@@ -5,11 +5,10 @@ import (
 	"slices"
 	"strings"
 
+	"charm.land/lipgloss/v2"
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/syntax"
-
-	text "github.com/MichaelMure/go-term-text"
 )
 
 var mods = []string{"dang", "tomhow"}
@@ -125,9 +124,11 @@ func RenderContent(c *Comment, depth int, commentWidth, availableScreenWidth int
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(style.IndentSymbol, depth)
 
 	formattedComment := Render(c.Content, commentWidth, availableScreenWidth, enableNerdFonts)
-	paddedComment, _ := text.WrapWithPad(formattedComment, availableScreenWidth, coloredIndentSymbol)
 
-	return paddedComment
+	padWidth := lipgloss.Width(coloredIndentSymbol)
+	wrapped := lipgloss.Wrap(formattedComment, availableScreenWidth-padWidth, "")
+
+	return style.PrefixLines(wrapped, coloredIndentSymbol)
 }
 
 // NewCommentsCount returns the number of new comments since lastVisited.

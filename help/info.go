@@ -8,8 +8,6 @@ import (
 	"github.com/bensadeh/circumflex/style"
 
 	"charm.land/bubbles/v2/key"
-
-	text "github.com/MichaelMure/go-term-text"
 )
 
 func MainMenuText(screenWidth int, mainMenuBindings []key.Binding) string {
@@ -106,9 +104,8 @@ func formatKeymaps(keys *keyList, screenWidth int) string {
 	listOfKeymaps := keys.print(contentWidth)
 
 	leftMargin := strings.Repeat(" ", layout.HeaderLeftMargin)
-	output, _ := text.WrapWithPad(listOfKeymaps, screenWidth, leftMargin)
 
-	return output
+	return style.PrefixLines(listOfKeymaps, leftMargin)
 }
 
 func labelText(fallback string, enableNerdFonts bool) string {

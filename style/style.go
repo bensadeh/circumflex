@@ -11,6 +11,24 @@ import (
 
 const IndentSymbol = "▎"
 
+// PrefixLines prepends prefix to every line in s.
+// A trailing empty line (from a final \n) is kept but not prefixed,
+// so that concatenating two prefixed blocks doesn't double-indent.
+func PrefixLines(s, prefix string) string {
+	lines := strings.Split(s, "\n")
+	last := len(lines) - 1
+
+	for i, line := range lines {
+		if i == last && line == "" {
+			break
+		}
+
+		lines[i] = prefix + line
+	}
+
+	return strings.Join(lines, "\n")
+}
+
 var current = theme.Default()
 
 func Init(t *theme.Theme) {
@@ -19,6 +37,10 @@ func Init(t *theme.Theme) {
 
 func colored(colorStr, text string) string {
 	return lipgloss.NewStyle().Foreground(theme.ParseColor(colorStr)).Render(text)
+}
+
+func coloredLinked(colorStr, text, url string) string {
+	return lipgloss.NewStyle().Foreground(theme.ParseColor(colorStr)).Hyperlink(url).Render(text)
 }
 
 // Generic color helpers (for CLI messages, non-themed uses).
@@ -101,7 +123,7 @@ func HeadlineYearColor() color.Color    { return theme.ParseColor(current.Headli
 
 // Comment colors.
 
-func CommentURL(s string) string          { return colored(current.Comment.URL, s) }
+func CommentURL(s, url string) string     { return coloredLinked(current.Comment.URL, s, url) }
 func CommentMention(s string) string      { return colored(current.Comment.Mention, s) }
 func CommentMod(s string) string          { return colored(current.Comment.Mod, s) }
 func CommentVariable(s string) string     { return colored(current.Comment.Variable, s) }
@@ -119,7 +141,7 @@ func MetaAuthor(s string) string      { return colored(current.Meta.Author, s) }
 func MetaComments(s string) string    { return colored(current.Meta.Comments, s) }
 func MetaScore(s string) string       { return colored(current.Meta.Score, s) }
 func MetaNewComments(s string) string { return colored(current.Meta.NewComments, s) }
-func MetaURL(s string) string         { return colored(current.Meta.URL, s) }
+func MetaURL(s, url string) string    { return coloredLinked(current.Meta.URL, s, url) }
 func MetaReaderMode(s string) string  { return colored(current.Meta.ReaderMode, s) }
 func MetaIDColor() color.Color        { return theme.ParseColor(current.Meta.ID) }
 
