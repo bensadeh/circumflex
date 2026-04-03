@@ -10,7 +10,7 @@
 
 
 <p align="center">
-  <img src="screenshots/mainview.png" width="600" alt="Main view"/>
+  <img src="screenshots/main_view.png" width="600" alt="Main view"/>
 </p>
 
 ### Main features
