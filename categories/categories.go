@@ -38,6 +38,11 @@ func Name(cat Category) string {
 	}
 }
 
+// AvailableNames returns the names accepted by the --categories flag.
+func AvailableNames() []string {
+	return []string{"top", "new", "ask", "show", "best"}
+}
+
 func categoryFromName(name string) (Category, bool) {
 	switch name {
 	case "top":
@@ -77,7 +82,7 @@ func New(categoriesCSV string) (*Categories, error) {
 		value, exists := categoryFromName(part)
 
 		if !exists {
-			return nil, fmt.Errorf("unsupported category: %s", part)
+			return nil, fmt.Errorf("unsupported category: %q (available: %s)", part, strings.Join(AvailableNames(), ", "))
 		}
 
 		validCategories = append(validCategories, value)

@@ -126,7 +126,7 @@ Show the current version of *circumflex*.
 Do not verify *less* version on startup
 
 *--categories*::
-Set the categories in the header. Choose between top, new, best, ask and show.
+Set the categories in the header. Available categories: top, new, best, ask, show.
 First category will be treated as the default one. Separate categories with comma.
 Default value: "top,best,ask,show"
 

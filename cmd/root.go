@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/hn"
@@ -71,7 +72,7 @@ func configureFlags(rootCmd *cobra.Command) {
 	rootCmd.PersistentFlags().StringVarP(&nerdFontFlag, "nerdfonts", "n", "",
 		"enable or disable Nerd Fonts (true/false, auto-enabled for Ghostty, env: NERDFONTS)")
 	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", "top,best,ask,show",
-		"set the categories in the header")
+		"set the categories in the header (available: "+strings.Join(categories.AvailableNames(), ", ")+")")
 	rootCmd.PersistentFlags().IntVar(&pageMultiplier, "pages", settings.Default().PageMultiplier,
 		"set the number of pages to fetch per category (1-5)")
 
