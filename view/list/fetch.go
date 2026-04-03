@@ -124,25 +124,26 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 
 	return func() tea.Msg {
 		lastVisited := hist.CommentsLastVisited(msg.ID)
-		_ = hist.MarkAsReadAndWriteToDisk(msg.ID, msg.CommentCount)
 
 		story, err := service.FetchComments(ctx, msg.ID)
+		if err != nil {
+			return message.CommentTreeDataReady{
+				Err:     err,
+				FetchID: fetchID,
+			}
+		}
+
+		_ = hist.MarkAsReadAndWriteToDisk(msg.ID, msg.CommentCount)
 
 		var updatedStory *item.Story
-		if err == nil && isOnFavorites {
+		if isOnFavorites {
 			updatedStory = story
 		}
 
-		var thread *comment.Thread
-		if err == nil {
-			thread = comment.StoryToThread(story)
-		}
-
 		return message.CommentTreeDataReady{
-			Thread:       thread,
+			Thread:       comment.StoryToThread(story),
 			LastVisited:  lastVisited,
 			UpdatedStory: updatedStory,
-			Err:          err,
 			FetchID:      fetchID,
 		}
 	}
