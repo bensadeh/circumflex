@@ -34,9 +34,10 @@ var (
 
 func Root() *cobra.Command {
 	rootCmd := &cobra.Command{
-		Use:     "clx",
-		Short:   style.Magenta("circumflex") + " is a command line tool for browsing Hacker News in your terminal",
-		Version: version.Version,
+		Use:          "clx",
+		Short:        style.Magenta("circumflex") + " is a command line tool for browsing Hacker News in your terminal",
+		Version:      version.Version,
+		SilenceUsage: true,
 		Run: func(cmd *cobra.Command, args []string) {
 			config := getConfig()
 
