@@ -2,6 +2,7 @@ package list
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"time"
 
@@ -191,6 +192,41 @@ func (m *Model) handleCategoryFetchingFinished(msg message.CategoryFetchingFinis
 	return m, nil
 }
 
+func (m *Model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*Model, tea.Cmd) {
+	if msg.FetchID != m.fetchID {
+		return m, nil
+	}
+
+	var cmds []tea.Cmd
+
+	m.pager.transition = nil
+	m.status.StopSpinner()
+
+	if msg.UpdatedStory != nil {
+		if err := m.favorites.UpdateStoryAndWriteToDisk(msg.UpdatedStory); err != nil {
+			cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not update favorite on disk", statusMessageLong))
+		}
+	}
+
+	if msg.Err != nil {
+		m.state = StateBrowsing
+		cmds = append(cmds, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong))
+
+		return m, tea.Batch(cmds...)
+	}
+
+	m.commentView = comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.EnableNerdFonts, m.width, m.height)
+	m.state = StateCommentView
+
+	cmds = append(cmds, m.commentView.Init())
+
+	if msg.HistoryWarning != nil {
+		cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not save read status", statusMessageShort))
+	}
+
+	return m, tea.Batch(cmds...)
+}
+
 func (m *Model) handleFetchingFinished(msg message.FetchingFinished) (*Model, tea.Cmd) {
 	if msg.FetchID != m.fetchID {
 		return m, nil
@@ -293,9 +329,13 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		m.favorites.Add(msg.Item)
 
 		if err := m.favorites.Write(); err != nil {
-			_ = m.favorites.Remove(len(m.favorites.Items()) - 1)
+			if removeErr := m.favorites.RemoveLast(); removeErr != nil {
+				cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not save or rollback favorite", statusMessageLong))
+			} else {
+				cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not save favorite to disk", statusMessageLong))
+			}
+
 			m.syncFavorites()
-			cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not save favorite to disk", statusMessageLong))
 
 			break
 		}
@@ -310,7 +350,8 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, m.handleEnteringCommentSection(msg)
 
 	case message.BrowserOpenFailed:
-		cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not open browser", statusMessageLong))
+		cmds = append(cmds, m.status.NewStatusMessageWithDuration(
+			fmt.Sprintf("Could not open browser: %s", msg.Err), statusMessageLong))
 
 	case message.EnteringReaderMode:
 		return m, m.handleEnteringReaderMode(msg)
@@ -344,7 +385,13 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 		m.state = StateReaderView
 
-		return m, m.readerView.Init()
+		initCmd := m.readerView.Init()
+		if msg.HistoryWarning != nil {
+			return m, tea.Batch(initCmd,
+				m.status.NewStatusMessageWithDuration("Could not save read status", statusMessageShort))
+		}
+
+		return m, initCmd
 
 	case message.ReaderViewQuitMsg:
 		m.readerView = nil
@@ -362,27 +409,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		cmds = append(cmds, m.status.NewStatusMessageWithDuration(msg.Message, msg.Duration))
 
 	case message.CommentTreeDataReady:
-		if msg.FetchID != m.fetchID {
-			return m, nil
-		}
-
-		m.pager.transition = nil
-		m.status.StopSpinner()
-
-		if msg.UpdatedStory != nil {
-			_ = m.favorites.UpdateStoryAndWriteToDisk(msg.UpdatedStory)
-		}
-
-		if msg.Err != nil {
-			m.state = StateBrowsing
-
-			return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
-		}
-
-		m.commentView = comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.EnableNerdFonts, m.width, m.height)
-		m.state = StateCommentView
-
-		return m, m.commentView.Init()
+		return m.handleCommentTreeDataReady(msg)
 
 	case message.CommentViewQuitMsg:
 		m.commentView = nil

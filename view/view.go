@@ -44,11 +44,17 @@ func (m model) View() tea.View {
 }
 
 func Run(config *settings.Config, cat *categories.Categories) {
-	m := model{list: list.New(list.NewDefaultDelegate(), config, cat, favorites.New(settings.FavoritesPath()), 0, 0)}
+	fav, err := favorites.New(settings.FavoritesPath())
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	m := model{list: list.New(list.NewDefaultDelegate(), config, cat, fav, 0, 0)}
 
 	p := tea.NewProgram(m)
 
-	_, err := p.Run()
+	_, err = p.Run()
 	if err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)

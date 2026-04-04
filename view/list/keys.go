@@ -2,6 +2,7 @@ package list
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -421,7 +422,8 @@ func (m *Model) handleToggleRead() tea.Cmd {
 
 	if m.history.Contains(item.ID) {
 		if err := m.history.MarkAsUnreadAndWriteToDisk(item.ID); err != nil {
-			return m.status.NewStatusMessageWithDuration("Could not mark as unread", statusMessageShort)
+			return m.status.NewStatusMessageWithDuration(
+				fmt.Sprintf("Could not mark as unread: %s", err), statusMessageShort)
 		}
 
 		return m.status.NewStatusMessageWithDuration(
@@ -429,7 +431,8 @@ func (m *Model) handleToggleRead() tea.Cmd {
 	}
 
 	if err := m.history.MarkAsReadAndWriteToDisk(item.ID, item.CommentsCount); err != nil {
-		return m.status.NewStatusMessageWithDuration("Could not mark as read", statusMessageShort)
+		return m.status.NewStatusMessageWithDuration(
+			fmt.Sprintf("Could not mark as read: %s", err), statusMessageShort)
 	}
 
 	return m.status.NewStatusMessageWithDuration(

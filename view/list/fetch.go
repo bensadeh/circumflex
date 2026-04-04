@@ -83,7 +83,7 @@ func getHistory(debugMode bool, doNotMarkAsRead bool) history.History {
 
 	h, err := history.NewPersistentHistory()
 	if err != nil {
-		return history.NewNonPersistentHistory()
+		fmt.Fprintf(os.Stderr, "Warning: %v\n", err)
 	}
 
 	return h
@@ -188,7 +188,7 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 
 		clearProgress()
 
-		_ = hist.MarkAsReadAndWriteToDisk(msg.ID, msg.CommentCount)
+		histErr := hist.MarkAsReadAndWriteToDisk(msg.ID, msg.CommentCount)
 
 		var updatedStory *item.Story
 		if isOnFavorites {
@@ -196,10 +196,11 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 		}
 
 		return message.CommentTreeDataReady{
-			Thread:       comment.StoryToThread(story),
-			LastVisited:  lastVisited,
-			UpdatedStory: updatedStory,
-			FetchID:      fetchID,
+			Thread:         comment.StoryToThread(story),
+			LastVisited:    lastVisited,
+			UpdatedStory:   updatedStory,
+			FetchID:        fetchID,
+			HistoryWarning: histErr,
 		}
 	}
 }
@@ -229,17 +230,18 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 
 		clearProgress()
 
-		_ = hist.MarkArticleAsReadAndWriteToDisk(msg.ID)
+		histErr := hist.MarkArticleAsReadAndWriteToDisk(msg.ID)
 
 		return message.ArticleReady{
-			Parsed:  parsed,
-			Title:   msg.Title,
-			URL:     msg.URL,
-			Author:  msg.Author,
-			TimeAgo: msg.TimeAgo,
-			ID:      msg.ID,
-			Points:  msg.Points,
-			FetchID: fetchID,
+			Parsed:         parsed,
+			Title:          msg.Title,
+			URL:            msg.URL,
+			Author:         msg.Author,
+			TimeAgo:        msg.TimeAgo,
+			ID:             msg.ID,
+			Points:         msg.Points,
+			FetchID:        fetchID,
+			HistoryWarning: histErr,
 		}
 	}
 }

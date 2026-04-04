@@ -32,7 +32,12 @@ func addCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			fav := favorites.New(settings.FavoritesPath())
+			fav, err := favorites.New(settings.FavoritesPath())
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				os.Exit(1)
+			}
+
 			fav.Add(submission)
 
 			if err := fav.Write(); err != nil {

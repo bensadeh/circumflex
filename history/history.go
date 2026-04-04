@@ -2,6 +2,7 @@ package history
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -44,6 +45,8 @@ func NewPersistentHistory() (History, error) {
 		if clearErr := h.ClearAndWriteToDisk(); clearErr != nil {
 			return h, clearErr
 		}
+
+		return h, fmt.Errorf("history was corrupted and has been reset: %w", deserializationErr)
 	}
 
 	return h, nil
@@ -73,9 +76,31 @@ func fileExists(path string) bool {
 }
 
 func writeFile(path string, content string) error {
-	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+	dir := filepath.Dir(path)
+
+	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return err
 	}
 
-	return os.WriteFile(path, []byte(content), 0o600)
+	tmp, err := os.CreateTemp(dir, filepath.Base(path)+".tmp*")
+	if err != nil {
+		return err
+	}
+
+	tmpPath := tmp.Name()
+
+	if _, err := tmp.WriteString(content); err != nil {
+		_ = tmp.Close()
+		_ = os.Remove(tmpPath)
+
+		return err
+	}
+
+	if err := tmp.Close(); err != nil {
+		_ = os.Remove(tmpPath)
+
+		return err
+	}
+
+	return os.Rename(tmpPath, path)
 }

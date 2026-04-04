@@ -5,33 +5,37 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/bensadeh/circumflex/item"
 )
 
 type Favorites struct {
+	mu    sync.RWMutex
 	items []*item.Story
 	path  string
 }
 
-func New(path string) *Favorites {
+func New(path string) (*Favorites, error) {
 	f := &Favorites{path: path}
 
-	if fileExists(path) {
-		favoritesJSON, err := os.ReadFile(path)
-		if err != nil {
-			return f
-		}
-
-		items, err := unmarshal(favoritesJSON)
-		if err != nil {
-			return f
-		}
-
-		f.items = items
+	if !fileExists(path) {
+		return f, nil
 	}
 
-	return f
+	favoritesJSON, err := os.ReadFile(path)
+	if err != nil {
+		return f, fmt.Errorf("could not read favorites: %w", err)
+	}
+
+	items, err := unmarshal(favoritesJSON)
+	if err != nil {
+		return f, fmt.Errorf("could not parse favorites (file may be corrupted): %w", err)
+	}
+
+	f.items = items
+
+	return f, nil
 }
 
 func unmarshal(data []byte) ([]*item.Story, error) {
@@ -45,19 +49,37 @@ func unmarshal(data []byte) ([]*item.Story, error) {
 	return items, nil
 }
 
+// Items returns the internal slice. Callers on the same goroutine (Bubble Tea
+// Update loop) can safely iterate it; concurrent use would need a copy.
 func (f *Favorites) Items() []*item.Story {
+	f.mu.RLock()
+	defer f.mu.RUnlock()
+
 	return f.items
 }
 
 func (f *Favorites) HasItems() bool {
+	f.mu.RLock()
+	defer f.mu.RUnlock()
+
 	return len(f.items) != 0
 }
 
 func (f *Favorites) Add(item *item.Story) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+
 	f.items = append(f.items, item)
 }
 
 func (f *Favorites) Write() error {
+	f.mu.RLock()
+	defer f.mu.RUnlock()
+
+	return f.writeLocked()
+}
+
+func (f *Favorites) writeLocked() error {
 	stream, err := json.MarshalIndent(f.items, "", "    ")
 	if err != nil {
 		return fmt.Errorf("could not serialize favorites: %w", err)
@@ -71,6 +93,9 @@ func (f *Favorites) Write() error {
 }
 
 func (f *Favorites) Remove(index int) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+
 	if index < 0 || index >= len(f.items) {
 		return fmt.Errorf("out of bounds: tried to remove index %d, but size was %d", index, len(f.items))
 	}
@@ -80,7 +105,23 @@ func (f *Favorites) Remove(index int) error {
 	return nil
 }
 
+func (f *Favorites) RemoveLast() error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+
+	if len(f.items) == 0 {
+		return fmt.Errorf("cannot remove from empty favorites")
+	}
+
+	f.items = f.items[:len(f.items)-1]
+
+	return nil
+}
+
 func (f *Favorites) UpdateStoryAndWriteToDisk(newItem *item.Story) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+
 	for i, s := range f.items {
 		if s.ID == newItem.ID {
 			isFieldsUpdated := s.Title != newItem.Title || s.Points != newItem.Points ||
@@ -97,7 +138,7 @@ func (f *Favorites) UpdateStoryAndWriteToDisk(newItem *item.Story) error {
 				f.items[i].URL = newItem.URL
 				f.items[i].Domain = newItem.Domain
 
-				return f.Write()
+				return f.writeLocked()
 			}
 		}
 	}
@@ -112,9 +153,31 @@ func fileExists(path string) bool {
 }
 
 func writeFile(path string, content string) error {
-	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+	dir := filepath.Dir(path)
+
+	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return err
 	}
 
-	return os.WriteFile(path, []byte(content), 0o600)
+	tmp, err := os.CreateTemp(dir, filepath.Base(path)+".tmp*")
+	if err != nil {
+		return err
+	}
+
+	tmpPath := tmp.Name()
+
+	if _, err := tmp.WriteString(content); err != nil {
+		_ = tmp.Close()
+		_ = os.Remove(tmpPath)
+
+		return err
+	}
+
+	if err := tmp.Close(); err != nil {
+		_ = os.Remove(tmpPath)
+
+		return err
+	}
+
+	return os.Rename(tmpPath, path)
 }

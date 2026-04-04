@@ -18,6 +18,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // instantMockService implements hn.Service without the 1-second sleep.
@@ -52,7 +53,9 @@ func newTestModel(t *testing.T) *Model {
 
 	config := settings.Default()
 	cat, _ := categories.New("top,best,ask,show")
-	fav := favorites.New(filepath.Join(t.TempDir(), "favorites.json"))
+	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.json"))
+	require.NoError(t, err)
+
 	service := &instantMockService{}
 	hist := history.NewMockHistory()
 
@@ -512,4 +515,141 @@ func TestSpinnerView_WhenActive(t *testing.T) {
 
 	got := m.statusAndPaginationView()
 	assert.NotEmpty(t, got)
+}
+
+// --- Error handling tests ---
+
+// failingHistory is a history.History that returns errors on write operations.
+type failingHistory struct {
+	history.Mock
+
+	writeErr error
+}
+
+func (f failingHistory) MarkAsReadAndWriteToDisk(_ int, _ int) error {
+	return f.writeErr
+}
+
+func (f failingHistory) MarkArticleAsReadAndWriteToDisk(_ int) error {
+	return f.writeErr
+}
+
+func (f failingHistory) MarkAsUnreadAndWriteToDisk(_ int) error {
+	return f.writeErr
+}
+
+func TestCommentTreeDataReady_HistoryWarning(t *testing.T) {
+	m := newTestModelReady(t)
+	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
+
+	thread := &comment.Thread{ID: 1, Title: "test", CommentsCount: 5}
+	histErr := errors.New("disk full")
+
+	m, cmd := m.Update(message.CommentTreeDataReady{
+		Thread:         thread,
+		FetchID:        m.fetchID,
+		HistoryWarning: histErr,
+	})
+
+	assert.Equal(t, StateCommentView, m.state)
+	assert.NotNil(t, cmd, "should return batched cmd with init + warning")
+}
+
+func TestArticleReady_HistoryWarning(t *testing.T) {
+	m := newTestModelReady(t)
+	histErr := errors.New("disk full")
+
+	m, cmd := m.Update(message.ArticleReady{
+		Content:        "article content",
+		Title:          "Test",
+		FetchID:        m.fetchID,
+		HistoryWarning: histErr,
+	})
+
+	assert.Equal(t, StateReaderView, m.state)
+	assert.NotNil(t, cmd, "should return batched cmd with init + warning")
+}
+
+func TestArticleReady_NoHistoryWarning(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, cmd := m.Update(message.ArticleReady{
+		Content: "article content",
+		Title:   "Test",
+		FetchID: m.fetchID,
+	})
+
+	assert.Equal(t, StateReaderView, m.state)
+	assert.Nil(t, cmd, "Init returns nil, no warning — cmd should be nil")
+}
+
+func TestBrowserOpenFailed_IncludesError(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, cmd := m.Update(message.BrowserOpenFailed{Err: errors.New("xdg-open not found")})
+
+	assert.NotNil(t, cmd)
+	assert.Contains(t, m.status.message, "xdg-open not found")
+}
+
+func TestEnteringCommentSection_HistoryWriteFailure(t *testing.T) {
+	config := settings.Default()
+	cat, _ := categories.New("top,best,ask,show")
+	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.json"))
+	require.NoError(t, err)
+
+	hist := failingHistory{writeErr: errors.New("permission denied")}
+	m := newModel(NewDefaultDelegate(), config, cat, fav, 80, 24, &instantMockService{}, hist)
+	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
+	m.pager.items[categories.Top] = testItems()
+	m.state = StateBrowsing
+
+	// Trigger the comment section fetch command
+	_, cmd := m.Update(message.EnteringCommentSection{ID: 1, CommentCount: 10})
+	assert.NotNil(t, cmd)
+
+	// Execute the cmd — should produce CommentTreeDataReady with HistoryWarning
+	msg := cmd()
+	result, ok := msg.(message.CommentTreeDataReady)
+	assert.True(t, ok)
+	require.NoError(t, result.Err, "fetch itself should succeed")
+	require.Error(t, result.HistoryWarning, "history write should fail")
+	assert.Contains(t, result.HistoryWarning.Error(), "permission denied")
+}
+
+func TestEnteringReaderMode_HistoryWriteFailure(t *testing.T) {
+	config := settings.Default()
+	cat, _ := categories.New("top,best,ask,show")
+	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.json"))
+	require.NoError(t, err)
+
+	hist := failingHistory{writeErr: errors.New("permission denied")}
+	m := newModel(NewDefaultDelegate(), config, cat, fav, 80, 24, &instantMockService{}, hist)
+	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
+	m.pager.items[categories.Top] = testItems()
+	m.state = StateBrowsing
+
+	// Trigger reader mode — use a domain that will fail article.Validate
+	// so the cmd returns immediately without hitting the network
+	_, cmd := m.Update(message.EnteringReaderMode{
+		URL:    "https://example.com/article",
+		Title:  "Test Article",
+		Domain: "example.com",
+		ID:     1,
+	})
+	assert.NotNil(t, cmd)
+
+	// Execute the cmd — article.Parse will fail (no real server), but we can
+	// still check the cmd was produced. For a true end-to-end test we'd need
+	// a mock HTTP server, so instead test the handler path directly.
+	m2 := newTestModelReady(t)
+	m2, resultCmd := m2.Update(message.ArticleReady{
+		Content:        "content",
+		Title:          "Test",
+		FetchID:        m2.fetchID,
+		HistoryWarning: errors.New("permission denied"),
+	})
+
+	assert.Equal(t, StateReaderView, m2.state)
+	assert.NotNil(t, resultCmd, "should batch init + warning")
 }

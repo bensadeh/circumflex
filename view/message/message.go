@@ -72,24 +72,26 @@ type AddToFavorites struct {
 }
 
 type ArticleReady struct {
-	Parsed  *article.Parsed
-	Content string
-	Title   string
-	URL     string
-	Author  string
-	TimeAgo string
-	ID      int
-	Points  int
-	Err     error
-	FetchID uint64
+	Parsed         *article.Parsed
+	Content        string
+	Title          string
+	URL            string
+	Author         string
+	TimeAgo        string
+	ID             int
+	Points         int
+	Err            error
+	FetchID        uint64
+	HistoryWarning error // non-nil if marking as read failed
 }
 
 type CommentTreeDataReady struct {
-	Thread       *comment.Thread
-	LastVisited  int64
-	UpdatedStory *item.Story // stays in item domain for favorites sync
-	Err          error
-	FetchID      uint64
+	Thread         *comment.Thread
+	LastVisited    int64
+	UpdatedStory   *item.Story // stays in item domain for favorites sync
+	Err            error
+	FetchID        uint64
+	HistoryWarning error // non-nil if marking as read failed
 }
 
 type CommentViewQuitMsg struct{}

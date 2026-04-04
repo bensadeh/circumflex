@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/bensadeh/circumflex/settings"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -169,4 +170,41 @@ func TestMock_ContainsKnownIDs(t *testing.T) {
 	assert.True(t, h.Contains(18))
 	assert.False(t, h.Contains(1))
 	assert.False(t, h.Contains(99))
+}
+
+func TestNewPersistentHistory_CorruptFile(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("HOME", dir)
+
+	filePath := path.Join(settings.CachePath(), "history.json")
+	require.NoError(t, os.MkdirAll(path.Dir(filePath), 0o700))
+	require.NoError(t, os.WriteFile(filePath, []byte("not valid json{{{"), 0o600))
+
+	h, err := NewPersistentHistory()
+
+	// Should return a usable (empty) history AND an error about corruption
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "corrupted")
+	assert.Contains(t, err.Error(), "reset")
+
+	// The returned history should be functional (empty after reset)
+	assert.NotNil(t, h)
+	assert.False(t, h.Contains(1))
+
+	// Should be able to write new entries
+	require.NoError(t, h.MarkAsReadAndWriteToDisk(1, 5))
+	assert.True(t, h.Contains(1))
+}
+
+func TestNewPersistentHistory_ValidFile(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("HOME", dir)
+
+	filePath := path.Join(settings.CachePath(), "history.json")
+	require.NoError(t, os.MkdirAll(path.Dir(filePath), 0o700))
+	require.NoError(t, os.WriteFile(filePath, []byte(`{"42":{"LastVisited":100,"CommentsLastVisited":100,"CommentsOnLastVisit":5}}`), 0o600))
+
+	h, err := NewPersistentHistory()
+	require.NoError(t, err)
+	assert.True(t, h.Contains(42))
 }
