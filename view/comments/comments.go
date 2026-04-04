@@ -873,7 +873,7 @@ func renderRootComment(c string, contentWidth int, enableNerdFonts bool) string 
 		return ""
 	}
 
-	rendered := comment.Render(c, contentWidth, contentWidth, enableNerdFonts)
+	rendered := comment.Render(c, contentWidth, contentWidth, enableNerdFonts, nil)
 
 	return "\n\n" + lipgloss.Wrap(rendered, contentWidth, "")
 }

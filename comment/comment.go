@@ -1,6 +1,7 @@
 package comment
 
 import (
+	"image/color"
 	"strings"
 
 	"charm.land/lipgloss/v2"
@@ -22,7 +23,7 @@ type section struct {
 	content string
 }
 
-func Render(commentHTML string, commentWidth int, availableScreenWidth int, enableNerdFonts bool) string {
+func Render(commentHTML string, commentWidth int, screenWidth int, enableNerdFonts bool, fg color.Color) string {
 	if commentHTML == "[deleted]" {
 		return style.Faint(commentHTML)
 	}
@@ -36,9 +37,21 @@ func Render(commentHTML string, commentWidth int, availableScreenWidth int, enab
 		case sectionQuote:
 			output.WriteString(formatQuote(s.content, commentWidth))
 		case sectionCode:
-			output.WriteString(formatCodeBlock(s.content, availableScreenWidth))
+			output.WriteString(formatCodeBlock(s.content, screenWidth))
 		case sectionParagraph:
-			output.WriteString(formatParagraph(s.content, commentWidth, enableNerdFonts))
+			if fg != nil {
+				style.SetBaseForeground(fg)
+			}
+
+			para := formatParagraph(s.content, commentWidth, enableNerdFonts)
+
+			if fg != nil {
+				style.ClearBaseForeground()
+
+				para = style.PaintForeground(para, fg)
+			}
+
+			output.WriteString(para)
 		}
 
 		if i < len(sections)-1 {

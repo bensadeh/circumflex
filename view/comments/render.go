@@ -1,6 +1,7 @@
 package comments
 
 import (
+	"image/color"
 	"strings"
 
 	"github.com/bensadeh/circumflex/comment"
@@ -78,7 +79,7 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 
 		depthIndent := comment.IndentString(fc.Depth)
 		depthIndentLen := len(depthIndent)
-		availableWidth := contentWidth - depthIndentLen
+		screenWidth := contentWidth - depthIndentLen
 		adjustedCommentWidth := commentWidth - fc.Depth
 
 		pad := leftMargin + depthIndent
@@ -93,7 +94,12 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 		out.headerFocused = style.PrefixLines(focusedHeader, pad)
 
 		// Render the comment content (expensive: syntax highlighting + wrapping).
-		content := comment.RenderContent(&fc.Comment, fc.Depth, adjustedCommentWidth, availableWidth, rc.enableNerdFonts)
+		var fg color.Color
+		if comment.IsMod(fc.Comment.Author) {
+			fg = style.CommentModFg()
+		}
+
+		content := comment.RenderContent(&fc.Comment, fc.Depth, adjustedCommentWidth, screenWidth, rc.enableNerdFonts, fg)
 		contentWithMargin := style.PrefixLines(content+"\n", pad)
 		out.content = contentWithMargin
 		out.contentLines = strings.Count(contentWithMargin, "\n")

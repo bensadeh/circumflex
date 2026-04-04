@@ -2,6 +2,7 @@ package comment
 
 import (
 	"fmt"
+	"image/color"
 	"slices"
 	"strings"
 
@@ -120,13 +121,14 @@ func Header(c *Comment, depth int, originalPoster, topLevelAuthor string, lastVi
 }
 
 // RenderContent returns the formatted comment body (without header), with indent symbol.
-func RenderContent(c *Comment, depth int, commentWidth, availableScreenWidth int, enableNerdFonts bool) string {
+// When fg is non-nil, paragraph text is tinted with that foreground color.
+func RenderContent(c *Comment, depth int, commentWidth, screenWidth int, enableNerdFonts bool, fg color.Color) string {
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(style.IndentSymbol, depth)
 
-	formattedComment := Render(c.Content, commentWidth, availableScreenWidth, enableNerdFonts)
+	formattedComment := Render(c.Content, commentWidth, screenWidth, enableNerdFonts, fg)
 
 	padWidth := lipgloss.Width(coloredIndentSymbol)
-	wrapped := lipgloss.Wrap(formattedComment, availableScreenWidth-padWidth, "")
+	wrapped := lipgloss.Wrap(formattedComment, screenWidth-padWidth, "")
 
 	return style.PrefixLines(wrapped, coloredIndentSymbol)
 }

@@ -13,6 +13,7 @@ _WIP_
 - Add `--pages` flag to configure the number of pages fetched per category (1-5)
 - Auto-enable Nerd Fonts when running inside Ghostty
 - Show terminal progress bar during fetching via OSC 9;4 
+- Mod's comments are now highlighted in green
 
 **Changes**
 
