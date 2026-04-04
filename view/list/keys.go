@@ -46,6 +46,8 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return nil
 
 		case key.Matches(msg, m.keymap.Quit):
+			clearProgress()
+
 			return tea.Quit
 
 		case key.Matches(msg, m.keymap.Up):

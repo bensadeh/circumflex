@@ -284,6 +284,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	case message.StatusMessageTimeout:
 		if msg.Generation == m.status.generation {
 			m.status.hideStatusMessage()
+			clearProgress()
 		}
 
 	case message.AddToFavorites:
