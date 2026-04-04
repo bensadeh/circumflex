@@ -93,9 +93,13 @@ func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) t
 		setProgressIndeterminate()
 
 		stories, err := service.FetchItems(ctx, numItems, endpoint)
-		if err != nil {
+
+		switch {
+		case errors.Is(err, context.Canceled):
+			clearProgress()
+		case err != nil:
 			setProgressError()
-		} else {
+		default:
 			clearProgress()
 		}
 
@@ -121,9 +125,13 @@ func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 		setProgressIndeterminate()
 
 		stories, err := service.FetchItems(ctx, numItems, endpoint)
-		if err != nil {
+
+		switch {
+		case errors.Is(err, context.Canceled):
+			clearProgress()
+		case err != nil:
 			setProgressError()
-		} else {
+		default:
 			clearProgress()
 		}
 
@@ -159,7 +167,11 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 
 		story, err := service.FetchComments(ctx, msg.ID, onProgress)
 		if err != nil {
-			setProgressError()
+			if errors.Is(err, context.Canceled) {
+				clearProgress()
+			} else {
+				setProgressError()
+			}
 
 			return message.CommentTreeDataReady{
 				Err:     err,
@@ -199,7 +211,11 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 
 		parsed, err := article.Parse(ctx, msg.URL)
 		if err != nil {
-			setProgressError()
+			if errors.Is(err, context.Canceled) {
+				clearProgress()
+			} else {
+				setProgressError()
+			}
 
 			return message.ArticleReady{Err: err, FetchID: fetchID}
 		}
@@ -227,7 +243,8 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 
 func setProgressIndeterminate() { fmt.Fprint(os.Stderr, "\033]9;4;3;0\a") }
 func setProgressError()         { fmt.Fprint(os.Stderr, "\033]9;4;2;100\a") }
-func clearProgress()            { fmt.Fprint(os.Stderr, "\033]9;4;0\a") }
+
+func clearProgress() { fmt.Fprint(os.Stderr, "\033]9;4;0\a") }
 
 func isTimeout(err error) bool {
 	var netErr net.Error

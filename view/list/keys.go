@@ -267,6 +267,16 @@ func (m *Model) startFetch(timeout time.Duration) tea.Cmd {
 	return m.status.StartSpinner()
 }
 
+// CancelFetch cancels an in-progress fetch and returns the resulting command.
+// Returns nil if no fetch is active.
+func (m *Model) CancelFetch() tea.Cmd {
+	if m.state != StateFetching {
+		return nil
+	}
+
+	return m.handleCancelFetch()
+}
+
 func (m *Model) handleCancelFetch() tea.Cmd {
 	if m.cancelFetch != nil {
 		m.cancelFetch()

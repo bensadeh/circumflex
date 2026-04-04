@@ -22,6 +22,10 @@ func (m model) Init() tea.Cmd {
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if msg, ok := msg.(tea.KeyPressMsg); ok && msg.Mod == tea.ModCtrl && msg.Code == 'c' {
+		if cmd := m.list.CancelFetch(); cmd != nil {
+			return m, cmd
+		}
+
 		return m, tea.Quit
 	}
 
