@@ -17,7 +17,7 @@ import (
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	"github.com/muesli/reflow/truncate"
+	xansi "github.com/charmbracelet/x/ansi"
 )
 
 const sectionMarker = "■"
@@ -310,9 +310,9 @@ func (m *Model) View() string {
 
 func (m *Model) headerView() string {
 	leftMargin := strings.Repeat(" ", layout.ReaderViewLeftMargin)
-	maxTitleWidth := uint(max(0, m.screenWidth-layout.ReaderViewLeftMargin))
+	maxTitleWidth := max(0, m.screenWidth-layout.ReaderViewLeftMargin)
 	title := syntax.ReplaceSpecialContentTags(m.title, m.articleMeta.NerdFonts)
-	title = truncate.StringWithTail(title, maxTitleWidth, "…")
+	title = xansi.Truncate(title, maxTitleWidth, "…")
 
 	title = syntax.HighlightYCStartupsInHeadlines(title, syntax.HeadlineInCommentSection, m.articleMeta.NerdFonts)
 	title = syntax.HighlightYear(title, syntax.HeadlineInCommentSection)

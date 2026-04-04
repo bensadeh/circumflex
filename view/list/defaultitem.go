@@ -13,7 +13,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	"github.com/muesli/reflow/truncate"
+	xansi "github.com/charmbracelet/x/ansi"
 )
 
 const nerdFontSpacing = 2
@@ -116,9 +116,9 @@ func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *item.St
 
 	// Prevent text from exceeding list width
 	if m.width > 0 {
-		textWidth := uint(m.width - s.NormalTitle.GetPaddingLeft() - s.NormalTitle.GetPaddingRight())
-		title = truncate.StringWithTail(title, textWidth, ellipsis)
-		desc = truncate.StringWithTail(desc, textWidth, ellipsis)
+		textWidth := m.width - s.NormalTitle.GetPaddingLeft() - s.NormalTitle.GetPaddingRight()
+		title = xansi.Truncate(title, textWidth, ellipsis)
+		desc = xansi.Truncate(desc, textWidth, ellipsis)
 	}
 
 	var (

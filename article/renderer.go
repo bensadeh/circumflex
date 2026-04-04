@@ -9,7 +9,6 @@ import (
 	"github.com/bensadeh/circumflex/syntax"
 
 	xansi "github.com/charmbracelet/x/ansi"
-	"github.com/muesli/reflow/wordwrap"
 
 	"charm.land/glamour/v2"
 	"charm.land/glamour/v2/styles"
@@ -115,7 +114,7 @@ func renderText(text string, lineWidth int) string {
 	text = syntax.HighlightMentions(text)
 	text = syntax.TrimURLs(text, false)
 
-	return wordwrap.String(text, lineWidth)
+	return xansi.Wordwrap(text, lineWidth, "")
 }
 
 func renderList(text string, lineWidth int) string {

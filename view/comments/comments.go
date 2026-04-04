@@ -18,7 +18,7 @@ import (
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	"github.com/muesli/reflow/truncate"
+	xansi "github.com/charmbracelet/x/ansi"
 )
 
 // Model is the Bubble Tea model for the native comment view.
@@ -339,9 +339,9 @@ func (m *Model) View() string {
 
 func (m *Model) headerView() string {
 	leftMargin := strings.Repeat(" ", layout.CommentSectionLeftMargin)
-	maxTitleWidth := uint(max(0, m.rc.screenWidth-layout.CommentSectionLeftMargin))
+	maxTitleWidth := max(0, m.rc.screenWidth-layout.CommentSectionLeftMargin)
 	title := syntax.ReplaceSpecialContentTags(m.title, m.rc.enableNerdFonts)
-	title = truncate.StringWithTail(title, maxTitleWidth, "…")
+	title = xansi.Truncate(title, maxTitleWidth, "…")
 
 	nf := m.rc.enableNerdFonts
 	title = syntax.HighlightYCStartupsInHeadlines(title, syntax.HeadlineInCommentSection, nf)
