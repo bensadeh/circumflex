@@ -28,7 +28,7 @@ func NewPersistentHistory() (History, error) {
 
 	if !fileExists(filePath) {
 		if err := writeToDisk(h, filePath); err != nil {
-			return h, err
+			return h, fmt.Errorf("could not create history at %s: %w", filePath, err)
 		}
 
 		return h, nil
@@ -36,17 +36,12 @@ func NewPersistentHistory() (History, error) {
 
 	historyFileContent, readErr := os.ReadFile(filePath)
 	if readErr != nil {
-		// Graceful degradation: treat as empty history
-		return h, nil //nolint:nilerr
+		return h, fmt.Errorf("could not read history at %s: %w", filePath, readErr)
 	}
 
 	deserializationErr := json.Unmarshal(historyFileContent, &h.VisitedStories)
 	if deserializationErr != nil {
-		if clearErr := h.ClearAndWriteToDisk(); clearErr != nil {
-			return h, clearErr
-		}
-
-		return h, fmt.Errorf("history was corrupted and has been reset: %w", deserializationErr)
+		return h, fmt.Errorf("history at %s is corrupted: %w\n  To start fresh, delete the file and restart", filePath, deserializationErr)
 	}
 
 	return h, nil

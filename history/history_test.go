@@ -180,20 +180,12 @@ func TestNewPersistentHistory_CorruptFile(t *testing.T) {
 	require.NoError(t, os.MkdirAll(path.Dir(filePath), 0o700))
 	require.NoError(t, os.WriteFile(filePath, []byte("not valid json{{{"), 0o600))
 
-	h, err := NewPersistentHistory()
+	_, err := NewPersistentHistory()
 
-	// Should return a usable (empty) history AND an error about corruption
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "corrupted")
-	assert.Contains(t, err.Error(), "reset")
-
-	// The returned history should be functional (empty after reset)
-	assert.NotNil(t, h)
-	assert.False(t, h.Contains(1))
-
-	// Should be able to write new entries
-	require.NoError(t, h.MarkAsReadAndWriteToDisk(1, 5))
-	assert.True(t, h.Contains(1))
+	assert.Contains(t, err.Error(), filePath)
+	assert.Contains(t, err.Error(), "delete the file")
 }
 
 func TestNewPersistentHistory_ValidFile(t *testing.T) {

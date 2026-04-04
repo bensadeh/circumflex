@@ -83,7 +83,8 @@ func getHistory(debugMode bool, doNotMarkAsRead bool) history.History {
 
 	h, err := history.NewPersistentHistory()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Warning: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
 	}
 
 	return h
