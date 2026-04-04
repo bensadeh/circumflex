@@ -290,6 +290,7 @@ func (m *Model) handleCancelFetch() tea.Cmd {
 		m.pager.transition = nil
 	}
 
+	clearProgress()
 	m.status.StopSpinner()
 	m.state = StateBrowsing
 	m.updatePagination()

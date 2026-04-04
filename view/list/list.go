@@ -192,6 +192,10 @@ func (m *Model) handleCategoryFetchingFinished(msg message.CategoryFetchingFinis
 }
 
 func (m *Model) handleFetchingFinished(msg message.FetchingFinished) (*Model, tea.Cmd) {
+	if msg.FetchID != m.fetchID {
+		return m, nil
+	}
+
 	m.status.StopSpinner()
 	m.state = StateBrowsing
 
@@ -233,10 +237,8 @@ func (m *Model) handleStartup(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 
 	var cmds []tea.Cmd
 
-	spinnerCmd := m.status.StartSpinner()
+	spinnerCmd := m.startFetch(0)
 	cmds = append(cmds, spinnerCmd)
-
-	m.state = StateFetching
 
 	m.syncFavorites()
 

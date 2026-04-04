@@ -32,14 +32,20 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 	service := m.service
 	numItems := m.getNumberOfItemsToFetch(categoryToFetch)
 	endpoint := categoryEndpoints[categoryToFetch]
+	ctx := m.fetchCtx
+	fetchID := m.fetchID
 
 	return func() tea.Msg {
 		setProgressIndeterminate()
 
-		stories, err := service.FetchItems(context.Background(), numItems, endpoint)
-		if err != nil {
+		stories, err := service.FetchItems(ctx, numItems, endpoint)
+
+		switch {
+		case errors.Is(err, context.Canceled):
+			clearProgress()
+		case err != nil:
 			setProgressError()
-		} else {
+		default:
 			clearProgress()
 		}
 
@@ -47,6 +53,7 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 			Stories:  stories,
 			Category: categoryToFetch,
 			Err:      err,
+			FetchID:  fetchID,
 		}
 	}
 }

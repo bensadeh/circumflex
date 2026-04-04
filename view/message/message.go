@@ -44,6 +44,7 @@ type FetchingFinished struct {
 	Stories  []*item.Story
 	Category categories.Category
 	Err      error
+	FetchID  uint64
 }
 
 type FetchAndChangeToCategory struct {

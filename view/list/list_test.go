@@ -167,7 +167,7 @@ func TestCategoryFetchingFinished_UpdatesState(t *testing.T) {
 	m.pager.transition = &transition{prevIndex: 0, oldItems: testItems(), refresh: true}
 	m.status.showSpinner = true
 
-	m, _ = m.Update(message.CategoryFetchingFinished{Index: 1, Cursor: 0})
+	m, _ = m.Update(message.CategoryFetchingFinished{Index: 1, Cursor: 0, FetchID: m.fetchID})
 
 	assert.Equal(t, StateBrowsing, m.state)
 	assert.False(t, m.status.showSpinner)
@@ -303,7 +303,7 @@ func TestCommentTreeDataReady_OpensCommentView(t *testing.T) {
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 
 	thread := &comment.Thread{ID: 1, Title: "test", CommentsCount: 5}
-	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread})
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
 	assert.Equal(t, StateCommentView, m.state)
 	assert.NotNil(t, m.commentView)
 }
@@ -351,14 +351,14 @@ func TestEnteringReaderMode_InvalidDomain(t *testing.T) {
 func TestArticleReady_WithError(t *testing.T) {
 	m := newTestModelReady(t)
 
-	_, cmd := m.Update(message.ArticleReady{Err: errors.New("Reader Mode not supported")})
+	_, cmd := m.Update(message.ArticleReady{Err: errors.New("Reader Mode not supported"), FetchID: m.fetchID})
 	assert.NotNil(t, cmd, "should return batch cmd with status message and editor finished")
 }
 
 func TestArticleReady_WithContent(t *testing.T) {
 	m := newTestModelReady(t)
 
-	m, _ = m.Update(message.ArticleReady{Content: "article content", Title: "Test"})
+	m, _ = m.Update(message.ArticleReady{Content: "article content", Title: "Test", FetchID: m.fetchID})
 	assert.Equal(t, StateReaderView, m.state)
 	assert.NotNil(t, m.readerView, "should create reader view")
 }
