@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/bensadeh/circumflex/ansi"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -384,6 +385,43 @@ func TestTrimURLs(t *testing.T) {
 		result := TrimURLs(input, true)
 		assert.NotContains(t, result, "<a href")
 		assert.Contains(t, result, "example.com")
+	})
+
+	t.Run("truncated anchor uses full href for hyperlink", func(t *testing.T) {
+		input := `<a href="https://www.example.com/very/long/path/to/resource.jpg" rel="nofollow">https://www.example.com/very/long/path/to/resour…`
+		result := TrimURLs(input, true)
+		// Display should use the full href (scheme-stripped), not the HN-truncated text
+		assert.NotContains(t, result, "resour…")
+		assert.Contains(t, result, "resource.jpg")
+	})
+
+	t.Run("truncated anchor without highlight restores full URL", func(t *testing.T) {
+		input := `<a href="https://www.example.com/very/long/path/to/resource.jpg" rel="nofollow">https://www.example.com/very/long/path/to/resour…`
+		result := TrimURLs(input, false)
+		assert.Contains(t, result, "resource.jpg")
+		assert.NotContains(t, result, "resour…")
+	})
+
+	t.Run("long URL display is truncated", func(t *testing.T) {
+		longPath := strings.Repeat("a", 80)
+		input := "visit https://example.com/" + longPath + " today"
+		result := TrimURLs(input, true)
+		visible := ansi.Strip(result)
+		assert.Contains(t, visible, "…")
+		assert.NotContains(t, visible, longPath)
+	})
+
+	t.Run("short URL display is not truncated", func(t *testing.T) {
+		input := "visit https://example.com/short today"
+		result := TrimURLs(input, true)
+		assert.Contains(t, result, "example.com/short")
+		assert.NotContains(t, result, "…")
+	})
+
+	t.Run("non-truncated anchor preserves full URL", func(t *testing.T) {
+		input := `<a href="https://example.com/page" rel="nofollow">https://example.com/page`
+		result := TrimURLs(input, true)
+		assert.Contains(t, result, "example.com/page")
 	})
 
 	t.Run("empty string", func(t *testing.T) {

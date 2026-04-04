@@ -36,6 +36,7 @@ var (
 	reYear            = regexp.MustCompile(`\((\d{4})\)`)
 	reUnwantedNewLine = regexp.MustCompile(`([\w\W[:cntrl:]])(\n)([a-zA-Z0-9" \-<[:cntrl:]…])`)
 	reHTMLAnchor      = regexp.MustCompile(`<a href=".*?"[^>]*>`)
+	reAnchorWithURL   = regexp.MustCompile(`<a href="([^"]*)"[^>]*>https?://[^,"\) \n]+`)
 	reURL             = regexp.MustCompile(`https?://([^,"\) \n]+)`)
 	reMention         = regexp.MustCompile(`((?:^| )\B@[\w.]+)`)
 	reVariable        = regexp.MustCompile(`(\$+[a-zA-Z_\-]+)`)
@@ -307,15 +308,24 @@ func ColorizeIndentSymbol(indentSymbol string, level int) string {
 	return ansi.Reset + cycle[idx](indentSymbol)
 }
 
+const maxURLDisplay = 50
+
 func TrimURLs(comment string, highlightURLs bool) string {
+	// Replace anchor-wrapped URLs with the full URL from href so that
+	// HN-truncated display text is restored to the complete URL.
+	comment = reAnchorWithURL.ReplaceAllString(comment, "$1")
+
+	// Strip any remaining anchor tags.
 	comment = reHTMLAnchor.ReplaceAllString(comment, "")
 
 	if !highlightURLs {
 		return comment
 	}
 
+	// Process all URLs in a single pass: scheme-stripped, truncated
+	// display text with an OSC 8 hyperlink pointing to the full URL.
 	comment = reURL.ReplaceAllStringFunc(comment, func(match string) string {
-		display := reURL.FindStringSubmatch(match)[1]
+		display := truncateURL(reURL.FindStringSubmatch(match)[1])
 
 		return style.CommentURL(display, match)
 	})
@@ -323,6 +333,15 @@ func TrimURLs(comment string, highlightURLs bool) string {
 	comment = strings.ReplaceAll(comment, "."+ansi.Reset+" ", ansi.Reset+". ")
 
 	return comment
+}
+
+func truncateURL(display string) string {
+	runes := []rune(display)
+	if len(runes) <= maxURLDisplay {
+		return display
+	}
+
+	return string(runes[:maxURLDisplay]) + "…"
 }
 
 func HighlightBackticks(input string) string {
