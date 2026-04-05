@@ -257,7 +257,7 @@ Open a URL directly in Reader Mode
 .sp
 \fBclx clear\fP
 .RS 4
-Clear the history of visited \fIID\fPs from ~/.cache/circumflex/history.json.
+Clear the history of visited items.
 .RE
 .sp
 \fBclx version\fP
@@ -267,7 +267,7 @@ Print the version number of \fBcircumflex\fP.
 .sp
 \fBclx default\-theme\fP
 .RS 4
-Write default theme config to ~/.config/circumflex/theme.toml.
+Write default theme config to the config directory.
 .RE
 .SH "OPTIONS"
 .sp
@@ -312,13 +312,21 @@ Only applies to top, new and best. Ask and show always fetch one page because th
 story pools are small (~150\-200 stories).
 Default: 3.
 .RE
+.SH "HISTORY"
+.sp
+\fBcircumflex\fP tracks which stories you have visited.
+Visited stories are dimmed in the list. When returning to a comment section, comments posted since
+your last visit are highlighted with a new\-comment indicator.
+.sp
+History is stored as a JSON file in the OS cache directory.
+Use \fBclx clear\fP to reset it, or \fB\-\-disable\-history\fP to turn tracking off entirely.
 .SH "FAVORITES"
 .sp
 Press \fIf\fP to add the currently highlighted submission to your list of favorites.
 Remove submissions from the Favorites page with \fIx\fP.
 .sp
-Favorites are stored in ~/.config/circumflex/favorites.json.
-The entries in favorites.json are pretty\-printed to make them both human\-readable and VCS\-friendly.
+Favorites are stored as a pretty\-printed JSON file in the OS config directory,
+making them both human\-readable and VCS\-friendly.
 .SH "ENVIRONMENT VARIABLES"
 .sp
 \fBCLX_BROWSER\fP

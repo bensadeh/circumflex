@@ -168,13 +168,13 @@ Go directly to the comment section for a given item _ID_ without first going thr
 Open a URL directly in Reader Mode
 
 *clx clear*::
-Clear the history of visited __ID__s from ~/.cache/circumflex/history.json.
+Clear the history of visited items.
 
 *clx version*::
 Print the version number of *circumflex*.
 
 *clx default-theme*::
-Write default theme config to ~/.config/circumflex/theme.toml.
+Write default theme config to the config directory.
 
 == Options
 
@@ -206,13 +206,22 @@ Only applies to top, new and best. Ask and show always fetch one page because th
 story pools are small (~150-200 stories).
 Default: 3.
 
+== History
+
+*circumflex* tracks which stories you have visited.
+Visited stories are dimmed in the list. When returning to a comment section, comments posted since
+your last visit are highlighted with a new-comment indicator.
+
+History is stored as a JSON file in the OS cache directory.
+Use *clx clear* to reset it, or *--disable-history* to turn tracking off entirely.
+
 == Favorites
 
 Press _f_ to add the currently highlighted submission to your list of favorites.
 Remove submissions from the Favorites page with _x_.
 
-Favorites are stored in ~/.config/circumflex/favorites.json.
-The entries in favorites.json are pretty-printed to make them both human-readable and VCS-friendly.
+Favorites are stored as a pretty-printed JSON file in the OS config directory,
+making them both human-readable and VCS-friendly.
 
 == Environment Variables
 

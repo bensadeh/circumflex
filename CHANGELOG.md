@@ -6,31 +6,32 @@ _WIP_
 
 **New features**
 
-- Add support for `go install`
+- Comment section and Reader Mode are now rendered inside `circumflex` instead of `less`
 - Add `u` keybinding to toggle read/unread status on stories
 - Add support for customizing the theme
-- Add `default-theme` subcommand to generate a default theme config file
+    - Add `default-theme` subcommand to generate a default theme config file
 - Add `--pages` flag to configure the number of pages fetched per category (1-5)
-- Auto-enable Nerd Fonts when running inside Ghostty
-- Show terminal progress bar during fetching via OSC 9;4 
+- Show terminal progress bar during fetching via OSC 9;4 codes
 - Mod's comments are now highlighted in green
+- Highlight YC Fall (F) and Spring (X) startup batches in headlines
+
+**Infrastructure**
+
+- Add support for `go install`
+- Improve error messages for timeouts, non-200 responses, and unexpected server responses
+- Fetching can now be canceled
+- Normalize header levels in reader mode so articles always start at h1
 
 **Changes**
 
+- Auto-enable Nerd Fonts when running inside Ghostty
+    - Change `--nerdfonts` flag to accept `true`/`false` for explicit control
 - Rename Parent Poster (`PP`) label to Grandparent Poster (`GP`)
-- Change `--nerdfonts` flag to accept `true`/`false` for explicit control
 - Add 5-minute threshold for updating last-read time on stories
 
 **Removed**
 
 - Remove `--plain-headlines`, `--plain-comments`, `--hide-indent`, and `--disable-emojis` flags
-
-**Improvements**
-
-- Highlight YC Fall (F) and Spring (X) startup batches in headlines
-- Improve error messages for timeouts, non-200 responses, and unexpected server responses
-- Fetching can now be canceled
-- Normalize header levels in reader mode so articles always start at h1
 
 **License**
 
@@ -38,9 +39,9 @@ _WIP_
 
 **Dependencies**
 
+- Removed `less` as a dependency
 - Use the official HN Firebase API for all requests
 - Bump Bubble Tea to 2.0
-- Removed `less` as a dependency
 
 ## 3.9
 
@@ -187,7 +188,8 @@ _05.05.23_
 
 **Cosmetic**
 
-- Simplified coloring of items to only use terminal colors from 0-16. This will make `circumflex` look better across different
+- Simplified coloring of items to only use terminal colors from 0-16. This will make `circumflex` look better across
+  different
   color schemes.
 
 ## 2.8.2
@@ -220,7 +222,8 @@ _25.11.22_
 
 **Bugfixes**
 
-- Fixed a bug where `circumflex` would crash if the `less` version contained decimals in the version number (Thanks @PrayagS! [#40](https://github.com/bensadeh/circumflex/pull/40))
+- Fixed a bug where `circumflex` would crash if the `less` version contained decimals in the version number (Thanks
+  @PrayagS! [#40](https://github.com/bensadeh/circumflex/pull/40))
 
 **Cosmetic**
 
@@ -230,7 +233,8 @@ _25.11.22_
 **Other**
 
 - Increased timeout for fetching submissions
-- Added Dockerfile for running `circumflex` inside a container (Thanks @stefins! [#42](https://github.com/bensadeh/circumflex/pull/42))
+- Added Dockerfile for running `circumflex` inside a container (Thanks
+  @stefins! [#42](https://github.com/bensadeh/circumflex/pull/42))
 
 ## 2.7
 
@@ -313,13 +317,15 @@ _13.08.22_
 
 **Cosmetic**
 
-- Left-aligned help screen to better accomodate for screen resizes (Fixes [#6](https://github.com/bensadeh/circumflex/issues/6))
+- Left-aligned help screen to better accomodate for screen resizes (
+  Fixes [#6](https://github.com/bensadeh/circumflex/issues/6))
 
 **Bugfixes**
 
 - Refreshing submissions no longer jumps to the first page just before fetching
 - Fixed a bug where submissions marked as read would not properly italicize after a refresh
-- Fixed a bug where `"` was not being showed correctly (Thanks @FnControlOption, [#5](https://github.com/bensadeh/circumflex/pull/5)!)
+- Fixed a bug where `"` was not being showed correctly (Thanks
+  @FnControlOption, [#5](https://github.com/bensadeh/circumflex/pull/5)!)
 
 ## 2.2
 
@@ -536,23 +542,23 @@ _2021-09-04_
 
 - New keybinding: press <kbd>n</kbd>/<kbd>N</kbd> to jump to the next top-level comment
   or headline
-  - (No longer required to search for the string `::`)
+    - (No longer required to search for the string `::`)
 - Added an option to set the header to the orange and classic Hacker News header
 
 **Cosmetic**
 
 - Added custom filtering rules for the following sites:
-  - `nytimes.com`
-  - `economist.com`
-  - `tomshardware.com`
-  - `cnn.com`
-  - `arstechnica.com`
-  - `macrumors.com`
-  - `wired.com`
-  - `wired.co.uk`
-  - `theguardian.com`
-  - `axios.com`
-  - `9to5mac.com`
+    - `nytimes.com`
+    - `economist.com`
+    - `tomshardware.com`
+    - `cnn.com`
+    - `arstechnica.com`
+    - `macrumors.com`
+    - `wired.com`
+    - `wired.co.uk`
+    - `theguardian.com`
+    - `axios.com`
+    - `9to5mac.com`
 
 ## 1.19
 
@@ -564,10 +570,10 @@ This release replaces `lynx` for rendering `HTML` in favour of handling the rend
 
 - Bump Go to 1.17
 - Reader Mode: Removed `lynx` as a dependency
-  - Added support for code blocks and in-line code highlighting
-  - Added support for prettier tables
-  - Added support for rendering different headers (`h1` - `h6`)
-  - Added support for well-formatted lists and sub-lists
+    - Added support for code blocks and in-line code highlighting
+    - Added support for prettier tables
+    - Added support for rendering different headers (`h1` - `h6`)
+    - Added support for well-formatted lists and sub-lists
 
 ## 1.18
 
