@@ -22,7 +22,7 @@ func urlCmd() *cobra.Command {
 
 			content, err := article.Fetch(cmd.Context(), url, readerWidth(config.ArticleWidth))
 			if err != nil {
-				fmt.Fprintln(os.Stderr, "Could not read article")
+				fmt.Fprintf(os.Stderr, "Error reading article: %v\n", err)
 				os.Exit(1)
 			}
 
