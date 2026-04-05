@@ -7,7 +7,7 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/hn"
 )
 
 // timeoutError satisfies net.Error with Timeout() returning true,
@@ -26,18 +26,18 @@ func NewFallibleService() FallibleService {
 	return FallibleService{mock: Service{}}
 }
 
-func (f FallibleService) FetchItems(ctx context.Context, itemsToFetch int, category string) ([]*item.Story, error) {
+func (f FallibleService) FetchItems(ctx context.Context, itemsToFetch int, category string) ([]*hn.Story, error) {
 	return f.mock.FetchItems(ctx, itemsToFetch, category)
 }
 
-func (f FallibleService) FetchComments(_ context.Context, _ int, _ func(fetched, total int)) (*item.Story, error) {
+func (f FallibleService) FetchComments(_ context.Context, _ int, _ func(fetched, total int)) (*hn.CommentTree, error) {
 	n, _ := rand.Int(rand.Reader, big.NewInt(3))
 	time.Sleep(time.Duration(1+n.Int64()) * time.Second)
 
 	return nil, randomError()
 }
 
-func (f FallibleService) FetchItem(_ context.Context, _ int) (*item.Story, error) {
+func (f FallibleService) FetchItem(_ context.Context, _ int) (*hn.Story, error) {
 	return nil, randomError()
 }
 

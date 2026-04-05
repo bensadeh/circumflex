@@ -11,7 +11,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bensadeh/circumflex/item"
 	"github.com/bensadeh/circumflex/timeago"
 
 	"github.com/stretchr/testify/assert"
@@ -19,7 +18,7 @@ import (
 )
 
 func TestMapStoryItem(t *testing.T) {
-	hn := &hnItem{
+	raw := &hnItem{
 		ID:          12345,
 		Title:       "Test Title",
 		Score:       100,
@@ -29,30 +28,29 @@ func TestMapStoryItem(t *testing.T) {
 		Descendants: 42,
 	}
 
-	story := mapStoryItem(hn)
+	story := mapStoryItem(raw)
 
 	assert.Equal(t, 12345, story.ID)
 	assert.Equal(t, "Test Title", story.Title)
 	assert.Equal(t, 100, story.Points)
-	assert.Equal(t, "testuser", story.User)
+	assert.Equal(t, "testuser", story.Author)
 	assert.Equal(t, int64(1700000000), story.Time)
 	assert.Equal(t, "https://example.com/article", story.URL)
 	assert.Equal(t, "example.com", story.Domain)
 	assert.Equal(t, 42, story.CommentsCount)
-	assert.Empty(t, story.TimeAgo)
 }
 
 func TestMapStoryItem_EmptyURL(t *testing.T) {
-	hn := &hnItem{ID: 1, Title: "Ask HN: Something"}
+	raw := &hnItem{ID: 1, Title: "Ask HN: Something"}
 
-	story := mapStoryItem(hn)
+	story := mapStoryItem(raw)
 
 	assert.Empty(t, story.URL)
 	assert.Empty(t, story.Domain)
 }
 
-func TestMapRootItem(t *testing.T) {
-	hn := &hnItem{
+func TestMapCommentTree(t *testing.T) {
+	raw := &hnItem{
 		ID:          12345,
 		Title:       "Test Story",
 		Score:       200,
@@ -63,60 +61,61 @@ func TestMapRootItem(t *testing.T) {
 		Descendants: 15,
 	}
 
-	story := mapRootItem(hn)
+	tree := mapCommentTree(raw)
 
-	assert.Equal(t, 12345, story.ID)
-	assert.Equal(t, "Test Story", story.Title)
-	assert.Equal(t, 200, story.Points)
-	assert.Equal(t, "author", story.User)
-	assert.Equal(t, "https://example.com", story.URL)
-	assert.Equal(t, "example.com", story.Domain)
-	assert.Equal(t, "<p>Self post content", story.Content)
-	assert.Equal(t, 15, story.CommentsCount)
-	assert.Contains(t, story.TimeAgo, "hours ago")
+	assert.Equal(t, 12345, tree.ID)
+	assert.Equal(t, "Test Story", tree.Title)
+	assert.Equal(t, 200, tree.Points)
+	assert.Equal(t, "author", tree.Author)
+	assert.Equal(t, "https://example.com", tree.URL)
+	assert.Equal(t, "example.com", tree.Domain)
+	assert.Equal(t, "<p>Self post content", tree.Content)
+	assert.Equal(t, 15, tree.CommentsCount)
+	assert.Contains(t, tree.TimeAgo, "hours ago")
 }
 
-func TestMapCommentItem(t *testing.T) {
-	hn := &hnItem{
+func TestMapCommentNode(t *testing.T) {
+	raw := &hnItem{
 		ID:   100,
 		By:   "commenter",
 		Time: time.Now().Add(-30 * time.Minute).Unix(),
 		Text: "This is a comment",
 	}
 
-	comment := mapCommentItem(hn)
+	node := mapCommentNode(raw)
 
-	assert.Equal(t, 100, comment.ID)
-	assert.Equal(t, "commenter", comment.User)
-	assert.Equal(t, "This is a comment", comment.Content)
-	assert.Contains(t, comment.TimeAgo, "minutes ago")
+	assert.Equal(t, 100, node.ID)
+	assert.Equal(t, "commenter", node.Author)
+	assert.Equal(t, "This is a comment", node.Content)
+	assert.Contains(t, node.TimeAgo, "minutes ago")
 }
 
-func TestMapCommentItem_Deleted(t *testing.T) {
-	hn := &hnItem{
+func TestMapCommentNode_Deleted(t *testing.T) {
+	raw := &hnItem{
 		ID:      101,
 		Time:    time.Now().Unix(),
 		Deleted: true,
 	}
 
-	comment := mapCommentItem(hn)
+	node := mapCommentNode(raw)
 
-	assert.Equal(t, "[deleted]", comment.Content)
-	assert.Empty(t, comment.User)
+	assert.Equal(t, "[deleted]", node.Content)
+	assert.Empty(t, node.Author)
 }
 
 func TestFilterNil(t *testing.T) {
-	items := filterNil(nil)
-	assert.Nil(t, items)
+	result := filterNil[int](nil)
+	assert.Nil(t, result)
 }
 
 func TestFilterNil_WithNils(t *testing.T) {
-	input := make([]*item.Story, 3)
-	input[1] = &item.Story{ID: 5}
+	input := make([]*int, 3)
+	v := 5
+	input[1] = &v
 
 	result := filterNil(input)
 	require.Len(t, result, 1)
-	assert.Equal(t, 5, result[0].ID)
+	assert.Equal(t, 5, *result[0])
 }
 
 func TestRelativeTime(t *testing.T) {
@@ -140,7 +139,7 @@ func TestRelativeTime(t *testing.T) {
 }
 
 func TestFetchHNItem_WithMockServer(t *testing.T) {
-	hn := hnItem{
+	raw := hnItem{
 		ID:    42,
 		Title: "Test Story",
 		Score: 200,
@@ -151,7 +150,7 @@ func TestFetchHNItem_WithMockServer(t *testing.T) {
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(hn)
+		_ = json.NewEncoder(w).Encode(raw)
 	}))
 	defer server.Close()
 
@@ -223,25 +222,25 @@ func TestFetchComments_WithMockServer(t *testing.T) {
 	s := NewService()
 	s.baseURL = server.URL
 
-	story, err := s.FetchComments(context.Background(), 1, nil)
+	tree, err := s.FetchComments(context.Background(), 1, nil)
 	require.NoError(t, err)
 
-	assert.Equal(t, 1, story.ID)
-	assert.Equal(t, "Root Story", story.Title)
-	assert.Equal(t, 100, story.Points)
-	assert.Equal(t, "author", story.User)
-	assert.Equal(t, 3, story.CommentsCount)
+	assert.Equal(t, 1, tree.ID)
+	assert.Equal(t, "Root Story", tree.Title)
+	assert.Equal(t, 100, tree.Points)
+	assert.Equal(t, "author", tree.Author)
+	assert.Equal(t, 3, tree.CommentsCount)
 
-	require.Len(t, story.Comments, 2)
+	require.Len(t, tree.Comments, 2)
 
-	assert.Equal(t, "First comment", story.Comments[0].Content)
-	assert.Equal(t, "user1", story.Comments[0].User)
+	assert.Equal(t, "First comment", tree.Comments[0].Content)
+	assert.Equal(t, "user1", tree.Comments[0].Author)
 
-	require.Len(t, story.Comments[0].Comments, 1)
-	assert.Equal(t, "Nested reply", story.Comments[0].Comments[0].Content)
-	assert.Equal(t, "user2", story.Comments[0].Comments[0].User)
+	require.Len(t, tree.Comments[0].Children, 1)
+	assert.Equal(t, "Nested reply", tree.Comments[0].Children[0].Content)
+	assert.Equal(t, "user2", tree.Comments[0].Children[0].Author)
 
-	assert.Equal(t, "Second comment", story.Comments[1].Content)
+	assert.Equal(t, "Second comment", tree.Comments[1].Content)
 }
 
 func TestFetchComments_DeletedComment(t *testing.T) {
@@ -268,14 +267,14 @@ func TestFetchComments_DeletedComment(t *testing.T) {
 	s := NewService()
 	s.baseURL = server.URL
 
-	story, err := s.FetchComments(context.Background(), 1, nil)
+	tree, err := s.FetchComments(context.Background(), 1, nil)
 	require.NoError(t, err)
 
-	require.Len(t, story.Comments, 1)
-	assert.Equal(t, "[deleted]", story.Comments[0].Content)
+	require.Len(t, tree.Comments, 1)
+	assert.Equal(t, "[deleted]", tree.Comments[0].Content)
 
-	require.Len(t, story.Comments[0].Comments, 1)
-	assert.Equal(t, "Reply to deleted", story.Comments[0].Comments[0].Content)
+	require.Len(t, tree.Comments[0].Children, 1)
+	assert.Equal(t, "Reply to deleted", tree.Comments[0].Children[0].Content)
 }
 
 func TestFetchComments_DeadComment(t *testing.T) {
@@ -302,11 +301,11 @@ func TestFetchComments_DeadComment(t *testing.T) {
 	s := NewService()
 	s.baseURL = server.URL
 
-	story, err := s.FetchComments(context.Background(), 1, nil)
+	tree, err := s.FetchComments(context.Background(), 1, nil)
 	require.NoError(t, err)
 
-	require.Len(t, story.Comments, 1)
-	assert.Equal(t, "Good comment", story.Comments[0].Content)
+	require.Len(t, tree.Comments, 1)
+	assert.Equal(t, "Good comment", tree.Comments[0].Content)
 }
 
 func TestFetchItems_WithMockServer(t *testing.T) {
@@ -458,11 +457,11 @@ func TestFetchComments_NullItemSkipped(t *testing.T) {
 	s := NewService()
 	s.baseURL = server.URL
 
-	story, err := s.FetchComments(context.Background(), 1, nil)
+	tree, err := s.FetchComments(context.Background(), 1, nil)
 	require.NoError(t, err)
 
-	require.Len(t, story.Comments, 1)
-	assert.Equal(t, "Good comment", story.Comments[0].Content)
+	require.Len(t, tree.Comments, 1)
+	assert.Equal(t, "Good comment", tree.Comments[0].Content)
 }
 
 func TestFetchItems_NullItemSkipped(t *testing.T) {
@@ -575,11 +574,11 @@ func TestFetchComments_RetrySuccess(t *testing.T) {
 	s := NewService()
 	s.baseURL = server.URL
 
-	story, err := s.FetchComments(context.Background(), 1, nil)
+	tree, err := s.FetchComments(context.Background(), 1, nil)
 	require.NoError(t, err)
 
-	require.Len(t, story.Comments, 1)
-	assert.Equal(t, "Recovered comment", story.Comments[0].Content)
+	require.Len(t, tree.Comments, 1)
+	assert.Equal(t, "Recovered comment", tree.Comments[0].Content)
 }
 
 func newMockServer(items map[int]hnItem) *httptest.Server {

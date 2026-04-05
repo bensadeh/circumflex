@@ -2,7 +2,7 @@ package list
 
 import (
 	"github.com/bensadeh/circumflex/categories"
-	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/hn"
 
 	"charm.land/bubbles/v2/paginator"
 	"charm.land/lipgloss/v2"
@@ -10,7 +10,7 @@ import (
 
 type pager struct {
 	cursor     int
-	items      [][]*item.Story
+	items      [][]*hn.Story
 	Paginator  paginator.Model
 	transition *transition
 }
@@ -83,7 +83,7 @@ func (p *pager) Select(index int) {
 	p.cursor = index % p.Paginator.PerPage
 }
 
-func (p *pager) VisibleItems(currentCategory categories.Category) []*item.Story {
+func (p *pager) VisibleItems(currentCategory categories.Category) []*hn.Story {
 	if p.transition != nil {
 		return p.transition.oldItems
 	}
@@ -91,12 +91,12 @@ func (p *pager) VisibleItems(currentCategory categories.Category) []*item.Story 
 	return p.items[currentCategory]
 }
 
-func (p *pager) SelectedItem(currentCategory categories.Category) *item.Story {
+func (p *pager) SelectedItem(currentCategory categories.Category) *hn.Story {
 	i := p.Index()
 
 	items := p.VisibleItems(currentCategory)
 	if i < 0 || len(items) == 0 || len(items) <= i {
-		return &item.Story{}
+		return &hn.Story{}
 	}
 
 	return items[i]
@@ -106,6 +106,6 @@ func (p *pager) categoryHasStories(cat categories.Category) bool {
 	return len(p.items[cat]) != 0
 }
 
-func (m *Model) Index() int                  { return m.pager.Index() }
-func (m *Model) VisibleItems() []*item.Story { return m.pager.VisibleItems(m.cat.CurrentCategory()) }
-func (m *Model) SelectedItem() *item.Story   { return m.pager.SelectedItem(m.cat.CurrentCategory()) }
+func (m *Model) Index() int                { return m.pager.Index() }
+func (m *Model) VisibleItems() []*hn.Story { return m.pager.VisibleItems(m.cat.CurrentCategory()) }
+func (m *Model) SelectedItem() *hn.Story   { return m.pager.SelectedItem(m.cat.CurrentCategory()) }

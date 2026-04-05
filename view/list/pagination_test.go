@@ -3,7 +3,7 @@ package list
 import (
 	"testing"
 
-	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/hn"
 
 	"charm.land/bubbles/v2/paginator"
 	"github.com/stretchr/testify/assert"
@@ -13,12 +13,12 @@ func newTestPager(itemCount, perPage int) pager {
 	p := paginator.New()
 	p.PerPage = perPage
 
-	stories := make([]*item.Story, itemCount)
+	stories := make([]*hn.Story, itemCount)
 	for i := range stories {
-		stories[i] = &item.Story{ID: i + 1}
+		stories[i] = &hn.Story{ID: i + 1}
 	}
 
-	items := make([][]*item.Story, numberOfCategories)
+	items := make([][]*hn.Story, numberOfCategories)
 	items[0] = stories
 
 	pg := pager{
@@ -96,7 +96,7 @@ func TestPager_VisibleItems(t *testing.T) {
 
 func TestPager_VisibleItems_WithTransition(t *testing.T) {
 	p := newTestPager(5, 10)
-	oldItems := []*item.Story{{ID: 99}}
+	oldItems := []*hn.Story{{ID: 99}}
 	p.transition = &transition{oldItems: oldItems}
 
 	items := p.VisibleItems(0)
@@ -163,8 +163,8 @@ func TestPager_Cursor(t *testing.T) {
 
 func TestPager_CategoryHasStories_MultipleCategories(t *testing.T) {
 	p := newTestPager(5, 10)
-	p.items[2] = []*item.Story{{ID: 1}}
-	p.items[3] = []*item.Story{}
+	p.items[2] = []*hn.Story{{ID: 1}}
+	p.items[3] = []*hn.Story{}
 
 	assert.True(t, p.categoryHasStories(0))
 	assert.False(t, p.categoryHasStories(1))

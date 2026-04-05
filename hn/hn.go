@@ -2,26 +2,49 @@ package hn
 
 import (
 	"context"
-
-	"github.com/bensadeh/circumflex/hn/services/firebase"
-	"github.com/bensadeh/circumflex/hn/services/mock"
-	"github.com/bensadeh/circumflex/item"
 )
 
-type Service interface {
-	FetchItems(ctx context.Context, itemsToFetch int, category string) ([]*item.Story, error)
-	FetchItem(ctx context.Context, id int) (*item.Story, error)
-	FetchComments(ctx context.Context, id int, onProgress func(fetched, total int)) (*item.Story, error)
+// Story represents a Hacker News story as returned by FetchItems/FetchItem.
+// This is the list-view representation: no comment tree, no self-text.
+type Story struct {
+	ID            int
+	Title         string
+	Points        int
+	Author        string
+	Time          int64
+	URL           string
+	Domain        string
+	CommentsCount int
 }
 
-func NewService(debugMode, debugFallible bool) Service {
-	if debugFallible {
-		return mock.NewFallibleService()
-	}
+// CommentTree represents a story with its full comment tree,
+// as returned by FetchComments.
+type CommentTree struct {
+	ID            int
+	Title         string
+	Points        int
+	Author        string
+	Time          int64
+	TimeAgo       string
+	URL           string
+	Domain        string
+	Content       string
+	CommentsCount int
+	Comments      []*CommentNode
+}
 
-	if debugMode {
-		return mock.Service{}
-	}
+// CommentNode represents a single comment in a tree.
+type CommentNode struct {
+	ID       int
+	Author   string
+	Time     int64
+	TimeAgo  string
+	Content  string
+	Children []*CommentNode
+}
 
-	return firebase.NewService()
+type Service interface {
+	FetchItems(ctx context.Context, itemsToFetch int, category string) ([]*Story, error)
+	FetchItem(ctx context.Context, id int) (*Story, error)
+	FetchComments(ctx context.Context, id int, onProgress func(fetched, total int)) (*CommentTree, error)
 }

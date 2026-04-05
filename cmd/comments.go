@@ -80,13 +80,13 @@ func commentsCmd() *cobra.Command {
 
 			service := newService()
 
-			story, err := service.FetchComments(cmd.Context(), id, nil)
+			tree, err := service.FetchComments(cmd.Context(), id, nil)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
 			}
 
-			thread := comment.StoryToThread(story)
+			thread := comment.ToThread(tree)
 
 			config := getConfig()
 

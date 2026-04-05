@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/bensadeh/circumflex/categories"
-	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/syntax"
 	"github.com/bensadeh/circumflex/timeago"
@@ -89,7 +89,7 @@ func (d *DefaultDelegate) Update(tea.Msg, *Model) tea.Cmd {
 }
 
 // Render prints an item.
-func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *item.Story) {
+func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *hn.Story) {
 	var (
 		title, desc, domain string
 		s                   = &d.Styles
@@ -103,7 +103,7 @@ func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *item.St
 	domain = syntax.HighlightDomain(item.Domain)
 
 	score := getScore(item.Points, enableNerdFonts)
-	author := getAuthor(item.User, enableNerdFonts)
+	author := getAuthor(item.Author, enableNerdFonts)
 	comments := getComments(item.CommentsCount, enableNerdFonts)
 	timeAgo := parseTime(item.Time, enableNerdFonts)
 

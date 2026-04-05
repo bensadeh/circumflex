@@ -5,20 +5,20 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/hn"
 )
 
 type Service struct{}
 
-func (Service) FetchItems(_ context.Context, _ int, category string) (items []*item.Story, err error) {
+func (Service) FetchItems(_ context.Context, _ int, category string) (items []*hn.Story, err error) {
 	time.Sleep(time.Second * 2)
 
-	items = []*item.Story{
+	items = []*hn.Story{
 		{
 			Title:         "Lorem ipsum dolor amet et quasi architecto",
 			Points:        31,
 			ID:            1,
-			User:          "alfa",
+			Author:        "alfa",
 			Time:          time.Now().Add(-time.Minute * 2).Unix(),
 			Domain:        "stackoverflow.com",
 			CommentsCount: 61,
@@ -27,7 +27,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Aliquam mauris massa, rhoncus nec lectus eu",
 			Points:        173,
 			ID:            2,
-			User:          "beta",
+			Author:        "beta",
 			Time:          time.Now().Add(-time.Minute * 46).Unix(),
 			Domain:        "pkg.go.dev",
 			CommentsCount: 1143,
@@ -36,7 +36,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Show HN: consectetur adipiscing elit doris elles",
 			Points:        1331,
 			ID:            3,
-			User:          "gamma",
+			Author:        "gamma",
 			Time:          time.Now().Add(-time.Hour * 3).Unix(),
 			Domain:        "",
 			CommentsCount: 145,
@@ -45,7 +45,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Interdum et malesuada fames ac ante merquenta [PDF]",
 			Points:        40,
 			ID:            4,
-			User:          "delta",
+			Author:        "delta",
 			Time:          time.Now().Add(-time.Hour * 5).Unix(),
 			Domain:        "bloomberg.com",
 			CommentsCount: 58,
@@ -54,7 +54,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Donec sed orci aliquam lorem mattis consequat",
 			Points:        417,
 			ID:            5,
-			User:          "epsilon",
+			Author:        "epsilon",
 			Time:          time.Now().Add(-time.Minute * 68).Unix(),
 			Domain:        "github.com",
 			CommentsCount: 0,
@@ -63,7 +63,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Ask HN: Vestibulum ante plero ipsum primis in faucibus?",
 			Points:        40,
 			ID:            6,
-			User:          "zeta",
+			Author:        "zeta",
 			Time:          time.Now().Add(-time.Minute * 27).Unix(),
 			Domain:        "",
 			CommentsCount: 77,
@@ -72,7 +72,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Orci luctus et ultrices posuere cubilia curae (2017)",
 			Points:        37,
 			ID:            7,
-			User:          "eta",
+			Author:        "eta",
 			Time:          time.Now().Add(-time.Minute * 32).Unix(),
 			Domain:        "apple.com",
 			CommentsCount: 89,
@@ -81,7 +81,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Launch HN: Cras consectetur (YC W05)",
 			Points:        16,
 			ID:            8,
-			User:          "theta",
+			Author:        "theta",
 			Time:          time.Now().Add(-time.Hour * 3).Unix(),
 			Domain:        "",
 			CommentsCount: 91,
@@ -90,7 +90,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Vivamus rhoncus sit amet tellus eget blandit",
 			Points:        7,
 			ID:            9,
-			User:          "iota",
+			Author:        "iota",
 			Time:          time.Now().Add(-time.Hour * 16).Unix(),
 			Domain:        "xbox.com",
 			CommentsCount: 98,
@@ -99,7 +99,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Fusce venenatis laoreet interdum (2003)",
 			Points:        503,
 			ID:            10,
-			User:          "kappa",
+			Author:        "kappa",
 			Time:          time.Now().Add(-time.Hour * 15).Unix(),
 			Domain:        "huffingtonpost.com",
 			CommentsCount: 125,
@@ -108,7 +108,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Etiam tincidunt, ex fermentum iaculis placerat",
 			Points:        48,
 			ID:            11,
-			User:          "lambda",
+			Author:        "lambda",
 			Time:          time.Now().Add(-time.Hour * 8).Unix(),
 			Domain:        "bbc.co.uk",
 			CommentsCount: 94,
@@ -117,7 +117,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Aenean sit amet erat eu quam vehicula fringilla",
 			Points:        110,
 			ID:            12,
-			User:          "mu",
+			Author:        "mu",
 			Time:          time.Now().Add(-time.Minute * 400).Unix(),
 			Domain:        "sites.google.com",
 			CommentsCount: 14,
@@ -126,7 +126,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Tell HN: Donec eget sapien viverra, viverra lacus in",
 			Points:        9,
 			ID:            13,
-			User:          "nu",
+			Author:        "nu",
 			Time:          time.Now().Add(-time.Minute * 120).Unix(),
 			Domain:        "",
 			CommentsCount: 103,
@@ -135,7 +135,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Sed ut perspiciatis, unde omnis iste natus error [video]",
 			Points:        26,
 			ID:            14,
-			User:          "xi",
+			Author:        "xi",
 			Time:          time.Now().Add(-time.Minute * 17).Unix(),
 			Domain:        "wired.com",
 			CommentsCount: 75,
@@ -144,7 +144,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Nemo enim ipsam voluptatem, quia voluptas sit",
 			Points:        66,
 			ID:            15,
-			User:          "omicron",
+			Author:        "omicron",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "macrumors.com",
 			CommentsCount: 148,
@@ -153,7 +153,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos",
 			Points:        65,
 			ID:            16,
-			User:          "pi",
+			Author:        "pi",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "arxiv.org",
 			CommentsCount: 135,
@@ -162,7 +162,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Ut enim ad minima veniam",
 			Points:        27,
 			ID:            17,
-			User:          "rho",
+			Author:        "rho",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "twitter.com",
 			CommentsCount: 81,
@@ -171,7 +171,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Nam libero tempore (YC S16), cum soluta nobis est eligendi optio",
 			ID:            18,
 			Points:        84,
-			User:          "sigma",
+			Author:        "sigma",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "wsj.com",
 			CommentsCount: 90,
@@ -180,7 +180,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Cumque nihil impedit, quo minus id, quod maxime placeat",
 			Points:        6,
 			ID:            19,
-			User:          "tau",
+			Author:        "tau",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "medium.com",
 			CommentsCount: 18,
@@ -189,7 +189,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Emporibus autem quibusdam et aut officiis debitis aut rerum",
 			Points:        150,
 			ID:            20,
-			User:          "upsilon",
+			Author:        "upsilon",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "npr.com",
 			CommentsCount: 114,
@@ -198,7 +198,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 			Title:         "Necessitatibus saepe eveniet, ut et voluptates repudiandae",
 			Points:        135,
 			ID:            21,
-			User:          "phi",
+			Author:        "phi",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "nature.com",
 			CommentsCount: 118,
@@ -206,7 +206,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 		{
 			Title:         "Quis autem vel eum iure reprehenderit",
 			Points:        97,
-			User:          "chi",
+			Author:        "chi",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "venturebeat.com",
 			CommentsCount: 66,
@@ -214,7 +214,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 		{
 			Title:         "Perferendis doloribus asperiores repellat",
 			Points:        50,
-			User:          "psi",
+			Author:        "psi",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "techcrunch.com",
 			CommentsCount: 107,
@@ -222,7 +222,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 		{
 			Title:         "Obcaecati cupiditate non provident",
 			Points:        68,
-			User:          "omega",
+			Author:        "omega",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "newyorker.com",
 			CommentsCount: 109,
@@ -230,7 +230,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 		{
 			Title:         "Quae ab illo inventore veritatis et quasi architecto",
 			Points:        115,
-			User:          "alfa",
+			Author:        "alfa",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "nytimes.com",
 			CommentsCount: 62,
@@ -238,7 +238,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 		{
 			Title:         "Qui ratione voluptatem sequi nesciunt",
 			Points:        102,
-			User:          "beta",
+			Author:        "beta",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "archive.org",
 			CommentsCount: 34,
@@ -246,7 +246,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 		{
 			Title:         "Nisi ut aliquid ex ea commodi consequatur?",
 			Points:        74,
-			User:          "gamma",
+			Author:        "gamma",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "sciencedirect.com",
 			CommentsCount: 139,
@@ -254,7 +254,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 		{
 			Title:         "Temporibus autem quibusdam et aut officiis debitis",
 			Points:        47,
-			User:          "delta",
+			Author:        "delta",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "smithsonianmag.com",
 			CommentsCount: 143,
@@ -262,7 +262,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 		{
 			Title:         "Id est laborum et dolorum fuga",
 			Points:        90,
-			User:          "epsilon",
+			Author:        "epsilon",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "vice.com",
 			CommentsCount: 48,
@@ -270,7 +270,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 		{
 			Title:         "Omnis voluptas assumenda est, omnis dolor repellendus",
 			Points:        22,
-			User:          "zeta",
+			Author:        "zeta",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "abc.com",
 			CommentsCount: 122,
@@ -285,46 +285,46 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*i
 	return items, nil
 }
 
-func (Service) FetchComments(_ context.Context, _ int, _ func(fetched, total int)) (*item.Story, error) {
-	return &item.Story{
+func (Service) FetchComments(_ context.Context, _ int, _ func(fetched, total int)) (*hn.CommentTree, error) {
+	return &hn.CommentTree{
 		ID:      32145667,
 		Title:   "Mauris commodo odio (YC W05) quis diam fermentum, et suscipit augue pharetra [video]",
 		Points:  543,
-		User:    "riemann",
+		Author:  "riemann",
 		TimeAgo: "6 hours ago",
 		URL:     "https://en.wikipedia.org/wiki/Riemann_hypothesis",
 		Domain:  "google.com",
-		Comments: []*item.Story{
+		Comments: []*hn.CommentNode{
 			{
 				ID:      28,
-				User:    "euler",
+				Author:  "euler",
 				TimeAgo: "1 hour ago",
-				Comments: []*item.Story{
+				Children: []*hn.CommentNode{
 					{
 						ID:      23,
-						User:    "hilbert",
+						Author:  "hilbert",
 						TimeAgo: "40 minutes ago",
-						Comments: []*item.Story{
+						Children: []*hn.CommentNode{
 							{
 								ID:      33,
-								User:    "riemann",
+								Author:  "riemann",
 								TimeAgo: "27 minutes ago",
-								Comments: []*item.Story{
+								Children: []*hn.CommentNode{
 									{
 										ID:      33,
-										User:    "gauss",
+										Author:  "gauss",
 										TimeAgo: "26 minutes ago",
-										Comments: []*item.Story{
+										Children: []*hn.CommentNode{
 											{
 												ID:      33,
 												Time:    time.Now().Add(time.Minute).Unix(),
-												User:    "cantor",
+												Author:  "cantor",
 												TimeAgo: "10 minutes ago",
-												Comments: []*item.Story{
+												Children: []*hn.CommentNode{
 													{
 														ID:      33,
 														Time:    time.Now().Add(time.Minute).Unix(),
-														User:    "euler",
+														Author:  "euler",
 														TimeAgo: "4 minutes ago",
 														Content: "Duis accumsan eros sit amet libero facilisis, id placerat tellus auctor.",
 													},
@@ -345,7 +345,7 @@ func (Service) FetchComments(_ context.Context, _ int, _ func(fetched, total int
 					},
 					{
 						ID:      33,
-						User:    "ramanujan",
+						Author:  "ramanujan",
 						TimeAgo: "27 minutes ago",
 						Content: "Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe " +
 							"eveniet, ut et voluptates repudiandae.",
@@ -355,10 +355,9 @@ func (Service) FetchComments(_ context.Context, _ int, _ func(fetched, total int
 					"venenatis, molestie sem quis, sagittis felis.",
 			},
 			{
-				ID:       1,
-				User:     "wolfgang",
-				TimeAgo:  "6 minutes ago",
-				Comments: nil,
+				ID:      1,
+				Author:  "wolfgang",
+				TimeAgo: "6 minutes ago",
 				Content: "<p>Vivamus elementum auctor congue. Etiam[1] nulla nisl, varius vehicula[2] quam vel, aliquet " +
 					"iaculis enim. Donec felis elit[3], sollicitudin viverra velit eget, posuere[4] vestibulum eros. " +
 					"<p>[1] <a href=\"https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Boss_key\" rel=\"nofollow\">" +
@@ -367,32 +366,26 @@ func (Service) FetchComments(_ context.Context, _ int, _ func(fetched, total int
 					"march-madness-live&#x2F;boss</a><p>[3] <a href=\"http:&#x2F;&#x2F;pcottle.github.io&#x2F;MSOutlookit&#" +
 					"x2F;&#x2F;\" rel=\"nofollow\">http:&#x2F;&#x2F;pcottle.github.io&#x2F;MSOutlookit&#x2F;&#x2F;</a><p>[4]" +
 					" <a href=\"https:&#x2F;&#x2F;redditshell.com&#x2F;\" rel=\"nofollow\">https:&#x2F;&#x2F;redditshell.com&#x2F;</a>",
-				CommentsCount: 0,
 			},
 			{
 				ID:      5,
-				User:    "hamilton",
+				Author:  "hamilton",
 				TimeAgo: "2 hours ago",
-				Comments: []*item.Story{
+				Children: []*hn.CommentNode{
 					{
-						ID:            41,
-						User:          "euler",
-						TimeAgo:       "1 hour ago",
-						Comments:      nil,
-						Content:       "<p>&gt; Godot doesn’t fight you when you’re building scenes. Making a scene feels a lot like creating a class using composition, and scenes can even inherit from other scenes (using another scene as the the root node of a scene allows you to inherit from it and override its properties in the editor and in code), allowing you to express patterns you’re intimately familiar with from object-oriented programming.<p>I personally find the approach of nodes everywhere a bit odd.<p><pre><code>  EnemyObject\n    PathfindingObject\n      PathfindingBehavior (attached script)\n    ShootingObject\n      ShootingBehavior (attached script)\n    TalkingObject\n      TalkingBehavior (attached script)\n</code></pre>\nIt kind of feels like it would be nicer to be able to attach a number of scripts to the object that I actually want to control, instead of having Nodes that I don&#x27;t really see much of a use for, apart from them being script containers.</a>",
-						CommentsCount: 0,
+						ID:      41,
+						Author:  "euler",
+						TimeAgo: "1 hour ago",
+						Content: "<p>&gt; Godot doesn't fight you when you're building scenes. Making a scene feels a lot like creating a class using composition, and scenes can even inherit from other scenes (using another scene as the the root node of a scene allows you to inherit from it and override its properties in the editor and in code), allowing you to express patterns you're intimately familiar with from object-oriented programming.<p>I personally find the approach of nodes everywhere a bit odd.<p><pre><code>  EnemyObject\n    PathfindingObject\n      PathfindingBehavior (attached script)\n    ShootingObject\n      ShootingBehavior (attached script)\n    TalkingObject\n      TalkingBehavior (attached script)\n</code></pre>\nIt kind of feels like it would be nicer to be able to attach a number of scripts to the object that I actually want to control, instead of having Nodes that I don&#x27;t really see much of a use for, apart from them being script containers.</a>",
 					},
 				},
-				Content:       "<p>&gt; Godot doesn’t fight you when you’re building scenes. Making a scene feels a lot like creating a class using composition, and scenes can even inherit from other scenes (using another scene as the the root node of a scene allows you to inherit from it and override its properties in the editor and in code), allowing you to express patterns you’re intimately familiar with from object-oriented programming.<p>I personally find the approach of nodes everywhere a bit odd.<p><pre><code>  EnemyObject\n    PathfindingObject\n      PathfindingBehavior (attached script)\n    ShootingObject\n      ShootingBehavior (attached script)\n    TalkingObject\n      TalkingBehavior (attached script)\n</code></pre>\nIt kind of feels like it would be nicer to be able to attach a number of scripts to the object that I actually want to control, instead of having Nodes that I don&#x27;t really see much of a use for, apart from them being script containers.</a>",
-				CommentsCount: 0,
+				Content: "<p>&gt; Godot doesn't fight you when you're building scenes. Making a scene feels a lot like creating a class using composition, and scenes can even inherit from other scenes (using another scene as the the root node of a scene allows you to inherit from it and override its properties in the editor and in code), allowing you to express patterns you're intimately familiar with from object-oriented programming.<p>I personally find the approach of nodes everywhere a bit odd.<p><pre><code>  EnemyObject\n    PathfindingObject\n      PathfindingBehavior (attached script)\n    ShootingObject\n      ShootingBehavior (attached script)\n    TalkingObject\n      TalkingBehavior (attached script)\n</code></pre>\nIt kind of feels like it would be nicer to be able to attach a number of scripts to the object that I actually want to control, instead of having Nodes that I don&#x27;t really see much of a use for, apart from them being script containers.</a>",
 			},
 			{
-				ID:            4,
-				User:          "hamilton",
-				TimeAgo:       "1 hour ago",
-				Comments:      nil,
-				Content:       "<p> This comment tests parsing of YC-funded companies: xxxxxxCompany (YC S07)",
-				CommentsCount: 0,
+				ID:      4,
+				Author:  "hamilton",
+				TimeAgo: "1 hour ago",
+				Content: "<p> This comment tests parsing of YC-funded companies: xxxxxxCompany (YC S07)",
 			},
 		},
 		Content: "<p>Lorem ipsum dolor sit amet, " +
@@ -401,6 +394,6 @@ func (Service) FetchComments(_ context.Context, _ int, _ func(fetched, total int
 	}, nil
 }
 
-func (Service) FetchItem(_ context.Context, id int) (*item.Story, error) {
-	return &item.Story{ID: id, Title: "Mock item"}, nil
+func (Service) FetchItem(_ context.Context, id int) (*hn.Story, error) {
+	return &hn.Story{ID: id, Title: "Mock item"}, nil
 }

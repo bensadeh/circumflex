@@ -9,6 +9,7 @@ import (
 	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/hn"
+	"github.com/bensadeh/circumflex/hn/provider"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/settings"
 	"github.com/bensadeh/circumflex/style"
@@ -214,7 +215,7 @@ func isGhostty() bool {
 }
 
 func newService() hn.Service {
-	return hn.NewService(debugMode, debugFallible)
+	return provider.NewService(debugMode, debugFallible)
 }
 
 func readerWidth(maxWidth int) int {

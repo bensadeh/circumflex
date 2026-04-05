@@ -12,7 +12,7 @@ import (
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/history"
-	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/view/message"
 
 	tea "charm.land/bubbletea/v2"
@@ -173,7 +173,7 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 			fmt.Fprintf(os.Stderr, "\033]9;4;1;%d\a", pct)
 		}
 
-		story, err := service.FetchComments(ctx, msg.ID, onProgress)
+		tree, err := service.FetchComments(ctx, msg.ID, onProgress)
 		if err != nil {
 			if errors.Is(err, context.Canceled) {
 				clearProgress()
@@ -191,13 +191,22 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 
 		histErr := hist.MarkAsReadAndWriteToDisk(msg.ID, msg.CommentCount)
 
-		var updatedStory *item.Story
+		var updatedStory *hn.Story
 		if isOnFavorites {
-			updatedStory = story
+			updatedStory = &hn.Story{
+				ID:            tree.ID,
+				Title:         tree.Title,
+				Points:        tree.Points,
+				Author:        tree.Author,
+				Time:          tree.Time,
+				URL:           tree.URL,
+				Domain:        tree.Domain,
+				CommentsCount: tree.CommentsCount,
+			}
 		}
 
 		return message.CommentTreeDataReady{
-			Thread:         comment.StoryToThread(story),
+			Thread:         comment.ToThread(tree),
 			LastVisited:    lastVisited,
 			UpdatedStory:   updatedStory,
 			FetchID:        fetchID,
@@ -283,10 +292,10 @@ func friendlyError(err error) string {
 	return msg
 }
 
-func clearAllCategories(items [][]*item.Story) {
-	items[categories.Top] = []*item.Story{}
-	items[categories.Newest] = []*item.Story{}
-	items[categories.Ask] = []*item.Story{}
-	items[categories.Show] = []*item.Story{}
-	items[categories.Best] = []*item.Story{}
+func clearAllCategories(items [][]*hn.Story) {
+	items[categories.Top] = []*hn.Story{}
+	items[categories.Newest] = []*hn.Story{}
+	items[categories.Ask] = []*hn.Story{}
+	items[categories.Show] = []*hn.Story{}
+	items[categories.Best] = []*hn.Story{}
 }

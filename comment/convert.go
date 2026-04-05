@@ -1,46 +1,46 @@
 package comment
 
 import (
-	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/hn"
 )
 
-// StoryToThread maps an item.Story (API layer) to a Thread (rendering layer).
-func StoryToThread(s *item.Story) *Thread {
+// ToThread maps an hn.CommentTree (API layer) to a Thread (rendering layer).
+func ToThread(t *hn.CommentTree) *Thread {
 	return &Thread{
-		ID:            s.ID,
-		Title:         s.Title,
-		Author:        s.User,
-		URL:           s.URL,
-		Domain:        s.Domain,
-		Points:        s.Points,
-		TimeAgo:       s.TimeAgo,
-		Content:       s.Content,
-		CommentsCount: s.CommentsCount,
-		Comments:      mapComments(s.Comments),
+		ID:            t.ID,
+		Title:         t.Title,
+		Author:        t.Author,
+		URL:           t.URL,
+		Domain:        t.Domain,
+		Points:        t.Points,
+		TimeAgo:       t.TimeAgo,
+		Content:       t.Content,
+		CommentsCount: t.CommentsCount,
+		Comments:      mapCommentNodes(t.Comments),
 	}
 }
 
-func mapComments(stories []*item.Story) []*Comment {
-	if stories == nil {
+func mapCommentNodes(nodes []*hn.CommentNode) []*Comment {
+	if nodes == nil {
 		return nil
 	}
 
-	result := make([]*Comment, 0, len(stories))
+	result := make([]*Comment, 0, len(nodes))
 
-	for _, s := range stories {
-		result = append(result, mapComment(s))
+	for _, n := range nodes {
+		result = append(result, mapCommentNode(n))
 	}
 
 	return result
 }
 
-func mapComment(s *item.Story) *Comment {
+func mapCommentNode(n *hn.CommentNode) *Comment {
 	return &Comment{
-		ID:       s.ID,
-		Author:   s.User,
-		Content:  s.Content,
-		Time:     s.Time,
-		TimeAgo:  s.TimeAgo,
-		Children: mapComments(s.Comments),
+		ID:       n.ID,
+		Author:   n.Author,
+		Content:  n.Content,
+		Time:     n.Time,
+		TimeAgo:  n.TimeAgo,
+		Children: mapCommentNodes(n.Children),
 	}
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/bensadeh/circumflex/help"
 	"github.com/bensadeh/circumflex/history"
 	"github.com/bensadeh/circumflex/hn"
-	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/hn/provider"
 	"github.com/bensadeh/circumflex/settings"
 	clxspinner "github.com/bensadeh/circumflex/spinner"
 	"github.com/bensadeh/circumflex/view/comments"
@@ -43,7 +43,7 @@ const (
 // help items will be added to the help view.
 type ItemDelegate interface {
 	// Render renders the item's view.
-	Render(w io.Writer, m *Model, index int, item *item.Story)
+	Render(w io.Writer, m *Model, index int, item *hn.Story)
 
 	// Height is the height of the list item.
 	Height() int
@@ -93,7 +93,7 @@ type Model struct {
 
 func New(delegate ItemDelegate, config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int) *Model {
 	return newModel(delegate, config, cat, favorites, width, height,
-		hn.NewService(config.DebugMode, config.DebugFallible),
+		provider.NewService(config.DebugMode, config.DebugFallible),
 		getHistory(config.DebugMode || config.DebugFallible, config.DoNotMarkSubmissionsAsRead))
 }
 
@@ -109,7 +109,7 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 	p.ActiveDot = s.ActivePaginationDot.String()
 	p.InactiveDot = s.InactivePaginationDot.String()
 
-	items := make([][]*item.Story, numberOfCategories)
+	items := make([][]*hn.Story, numberOfCategories)
 
 	m := Model{
 		styles: s,
@@ -145,7 +145,7 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 }
 
 func (m *Model) syncFavorites() {
-	m.pager.items[categories.Favorites] = m.favorites.Items()
+	m.pager.items[categories.Favorites] = favItemsToStories(m.favorites.Items())
 	m.cat.SetFavorites(m.favorites.HasItems())
 }
 
@@ -203,7 +203,7 @@ func (m *Model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*M
 	m.status.StopSpinner()
 
 	if msg.UpdatedStory != nil {
-		if err := m.favorites.UpdateStoryAndWriteToDisk(msg.UpdatedStory); err != nil {
+		if err := m.favorites.UpdateStoryAndWriteToDisk(favorites.ItemFromStory(msg.UpdatedStory)); err != nil {
 			cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not update favorite on disk", statusMessageLong))
 		}
 	}
@@ -326,7 +326,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		}
 
 	case message.AddToFavorites:
-		m.favorites.Add(msg.Item)
+		m.favorites.Add(favorites.ItemFromStory(msg.Item))
 
 		if err := m.favorites.Write(); err != nil {
 			if removeErr := m.favorites.RemoveLast(); removeErr != nil {
@@ -436,4 +436,24 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	cmds = append(cmds, m.handleBrowsing(msg))
 
 	return m, tea.Batch(cmds...)
+}
+
+// favItemsToStories maps favorites items to hn.Story for display in the pager.
+func favItemsToStories(items []*favorites.Item) []*hn.Story {
+	stories := make([]*hn.Story, len(items))
+
+	for i, it := range items {
+		stories[i] = &hn.Story{
+			ID:            it.ID,
+			Title:         it.Title,
+			Points:        it.Points,
+			Author:        it.Author,
+			Time:          it.Time,
+			URL:           it.URL,
+			Domain:        it.Domain,
+			CommentsCount: it.CommentsCount,
+		}
+	}
+
+	return stories
 }

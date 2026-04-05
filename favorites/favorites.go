@@ -7,12 +7,39 @@ import (
 	"sync"
 
 	"github.com/bensadeh/circumflex/fileutil"
-	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/hn"
 )
+
+// ItemFromStory maps an hn.Story to a favorites Item.
+func ItemFromStory(s *hn.Story) *Item {
+	return &Item{
+		ID:            s.ID,
+		Title:         s.Title,
+		Points:        s.Points,
+		Author:        s.Author,
+		Time:          s.Time,
+		URL:           s.URL,
+		Domain:        s.Domain,
+		CommentsCount: s.CommentsCount,
+	}
+}
+
+// Item holds the fields persisted for a favorited story.
+// JSON tags match the old item.Story PascalCase names for backward compatibility.
+type Item struct {
+	ID            int    `json:"ID"`
+	Title         string `json:"Title"`
+	Points        int    `json:"Points"`
+	Author        string `json:"User"`
+	Time          int64  `json:"Time"`
+	URL           string `json:"URL"`
+	Domain        string `json:"Domain"`
+	CommentsCount int    `json:"CommentsCount"`
+}
 
 type Favorites struct {
 	mu    sync.RWMutex
-	items []*item.Story
+	items []*Item
 	path  string
 }
 
@@ -38,8 +65,8 @@ func New(path string) (*Favorites, error) {
 	return f, nil
 }
 
-func unmarshal(data []byte) ([]*item.Story, error) {
-	var items []*item.Story
+func unmarshal(data []byte) ([]*Item, error) {
+	var items []*Item
 
 	err := json.Unmarshal(data, &items)
 	if err != nil {
@@ -51,7 +78,7 @@ func unmarshal(data []byte) ([]*item.Story, error) {
 
 // Items returns the internal slice. Callers on the same goroutine (Bubble Tea
 // Update loop) can safely iterate it; concurrent use would need a copy.
-func (f *Favorites) Items() []*item.Story {
+func (f *Favorites) Items() []*Item {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 
@@ -65,7 +92,7 @@ func (f *Favorites) HasItems() bool {
 	return len(f.items) != 0
 }
 
-func (f *Favorites) Add(item *item.Story) {
+func (f *Favorites) Add(item *Item) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 
@@ -118,14 +145,14 @@ func (f *Favorites) RemoveLast() error {
 	return nil
 }
 
-func (f *Favorites) UpdateStoryAndWriteToDisk(newItem *item.Story) error {
+func (f *Favorites) UpdateStoryAndWriteToDisk(newItem *Item) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 
 	for i, s := range f.items {
 		if s.ID == newItem.ID {
 			isFieldsUpdated := s.Title != newItem.Title || s.Points != newItem.Points ||
-				s.Time != newItem.Time || s.User != newItem.User ||
+				s.Time != newItem.Time || s.Author != newItem.Author ||
 				s.CommentsCount != newItem.CommentsCount || s.URL != newItem.URL ||
 				s.Domain != newItem.Domain
 
@@ -133,7 +160,7 @@ func (f *Favorites) UpdateStoryAndWriteToDisk(newItem *item.Story) error {
 				f.items[i].Title = newItem.Title
 				f.items[i].Points = newItem.Points
 				f.items[i].Time = newItem.Time
-				f.items[i].User = newItem.User
+				f.items[i].Author = newItem.Author
 				f.items[i].CommentsCount = newItem.CommentsCount
 				f.items[i].URL = newItem.URL
 				f.items[i].Domain = newItem.Domain

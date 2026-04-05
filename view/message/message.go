@@ -6,7 +6,7 @@ import (
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/comment"
-	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/hn"
 )
 
 type ReaderViewQuitMsg struct{}
@@ -41,7 +41,7 @@ type StatusMessageTimeout struct {
 }
 
 type FetchingFinished struct {
-	Stories  []*item.Story
+	Stories  []*hn.Story
 	Category categories.Category
 	Err      error
 	FetchID  uint64
@@ -59,7 +59,7 @@ type Refresh struct {
 }
 
 type CategoryFetchingFinished struct {
-	Stories  []*item.Story
+	Stories  []*hn.Story
 	Category categories.Category
 	Index    int
 	Cursor   int
@@ -68,7 +68,7 @@ type CategoryFetchingFinished struct {
 }
 
 type AddToFavorites struct {
-	Item *item.Story
+	Item *hn.Story
 }
 
 type ArticleReady struct {
@@ -88,7 +88,7 @@ type ArticleReady struct {
 type CommentTreeDataReady struct {
 	Thread         *comment.Thread
 	LastVisited    int64
-	UpdatedStory   *item.Story // stays in item domain for favorites sync
+	UpdatedStory   *hn.Story // non-nil when viewing a favorite, for syncing metadata
 	Err            error
 	FetchID        uint64
 	HistoryWarning error // non-nil if marking as read failed

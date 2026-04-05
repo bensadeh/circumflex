@@ -9,6 +9,7 @@ import (
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/browser"
 	"github.com/bensadeh/circumflex/categories"
+	"github.com/bensadeh/circumflex/timeago"
 	"github.com/bensadeh/circumflex/view/message"
 
 	"charm.land/bubbles/v2/key"
@@ -160,8 +161,8 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 					Domain:       selected.Domain,
 					ID:           selected.ID,
 					CommentCount: selected.CommentsCount,
-					Author:       selected.User,
-					TimeAgo:      selected.TimeAgo,
+					Author:       selected.Author,
+					TimeAgo:      timeago.RelativeTime(selected.Time),
 					Points:       selected.Points,
 				}
 			}

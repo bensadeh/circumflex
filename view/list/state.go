@@ -1,6 +1,6 @@
 package list
 
-import "github.com/bensadeh/circumflex/item"
+import "github.com/bensadeh/circumflex/hn"
 
 type ViewState int
 
@@ -17,6 +17,6 @@ const (
 
 type transition struct {
 	prevIndex int
-	oldItems  []*item.Story
+	oldItems  []*hn.Story
 	refresh   bool
 }

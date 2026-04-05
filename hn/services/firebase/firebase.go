@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/bensadeh/circumflex/ansi"
-	"github.com/bensadeh/circumflex/item"
+	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/timeago"
 	"github.com/bensadeh/circumflex/version"
 
@@ -59,7 +59,7 @@ func NewService() *Service {
 	return &Service{client: client, baseURL: defaultBaseURL}
 }
 
-func (s *Service) FetchItems(ctx context.Context, itemsToFetch int, category string) ([]*item.Story, error) {
+func (s *Service) FetchItems(ctx context.Context, itemsToFetch int, category string) ([]*hn.Story, error) {
 	ids, err := s.fetchStoriesList(ctx, category)
 	if err != nil {
 		return nil, err
@@ -88,8 +88,8 @@ func (s *Service) fetchStoriesList(ctx context.Context, category string) ([]int,
 	return ids, nil
 }
 
-func (s *Service) fetchItemsInParallel(ctx context.Context, ids []int) ([]*item.Story, error) {
-	items := make([]*item.Story, len(ids))
+func (s *Service) fetchItemsInParallel(ctx context.Context, ids []int) ([]*hn.Story, error) {
+	items := make([]*hn.Story, len(ids))
 
 	ctx, cancel := context.WithCancelCause(ctx)
 	defer cancel(nil)
@@ -113,7 +113,7 @@ func (s *Service) fetchItemsInParallel(ctx context.Context, ids []int) ([]*item.
 		go func(i, id int) {
 			defer wg.Done()
 
-			hn, err := s.fetchHNItem(ctx, id)
+			raw, err := s.fetchHNItem(ctx, id)
 			if err != nil {
 				if !errors.Is(err, errItemNotFound) {
 					fail(err)
@@ -122,7 +122,7 @@ func (s *Service) fetchItemsInParallel(ctx context.Context, ids []int) ([]*item.
 				return
 			}
 
-			items[i] = mapStoryItem(hn)
+			items[i] = mapStoryItem(raw)
 		}(i, id)
 	}
 
@@ -135,22 +135,22 @@ func (s *Service) fetchItemsInParallel(ctx context.Context, ids []int) ([]*item.
 	return filterNil(items), nil
 }
 
-func (s *Service) FetchItem(ctx context.Context, id int) (*item.Story, error) {
-	hn, err := s.fetchHNItem(ctx, id)
+func (s *Service) FetchItem(ctx context.Context, id int) (*hn.Story, error) {
+	raw, err := s.fetchHNItem(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return mapStoryItem(hn), nil
+	return mapStoryItem(raw), nil
 }
 
-func (s *Service) FetchComments(ctx context.Context, id int, onProgress func(fetched, total int)) (*item.Story, error) {
-	hn, err := s.fetchHNItem(ctx, id)
+func (s *Service) FetchComments(ctx context.Context, id int, onProgress func(fetched, total int)) (*hn.CommentTree, error) {
+	raw, err := s.fetchHNItem(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("fetching story %d: %w", id, err)
 	}
 
-	story := mapRootItem(hn)
+	tree := mapCommentTree(raw)
 
 	ctx, cancel := context.WithCancelCause(ctx)
 	defer cancel(nil)
@@ -159,20 +159,20 @@ func (s *Service) FetchComments(ctx context.Context, id int, onProgress func(fet
 
 	var fetched atomic.Int64
 
-	story.Comments, err = s.fetchCommentTree(ctx, cancel, sem, hn.Kids, &fetched, hn.Descendants, onProgress)
+	tree.Comments, err = s.fetchCommentNodes(ctx, cancel, sem, raw.Kids, &fetched, raw.Descendants, onProgress)
 	if err != nil {
 		return nil, fmt.Errorf("fetching comments for story %d: %w", id, err)
 	}
 
-	return story, nil
+	return tree, nil
 }
 
-func (s *Service) fetchCommentTree(ctx context.Context, cancel context.CancelCauseFunc, sem chan struct{}, kidIDs []int, fetched *atomic.Int64, total int, onProgress func(fetched, total int)) ([]*item.Story, error) {
+func (s *Service) fetchCommentNodes(ctx context.Context, cancel context.CancelCauseFunc, sem chan struct{}, kidIDs []int, fetched *atomic.Int64, total int, onProgress func(fetched, total int)) ([]*hn.CommentNode, error) {
 	if len(kidIDs) == 0 {
 		return nil, nil
 	}
 
-	comments := make([]*item.Story, len(kidIDs))
+	comments := make([]*hn.CommentNode, len(kidIDs))
 
 	var (
 		wg       sync.WaitGroup
@@ -200,7 +200,7 @@ func (s *Service) fetchCommentTree(ctx context.Context, cancel context.CancelCau
 				return
 			}
 
-			hn, err := s.fetchHNItem(ctx, kidID)
+			raw, err := s.fetchHNItem(ctx, kidID)
 
 			// Release semaphore before recursion to avoid deadlock: child
 			// goroutines can acquire slots while the parent continues.
@@ -218,21 +218,21 @@ func (s *Service) fetchCommentTree(ctx context.Context, cancel context.CancelCau
 				onProgress(int(fetched.Add(1)), total)
 			}
 
-			if hn.Dead {
+			if raw.Dead {
 				return
 			}
 
-			c := mapCommentItem(hn)
+			node := mapCommentNode(raw)
 
-			children, err := s.fetchCommentTree(ctx, cancel, sem, hn.Kids, fetched, total, onProgress)
+			children, err := s.fetchCommentNodes(ctx, cancel, sem, raw.Kids, fetched, total, onProgress)
 			if err != nil {
 				fail(err)
 
 				return
 			}
 
-			c.Comments = children
-			comments[i] = c
+			node.Children = children
+			comments[i] = node
 		}(i, kidID)
 	}
 
@@ -266,63 +266,63 @@ func (s *Service) fetchHNItem(ctx context.Context, id int) (*hnItem, error) {
 		return nil, fmt.Errorf("item %d: %w", id, errItemNotFound)
 	}
 
-	var hn hnItem
-	if err := json.Unmarshal([]byte(sanitized), &hn); err != nil {
+	var item hnItem
+	if err := json.Unmarshal([]byte(sanitized), &item); err != nil {
 		return nil, fmt.Errorf("unexpected response from server for item %d: %w", id, err)
 	}
 
-	return &hn, nil
+	return &item, nil
 }
 
-func mapStoryItem(hn *hnItem) *item.Story {
-	return &item.Story{
-		ID:            hn.ID,
-		Title:         hn.Title,
-		Points:        hn.Score,
-		User:          hn.By,
-		Time:          hn.Time,
-		URL:           hn.URL,
-		Domain:        domainutil.Domain(hn.URL),
-		CommentsCount: hn.Descendants,
+func mapStoryItem(raw *hnItem) *hn.Story {
+	return &hn.Story{
+		ID:            raw.ID,
+		Title:         raw.Title,
+		Points:        raw.Score,
+		Author:        raw.By,
+		Time:          raw.Time,
+		URL:           raw.URL,
+		Domain:        domainutil.Domain(raw.URL),
+		CommentsCount: raw.Descendants,
 	}
 }
 
-func mapRootItem(hn *hnItem) *item.Story {
-	return &item.Story{
-		ID:            hn.ID,
-		Title:         hn.Title,
-		Points:        hn.Score,
-		User:          hn.By,
-		Time:          hn.Time,
-		TimeAgo:       timeago.RelativeTime(hn.Time),
-		URL:           hn.URL,
-		Domain:        domainutil.Domain(hn.URL),
-		Content:       hn.Text,
-		CommentsCount: hn.Descendants,
+func mapCommentTree(raw *hnItem) *hn.CommentTree {
+	return &hn.CommentTree{
+		ID:            raw.ID,
+		Title:         raw.Title,
+		Points:        raw.Score,
+		Author:        raw.By,
+		Time:          raw.Time,
+		TimeAgo:       timeago.RelativeTime(raw.Time),
+		URL:           raw.URL,
+		Domain:        domainutil.Domain(raw.URL),
+		Content:       raw.Text,
+		CommentsCount: raw.Descendants,
 	}
 }
 
-func mapCommentItem(hn *hnItem) *item.Story {
-	content := hn.Text
-	if hn.Deleted {
+func mapCommentNode(raw *hnItem) *hn.CommentNode {
+	content := raw.Text
+	if raw.Deleted {
 		content = "[deleted]"
 	}
 
-	return &item.Story{
-		ID:      hn.ID,
-		User:    hn.By,
-		Time:    hn.Time,
-		TimeAgo: timeago.RelativeTime(hn.Time),
+	return &hn.CommentNode{
+		ID:      raw.ID,
+		Author:  raw.By,
+		Time:    raw.Time,
+		TimeAgo: timeago.RelativeTime(raw.Time),
 		Content: content,
 	}
 }
 
-func filterNil(items []*item.Story) []*item.Story {
+func filterNil[T any](items []*T) []*T {
 	if len(items) == 0 {
 		return nil
 	}
 
-	result := make([]*item.Story, 0, len(items))
+	result := make([]*T, 0, len(items))
 
 	for _, it := range items {
 		if it != nil {
