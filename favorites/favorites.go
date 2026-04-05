@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"path/filepath"
 	"sync"
 
+	"github.com/bensadeh/circumflex/fileutil"
 	"github.com/bensadeh/circumflex/item"
 )
 
@@ -19,7 +19,7 @@ type Favorites struct {
 func New(path string) (*Favorites, error) {
 	f := &Favorites{path: path}
 
-	if !fileExists(path) {
+	if !fileutil.Exists(path) {
 		return f, nil
 	}
 
@@ -85,7 +85,7 @@ func (f *Favorites) writeLocked() error {
 		return fmt.Errorf("could not serialize favorites: %w", err)
 	}
 
-	if err := writeFile(f.path, string(stream)); err != nil {
+	if err := fileutil.WriteAtomic(f.path, string(stream)); err != nil {
 		return fmt.Errorf("could not write favorites: %w", err)
 	}
 
@@ -144,40 +144,4 @@ func (f *Favorites) UpdateStoryAndWriteToDisk(newItem *item.Story) error {
 	}
 
 	return nil
-}
-
-func fileExists(path string) bool {
-	_, err := os.Stat(path)
-
-	return err == nil
-}
-
-func writeFile(path string, content string) error {
-	dir := filepath.Dir(path)
-
-	if err := os.MkdirAll(dir, 0o700); err != nil {
-		return err
-	}
-
-	tmp, err := os.CreateTemp(dir, filepath.Base(path)+".tmp*")
-	if err != nil {
-		return err
-	}
-
-	tmpPath := tmp.Name()
-
-	if _, err := tmp.WriteString(content); err != nil {
-		_ = tmp.Close()
-		_ = os.Remove(tmpPath)
-
-		return err
-	}
-
-	if err := tmp.Close(); err != nil {
-		_ = os.Remove(tmpPath)
-
-		return err
-	}
-
-	return os.Rename(tmpPath, path)
 }

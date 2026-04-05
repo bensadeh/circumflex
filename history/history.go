@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/bensadeh/circumflex/fileutil"
 	"github.com/bensadeh/circumflex/settings"
 )
 
@@ -26,7 +27,7 @@ func NewPersistentHistory() (History, error) {
 		VisitedStories: make(map[int]StoryInfo),
 	}
 
-	if !fileExists(filePath) {
+	if !fileutil.Exists(filePath) {
 		if err := writeToDisk(h, filePath); err != nil {
 			return h, fmt.Errorf("could not create history at %s: %w", filePath, err)
 		}
@@ -61,41 +62,5 @@ func writeToDisk(h *Persistent, filePath string) error {
 		return err
 	}
 
-	return writeFile(filePath, string(visitedStoriesJSON))
-}
-
-func fileExists(path string) bool {
-	_, err := os.Stat(path)
-
-	return err == nil
-}
-
-func writeFile(path string, content string) error {
-	dir := filepath.Dir(path)
-
-	if err := os.MkdirAll(dir, 0o700); err != nil {
-		return err
-	}
-
-	tmp, err := os.CreateTemp(dir, filepath.Base(path)+".tmp*")
-	if err != nil {
-		return err
-	}
-
-	tmpPath := tmp.Name()
-
-	if _, err := tmp.WriteString(content); err != nil {
-		_ = tmp.Close()
-		_ = os.Remove(tmpPath)
-
-		return err
-	}
-
-	if err := tmp.Close(); err != nil {
-		_ = os.Remove(tmpPath)
-
-		return err
-	}
-
-	return os.Rename(tmpPath, path)
+	return fileutil.WriteAtomic(filePath, string(visitedStoriesJSON))
 }
