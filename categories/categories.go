@@ -38,6 +38,9 @@ func Name(cat Category) string {
 	}
 }
 
+// Default is the default value for the --categories flag.
+const Default = "top,best,ask,show"
+
 // AvailableNames returns the names accepted by the --categories flag.
 func AvailableNames() []string {
 	return []string{"top", "best", "new", "ask", "show"}

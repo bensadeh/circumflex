@@ -164,9 +164,8 @@ func configureFlags(rootCmd *cobra.Command) {
 		"set the article width in reader mode")
 	rootCmd.PersistentFlags().BoolVarP(&nerdFontFlag, "nerdfonts", "n", false,
 		"enable or disable Nerd Fonts")
-	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", "top,best,ask,show",
-		"set the categories in the header\n(available: "+strings.Join(categories.AvailableNames(), ", ")+")\n(default \"top,best,ask,show\")")
-	rootCmd.Flag("categories").DefValue = ""
+	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", categories.Default,
+		"set the categories in the header\n(available: "+strings.Join(categories.AvailableNames(), ", ")+")")
 	rootCmd.PersistentFlags().IntVar(&pageMultiplier, "pages", settings.Default().PageMultiplier,
 		"set the number of pages to fetch per category (min 1, max 5)")
 
