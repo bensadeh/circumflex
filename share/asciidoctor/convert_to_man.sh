@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version=$(go run ../../main.go version)
+version=$(go run ../../cmd/clx/main.go --version | awk '{print $NF}')
 
 touch clx.adoc
 
