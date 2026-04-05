@@ -617,39 +617,31 @@ func TestEnteringCommentSection_HistoryWriteFailure(t *testing.T) {
 	assert.Contains(t, result.HistoryWarning.Error(), "permission denied")
 }
 
-func TestEnteringReaderMode_HistoryWriteFailure(t *testing.T) {
+func TestEnteringReaderMode_ValidationFailure_SkipsHistoryWrite(t *testing.T) {
 	config := settings.Default()
 	cat, _ := categories.New("top,best,ask,show")
 	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.json"))
 	require.NoError(t, err)
 
-	hist := failingHistory{writeErr: errors.New("permission denied")}
+	// Even with a failing history, validation failure should return before
+	// attempting the history write — so HistoryWarning must be nil.
+	hist := failingHistory{writeErr: errors.New("should not be reached")}
 	m := newModel(NewDefaultDelegate(), config, cat, fav, 80, 24, &instantMockService{}, hist)
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 	m.pager.items[categories.Top] = testItems()
 	m.state = StateBrowsing
 
-	// Trigger reader mode — use a domain that will fail article.Validate
-	// so the cmd returns immediately without hitting the network
 	_, cmd := m.Update(message.EnteringReaderMode{
-		URL:    "https://example.com/article",
-		Title:  "Test Article",
-		Domain: "example.com",
+		URL:    "https://youtube.com/watch?v=123",
+		Title:  "Test Video",
+		Domain: "youtube.com",
 		ID:     1,
 	})
-	assert.NotNil(t, cmd)
+	require.NotNil(t, cmd)
 
-	// Execute the cmd — article.Parse will fail (no real server), but we can
-	// still check the cmd was produced. For a true end-to-end test we'd need
-	// a mock HTTP server, so instead test the handler path directly.
-	m2 := newTestModelReady(t)
-	m2, resultCmd := m2.Update(message.ArticleReady{
-		Content:        "content",
-		Title:          "Test",
-		FetchID:        m2.fetchID,
-		HistoryWarning: errors.New("permission denied"),
-	})
-
-	assert.Equal(t, StateReaderView, m2.state)
-	assert.NotNil(t, resultCmd, "should batch init + warning")
+	msg := cmd()
+	result, ok := msg.(message.ArticleReady)
+	require.True(t, ok)
+	require.Error(t, result.Err, "validation should fail for youtube.com")
+	assert.NoError(t, result.HistoryWarning, "history write should be skipped on validation failure")
 }

@@ -101,6 +101,16 @@ func Parse(ctx context.Context, url string) (*Parsed, error) {
 	return &Parsed{blocks: blocks, url: url}, nil
 }
 
+// NewParsedFromMarkdown creates a Parsed value from raw Markdown text,
+// bypassing the network fetch. Intended for tests that need a Parsed
+// without hitting a real URL.
+func NewParsedFromMarkdown(md string) *Parsed {
+	blocks := convertToMarkdownBlocks(md)
+	normalizeHeaders(blocks)
+
+	return &Parsed{blocks: blocks, url: "https://example.com"}
+}
+
 // Fetch fetches, parses, and renders an article in one step.
 // Convenience wrapper used by standalone commands.
 func Fetch(ctx context.Context, url string, width int) (string, error) {

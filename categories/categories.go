@@ -40,7 +40,7 @@ func Name(cat Category) string {
 
 // AvailableNames returns the names accepted by the --categories flag.
 func AvailableNames() []string {
-	return []string{"top", "new", "ask", "show", "best"}
+	return []string{"top", "best", "new", "ask", "show"}
 }
 
 func categoryFromName(name string) (Category, bool) {
