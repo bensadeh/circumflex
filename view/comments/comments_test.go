@@ -3,6 +3,7 @@ package comments
 import (
 	"testing"
 
+	tea "charm.land/bubbletea/v2"
 	"github.com/bensadeh/circumflex/comment"
 
 	"github.com/stretchr/testify/assert"
@@ -279,6 +280,148 @@ func TestGotoBottom_Navigate(t *testing.T) {
 
 	m.gotoBottom()
 	assert.Equal(t, len(m.visible)-1, m.focusedIdx)
+}
+
+// --- Viewport stability: anchor doesn't move on collapse/expand/resize ---
+
+// deepThread builds a tree large enough that content exceeds the viewport,
+// making scroll anchoring observable. Structure:
+//
+//	T1 (depth 0)
+//	  T1-R1 (depth 1)
+//	    T1-R1-R1 (depth 2)
+//	  T1-R2 (depth 1)
+//	T2 (depth 0)
+//	  T2-R1 (depth 1)
+//	    T2-R1-R1 (depth 2)
+//	  T2-R2 (depth 1)
+//	T3 (depth 0)
+//	  T3-R1 (depth 1)
+//	T4 (depth 0)
+//	  T4-R1 (depth 1)
+//	    T4-R1-R1 (depth 2)
+func deepThread() *comment.Thread {
+	return newThread(
+		newComment(10, "a", "Top-level 1 with enough text to occupy lines",
+			newComment(11, "b", "Reply to T1 with some content here",
+				newComment(12, "c", "Nested reply deep in T1"),
+			),
+			newComment(13, "d", "Second reply to T1"),
+		),
+		newComment(20, "e", "Top-level 2 with another block of text",
+			newComment(21, "f", "Reply to T2 with content",
+				newComment(22, "g", "Nested reply in T2"),
+			),
+			newComment(23, "h", "Second reply to T2"),
+		),
+		newComment(30, "i", "Top-level 3",
+			newComment(31, "j", "Reply to T3"),
+		),
+		newComment(40, "k", "Top-level 4",
+			newComment(41, "l", "Reply to T4",
+				newComment(42, "m", "Nested in T4"),
+			),
+		),
+	)
+}
+
+// newScrollableModel creates a model with a small viewport (height 30)
+// so that expanded content overflows and scroll anchoring is exercised.
+func newScrollableModel(t *testing.T) *Model {
+	t.Helper()
+
+	return New(deepThread(), 0, 80, false, 120, 30)
+}
+
+func TestViewportStable_ExpandLevel(t *testing.T) {
+	m := newScrollableModel(t)
+
+	// Expand once so we have content, then scroll partway down.
+	m.expandLevel()
+	m.viewport.SetYOffset(m.contentLines / 3)
+
+	anchor := m.anchorComment()
+	posBefore := m.screenPosition(anchor)
+
+	m.expandLevel()
+
+	posAfter := m.screenPosition(anchor)
+	assert.Equal(t, posBefore, posAfter,
+		"anchor comment should not move on screen after expanding a level")
+}
+
+func TestViewportStable_CollapseLevel(t *testing.T) {
+	m := newScrollableModel(t)
+
+	// Fully expand, scroll down, then collapse one level.
+	for range m.maxDepth + 1 {
+		m.expandLevel()
+	}
+
+	m.viewport.SetYOffset(m.contentLines / 3)
+
+	anchor := m.anchorComment()
+	posBefore := m.screenPosition(anchor)
+
+	m.collapseLevel()
+
+	// If the anchor is still visible, its position should be preserved.
+	if m.lineMetrics[anchor].LineCount > 0 {
+		posAfter := m.screenPosition(anchor)
+		assert.Equal(t, posBefore, posAfter,
+			"anchor comment should not move on screen after collapsing a level")
+	}
+}
+
+func TestViewportStable_IndividualCollapse(t *testing.T) {
+	m := newScrollableModel(t)
+
+	// Fully expand, enter navigate mode, scroll down, focus a comment with children.
+	for range m.maxDepth + 1 {
+		m.expandLevel()
+	}
+
+	m.toggleMode()
+	m.viewport.SetYOffset(m.contentLines / 3)
+
+	// Find a visible comment with descendants below the current scroll.
+	found := false
+
+	for vi, fi := range m.visible {
+		if m.flat[fi].DescendantCount > 0 && m.lineMetrics[fi].StartLine >= m.viewport.YOffset() {
+			m.focusedIdx = vi
+			found = true
+
+			break
+		}
+	}
+
+	require.True(t, found, "need a collapsible comment in the viewport")
+
+	flatIdx := m.visible[m.focusedIdx]
+	posBefore := m.screenPosition(flatIdx)
+
+	m.setCollapsed(true)
+
+	posAfter := m.screenPosition(flatIdx)
+	assert.Equal(t, posBefore, posAfter,
+		"individually collapsed comment should stay in place on screen")
+}
+
+func TestViewportStable_Resize(t *testing.T) {
+	m := newScrollableModel(t)
+
+	m.expandLevel()
+	m.viewport.SetYOffset(m.contentLines / 3)
+
+	anchor := m.anchorComment()
+	posBefore := m.screenPosition(anchor)
+
+	m.Update(tea.WindowSizeMsg{Width: 100, Height: 30})
+
+	posAfter := m.screenPosition(anchor)
+	assert.Equal(t, posBefore, posAfter,
+		"anchor comment should not move on screen after resize")
 }
 
 // --- syncExpandedDepth ---
