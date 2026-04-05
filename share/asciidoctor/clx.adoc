@@ -64,22 +64,94 @@ Bring up the help screen.
 _q_::
 Quit to prompt.
 
-== Navigation
+== Comment Section
 
-*circumflex* pipes all its content to the pager *less*.
-It is recommended to use the following keybindings for moving around:
+The comment section has two interaction modes, toggled with _Tab_.
+
+=== Read Mode
+
+The default mode. Scroll through the comment section line by line.
 
 _j_, _k_::
-Scroll up/down one line.
+Scroll down/up one line.
 
 _d_, _u_::
-Scroll up/down one half-page.
+Scroll down/up half a page.
 
-_h_, _l_::
-Hide/unhide all replies.
+_Space_/_f_, _b_::
+Page down/up.
+
+_g_, _G_::
+Go to top/bottom.
 
 _n_, _N_::
-Scroll between the next/previous _top-level_ comment (comment section) or _headline_ (Reader Mode).
+Jump to next/previous top-level comment.
+
+_h_, _l_::
+Collapse/expand one level.
+
+_Enter_::
+Toggle collapse all.
+
+_Tab_::
+Switch to navigate mode.
+
+_i_, _?_::
+Bring up the help screen.
+
+_q_, _Esc_::
+Go back.
+
+=== Navigate Mode
+
+Jump between individual comments instead of scrolling line by line.
+
+_j_, _k_::
+Next/previous comment.
+
+_d_, _u_::
+Scroll down/up half a page.
+
+_n_, _N_::
+Jump to next/previous top-level comment.
+
+_h_, _l_::
+Collapse/expand current comment.
+
+_Enter_::
+Toggle collapse for current comment.
+
+_Tab_::
+Switch to read mode.
+
+_i_, _?_::
+Bring up the help screen.
+
+_q_, _Esc_::
+Go back.
+
+== Reader Mode
+
+_j_, _k_::
+Scroll down/up one line.
+
+_d_, _u_::
+Scroll down/up half a page.
+
+_Space_/_f_, _b_::
+Page down/up.
+
+_g_, _G_::
+Go to top/bottom.
+
+_n_, _N_::
+Jump to next/previous section.
+
+_i_, _?_::
+Bring up the help screen.
+
+_q_, _Esc_::
+Go back.
 
 == Commands
 
@@ -112,18 +184,15 @@ Set the comment width to _n_ columns.
 *-d, --disable-history*::
 Disable marking stories as read.
 
-*-n, --nerdfonts*=_true|false_::
-Enable or disable Nerd Fonts icons as decorators for some elements (requires a Nerd Font-patched font).
-Auto-enabled for Ghostty, which embeds Nerd Fonts. Can also be set with the *NERDFONTS* environment variable.
+*-a* _n_, *--article-width*=_n_::
+Set the article width in Reader Mode to _n_ columns.
 
-*-a, --auto-expand*::
-Auto expand all replies upon entering the comment section (collapse comments with _h_).
+*-n, --nerdfonts*::
+Enable Nerd Fonts icons as decorators for some elements (requires a Nerd Font-patched font).
+Auto-enabled for Ghostty, which embeds Nerd Fonts.
 
 *-v, --version*::
 Show the current version of *circumflex*.
-
-*--no-less-verify*::
-Do not verify *less* version on startup
 
 *--categories*::
 Set the categories in the header. Available categories: top, new, best, ask, show.
@@ -147,17 +216,13 @@ The entries in favorites.json are pretty-printed to make them both human-readabl
 
 == Environment Variables
 
-*NERDFONTS*::
-If this variable is set, *circumflex* will use Nerd Fonts icons as decorators for some elements.
-Same as running *clx* with *--nerdfonts*=_true_. Nerd Fonts are also auto-enabled in Ghostty, which embeds Nerd Fonts.
-
 *CLX_BROWSER*::
 Set to a custom command to be run when opening links. The URL to the website will be appended to
 CLX_BROWSER and ran as a single command.
 
 == See also
 
-*less*(1), *vim*(1)
+*vim*(1)
 
 == About
 

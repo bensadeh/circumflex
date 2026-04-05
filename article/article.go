@@ -45,7 +45,7 @@ func (p *Parsed) Render(width int) string {
 func (p *Parsed) RenderWithHeader(width int, header string) string {
 	content := convertToTerminalFormat(p.blocks, width)
 
-	return header + processArticle(content, p.url, width)
+	return header + processArticle(content, p.url)
 }
 
 // Parse fetches and parses an article, returning the intermediate

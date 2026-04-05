@@ -2,12 +2,12 @@
 .\"     Title: clx
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.26
-.\"      Date: 2026-01-10
+.\"      Date: 2026-04-05
 .\"    Manual: circumflex
-.\"    Source: circumflex 3.9
+.\"    Source: circumflex 4.0-dev
 .\"  Language: English
 .\"
-.TH "CLX" "1" "2026-01-10" "circumflex 3.9" "circumflex"
+.TH "CLX" "1" "2026-04-05" "circumflex 4.0\-dev" "circumflex"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -69,7 +69,7 @@ Open link to article in browser.
 Open comment section in browser.
 .RE
 .sp
-\fIf\fP
+\fIf\fP, \fIV\fP
 .RS 4
 Add currently highlighted submission to favorites.
 .RE
@@ -79,33 +79,159 @@ Add currently highlighted submission to favorites.
 Remove currently highlighted submission from favorites.
 .RE
 .sp
+\fIu\fP
+.RS 4
+Toggle read/unread for the currently highlighted submission.
+.RE
+.sp
+\fIg\fP, \fIG\fP
+.RS 4
+Go to the top/bottom of the list.
+.RE
+.sp
+\fIi\fP, \fI?\fP
+.RS 4
+Bring up the help screen.
+.RE
+.sp
 \fIq\fP
 .RS 4
 Quit to prompt.
 .RE
-.SH "NAVIGATION"
+.SH "COMMENT SECTION"
 .sp
-\fBcircumflex\fP pipes all its content to the pager \fBless\fP.
-It is recommended to use the following keybindings for moving around:
+The comment section has two interaction modes, toggled with \fITab\fP.
+.SS "Read Mode"
+.sp
+The default mode. Scroll through the comment section line by line.
 .sp
 \fIj\fP, \fIk\fP
 .RS 4
-Scroll up/down one line.
+Scroll down/up one line.
 .RE
 .sp
 \fId\fP, \fIu\fP
 .RS 4
-Scroll up/down one half\-page.
+Scroll down/up half a page.
 .RE
 .sp
-\fIh\fP, \fIl\fP
+\fISpace\fP/\fIf\fP, \fIb\fP
 .RS 4
-Hide/unhide all replies.
+Page down/up.
+.RE
+.sp
+\fIg\fP, \fIG\fP
+.RS 4
+Go to top/bottom.
 .RE
 .sp
 \fIn\fP, \fIN\fP
 .RS 4
-Scroll between the next/previous \fItop\-level\fP comment (comment section) or \fIheadline\fP (Reader Mode).
+Jump to next/previous top\-level comment.
+.RE
+.sp
+\fIh\fP, \fIl\fP
+.RS 4
+Collapse/expand one level.
+.RE
+.sp
+\fIEnter\fP
+.RS 4
+Toggle collapse all.
+.RE
+.sp
+\fITab\fP
+.RS 4
+Switch to navigate mode.
+.RE
+.sp
+\fIi\fP, \fI?\fP
+.RS 4
+Bring up the help screen.
+.RE
+.sp
+\fIq\fP, \fIEsc\fP
+.RS 4
+Go back.
+.RE
+.SS "Navigate Mode"
+.sp
+Jump between individual comments instead of scrolling line by line.
+.sp
+\fIj\fP, \fIk\fP
+.RS 4
+Next/previous comment.
+.RE
+.sp
+\fId\fP, \fIu\fP
+.RS 4
+Scroll down/up half a page.
+.RE
+.sp
+\fIn\fP, \fIN\fP
+.RS 4
+Jump to next/previous top\-level comment.
+.RE
+.sp
+\fIh\fP, \fIl\fP
+.RS 4
+Collapse/expand current comment.
+.RE
+.sp
+\fIEnter\fP
+.RS 4
+Toggle collapse for current comment.
+.RE
+.sp
+\fITab\fP
+.RS 4
+Switch to read mode.
+.RE
+.sp
+\fIi\fP, \fI?\fP
+.RS 4
+Bring up the help screen.
+.RE
+.sp
+\fIq\fP, \fIEsc\fP
+.RS 4
+Go back.
+.RE
+.SH "READER MODE"
+.sp
+\fIj\fP, \fIk\fP
+.RS 4
+Scroll down/up one line.
+.RE
+.sp
+\fId\fP, \fIu\fP
+.RS 4
+Scroll down/up half a page.
+.RE
+.sp
+\fISpace\fP/\fIf\fP, \fIb\fP
+.RS 4
+Page down/up.
+.RE
+.sp
+\fIg\fP, \fIG\fP
+.RS 4
+Go to top/bottom.
+.RE
+.sp
+\fIn\fP, \fIN\fP
+.RS 4
+Jump to next/previous section.
+.RE
+.sp
+\fIi\fP, \fI?\fP
+.RS 4
+Bring up the help screen.
+.RE
+.sp
+\fIq\fP, \fIEsc\fP
+.RS 4
+Go back.
 .RE
 .SH "COMMANDS"
 .sp
@@ -133,6 +259,16 @@ Open a URL directly in Reader Mode
 .RS 4
 Clear the history of visited \fIID\fPs from ~/.cache/circumflex/history.json.
 .RE
+.sp
+\fBclx version\fP
+.RS 4
+Print the version number of \fBcircumflex\fP.
+.RE
+.sp
+\fBclx default\-theme\fP
+.RS 4
+Write default theme config to ~/.config/circumflex/theme.toml.
+.RE
 .SH "OPTIONS"
 .sp
 \fB\-c\fP \fIn\fP, \fB\-\-comment\-width\fP=\fIn\fP
@@ -140,39 +276,20 @@ Clear the history of visited \fIID\fPs from ~/.cache/circumflex/history.json.
 Set the comment width to \fIn\fP columns.
 .RE
 .sp
-\fB\-p, \-\-plain\-headlines\fP
-.RS 4
-Disable syntax highlighting for headlines.
-.RE
-.sp
-\fB\-o, \-\-plain\-comments\fP
-.RS 4
-Disable syntax highlighting for comments.
-.RE
-.sp
-\fB\-e, \-\-disable\-emojis\fP
-.RS 4
-Disable conversion of smileys to emojis.
-.RE
-.sp
 \fB\-d, \-\-disable\-history\fP
 .RS 4
-Disable marking submissions as read.
+Disable marking stories as read.
 .RE
 .sp
-\fB\-t, \-\-hide\-indent\fP
+\fB\-a\fP \fIn\fP, \fB\-\-article\-width\fP=\fIn\fP
 .RS 4
-Hide the indentation bar to the left of the reply.
+Set the article width in Reader Mode to \fIn\fP columns.
 .RE
 .sp
 \fB\-n, \-\-nerdfonts\fP
 .RS 4
-Use Nerd Fonts icons as decorators for some elements (requires a Nerd Font\-patched font).
-.RE
-.sp
-\fB\-a, \-\-auto\-expand\fP
-.RS 4
-Auto expand all replies upon entering the comment section (collapse comments with \fIh\fP).
+Enable Nerd Fonts icons as decorators for some elements (requires a Nerd Font\-patched font).
+Auto\-enabled for Ghostty, which embeds Nerd Fonts.
 .RE
 .sp
 \fB\-v, \-\-version\fP
@@ -180,21 +297,20 @@ Auto expand all replies upon entering the comment section (collapse comments wit
 Show the current version of \fBcircumflex\fP.
 .RE
 .sp
-\fB\-q, \-\-debug\-mode\fP
-.RS 4
-Mock all endpoints and use dummy data for the submissions screen and comment section.
-.RE
-.sp
-\fB\-\-no\-less\-verify\fP
-.RS 4
-Do not verify \fBless\fP version on startup
-.RE
-.sp
 \fB\-\-categories\fP
 .RS 4
-Set the categories in the header. Choose between top, new, best, ask and show.
+Set the categories in the header. Available categories: top, new, best, ask, show.
 First category will be treated as the default one. Separate categories with comma.
 Default value: "top,best,ask,show"
+.RE
+.sp
+\fB\-\-pages\fP=\fIn\fP
+.RS 4
+Set the number of pages to fetch per category, between 1 and 5.
+Higher values fetch more stories but increase load time.
+Only applies to top, new and best. Ask and show always fetch one page because their
+story pools are small (~150\-200 stories).
+Default: 3.
 .RE
 .SH "FAVORITES"
 .sp
@@ -205,12 +321,6 @@ Favorites are stored in ~/.config/circumflex/favorites.json.
 The entries in favorites.json are pretty\-printed to make them both human\-readable and VCS\-friendly.
 .SH "ENVIRONMENT VARIABLES"
 .sp
-\fBNERDFONTS\fP
-.RS 4
-If this variable is set, \fBcircumflex\fP will use Nerd Fonts icons as decorators for some elements. Same as running \fBclx\fP
-with the \fB\-\-nerdfonts\fP flag.
-.RE
-.sp
 \fBCLX_BROWSER\fP
 .RS 4
 Set to a custom command to be run when opening links. The URL to the website will be appended to
@@ -218,7 +328,7 @@ CLX_BROWSER and ran as a single command.
 .RE
 .SH "SEE ALSO"
 .sp
-\fBless\fP(1), \fBvim\fP(1)
+\fBvim\fP(1)
 .SH "ABOUT"
 .sp
 Ben Sadeh (github.com/bensadeh/circumflex)

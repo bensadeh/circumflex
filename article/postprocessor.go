@@ -6,14 +6,14 @@ import (
 	"github.com/bensadeh/circumflex/layout"
 )
 
-func processArticle(text string, url string, width int) string {
+func processArticle(text string, url string) string {
 	text = filterSite(text, url)
-	text = indent(text, width)
+	text = indent(text)
 
 	return text
 }
 
-func indent(commentSection string, _ int) string {
+func indent(commentSection string) string {
 	indentBlock := strings.Repeat(" ", layout.ReaderViewLeftMargin)
 
 	lines := strings.Split(commentSection, "\n")
