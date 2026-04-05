@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	fetchTimeout = 4 * time.Second
-	retryCount   = 2
+	fetchTimeout = 10 * time.Second
+	retryCount   = 1
 )
 
 // discardLogger silences resty's internal logging so that WARN/ERROR
