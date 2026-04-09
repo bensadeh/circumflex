@@ -1,6 +1,7 @@
 # circumflex theme configuration
 #
-# Copy this file to ~/.config/circumflex/theme.toml and customize.
+# Copy this file to your config directory and customize.
+# Run `clx default-theme` to see the resolved path.
 # Only include the values you want to override — unspecified values
 # keep their defaults.
 #

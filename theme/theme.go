@@ -159,56 +159,41 @@ func configHeader() string {
 		"#   - Hex: \"#ff5500\", \"#1a1a2e\"\n\n"
 }
 
-func WriteDefaultConfig() (string, error) {
-	configDir, err := os.UserConfigDir()
-	if err != nil {
-		return "", err
-	}
-
-	dir := filepath.Join(configDir, "circumflex")
-	path := filepath.Join(dir, "theme.toml")
-
+func WriteDefaultConfig(path string) error {
 	if _, statErr := os.Stat(path); statErr == nil {
-		return "", fmt.Errorf("config already exists at %s", path)
+		return fmt.Errorf("config already exists at %s", path)
 	}
 
-	if err := os.MkdirAll(dir, 0o755); err != nil {
-		return "", err
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return err
 	}
 
 	f, err := os.Create(path)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	defer func() { _ = f.Close() }()
 
 	if _, err := f.WriteString(configHeader()); err != nil {
-		return "", err
+		return err
 	}
 
 	if err := toml.NewEncoder(f).Encode(Default()); err != nil {
-		return "", err
+		return err
 	}
 
-	return path, nil
+	return nil
 }
 
-func Load() (*Theme, error) {
+func Load(path string) (*Theme, error) {
 	t := Default()
-
-	configDir, err := os.UserConfigDir()
-	if err != nil {
-		return t, err
-	}
-
-	path := filepath.Join(configDir, "circumflex", "theme.toml")
 
 	if _, statErr := os.Stat(path); os.IsNotExist(statErr) {
 		return t, nil
 	}
 
-	_, err = toml.DecodeFile(path, t)
+	_, err := toml.DecodeFile(path, t)
 	if err != nil {
 		return Default(), err
 	}

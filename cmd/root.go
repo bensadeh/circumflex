@@ -182,7 +182,7 @@ func configureFlags(rootCmd *cobra.Command) {
 func getConfig() *settings.Config {
 	config := settings.Default()
 
-	t, err := theme.Load()
+	t, err := theme.Load(settings.ThemePath())
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: could not load theme config\n  %v\n", err)
 		os.Exit(1)

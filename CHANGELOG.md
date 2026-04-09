@@ -1,14 +1,20 @@
 # Changelog
 
+## 4.1
+
+**Fixes**
+
+- Honor `$XDG_CONFIG_HOME` and `$XDG_CACHE_HOME` (#195)
+
 ## 4.0
 
-This is a big one for me. 
+This is a big one for me.
 
-This release marks the launch of something I've been wanting to have in circumflex for a long time--native comment 
+This release marks the launch of something I've been wanting to have in circumflex for a long time--native comment
 section view with individually collapsable comments and more control over the output.
 
-Until this release, I've leaned on outputting the views to `less`, which in fairness has served very well and I even 
-found a way to collapse replies in it by defining the lesskey schema to filter out invisible characters to collapse and 
+Until this release, I've leaned on outputting the views to `less`, which in fairness has served very well and I even
+found a way to collapse replies in it by defining the lesskey schema to filter out invisible characters to collapse and
 show threads. However, while efficient, it was at its core hacky, hard to build upon and almost impossible to extend.
 
 In 4.0, we never leave circumflex to another application. That means more control of folding and navigating.

@@ -175,6 +175,7 @@ func TestMock_ContainsKnownIDs(t *testing.T) {
 func TestNewPersistentHistory_CorruptFile(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("HOME", dir)
+	t.Setenv("XDG_CACHE_HOME", "")
 
 	filePath := path.Join(settings.CachePath(), "history.json")
 	require.NoError(t, os.MkdirAll(path.Dir(filePath), 0o700))
@@ -191,6 +192,7 @@ func TestNewPersistentHistory_CorruptFile(t *testing.T) {
 func TestNewPersistentHistory_ValidFile(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("HOME", dir)
+	t.Setenv("XDG_CACHE_HOME", "")
 
 	filePath := path.Join(settings.CachePath(), "history.json")
 	require.NoError(t, os.MkdirAll(path.Dir(filePath), 0o700))

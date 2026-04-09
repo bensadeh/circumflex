@@ -70,7 +70,8 @@ The comment section has two interaction modes, toggled with _Tab_.
 
 === Read Mode
 
-The default mode. Scroll through the comment section line by line.
+The default mode.
+Scroll through the comment section line by line.
 
 _j_, _k_::
 Scroll down/up one line.
@@ -195,22 +196,24 @@ Auto-enabled for Ghostty, which embeds Nerd Fonts.
 Show the current version of *circumflex*.
 
 *--categories*::
-Set the categories in the header. Available categories: top, new, best, ask, show.
-First category will be treated as the default one. Separate categories with comma.
+Set the categories in the header.
+Available categories: top, new, best, ask, show.
+First category will be treated as the default one.
+Separate categories with comma.
 Default value: "top,best,ask,show"
 
 *--pages*=_n_::
 Set the number of pages to fetch per category, between 1 and 5.
 Higher values fetch more stories but increase load time.
-Only applies to top, new and best. Ask and show always fetch one page because their
-story pools are small (~150-200 stories).
+Only applies to top, new and best.
+Ask and show always fetch one page because their story pools are small (~150-200 stories).
 Default: 3.
 
 == History
 
 *circumflex* tracks which stories you have visited.
-Visited stories are dimmed in the list. When returning to a comment section, comments posted since
-your last visit are highlighted with a new-comment indicator.
+Visited stories are dimmed in the list.
+When returning to a comment section, comments posted since your last visit are highlighted with a new-comment indicator.
 
 History is stored as a JSON file in the OS cache directory.
 Use *clx clear* to reset it, or *--disable-history* to turn tracking off entirely.
@@ -220,18 +223,20 @@ Use *clx clear* to reset it, or *--disable-history* to turn tracking off entirel
 Press _f_ to add the currently highlighted submission to your list of favorites.
 Remove submissions from the Favorites page with _x_.
 
-Favorites are stored as a pretty-printed JSON file in the OS config directory,
-making them both human-readable and VCS-friendly.
+Favorites are stored as a pretty-printed JSON file in the OS config directory, making them both human-readable and VCS-friendly.
 
 == Environment Variables
 
+*XDG_CONFIG_HOME*, *XDG_CACHE_HOME*::
+Override where *circumflex* stores its files.
+Configuration (theme, favorites) goes under `$XDG_CONFIG_HOME/circumflex/`
+and cache (read history) under `$XDG_CACHE_HOME/circumflex/`.
+When unset, the platform defaults are used (`~/Library/Application Support/` and `~/Library/Caches/` on macOS,
+`~/.config/` and `~/.cache/` on Linux).
+
 *CLX_BROWSER*::
-Set to a custom command to be run when opening links. The URL to the website will be appended to
-CLX_BROWSER and ran as a single command.
-
-== See also
-
-*vim*(1)
+Set to a custom command to be run when opening links.
+The URL to the website will be appended to CLX_BROWSER and ran as a single command.
 
 == About
 
