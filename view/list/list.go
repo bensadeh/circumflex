@@ -215,7 +215,7 @@ func (m *Model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*M
 		return m, tea.Batch(cmds...)
 	}
 
-	m.commentView = comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.EnableNerdFonts, m.width, m.height)
+	m.commentView = comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, m.width, m.height)
 	m.state = StateCommentView
 
 	cmds = append(cmds, m.commentView.Init())

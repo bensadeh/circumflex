@@ -17,6 +17,7 @@ type renderContext struct {
 	originalPoster  string
 	firstCommentID  int
 	commentWidth    int
+	indent          int
 	enableNerdFonts bool
 	screenWidth     int
 	viewportHeight  int
@@ -77,10 +78,20 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 			out.sepLines = strings.Count(indentedSep, "\n")
 		}
 
-		depthIndent := comment.IndentString(fc.Depth)
-		depthIndentLen := len(depthIndent)
-		screenWidth := contentWidth - depthIndentLen
-		adjustedCommentWidth := commentWidth - fc.Depth
+		// Reserve 1 col inside commentWidth for the colored indent symbol when
+		// the comment is nested (depth >= 1). Top-level comments have no symbol.
+		symbolCols := 0
+		if fc.Depth > 0 {
+			symbolCols = 1
+		}
+
+		// Fold symbolCols into the floor so adjustedCommentWidth >= MinCommentWidth
+		// even at the plateau.
+		indentCols := comment.EffectiveIndentColumns(fc.Depth, rc.indent, commentWidth, layout.MinCommentWidth+symbolCols)
+		depthIndent := strings.Repeat(" ", indentCols)
+
+		screenWidth := contentWidth - indentCols
+		adjustedCommentWidth := commentWidth - indentCols - symbolCols
 
 		pad := leftMargin + depthIndent
 
@@ -104,9 +115,16 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 		out.content = contentWithMargin
 		out.contentLines = strings.Count(contentWithMargin, "\n")
 
-		// Pre-render replies indicator (only shown when collapsed).
+		// Pre-render replies indicator (only shown when collapsed). The indicator
+		// sits at the first hidden reply's author column so that toggling
+		// collapse/expand swaps content at the same left edge. Children are always
+		// at depth >= 1, so the floor accounts for the child's 1-col symbol. The
+		// trailing +1 matches the header's 1-col offset where the ▎ would sit.
 		if fc.DescendantCount > 0 {
-			collapsed := comment.RepliesIndicator(fc.DescendantCount, fc.Depth, adjustedCommentWidth, true)
+			childIndentCols := comment.EffectiveIndentColumns(fc.Depth+1, rc.indent, commentWidth, layout.MinCommentWidth+1)
+			indicatorIndent := strings.Repeat(" ", childIndentCols+1)
+
+			collapsed := comment.RepliesIndicator(fc.DescendantCount, indicatorIndent, true)
 			indentedCollapsed := style.PrefixLines(collapsed, leftMargin)
 			out.repliesCollapsed = indentedCollapsed
 			out.repliesLines = strings.Count(indentedCollapsed, "\n")

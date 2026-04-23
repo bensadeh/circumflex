@@ -1,10 +1,12 @@
 package comments
 
 import (
+	"strings"
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
 	"github.com/bensadeh/circumflex/comment"
+	"github.com/bensadeh/circumflex/layout"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -34,7 +36,7 @@ func testThread() *comment.Thread {
 func newTestModel(t *testing.T, thread *comment.Thread) *Model {
 	t.Helper()
 
-	return New(thread, 0, 80, false, 120, 200)
+	return New(thread, 0, 80, 1, false, 120, 200)
 }
 
 // --- Initial state ---
@@ -330,7 +332,7 @@ func deepThread() *comment.Thread {
 func newScrollableModel(t *testing.T) *Model {
 	t.Helper()
 
-	return New(deepThread(), 0, 80, false, 120, 30)
+	return New(deepThread(), 0, 80, 1, false, 120, 30)
 }
 
 func TestViewportStable_ExpandLevel(t *testing.T) {
@@ -422,6 +424,131 @@ func TestViewportStable_Resize(t *testing.T) {
 	posAfter := m.screenPosition(anchor)
 	assert.Equal(t, posBefore, posAfter,
 		"anchor comment should not move on screen after resize")
+}
+
+// --- prerenderComments: indent plateau ---
+
+// linearChain builds a thread of a single depth-N chain where comment i has
+// comment i+1 as its only child.
+func linearChain(depth int) []flatComment {
+	var children []*comment.Comment
+	for i := depth; i >= 1; i-- {
+		c := newComment(i, "u", "body", children...)
+		children = []*comment.Comment{c}
+	}
+
+	return flatten(newThread(children...))
+}
+
+func leadingIndentCols(s string) int {
+	return len(s) - len(strings.TrimLeft(s, " ")) - layout.CommentSectionLeftMargin
+}
+
+func TestPrerenderComments_IndentPlateausUnderDeepNesting(t *testing.T) {
+	t.Parallel()
+
+	flat := linearChain(12)
+	require.Len(t, flat, 12)
+
+	const (
+		commentWidth = 70
+		indentSize   = 5
+	)
+
+	rc := renderContext{
+		commentWidth: commentWidth,
+		indent:       indentSize,
+		screenWidth:  120,
+	}
+
+	rendered := prerenderComments(rc, flat)
+
+	// Floor for depth >= 1 is MinCommentWidth(40) + symbolCol(1) = 41.
+	// Headroom = commentWidth(70) - floor(41) = 29.
+	// Desired = (depth - 1) * 5, capped at 29. Plateau begins at depth 7.
+	wantIndent := []int{0, 0, 5, 10, 15, 20, 25, 29, 29, 29, 29, 29}
+
+	for i := range flat {
+		got := leadingIndentCols(rendered[i].content)
+		assert.Equalf(t, wantIndent[i], got, "flat[%d] depth=%d", i, flat[i].Depth)
+
+		symbolCols := 0
+		if flat[i].Depth > 0 {
+			symbolCols = 1
+		}
+
+		adjusted := commentWidth - got - symbolCols
+		assert.GreaterOrEqualf(t, adjusted, layout.MinCommentWidth, "flat[%d] depth=%d", i, flat[i].Depth)
+	}
+}
+
+// indicatorLeadingCols returns the count of leading spaces on the line
+// containing the ↩ marker, or -1 if not found. Leading spaces are always
+// plain ASCII; any ANSI escapes sit to the right of them.
+func indicatorLeadingCols(s string) int {
+	for line := range strings.SplitSeq(s, "\n") {
+		trimmed := strings.TrimLeft(line, " ")
+		if strings.Contains(trimmed, "↩") {
+			return len(line) - len(trimmed)
+		}
+	}
+
+	return -1
+}
+
+func TestPrerenderComments_RepliesIndicatorAlignsWithChildAuthor(t *testing.T) {
+	t.Parallel()
+
+	flat := linearChain(10)
+
+	const (
+		commentWidth = 70
+		indentSize   = 5
+	)
+
+	rc := renderContext{
+		commentWidth: commentWidth,
+		indent:       indentSize,
+		screenWidth:  120,
+	}
+
+	rendered := prerenderComments(rc, flat)
+
+	// Every comment in the chain except the last has exactly one child at the
+	// next flatten index. The indicator's ↩ column should equal the child's
+	// author column (content-indent + 1 col for the ▎ position).
+	for i := range len(flat) - 1 {
+		require.Positivef(t, flat[i].DescendantCount, "flat[%d] should have descendants", i)
+
+		indicatorCol := indicatorLeadingCols(rendered[i].repliesCollapsed)
+		require.GreaterOrEqualf(t, indicatorCol, 0, "flat[%d] missing ↩ in indicator", i)
+
+		childIndentCols := leadingIndentCols(rendered[i+1].content)
+		expectedAuthorCol := layout.CommentSectionLeftMargin + childIndentCols + 1
+
+		assert.Equalf(t, expectedAuthorCol, indicatorCol, "parent depth=%d child depth=%d", flat[i].Depth, flat[i+1].Depth)
+	}
+}
+
+func TestPrerenderComments_IndentCollapsesOnNarrowTerminal(t *testing.T) {
+	t.Parallel()
+
+	flat := linearChain(6)
+
+	// contentWidth = 30 - 2 = 28, commentWidth = min(28, 70) = 28 < MinCommentWidth.
+	// Headroom becomes 0, so indent collapses to zero for all depths.
+	rc := renderContext{
+		commentWidth: 70,
+		indent:       5,
+		screenWidth:  30,
+	}
+
+	rendered := prerenderComments(rc, flat)
+
+	for i := range flat {
+		got := leadingIndentCols(rendered[i].content)
+		assert.Equalf(t, 0, got, "flat[%d] depth=%d", i, flat[i].Depth)
+	}
 }
 
 // --- syncExpandedDepth ---

@@ -25,6 +25,7 @@ import (
 var (
 	commentWidth       int
 	articleWidth       int
+	indent             int
 	disableHistory     bool
 	debugMode          bool
 	debugFallible      bool
@@ -163,6 +164,8 @@ func configureFlags(rootCmd *cobra.Command) {
 		"set the comment width")
 	rootCmd.PersistentFlags().IntVarP(&articleWidth, "article-width", "a", settings.Default().ArticleWidth,
 		"set the article width in reader mode")
+	rootCmd.PersistentFlags().IntVar(&indent, "indent", settings.Default().Indent,
+		"set the comment section indent size")
 	rootCmd.PersistentFlags().BoolVarP(&nerdFontFlag, "nerdfonts", "n", false,
 		"enable or disable Nerd Fonts")
 	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", categories.Default,
@@ -193,6 +196,7 @@ func getConfig() *settings.Config {
 
 	config.CommentWidth = commentWidth
 	config.ArticleWidth = articleWidth
+	config.Indent = settings.ClampIndent(indent)
 	config.DoNotMarkSubmissionsAsRead = disableHistory
 	config.EnableNerdFonts = resolveNerdFonts(nerdFontFlag, nerdFontChanged)
 	config.DebugMode = debugMode

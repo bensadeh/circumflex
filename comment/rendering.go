@@ -97,13 +97,23 @@ func Separator(depth, commentWidth, currentCommentID, firstCommentID int) string
 	return style.Faint(strings.Repeat("▁", commentWidth)) + "\n\n"
 }
 
-// IndentString returns the indentation prefix for a given nesting depth.
-func IndentString(depth int) string {
-	if depth == 0 {
-		return ""
+// EffectiveIndentColumns returns the indent column count for a comment, capped
+// so that (commentWidth - result) never drops below minCommentWidth. When the
+// desired indent would push the remaining width below the floor, the indent
+// plateaus and deeper comments share an ancestor's indent level — nesting is
+// then conveyed by the depth-colored indent symbol alone. When commentWidth is
+// already at or below minCommentWidth (very narrow terminal), no indent is
+// applied. First-level replies (depth 1) inherit the top-level indent of 0,
+// matching the historical rendering.
+func EffectiveIndentColumns(depth, size, commentWidth, minCommentWidth int) int {
+	if depth <= 1 {
+		return 0
 	}
 
-	return strings.Repeat(" ", depth-1)
+	desired := (depth - 1) * size
+	headroom := max(0, commentWidth-minCommentWidth)
+
+	return min(desired, headroom)
 }
 
 // Header returns the formatted comment header line (author + label + time).
@@ -164,8 +174,10 @@ func FirstCommentID(comments []*Comment) int {
 }
 
 // RepliesIndicator returns a styled, left-aligned replies indicator line when
-// replies are collapsed. When expanded, it returns an empty string.
-func RepliesIndicator(descendantCount, depth, commentWidth int, collapsed bool) string {
+// replies are collapsed. When expanded, it returns an empty string. The caller
+// is responsible for supplying the full leading whitespace (leftMargin aside)
+// so that the ↩ marker lands at the first hidden reply's author column.
+func RepliesIndicator(descendantCount int, indent string, collapsed bool) string {
 	if !collapsed {
 		return ""
 	}
@@ -176,12 +188,6 @@ func RepliesIndicator(descendantCount, depth, commentWidth int, collapsed bool) 
 	}
 
 	label := fmt.Sprintf("↩ %d %s hidden", descendantCount, replies)
-	indent := IndentString(depth)
 
-	extra := " "
-	if depth > 0 {
-		extra = "  "
-	}
-
-	return "\n" + indent + extra + style.FaintItalic(label) + "\n"
+	return "\n" + indent + style.FaintItalic(label) + "\n"
 }

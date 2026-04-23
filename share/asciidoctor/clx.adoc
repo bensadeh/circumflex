@@ -188,6 +188,11 @@ Disable marking stories as read.
 *-a* _n_, *--article-width*=_n_::
 Set the article width in Reader Mode to _n_ columns.
 
+*--indent*=_n_::
+Set the comment section indent size to _n_ spaces per nesting level.
+When the requested indent would shrink a comment's text column below a readable minimum, the indent plateaus and deeper comments share an ancestor's indent level while the depth-colored bar continues to convey nesting.
+Default: 1.
+
 *-n, --nerdfonts*::
 Enable Nerd Fonts icons as decorators for some elements (requires a Nerd Font-patched font).
 Auto-enabled for Ghostty, which embeds Nerd Fonts.

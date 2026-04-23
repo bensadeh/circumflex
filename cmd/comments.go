@@ -39,7 +39,7 @@ func (m commentModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if !m.ready {
 			m.ready = true
 
-			m.view = comments.New(m.thread, m.lastVisited, m.config.CommentWidth, m.config.EnableNerdFonts, msg.Width, msg.Height)
+			m.view = comments.New(m.thread, m.lastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, msg.Width, msg.Height)
 
 			return m, m.view.Init()
 		}

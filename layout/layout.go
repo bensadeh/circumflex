@@ -11,6 +11,13 @@ const (
 	HeaderLeftMargin               = 2
 	CommentSectionLeftMargin       = HeaderLeftMargin
 	ReaderViewLeftMargin           = HeaderLeftMargin
+
+	// MinCommentWidth is the floor for a comment's text column. When an indent
+	// would push the available comment width below this value, the indent
+	// plateaus — deeper comments share an ancestor's indent depth rather than
+	// squeezing text to unreadable widths. Nesting is still conveyed by the
+	// colored indent symbol.
+	MinCommentWidth = 40
 )
 
 // ReaderContentWidth returns the usable article width given the full

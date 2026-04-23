@@ -51,7 +51,7 @@ const (
 )
 
 // New creates a new comment view model.
-func New(thread *comment.Thread, lastVisited int64, commentWidth int, enableNerdFonts bool, width, height int) *Model {
+func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, enableNerdFonts bool, width, height int) *Model {
 	km := defaultKeyMap()
 
 	vp := viewport.New(
@@ -93,6 +93,7 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth int, enableNerd
 		originalPoster:  thread.Author,
 		firstCommentID:  comment.FirstCommentID(thread.Comments),
 		commentWidth:    commentWidth,
+		indent:          indent,
 		enableNerdFonts: enableNerdFonts,
 		screenWidth:     width,
 		viewportHeight:  height - headerHeight - footerHeight,

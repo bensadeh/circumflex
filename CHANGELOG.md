@@ -2,6 +2,10 @@
 
 ## 4.1
 
+**New features**
+
+- Add `--indent` flag to set the comment section indent size (default 1) (#197). Deeply nested comments plateau at an ancestor's indent once the indent would squeeze text below a readable minimum; the depth-colored bar continues to convey nesting
+
 **Fixes**
 
 - Honor `$XDG_CONFIG_HOME` and `$XDG_CACHE_HOME` (#195)

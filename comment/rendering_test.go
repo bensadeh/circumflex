@@ -7,13 +7,30 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIndentString(t *testing.T) {
+func TestEffectiveIndentColumns(t *testing.T) {
 	t.Parallel()
 
-	assert.Empty(t, IndentString(0))
-	assert.Empty(t, IndentString(1))
-	assert.Equal(t, " ", IndentString(2))
-	assert.Equal(t, "  ", IndentString(3))
+	t.Run("top level and first nest have zero indent", func(t *testing.T) {
+		assert.Equal(t, 0, EffectiveIndentColumns(0, 4, 70, 40))
+		assert.Equal(t, 0, EffectiveIndentColumns(1, 4, 70, 40))
+	})
+
+	t.Run("scales linearly while under the floor", func(t *testing.T) {
+		assert.Equal(t, 4, EffectiveIndentColumns(2, 4, 70, 40))
+		assert.Equal(t, 8, EffectiveIndentColumns(3, 4, 70, 40))
+	})
+
+	t.Run("plateaus at commentWidth minus minCommentWidth", func(t *testing.T) {
+		// headroom = 70 - 40 = 30; (20-1)*4 = 76 desired, capped at 30
+		assert.Equal(t, 30, EffectiveIndentColumns(20, 4, 70, 40))
+		// Every deeper comment stays at the same plateau.
+		assert.Equal(t, 30, EffectiveIndentColumns(50, 4, 70, 40))
+	})
+
+	t.Run("commentWidth at or below floor collapses indent to zero", func(t *testing.T) {
+		assert.Equal(t, 0, EffectiveIndentColumns(10, 4, 40, 40))
+		assert.Equal(t, 0, EffectiveIndentColumns(10, 4, 20, 40))
+	})
 }
 
 func TestSeparator(t *testing.T) {
@@ -120,18 +137,23 @@ func TestRepliesIndicator(t *testing.T) {
 	t.Parallel()
 
 	t.Run("singular reply hidden", func(t *testing.T) {
-		result := RepliesIndicator(1, 0, 80, true)
+		result := RepliesIndicator(1, "", true)
 		assert.Contains(t, result, "1 reply hidden")
 		assert.NotContains(t, result, "replies")
 	})
 
 	t.Run("plural replies hidden", func(t *testing.T) {
-		result := RepliesIndicator(3, 0, 80, true)
+		result := RepliesIndicator(3, "", true)
 		assert.Contains(t, result, "3 replies hidden")
 	})
 
 	t.Run("expanded returns empty", func(t *testing.T) {
-		result := RepliesIndicator(5, 0, 80, false)
+		result := RepliesIndicator(5, "", false)
 		assert.Empty(t, result)
+	})
+
+	t.Run("caller-supplied indent is respected", func(t *testing.T) {
+		result := RepliesIndicator(2, "    ", true)
+		assert.Contains(t, result, "    ")
 	})
 }
