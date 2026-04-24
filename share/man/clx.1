@@ -2,12 +2,12 @@
 .\"     Title: clx
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.26
-.\"      Date: 2026-04-05
+.\"      Date: 2026-04-24
 .\"    Manual: circumflex
-.\"    Source: circumflex 4.0
+.\"    Source: circumflex 4.1-dev
 .\"  Language: English
 .\"
-.TH "CLX" "1" "2026-04-05" "circumflex 4.0" "circumflex"
+.TH "CLX" "1" "2026-04-24" "circumflex 4.1\-dev" "circumflex"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -103,7 +103,8 @@ Quit to prompt.
 The comment section has two interaction modes, toggled with \fITab\fP.
 .SS "Read Mode"
 .sp
-The default mode. Scroll through the comment section line by line.
+The default mode.
+Scroll through the comment section line by line.
 .sp
 \fIj\fP, \fIk\fP
 .RS 4
@@ -286,6 +287,13 @@ Disable marking stories as read.
 Set the article width in Reader Mode to \fIn\fP columns.
 .RE
 .sp
+\fB\-\-indent\fP=\fIn\fP
+.RS 4
+Set the comment section indent size to \fIn\fP spaces per nesting level.
+When the requested indent would shrink a comment\(cqs text column below a readable minimum, the indent plateaus and deeper comments share an ancestor\(cqs indent level while the depth\-colored bar continues to convey nesting.
+Default: 1.
+.RE
+.sp
 \fB\-n, \-\-nerdfonts\fP
 .RS 4
 Enable Nerd Fonts icons as decorators for some elements (requires a Nerd Font\-patched font).
@@ -299,8 +307,10 @@ Show the current version of \fBcircumflex\fP.
 .sp
 \fB\-\-categories\fP
 .RS 4
-Set the categories in the header. Available categories: top, new, best, ask, show.
-First category will be treated as the default one. Separate categories with comma.
+Set the categories in the header.
+Available categories: top, new, best, ask, show.
+First category will be treated as the default one.
+Separate categories with comma.
 Default value: "top,best,ask,show"
 .RE
 .sp
@@ -308,15 +318,15 @@ Default value: "top,best,ask,show"
 .RS 4
 Set the number of pages to fetch per category, between 1 and 5.
 Higher values fetch more stories but increase load time.
-Only applies to top, new and best. Ask and show always fetch one page because their
-story pools are small (~150\-200 stories).
+Only applies to top, new and best.
+Ask and show always fetch one page because their story pools are small (~150\-200 stories).
 Default: 3.
 .RE
 .SH "HISTORY"
 .sp
 \fBcircumflex\fP tracks which stories you have visited.
-Visited stories are dimmed in the list. When returning to a comment section, comments posted since
-your last visit are highlighted with a new\-comment indicator.
+Visited stories are dimmed in the list.
+When returning to a comment section, comments posted since your last visit are highlighted with a new\-comment indicator.
 .sp
 History is stored as a JSON file in the OS cache directory.
 Use \fBclx clear\fP to reset it, or \fB\-\-disable\-history\fP to turn tracking off entirely.
@@ -325,18 +335,23 @@ Use \fBclx clear\fP to reset it, or \fB\-\-disable\-history\fP to turn tracking 
 Press \fIf\fP to add the currently highlighted submission to your list of favorites.
 Remove submissions from the Favorites page with \fIx\fP.
 .sp
-Favorites are stored as a pretty\-printed JSON file in the OS config directory,
-making them both human\-readable and VCS\-friendly.
+Favorites are stored as a pretty\-printed JSON file in the OS config directory, making them both human\-readable and VCS\-friendly.
 .SH "ENVIRONMENT VARIABLES"
+.sp
+\fBXDG_CONFIG_HOME\fP, \fBXDG_CACHE_HOME\fP
+.RS 4
+Override where \fBcircumflex\fP stores its files.
+Configuration (theme, favorites) goes under \f(CR$XDG_CONFIG_HOME/circumflex/\fP
+and cache (read history) under \f(CR$XDG_CACHE_HOME/circumflex/\fP.
+When unset, the platform defaults are used (\f(CR~/Library/Application Support/\fP and \f(CR~/Library/Caches/\fP on macOS,
+\f(CR~/.config/\fP and \f(CR~/.cache/\fP on Linux).
+.RE
 .sp
 \fBCLX_BROWSER\fP
 .RS 4
-Set to a custom command to be run when opening links. The URL to the website will be appended to
-CLX_BROWSER and ran as a single command.
+Set to a custom command to be run when opening links.
+The URL to the website will be appended to CLX_BROWSER and ran as a single command.
 .RE
-.SH "SEE ALSO"
-.sp
-\fBvim\fP(1)
 .SH "ABOUT"
 .sp
 Ben Sadeh (github.com/bensadeh/circumflex)

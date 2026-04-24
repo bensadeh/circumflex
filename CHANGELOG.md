@@ -4,7 +4,8 @@
 
 **New features**
 
-- Add `--indent` flag to set the comment section indent size (default 1) (#197). Deeply nested comments plateau at an ancestor's indent once the indent would squeeze text below a readable minimum; the depth-colored bar continues to convey nesting
+- Add `--indent` flag to change the comment section indent size (#197)
+- Add shell completions for bash, zsh, and fish
 
 **Fixes**
 
