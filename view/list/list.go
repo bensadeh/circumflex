@@ -35,20 +35,13 @@ const (
 	statusMessageLong     = 3 * time.Second
 )
 
-// ItemDelegate encapsulates the general functionality for all list items. The
-// benefit to separating this logic from the item itself is that you can change
-// the functionality of items without changing the actual items themselves.
-//
-// Note that if the delegate also implements help.KeyMap delegate-related
-// help items will be added to the help view.
+// ItemDelegate — if it also implements help.KeyMap, delegate-related help
+// items will be added to the help view.
 type ItemDelegate interface {
-	// Render renders the item's view.
 	Render(w io.Writer, m *Model, index int, item *hn.Story)
 
-	// Height is the height of the list item.
 	Height() int
 
-	// Spacing is the size of the horizontal gap between list items in cells.
 	Spacing() int
 
 	// Update is the update loop for items. All messages in the list's update
@@ -58,7 +51,6 @@ type ItemDelegate interface {
 	Update(msg tea.Msg, m *Model) tea.Cmd
 }
 
-// Model contains the state of this component.
 type Model struct {
 	styles styles
 
@@ -438,7 +430,6 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
-// favItemsToStories maps favorites items to hn.Story for display in the pager.
 func favItemsToStories(items []*favorites.Item) []*hn.Story {
 	stories := make([]*hn.Story, len(items))
 

@@ -6,7 +6,6 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-// entryKind identifies the type of a help screen entry.
 type entryKind int
 
 const (

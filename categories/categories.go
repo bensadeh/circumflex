@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-// Category identifies a Hacker News story category.
 type Category int
 
 const (
@@ -18,7 +17,6 @@ const (
 	Favorites
 )
 
-// Name returns the display name for a category constant.
 func Name(cat Category) string {
 	switch cat {
 	case Top:

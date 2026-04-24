@@ -43,7 +43,6 @@ func CachePath() string {
 	return filepath.Join(dir, clxDir)
 }
 
-// ThemePath returns the full path to the theme config file.
 func ThemePath() string {
 	return filepath.Join(ConfigDir(), themeFileNameFull)
 }

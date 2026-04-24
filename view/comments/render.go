@@ -70,7 +70,6 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 		fc := &flat[i]
 		out := &rendered[i]
 
-		// Separator.
 		sep := comment.Separator(fc.Depth, commentWidth, fc.Comment.ID, rc.firstCommentID)
 		if sep != "" {
 			indentedSep := style.PrefixLines(sep, leftMargin)
@@ -95,7 +94,6 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 
 		pad := leftMargin + depthIndent
 
-		// Pre-render both header variants (normal and focused).
 		header := comment.Header(&fc.Comment, fc.Depth, rc.originalPoster, fc.TopLevelAuthor, rc.lastVisited, rc.enableNerdFonts, false)
 		headerWithMargin := style.PrefixLines(header, pad)
 		out.header = headerWithMargin
@@ -164,7 +162,6 @@ func renderFromFlat(rc renderContext, flat []flatComment, visible []int, prerend
 
 		startLine := lineCount
 
-		// Pick the focused or normal header variant.
 		if flatIdx == focusedFlatIdx {
 			sb.WriteString(pre.headerFocused)
 		} else {
@@ -176,7 +173,6 @@ func renderFromFlat(rc renderContext, flat []flatComment, visible []int, prerend
 		sb.WriteString(pre.content)
 		lineCount += pre.contentLines
 
-		// Replies indicator: only shown when replies are collapsed.
 		if fc.DescendantCount > 0 && fc.Collapsed {
 			sb.WriteString(pre.repliesCollapsed)
 			lineCount += pre.repliesLines

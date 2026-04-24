@@ -11,7 +11,6 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-// View renders the component.
 func (m *Model) View() string {
 	if m.state == StateHelpScreen {
 		underscore := m.underlineStyle.Render(" ")
@@ -121,7 +120,6 @@ func (m *Model) populatedView() string {
 
 	var b strings.Builder
 
-	// Empty states
 	if len(allItems) == 0 {
 		return m.styles.NoItems.Render("")
 	}

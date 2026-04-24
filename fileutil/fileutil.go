@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 )
 
-// Exists reports whether path exists on disk.
 func Exists(path string) bool {
 	_, err := os.Stat(path)
 

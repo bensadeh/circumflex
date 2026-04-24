@@ -26,11 +26,9 @@ func (p *pager) updatePagination(availHeight, itemHeight, itemSpacing int, curre
 		p.Paginator.SetTotalPages(pages)
 	}
 
-	// Restore index
 	p.Paginator.Page = index / p.Paginator.PerPage
 	p.cursor = index % p.Paginator.PerPage
 
-	// Make sure the page stays in bounds
 	if p.Paginator.Page >= p.Paginator.TotalPages-1 {
 		p.Paginator.Page = max(0, p.Paginator.TotalPages-1)
 	}

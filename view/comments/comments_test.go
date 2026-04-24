@@ -39,8 +39,6 @@ func newTestModel(t *testing.T, thread *comment.Thread) *Model {
 	return New(thread, 0, 80, 1, false, 120, 200)
 }
 
-// --- Initial state ---
-
 func TestNew_StartsInReadMode(t *testing.T) {
 	m := newTestModel(t, testThread())
 
@@ -58,8 +56,6 @@ func TestNew_StartsFullyCollapsed(t *testing.T) {
 		assert.Equal(t, 0, m.flat[vi].Depth)
 	}
 }
-
-// --- Expand / collapse levels (read mode) ---
 
 func TestExpandLevel_RevealsChildren(t *testing.T) {
 	m := newTestModel(t, testThread())
@@ -125,8 +121,6 @@ func TestExpandLevel_ClampsAtMax(t *testing.T) {
 	assert.Equal(t, m.maxDepth, m.expandedDepth)
 }
 
-// --- Toggle collapse all (read mode) ---
-
 func TestToggleCollapseAll_ExpandsThenCollapses(t *testing.T) {
 	m := newTestModel(t, testThread())
 
@@ -141,8 +135,6 @@ func TestToggleCollapseAll_ExpandsThenCollapses(t *testing.T) {
 		assert.Equal(t, 0, m.flat[vi].Depth)
 	}
 }
-
-// --- Mode switching ---
 
 func TestToggleMode_SwitchesToNavigate(t *testing.T) {
 	m := newTestModel(t, testThread())
@@ -161,8 +153,6 @@ func TestToggleMode_SwitchesBackToRead(t *testing.T) {
 	assert.Equal(t, modeRead, m.mode)
 	assert.Equal(t, -1, m.focusedIdx, "focus cleared in read mode")
 }
-
-// --- Navigate mode: comment-by-comment ---
 
 func TestNavigateComment_MovesForward(t *testing.T) {
 	m := newTestModel(t, testThread())
@@ -188,8 +178,6 @@ func TestNavigateComment_ClampsAtBounds(t *testing.T) {
 	m.navigateComment(1)
 	assert.Equal(t, len(m.visible)-1, m.focusedIdx, "should not exceed visible length")
 }
-
-// --- Navigate mode: individual collapse/expand ---
 
 func TestSetCollapsed_CollapsesAndExpands(t *testing.T) {
 	m := newTestModel(t, testThread())
@@ -265,8 +253,6 @@ func TestToggleCollapse_Toggles(t *testing.T) {
 	assert.Equal(t, collapsed, m.flat[flatIdx].Collapsed)
 }
 
-// --- Goto top/bottom ---
-
 func TestGotoTop_Navigate(t *testing.T) {
 	m := newTestModel(t, testThread())
 	m.toggleMode()
@@ -283,8 +269,6 @@ func TestGotoBottom_Navigate(t *testing.T) {
 	m.gotoBottom()
 	assert.Equal(t, len(m.visible)-1, m.focusedIdx)
 }
-
-// --- Viewport stability: anchor doesn't move on collapse/expand/resize ---
 
 // deepThread builds a tree large enough that content exceeds the viewport,
 // making scroll anchoring observable. Structure:
@@ -426,8 +410,6 @@ func TestViewportStable_Resize(t *testing.T) {
 		"anchor comment should not move on screen after resize")
 }
 
-// --- prerenderComments: indent plateau ---
-
 // linearChain builds a thread of a single depth-N chain where comment i has
 // comment i+1 as its only child.
 func linearChain(depth int) []flatComment {
@@ -550,8 +532,6 @@ func TestPrerenderComments_IndentCollapsesOnNarrowTerminal(t *testing.T) {
 		assert.Equalf(t, 0, got, "flat[%d] depth=%d", i, flat[i].Depth)
 	}
 }
-
-// --- syncExpandedDepth ---
 
 func TestSyncExpandedDepth_MatchesCollapseState(t *testing.T) {
 	m := newTestModel(t, testThread())

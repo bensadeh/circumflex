@@ -10,7 +10,6 @@ import (
 	"github.com/bensadeh/circumflex/hn"
 )
 
-// ItemFromStory maps an hn.Story to a favorites Item.
 func ItemFromStory(s *hn.Story) *Item {
 	return &Item{
 		ID:            s.ID,

@@ -1,6 +1,5 @@
 package article
 
-// blockKind identifies the type of a parsed content block.
 type blockKind int
 
 const (

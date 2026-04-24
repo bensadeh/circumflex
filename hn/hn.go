@@ -17,8 +17,6 @@ type Story struct {
 	CommentsCount int
 }
 
-// CommentTree represents a story with its full comment tree,
-// as returned by FetchComments.
 type CommentTree struct {
 	ID            int
 	Title         string
@@ -33,7 +31,6 @@ type CommentTree struct {
 	Comments      []*CommentNode
 }
 
-// CommentNode represents a single comment in a tree.
 type CommentNode struct {
 	ID       int
 	Author   string

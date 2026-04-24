@@ -22,7 +22,6 @@ import (
 
 const sectionMarker = "■"
 
-// Meta holds HN metadata displayed in the reader mode header block.
 type Meta struct {
 	URL       string
 	Author    string
@@ -32,7 +31,6 @@ type Meta struct {
 	NerdFonts bool
 }
 
-// Model is the Bubble Tea model for the built-in reader view.
 type Model struct {
 	viewport viewport.Model
 	keymap   keyMap
@@ -45,7 +43,6 @@ type Model struct {
 	standalone     bool // when true, quit sends tea.Quit instead of ReaderViewQuitMsg
 	showHelp       bool
 
-	// Fields for re-rendering on resize.
 	parsed      *article.Parsed // nil when created with pre-rendered content
 	maxWidth    int             // ArticleWidth cap
 	articleMeta Meta
@@ -56,7 +53,6 @@ const (
 	footerHeight = 2 // underline separator + keybinding hints
 )
 
-// New creates a new reader view model with pre-rendered content.
 func New(content, title string, width, height int) *Model {
 	m := &Model{
 		keymap:      defaultKeyMap(),
@@ -108,7 +104,6 @@ func (m *Model) initViewport(content string, width, height int) {
 	lines := strings.Split(trimmed, "\n")
 	contentLineCount := len(lines)
 
-	// Scan for header lines (lines containing the ■ block character).
 	var headers []int
 
 	for i, line := range lines {
@@ -129,12 +124,10 @@ func (m *Model) initViewport(content string, width, height int) {
 	m.viewportHeight = vpHeight
 }
 
-// Init returns nil; no initial commands needed.
 func (m *Model) Init() tea.Cmd {
 	return nil
 }
 
-// Update handles messages for the reader view.
 func (m *Model) Update(msg tea.Msg) tea.Cmd {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
@@ -291,7 +284,6 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 	return cmd
 }
 
-// View renders the reader view.
 func (m *Model) View() string {
 	if m.showHelp {
 		content := help.FitToHeight(
@@ -412,7 +404,6 @@ func (m *Model) jumpToHeader(direction int) {
 	}
 }
 
-// standaloneModel wraps Model to implement tea.Model for standalone use.
 type standaloneModel struct {
 	inner *Model
 }
@@ -434,7 +425,6 @@ func (s standaloneModel) View() tea.View {
 	return v
 }
 
-// Run launches the reader as a standalone Bubble Tea program.
 func Run(content, title string) error {
 	m := New(content, title, 0, 0)
 	m.standalone = true

@@ -2,7 +2,6 @@ package list
 
 import "charm.land/bubbles/v2/key"
 
-// keyMap defines all keybindings for the list view.
 type keyMap struct {
 	Help           key.Binding
 	Quit           key.Binding

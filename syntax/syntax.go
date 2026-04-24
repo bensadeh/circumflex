@@ -12,7 +12,6 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-// HighlightType selects the visual treatment applied to a headline.
 type HighlightType int
 
 const (

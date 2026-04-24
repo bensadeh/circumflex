@@ -1,6 +1,5 @@
 package comment
 
-// Comment represents a single comment in a discussion thread.
 type Comment struct {
 	ID       int
 	Author   string
@@ -10,7 +9,6 @@ type Comment struct {
 	Children []*Comment
 }
 
-// Thread represents a discussion thread with its metadata and comment tree.
 type Thread struct {
 	ID            int
 	Title         string

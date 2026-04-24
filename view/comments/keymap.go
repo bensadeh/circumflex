@@ -2,7 +2,6 @@ package comments
 
 import "charm.land/bubbles/v2/key"
 
-// Mode represents the interaction mode for the comment view.
 type mode int
 
 const (
@@ -13,7 +12,6 @@ const (
 	modeNavigate
 )
 
-// keyMap defines the keybindings for the comment view.
 type keyMap struct {
 	Quit         key.Binding
 	ToggleMode   key.Binding

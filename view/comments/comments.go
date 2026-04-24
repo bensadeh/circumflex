@@ -21,7 +21,6 @@ import (
 	xansi "github.com/charmbracelet/x/ansi"
 )
 
-// Model is the Bubble Tea model for the native comment view.
 type Model struct {
 	viewport viewport.Model
 	keymap   keyMap
@@ -50,7 +49,6 @@ const (
 	scrollPadding = 2 // breathing room above/below when scrolling to a comment
 )
 
-// New creates a new comment view model.
 func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, enableNerdFonts bool, width, height int) *Model {
 	km := defaultKeyMap()
 
@@ -127,12 +125,10 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 	return &m
 }
 
-// Init returns nil; no initial commands needed.
 func (m *Model) Init() tea.Cmd {
 	return nil
 }
 
-// Update handles messages for the comment view.
 func (m *Model) Update(msg tea.Msg) tea.Cmd {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
@@ -283,7 +279,6 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		return m.handleNavigateKeys(msg)
 	}
 
-	// In read mode, delegate unhandled keys to the viewport.
 	before := m.viewport.YOffset()
 
 	var cmd tea.Cmd
@@ -321,7 +316,6 @@ func (m *Model) handleNavigateKeys(msg tea.KeyPressMsg) tea.Cmd {
 	return nil
 }
 
-// View renders the comment view.
 func (m *Model) View() string {
 	if m.showHelp {
 		content := help.FitToHeight(
@@ -451,7 +445,6 @@ func (m *Model) toggleMode() {
 		m.viewport.KeyMap.Up.SetEnabled(false)
 		m.viewport.KeyMap.Down.SetEnabled(false)
 
-		// Set focus to the comment nearest to the current scroll position.
 		if m.focusedIdx < 0 && len(m.visible) > 0 {
 			m.focusedIdx = m.findCommentAtScroll()
 		}
@@ -461,7 +454,6 @@ func (m *Model) toggleMode() {
 	case modeNavigate:
 		m.mode = modeRead
 
-		// Re-enable viewport j/k.
 		m.viewport.KeyMap.Up.SetEnabled(true)
 		m.viewport.KeyMap.Down.SetEnabled(true)
 
@@ -502,7 +494,6 @@ func (m *Model) snapFocusToVisible(direction int) {
 	top := m.viewport.YOffset()
 	bottom := top + m.viewport.VisibleLineCount()
 
-	// Still on screen — nothing to do.
 	if m.lineMetrics[flatIdx].StartLine >= top && m.lineMetrics[flatIdx].StartLine < bottom {
 		return
 	}

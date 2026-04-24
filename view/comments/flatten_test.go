@@ -36,8 +36,6 @@ func expandAll(flat []flatComment) {
 	}
 }
 
-// --- flatten: DFS ordering invariant ---
-
 func TestFlatten_DFSOrder(t *testing.T) {
 	t.Parallel()
 
@@ -197,8 +195,6 @@ func TestFlatten_EmptyThread(t *testing.T) {
 	assert.Empty(t, flat)
 }
 
-// --- computeVisible ---
-
 func TestComputeVisible_AllExpanded(t *testing.T) {
 	t.Parallel()
 
@@ -268,8 +264,6 @@ func TestComputeVisible_CollapsedLeafNoEffect(t *testing.T) {
 	assert.Equal(t, []int{0, 1}, computeVisible(flat),
 		"collapsed node with no descendants should not hide anything")
 }
-
-// --- renderFromFlat contract tests ---
 
 func defaultRenderContext() renderContext {
 	return renderContext{

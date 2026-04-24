@@ -14,8 +14,6 @@ import (
 
 var mods = []string{"dang", "tomhow"}
 
-// Author returns the formatted author name with an optional new-comment indicator.
-// When focused is true, the author name is rendered with reverse video.
 func Author(author string, lastVisited, timePosted int64, focused bool) string {
 	var styledAuthor string
 	if focused {
@@ -31,7 +29,6 @@ func Author(author string, lastVisited, timePosted int64, focused bool) string {
 	return styledAuthor
 }
 
-// AuthorLabel returns a styled label for special users (mod, OP, GP).
 func AuthorLabel(author, originalPoster, topLevelAuthor string, enableNerdFonts bool) string {
 	label := computeLabel(author, originalPoster, topLevelAuthor, enableNerdFonts)
 	if label == "" {
@@ -79,12 +76,10 @@ func colorizeLabel(author, originalPoster, topLevelAuthor, label string) string 
 	}
 }
 
-// IsMod returns true if the author is a known moderator.
 func IsMod(author string) bool {
 	return slices.Contains(mods, author)
 }
 
-// Separator returns the visual separator between comments.
 func Separator(depth, commentWidth, currentCommentID, firstCommentID int) string {
 	if currentCommentID == firstCommentID {
 		return ""
@@ -116,7 +111,6 @@ func EffectiveIndentColumns(depth, size, commentWidth, minCommentWidth int) int 
 	return min(desired, headroom)
 }
 
-// Header returns the formatted comment header line (author + label + time).
 func Header(c *Comment, depth int, originalPoster, topLevelAuthor string, lastVisited int64, enableNerdFonts bool, focused bool) string {
 	indentSize := 0
 	if depth > 0 {
@@ -130,8 +124,6 @@ func Header(c *Comment, depth int, originalPoster, topLevelAuthor string, lastVi
 	return indentation + author + authorLabel + style.Faint(c.TimeAgo) + "\n"
 }
 
-// RenderContent returns the formatted comment body (without header), with indent symbol.
-// When fg is non-nil, paragraph text is tinted with that foreground color.
 func RenderContent(c *Comment, depth int, commentWidth, screenWidth int, enableNerdFonts bool, fg color.Color) string {
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(style.IndentSymbol, depth)
 
@@ -143,7 +135,6 @@ func RenderContent(c *Comment, depth int, commentWidth, screenWidth int, enableN
 	return style.PrefixLines(wrapped, coloredIndentSymbol)
 }
 
-// NewCommentsCount returns the number of new comments since lastVisited.
 func NewCommentsCount(thread *Thread, lastVisited int64) int {
 	count := 0
 
@@ -164,7 +155,6 @@ func countNewComments(c *Comment, count *int, lastVisited int64) {
 	}
 }
 
-// FirstCommentID returns the ID of the first comment, or 0 if there are none.
 func FirstCommentID(comments []*Comment) int {
 	if len(comments) == 0 {
 		return 0

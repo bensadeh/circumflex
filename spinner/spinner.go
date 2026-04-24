@@ -17,7 +17,6 @@ const frameDuration = 250 * time.Millisecond
 // repeats. A value of -1 means no color has been chosen yet.
 var lastColor = -1
 
-// Random returns a randomly selected spinner animation.
 func Random() spinner.Spinner {
 	return star()
 }

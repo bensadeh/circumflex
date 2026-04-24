@@ -20,8 +20,6 @@ const (
 	MinCommentWidth = 40
 )
 
-// ReaderContentWidth returns the usable article width given the full
-// screen width and an upper-bound cap.
 func ReaderContentWidth(screenWidth, maxWidth int) int {
 	w := screenWidth - 2*ReaderViewLeftMargin
 	if w <= 0 {

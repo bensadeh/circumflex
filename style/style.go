@@ -47,12 +47,10 @@ func SetBaseForeground(c color.Color) {
 	baseFg = foregroundCode(c)
 }
 
-// ClearBaseForeground removes the base foreground override.
 func ClearBaseForeground() {
 	baseFg = ""
 }
 
-// CommentModFg returns the theme's mod color as a color.Color.
 func CommentModFg() color.Color { return theme.ParseColor(current.Comment.Mod) }
 
 // render is the single chokepoint for all lipgloss foreground renders.
@@ -74,8 +72,6 @@ func colored(colorStr, text string) string {
 func coloredLinked(colorStr, text, url string) string {
 	return render(lipgloss.NewStyle().Foreground(theme.ParseColor(colorStr)).Hyperlink(url), text)
 }
-
-// Generic color helpers (for CLI messages, non-themed uses).
 
 func Red(s string) string       { return render(lipgloss.NewStyle().Foreground(lipgloss.Red), s) }
 func Blue(s string) string      { return render(lipgloss.NewStyle().Foreground(lipgloss.Blue), s) }
@@ -113,10 +109,6 @@ func FaintItalic(s string) string {
 	return lipgloss.NewStyle().Faint(true).Italic(true).Render(s)
 }
 
-// Semantic helpers — theme-aware.
-
-// Headline colors.
-
 func HeadlineAskHN(s string) string    { return colored(current.Headline.AskHN, s) }
 func HeadlineShowHN(s string) string   { return colored(current.Headline.ShowHN, s) }
 func HeadlineTellHN(s string) string   { return colored(current.Headline.TellHN, s) }
@@ -128,8 +120,6 @@ func HeadlinePDF(s string) string      { return colored(current.Headline.PDF, s)
 
 func HeadlineYCLabelColor() color.Color { return theme.ParseColor(current.Headline.YCLabel) }
 func HeadlineYearColor() color.Color    { return theme.ParseColor(current.Headline.Year) }
-
-// Comment colors.
 
 func CommentURL(s, url string) string     { return coloredLinked(current.Comment.URL, s, url) }
 func CommentMention(s string) string      { return colored(current.Comment.Mention, s) }
@@ -143,8 +133,6 @@ func CommentBacktick(s string) string {
 	return render(lipgloss.NewStyle().Foreground(theme.ParseColor(current.Comment.Backtick)).Italic(true), s)
 }
 
-// Meta colors.
-
 func MetaAuthor(s string) string      { return colored(current.Meta.Author, s) }
 func MetaComments(s string) string    { return colored(current.Meta.Comments, s) }
 func MetaScore(s string) string       { return colored(current.Meta.Score, s) }
@@ -152,8 +140,6 @@ func MetaNewComments(s string) string { return colored(current.Meta.NewComments,
 func MetaURL(s, url string) string    { return coloredLinked(current.Meta.URL, s, url) }
 func MetaReaderMode(s string) string  { return colored(current.Meta.ReaderMode, s) }
 func MetaIDColor() color.Color        { return theme.ParseColor(current.Meta.ID) }
-
-// Reader colors.
 
 func ReaderH1(s string) string           { return colored(current.Reader.H1, s) }
 func ReaderH2(s string) string           { return colored(current.Reader.H2, s) }
@@ -164,8 +150,6 @@ func ReaderH6(s string) string           { return colored(current.Reader.H6, s) 
 func ReaderBBCImageColor() color.Color   { return theme.ParseColor(current.Reader.BBCImage) }
 func ReaderBBCCaptionColor() color.Color { return theme.ParseColor(current.Reader.BBCCaption) }
 func ReaderImageColor() color.Color      { return theme.ParseColor(current.Reader.Image) }
-
-// Header colors.
 
 func HeaderC() color.Color         { return theme.ParseColor(current.Header.C) }
 func HeaderL() color.Color         { return theme.ParseColor(current.Header.L) }
@@ -183,8 +167,6 @@ func Logo(a, b, c string) string {
 	return cs.Render(a) + ls.Render(b) + xs.Render(c)
 }
 
-// Indent colors.
-
 func IndentCycle() []func(string) string {
 	funcs := make([]func(string) string, len(current.Indent.Cycle))
 	for i, c := range current.Indent.Cycle {
@@ -194,8 +176,6 @@ func IndentCycle() []func(string) string {
 
 	return funcs
 }
-
-// Footer.
 
 type Binding struct {
 	Key  string

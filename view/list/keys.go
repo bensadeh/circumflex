@@ -175,7 +175,6 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	cmd := m.delegate.Update(msg, m)
 	cmds = append(cmds, cmd)
 
-	// Keep the index in bounds when paginating
 	itemsOnPage := m.pager.Paginator.ItemsOnPage(len(m.VisibleItems()))
 	if m.pager.cursor > itemsOnPage-1 {
 		m.pager.cursor = max(0, itemsOnPage-1)

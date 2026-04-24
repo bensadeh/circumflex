@@ -2,7 +2,6 @@ package reader
 
 import "charm.land/bubbles/v2/key"
 
-// keyMap defines the keybindings for the reader view.
 type keyMap struct {
 	Quit         key.Binding
 	Help         key.Binding

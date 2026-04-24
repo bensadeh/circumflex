@@ -65,7 +65,6 @@ type DefaultDelegate struct {
 	spacing int
 }
 
-// NewDefaultDelegate creates a new delegate with default styles.
 func NewDefaultDelegate() *DefaultDelegate {
 	return &DefaultDelegate{
 		Styles:  NewDefaultItemStyles(),
@@ -73,22 +72,18 @@ func NewDefaultDelegate() *DefaultDelegate {
 	}
 }
 
-// Height returns the delegate's preferred height.
 func (d *DefaultDelegate) Height() int {
 	return 2
 }
 
-// Spacing returns the delegate's spacing.
 func (d *DefaultDelegate) Spacing() int {
 	return d.spacing
 }
 
-// Update is a no-op; satisfies the ItemDelegate interface.
 func (d *DefaultDelegate) Update(tea.Msg, *Model) tea.Cmd {
 	return nil
 }
 
-// Render prints an item.
 func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *hn.Story) {
 	var (
 		title, desc, domain string
@@ -114,7 +109,6 @@ func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *hn.Stor
 		desc = score + author + timeAgo + comments
 	}
 
-	// Prevent text from exceeding list width
 	if m.width > 0 {
 		textWidth := m.width - s.NormalTitle.GetPaddingLeft() - s.NormalTitle.GetPaddingRight()
 		title = xansi.Truncate(title, textWidth, ellipsis)

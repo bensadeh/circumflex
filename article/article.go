@@ -34,14 +34,10 @@ type Parsed struct {
 	url    string
 }
 
-// Render formats the parsed article for terminal display at the given width,
-// using the default meta header.
 func (p *Parsed) Render(width int) string {
 	return p.RenderWithHeader(width, createHeader(p.url, width))
 }
 
-// RenderWithHeader formats the parsed article with a custom header block
-// prepended before postprocessing.
 func (p *Parsed) RenderWithHeader(width int, header string) string {
 	content := convertToTerminalFormat(p.blocks, width)
 
@@ -111,8 +107,6 @@ func NewParsedFromMarkdown(md string) *Parsed {
 	return &Parsed{blocks: blocks, url: "https://example.com"}
 }
 
-// Fetch fetches, parses, and renders an article in one step.
-// Convenience wrapper used by standalone commands.
 func Fetch(ctx context.Context, url string, width int) (string, error) {
 	p, err := Parse(ctx, url)
 	if err != nil {

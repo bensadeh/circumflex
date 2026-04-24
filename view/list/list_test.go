@@ -107,8 +107,6 @@ func keyMsg(s string) tea.KeyPressMsg {
 	}
 }
 
-// --- Phase 0a: Update handler tests ---
-
 func TestStartup_WaitsForWindowSizeMsg(t *testing.T) {
 	m := newTestModel(t)
 	assert.Equal(t, StateStartup, m.state)
@@ -183,8 +181,6 @@ func TestShowStatusMessage_SetsMessage(t *testing.T) {
 	_, cmd := m.Update(message.ShowStatusMessage{Message: "hello", Duration: time.Second})
 	assert.NotNil(t, cmd)
 }
-
-// --- Key handling tests ---
 
 func TestQuit(t *testing.T) {
 	m := newTestModelReady(t)
@@ -483,8 +479,6 @@ func TestSpinnerTick_WhenInactive(t *testing.T) {
 	_ = cmd
 }
 
-// --- Phase 0b: View snapshot tests ---
-
 func TestViewReaderView_HasContent(t *testing.T) {
 	m := newTestModelReady(t)
 	m.readerView = reader.New("test content", "Test Title", 80, 24)
@@ -516,8 +510,6 @@ func TestSpinnerView_WhenActive(t *testing.T) {
 	got := m.statusAndPaginationView()
 	assert.NotEmpty(t, got)
 }
-
-// --- Error handling tests ---
 
 // failingHistory is a history.History that returns errors on write operations.
 type failingHistory struct {
