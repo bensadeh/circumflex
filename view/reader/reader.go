@@ -35,16 +35,17 @@ type Model struct {
 	viewport viewport.Model
 	keymap   keyMap
 
-	headerLines    []int  // line indices containing ■ (section headers)
-	title          string // article title for the fixed header
-	contentLines   int    // actual content lines (excluding bottom padding)
+	headerLines    []int // line indices containing ■ (section headers)
+	title          string
+	titleHeader    string
+	contentLines   int // excludes bottom padding
 	screenWidth    int
 	viewportHeight int
-	standalone     bool // when true, quit sends tea.Quit instead of ReaderViewQuitMsg
+	standalone     bool // quit sends tea.Quit instead of ReaderViewQuitMsg
 	showHelp       bool
 
 	parsed      *article.Parsed // nil when created with pre-rendered content
-	maxWidth    int             // ArticleWidth cap
+	maxWidth    int
 	articleMeta Meta
 }
 
@@ -122,6 +123,7 @@ func (m *Model) initViewport(content string, width, height int) {
 	m.headerLines = headers
 	m.contentLines = contentLineCount
 	m.viewportHeight = vpHeight
+	m.rebuildTitleHeader()
 }
 
 func (m *Model) Init() tea.Cmd {
@@ -155,6 +157,8 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		m.viewportHeight = msg.Height - headerHeight - footerHeight
 		m.viewport.SetWidth(msg.Width)
 		m.viewport.SetHeight(m.viewportHeight)
+
+		m.rebuildTitleHeader()
 
 		if m.parsed != nil {
 			m.rerender()
@@ -297,10 +301,10 @@ func (m *Model) View() string {
 			help.Footer(m.screenWidth)
 	}
 
-	return m.headerView() + "\n" + m.viewport.View() + "\n" + m.footerSeparator() + "\n" + m.modeIndicator()
+	return m.titleHeader + "\n" + m.viewport.View() + "\n" + m.footerSeparator() + "\n" + m.modeIndicator()
 }
 
-func (m *Model) headerView() string {
+func (m *Model) rebuildTitleHeader() {
 	leftMargin := strings.Repeat(" ", layout.ReaderViewLeftMargin)
 	maxTitleWidth := max(0, m.screenWidth-layout.ReaderViewLeftMargin)
 	title := syntax.ReplaceSpecialContentTags(m.title, m.articleMeta.NerdFonts)
@@ -314,7 +318,7 @@ func (m *Model) headerView() string {
 	title = leftMargin + ansi.Bold + title + ansi.Reset
 	separator := strings.Repeat("‾", m.screenWidth)
 
-	return title + "\n" + separator
+	m.titleHeader = title + "\n" + separator
 }
 
 func (m *Model) footerSeparator() string {

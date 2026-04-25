@@ -29,18 +29,17 @@ type Model struct {
 	flat          []flatComment
 	visible       []int // indices into flat
 	focusedIdx    int   // index into visible (-1 = no focus, scroll mode)
-	expandedDepth int   // in scroll mode: h/l expand/collapse one level at a time
-	maxDepth      int   // deepest comment depth in the tree
+	expandedDepth int
+	maxDepth      int
 	rc            renderContext
-	title         string // story title for the fixed header
+	title         string
+	titleHeader   string
 	showHelp      bool
 
-	// Pre-rendered comment blocks — rebuilt on window resize.
 	prerendered []renderedComment
 
-	// Rendering artifacts — recomputed on every rebuildContent or updateViewport call.
 	lineMetrics  []lineMetrics // indexed by flat index
-	contentLines int           // actual content lines (excluding bottom padding)
+	contentLines int           // excludes bottom padding
 }
 
 const (
@@ -120,6 +119,7 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 		rc:            rc,
 	}
 
+	m.rebuildTitleHeader()
 	m.rebuildContent()
 
 	return &m
@@ -162,6 +162,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		cw := min(msg.Width-2*layout.CommentSectionLeftMargin, m.rc.commentWidth)
 		m.rc.header = buildCommentHeader(m.rc.story, m.rc.enableNerdFonts, m.rc.newComments, cw) + "\n"
 
+		m.rebuildTitleHeader()
 		m.prerendered = prerenderComments(m.rc, m.flat)
 		m.rebuildContent()
 		m.restoreScreenPosition(anchorIdx, screenPos)
@@ -329,10 +330,10 @@ func (m *Model) View() string {
 			help.Footer(m.rc.screenWidth)
 	}
 
-	return m.headerView() + "\n" + m.viewport.View() + "\n" + m.footerSeparator() + "\n" + m.modeIndicator()
+	return m.titleHeader + "\n" + m.viewport.View() + "\n" + m.footerSeparator() + "\n" + m.modeIndicator()
 }
 
-func (m *Model) headerView() string {
+func (m *Model) rebuildTitleHeader() {
 	leftMargin := strings.Repeat(" ", layout.CommentSectionLeftMargin)
 	maxTitleWidth := max(0, m.rc.screenWidth-layout.CommentSectionLeftMargin)
 	title := syntax.ReplaceSpecialContentTags(m.title, m.rc.enableNerdFonts)
@@ -347,7 +348,7 @@ func (m *Model) headerView() string {
 	title = leftMargin + ansi.Bold + title + ansi.Reset
 	separator := strings.Repeat("‾", m.rc.screenWidth)
 
-	return title + "\n" + separator
+	m.titleHeader = title + "\n" + separator
 }
 
 // updateViewport re-renders the viewport content with the current focus state.
