@@ -3,6 +3,7 @@ package article
 import (
 	"errors"
 	"regexp"
+	"slices"
 	"strings"
 )
 
@@ -119,7 +120,7 @@ func convertToMarkdownBlocks(text string) []*block {
 				temp.kind = blockList
 				temp.text = blocks[lastItem].Text + "\n" + line
 
-				blocks = removeIndex(blocks, lastItem)
+				blocks = slices.Delete(blocks, lastItem, lastItem+1)
 				isInsideList = true
 
 				continue
@@ -137,7 +138,7 @@ func convertToMarkdownBlocks(text string) []*block {
 				temp.kind = blockTable
 				temp.text = blocks[lastItem].Text + "\n" + line
 
-				blocks = removeIndex(blocks, lastItem)
+				blocks = slices.Delete(blocks, lastItem, lastItem+1)
 				isInsideTable = true
 
 				continue
@@ -197,10 +198,6 @@ func convertToMarkdownBlocks(text string) []*block {
 	}
 
 	return blocks
-}
-
-func removeIndex(s []*block, index int) []*block {
-	return append(s[:index], s[index+1:]...)
 }
 
 func isListItem(text string) bool {
