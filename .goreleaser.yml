@@ -12,6 +12,9 @@ builds:
       - darwin
 archives:
   - files:
-      - share/man/*
+      - share/man/clx.1
+      - share/completions/clx.bash
+      - share/completions/_clx
+      - share/completions/clx.fish
 checksum:
   name_template: 'checksums.txt'

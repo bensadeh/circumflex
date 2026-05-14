@@ -1,6 +1,10 @@
 # Changelog
 
-## 4.2 (unreleased)
+## 4.1.1 (unreleased)
+
+**Infrastructure**
+
+- Include shell completions for bash, zsh, and fish in the release archive
 
 ## 4.1
 

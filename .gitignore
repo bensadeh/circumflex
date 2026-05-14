@@ -11,3 +11,4 @@
 # Folders
 .DS_Store
 .idea/
+dist/
