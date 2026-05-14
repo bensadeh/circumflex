@@ -1,5 +1,7 @@
 # Changelog
 
+## 4.2 (unreleased)
+
 ## 4.1
 
 **New features**
