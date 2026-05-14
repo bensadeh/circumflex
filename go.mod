@@ -9,18 +9,19 @@ require (
 	charm.land/lipgloss/v2 v2.0.3
 	codeberg.org/readeck/go-readability/v2 v2.1.1
 	github.com/BurntSushi/toml v1.6.0
-	github.com/JohannesKaufmann/html-to-markdown v1.6.0
-	github.com/PuerkitoBio/goquery v1.12.0
+	github.com/JohannesKaufmann/html-to-markdown/v2 v2.5.1
 	github.com/bobesa/go-domain-util v0.0.0-20250410211237-17ab3b2f4a95
 	github.com/charmbracelet/x/ansi v0.11.7
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.0.10
 	github.com/stretchr/testify v1.11.1
+	golang.org/x/net v0.54.0
 	golang.org/x/term v0.43.0
 	resty.dev/v3 v3.0.0-beta.6
 )
 
 require (
+	github.com/JohannesKaufmann/dom v0.2.0 // indirect
 	github.com/alecthomas/chroma/v2 v2.24.1 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de // indirect
@@ -39,6 +40,7 @@ require (
 	github.com/gogs/chardet v0.0.0-20211120154057-b7413eaefb8f // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/kr/pretty v0.1.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.23 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.27 // indirect
@@ -48,10 +50,9 @@ require (
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/yuin/goldmark v1.8.2 // indirect
 	github.com/yuin/goldmark-emoji v1.0.6 // indirect
-	golang.org/x/net v0.54.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/sys v0.44.0 // indirect
 	golang.org/x/text v0.37.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

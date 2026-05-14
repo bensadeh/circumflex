@@ -1,46 +1,53 @@
 package article
 
 import (
+	"bytes"
 	"strings"
 
-	md "github.com/JohannesKaufmann/html-to-markdown"
-	"github.com/JohannesKaufmann/html-to-markdown/plugin"
-	"github.com/PuerkitoBio/goquery"
+	"github.com/JohannesKaufmann/html-to-markdown/v2/converter"
+	"github.com/JohannesKaufmann/html-to-markdown/v2/plugin/base"
+	"github.com/JohannesKaufmann/html-to-markdown/v2/plugin/commonmark"
+	"github.com/JohannesKaufmann/html-to-markdown/v2/plugin/table"
+	"golang.org/x/net/html"
 )
 
 func convertToMarkdown(article string) (string, error) {
-	href := md.Rule{
-		Filter: []string{"a"},
-		Replacement: func(content string, s *goquery.Selection, opt *md.Options) *string {
-			content = strings.TrimSpace(content)
+	conv := converter.NewConverter(
+		converter.WithPlugins(
+			base.NewBasePlugin(),
+			commonmark.NewCommonmarkPlugin(),
+			table.NewTablePlugin(),
+		),
+	)
 
-			return new(content)
-		},
+	// <a>, <b>, <strong> are unwrapped to plain text; <i>, <em> are wrapped
+	// in CLX-ITALIC markers that the renderer later turns into ANSI.
+	for _, tag := range []string{"a", "b", "strong"} {
+		conv.Register.RendererFor(tag, converter.TagTypeInline, renderUnwrapped, converter.PriorityEarly)
 	}
 
-	italic := md.Rule{
-		Filter: []string{"i", "em"},
-		Replacement: func(content string, s *goquery.Selection, opt *md.Options) *string {
-			content = strings.TrimSpace(content)
-
-			return new(italicStart + content + italicStop)
-		},
+	for _, tag := range []string{"i", "em"} {
+		conv.Register.RendererFor(tag, converter.TagTypeInline, renderItalic, converter.PriorityEarly)
 	}
 
-	bold := md.Rule{
-		Filter: []string{"b", "strong"},
-		Replacement: func(content string, s *goquery.Selection, opt *md.Options) *string {
-			content = strings.TrimSpace(content)
+	return conv.ConvertString(article)
+}
 
-			return &content
-		},
-	}
+func renderChildText(ctx converter.Context, n *html.Node) string {
+	var buf bytes.Buffer
+	ctx.RenderChildNodes(ctx, &buf, n)
 
-	converter := md.NewConverter("", true, &md.Options{})
-	converter.AddRules(href)
-	converter.AddRules(italic)
-	converter.AddRules(bold)
-	converter.Use(plugin.Table())
+	return strings.TrimSpace(buf.String())
+}
 
-	return converter.ConvertString(article)
+func renderUnwrapped(ctx converter.Context, w converter.Writer, n *html.Node) converter.RenderStatus {
+	_, _ = w.WriteString(renderChildText(ctx, n))
+
+	return converter.RenderSuccess
+}
+
+func renderItalic(ctx converter.Context, w converter.Writer, n *html.Node) converter.RenderStatus {
+	_, _ = w.WriteString(italicStart + renderChildText(ctx, n) + italicStop)
+
+	return converter.RenderSuccess
 }
