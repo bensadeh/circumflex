@@ -2,6 +2,7 @@ package comments
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/bensadeh/circumflex/ansi"
@@ -511,8 +512,7 @@ func (m *Model) snapFocusToVisible(direction int) {
 		}
 	} else {
 		// Scrolled up — pick the bottommost visible comment.
-		for vi := len(m.visible) - 1; vi >= 0; vi-- {
-			fi := m.visible[vi]
+		for vi, fi := range slices.Backward(m.visible) {
 			if m.lineMetrics[fi].StartLine >= top && m.lineMetrics[fi].StartLine < bottom {
 				m.focusedIdx = vi
 				m.updateViewport()
@@ -598,8 +598,7 @@ func (m *Model) jumpToTopLevel(direction int) {
 			}
 		}
 	} else {
-		for i := len(m.visible) - 1; i >= 0; i-- {
-			flatIdx := m.visible[i]
+		for i, flatIdx := range slices.Backward(m.visible) {
 			if m.flat[flatIdx].Depth == 0 && m.lineMetrics[flatIdx].StartLine < yOffset {
 				m.viewport.SetYOffset(m.lineMetrics[flatIdx].StartLine)
 				m.setFocusIfNavigating(i)

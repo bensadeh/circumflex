@@ -40,6 +40,8 @@ linters:
     - noinlineerr      # forbids inline error returns — too strict
     - iotamixing       # flags mixing iota with explicit values — rare edge case
     - perfsprint       # suggests fmt.Sprintf replacements — micro-optimization
+    - goconst          # extracting short semantic words (color/category names) to constants adds indirection, not clarity
+    - gomodguard       # deprecated, replaced by gomodguard_v2 — no allow/block list configured anyway
 
   settings:
     gocognit:

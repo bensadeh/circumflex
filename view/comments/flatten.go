@@ -1,6 +1,8 @@
 package comments
 
 import (
+	"slices"
+
 	"github.com/bensadeh/circumflex/comment"
 )
 
@@ -72,7 +74,7 @@ func flattenRecursive(c *comment.Comment, depth int, topLevelAuthor string, out 
 // Each node's count is the sum of its direct children's counts plus the
 // number of direct children. O(n) instead of O(n²).
 func fillDescendantCounts(flat []flatComment) {
-	for i := len(flat) - 1; i >= 0; i-- {
+	for i := range slices.Backward(flat) {
 		count := 0
 
 		for j := i + 1; j < len(flat) && flat[j].Depth > flat[i].Depth; j += flat[j].DescendantCount + 1 {

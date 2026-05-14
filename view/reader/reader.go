@@ -1,6 +1,7 @@
 package reader
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/bensadeh/circumflex/ansi"
@@ -394,9 +395,9 @@ func (m *Model) jumpToHeader(direction int) {
 			}
 		}
 	} else {
-		for i := len(m.headerLines) - 1; i >= 0; i-- {
-			if m.headerLines[i] < yOffset {
-				m.viewport.SetYOffset(m.headerLines[i])
+		for _, v := range slices.Backward(m.headerLines) {
+			if v < yOffset {
+				m.viewport.SetYOffset(v)
 
 				return
 			}
