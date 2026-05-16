@@ -1,11 +1,14 @@
 package comment
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/style"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestIsQuote(t *testing.T) {
@@ -105,4 +108,36 @@ func TestPrintMultipleParagraphs(t *testing.T) {
 	assert.Contains(t, result, "first paragraph")
 	assert.Contains(t, result, "second paragraph")
 	assert.Contains(t, result, "\n\n", "paragraphs should be separated by double newline")
+}
+
+func TestRender_ModParagraphTintReappliedAfterEveryReset(t *testing.T) {
+	t.Parallel()
+
+	// Each ansi.Reset emitted by a styled span must be followed by the mod-tint
+	// foreground escape — otherwise plaintext after the span silently loses tint.
+	// Exercises four reset sources: inline code, mention, URL hyperlink, <i> tag.
+	input := "see `code`, @user, <a href=\"https://example.com\">link</a>, and <i>italic</i> here"
+
+	result := Render(input, 80, 80, false, style.CommentModFg())
+
+	require.Contains(t, result, ansi.Reset, "test input should produce styled spans with resets")
+
+	for i := 0; i < len(result); {
+		rel := strings.Index(result[i:], ansi.Reset)
+		if rel == -1 {
+			break
+		}
+
+		pos := i + rel
+		after := pos + len(ansi.Reset)
+		i = after
+
+		if after >= len(result) {
+			continue
+		}
+
+		assert.Equalf(t, byte(0x1B), result[after],
+			"reset at offset %d must be followed by ESC (color re-apply), got %q",
+			pos, string(result[after]))
+	}
 }
