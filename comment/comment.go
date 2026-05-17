@@ -39,15 +39,9 @@ func Render(commentHTML string, commentWidth int, screenWidth int, enableNerdFon
 		case sectionCode:
 			output.WriteString(formatCodeBlock(s.content, screenWidth))
 		case sectionParagraph:
-			if fg != nil {
-				style.SetBaseForeground(fg)
-			}
-
 			para := formatParagraph(s.content, commentWidth, enableNerdFonts)
 
 			if fg != nil {
-				style.ClearBaseForeground()
-
 				para = style.PaintForeground(para, fg)
 			}
 

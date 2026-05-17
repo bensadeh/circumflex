@@ -2,6 +2,7 @@ package style
 
 import (
 	"image/color"
+	"regexp"
 	"strings"
 
 	"github.com/bensadeh/circumflex/ansi"
@@ -31,11 +32,6 @@ func PrefixLines(s, prefix string) string {
 }
 
 var current = theme.Default()
-
-// baseFg holds a raw ANSI foreground escape to re-apply after every
-// styled span's reset. Set before rendering a mod paragraph, cleared after.
-// Safe because the Bubble Tea rendering pipeline is single-threaded.
-var baseFg string
 
 // Static styles — built once from lipgloss-builtin colors.
 var (
@@ -189,86 +185,64 @@ func rebuildThemeStyles() {
 	indentCycleFuncs = make([]func(string) string, len(current.Indent.Cycle))
 	for i, c := range current.Indent.Cycle {
 		s := fg(c)
-		indentCycleFuncs[i] = func(text string) string { return render(s, text) }
+		indentCycleFuncs[i] = func(text string) string { return s.Render(text) }
 	}
-}
-
-// SetBaseForeground sets the base foreground color that render() will
-// re-apply after each styled span's reset. Call ClearBaseForeground when done.
-func SetBaseForeground(c color.Color) {
-	baseFg = foregroundCode(c)
-}
-
-func ClearBaseForeground() {
-	baseFg = ""
 }
 
 func CommentModFg() color.Color { return commentModColor }
 
-// render is the single chokepoint for all lipgloss foreground renders.
-// It appends baseFg (when set) so the mod tint automatically resumes
-// after every styled span's reset.
-func render(s lipgloss.Style, text string) string {
-	result := s.Render(text)
-	if baseFg != "" {
-		result += baseFg
-	}
-
-	return result
-}
-
-func Red(s string) string          { return render(redStyle, s) }
-func Blue(s string) string         { return render(blueStyle, s) }
-func Green(s string) string        { return render(greenStyle, s) }
-func Yellow(s string) string       { return render(yellowStyle, s) }
-func Magenta(s string) string      { return render(magentaStyle, s) }
-func Cyan(s string) string         { return render(cyanStyle, s) }
-func White(s string) string        { return render(whiteStyle, s) }
-func BrightRed(s string) string    { return render(brightRedStyle, s) }
-func BrightGreen(s string) string  { return render(brightGreenStyle, s) }
-func BrightYellow(s string) string { return render(brightYellowStyle, s) }
-func BrightWhite(s string) string  { return render(brightWhiteStyle, s) }
+func Red(s string) string          { return redStyle.Render(s) }
+func Blue(s string) string         { return blueStyle.Render(s) }
+func Green(s string) string        { return greenStyle.Render(s) }
+func Yellow(s string) string       { return yellowStyle.Render(s) }
+func Magenta(s string) string      { return magentaStyle.Render(s) }
+func Cyan(s string) string         { return cyanStyle.Render(s) }
+func White(s string) string        { return whiteStyle.Render(s) }
+func BrightRed(s string) string    { return brightRedStyle.Render(s) }
+func BrightGreen(s string) string  { return brightGreenStyle.Render(s) }
+func BrightYellow(s string) string { return brightYellowStyle.Render(s) }
+func BrightWhite(s string) string  { return brightWhiteStyle.Render(s) }
 
 func Bold(s string) string        { return boldStyle.Render(s) }
 func BoldReverse(s string) string { return boldReverseStyle.Render(s) }
 func Faint(s string) string       { return faintStyle.Render(s) }
 func FaintItalic(s string) string { return faintItalicStyle.Render(s) }
 
-func HeadlineAskHN(s string) string    { return render(headlineAskHNStyle, s) }
-func HeadlineShowHN(s string) string   { return render(headlineShowHNStyle, s) }
-func HeadlineTellHN(s string) string   { return render(headlineTellHNStyle, s) }
-func HeadlineThankHN(s string) string  { return render(headlineThankHNStyle, s) }
-func HeadlineLaunchHN(s string) string { return render(headlineLaunchHNStyle, s) }
-func HeadlineAudio(s string) string    { return render(headlineAudioStyle, s) }
-func HeadlineVideo(s string) string    { return render(headlineVideoStyle, s) }
-func HeadlinePDF(s string) string      { return render(headlinePDFStyle, s) }
+func HeadlineAskHN(s string) string    { return headlineAskHNStyle.Render(s) }
+func HeadlineShowHN(s string) string   { return headlineShowHNStyle.Render(s) }
+func HeadlineTellHN(s string) string   { return headlineTellHNStyle.Render(s) }
+func HeadlineThankHN(s string) string  { return headlineThankHNStyle.Render(s) }
+func HeadlineLaunchHN(s string) string { return headlineLaunchHNStyle.Render(s) }
+func HeadlineAudio(s string) string    { return headlineAudioStyle.Render(s) }
+func HeadlineVideo(s string) string    { return headlineVideoStyle.Render(s) }
+func HeadlinePDF(s string) string      { return headlinePDFStyle.Render(s) }
 
 func HeadlineYCLabelColor() color.Color { return headlineYCLabelColor }
 func HeadlineYearColor() color.Color    { return headlineYearColor }
 
-func CommentURL(s, url string) string     { return render(commentURLStyle.Hyperlink(url), s) }
-func CommentMention(s string) string      { return render(commentMentionStyle, s) }
-func CommentMod(s string) string          { return render(commentModStyle, s) }
-func CommentVariable(s string) string     { return render(commentVariableStyle, s) }
-func CommentOP(s string) string           { return render(commentOPStyle, s) }
-func CommentGP(s string) string           { return render(commentGPStyle, s) }
-func CommentNewIndicator(s string) string { return render(commentNewIndicatorStyle, s) }
-func CommentBacktick(s string) string     { return render(commentBacktickStyle, s) }
+func CommentURL(s, url string) string     { return commentURLStyle.Hyperlink(url).Render(s) }
+func CommentMention(s string) string      { return commentMentionStyle.Render(s) }
+func CommentMod(s string) string          { return commentModStyle.Render(s) }
+func CommentVariable(s string) string     { return commentVariableStyle.Render(s) }
+func CommentOP(s string) string           { return commentOPStyle.Render(s) }
+func CommentGP(s string) string           { return commentGPStyle.Render(s) }
+func CommentNewIndicator(s string) string { return commentNewIndicatorStyle.Render(s) }
+func CommentBacktick(s string) string     { return commentBacktickStyle.Render(s) }
 
-func MetaAuthor(s string) string      { return render(metaAuthorStyle, s) }
-func MetaComments(s string) string    { return render(metaCommentsStyle, s) }
-func MetaScore(s string) string       { return render(metaScoreStyle, s) }
-func MetaNewComments(s string) string { return render(metaNewCommentsStyle, s) }
-func MetaURL(s, url string) string    { return render(metaURLStyle.Hyperlink(url), s) }
-func MetaReaderMode(s string) string  { return render(metaReaderModeStyle, s) }
+func MetaAuthor(s string) string      { return metaAuthorStyle.Render(s) }
+func MetaComments(s string) string    { return metaCommentsStyle.Render(s) }
+func MetaScore(s string) string       { return metaScoreStyle.Render(s) }
+func MetaNewComments(s string) string { return metaNewCommentsStyle.Render(s) }
+func MetaURL(s, url string) string    { return metaURLStyle.Hyperlink(url).Render(s) }
+func MetaReaderMode(s string) string  { return metaReaderModeStyle.Render(s) }
 func MetaIDColor() color.Color        { return metaIDColor }
 
-func ReaderH1(s string) string           { return render(readerH1Style, s) }
-func ReaderH2(s string) string           { return render(readerH2Style, s) }
-func ReaderH3(s string) string           { return render(readerH3Style, s) }
-func ReaderH4(s string) string           { return render(readerH4Style, s) }
-func ReaderH5(s string) string           { return render(readerH5Style, s) }
-func ReaderH6(s string) string           { return render(readerH6Style, s) }
+func ReaderH1(s string) string           { return readerH1Style.Render(s) }
+func ReaderH2(s string) string           { return readerH2Style.Render(s) }
+func ReaderH3(s string) string           { return readerH3Style.Render(s) }
+func ReaderH4(s string) string           { return readerH4Style.Render(s) }
+func ReaderH5(s string) string           { return readerH5Style.Render(s) }
+func ReaderH6(s string) string           { return readerH6Style.Render(s) }
 func ReaderBBCImageColor() color.Color   { return readerBBCImageColor }
 func ReaderBBCCaptionColor() color.Color { return readerBBCCaptionColor }
 func ReaderImageColor() color.Color      { return readerImageColor }
@@ -305,19 +279,25 @@ func RenderBinding(b Binding) string {
 	return b.Key + Faint(": "+b.Desc)
 }
 
-// PaintForeground tints text with the given foreground color. Lipgloss resets
-// are already handled by render()/baseFg; this covers direct ansi.Reset
-// usage (e.g. </i> tag replacement) and per-line prefixing so the color
-// survives external indent-symbol prefixes.
+// sgrResetPattern matches the two SGR-reset forms that appear in our rendered
+// output: lipgloss emits the short form \x1b[m after styled spans, while our
+// own ansi.Reset (used by syntax.ReplaceHTML for </i> etc.) is the long form
+// \x1b[0m. Both wipe the foreground and so both need the tint reapplied.
+var sgrResetPattern = regexp.MustCompile(`\x1b\[0?m`)
+
+// PaintForeground re-applies the given foreground color throughout s so the
+// tint survives every SGR reset (from lipgloss spans and our own ansi.Reset)
+// and the outer indent-symbol prefix added per line by the caller. Returns s
+// unchanged when c renders no foreground escape.
 func PaintForeground(s string, c color.Color) string {
 	prefix := foregroundCode(c)
 	if prefix == "" {
 		return s
 	}
 
-	// Re-apply color after our own ansi.Reset sequences
-	// (injected by syntax.ReplaceHTML for closing </i> tags).
-	s = strings.ReplaceAll(s, ansi.Reset, ansi.Reset+prefix)
+	s = sgrResetPattern.ReplaceAllStringFunc(s, func(reset string) string {
+		return reset + prefix
+	})
 
 	// Prepend color to every non-empty line so it survives external
 	// prefixing (indent symbols, margins) that includes its own resets.
