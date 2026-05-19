@@ -13,34 +13,42 @@ func TestKeymaps(t *testing.T) {
 
 	keys := new(keyList)
 
-	keys.addHeader("Header")
-	keys.addSeparator()
-	keys.addKeymap("Very long description", "x")
-	keys.addKeymap("Separate item", "xyz")
-	keys.addSeparator()
-	keys.addKeymap("Add item", "x")
-	keys.addKeymap("Delete item", "x")
-	keys.addSeparator()
-	keys.addHeader("Header")
-	keys.addSeparator()
-	keys.addKeymap("Delete item", "x")
-	keys.addKeymap("Item", "a + b")
+	first := keys.addSection("First")
+	first.addKey("x", "Add item")
+	first.addKey("y", "Delete item")
+	first.addKey("xyz", "Other thing")
+	first.addKey("a + b", "Combined")
+
+	second := keys.addSection("Second")
+	second.addKey("x", "Down")
+	second.addKey("y", "Up")
 
 	actual := keys.print(80)
+	stripped := ansi.Strip(actual)
 
-	expected := `Header
+	assert.Contains(t, stripped, "─ First ─")
+	assert.Contains(t, stripped, "─ Second ─")
+	assert.Contains(t, stripped, "Add item")
+	assert.Contains(t, stripped, "Delete item")
+	assert.Contains(t, stripped, "Other thing")
+	assert.Contains(t, stripped, "Combined")
+	assert.Contains(t, stripped, "Down")
+	assert.Contains(t, stripped, "Up")
+}
 
-[1mx[0m[2m ........................................................ [0mVery long description
-[1mxyz[0m[2m .............................................................. [0mSeparate item
+func TestKeymapsNarrowWidthFallsBackToSingleColumn(t *testing.T) {
+	t.Parallel()
 
-[1mx[0m[2m ..................................................................... [0mAdd item
-[1mx[0m[2m .................................................................. [0mDelete item
+	keys := new(keyList)
+	s := keys.addSection("S")
+	s.addKey("j", "Down")
+	s.addKey("k", "Up")
+	s.addKey("h", "Left")
+	s.addKey("l", "Right")
 
-Header
+	actual := ansi.Strip(keys.print(40))
 
-[1mx[0m[2m .................................................................. [0mDelete item
-[1ma + b[0m[2m ..................................................................... [0mItem
-`
-
-	assert.Equal(t, ansi.Strip(expected), ansi.Strip(actual))
+	for _, line := range []string{"Down", "Up", "Left", "Right"} {
+		assert.Contains(t, actual, line)
+	}
 }

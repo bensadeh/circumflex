@@ -1,6 +1,7 @@
 package help
 
 import (
+	"image/color"
 	"strings"
 
 	"charm.land/bubbles/v2/key"
@@ -26,10 +27,29 @@ func FitToHeight(content string, height int) string {
 	return strings.Join(lines, "\n")
 }
 
-func MainMenuHelpScreen(screenWidth int, mainMenuBindings []key.Binding) string {
+type Section struct {
+	Title string
+	Color color.Color
+	Items []Item
+}
+
+type Item struct {
+	Key  string
+	Desc string
+}
+
+func FromBinding(b key.Binding) Item {
+	if !b.Enabled() {
+		return Item{}
+	}
+
+	return Item{Key: b.Help().Key, Desc: b.Help().Desc}
+}
+
+func MainMenuHelpScreen(screenWidth int, sections []Section) string {
 	var sb strings.Builder
 
-	sb.WriteString(MainMenuText(screenWidth, mainMenuBindings) + newPar)
+	sb.WriteString(MainMenuText(screenWidth, sections) + newPar)
 
 	return sb.String()
 }

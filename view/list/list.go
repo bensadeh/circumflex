@@ -253,7 +253,7 @@ func (m *Model) handleWindowResize(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 
 	content := lipgloss.NewStyle().
 		Width(msg.Width).
-		SetString(help.MainMenuHelpScreen(msg.Width, m.keymap.MainMenuBindings()))
+		SetString(help.MainMenuHelpScreen(msg.Width, m.keymap.MainMenuSections()))
 
 	m.viewport.SetContent(content.String())
 
@@ -278,7 +278,7 @@ func (m *Model) handleStartup(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 
 	content := lipgloss.NewStyle().
 		Width(msg.Width).
-		SetString(help.MainMenuHelpScreen(msg.Width, m.keymap.MainMenuBindings()))
+		SetString(help.MainMenuHelpScreen(msg.Width, m.keymap.MainMenuSections()))
 
 	m.viewport.SetContent(content.String())
 

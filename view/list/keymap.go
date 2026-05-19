@@ -1,6 +1,10 @@
 package list
 
-import "charm.land/bubbles/v2/key"
+import (
+	"charm.land/bubbles/v2/key"
+	"github.com/bensadeh/circumflex/help"
+	"github.com/bensadeh/circumflex/style"
+)
 
 type keyMap struct {
 	Help           key.Binding
@@ -29,26 +33,26 @@ func defaultKeyMap() keyMap {
 	return keyMap{
 		EnterComments: key.NewBinding(
 			key.WithKeys("enter"),
-			key.WithHelp("Enter", "View comment section"),
+			key.WithHelp("↩", "View comments"),
 		),
 		ReaderMode: key.NewBinding(
 			key.WithKeys("space"),
-			key.WithHelp("Space", "View article in Reader Mode"),
+			key.WithHelp("␣", "Reader mode"),
 		),
 		Refresh: key.NewBinding(
 			key.WithKeys("r"),
-			key.WithHelp("r", "Refresh"),
+			key.WithHelp("r", "Refresh stories"),
 		),
 		NextCategory: key.NewBinding(
 			key.WithKeys("tab"),
-			key.WithHelp("Tab", "Change category"),
+			key.WithHelp("⇥", "Next category"),
 		),
 		PrevCategory: key.NewBinding(
 			key.WithKeys("shift+tab"),
 		),
 		OpenLink: key.NewBinding(
 			key.WithKeys("o"),
-			key.WithHelp("o", "Open story link in browser"),
+			key.WithHelp("o", "Open story in browser"),
 		),
 		OpenComments: key.NewBinding(
 			key.WithKeys("c"),
@@ -56,23 +60,23 @@ func defaultKeyMap() keyMap {
 		),
 		AddFavorite: key.NewBinding(
 			key.WithKeys("f", "V"),
-			key.WithHelp("f", "Add to favorites"),
+			key.WithHelp("f", "Add favorite"),
 		),
 		RemoveFavorite: key.NewBinding(
 			key.WithKeys("x"),
-			key.WithHelp("x", "Remove from favorites"),
+			key.WithHelp("x", "Remove favorite"),
 		),
 		ToggleRead: key.NewBinding(
 			key.WithKeys("u"),
-			key.WithHelp("u", "Toggle read/unread"),
+			key.WithHelp("u", "Toggle read"),
 		),
 		Help: key.NewBinding(
 			key.WithKeys("i", "?"),
-			key.WithHelp("i, ?", "Bring up this screen"),
+			key.WithHelp("i, ?", "Help"),
 		),
 		Quit: key.NewBinding(
 			key.WithKeys("q", "esc", "ctrl+c"),
-			key.WithHelp("q", "Quit to prompt"),
+			key.WithHelp("q", "Quit"),
 		),
 		Up: key.NewBinding(
 			key.WithKeys("up", "k"),
@@ -101,26 +105,40 @@ func defaultKeyMap() keyMap {
 	}
 }
 
-// MainMenuBindings returns the bindings shown in the help screen's "Main Menu"
-// section. Zero-value bindings act as group separators.
-func (km keyMap) MainMenuBindings() []key.Binding {
-	sep := key.Binding{}
+func (km keyMap) MainMenuSections() []help.Section {
+	fromBindings := func(bs ...key.Binding) []help.Item {
+		items := make([]help.Item, 0, len(bs))
 
-	return []key.Binding{
-		km.EnterComments,
-		km.ReaderMode,
-		sep,
-		km.Refresh,
-		km.NextCategory,
-		sep,
-		km.OpenLink,
-		km.OpenComments,
-		sep,
-		km.AddFavorite,
-		km.RemoveFavorite,
-		km.ToggleRead,
-		sep,
-		km.Help,
-		km.Quit,
+		for _, b := range bs {
+			if item := help.FromBinding(b); item.Key != "" {
+				items = append(items, item)
+			}
+		}
+
+		return items
+	}
+
+	listItems := []help.Item{
+		{Key: "j, k", Desc: "Down / up"},
+		{Key: "h, l", Desc: "Prev / next page"},
+		{Key: "g, G", Desc: "Top / bottom"},
+		{Key: "⇥", Desc: "Next category"},
+	}
+	listItems = append(listItems, fromBindings(km.Refresh, km.AddFavorite, km.RemoveFavorite, km.ToggleRead)...)
+
+	return []help.Section{
+		{
+			Title: "Open",
+			Items: fromBindings(km.EnterComments, km.ReaderMode, km.OpenLink, km.OpenComments),
+		},
+		{
+			Title: "List",
+			Items: listItems,
+		},
+		{
+			Title: "App",
+			Color: style.HeaderTertiary(),
+			Items: fromBindings(km.Help, km.Quit),
+		},
 	}
 }
