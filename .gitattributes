@@ -1,4 +1,7 @@
 *.1 linguist-vendored
 *.sh linguist-vendored
+*.bash linguist-vendored
+*.fish linguist-vendored
 *.adoc linguist-vendored
 Dockerfile linguist-vendored
+share/completions/* linguist-vendored
