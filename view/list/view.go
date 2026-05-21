@@ -6,6 +6,7 @@ import (
 
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/help"
+	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/view/list/ranking"
 
 	"charm.land/lipgloss/v2"
@@ -13,13 +14,10 @@ import (
 
 func (m *Model) View() string {
 	if m.state == StateHelpScreen {
-		underscore := m.underlineStyle.Render(" ")
-		underline := strings.Repeat(underscore, m.width)
-
 		return fmt.Sprintf("%s\n%s\n%s\n%s",
 			header.HelpHeader("Keyboard Shortcuts", m.width),
 			m.viewport.View(),
-			underline,
+			m.bottomBar(),
 			help.Footer(m.width))
 	}
 
@@ -84,14 +82,25 @@ func (m *Model) titleView() string {
 		sv)
 }
 
+// bottomBar renders the footer rule (underlined spaces). When the HN memorial
+// is active it carries the same color as the header rule (style.MemorialColor),
+// so the top and bottom rules match.
+func (m *Model) bottomBar() string {
+	s := m.underlineStyle
+	if header.MemorialActive() {
+		s = s.Foreground(style.MemorialColor())
+	}
+
+	return strings.Repeat(s.Render(" "), m.width)
+}
+
 func (m *Model) statusAndPaginationView() string {
 	var (
 		centerContent string
 		rightContent  string
 	)
 
-	underscore := m.underlineStyle.Render(" ")
-	underline := strings.Repeat(underscore, m.width)
+	underline := m.bottomBar()
 
 	centerContent = m.status.message
 

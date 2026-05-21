@@ -19,6 +19,8 @@ var memorialActive atomic.Bool
 
 func SetMemorial(active bool) { memorialActive.Store(active) }
 
+func MemorialActive() bool { return memorialActive.Load() }
+
 // Underline renders the header rule, tinted muted gray when the HN memorial
 // black bar is up. Every view draws its top rule through here so the indicator
 // stays consistent across the list, help, comment, and reader screens.

@@ -323,9 +323,12 @@ func (m *Model) rebuildTitleHeader() {
 }
 
 func (m *Model) footerSeparator() string {
-	return lipgloss.NewStyle().Underline(true).
-		Width(m.screenWidth).
-		Render(strings.Repeat(" ", m.screenWidth))
+	s := lipgloss.NewStyle().Underline(true).Width(m.screenWidth)
+	if header.MemorialActive() {
+		s = s.Foreground(style.MemorialColor())
+	}
+
+	return s.Render(strings.Repeat(" ", m.screenWidth))
 }
 
 func (m *Model) modeIndicator() string {
