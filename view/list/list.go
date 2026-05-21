@@ -8,6 +8,7 @@ import (
 
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/favorites"
+	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/help"
 	"github.com/bensadeh/circumflex/history"
 	"github.com/bensadeh/circumflex/hn"
@@ -74,6 +75,8 @@ type Model struct {
 	viewport    viewport.Model
 	commentView *comments.Model
 	readerView  *reader.Model
+
+	blackBarErr error
 
 	// Cached styles for hot-path rendering.
 	contentStyle    lipgloss.Style
@@ -260,6 +263,8 @@ func (m *Model) handleWindowResize(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 	return m, nil
 }
 
+func (m *Model) BlackBarErr() error { return m.blackBarErr }
+
 func (m *Model) handleStartup(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 	m.setSize(msg.Width, msg.Height)
 
@@ -272,6 +277,7 @@ func (m *Model) handleStartup(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 
 	fetchCmd := m.FetchStoriesForFirstCategory()
 	cmds = append(cmds, fetchCmd)
+	cmds = append(cmds, FetchBlackBarStatus())
 	cmds = append(cmds, scheduleTimeRefresh())
 
 	m.viewport = viewport.New(viewport.WithWidth(msg.Width), viewport.WithHeight(msg.Height-headerAndFooterHeight))
@@ -307,6 +313,10 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 	case message.TimeRefreshTick:
 		cmds = append(cmds, scheduleTimeRefresh())
+
+	case message.BlackBarStatusReady:
+		header.SetMemorial(msg.Active)
+		m.blackBarErr = msg.Err
 
 	case message.FetchingFinished:
 		return m.handleFetchingFinished(msg)

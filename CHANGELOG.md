@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.2
+
+**New features**
+
+- Added a black bar to the header whenever a significant person has passed away
+
 ## 4.1.1
 
 **Infrastructure**

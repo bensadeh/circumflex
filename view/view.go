@@ -54,9 +54,15 @@ func Run(config *settings.Config, cat *categories.Categories) {
 
 	p := tea.NewProgram(m)
 
-	_, err = p.Run()
+	finalModel, err := p.Run()
 	if err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
+	}
+
+	if fm, ok := finalModel.(model); ok {
+		if bbErr := fm.list.BlackBarErr(); bbErr != nil {
+			fmt.Fprintf(os.Stderr, "circumflex: could not check HN memorial status: %v\n", bbErr)
+		}
 	}
 }

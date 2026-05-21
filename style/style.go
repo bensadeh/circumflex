@@ -50,6 +50,8 @@ var (
 	boldReverseStyle  = lipgloss.NewStyle().Bold(true).Reverse(true)
 	faintStyle        = lipgloss.NewStyle().Faint(true)
 	faintItalicStyle  = lipgloss.NewStyle().Faint(true).Italic(true)
+
+	memorialUnderlineStyle = lipgloss.NewStyle().Foreground(lipgloss.ANSIColor(8))
 )
 
 // Theme-dependent styles — rebuilt by rebuildThemeStyles whenever the theme changes.
@@ -203,10 +205,11 @@ func BrightGreen(s string) string  { return brightGreenStyle.Render(s) }
 func BrightYellow(s string) string { return brightYellowStyle.Render(s) }
 func BrightWhite(s string) string  { return brightWhiteStyle.Render(s) }
 
-func Bold(s string) string        { return boldStyle.Render(s) }
-func BoldReverse(s string) string { return boldReverseStyle.Render(s) }
-func Faint(s string) string       { return faintStyle.Render(s) }
-func FaintItalic(s string) string { return faintItalicStyle.Render(s) }
+func Bold(s string) string              { return boldStyle.Render(s) }
+func BoldReverse(s string) string       { return boldReverseStyle.Render(s) }
+func Faint(s string) string             { return faintStyle.Render(s) }
+func MemorialUnderline(s string) string { return memorialUnderlineStyle.Render(s) }
+func FaintItalic(s string) string       { return faintItalicStyle.Render(s) }
 
 func HeadlineAskHN(s string) string    { return headlineAskHNStyle.Render(s) }
 func HeadlineShowHN(s string) string   { return headlineShowHNStyle.Render(s) }

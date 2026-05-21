@@ -3,6 +3,7 @@ package header
 import (
 	"image/color"
 	"strings"
+	"sync/atomic"
 
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/layout"
@@ -10,6 +11,25 @@ import (
 
 	"charm.land/lipgloss/v2"
 )
+
+// memorialActive mirrors the HN front-page black bar. It is global because the
+// status is a single fact about HN, not per-view state, and every view's header
+// underline must reflect it. Set once when the fetch result arrives.
+var memorialActive atomic.Bool
+
+func SetMemorial(active bool) { memorialActive.Store(active) }
+
+// Underline renders the header rule, tinted muted gray when the HN memorial
+// black bar is up. Every view draws its top rule through here so the indicator
+// stays consistent across the list, help, comment, and reader screens.
+func Underline(width int) string {
+	bar := strings.Repeat("‾", width)
+	if memorialActive.Load() {
+		return style.MemorialUnderline(bar)
+	}
+
+	return bar
+}
 
 func Header(allCategories []categories.Category, selectedSubHeader int, width int, spinnerView string) string {
 	leftPad := strings.Repeat(" ", layout.HeaderLogoLeftPadding)
@@ -25,13 +45,13 @@ func Header(allCategories []categories.Category, selectedSubHeader int, width in
 	cats := getCategories(allCategories, selectedSubHeader)
 	filler := getFiller(title, cats, width)
 
-	return title + cats + filler + "\n" + strings.Repeat("‾", width)
+	return title + cats + filler + "\n" + Underline(width)
 }
 
 func HelpHeader(title string, width int) string {
 	padded := strings.Repeat(" ", layout.HeaderLeftMargin) + lipgloss.NewStyle().Bold(true).Render(title)
 
-	return padded + "\n" + strings.Repeat("‾", width)
+	return padded + "\n" + Underline(width)
 }
 
 func getFiller(title string, categories string, width int) string {

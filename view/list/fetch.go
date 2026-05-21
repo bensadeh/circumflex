@@ -7,12 +7,14 @@ import (
 	"net"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/history"
 	"github.com/bensadeh/circumflex/hn"
+	"github.com/bensadeh/circumflex/hn/blackbar"
 	"github.com/bensadeh/circumflex/view/message"
 
 	tea "charm.land/bubbletea/v2"
@@ -55,6 +57,17 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 			Err:      err,
 			FetchID:  fetchID,
 		}
+	}
+}
+
+func FetchBlackBarStatus() tea.Cmd {
+	return func() tea.Msg {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		active, err := blackbar.Detect(ctx)
+
+		return message.BlackBarStatusReady{Active: active, Err: err}
 	}
 }
 

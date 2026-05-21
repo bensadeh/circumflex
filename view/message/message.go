@@ -97,3 +97,8 @@ type CommentTreeDataReady struct {
 type CommentViewQuitMsg struct{}
 
 type TimeRefreshTick struct{}
+
+type BlackBarStatusReady struct {
+	Active bool
+	Err    error
+}

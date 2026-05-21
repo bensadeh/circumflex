@@ -347,7 +347,7 @@ func (m *Model) rebuildTitleHeader() {
 	title = syntax.HighlightSpecialContent(title, syntax.HeadlineInCommentSection, nf)
 
 	title = leftMargin + ansi.Bold + title + ansi.Reset
-	separator := strings.Repeat("‾", m.rc.screenWidth)
+	separator := header.Underline(m.rc.screenWidth)
 
 	m.titleHeader = title + "\n" + separator
 }
