@@ -98,7 +98,7 @@ type CommentViewQuitMsg struct{}
 
 type TimeRefreshTick struct{}
 
-type BlackBarStatusReady struct {
+type MemorialStatusReady struct {
 	Active bool
 	Err    error
 }

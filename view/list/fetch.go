@@ -14,7 +14,7 @@ import (
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/history"
 	"github.com/bensadeh/circumflex/hn"
-	"github.com/bensadeh/circumflex/hn/blackbar"
+	"github.com/bensadeh/circumflex/hn/memorial"
 	"github.com/bensadeh/circumflex/view/message"
 
 	tea "charm.land/bubbletea/v2"
@@ -60,14 +60,14 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 	}
 }
 
-func FetchBlackBarStatus() tea.Cmd {
+func FetchMemorialStatus() tea.Cmd {
 	return func() tea.Msg {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
-		active, err := blackbar.Detect(ctx)
+		active, err := memorial.Detect(ctx)
 
-		return message.BlackBarStatusReady{Active: active, Err: err}
+		return message.MemorialStatusReady{Active: active, Err: err}
 	}
 }
 

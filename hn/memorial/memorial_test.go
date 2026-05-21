@@ -1,4 +1,4 @@
-package blackbar
+package memorial
 
 import (
 	"context"
@@ -13,9 +13,9 @@ import (
 )
 
 const (
-	withBlackBar = `<table><tr><td bgcolor="#000000"><img height="5"></td></tr>` +
+	withMemorialBar = `<table><tr><td bgcolor="#000000"><img height="5"></td></tr>` +
 		`<tr><td bgcolor="#ff6600">header</td></tr></table>`
-	withoutBlackBar = `<table><tr><td bgcolor="#ff6600">header</td></tr></table>`
+	withoutMemorialBar = `<table><tr><td bgcolor="#ff6600">header</td></tr></table>`
 )
 
 func TestDetect(t *testing.T) {
@@ -26,11 +26,11 @@ func TestDetect(t *testing.T) {
 		want    bool
 		wantErr bool
 	}{
-		{name: "black bar present", body: withBlackBar, status: http.StatusOK, want: true},
-		{name: "no black bar", body: withoutBlackBar, status: http.StatusOK, want: false},
+		{name: "black bar present", body: withMemorialBar, status: http.StatusOK, want: true},
+		{name: "no black bar", body: withoutMemorialBar, status: http.StatusOK, want: false},
 		{name: "server error", body: "", status: http.StatusInternalServerError, wantErr: true},
 		// Markers past the read limit are never seen, so the bar reads as absent.
-		{name: "black bar beyond read limit", body: strings.Repeat("x", readLimit+100) + withBlackBar, status: http.StatusOK, want: false},
+		{name: "black bar beyond read limit", body: strings.Repeat("x", readLimit+100) + withMemorialBar, status: http.StatusOK, want: false},
 	}
 
 	for _, tt := range tests {
@@ -101,10 +101,10 @@ func TestDetect_Timeout(t *testing.T) {
 	assert.False(t, got)
 }
 
-func TestHasBlackBar(t *testing.T) {
-	assert.True(t, hasBlackBar(withBlackBar))
-	assert.False(t, hasBlackBar(withoutBlackBar))
-	assert.False(t, hasBlackBar(""))
+func TestHasMemorialBar(t *testing.T) {
+	assert.True(t, hasMemorialBar(withMemorialBar))
+	assert.False(t, hasMemorialBar(withoutMemorialBar))
+	assert.False(t, hasMemorialBar(""))
 	// Orange before black should not count.
-	assert.False(t, hasBlackBar(`<tr bgcolor="#ff6600"></tr><tr bgcolor="#000000"></tr>`))
+	assert.False(t, hasMemorialBar(`<tr bgcolor="#ff6600"></tr><tr bgcolor="#000000"></tr>`))
 }

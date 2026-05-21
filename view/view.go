@@ -61,8 +61,8 @@ func Run(config *settings.Config, cat *categories.Categories) {
 	}
 
 	if fm, ok := finalModel.(model); ok {
-		if bbErr := fm.list.BlackBarErr(); bbErr != nil {
-			fmt.Fprintf(os.Stderr, "circumflex: could not check HN memorial status: %v\n", bbErr)
+		if memErr := fm.list.MemorialErr(); memErr != nil {
+			fmt.Fprintf(os.Stderr, "circumflex: could not check HN memorial status: %v\n", memErr)
 		}
 	}
 }

@@ -76,7 +76,7 @@ type Model struct {
 	commentView *comments.Model
 	readerView  *reader.Model
 
-	blackBarErr error
+	memorialErr error
 
 	// Cached styles for hot-path rendering.
 	contentStyle    lipgloss.Style
@@ -263,7 +263,7 @@ func (m *Model) handleWindowResize(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m *Model) BlackBarErr() error { return m.blackBarErr }
+func (m *Model) MemorialErr() error { return m.memorialErr }
 
 func (m *Model) handleStartup(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 	m.setSize(msg.Width, msg.Height)
@@ -277,7 +277,7 @@ func (m *Model) handleStartup(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 
 	fetchCmd := m.FetchStoriesForFirstCategory()
 	cmds = append(cmds, fetchCmd)
-	cmds = append(cmds, FetchBlackBarStatus())
+	cmds = append(cmds, FetchMemorialStatus())
 	cmds = append(cmds, scheduleTimeRefresh())
 
 	m.viewport = viewport.New(viewport.WithWidth(msg.Width), viewport.WithHeight(msg.Height-headerAndFooterHeight))
@@ -314,14 +314,14 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	case message.TimeRefreshTick:
 		cmds = append(cmds, scheduleTimeRefresh())
 
-	case message.BlackBarStatusReady:
+	case message.MemorialStatusReady:
 		// Only apply a definitive result; on error leave the current state so a
 		// failed re-check (e.g. during a refresh) never blanks an active bar.
 		if msg.Err == nil {
 			header.SetMemorial(msg.Active)
 		}
 
-		m.blackBarErr = msg.Err
+		m.memorialErr = msg.Err
 
 	case message.FetchingFinished:
 		return m.handleFetchingFinished(msg)
@@ -410,7 +410,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, m.fetchAndChangeToCategory(msg)
 
 	case message.Refresh:
-		return m, tea.Batch(m.refresh(msg), FetchBlackBarStatus())
+		return m, tea.Batch(m.refresh(msg), FetchMemorialStatus())
 
 	case message.ShowStatusMessage:
 		cmds = append(cmds, m.status.NewStatusMessageWithDuration(msg.Message, msg.Duration))

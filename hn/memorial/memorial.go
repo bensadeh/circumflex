@@ -1,4 +1,4 @@
-package blackbar
+package memorial
 
 import (
 	"context"
@@ -51,10 +51,10 @@ func Detect(ctx context.Context) (bool, error) {
 		return false, fmt.Errorf("reading front page: %w", err)
 	}
 
-	return hasBlackBar(string(body)), nil
+	return hasMemorialBar(string(body)), nil
 }
 
-func hasBlackBar(html string) bool {
+func hasMemorialBar(html string) bool {
 	black := strings.Index(html, blackMarker)
 	if black == -1 {
 		return false
