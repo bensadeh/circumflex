@@ -315,7 +315,12 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		cmds = append(cmds, scheduleTimeRefresh())
 
 	case message.BlackBarStatusReady:
-		header.SetMemorial(msg.Active)
+		// Only apply a definitive result; on error leave the current state so a
+		// failed re-check (e.g. during a refresh) never blanks an active bar.
+		if msg.Err == nil {
+			header.SetMemorial(msg.Active)
+		}
+
 		m.blackBarErr = msg.Err
 
 	case message.FetchingFinished:
@@ -405,7 +410,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, m.fetchAndChangeToCategory(msg)
 
 	case message.Refresh:
-		return m, m.refresh(msg)
+		return m, tea.Batch(m.refresh(msg), FetchBlackBarStatus())
 
 	case message.ShowStatusMessage:
 		cmds = append(cmds, m.status.NewStatusMessageWithDuration(msg.Message, msg.Duration))
