@@ -4,6 +4,7 @@
 
 **New features**
 
+- Added a scroll bar
 - Added a black bar to the header whenever a significant person has passed away
 
 ## 4.1.1
