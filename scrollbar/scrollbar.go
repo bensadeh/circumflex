@@ -3,8 +3,6 @@ package scrollbar
 import (
 	"strings"
 
-	"github.com/bensadeh/circumflex/style"
-
 	xansi "github.com/charmbracelet/x/ansi"
 )
 
@@ -13,11 +11,12 @@ import (
 // overlap a glyph; Attach itself uses it to place the bar.
 const Width = 1
 
-// A slim, right-aligned bar: a thin track with a half-width thumb. The two
-// quadrant glyphs let the thumb's edges land on a half-row boundary, doubling
-// the apparent resolution while staying vertically symmetric.
+// A slim, right-aligned thumb floating in a blank column (no track rule). The
+// two quadrant glyphs let the thumb's edges land on a half-row boundary,
+// doubling the apparent resolution while staying vertically symmetric. A track
+// rule is omitted on purpose: a half-cell quadrant edge only fills half its
+// cell, so a thin rule would break at every half-step.
 const (
-	track      = "▕" // right one-eighth block
 	full       = "▐" // right half block
 	topHalf    = "▝" // upper-right quadrant
 	bottomHalf = "▗" // lower-right quadrant
@@ -72,8 +71,9 @@ func Attach(viewportView string, width, contentLines, height, offset int) string
 	return b.String()
 }
 
-// barColumn returns height single-cell rows: a track with a thumb whose size
-// and position reflect the scroll state, or blank rows when all content fits.
+// barColumn returns height single-cell rows: a thumb (whose size and position
+// reflect the scroll state) floating in otherwise blank cells, or all blank
+// when the content fits.
 //
 // The math runs in half-cell units so the thumb's edges can land on a half-row
 // boundary, rendered with the quadrant glyphs. This doubles the apparent
@@ -118,11 +118,9 @@ func barColumn(contentLines, height, offset int) []string {
 		case bottom:
 			column[i] = bottomHalf
 		default:
-			column[i] = faintTrack
+			column[i] = " "
 		}
 	}
 
 	return column
 }
-
-var faintTrack = style.Faint(track)
