@@ -6,6 +6,7 @@ import (
 
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/layout"
+	"github.com/bensadeh/circumflex/scrollbar"
 	"github.com/bensadeh/circumflex/style"
 )
 
@@ -61,9 +62,9 @@ type renderedComment struct {
 // collapse/expand operations only concatenate pre-rendered strings.
 func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 	leftMargin := strings.Repeat(" ", layout.CommentSectionLeftMargin)
-	// Reserve the rightmost column for the scrollbar so full-width content
-	// (top-level lines, the separator rule) isn't clipped by the overlay.
-	contentWidth := rc.screenWidth - layout.CommentSectionLeftMargin - 1
+	// Comment content can reach the screen edge, so reserve the scrollbar's
+	// column; otherwise the overlay would clip the rightmost glyph.
+	contentWidth := rc.screenWidth - layout.CommentSectionLeftMargin - scrollbar.Width
 	commentWidth := min(contentWidth, rc.commentWidth)
 
 	rendered := make([]renderedComment, len(flat))

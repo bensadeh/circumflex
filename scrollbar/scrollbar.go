@@ -8,6 +8,11 @@ import (
 	xansi "github.com/charmbracelet/x/ansi"
 )
 
+// Width is the number of columns the scrollbar occupies. Callers that render
+// content up to the screen edge must reserve this much room so the bar doesn't
+// overlap a glyph; Attach itself uses it to place the bar.
+const Width = 1
+
 // A slim, right-aligned bar: a thin track with a half-width thumb. The two
 // quadrant glyphs let the thumb's edges land on a half-row boundary, doubling
 // the apparent resolution while staying vertically symmetric.
@@ -27,10 +32,10 @@ const (
 )
 
 // Attach overlays a vertical scrollbar in the rightmost column of viewportView.
-// Each row is padded (or truncated) to width-1 so the bar sits flush against
-// the right edge, regardless of how wide the underlying content is. The thumb
-// reflects offset within contentLines of content shown through a height-row
-// viewport; when everything fits, the column stays blank.
+// Each row is padded (or truncated) to leave room for the bar so it sits flush
+// against the right edge, regardless of how wide the underlying content is. The
+// thumb reflects offset within contentLines of content shown through a
+// height-row viewport; when everything fits, the column stays blank.
 func Attach(viewportView string, width, contentLines, height, offset int) string {
 	if height <= 0 {
 		return viewportView
@@ -38,7 +43,7 @@ func Attach(viewportView string, width, contentLines, height, offset int) string
 
 	bar := barColumn(contentLines, height, offset)
 	vpLines := strings.Split(viewportView, "\n")
-	colWidth := max(0, width-1)
+	colWidth := max(0, width-Width)
 
 	var b strings.Builder
 	b.Grow(height * (width + len(full)))
