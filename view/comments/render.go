@@ -61,7 +61,9 @@ type renderedComment struct {
 // collapse/expand operations only concatenate pre-rendered strings.
 func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 	leftMargin := strings.Repeat(" ", layout.CommentSectionLeftMargin)
-	contentWidth := rc.screenWidth - layout.CommentSectionLeftMargin
+	// Reserve the rightmost column for the scrollbar so full-width content
+	// (top-level lines, the separator rule) isn't clipped by the overlay.
+	contentWidth := rc.screenWidth - layout.CommentSectionLeftMargin - 1
 	commentWidth := min(contentWidth, rc.commentWidth)
 
 	rendered := make([]renderedComment, len(flat))

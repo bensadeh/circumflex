@@ -11,6 +11,7 @@ import (
 	"github.com/bensadeh/circumflex/help"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/meta"
+	"github.com/bensadeh/circumflex/scrollbar"
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/syntax"
 	"github.com/bensadeh/circumflex/view/message"
@@ -331,7 +332,9 @@ func (m *Model) View() string {
 			help.Footer(m.rc.screenWidth)
 	}
 
-	return m.titleHeader + "\n" + m.viewport.View() + "\n" + m.footerSeparator() + "\n" + m.modeIndicator()
+	content := scrollbar.Attach(m.viewport.View(), m.rc.screenWidth, m.contentLines, m.rc.viewportHeight, m.viewport.YOffset())
+
+	return m.titleHeader + "\n" + content + "\n" + m.footerSeparator() + "\n" + m.modeIndicator()
 }
 
 func (m *Model) rebuildTitleHeader() {
