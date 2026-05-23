@@ -266,24 +266,6 @@ func Logo(a, b, c string) string {
 
 func IndentCycle() []func(string) string { return indentCycleFuncs }
 
-type Binding struct {
-	Key  string
-	Desc string
-}
-
-func ModeIndicator(bindings []Binding) string {
-	parts := make([]string, len(bindings))
-	for i, b := range bindings {
-		parts[i] = RenderBinding(b)
-	}
-
-	return strings.Repeat(" ", 2) + strings.Join(parts, "  ")
-}
-
-func RenderBinding(b Binding) string {
-	return b.Key + Faint(": "+b.Desc)
-}
-
 // sgrResetPattern matches the two SGR-reset forms that appear in our rendered
 // output: lipgloss emits the short form \x1b[m after styled spans, while our
 // own ansi.Reset (used by syntax.ReplaceHTML for </i> etc.) is the long form

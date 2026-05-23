@@ -380,23 +380,15 @@ func (m *Model) footerSeparator() string {
 }
 
 func (m *Model) modeIndicator() string {
-	var left string
+	var label string
 
 	switch m.mode {
 	case modeRead:
-		left = style.ModeIndicator([]style.Binding{
-			{Key: "⇥", Desc: "navigate mode"},
-		})
+		label = "  ☰ " + style.Faint("read")
 	case modeNavigate:
-		left = style.ModeIndicator([]style.Binding{
-			{Key: "⇥", Desc: "read mode"},
-		})
+		label = "  … " + style.Faint(" nav")
 	}
 
-	help := style.RenderBinding(style.Binding{Key: "i", Desc: "help"})
-
-	// Reserve a fixed-width slot for the depth indicator so that
-	// "i: help" stays in place across modes and depth changes.
 	diSlot := 0
 	if m.maxDepth > 0 {
 		diSlot = 1 + 1 + len(fmt.Sprintf("%d", m.maxDepth)) // " ⋮" + digits
@@ -404,9 +396,9 @@ func (m *Model) modeIndicator() string {
 
 	commentWidth := min(m.rc.screenWidth-layout.CommentSectionLeftMargin, m.rc.commentWidth)
 	totalWidth := layout.CommentSectionLeftMargin + commentWidth
-	padding := max(1, totalWidth-lipgloss.Width(left)-lipgloss.Width(help)-diSlot)
+	padding := max(1, totalWidth-lipgloss.Width(label)-diSlot)
 
-	result := left + strings.Repeat(" ", padding) + help
+	result := label + strings.Repeat(" ", padding)
 
 	if diSlot > 0 {
 		di := ""
@@ -415,8 +407,7 @@ func (m *Model) modeIndicator() string {
 		}
 
 		if di != "" {
-			used := 1 + lipgloss.Width(di)
-			result += " " + di + strings.Repeat(" ", max(0, diSlot-used))
+			result += di + strings.Repeat(" ", max(0, diSlot-lipgloss.Width(di)))
 		} else {
 			result += strings.Repeat(" ", diSlot)
 		}

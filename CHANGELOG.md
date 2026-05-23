@@ -6,6 +6,8 @@
 
 - Added a scroll bar
 - Added a black bar to the header whenever a significant person has passed away
+- Added a mode indicator to the comment section footer
+- Removed keybinding hints from the comment and reader footers
 
 ## 4.1.1
 
