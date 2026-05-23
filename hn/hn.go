@@ -2,7 +2,13 @@ package hn
 
 import (
 	"context"
+	"strconv"
 )
+
+// ItemURL returns the Hacker News page for an item (story or comment thread).
+func ItemURL(id int) string {
+	return "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
+}
 
 // Story represents a Hacker News story as returned by FetchItems/FetchItem.
 // This is the list-view representation: no comment tree, no self-text.

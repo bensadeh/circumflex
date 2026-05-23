@@ -3,12 +3,12 @@ package list
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/browser"
 	"github.com/bensadeh/circumflex/categories"
+	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/timeago"
 	"github.com/bensadeh/circumflex/view/message"
 
@@ -348,7 +348,7 @@ func (m *Model) handleOpenLink() tea.Cmd {
 
 	url := selected.URL
 	if url == "" {
-		url = "https://news.ycombinator.com/item?id=" + strconv.Itoa(selected.ID)
+		url = hn.ItemURL(selected.ID)
 	}
 
 	return func() tea.Msg {
@@ -361,7 +361,7 @@ func (m *Model) handleOpenLink() tea.Cmd {
 }
 
 func (m *Model) handleOpenComments() tea.Cmd {
-	url := "https://news.ycombinator.com/item?id=" + strconv.Itoa(m.SelectedItem().ID)
+	url := hn.ItemURL(m.SelectedItem().ID)
 
 	return func() tea.Msg {
 		if err := browser.Open(context.Background(), url); err != nil {
