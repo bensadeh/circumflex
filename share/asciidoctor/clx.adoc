@@ -14,16 +14,18 @@ endif::[]
 
 == Name
 
-clx - it's Hacker News in your terminal
+clx - Hacker News in your terminal
 
 == Synopsis
 
 *clx* [_OPTION_]...
 
+*clx* _COMMAND_ [_ARGS_]
+
 == Description
 
 *circumflex* lets you browse Hacker News in your terminal.
-Quickly and easily visit the comment section or read the article in Reader Mode.
+Visit the comment section or read the article in Reader Mode.
 
 == Keybindings
 
@@ -34,14 +36,14 @@ _Space_::
 Read the article in Reader Mode.
 
 _r_::
-Re-fetches submissions for current category.
-Purges already fetched submissions from other categories.
+Re-fetch submissions for the current category.
 
 _Tab_::
 Change category (use Shift + Tab to change in opposite direction).
 
 _o_::
 Open link to article in browser.
+See *CLX_BROWSER*.
 
 _c_::
 Open comment section in browser.
@@ -55,13 +57,19 @@ Remove currently highlighted submission from favorites.
 _u_::
 Toggle read/unread for the currently highlighted submission.
 
+_j_, _k_::
+Move down/up one item.
+
+_h_, _l_::
+Previous/next page.
+
 _g_, _G_::
 Go to the top/bottom of the list.
 
 _i_, _?_::
 Bring up the help screen.
 
-_q_::
+_q_, _Esc_::
 Quit to prompt.
 
 == Comment Section
@@ -154,6 +162,43 @@ Bring up the help screen.
 _q_, _Esc_::
 Go back.
 
+== Options
+
+*-a* _n_, *--article-width*=_n_::
+Set the article width in Reader Mode to _n_ columns.
+
+*--categories*=_list_::
+Set the categories in the header.
+Available categories: top, best, new, ask, show.
+The first category becomes the default.
+Separate categories with comma.
+Default: "top,best,ask,show".
+
+*-c* _n_, *--comment-width*=_n_::
+Set the comment width to _n_ columns.
+
+*-d, --disable-history*::
+Disable marking stories as read.
+
+*--indent*=_n_::
+Set the comment section indent size to _n_ spaces per nesting level.
+When the requested indent would shrink a comment's text column below a readable minimum, the indent plateaus and deeper comments share an ancestor's indent level while the depth-colored bar continues to convey nesting.
+Default: 1.
+
+*-n, --nerdfonts*::
+Enable Nerd Fonts icons as decorators for some elements (requires a Nerd Font-patched font).
+Auto-enabled for Ghostty, which embeds Nerd Fonts.
+
+*--pages*=_n_::
+Set the number of pages to fetch per category, between 1 and 5.
+Higher values fetch more stories but increase load time.
+Only applies to top, new and best.
+Ask and show always fetch one page because their story pools are small (~150-200 stories).
+Default: 3.
+
+*-v, --version*::
+Show the current version of *circumflex*.
+
 == Commands
 
 *clx add* [_ID_]::
@@ -166,53 +211,14 @@ Go directly to Reader Mode for a given item _ID_ without first going through the
 Go directly to the comment section for a given item _ID_ without first going through the main view.
 
 *clx url* [_URL_]::
-Open a URL directly in Reader Mode
+Open a URL directly in Reader Mode.
 
 *clx clear*::
 Clear the history of visited items.
 
-*clx version*::
-Print the version number of *circumflex*.
-
 *clx default-theme*::
-Write default theme config to the config directory.
-
-== Options
-
-*-c* _n_, *--comment-width*=_n_::
-Set the comment width to _n_ columns.
-
-*-d, --disable-history*::
-Disable marking stories as read.
-
-*-a* _n_, *--article-width*=_n_::
-Set the article width in Reader Mode to _n_ columns.
-
-*--indent*=_n_::
-Set the comment section indent size to _n_ spaces per nesting level.
-When the requested indent would shrink a comment's text column below a readable minimum, the indent plateaus and deeper comments share an ancestor's indent level while the depth-colored bar continues to convey nesting.
-Default: 1.
-
-*-n, --nerdfonts*::
-Enable Nerd Fonts icons as decorators for some elements (requires a Nerd Font-patched font).
-Auto-enabled for Ghostty, which embeds Nerd Fonts.
-
-*-v, --version*::
-Show the current version of *circumflex*.
-
-*--categories*::
-Set the categories in the header.
-Available categories: top, new, best, ask, show.
-First category will be treated as the default one.
-Separate categories with comma.
-Default value: "top,best,ask,show"
-
-*--pages*=_n_::
-Set the number of pages to fetch per category, between 1 and 5.
-Higher values fetch more stories but increase load time.
-Only applies to top, new and best.
-Ask and show always fetch one page because their story pools are small (~150-200 stories).
-Default: 3.
+Generate a starter theme file in the config directory.
+See *FILES*.
 
 == History
 
@@ -220,32 +226,44 @@ Default: 3.
 Visited stories are dimmed in the list.
 When returning to a comment section, comments posted since your last visit are highlighted with a new-comment indicator.
 
-History is stored as a JSON file in the OS cache directory.
-Use *clx clear* to reset it, or *--disable-history* to turn tracking off entirely.
+Use *clx clear* to reset history, or *--disable-history* to turn tracking off entirely.
 
 == Favorites
 
 Press _f_ to add the currently highlighted submission to your list of favorites.
 Remove submissions from the Favorites page with _x_.
 
-Favorites are stored as a pretty-printed JSON file in the OS config directory, making them both human-readable and VCS-friendly.
+The favorites file is pretty-printed JSON, suitable for hand-editing or version control.
 
-== Environment Variables
+== Environment
 
 *XDG_CONFIG_HOME*, *XDG_CACHE_HOME*::
-Override where *circumflex* stores its files.
-Configuration (theme, favorites) goes under `$XDG_CONFIG_HOME/circumflex/`
-and cache (read history) under `$XDG_CACHE_HOME/circumflex/`.
-When unset, the platform defaults are used (`~/Library/Application Support/` and `~/Library/Caches/` on macOS,
-`~/.config/` and `~/.cache/` on Linux).
+Override the directories where *circumflex* stores its config and cache files.
+See *FILES* for what lives where.
 
 *CLX_BROWSER*::
-Set to a custom command to be run when opening links.
-The URL to the website will be appended to CLX_BROWSER and ran as a single command.
+Command used to open URLs (article links and comment pages).
+The URL is appended as the final argument.
+For example, `CLX_BROWSER="firefox --new-tab"` opens links in a new Firefox tab.
+When unset, the platform default opener is used (*open* on macOS, *xdg-open* on Linux, *rundll32* on Windows).
 
-== About
+== Files
 
-Ben Sadeh (github.com/bensadeh/circumflex)
+_$XDG_CONFIG_HOME/circumflex/theme.toml_::
+TOML color theme.
+Run *clx default-theme* to write a starter file pre-populated with every key and its default value.
+Values may be named colors (`red`, `bright_blue`, ...), hex strings (`#ff8800`), or ANSI 256 indices (`0`-`255`).
+Unrecognized values render with no styling.
 
-Released under the MIT License
+_$XDG_CONFIG_HOME/circumflex/favorites.json_::
+Saved favorites.
+
+_$XDG_CACHE_HOME/circumflex/history.json_::
+IDs of visited stories.
+
+When the XDG variables are unset, the platform defaults apply: `~/Library/Application Support/circumflex/` and `~/Library/Caches/circumflex/` on macOS; `~/.config/circumflex/` and `~/.cache/circumflex/` on Linux.
+
+== Author
+
+Ben Sadeh
 

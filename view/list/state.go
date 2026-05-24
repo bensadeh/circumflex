@@ -18,5 +18,4 @@ const (
 type transition struct {
 	prevIndex int
 	oldItems  []*hn.Story
-	refresh   bool
 }

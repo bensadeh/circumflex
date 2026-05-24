@@ -168,10 +168,6 @@ func (m *Model) handleCategoryFetchingFinished(msg message.CategoryFetchingFinis
 		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
 	}
 
-	if m.pager.transition != nil && m.pager.transition.refresh {
-		clearAllCategories(m.pager.items)
-	}
-
 	m.pager.transition = nil
 	m.pager.items[msg.Category] = msg.Stories
 	m.pager.Paginator.Page = 0

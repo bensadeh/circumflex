@@ -2,12 +2,12 @@
 .\"     Title: clx
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.26
-.\"      Date: 2026-05-14
+.\"      Date: 2026-05-24
 .\"    Manual: circumflex
-.\"    Source: circumflex 4.1.1
+.\"    Source: circumflex 4.2-dev
 .\"  Language: English
 .\"
-.TH "CLX" "1" "2026-05-14" "circumflex 4.1.1" "circumflex"
+.TH "CLX" "1" "2026-05-24" "circumflex 4.2\-dev" "circumflex"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -28,14 +28,16 @@
 .  LINKSTYLE blue R < >
 .\}
 .SH "NAME"
-clx \- it\*(Aqs Hacker News in your terminal
+clx \- Hacker News in your terminal
 .SH "SYNOPSIS"
 .sp
 \fBclx\fP [\fIOPTION\fP].\|.\|.
+.sp
+\fBclx\fP \fICOMMAND\fP [\fIARGS\fP]
 .SH "DESCRIPTION"
 .sp
 \fBcircumflex\fP lets you browse Hacker News in your terminal.
-Quickly and easily visit the comment section or read the article in Reader Mode.
+Visit the comment section or read the article in Reader Mode.
 .SH "KEYBINDINGS"
 .sp
 \fIEnter\fP
@@ -50,8 +52,7 @@ Read the article in Reader Mode.
 .sp
 \fIr\fP
 .RS 4
-Re\-fetches submissions for current category.
-Purges already fetched submissions from other categories.
+Re\-fetch submissions for the current category.
 .RE
 .sp
 \fITab\fP
@@ -62,6 +63,7 @@ Change category (use Shift + Tab to change in opposite direction).
 \fIo\fP
 .RS 4
 Open link to article in browser.
+See \fBCLX_BROWSER\fP.
 .RE
 .sp
 \fIc\fP
@@ -84,6 +86,16 @@ Remove currently highlighted submission from favorites.
 Toggle read/unread for the currently highlighted submission.
 .RE
 .sp
+\fIj\fP, \fIk\fP
+.RS 4
+Move down/up one item.
+.RE
+.sp
+\fIh\fP, \fIl\fP
+.RS 4
+Previous/next page.
+.RE
+.sp
 \fIg\fP, \fIG\fP
 .RS 4
 Go to the top/bottom of the list.
@@ -94,7 +106,7 @@ Go to the top/bottom of the list.
 Bring up the help screen.
 .RE
 .sp
-\fIq\fP
+\fIq\fP, \fIEsc\fP
 .RS 4
 Quit to prompt.
 .RE
@@ -234,6 +246,58 @@ Bring up the help screen.
 .RS 4
 Go back.
 .RE
+.SH "OPTIONS"
+.sp
+\fB\-a\fP \fIn\fP, \fB\-\-article\-width\fP=\fIn\fP
+.RS 4
+Set the article width in Reader Mode to \fIn\fP columns.
+.RE
+.sp
+\fB\-\-categories\fP=\fIlist\fP
+.RS 4
+Set the categories in the header.
+Available categories: top, best, new, ask, show.
+The first category becomes the default.
+Separate categories with comma.
+Default: "top,best,ask,show".
+.RE
+.sp
+\fB\-c\fP \fIn\fP, \fB\-\-comment\-width\fP=\fIn\fP
+.RS 4
+Set the comment width to \fIn\fP columns.
+.RE
+.sp
+\fB\-d, \-\-disable\-history\fP
+.RS 4
+Disable marking stories as read.
+.RE
+.sp
+\fB\-\-indent\fP=\fIn\fP
+.RS 4
+Set the comment section indent size to \fIn\fP spaces per nesting level.
+When the requested indent would shrink a comment\(cqs text column below a readable minimum, the indent plateaus and deeper comments share an ancestor\(cqs indent level while the depth\-colored bar continues to convey nesting.
+Default: 1.
+.RE
+.sp
+\fB\-n, \-\-nerdfonts\fP
+.RS 4
+Enable Nerd Fonts icons as decorators for some elements (requires a Nerd Font\-patched font).
+Auto\-enabled for Ghostty, which embeds Nerd Fonts.
+.RE
+.sp
+\fB\-\-pages\fP=\fIn\fP
+.RS 4
+Set the number of pages to fetch per category, between 1 and 5.
+Higher values fetch more stories but increase load time.
+Only applies to top, new and best.
+Ask and show always fetch one page because their story pools are small (~150\-200 stories).
+Default: 3.
+.RE
+.sp
+\fB\-v, \-\-version\fP
+.RS 4
+Show the current version of \fBcircumflex\fP.
+.RE
 .SH "COMMANDS"
 .sp
 \fBclx add\fP [\fIID\fP]
@@ -253,7 +317,7 @@ Go directly to the comment section for a given item \fIID\fP without first going
 .sp
 \fBclx url\fP [\fIURL\fP]
 .RS 4
-Open a URL directly in Reader Mode
+Open a URL directly in Reader Mode.
 .RE
 .sp
 \fBclx clear\fP
@@ -261,66 +325,10 @@ Open a URL directly in Reader Mode
 Clear the history of visited items.
 .RE
 .sp
-\fBclx version\fP
-.RS 4
-Print the version number of \fBcircumflex\fP.
-.RE
-.sp
 \fBclx default\-theme\fP
 .RS 4
-Write default theme config to the config directory.
-.RE
-.SH "OPTIONS"
-.sp
-\fB\-c\fP \fIn\fP, \fB\-\-comment\-width\fP=\fIn\fP
-.RS 4
-Set the comment width to \fIn\fP columns.
-.RE
-.sp
-\fB\-d, \-\-disable\-history\fP
-.RS 4
-Disable marking stories as read.
-.RE
-.sp
-\fB\-a\fP \fIn\fP, \fB\-\-article\-width\fP=\fIn\fP
-.RS 4
-Set the article width in Reader Mode to \fIn\fP columns.
-.RE
-.sp
-\fB\-\-indent\fP=\fIn\fP
-.RS 4
-Set the comment section indent size to \fIn\fP spaces per nesting level.
-When the requested indent would shrink a comment\(cqs text column below a readable minimum, the indent plateaus and deeper comments share an ancestor\(cqs indent level while the depth\-colored bar continues to convey nesting.
-Default: 1.
-.RE
-.sp
-\fB\-n, \-\-nerdfonts\fP
-.RS 4
-Enable Nerd Fonts icons as decorators for some elements (requires a Nerd Font\-patched font).
-Auto\-enabled for Ghostty, which embeds Nerd Fonts.
-.RE
-.sp
-\fB\-v, \-\-version\fP
-.RS 4
-Show the current version of \fBcircumflex\fP.
-.RE
-.sp
-\fB\-\-categories\fP
-.RS 4
-Set the categories in the header.
-Available categories: top, new, best, ask, show.
-First category will be treated as the default one.
-Separate categories with comma.
-Default value: "top,best,ask,show"
-.RE
-.sp
-\fB\-\-pages\fP=\fIn\fP
-.RS 4
-Set the number of pages to fetch per category, between 1 and 5.
-Higher values fetch more stories but increase load time.
-Only applies to top, new and best.
-Ask and show always fetch one page because their story pools are small (~150\-200 stories).
-Default: 3.
+Generate a starter theme file in the config directory.
+See \fBFILES\fP.
 .RE
 .SH "HISTORY"
 .sp
@@ -328,32 +336,49 @@ Default: 3.
 Visited stories are dimmed in the list.
 When returning to a comment section, comments posted since your last visit are highlighted with a new\-comment indicator.
 .sp
-History is stored as a JSON file in the OS cache directory.
-Use \fBclx clear\fP to reset it, or \fB\-\-disable\-history\fP to turn tracking off entirely.
+Use \fBclx clear\fP to reset history, or \fB\-\-disable\-history\fP to turn tracking off entirely.
 .SH "FAVORITES"
 .sp
 Press \fIf\fP to add the currently highlighted submission to your list of favorites.
 Remove submissions from the Favorites page with \fIx\fP.
 .sp
-Favorites are stored as a pretty\-printed JSON file in the OS config directory, making them both human\-readable and VCS\-friendly.
-.SH "ENVIRONMENT VARIABLES"
+The favorites file is pretty\-printed JSON, suitable for hand\-editing or version control.
+.SH "ENVIRONMENT"
 .sp
 \fBXDG_CONFIG_HOME\fP, \fBXDG_CACHE_HOME\fP
 .RS 4
-Override where \fBcircumflex\fP stores its files.
-Configuration (theme, favorites) goes under \f(CR$XDG_CONFIG_HOME/circumflex/\fP
-and cache (read history) under \f(CR$XDG_CACHE_HOME/circumflex/\fP.
-When unset, the platform defaults are used (\f(CR~/Library/Application Support/\fP and \f(CR~/Library/Caches/\fP on macOS,
-\f(CR~/.config/\fP and \f(CR~/.cache/\fP on Linux).
+Override the directories where \fBcircumflex\fP stores its config and cache files.
+See \fBFILES\fP for what lives where.
 .RE
 .sp
 \fBCLX_BROWSER\fP
 .RS 4
-Set to a custom command to be run when opening links.
-The URL to the website will be appended to CLX_BROWSER and ran as a single command.
+Command used to open URLs (article links and comment pages).
+The URL is appended as the final argument.
+For example, \f(CRCLX_BROWSER="firefox \-\-new\-tab"\fP opens links in a new Firefox tab.
+When unset, the platform default opener is used (\fBopen\fP on macOS, \fBxdg\-open\fP on Linux, \fBrundll32\fP on Windows).
 .RE
-.SH "ABOUT"
+.SH "FILES"
 .sp
-Ben Sadeh (github.com/bensadeh/circumflex)
+\fI$XDG_CONFIG_HOME/circumflex/theme.toml\fP
+.RS 4
+TOML color theme.
+Run \fBclx default\-theme\fP to write a starter file pre\-populated with every key and its default value.
+Values may be named colors (\f(CRred\fP, \f(CRbright_blue\fP, .\|.\|.), hex strings (\f(CR#ff8800\fP), or ANSI 256 indices (\f(CR0\fP\-\f(CR255\fP).
+Unrecognized values render with no styling.
+.RE
 .sp
-Released under the MIT License
+\fI$XDG_CONFIG_HOME/circumflex/favorites.json\fP
+.RS 4
+Saved favorites.
+.RE
+.sp
+\fI$XDG_CACHE_HOME/circumflex/history.json\fP
+.RS 4
+IDs of visited stories.
+.RE
+.sp
+When the XDG variables are unset, the platform defaults apply: \f(CR~/Library/Application Support/circumflex/\fP and \f(CR~/Library/Caches/circumflex/\fP on macOS; \f(CR~/.config/circumflex/\fP and \f(CR~/.cache/circumflex/\fP on Linux.
+.SH "AUTHOR"
+.sp
+Ben Sadeh

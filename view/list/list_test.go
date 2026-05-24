@@ -165,7 +165,7 @@ func TestWindowResize_UpdatesDimensions(t *testing.T) {
 func TestCategoryFetchingFinished_UpdatesState(t *testing.T) {
 	m := newTestModelReady(t)
 	m.state = StateFetching
-	m.pager.transition = &transition{prevIndex: 0, oldItems: testItems(), refresh: true}
+	m.pager.transition = &transition{prevIndex: 0, oldItems: testItems()}
 	m.status.showSpinner = true
 
 	m, _ = m.Update(message.CategoryFetchingFinished{Index: 1, Cursor: 0, FetchID: m.fetchID})
@@ -425,7 +425,6 @@ func TestRefresh(t *testing.T) {
 	assert.True(t, m.status.showSpinner)
 	assert.NotNil(t, cmd)
 	assert.NotNil(t, m.pager.transition)
-	assert.True(t, m.pager.transition.refresh)
 }
 
 func TestOpenLink_ReturnsCmd(t *testing.T) {

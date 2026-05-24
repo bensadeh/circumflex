@@ -304,11 +304,3 @@ func friendlyError(err error) string {
 
 	return msg
 }
-
-func clearAllCategories(items [][]*hn.Story) {
-	items[categories.Top] = []*hn.Story{}
-	items[categories.Newest] = []*hn.Story{}
-	items[categories.Ask] = []*hn.Story{}
-	items[categories.Show] = []*hn.Story{}
-	items[categories.Best] = []*hn.Story{}
-}

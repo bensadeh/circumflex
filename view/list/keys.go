@@ -380,7 +380,6 @@ func (m *Model) handleRefresh() tea.Cmd {
 	m.pager.transition = &transition{
 		prevIndex: currentIndex,
 		oldItems:  m.pager.items[currentCategory],
-		refresh:   true,
 	}
 
 	m.pager.Paginator.Page = 0
