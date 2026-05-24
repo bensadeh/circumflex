@@ -23,8 +23,9 @@ const (
 )
 
 // Thumb sizing, in half-cell units. A floor keeps the handle grabbable on huge
-// documents; a ceiling keeps a cell of travel so a barely-overflowing view
-// still visibly scrolls instead of the thumb filling the whole track.
+// documents; a ceiling caps the thumb at half the track so it always reads as
+// a handle floating in travel space rather than a near-full column on a
+// barely-overflowing view.
 const (
 	halves       = 2
 	minThumbCell = 1
@@ -91,7 +92,7 @@ func barColumn(contentLines, height, offset int) []string {
 
 	units := height * halves
 	minThumb := minThumbCell * halves
-	maxThumb := max(minThumb, units-halves)
+	maxThumb := max(minThumb, units/2)
 	thumbSize := min(max(units*height/contentLines, minThumb), maxThumb)
 
 	travel := units - thumbSize
