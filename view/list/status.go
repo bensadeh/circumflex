@@ -46,7 +46,6 @@ func (s *statusBar) StartSpinner() tea.Cmd {
 	s.spinner.Style = defaultStyles().Spinner
 
 	s.showSpinner = true
-	s.message = lipgloss.NewStyle().Faint(true).Render("fetching")
 
 	return s.spinner.Tick
 }
