@@ -72,6 +72,17 @@ func Root() *cobra.Command {
 
 	configureFlags(rootCmd)
 
+	rootCmd.InitDefaultHelpFlag()
+	rootCmd.InitDefaultVersionFlag()
+
+	if f := rootCmd.Flags().Lookup("help"); f != nil {
+		f.Usage = "show help"
+	}
+
+	if f := rootCmd.Flags().Lookup("version"); f != nil {
+		f.Usage = "show version"
+	}
+
 	return rootCmd
 }
 
@@ -95,7 +106,7 @@ func registerTemplateFuncs() {
 	cobra.AddTemplateFunc("stylizeFlags", stylizeFlags)
 	cobra.AddTemplateFunc("flagUsages", func(flags *pflag.FlagSet) string {
 		// Wrap at w-1 because stylizeFlags adds 1 extra space to each flag line.
-		return flags.FlagUsagesWrapped(w - 1)
+		return splitDefaults(flags.FlagUsagesWrapped(w - 1))
 	})
 	cobra.AddTemplateFunc("descCol", func(cmd *cobra.Command) int {
 		usage := cmd.Flags().FlagUsagesWrapped(w - 1)
@@ -171,7 +182,7 @@ func configureFlags(rootCmd *cobra.Command) {
 	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", categories.Default,
 		"set the categories in the header\n(available: "+strings.Join(categories.AvailableNames(), ", ")+")")
 	rootCmd.PersistentFlags().IntVar(&pageMultiplier, "pages", settings.Default().PageMultiplier,
-		"set the number of pages to fetch per category (min 1, max 5)")
+		"set pages to fetch per category (1-5)")
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
 		"enable debug mode (offline mode) by using mock data for the endpoints")
@@ -237,6 +248,71 @@ var (
 	flagDefRe = regexp.MustCompile(`^(\s+)(?:(-\w)(, ))?(--[\w-]+)( \w+)?`)
 	defaultRe = regexp.MustCompile(`\(default ([^)]+)\)`)
 )
+
+// splitDefaults moves any "(default X)" segment to its own continuation line so
+// every flag's default value appears below the description rather than inline.
+func splitDefaults(s string) string {
+	var col int
+
+	for line := range strings.SplitSeq(s, "\n") {
+		m := flagDefRe.FindStringSubmatchIndex(line)
+		if m == nil || m[1] >= len(line) || line[m[1]] != ' ' {
+			continue
+		}
+
+		c := m[1]
+		for c < len(line) && line[c] == ' ' {
+			c++
+		}
+
+		col = c
+
+		break
+	}
+
+	if col == 0 {
+		return s
+	}
+
+	indent := strings.Repeat(" ", col)
+
+	var b strings.Builder
+
+	first := true
+
+	for line := range strings.SplitSeq(s, "\n") {
+		if !first {
+			b.WriteByte('\n')
+		}
+
+		first = false
+
+		loc := defaultRe.FindStringIndex(line)
+		if loc == nil {
+			b.WriteString(line)
+
+			continue
+		}
+
+		before := strings.TrimRight(line[:loc[0]], " ")
+		if before == "" {
+			b.WriteString(line)
+
+			continue
+		}
+
+		b.WriteString(before)
+		b.WriteByte('\n')
+		b.WriteString(indent)
+		b.WriteString(line[loc[0]:loc[1]])
+
+		if loc[1] < len(line) {
+			b.WriteString(line[loc[1]:])
+		}
+	}
+
+	return b.String()
+}
 
 func stylizeFlags(s string) string {
 	var b strings.Builder

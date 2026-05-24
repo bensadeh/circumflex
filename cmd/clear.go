@@ -12,7 +12,7 @@ import (
 func clearCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:                   "clear",
-		Short:                 "Clear the history of visited IDs",
+		Short:                 "clear the history of visited IDs",
 		Args:                  cobra.NoArgs,
 		DisableFlagsInUseLine: true,
 		Run: func(cmd *cobra.Command, args []string) {

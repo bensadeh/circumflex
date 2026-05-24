@@ -68,7 +68,7 @@ func (m commentModel) View() tea.View {
 func commentsCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:                   "comments [id]",
-		Short:                 "Read the comment section of a story",
+		Short:                 "read the comment section of a story",
 		Args:                  cobra.ExactArgs(1),
 		DisableFlagsInUseLine: true,
 		Run: func(cmd *cobra.Command, args []string) {

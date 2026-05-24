@@ -15,7 +15,7 @@ func defaultThemeCmd() *cobra.Command {
 
 	return &cobra.Command{
 		Use:                   "default-theme",
-		Short:                 "Write default theme config to " + settings.Tilde(path),
+		Short:                 "write default theme config file",
 		Args:                  cobra.NoArgs,
 		DisableFlagsInUseLine: true,
 		Run: func(cmd *cobra.Command, args []string) {
