@@ -2,7 +2,9 @@
 
 ## 4.3 (Unreleased)
 
--
+**Fixes**
+
+- Fix JSON parse failure on items containing literal backslashes (e.g. `\func`) (#201)
 
 ## 4.2
 
