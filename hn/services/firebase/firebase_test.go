@@ -178,6 +178,54 @@ func TestFetchHNItem_ServerError(t *testing.T) {
 	assert.Contains(t, err.Error(), "500")
 }
 
+func TestFetchHNItem_PreservesEscapedBackslashes(t *testing.T) {
+	// Regression for #201: `\func` in text used to break JSON parsing.
+	raw := hnItem{
+		ID:   48264635,
+		By:   "user",
+		Text: `All commands have the format \func inputs. \begin and \\path also.`,
+	}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(raw)
+	}))
+	defer server.Close()
+
+	s := NewService()
+	s.baseURL = server.URL
+
+	result, err := s.fetchHNItem(context.Background(), 48264635)
+	require.NoError(t, err)
+	assert.Equal(t, raw.Text, result.Text)
+}
+
+func TestFetchHNItem_StripsANSIFromUserFields(t *testing.T) {
+	raw := hnItem{
+		ID:    1,
+		By:    "\x1B[31muser\x1B[0m",
+		Title: "title \x1B[1mbold\x1B[0m end",
+		Text:  "body \x07 with bel",
+		URL:   "https://example.com/\x1B[2Apath",
+	}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(raw)
+	}))
+	defer server.Close()
+
+	s := NewService()
+	s.baseURL = server.URL
+
+	result, err := s.fetchHNItem(context.Background(), 1)
+	require.NoError(t, err)
+	assert.Equal(t, "user", result.By)
+	assert.Equal(t, "title bold end", result.Title)
+	assert.Equal(t, "body  with bel", result.Text)
+	assert.Equal(t, "https://example.com/path", result.URL)
+}
+
 func TestFetchHNItem_NullResponse(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

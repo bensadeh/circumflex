@@ -258,18 +258,22 @@ func (s *Service) fetchHNItem(ctx context.Context, id int) (*hnItem, error) {
 			id, resp.StatusCode(), http.StatusText(resp.StatusCode()))
 	}
 
-	// Strip ANSI escape sequences as a defensive measure against potential
-	// injection in user-submitted content (title, text fields).
-	sanitized := ansi.Strip(string(resp.Bytes()))
+	body := resp.Bytes()
 
-	if sanitized == "null" {
+	if string(body) == "null" {
 		return nil, fmt.Errorf("item %d: %w", id, errItemNotFound)
 	}
 
 	var item hnItem
-	if err := json.Unmarshal([]byte(sanitized), &item); err != nil {
+	if err := json.Unmarshal(body, &item); err != nil {
 		return nil, fmt.Errorf("unexpected response from server for item %d: %w", id, err)
 	}
+
+	// Defend against terminal injection via user-submitted fields.
+	item.By = ansi.Strip(item.By)
+	item.Title = ansi.Strip(item.Title)
+	item.Text = ansi.Strip(item.Text)
+	item.URL = ansi.Strip(item.URL)
 
 	return &item, nil
 }
