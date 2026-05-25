@@ -48,15 +48,26 @@ go run ./cmd/clx
 
 ## Features
 
+### Categories
+
+Switch between categories with <kbd>Tab</kbd>. The header shows `top`, `best`, `ask` and `show` by default, plus
+`favorites`. Pick which ones appear (and in what order) with the `--categories` flag:
+
+```console
+clx --categories top,new,best
+```
+
+Available categories are `top`, `best`, `new`, `ask` and `show`.
+
 ### Comment section
 
 Press <kbd>Enter</kbd> to view the comment section.
 
 The comment section has two modes: `read mode` and `navigate mode`.
 
-In `read mode`, you can scroll using the usual vim bindings. You can also jump between top-level comments (<kbd>
-n</kbd>/<kbd>N</kbd>), and you can expand and collapse threads by quote level (<kbd>h</kbd>/<kbd>l</kbd>) or all at
-once (<kbd>Enter</kbd>).
+In `read mode`, you can scroll using the usual vim bindings. You can also jump between top-level
+comments (<kbd>n</kbd>/<kbd>N</kbd>), and you can expand and collapse threads by quote level
+(<kbd>h</kbd>/<kbd>l</kbd>) or all at once (<kbd>Enter</kbd>).
 
 In `navigate mode`, you can individually select comments and collapse specific threads. This is useful in longer threads
 with many replies.
@@ -66,7 +77,7 @@ with many replies.
 </p>
 
 
-`circumflex` is read-only and does not support for logging in, voting or commenting.
+`circumflex` is read-only and does not support logging in, voting or commenting.
 
 ### Reader Mode
 
@@ -77,7 +88,56 @@ headers using <kbd>n</kbd>/<kbd>N</kbd>, and you can scroll using the usual vim 
   <img src="screenshots/reader_mode.png" width="500" alt="reader mode"/>
 </p>
 
+### Favorites
+
+Press <kbd>f</kbd> to add the highlighted submission to your favorites. Remove it with <kbd>x</kbd>.
+
+You can also add a submission by `ID` from the command line:
+
+```console
+clx add [id]
+```
+
+Favorites are stored in `~/.config/circumflex/favorites.json` and pretty-printed to be human-readable and VCS-friendly.
+
+### History
+
+Visited submissions are marked as read, and comments added since your last visit are highlighted.
+
+History is stored in `~/.cache/circumflex/history.json`. Disable tracking with `-d`/`--disable-history`, or clear it
+with:
+
+```console
+clx clear
+```
+
+### Theme
+
+`circumflex` uses your terminal's color scheme by default. To customize, write out the default config and edit it:
+
+```console
+clx default-theme
+```
+
+The theme lives at `~/.config/circumflex/theme.toml` and accepts named colors, hex codes, and ANSI 256 values.
+
+## Keymaps
+
+Main view keybindings — press <kbd>i</kbd> in any view for the full list, including comment and reader mode.
+
+| Key              | Action                   |
+|:-----------------|:-------------------------|
+| <kbd>Enter</kbd> | View comments            |
+| <kbd>Space</kbd> | Reader Mode              |
+| <kbd>Tab</kbd>   | Next category            |
+| <kbd>r</kbd>     | Refresh stories          |
+| <kbd>o</kbd>     | Open story in browser    |
+| <kbd>c</kbd>     | Open comments in browser |
+| <kbd>f</kbd>     | Add to favorites         |
+| <kbd>x</kbd>     | Remove from favorites    |
+| <kbd>u</kbd>     | Toggle read              |
+| <kbd>q</kbd>     | Quit                     |
+
 ## Usage
 
-Run `clx help` or `man clx` for a full list of available commands, flags and keymaps. Press <kbd>i</kbd> to bring up
-all the keybindings for the current view.
+Run `clx help` or `man clx` for a full list of available commands and flags.
