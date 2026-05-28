@@ -250,23 +250,23 @@ func (s *Service) fetchHNItem(ctx context.Context, id int) (*hnItem, error) {
 
 	resp, err := s.client.R().SetContext(ctx).Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("fetching item %d: %w", id, err)
+		return nil, fmt.Errorf("fetching %s: %w", url, err)
 	}
 
 	if resp.StatusCode() != http.StatusOK {
-		return nil, fmt.Errorf("could not fetch item %d, server returned status %d %s",
-			id, resp.StatusCode(), http.StatusText(resp.StatusCode()))
+		return nil, fmt.Errorf("%s returned status %d %s",
+			url, resp.StatusCode(), http.StatusText(resp.StatusCode()))
 	}
 
 	body := resp.Bytes()
 
 	if string(body) == "null" {
-		return nil, fmt.Errorf("item %d: %w", id, errItemNotFound)
+		return nil, fmt.Errorf("%s: %w", url, errItemNotFound)
 	}
 
 	var item hnItem
 	if err := json.Unmarshal(body, &item); err != nil {
-		return nil, fmt.Errorf("unexpected response from server for item %d: %w", id, err)
+		return nil, fmt.Errorf("unexpected response from %s: %w", url, err)
 	}
 
 	// Defend against terminal injection via user-submitted fields.
