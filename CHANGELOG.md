@@ -2,6 +2,10 @@
 
 ## 4.3 (Unreleased)
 
+**New features**
+
+- `favorites` is now a regular category that can can be moved or hidden entirely using the `--categories` flag
+
 **Fixes**
 
 - Fix JSON parse failure on items containing literal backslashes (e.g. `\func`) (#201)

@@ -2,12 +2,12 @@
 .\"     Title: clx
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.26
-.\"      Date: 2026-05-25
+.\"      Date: 2026-05-30
 .\"    Manual: circumflex
-.\"    Source: circumflex 4.2
+.\"    Source: circumflex 4.3-dev
 .\"  Language: English
 .\"
-.TH "CLX" "1" "2026-05-25" "circumflex 4.2" "circumflex"
+.TH "CLX" "1" "2026-05-30" "circumflex 4.3\-dev" "circumflex"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -256,10 +256,10 @@ Set the article width in Reader Mode to \fIn\fP columns.
 \fB\-\-categories\fP=\fIlist\fP
 .RS 4
 Set the categories in the header.
-Available categories: top, best, new, ask, show.
-The first category becomes the default.
+Available categories: top, best, new, ask, show, favorites.
 Separate categories with comma.
-Default: "top,best,ask,show".
+The first category is the view shown on launch; it appears as the \fBclx\fP logo in the header rather than as a named tab.
+Default: "top,best,ask,show,favorites".
 .RE
 .sp
 \fB\-c\fP \fIn\fP, \fB\-\-comment\-width\fP=\fIn\fP

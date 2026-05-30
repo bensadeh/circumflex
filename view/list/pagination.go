@@ -45,7 +45,7 @@ func (m *Model) updatePagination() {
 }
 
 func (p *pager) updateCursor(currentCategory categories.Category) {
-	p.cursor = min(p.cursor, p.Paginator.ItemsOnPage(len(p.VisibleItems(currentCategory)))-1)
+	p.cursor = max(0, min(p.cursor, p.Paginator.ItemsOnPage(len(p.VisibleItems(currentCategory)))-1))
 }
 
 func (p *pager) CursorUp() {
@@ -65,7 +65,7 @@ func (p *pager) CursorDown(currentCategory categories.Category) {
 		return
 	}
 
-	p.cursor = itemsOnPage - 1
+	p.cursor = max(0, itemsOnPage-1)
 }
 
 func (p *pager) Index() int {

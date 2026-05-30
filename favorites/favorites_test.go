@@ -11,11 +11,9 @@ import (
 
 func TestFavorites_AddAndItems(t *testing.T) {
 	f := &Favorites{}
-	assert.False(t, f.HasItems())
 	assert.Empty(t, f.Items())
 
 	f.Add(&Item{ID: 1, Title: "First"})
-	assert.True(t, f.HasItems())
 	assert.Len(t, f.Items(), 1)
 
 	f.Add(&Item{ID: 2, Title: "Second"})

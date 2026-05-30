@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/help"
+	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/view/list/ranking"
 
@@ -130,6 +132,10 @@ func (m *Model) populatedView() string {
 	var b strings.Builder
 
 	if len(allItems) == 0 {
+		if m.cat.CurrentCategory() == categories.Favorites {
+			return m.favoritesEmptyMessage()
+		}
+
 		return m.styles.NoItems.Render("")
 	}
 
@@ -155,4 +161,14 @@ func (m *Model) populatedView() string {
 	}
 
 	return b.String()
+}
+
+func (m *Model) favoritesEmptyMessage() string {
+	dim := lipgloss.NewStyle().Faint(true)
+	key := lipgloss.NewStyle().Foreground(lipgloss.Blue).Bold(true)
+
+	// Indent to line up with where front-page item titles begin (past the rank gutter).
+	margin := strings.Repeat(" ", layout.MainViewLeftMargin)
+
+	return margin + dim.Render("No favorites yet — press ") + key.Render("f") + dim.Render(" on any story to add it")
 }

@@ -169,10 +169,10 @@ Set the article width in Reader Mode to _n_ columns.
 
 *--categories*=_list_::
 Set the categories in the header.
-Available categories: top, best, new, ask, show.
-The first category becomes the default.
+Available categories: top, best, new, ask, show, favorites.
 Separate categories with comma.
-Default: "top,best,ask,show".
+The first category is the view shown on launch; it appears as the *clx* logo in the header rather than as a named tab.
+Default: "top,best,ask,show,favorites".
 
 *-c* _n_, *--comment-width*=_n_::
 Set the comment width to _n_ columns.

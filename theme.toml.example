@@ -62,7 +62,6 @@ bbc_caption = "yellow"
 c = "magenta"
 l = "yellow"
 x = "blue"
-favorites = "219"
 
 [help]
 main_menu = "magenta"

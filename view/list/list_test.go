@@ -395,6 +395,54 @@ func TestAddFavoritesCancel(t *testing.T) {
 	assert.Equal(t, StateBrowsing, m.state)
 }
 
+func newFavoritesTestModel(t *testing.T) *Model {
+	t.Helper()
+
+	config := settings.Default()
+	cat, err := categories.New("top,favorites")
+	require.NoError(t, err)
+
+	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.json"))
+	require.NoError(t, err)
+
+	m := newModel(NewDefaultDelegate(), config, cat, fav, 80, 24, &instantMockService{}, history.NewMockHistory())
+	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
+	m.pager.items[categories.Top] = testItems()
+	m.status.StopSpinner()
+	m.state = StateBrowsing
+
+	return m
+}
+
+func TestFavorites_HeaderAlwaysShown(t *testing.T) {
+	m := newFavoritesTestModel(t)
+
+	// Favorites has no items, yet its header label is rendered.
+	require.Empty(t, m.favorites.Items())
+	assert.Contains(t, m.View(), "favorites")
+}
+
+func TestFavorites_EmptyShowsHint(t *testing.T) {
+	m := newFavoritesTestModel(t)
+
+	// Move to the (empty) favorites category.
+	m.cat.SetIndex(1)
+	require.Equal(t, categories.Favorites, m.cat.CurrentCategory())
+
+	assert.Contains(t, m.populatedView(), "No favorites yet")
+	assert.Contains(t, m.View(), "No favorites yet")
+}
+
+func TestFavorites_TabToEmptyDoesNotFetch(t *testing.T) {
+	m := newFavoritesTestModel(t)
+
+	m, cmd := m.Update(keyMsg("tab"))
+
+	assert.Equal(t, categories.Favorites, m.cat.CurrentCategory())
+	assert.Equal(t, StateBrowsing, m.state, "favorites is local; tabbing to it must not fetch")
+	assert.Nil(t, cmd)
+}
+
 func TestDisabledInput_IgnoresKeys(t *testing.T) {
 	m := newTestModelReady(t)
 	m.state = StateFetching

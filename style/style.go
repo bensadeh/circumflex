@@ -110,7 +110,6 @@ var (
 	headerCColor         color.Color
 	headerLColor         color.Color
 	headerXColor         color.Color
-	headerFavoritesColor color.Color
 	headerPrimaryColor   color.Color
 	headerSecondaryColor color.Color
 	headerTertiaryColor  color.Color
@@ -176,7 +175,6 @@ func rebuildThemeStyles() {
 	headerCColor = theme.ParseColor(current.Header.C)
 	headerLColor = theme.ParseColor(current.Header.L)
 	headerXColor = theme.ParseColor(current.Header.X)
-	headerFavoritesColor = theme.ParseColor(current.Header.Favorites)
 	headerPrimaryColor = theme.ParseColor(current.App.Primary)
 	headerSecondaryColor = theme.ParseColor(current.App.Secondary)
 	headerTertiaryColor = theme.ParseColor(current.App.Tertiary)
@@ -255,7 +253,6 @@ func ReaderImageColor() color.Color      { return readerImageColor }
 func HeaderC() color.Color         { return headerCColor }
 func HeaderL() color.Color         { return headerLColor }
 func HeaderX() color.Color         { return headerXColor }
-func HeaderFavorites() color.Color { return headerFavoritesColor }
 func HeaderPrimary() color.Color   { return headerPrimaryColor }
 func HeaderSecondary() color.Color { return headerSecondaryColor }
 func HeaderTertiary() color.Color  { return headerTertiaryColor }

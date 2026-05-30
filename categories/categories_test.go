@@ -84,10 +84,9 @@ func TestPrev_WithoutFavorites(t *testing.T) {
 }
 
 func TestNext_WithFavorites(t *testing.T) {
-	c := newTestCategories(t, "top,best")
-	c.SetFavorites(true)
+	c := newTestCategories(t, "top,best,favorites")
 
-	// With favorites, there are 3 positions: top(0), best(1), favorites(2)
+	// 3 positions: top(0), best(1), favorites(2)
 	c.Next()
 	assert.Equal(t, Best, c.CurrentCategory())
 
@@ -100,8 +99,7 @@ func TestNext_WithFavorites(t *testing.T) {
 }
 
 func TestPrev_WithFavorites(t *testing.T) {
-	c := newTestCategories(t, "top,best")
-	c.SetFavorites(true)
+	c := newTestCategories(t, "top,best,favorites")
 
 	// Wraps to favorites
 	c.Prev()
@@ -148,8 +146,7 @@ func TestPrevIndex(t *testing.T) {
 }
 
 func TestActiveCategories_WithFavorites(t *testing.T) {
-	c := newTestCategories(t, "top,best")
-	c.SetFavorites(true)
+	c := newTestCategories(t, "top,best,favorites")
 	cats := c.ActiveCategories()
 	assert.Len(t, cats, 3)
 	assert.Equal(t, Favorites, cats[2])
@@ -190,53 +187,60 @@ func TestNew_InvalidCategory(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestSetFavorites_Idempotent(t *testing.T) {
-	c := newTestCategories(t, "top,best")
-
-	c.SetFavorites(true)
-	c.SetFavorites(true)
-	assert.Len(t, c.ActiveCategories(), 3)
-	assert.True(t, c.HasFavorites())
-
-	c.SetFavorites(false)
-	c.SetFavorites(false)
-	assert.Len(t, c.ActiveCategories(), 2)
-	assert.False(t, c.HasFavorites())
-}
-
-func TestSetFavorites_ClampIndex(t *testing.T) {
-	c := newTestCategories(t, "top,best")
-	c.SetFavorites(true)
-
-	// Move to favorites (index 2)
-	c.SetIndex(2)
+func TestNew_Favorites(t *testing.T) {
+	c := newTestCategories(t, "favorites")
 	assert.Equal(t, Favorites, c.CurrentCategory())
-
-	// Remove favorites — index should clamp to last valid (1)
-	c.SetFavorites(false)
-	assert.Equal(t, 1, c.CurrentIndex())
-	assert.Equal(t, Best, c.CurrentCategory())
 }
 
-func TestBase(t *testing.T) {
-	c := newTestCategories(t, "top,best,ask")
-	c.SetFavorites(true)
-
-	base := c.Base()
-	assert.Len(t, base, 3)
-	assert.Equal(t, Top, base[0])
-	assert.Equal(t, Best, base[1])
-	assert.Equal(t, Ask, base[2])
+func TestDefault_IncludesFavorites(t *testing.T) {
+	c := newTestCategories(t, Default)
+	assert.Contains(t, c.ActiveCategories(), Favorites)
 }
 
-func TestHasFavorites(t *testing.T) {
-	c := newTestCategories(t, "top,best")
+func TestAvailableNames_IncludesFavorites(t *testing.T) {
+	assert.Contains(t, AvailableNames(), "favorites")
+}
 
-	assert.False(t, c.HasFavorites())
+func TestEndpoint(t *testing.T) {
+	assert.Equal(t, "topstories", Endpoint(Top))
+	assert.Equal(t, "newstories", Endpoint(Newest))
+	assert.Equal(t, "beststories", Endpoint(Best))
+	assert.Empty(t, Endpoint(Favorites), "favorites is local and has no endpoint")
+}
 
-	c.SetFavorites(true)
-	assert.True(t, c.HasFavorites())
+func TestPolicy(t *testing.T) {
+	assert.Equal(t, MultiPage, Policy(Top))
+	assert.Equal(t, SinglePage, Policy(Ask))
+	assert.Equal(t, SinglePage, Policy(Show))
+}
 
-	c.SetFavorites(false)
-	assert.False(t, c.HasFavorites())
+func TestIsFavorites(t *testing.T) {
+	assert.True(t, IsFavorites(Favorites))
+	assert.False(t, IsFavorites(Top))
+	assert.False(t, IsFavorites(Ask))
+}
+
+func TestCount_MatchesNamedCategories(t *testing.T) {
+	assert.Equal(t, int(Favorites)+1, Count())
+}
+
+// TestCategoryTable_Consistent guards future additions: every category must
+// have a name, and only favorites (served locally) may omit an endpoint.
+func TestCategoryTable_Consistent(t *testing.T) {
+	for i := range Count() {
+		cat := Category(i)
+
+		assert.NotEmptyf(t, Name(cat), "category %d has no name", i)
+		assert.NotEqualf(t, "unknown", Name(cat), "category %d falls through to unknown", i)
+
+		if IsFavorites(cat) {
+			assert.Emptyf(t, Endpoint(cat), "favorites is local and must not have an endpoint")
+		} else {
+			assert.NotEmptyf(t, Endpoint(cat), "fetched category %q must have an endpoint", Name(cat))
+		}
+
+		got, ok := categoryFromName(Name(cat))
+		assert.Truef(t, ok, "Name/categoryFromName round-trip failed for %q", Name(cat))
+		assert.Equal(t, cat, got)
+	}
 }

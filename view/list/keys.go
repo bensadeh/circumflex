@@ -86,92 +86,103 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return nil
 
 		case key.Matches(msg, m.keymap.GoToBottom):
-			m.pager.cursor = m.pager.Paginator.ItemsOnPage(numItems) - 1
+			m.pager.cursor = max(0, m.pager.Paginator.ItemsOnPage(numItems)-1)
 
 			return nil
 
-		case key.Matches(msg, m.keymap.OpenLink):
-			return m.handleOpenLink()
-
-		case key.Matches(msg, m.keymap.OpenComments):
-			return m.handleOpenComments()
-
 		case key.Matches(msg, m.keymap.Refresh):
-			if m.cat.CurrentCategory() != categories.Favorites {
+			if !categories.IsFavorites(m.cat.CurrentCategory()) {
 				return m.handleRefresh()
 			}
 
-		case key.Matches(msg, m.keymap.AddFavorite):
-			m.status.SetPermanentStatusMessage(getAddItemConfirmationMessage(), false)
-			m.state = StateAddFavoritesPrompt
+		default:
+			// The remaining keys all act on the highlighted story, so they do
+			// nothing when the list is empty (e.g. the favorites tab with no
+			// items). Guarding once here means any item action added below is
+			// covered automatically.
+			if numItems == 0 {
+				break
+			}
 
-			return nil
+			switch {
+			case key.Matches(msg, m.keymap.OpenLink):
+				return m.handleOpenLink()
 
-		case key.Matches(msg, m.keymap.RemoveFavorite):
-			if m.cat.CurrentCategory() == categories.Favorites {
-				m.status.SetPermanentStatusMessage(getRemoveItemConfirmationMessage(), false)
-				m.state = StateRemoveFavoritesPrompt
+			case key.Matches(msg, m.keymap.OpenComments):
+				return m.handleOpenComments()
+
+			case key.Matches(msg, m.keymap.AddFavorite):
+				m.status.SetPermanentStatusMessage(getAddItemConfirmationMessage(), false)
+				m.state = StateAddFavoritesPrompt
 
 				return nil
-			}
 
-		case key.Matches(msg, m.keymap.ToggleRead):
-			if m.cat.CurrentCategory() != categories.Favorites {
-				return m.handleToggleRead()
-			}
+			case key.Matches(msg, m.keymap.RemoveFavorite):
+				if m.cat.CurrentCategory() == categories.Favorites {
+					m.status.SetPermanentStatusMessage(getRemoveItemConfirmationMessage(), false)
+					m.state = StateRemoveFavoritesPrompt
 
-		case key.Matches(msg, m.keymap.EnterComments):
-			currentCategory := m.cat.CurrentCategory()
-			m.pager.transition = &transition{
-				prevIndex: m.cat.CurrentIndex(),
-				oldItems:  m.pager.items[currentCategory],
-			}
-			startSpinnerCmd := m.startFetch(0)
-
-			id := m.SelectedItem().ID
-			commentCount := m.SelectedItem().CommentsCount
-
-			enterCommentsCmd := func() tea.Msg {
-				return message.EnteringCommentSection{
-					ID:           id,
-					CommentCount: commentCount,
+					return nil
 				}
-			}
 
-			return tea.Batch(startSpinnerCmd, enterCommentsCmd)
-
-		case key.Matches(msg, m.keymap.ReaderMode):
-			selected := m.SelectedItem()
-
-			if err := article.Validate(selected.Title, selected.Domain); err != nil {
-				return m.status.NewStatusMessageWithDuration(friendlyError(err), statusMessageLong)
-			}
-
-			currentCategory := m.cat.CurrentCategory()
-			m.pager.transition = &transition{
-				prevIndex: m.cat.CurrentIndex(),
-				oldItems:  m.pager.items[currentCategory],
-			}
-			startSpinnerCmd := m.startFetch(readerModeTimeout)
-
-			enterReaderCmd := func() tea.Msg {
-				return message.EnteringReaderMode{
-					URL:          selected.URL,
-					Title:        selected.Title,
-					Domain:       selected.Domain,
-					ID:           selected.ID,
-					CommentCount: selected.CommentsCount,
-					Author:       selected.Author,
-					TimeAgo:      timeago.RelativeTime(selected.Time),
-					Points:       selected.Points,
+			case key.Matches(msg, m.keymap.ToggleRead):
+				if m.cat.CurrentCategory() != categories.Favorites {
+					return m.handleToggleRead()
 				}
-			}
 
-			return tea.Batch(startSpinnerCmd, enterReaderCmd)
+			case key.Matches(msg, m.keymap.EnterComments):
+				currentCategory := m.cat.CurrentCategory()
+				m.pager.transition = &transition{
+					prevIndex: m.cat.CurrentIndex(),
+					oldItems:  m.pager.items[currentCategory],
+				}
+				startSpinnerCmd := m.startFetch(0)
+
+				id := m.SelectedItem().ID
+				commentCount := m.SelectedItem().CommentsCount
+
+				enterCommentsCmd := func() tea.Msg {
+					return message.EnteringCommentSection{
+						ID:           id,
+						CommentCount: commentCount,
+					}
+				}
+
+				return tea.Batch(startSpinnerCmd, enterCommentsCmd)
+
+			case key.Matches(msg, m.keymap.ReaderMode):
+				selected := m.SelectedItem()
+
+				if err := article.Validate(selected.Title, selected.Domain); err != nil {
+					return m.status.NewStatusMessageWithDuration(friendlyError(err), statusMessageLong)
+				}
+
+				currentCategory := m.cat.CurrentCategory()
+				m.pager.transition = &transition{
+					prevIndex: m.cat.CurrentIndex(),
+					oldItems:  m.pager.items[currentCategory],
+				}
+				startSpinnerCmd := m.startFetch(readerModeTimeout)
+
+				enterReaderCmd := func() tea.Msg {
+					return message.EnteringReaderMode{
+						URL:          selected.URL,
+						Title:        selected.Title,
+						Domain:       selected.Domain,
+						ID:           selected.ID,
+						CommentCount: selected.CommentsCount,
+						Author:       selected.Author,
+						TimeAgo:      timeago.RelativeTime(selected.Time),
+						Points:       selected.Points,
+					}
+				}
+
+				return tea.Batch(startSpinnerCmd, enterReaderCmd)
+			}
 		}
 	}
 
-	// Epilogue: delegate + cursor clamp (only reached if no handler matched)
+	// Epilogue: delegate + cursor clamp (reached when no handler returned a command)
 	cmd := m.delegate.Update(msg, m)
 	cmds = append(cmds, cmd)
 
@@ -212,23 +223,17 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 
 	m.syncFavorites()
 
+	isEmpty := len(m.pager.items[categories.Favorites]) == 0
 	isOnLastItem := m.Index() == len(m.pager.items[categories.Favorites])
-	hasOnlyOneItem := len(m.pager.items[categories.Favorites]) == 0
 
-	itemRemovedMessage := "Item removed"
-
-	if hasOnlyOneItem {
-		m.cat.SetIndex(0)
-		m.pager.updateCursor(m.cat.CurrentCategory())
+	// Removing the last favorite leaves the (now empty) favorites tab in place
+	// rather than jumping to another category.
+	if isEmpty {
+		m.pager.cursor = 0
+		m.pager.Paginator.Page = 0
 		m.updatePagination()
 
-		catIndex := m.cat.CurrentIndex()
-		catValue := m.cat.CurrentCategory()
-		changeCatCmd := func() tea.Msg {
-			return message.FetchAndChangeToCategory{Index: catIndex, Category: catValue, Cursor: 0}
-		}
-
-		return tea.Batch(changeCatCmd, m.status.NewStatusMessageWithDuration(itemRemovedMessage, statusMessageShort))
+		return m.status.NewStatusMessageWithDuration("Item removed", statusMessageShort)
 	}
 
 	if isOnLastItem {
@@ -237,7 +242,7 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 
 	m.updatePagination()
 
-	return m.status.NewStatusMessageWithDuration(itemRemovedMessage, statusMessageShort)
+	return m.status.NewStatusMessageWithDuration("Item removed", statusMessageShort)
 }
 
 func (m *Model) handleCancelPrompt() tea.Cmd {
@@ -319,7 +324,9 @@ func (m *Model) handleTabBackward() tea.Cmd {
 }
 
 func (m *Model) handleTab(targetIndex int, targetCategory categories.Category, changeCategory func(), advance func()) tea.Cmd {
-	if m.pager.categoryHasStories(targetCategory) {
+	// Favorites is served locally and never fetched, so switch to it directly
+	// even when empty.
+	if categories.IsFavorites(targetCategory) || m.pager.categoryHasStories(targetCategory) {
 		changeCategory()
 
 		return nil
@@ -403,7 +410,7 @@ func (m *Model) changeToNextCategory() {
 	currentCategory := m.cat.CurrentCategory()
 
 	m.pager.Paginator.Page = 0
-	m.pager.cursor = min(m.pager.cursor, len(m.pager.items[currentCategory])-1)
+	m.pager.cursor = max(0, min(m.pager.cursor, len(m.pager.items[currentCategory])-1))
 	m.updatePagination()
 }
 
@@ -412,7 +419,7 @@ func (m *Model) changeToPrevCategory() {
 	currentCategory := m.cat.CurrentCategory()
 
 	m.pager.Paginator.Page = 0
-	m.pager.cursor = min(m.pager.cursor, len(m.pager.items[currentCategory])-1)
+	m.pager.cursor = max(0, min(m.pager.cursor, len(m.pager.items[currentCategory])-1))
 	m.updatePagination()
 }
 

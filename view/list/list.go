@@ -27,7 +27,6 @@ import (
 )
 
 const (
-	numberOfCategories    = 6
 	statusBarEdgeWidth    = 5
 	headerHeight          = 2
 	footerHeight          = 2
@@ -104,7 +103,7 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 	p.ActiveDot = s.ActivePaginationDot.String()
 	p.InactiveDot = s.InactivePaginationDot.String()
 
-	items := make([][]*hn.Story, numberOfCategories)
+	items := make([][]*hn.Story, categories.Count())
 
 	m := Model{
 		styles: s,
@@ -141,7 +140,6 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 
 func (m *Model) syncFavorites() {
 	m.pager.items[categories.Favorites] = favItemsToStories(m.favorites.Items())
-	m.cat.SetFavorites(m.favorites.HasItems())
 }
 
 func (m *Model) setSize(width, height int) {

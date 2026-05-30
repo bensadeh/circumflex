@@ -3,6 +3,7 @@ package list
 import (
 	"testing"
 
+	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/hn"
 
 	"charm.land/bubbles/v2/paginator"
@@ -18,7 +19,7 @@ func newTestPager(itemCount, perPage int) pager {
 		stories[i] = &hn.Story{ID: i + 1}
 	}
 
-	items := make([][]*hn.Story, numberOfCategories)
+	items := make([][]*hn.Story, categories.Count())
 	items[0] = stories
 
 	pg := pager{

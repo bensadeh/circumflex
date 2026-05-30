@@ -84,13 +84,6 @@ func (f *Favorites) Items() []*Item {
 	return f.items
 }
 
-func (f *Favorites) HasItems() bool {
-	f.mu.RLock()
-	defer f.mu.RUnlock()
-
-	return len(f.items) != 0
-}
-
 func (f *Favorites) Add(item *Item) {
 	f.mu.Lock()
 	defer f.mu.Unlock()

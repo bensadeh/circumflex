@@ -50,14 +50,14 @@ go run ./cmd/clx
 
 ### Categories
 
-Switch between categories with <kbd>Tab</kbd>. The header shows `top`, `best`, `ask` and `show` by default, plus
-`favorites`. Pick which ones appear (and in what order) with the `--categories` flag:
+Switch between categories with <kbd>Tab</kbd>. The header shows `top`, `best`, `ask`, `show` and `favorites` by
+default. Pick which ones appear (and in what order) with the `--categories` flag:
 
 ```console
 clx --categories top,new,best
 ```
 
-Available categories are `top`, `best`, `new`, `ask` and `show`.
+Available categories are `top`, `best`, `new`, `ask`, `show` and `favorites`.
 
 ### Comment section
 

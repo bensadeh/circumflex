@@ -77,10 +77,10 @@ func getCategories(allCategories []categories.Category, selectedSubHeader int) s
 
 	for i, cat := range cats {
 		name := categories.Name(cat)
-		selectedCatColor, isSelected := getColor(i+1, selectedSubHeader, cat)
+		categoryColor, isSelected := getColor(i+1, selectedSubHeader)
 
 		out.WriteString(lipgloss.NewStyle().
-			Foreground(selectedCatColor).
+			Foreground(categoryColor).
 			Faint(!isSelected).
 			Render(name))
 
@@ -92,29 +92,25 @@ func getCategories(allCategories []categories.Category, selectedSubHeader int) s
 	return out.String()
 }
 
-func getColor(index int, selectedSubHeader int, cat categories.Category) (clr color.Color, isSelected bool) {
+func getColor(index int, selectedSubHeader int) (clr color.Color, isSelected bool) {
 	if index == selectedSubHeader {
-		return getSelectedCategoryColor(selectedSubHeader, cat)
+		return getSelectedCategoryColor(selectedSubHeader), true
 	}
 
 	return lipgloss.NoColor{}, false
 }
 
-func getSelectedCategoryColor(selectedSubHeader int, cat categories.Category) (clr color.Color, isSelected bool) {
-	if cat == categories.Favorites {
-		return style.HeaderFavorites(), true
-	}
-
+func getSelectedCategoryColor(selectedSubHeader int) color.Color {
 	primary := style.HeaderPrimary()
 	secondary := style.HeaderSecondary()
 	tertiary := style.HeaderTertiary()
 
 	switch selectedSubHeader % 3 {
 	case 0:
-		return tertiary, true
+		return tertiary
 	case 1:
-		return primary, true
+		return primary
 	default:
-		return secondary, true
+		return secondary
 	}
 }

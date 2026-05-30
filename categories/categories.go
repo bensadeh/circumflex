@@ -2,7 +2,6 @@ package categories
 
 import (
 	"fmt"
-	"slices"
 	"strings"
 )
 
@@ -17,53 +16,98 @@ const (
 	Favorites
 )
 
-func Name(cat Category) string {
-	switch cat {
-	case Top:
-		return "top"
-	case Newest:
-		return "new"
-	case Ask:
-		return "ask"
-	case Show:
-		return "show"
-	case Best:
-		return "best"
-	case Favorites:
-		return "favorites"
-	default:
-		return "unknown"
-	}
+// FetchPolicy describes how many stories to fetch for a category.
+type FetchPolicy int
+
+const (
+	// MultiPage fetches PerPage * PageMultiplier IDs; used by the large pools
+	// (top, new, best) where paging deep is worthwhile.
+	MultiPage FetchPolicy = iota
+	// SinglePage fetches one page; the Ask and Show pools are only ~150-200 IDs,
+	// so fetching more would exceed the pool and waste requests.
+	SinglePage
+)
+
+type info struct {
+	name        string
+	endpoint    string
+	fetchPolicy FetchPolicy
 }
 
+// categoryInfo is the single source of truth for per-category facts. Adding a
+// category means adding an enum value above and one row here; everything else
+// (names, parsing, endpoints, fetch sizing, Count) derives from this table.
+var categoryInfo = [...]info{
+	Top:    {name: "top", endpoint: "topstories", fetchPolicy: MultiPage},
+	Newest: {name: "new", endpoint: "newstories", fetchPolicy: MultiPage},
+	Ask:    {name: "ask", endpoint: "askstories", fetchPolicy: SinglePage},
+	Show:   {name: "show", endpoint: "showstories", fetchPolicy: SinglePage},
+	Best:   {name: "best", endpoint: "beststories", fetchPolicy: MultiPage},
+	// favorites is served locally; it is never fetched, so fetchPolicy is unused.
+	Favorites: {name: "favorites", endpoint: "", fetchPolicy: SinglePage},
+}
+
+// Count is the number of defined categories.
+func Count() int { return len(categoryInfo) }
+
+func (cat Category) valid() bool { return cat >= 0 && int(cat) < len(categoryInfo) }
+
+func Name(cat Category) string {
+	if !cat.valid() {
+		return "unknown"
+	}
+
+	return categoryInfo[cat].name
+}
+
+// Endpoint returns the Firebase endpoint used to fetch cat's stories. It is
+// empty for favorites, which is served locally rather than fetched.
+func Endpoint(cat Category) string {
+	if !cat.valid() {
+		return ""
+	}
+
+	return categoryInfo[cat].endpoint
+}
+
+// Policy returns how many stories to fetch for cat.
+func Policy(cat Category) FetchPolicy {
+	if !cat.valid() {
+		return SinglePage
+	}
+
+	return categoryInfo[cat].fetchPolicy
+}
+
+// IsFavorites reports whether cat is the favorites view, which is served from
+// saved items on disk rather than fetched over the network.
+func IsFavorites(cat Category) bool { return cat == Favorites }
+
 // Default is the default value for the --categories flag.
-const Default = "top,best,ask,show"
+const Default = "top,best,ask,show,favorites"
 
 // AvailableNames returns the names accepted by the --categories flag.
 func AvailableNames() []string {
-	return []string{"top", "best", "new", "ask", "show"}
+	names := make([]string, len(categoryInfo))
+	for i, inf := range categoryInfo {
+		names[i] = inf.name
+	}
+
+	return names
 }
 
 func categoryFromName(name string) (Category, bool) {
-	switch name {
-	case "top":
-		return Top, true
-	case "new":
-		return Newest, true
-	case "ask":
-		return Ask, true
-	case "show":
-		return Show, true
-	case "best":
-		return Best, true
-	default:
-		return 0, false
+	for i, inf := range categoryInfo {
+		if inf.name == name {
+			return Category(i), true
+		}
 	}
+
+	return 0, false
 }
 
 type Categories struct {
-	base         []Category
-	active       []Category
+	list         []Category
 	currentIndex int
 }
 
@@ -90,34 +134,14 @@ func New(categoriesCSV string) (*Categories, error) {
 	}
 
 	return &Categories{
-		base:         validCategories,
-		active:       validCategories,
+		list:         validCategories,
 		currentIndex: 0,
 	}, nil
 }
 
-func (c *Categories) SetFavorites(has bool) {
-	if has {
-		c.active = append(slices.Clone(c.base), Favorites)
-	} else {
-		c.active = c.base
-		if c.currentIndex >= len(c.active) {
-			c.currentIndex = len(c.active) - 1
-		}
-	}
-}
-
-func (c *Categories) HasFavorites() bool {
-	return slices.Contains(c.active, Favorites)
-}
-
-func (c *Categories) Base() []Category {
-	return c.base
-}
-
 func (c *Categories) Next() {
 	c.currentIndex++
-	if c.currentIndex >= len(c.active) {
+	if c.currentIndex >= len(c.list) {
 		c.currentIndex = 0
 	}
 }
@@ -125,13 +149,13 @@ func (c *Categories) Next() {
 func (c *Categories) Prev() {
 	c.currentIndex--
 	if c.currentIndex < 0 {
-		c.currentIndex = len(c.active) - 1
+		c.currentIndex = len(c.list) - 1
 	}
 }
 
 func (c *Categories) NextIndex() int {
 	nextIndex := c.currentIndex + 1
-	if nextIndex >= len(c.active) {
+	if nextIndex >= len(c.list) {
 		nextIndex = 0
 	}
 
@@ -141,18 +165,18 @@ func (c *Categories) NextIndex() int {
 func (c *Categories) PrevIndex() int {
 	prevIndex := c.currentIndex - 1
 	if prevIndex < 0 {
-		prevIndex = len(c.active) - 1
+		prevIndex = len(c.list) - 1
 	}
 
 	return prevIndex
 }
 
 func (c *Categories) ActiveCategories() []Category {
-	return c.active
+	return c.list
 }
 
 func (c *Categories) CurrentCategory() Category {
-	return c.active[c.currentIndex]
+	return c.list[c.currentIndex]
 }
 
 func (c *Categories) CurrentIndex() int {
@@ -160,15 +184,15 @@ func (c *Categories) CurrentIndex() int {
 }
 
 func (c *Categories) NextCategory() Category {
-	return c.active[c.NextIndex()]
+	return c.list[c.NextIndex()]
 }
 
 func (c *Categories) PrevCategory() Category {
-	return c.active[c.PrevIndex()]
+	return c.list[c.PrevIndex()]
 }
 
 func (c *Categories) SetIndex(index int) {
-	if index < 0 || index >= len(c.active) {
+	if index < 0 || index >= len(c.list) {
 		return
 	}
 

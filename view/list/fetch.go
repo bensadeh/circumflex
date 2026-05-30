@@ -21,19 +21,27 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-var categoryEndpoints = map[categories.Category]string{
-	categories.Top:    "topstories",
-	categories.Newest: "newstories",
-	categories.Ask:    "askstories",
-	categories.Show:   "showstories",
-	categories.Best:   "beststories",
-}
-
 func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 	categoryToFetch := m.cat.CurrentCategory()
+
+	// Favorites is served locally — it is never fetched over the network. Hand
+	// the already-synced items straight to the normal "fetch finished" path.
+	if categories.IsFavorites(categoryToFetch) {
+		stories := m.pager.items[categoryToFetch]
+		fetchID := m.fetchID
+
+		return func() tea.Msg {
+			return message.FetchingFinished{
+				Stories:  stories,
+				Category: categoryToFetch,
+				FetchID:  fetchID,
+			}
+		}
+	}
+
 	service := m.service
 	numItems := m.getNumberOfItemsToFetch(categoryToFetch)
-	endpoint := categoryEndpoints[categoryToFetch]
+	endpoint := categories.Endpoint(categoryToFetch)
 	ctx := m.fetchCtx
 	fetchID := m.fetchID
 
@@ -72,14 +80,8 @@ func FetchMemorialStatus() tea.Cmd {
 }
 
 func (m *Model) getNumberOfItemsToFetch(cat categories.Category) int {
-	switch cat {
-	case categories.Top, categories.Newest, categories.Best:
+	if categories.Policy(cat) == categories.MultiPage {
 		return m.pager.Paginator.PerPage * m.config.PageMultiplier
-
-	case categories.Ask, categories.Show, categories.Favorites:
-		// Ask and Show pools are ~150-200 IDs, so fetching multiple pages
-		// would exceed the pool and waste requests. Always fetch 1 page.
-		return m.pager.Paginator.PerPage
 	}
 
 	return m.pager.Paginator.PerPage
@@ -106,7 +108,7 @@ func getHistory(debugMode bool, doNotMarkAsRead bool) history.History {
 func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) tea.Cmd {
 	service := m.service
 	numItems := m.getNumberOfItemsToFetch(msg.Category)
-	endpoint := categoryEndpoints[msg.Category]
+	endpoint := categories.Endpoint(msg.Category)
 	ctx := m.fetchCtx
 	fetchID := m.fetchID
 
@@ -138,7 +140,7 @@ func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) t
 func (m *Model) refresh(msg message.Refresh) tea.Cmd {
 	service := m.service
 	numItems := m.getNumberOfItemsToFetch(msg.CurrentCategory)
-	endpoint := categoryEndpoints[msg.CurrentCategory]
+	endpoint := categories.Endpoint(msg.CurrentCategory)
 	ctx := m.fetchCtx
 	fetchID := m.fetchID
 

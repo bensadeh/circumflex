@@ -75,10 +75,9 @@ type ReaderColors struct {
 }
 
 type HeaderColors struct {
-	C         string `toml:"c"`
-	L         string `toml:"l"`
-	X         string `toml:"x"`
-	Favorites string `toml:"favorites"`
+	C string `toml:"c"`
+	L string `toml:"l"`
+	X string `toml:"x"`
 }
 
 type IndentColors struct {
@@ -135,10 +134,9 @@ func Default() *Theme {
 			BBCCaption: "yellow",
 		},
 		Header: HeaderColors{
-			C:         "magenta",
-			L:         "yellow",
-			X:         "blue",
-			Favorites: "219",
+			C: "magenta",
+			L: "yellow",
+			X: "blue",
 		},
 		Indent: IndentColors{
 			Cycle: []string{
