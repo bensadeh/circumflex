@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.3 (Unreleased)
+## 4.3
 
 **New features**
 
