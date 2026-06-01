@@ -21,7 +21,7 @@ import (
 
 const (
 	defaultBaseURL = "https://hacker-news.firebaseio.com/v0"
-	maxConcurrency = 25
+	maxConcurrency = 50
 	httpTimeout    = 10 * time.Second
 	retryCount     = 3
 	retryWaitTime  = 200 * time.Millisecond

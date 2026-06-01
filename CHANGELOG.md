@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+**Improvements**
+
+- Comment sections now load faster on large threads by fetching more comments in parallel
+
 ## 4.3
 
 **New features**
