@@ -26,6 +26,9 @@ type keyMap struct {
 
 	Help key.Binding
 
+	OpenLink     key.Binding
+	OpenComments key.Binding
+
 	// Shared between modes: collapse/expand all in scroll, individual in navigate.
 	NextComment    key.Binding
 	PrevComment    key.Binding
@@ -37,8 +40,8 @@ type keyMap struct {
 func defaultKeyMap() keyMap {
 	return keyMap{
 		Quit: key.NewBinding(
-			key.WithKeys("q", "esc"),
-			key.WithHelp("q/esc", "back"),
+			key.WithKeys("q", "esc", "ctrl+o"),
+			key.WithHelp("q/esc/^o", "back"),
 		),
 		Help: key.NewBinding(
 			key.WithKeys("i", "?"),
@@ -99,6 +102,14 @@ func defaultKeyMap() keyMap {
 		ToggleCollapse: key.NewBinding(
 			key.WithKeys("enter"),
 			key.WithHelp("enter", "toggle collapse"),
+		),
+		OpenLink: key.NewBinding(
+			key.WithKeys("o"),
+			key.WithHelp("o", "open story in browser"),
+		),
+		OpenComments: key.NewBinding(
+			key.WithKeys("c"),
+			key.WithHelp("c", "open comments in browser"),
 		),
 	}
 }

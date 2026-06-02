@@ -13,13 +13,15 @@ type keyMap struct {
 	HalfPageUp   key.Binding
 	PageDown     key.Binding
 	PageUp       key.Binding
+	OpenLink     key.Binding
+	OpenComments key.Binding
 }
 
 func defaultKeyMap() keyMap {
 	return keyMap{
 		Quit: key.NewBinding(
-			key.WithKeys("q", "esc"),
-			key.WithHelp("q/esc", "back"),
+			key.WithKeys("q", "esc", "ctrl+o"),
+			key.WithHelp("q/esc/^o", "back"),
 		),
 		Help: key.NewBinding(
 			key.WithKeys("i", "?"),
@@ -56,6 +58,14 @@ func defaultKeyMap() keyMap {
 		PageUp: key.NewBinding(
 			key.WithKeys("pgup", "b"),
 			key.WithHelp("b", "page up"),
+		),
+		OpenLink: key.NewBinding(
+			key.WithKeys("o"),
+			key.WithHelp("o", "open story in browser"),
+		),
+		OpenComments: key.NewBinding(
+			key.WithKeys("c"),
+			key.WithHelp("c", "open comments in browser"),
 		),
 	}
 }
