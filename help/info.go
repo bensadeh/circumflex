@@ -43,10 +43,14 @@ func ReaderText(screenWidth int) string {
 	nav.addKey("g, G", "Top / bottom")
 	nav.addKey("n, N", "Next / prev section")
 
+	open := keys.addSection("Open")
+	open.addKey("o", "Open story in browser")
+	open.addKey("c", "Open comments in browser")
+
 	app := keys.addSection("App")
 	app.color = style.HeaderTertiary()
 	app.addKey("i, ?", "Help")
-	app.addKey("q, ⎋", "Back")
+	app.addKey("q, ⎋, ^o", "Back")
 
 	return formatKeymaps(keys, screenWidth)
 }
@@ -64,8 +68,11 @@ func CommentText(screenWidth int, enableNerdFonts bool) string {
 	read.addKey("↩", "Toggle all")
 	read.addKey("⇥", "Navigate mode")
 	read.addBreak()
+	read.addKey("o", "Open story in browser")
+	read.addKey("c", "Open comments in browser")
+	read.addBreak()
 	read.addKey("i, ?", "Help")
-	read.addKey("q, ⎋", "Back")
+	read.addKey("q, ⎋, ^o", "Back")
 
 	nav := keys.addSection("Navigate Mode")
 	nav.addKey("j, k", "Next / prev comment")
@@ -75,8 +82,11 @@ func CommentText(screenWidth int, enableNerdFonts bool) string {
 	nav.addKey("↩", "Toggle collapse")
 	nav.addKey("⇥", "Read mode")
 	nav.addBreak()
+	nav.addKey("o", "Open story in browser")
+	nav.addKey("c", "Open comments in browser")
+	nav.addBreak()
 	nav.addKey("i, ?", "Help")
-	nav.addKey("q, ⎋", "Back")
+	nav.addKey("q, ⎋, ^o", "Back")
 
 	legend := keys.addSection("Legend")
 	legend.addLabel(style.CommentOP(labelText("OP", enableNerdFonts)), "Original Poster")

@@ -1,14 +1,17 @@
 package comments
 
 import (
+	"context"
 	"fmt"
 	"slices"
 	"strings"
 
 	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/browser"
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/help"
+	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/scrollbar"
@@ -194,6 +197,14 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		return nil
 	}
 
+	if key.Matches(msg, m.keymap.OpenLink) {
+		return m.openStoryInBrowser()
+	}
+
+	if key.Matches(msg, m.keymap.OpenComments) {
+		return m.openCommentsInBrowser()
+	}
+
 	if key.Matches(msg, m.keymap.ToggleMode) {
 		m.toggleMode()
 
@@ -377,6 +388,33 @@ func (m *Model) footerSeparator() string {
 	}
 
 	return s.Render(strings.Repeat(" ", m.rc.screenWidth))
+}
+
+func (m *Model) openStoryInBrowser() tea.Cmd {
+	url := m.rc.story.URL
+	if url == "" {
+		url = hn.ItemURL(m.rc.story.ID)
+	}
+
+	return func() tea.Msg {
+		if err := browser.Open(context.Background(), url); err != nil {
+			return message.BrowserOpenFailed{Err: err}
+		}
+
+		return nil
+	}
+}
+
+func (m *Model) openCommentsInBrowser() tea.Cmd {
+	url := hn.ItemURL(m.rc.story.ID)
+
+	return func() tea.Msg {
+		if err := browser.Open(context.Background(), url); err != nil {
+			return message.BrowserOpenFailed{Err: err}
+		}
+
+		return nil
+	}
 }
 
 func (m *Model) modeIndicator() string {
