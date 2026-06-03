@@ -39,6 +39,13 @@ func newTestModel(t *testing.T, thread *comment.Thread) *Model {
 	return New(thread, 0, 80, 1, false, 120, 200)
 }
 
+func TestOpenInBrowser_ReturnsCmd(t *testing.T) {
+	m := newTestModel(t, testThread())
+
+	assert.NotNil(t, m.openStoryInBrowser())
+	assert.NotNil(t, m.openCommentsInBrowser())
+}
+
 func TestNew_StartsInReadMode(t *testing.T) {
 	m := newTestModel(t, testThread())
 

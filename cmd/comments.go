@@ -23,6 +23,7 @@ type commentModel struct {
 	thread      *comment.Thread
 	lastVisited int64
 	config      *settings.Config
+	browserErr  error
 }
 
 func (m commentModel) Init() tea.Cmd {
@@ -32,6 +33,10 @@ func (m commentModel) Init() tea.Cmd {
 func (m commentModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if msg, ok := msg.(tea.KeyPressMsg); ok && msg.Mod == tea.ModCtrl && msg.Code == 'c' {
 		return m, tea.Quit
+	}
+
+	if failed, ok := msg.(message.BrowserOpenFailed); ok {
+		m.browserErr = failed.Err
 	}
 
 	switch msg := msg.(type) {
@@ -97,9 +102,15 @@ func commentsCmd() *cobra.Command {
 			}
 
 			p := tea.NewProgram(m)
-			if _, err := p.Run(); err != nil {
+
+			finalModel, err := p.Run()
+			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
+			}
+
+			if cm, ok := finalModel.(commentModel); ok && cm.browserErr != nil {
+				fmt.Fprintf(os.Stderr, "circumflex: could not open browser: %v\n", cm.browserErr)
 			}
 		},
 	}

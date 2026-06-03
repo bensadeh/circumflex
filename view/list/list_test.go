@@ -622,13 +622,13 @@ func TestArticleReady_NoHistoryWarning(t *testing.T) {
 	assert.Nil(t, cmd, "Init returns nil, no warning — cmd should be nil")
 }
 
-func TestBrowserOpenFailed_IncludesError(t *testing.T) {
+func TestBrowserOpenFailed_RecordsErrorForExit(t *testing.T) {
 	m := newTestModelReady(t)
 
-	m, cmd := m.Update(message.BrowserOpenFailed{Err: errors.New("xdg-open not found")})
+	m, _ = m.Update(message.BrowserOpenFailed{Err: errors.New("xdg-open not found")})
 
-	assert.NotNil(t, cmd)
-	assert.Contains(t, m.status.message, "xdg-open not found")
+	require.Error(t, m.BrowserErr())
+	assert.Contains(t, m.BrowserErr().Error(), "xdg-open not found")
 }
 
 func TestEnteringCommentSection_HistoryWriteFailure(t *testing.T) {

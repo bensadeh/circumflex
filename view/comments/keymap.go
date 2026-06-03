@@ -40,8 +40,8 @@ type keyMap struct {
 func defaultKeyMap() keyMap {
 	return keyMap{
 		Quit: key.NewBinding(
-			key.WithKeys("q", "esc", "ctrl+o"),
-			key.WithHelp("q/esc/^o", "back"),
+			key.WithKeys("q", "esc"),
+			key.WithHelp("q/esc", "back"),
 		),
 		Help: key.NewBinding(
 			key.WithKeys("i", "?"),

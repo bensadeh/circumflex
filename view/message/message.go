@@ -1,12 +1,16 @@
 package message
 
 import (
+	"context"
 	"time"
 
 	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/browser"
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/hn"
+
+	tea "charm.land/bubbletea/v2"
 )
 
 type ReaderViewQuitMsg struct{}
@@ -18,6 +22,16 @@ type EnteringCommentSection struct {
 
 type BrowserOpenFailed struct {
 	Err error
+}
+
+func OpenInBrowser(url string) tea.Cmd {
+	return func() tea.Msg {
+		if err := browser.Open(context.Background(), url); err != nil {
+			return BrowserOpenFailed{Err: err}
+		}
+
+		return nil
+	}
 }
 
 type EnteringReaderMode struct {

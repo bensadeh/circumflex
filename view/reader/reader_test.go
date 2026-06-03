@@ -103,6 +103,28 @@ func TestQuit_Standalone_ReturnsTeaQuit(t *testing.T) {
 	assert.IsType(t, tea.QuitMsg{}, msg, "standalone quit should produce tea.QuitMsg")
 }
 
+func TestOpenInBrowser_NoMetaIsNoop(t *testing.T) {
+	m := New("content", "Title", 80, 24)
+
+	assert.Nil(t, m.openStoryInBrowser(), "no URL and no ID should not open anything")
+	assert.Nil(t, m.openCommentsInBrowser(), "no ID should not open a comments page")
+}
+
+func TestOpenInBrowser_SelfPostFallsBackToItemURL(t *testing.T) {
+	m := New("content", "Title", 80, 24)
+	m.articleMeta = Meta{ID: 42}
+
+	assert.NotNil(t, m.openStoryInBrowser(), "self-post should fall back to the HN item URL")
+	assert.NotNil(t, m.openCommentsInBrowser())
+}
+
+func TestOpenInBrowser_WithURLReturnsCmd(t *testing.T) {
+	m := New("content", "Title", 80, 24)
+	m.articleMeta = Meta{URL: "https://example.com", ID: 42}
+
+	assert.NotNil(t, m.openStoryInBrowser())
+}
+
 func TestHelpToggle(t *testing.T) {
 	m := New("content", "Title", 80, 24)
 	assert.False(t, m.showHelp)

@@ -1,13 +1,13 @@
 package reader
 
 import (
-	"context"
+	"fmt"
+	"os"
 	"slices"
 	"strings"
 
 	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/article"
-	"github.com/bensadeh/circumflex/browser"
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/help"
 	"github.com/bensadeh/circumflex/hn"
@@ -388,28 +388,22 @@ func (m *Model) gotoBottom() {
 func (m *Model) openStoryInBrowser() tea.Cmd {
 	url := m.articleMeta.URL
 	if url == "" {
+		if m.articleMeta.ID == 0 {
+			return nil
+		}
+
 		url = hn.ItemURL(m.articleMeta.ID)
 	}
 
-	return func() tea.Msg {
-		if err := browser.Open(context.Background(), url); err != nil {
-			return message.BrowserOpenFailed{Err: err}
-		}
-
-		return nil
-	}
+	return message.OpenInBrowser(url)
 }
 
 func (m *Model) openCommentsInBrowser() tea.Cmd {
-	url := hn.ItemURL(m.articleMeta.ID)
-
-	return func() tea.Msg {
-		if err := browser.Open(context.Background(), url); err != nil {
-			return message.BrowserOpenFailed{Err: err}
-		}
-
+	if m.articleMeta.ID == 0 {
 		return nil
 	}
+
+	return message.OpenInBrowser(hn.ItemURL(m.articleMeta.ID))
 }
 
 func (m *Model) jumpToHeader(direction int) {
@@ -443,7 +437,8 @@ func (m *Model) jumpToHeader(direction int) {
 }
 
 type standaloneModel struct {
-	inner *Model
+	inner      *Model
+	browserErr error
 }
 
 func (s standaloneModel) Init() tea.Cmd {
@@ -451,6 +446,10 @@ func (s standaloneModel) Init() tea.Cmd {
 }
 
 func (s standaloneModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if failed, ok := msg.(message.BrowserOpenFailed); ok {
+		s.browserErr = failed.Err
+	}
+
 	cmd := s.inner.Update(msg)
 
 	return s, cmd
@@ -463,12 +462,21 @@ func (s standaloneModel) View() tea.View {
 	return v
 }
 
-func Run(content, title string) error {
+func Run(content, title string, articleMeta Meta) error {
 	m := New(content, title, 0, 0)
 	m.standalone = true
+	m.articleMeta = articleMeta
 
 	p := tea.NewProgram(standaloneModel{inner: m})
-	_, err := p.Run()
 
-	return err
+	finalModel, err := p.Run()
+	if err != nil {
+		return err
+	}
+
+	if sm, ok := finalModel.(standaloneModel); ok && sm.browserErr != nil {
+		fmt.Fprintf(os.Stderr, "circumflex: could not open browser: %v\n", sm.browserErr)
+	}
+
+	return nil
 }

@@ -45,7 +45,7 @@ func articleCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			if err := reader.Run(content, item.Title); err != nil {
+			if err := reader.Run(content, item.Title, reader.Meta{URL: item.URL, ID: item.ID}); err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
 			}

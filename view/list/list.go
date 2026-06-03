@@ -2,7 +2,6 @@ package list
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"time"
 
@@ -76,6 +75,7 @@ type Model struct {
 	readerView  *reader.Model
 
 	memorialErr error
+	browserErr  error
 
 	// Cached styles for hot-path rendering.
 	contentStyle    lipgloss.Style
@@ -259,6 +259,8 @@ func (m *Model) handleWindowResize(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 
 func (m *Model) MemorialErr() error { return m.memorialErr }
 
+func (m *Model) BrowserErr() error { return m.browserErr }
+
 func (m *Model) handleStartup(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 	m.setSize(msg.Width, msg.Height)
 
@@ -351,8 +353,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, m.handleEnteringCommentSection(msg)
 
 	case message.BrowserOpenFailed:
-		cmds = append(cmds, m.status.NewStatusMessageWithDuration(
-			fmt.Sprintf("Could not open browser: %s", msg.Err), statusMessageLong))
+		m.browserErr = msg.Err
 
 	case message.EnteringReaderMode:
 		return m, m.handleEnteringReaderMode(msg)

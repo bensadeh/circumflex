@@ -64,5 +64,9 @@ func Run(config *settings.Config, cat *categories.Categories) {
 		if memErr := fm.list.MemorialErr(); memErr != nil {
 			fmt.Fprintf(os.Stderr, "circumflex: could not check HN memorial status: %v\n", memErr)
 		}
+
+		if browserErr := fm.list.BrowserErr(); browserErr != nil {
+			fmt.Fprintf(os.Stderr, "circumflex: could not open browser: %v\n", browserErr)
+		}
 	}
 }

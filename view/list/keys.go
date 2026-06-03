@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/bensadeh/circumflex/article"
-	"github.com/bensadeh/circumflex/browser"
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/timeago"
@@ -358,25 +357,11 @@ func (m *Model) handleOpenLink() tea.Cmd {
 		url = hn.ItemURL(selected.ID)
 	}
 
-	return func() tea.Msg {
-		if err := browser.Open(context.Background(), url); err != nil {
-			return message.BrowserOpenFailed{Err: err}
-		}
-
-		return nil
-	}
+	return message.OpenInBrowser(url)
 }
 
 func (m *Model) handleOpenComments() tea.Cmd {
-	url := hn.ItemURL(m.SelectedItem().ID)
-
-	return func() tea.Msg {
-		if err := browser.Open(context.Background(), url); err != nil {
-			return message.BrowserOpenFailed{Err: err}
-		}
-
-		return nil
-	}
+	return message.OpenInBrowser(hn.ItemURL(m.SelectedItem().ID))
 }
 
 func (m *Model) handleRefresh() tea.Cmd {

@@ -26,7 +26,7 @@ func urlCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			if err := reader.Run(content, "Reader Mode"); err != nil {
+			if err := reader.Run(content, "Reader Mode", reader.Meta{URL: url}); err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
 			}

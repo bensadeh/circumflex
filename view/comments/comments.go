@@ -1,13 +1,11 @@
 package comments
 
 import (
-	"context"
 	"fmt"
 	"slices"
 	"strings"
 
 	"github.com/bensadeh/circumflex/ansi"
-	"github.com/bensadeh/circumflex/browser"
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/help"
@@ -178,6 +176,25 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 	return nil
 }
 
+// handleGlobalKeys dispatches the keys that work the same in both Read and
+// Navigate modes. The bool reports whether the key was consumed.
+func (m *Model) handleGlobalKeys(msg tea.KeyPressMsg) (tea.Cmd, bool) {
+	switch {
+	case key.Matches(msg, m.keymap.Quit):
+		return func() tea.Msg { return message.CommentViewQuitMsg{} }, true
+	case key.Matches(msg, m.keymap.Help):
+		m.showHelp = true
+
+		return nil, true
+	case key.Matches(msg, m.keymap.OpenLink):
+		return m.openStoryInBrowser(), true
+	case key.Matches(msg, m.keymap.OpenComments):
+		return m.openCommentsInBrowser(), true
+	}
+
+	return nil, false
+}
+
 func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 	if m.showHelp {
 		if key.Matches(msg, m.keymap.Quit, m.keymap.Help) {
@@ -187,22 +204,8 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		return nil
 	}
 
-	if key.Matches(msg, m.keymap.Quit) {
-		return func() tea.Msg { return message.CommentViewQuitMsg{} }
-	}
-
-	if key.Matches(msg, m.keymap.Help) {
-		m.showHelp = true
-
-		return nil
-	}
-
-	if key.Matches(msg, m.keymap.OpenLink) {
-		return m.openStoryInBrowser()
-	}
-
-	if key.Matches(msg, m.keymap.OpenComments) {
-		return m.openCommentsInBrowser()
+	if cmd, handled := m.handleGlobalKeys(msg); handled {
+		return cmd
 	}
 
 	if key.Matches(msg, m.keymap.ToggleMode) {
@@ -396,25 +399,11 @@ func (m *Model) openStoryInBrowser() tea.Cmd {
 		url = hn.ItemURL(m.rc.story.ID)
 	}
 
-	return func() tea.Msg {
-		if err := browser.Open(context.Background(), url); err != nil {
-			return message.BrowserOpenFailed{Err: err}
-		}
-
-		return nil
-	}
+	return message.OpenInBrowser(url)
 }
 
 func (m *Model) openCommentsInBrowser() tea.Cmd {
-	url := hn.ItemURL(m.rc.story.ID)
-
-	return func() tea.Msg {
-		if err := browser.Open(context.Background(), url); err != nil {
-			return message.BrowserOpenFailed{Err: err}
-		}
-
-		return nil
-	}
+	return message.OpenInBrowser(hn.ItemURL(m.rc.story.ID))
 }
 
 func (m *Model) modeIndicator() string {
