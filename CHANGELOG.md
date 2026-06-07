@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+**New features**
+
+- Open the story (<kbd>o</kbd>) and comments (<kbd>c</kbd>) directly from the reader and comment views, with <kbd>Ctrl+O</kbd> as a back-key (Thanks, @aymericbeaumet! [#204](https://github.com/bensadeh/circumflex/pull/204))
+
 **Improvements**
 
 - Comment sections now load faster on large threads by fetching more comments in parallel
