@@ -46,7 +46,7 @@ type Service struct {
 func NewService() *Service {
 	client := resty.New()
 	client.SetTimeout(httpTimeout)
-	client.SetRedirectPolicy(resty.NoRedirectPolicy())
+	client.SetRedirectPolicy(resty.RedirectNoPolicy())
 	client.SetHeader("User-Agent", version.Name+"/"+version.Version)
 	client.SetRetryCount(retryCount)
 	client.SetRetryWaitTime(retryWaitTime)
