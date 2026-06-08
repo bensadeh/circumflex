@@ -9,7 +9,7 @@ require (
 	charm.land/lipgloss/v2 v2.0.3
 	codeberg.org/readeck/go-readability/v2 v2.1.1
 	github.com/BurntSushi/toml v1.6.0
-	github.com/JohannesKaufmann/html-to-markdown/v2 v2.5.1
+	github.com/JohannesKaufmann/html-to-markdown/v2 v2.5.2
 	github.com/bobesa/go-domain-util v0.0.0-20250410211237-17ab3b2f4a95
 	github.com/charmbracelet/x/ansi v0.11.7
 	github.com/spf13/cobra v1.10.2
@@ -17,13 +17,13 @@ require (
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/net v0.55.0
 	golang.org/x/term v0.43.0
-	resty.dev/v3 v3.0.0-beta.6
+	resty.dev/v3 v3.0.0-rc.1
 )
 
 require (
-	github.com/JohannesKaufmann/dom v0.2.0 // indirect
+	github.com/JohannesKaufmann/dom v0.3.1 // indirect
 	github.com/alecthomas/chroma/v2 v2.24.1 // indirect
-	github.com/andybalholm/cascadia v1.3.3 // indirect
+	github.com/andybalholm/cascadia v1.3.4 // indirect
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/charmbracelet/colorprofile v0.4.3 // indirect
