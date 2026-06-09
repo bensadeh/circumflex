@@ -33,8 +33,11 @@ The binary name for `circumflex` is `clx`.
 # Homebrew
 brew install circumflex
 
-# Nix
+# Nix (nixpkgs)
 nix-shell -p circumflex
+
+# Nix (flake)
+nix run github:bensadeh/circumflex
 
 # AUR
 yay -S circumflex
@@ -44,6 +47,45 @@ go install github.com/bensadeh/circumflex/cmd/clx@latest
 
 # From source
 go run ./cmd/clx
+```
+
+### Nix Flake
+
+`circumflex` provides a Nix flake with a package, overlay, and home-manager module.
+
+**Add to your flake inputs:**
+
+```nix
+inputs.circumflex = {
+  url = "github:bensadeh/circumflex";
+  inputs.nixpkgs.follows = "nixpkgs";
+};
+```
+
+**Use the package directly:**
+
+```nix
+home.packages = [
+  inputs.circumflex.packages.${system}.default
+];
+```
+
+**Or use the overlay:**
+
+```nix
+nixpkgs.overlays = [ inputs.circumflex.overlays.default ];
+
+# Then pkgs.circumflex is available
+```
+
+**Or use the home-manager module:**
+
+```nix
+imports = [ inputs.circumflex.homeManagerModules.default ];
+```
+
+```nix
+programs.circumflex.enable = true;
 ```
 
 ## Features
