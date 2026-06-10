@@ -20,6 +20,20 @@ func TestFilter_SkipParContains(t *testing.T) {
 	assert.Contains(t, result, "Third paragraph")
 }
 
+func TestFilter_SkipParContains_MatchesAcrossStyledText(t *testing.T) {
+	t.Parallel()
+
+	rs := ruleSet{}
+	rs.skipParContains("Listen to this story")
+
+	input := "First paragraph\n\nListen \x1b[3mto this\x1b[0m story on Spotify\n\nThird paragraph"
+	result := rs.filter(input)
+
+	assert.Contains(t, result, "First paragraph")
+	assert.NotContains(t, result, "Spotify")
+	assert.Contains(t, result, "Third paragraph")
+}
+
 func TestFilter_SkipLineEquals(t *testing.T) {
 	t.Parallel()
 

@@ -11,6 +11,10 @@
 - Comment sections now load faster on large threads by fetching more comments in parallel
 - Unrecognized color values in `theme.toml` are now reported on startup instead of silently rendering without color
 
+**Fixes**
+
+- Reader mode site filters (e.g. removing "Listen to this story" paragraphs) now match paragraphs even when styling interrupts the text
+
 ## 4.3
 
 **New features**

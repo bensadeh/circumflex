@@ -124,8 +124,9 @@ func equals(targets []string, line string) bool {
 }
 
 func contains(targets []string, line string) bool {
+	line = ansi.Strip(line)
+
 	for _, target := range targets {
-		target = ansi.Strip(target)
 		if strings.Contains(line, target) {
 			return true
 		}
