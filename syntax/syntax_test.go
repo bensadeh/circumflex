@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"charm.land/lipgloss/v2"
 	"github.com/bensadeh/circumflex/ansi"
 	"github.com/stretchr/testify/assert"
 )
@@ -427,4 +428,18 @@ func TestTrimURLs(t *testing.T) {
 	t.Run("empty string", func(t *testing.T) {
 		assert.Empty(t, TrimURLs("", false))
 	})
+}
+
+func TestLabel_AppliesHighlightTypeStyles(t *testing.T) {
+	t.Parallel()
+
+	fg := lipgloss.Black
+	bg := lipgloss.Yellow
+
+	unselected := label("YC S20", fg, bg, Unselected)
+
+	assert.NotEqual(t, unselected, label("YC S20", fg, bg, MarkAsRead),
+		"mark-as-read should dim the label")
+	assert.NotEqual(t, unselected, label("YC S20", fg, bg, HeadlineInCommentSection),
+		"comment section headlines should embolden the label")
 }

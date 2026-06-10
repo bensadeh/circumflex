@@ -113,13 +113,11 @@ func label(text string, fg color.Color, bg color.Color, highlightType HighlightT
 		Background(bg)
 
 	if highlightType == MarkAsRead {
-		content.
-			Italic(true).
-			Faint(true)
+		content = content.Italic(true).Faint(true)
 	}
 
 	if highlightType == HeadlineInCommentSection {
-		content.Bold(true)
+		content = content.Bold(true)
 	}
 
 	return ansi.Reset +
