@@ -318,8 +318,13 @@ func (m *Model) handleNavigateKeys(msg tea.KeyPressMsg) tea.Cmd {
 	case key.Matches(msg, m.keymap.HalfPageUp):
 		m.halfPageUp()
 		m.snapFocusToVisible(-1)
+	case key.Matches(msg, m.keymap.PageDown):
+		m.pageDown()
+		m.snapFocusToVisible(1)
+	case key.Matches(msg, m.keymap.PageUp):
+		m.pageUp()
+		m.snapFocusToVisible(-1)
 	default:
-		// Unhandled key — let viewport process it (pgup/pgdn/etc).
 		before := m.viewport.YOffset()
 
 		var cmd tea.Cmd

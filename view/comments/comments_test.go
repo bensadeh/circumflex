@@ -326,6 +326,39 @@ func newScrollableModel(t *testing.T) *Model {
 	return New(deepThread(), 0, 80, 1, false, 120, 30)
 }
 
+func TestNavigateMode_PageKeysScrollAndSnapFocus(t *testing.T) {
+	m := newScrollableModel(t)
+
+	for range m.maxDepth + 1 {
+		m.expandLevel()
+	}
+
+	m.toggleMode()
+	require.Equal(t, modeNavigate, m.mode)
+
+	top := m.viewport.YOffset()
+	m.handleKeyPress(tea.KeyPressMsg{Code: 'f', Text: "f"})
+
+	assert.Greater(t, m.viewport.YOffset(), top, "page down should scroll in navigate mode")
+	assertFocusOnScreen(t, m)
+
+	scrolled := m.viewport.YOffset()
+	m.handleKeyPress(tea.KeyPressMsg{Code: 'b', Text: "b"})
+
+	assert.Less(t, m.viewport.YOffset(), scrolled, "page up should scroll in navigate mode")
+	assertFocusOnScreen(t, m)
+}
+
+func assertFocusOnScreen(t *testing.T, m *Model) {
+	t.Helper()
+
+	require.GreaterOrEqual(t, m.focusedIdx, 0)
+
+	start := m.lineMetrics[m.visible[m.focusedIdx]].StartLine
+	assert.GreaterOrEqual(t, start, m.viewport.YOffset())
+	assert.Less(t, start, m.viewport.YOffset()+m.viewport.VisibleLineCount())
+}
+
 func TestViewportStable_ExpandLevel(t *testing.T) {
 	m := newScrollableModel(t)
 
