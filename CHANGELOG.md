@@ -9,6 +9,7 @@
 **Improvements**
 
 - Comment sections now load faster on large threads by fetching more comments in parallel
+- Unrecognized color values in `theme.toml` are now reported on startup instead of silently rendering without color
 
 ## 4.3
 

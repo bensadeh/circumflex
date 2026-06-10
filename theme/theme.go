@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strconv"
 	"strings"
 
@@ -196,7 +197,42 @@ func Load(path string) (*Theme, error) {
 		return Default(), err
 	}
 
+	if bad := t.invalidColors(); len(bad) > 0 {
+		return Default(), fmt.Errorf("unrecognized colors in %s: %s", path, strings.Join(bad, ", "))
+	}
+
 	return t, nil
+}
+
+func (t *Theme) invalidColors() []string {
+	var bad []string
+
+	report := func(key, value string) {
+		if _, ok := parseColor(value); !ok {
+			bad = append(bad, fmt.Sprintf("%s = %q", key, value))
+		}
+	}
+
+	sections := reflect.ValueOf(t).Elem()
+	for i := range sections.NumField() {
+		sectionKey := sections.Type().Field(i).Tag.Get("toml")
+		section := sections.Field(i)
+
+		for j := range section.NumField() {
+			key := sectionKey + "." + section.Type().Field(j).Tag.Get("toml")
+
+			switch value := section.Field(j).Interface().(type) {
+			case string:
+				report(key, value)
+			case []string:
+				for _, s := range value {
+					report(key, s)
+				}
+			}
+		}
+	}
+
+	return bad
 }
 
 var namedColors = map[string]color.Color{
@@ -219,19 +255,33 @@ var namedColors = map[string]color.Color{
 }
 
 func ParseColor(s string) color.Color {
+	c, _ := parseColor(s)
+
+	return c
+}
+
+func parseColor(s string) (color.Color, bool) {
 	s = strings.TrimSpace(s)
 
+	// An empty value is an explicit request for the terminal's default color.
+	if s == "" {
+		return lipgloss.NoColor{}, true
+	}
+
 	if c, ok := namedColors[s]; ok {
-		return c
+		return c, true
 	}
 
 	if strings.HasPrefix(s, "#") {
-		return lipgloss.Color(s)
+		c := lipgloss.Color(s)
+		_, invalid := c.(lipgloss.NoColor)
+
+		return c, !invalid
 	}
 
 	if n, err := strconv.Atoi(s); err == nil && n >= 0 && n <= 255 {
-		return lipgloss.ANSIColor(n)
+		return lipgloss.ANSIColor(n), true
 	}
 
-	return lipgloss.NoColor{}
+	return lipgloss.NoColor{}, false
 }
