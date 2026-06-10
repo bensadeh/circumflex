@@ -3,11 +3,13 @@ package firebase
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -427,6 +429,29 @@ func TestFetchComments_ItemFetchError(t *testing.T) {
 	_, err := s.FetchComments(context.Background(), 1, nil)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "20")
+}
+
+func TestFetchCommentNodes_CancelledWhileParked_ReturnsCause(t *testing.T) {
+	t.Parallel()
+
+	cause := errors.New("fetch aborted")
+
+	ctx, cancel := context.WithCancelCause(context.Background())
+	cancel(cause)
+
+	// A full semaphore parks every goroutine at acquire, so all of them take
+	// the silent cancellation exit.
+	sem := make(chan struct{}, maxConcurrency)
+	for range maxConcurrency {
+		sem <- struct{}{}
+	}
+
+	var fetched atomic.Int64
+
+	nodes, err := (&Service{}).fetchCommentNodes(ctx, cancel, sem, []int{10, 20}, &fetched, 2, nil)
+
+	require.ErrorIs(t, err, cause)
+	assert.Nil(t, nodes)
 }
 
 func TestFetchComments_NestedFetchError(t *testing.T) {

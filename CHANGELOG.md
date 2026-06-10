@@ -14,6 +14,7 @@
 **Fixes**
 
 - Reader mode site filters (e.g. removing "Listen to this story" paragraphs) now match paragraphs even when styling interrupts the text
+- A cancelled comment fetch now reports the cancellation instead of returning a partial comment section as if fully loaded
 
 ## 4.3
 

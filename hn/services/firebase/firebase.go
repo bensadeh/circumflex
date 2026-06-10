@@ -242,6 +242,12 @@ func (s *Service) fetchCommentNodes(ctx context.Context, cancel context.CancelCa
 		return nil, firstErr
 	}
 
+	// Goroutines parked at the semaphore exit silently on cancellation;
+	// without this check a cancelled fetch returns a partial tree with no error.
+	if err := context.Cause(ctx); err != nil {
+		return nil, err
+	}
+
 	return filterNil(comments), nil
 }
 
