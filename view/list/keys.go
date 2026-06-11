@@ -26,23 +26,23 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
 		switch {
-		case m.state == StateAddFavoritesPrompt && key.Matches(msg, m.keymap.Confirm):
+		case m.state == stateAddFavoritesPrompt && key.Matches(msg, m.keymap.Confirm):
 			return m.handleConfirmAddFavorites()
 
-		case m.state == StateRemoveFavoritesPrompt && key.Matches(msg, m.keymap.Confirm):
+		case m.state == stateRemoveFavoritesPrompt && key.Matches(msg, m.keymap.Confirm):
 			return m.handleConfirmRemoveFavorites()
 
-		case m.state == StateAddFavoritesPrompt || m.state == StateRemoveFavoritesPrompt:
+		case m.state == stateAddFavoritesPrompt || m.state == stateRemoveFavoritesPrompt:
 			return m.handleCancelPrompt()
 
-		case m.state == StateFetching && key.Matches(msg, m.keymap.Cancel):
+		case m.state == stateFetching && key.Matches(msg, m.keymap.Cancel):
 			return m.handleCancelFetch()
 
-		case m.state != StateBrowsing:
+		case m.state != stateBrowsing:
 			return nil
 
 		case key.Matches(msg, m.keymap.Help):
-			m.state = StateHelpScreen
+			m.state = stateHelpScreen
 
 			return nil
 
@@ -111,15 +111,15 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 				return m.handleOpenComments()
 
 			case key.Matches(msg, m.keymap.AddFavorite):
-				m.status.SetPermanentStatusMessage(getAddItemConfirmationMessage())
-				m.state = StateAddFavoritesPrompt
+				m.status.SetPermanentStatusMessage(addItemConfirmationMessage())
+				m.state = stateAddFavoritesPrompt
 
 				return nil
 
 			case key.Matches(msg, m.keymap.RemoveFavorite):
 				if m.cat.CurrentCategory() == categories.Favorites {
-					m.status.SetPermanentStatusMessage(getRemoveItemConfirmationMessage())
-					m.state = StateRemoveFavoritesPrompt
+					m.status.SetPermanentStatusMessage(removeItemConfirmationMessage())
+					m.state = stateRemoveFavoritesPrompt
 
 					return nil
 				}
@@ -190,7 +190,7 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 }
 
 func (m *Model) handleConfirmAddFavorites() tea.Cmd {
-	m.state = StateBrowsing
+	m.state = stateBrowsing
 
 	selectedItem := m.SelectedItem()
 	addToFavorites := func() tea.Msg {
@@ -201,7 +201,7 @@ func (m *Model) handleConfirmAddFavorites() tea.Cmd {
 }
 
 func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
-	m.state = StateBrowsing
+	m.state = stateBrowsing
 
 	removedItem := m.favorites.Items()[m.Index()]
 
@@ -241,7 +241,7 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 }
 
 func (m *Model) handleCancelPrompt() tea.Cmd {
-	m.state = StateBrowsing
+	m.state = stateBrowsing
 
 	return m.status.NewStatusMessageWithDuration(
 		lipgloss.NewStyle().Faint(true).Render("Cancelled"), statusMessageShort)
@@ -253,7 +253,7 @@ func (m *Model) startFetch(timeout time.Duration) tea.Cmd {
 	}
 
 	m.fetchID++
-	m.state = StateFetching
+	m.state = stateFetching
 
 	if timeout > 0 {
 		ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -271,7 +271,7 @@ func (m *Model) startFetch(timeout time.Duration) tea.Cmd {
 // CancelFetch cancels an in-progress fetch and returns the resulting command.
 // Returns nil if no fetch is active.
 func (m *Model) CancelFetch() tea.Cmd {
-	if m.state != StateFetching {
+	if m.state != stateFetching {
 		return nil
 	}
 
@@ -293,7 +293,7 @@ func (m *Model) handleCancelFetch() tea.Cmd {
 
 	clearProgress()
 	m.status.StopSpinner()
-	m.state = StateBrowsing
+	m.state = stateBrowsing
 	m.updatePagination()
 
 	return m.status.NewStatusMessageWithDuration(
@@ -389,7 +389,7 @@ func (m *Model) handleToggleRead() tea.Cmd {
 	item := m.SelectedItem()
 
 	if m.history.Contains(item.ID) {
-		if err := m.history.MarkAsUnreadAndWriteToDisk(item.ID); err != nil {
+		if err := m.history.MarkUnread(item.ID); err != nil {
 			return m.status.NewStatusMessageWithDuration(
 				fmt.Sprintf("Could not mark as unread: %s", err), statusMessageShort)
 		}
@@ -398,7 +398,7 @@ func (m *Model) handleToggleRead() tea.Cmd {
 			"Marked as "+lipgloss.NewStyle().Foreground(lipgloss.Yellow).Render("unread"), statusMessageShort)
 	}
 
-	if err := m.history.MarkAsReadAndWriteToDisk(item.ID, item.CommentsCount); err != nil {
+	if err := m.history.MarkRead(item.ID, item.CommentsCount); err != nil {
 		return m.status.NewStatusMessageWithDuration(
 			fmt.Sprintf("Could not mark as read: %s", err), statusMessageShort)
 	}
@@ -407,7 +407,7 @@ func (m *Model) handleToggleRead() tea.Cmd {
 		"Marked as "+lipgloss.NewStyle().Foreground(lipgloss.Magenta).Render("read"), statusMessageShort)
 }
 
-func getAddItemConfirmationMessage() string {
+func addItemConfirmationMessage() string {
 	normal := lipgloss.NewStyle()
 	green := normal.Foreground(lipgloss.Green)
 	bold := normal.Foreground(lipgloss.Blue).Bold(true)
@@ -416,7 +416,7 @@ func getAddItemConfirmationMessage() string {
 		normal.Render(" to confirm")
 }
 
-func getRemoveItemConfirmationMessage() string {
+func removeItemConfirmationMessage() string {
 	normal := lipgloss.NewStyle()
 	red := normal.Foreground(lipgloss.Red)
 	bold := normal.Foreground(lipgloss.Blue).Bold(true)

@@ -8,9 +8,9 @@ import (
 const readCooldown = 5 * time.Minute
 
 type Persistent struct {
-	mu             sync.RWMutex `json:"-"`
-	filePath       string       `json:"-"`
-	VisitedStories map[int]StoryInfo
+	mu             sync.RWMutex
+	filePath       string
+	visitedStories map[int]StoryInfo
 }
 
 type StoryInfo struct {
@@ -23,7 +23,7 @@ func (his *Persistent) Contains(id int) bool {
 	his.mu.RLock()
 	defer his.mu.RUnlock()
 
-	_, contains := his.VisitedStories[id]
+	_, contains := his.visitedStories[id]
 
 	return contains
 }
@@ -32,7 +32,7 @@ func (his *Persistent) CommentsLastVisited(id int) int64 {
 	his.mu.RLock()
 	defer his.mu.RUnlock()
 
-	if item, contains := his.VisitedStories[id]; contains {
+	if item, contains := his.visitedStories[id]; contains {
 		if item.CommentsLastVisited > 0 {
 			return item.CommentsLastVisited
 		}
@@ -43,20 +43,20 @@ func (his *Persistent) CommentsLastVisited(id int) int64 {
 	return time.Now().Unix()
 }
 
-func (his *Persistent) ClearAndWriteToDisk() error {
+func (his *Persistent) Clear() error {
 	his.mu.Lock()
 	defer his.mu.Unlock()
 
-	his.VisitedStories = make(map[int]StoryInfo)
+	his.visitedStories = make(map[int]StoryInfo)
 
 	return writeToDisk(his, his.filePath)
 }
 
-func (his *Persistent) MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int) error {
+func (his *Persistent) MarkRead(id int, commentsOnLastVisit int) error {
 	his.mu.Lock()
 	defer his.mu.Unlock()
 
-	if existing, ok := his.VisitedStories[id]; ok {
+	if existing, ok := his.visitedStories[id]; ok {
 		elapsed := time.Since(time.Unix(existing.CommentsLastVisited, 0))
 		if elapsed < readCooldown {
 			return nil
@@ -65,7 +65,7 @@ func (his *Persistent) MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int)
 
 	now := time.Now().Unix()
 
-	his.VisitedStories[id] = StoryInfo{
+	his.visitedStories[id] = StoryInfo{
 		LastVisited:         now,
 		CommentsLastVisited: now,
 		CommentsOnLastVisit: commentsOnLastVisit,
@@ -74,25 +74,25 @@ func (his *Persistent) MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int)
 	return writeToDisk(his, his.filePath)
 }
 
-func (his *Persistent) MarkArticleAsReadAndWriteToDisk(id int) error {
+func (his *Persistent) MarkArticleRead(id int) error {
 	his.mu.Lock()
 	defer his.mu.Unlock()
 
 	now := time.Now().Unix()
 
-	if existing, ok := his.VisitedStories[id]; ok {
+	if existing, ok := his.visitedStories[id]; ok {
 		elapsed := time.Since(time.Unix(existing.LastVisited, 0))
 		if elapsed < readCooldown {
 			return nil
 		}
 
-		his.VisitedStories[id] = StoryInfo{
+		his.visitedStories[id] = StoryInfo{
 			LastVisited:         now,
 			CommentsLastVisited: existing.CommentsLastVisited,
 			CommentsOnLastVisit: existing.CommentsOnLastVisit,
 		}
 	} else {
-		his.VisitedStories[id] = StoryInfo{
+		his.visitedStories[id] = StoryInfo{
 			LastVisited: now,
 		}
 	}
@@ -100,11 +100,11 @@ func (his *Persistent) MarkArticleAsReadAndWriteToDisk(id int) error {
 	return writeToDisk(his, his.filePath)
 }
 
-func (his *Persistent) MarkAsUnreadAndWriteToDisk(id int) error {
+func (his *Persistent) MarkUnread(id int) error {
 	his.mu.Lock()
 	defer his.mu.Unlock()
 
-	delete(his.VisitedStories, id)
+	delete(his.visitedStories, id)
 
 	return writeToDisk(his, his.filePath)
 }

@@ -35,7 +35,7 @@ const (
 type Model struct {
 	styles styles
 
-	state  ViewState
+	state  viewState
 	status statusBar
 	pager  pager
 	width  int
@@ -68,7 +68,7 @@ type Model struct {
 }
 
 func New(config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int) (*Model, error) {
-	hist, err := getHistory(config.DebugMode || config.DebugFallible, config.DoNotMarkSubmissionsAsRead)
+	hist, err := newHistory(config.DebugMode || config.DebugFallible, config.DoNotMarkSubmissionsAsRead)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func newModel(config *settings.Config, cat *categories.Categories, favorites *fa
 	m := Model{
 		styles: s,
 
-		state:  StateStartup,
+		state:  stateStartup,
 		width:  width,
 		height: height,
 		pager: pager{
@@ -145,7 +145,7 @@ func (m *Model) handleCategoryFetchingFinished(msg message.CategoryFetchingFinis
 		}
 
 		m.pager.transition = nil
-		m.state = StateBrowsing
+		m.state = stateBrowsing
 		m.status.StopSpinner()
 		m.updatePagination()
 
@@ -155,7 +155,7 @@ func (m *Model) handleCategoryFetchingFinished(msg message.CategoryFetchingFinis
 	m.pager.transition = nil
 	m.pager.items[msg.Category] = msg.Stories
 	m.pager.Paginator.Page = 0
-	m.state = StateBrowsing
+	m.state = stateBrowsing
 	m.status.StopSpinner()
 	m.cat.SetIndex(msg.Index)
 
@@ -184,14 +184,14 @@ func (m *Model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*M
 	}
 
 	if msg.Err != nil {
-		m.state = StateBrowsing
+		m.state = stateBrowsing
 		cmds = append(cmds, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong))
 
 		return m, tea.Batch(cmds...)
 	}
 
 	m.commentView = comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, m.width, m.height)
-	m.state = StateCommentView
+	m.state = stateCommentView
 
 	cmds = append(cmds, m.commentView.Init())
 
@@ -208,7 +208,7 @@ func (m *Model) handleFetchingFinished(msg message.FetchingFinished) (*Model, te
 	}
 
 	m.status.StopSpinner()
-	m.state = StateBrowsing
+	m.state = stateBrowsing
 
 	if msg.Err != nil {
 		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
@@ -223,11 +223,11 @@ func (m *Model) handleFetchingFinished(msg message.FetchingFinished) (*Model, te
 func (m *Model) handleWindowResize(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 	m.setSize(msg.Width, msg.Height)
 
-	if m.state == StateReaderView {
+	if m.state == stateReaderView {
 		return m, m.readerView.Update(msg)
 	}
 
-	if m.state == StateCommentView {
+	if m.state == stateCommentView {
 		return m, m.commentView.Update(msg)
 	}
 
@@ -250,9 +250,9 @@ func (m *Model) handleStartup(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 
 	m.syncFavorites()
 
-	fetchCmd := m.FetchStoriesForFirstCategory()
+	fetchCmd := m.fetchStoriesForFirstCategory()
 	cmds = append(cmds, fetchCmd)
-	cmds = append(cmds, FetchMemorialStatus())
+	cmds = append(cmds, fetchMemorialStatus())
 	cmds = append(cmds, scheduleTimeRefresh())
 
 	m.viewport = viewport.New()
@@ -262,7 +262,7 @@ func (m *Model) handleStartup(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 }
 
 func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
-	if m.state == StateStartup {
+	if m.state == stateStartup {
 		if windowSizeMsg, ok := msg.(tea.WindowSizeMsg); ok {
 			return m.handleStartup(windowSizeMsg)
 		}
@@ -341,7 +341,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		m.status.StopSpinner()
 
 		if msg.Err != nil {
-			m.state = StateBrowsing
+			m.state = stateBrowsing
 
 			return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
 		}
@@ -355,7 +355,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 			NerdFonts: m.config.EnableNerdFonts,
 		})
 
-		m.state = StateReaderView
+		m.state = stateReaderView
 
 		initCmd := m.readerView.Init()
 		if msg.HistoryWarning != nil {
@@ -365,9 +365,9 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 
 		return m, initCmd
 
-	case message.ReaderViewQuitMsg:
+	case message.ReaderViewQuit:
 		m.readerView = nil
-		m.state = StateBrowsing
+		m.state = stateBrowsing
 
 		return m, nil
 
@@ -375,7 +375,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, m.fetchCategory(msg.Category, msg.Index, msg.Cursor)
 
 	case message.Refresh:
-		return m, tea.Batch(m.fetchCategory(msg.CurrentCategory, msg.CurrentIndex, 0), FetchMemorialStatus())
+		return m, tea.Batch(m.fetchCategory(msg.CurrentCategory, msg.CurrentIndex, 0), fetchMemorialStatus())
 
 	case message.ShowStatusMessage:
 		cmds = append(cmds, m.status.NewStatusMessageWithDuration(msg.Message, msg.Duration))
@@ -383,9 +383,9 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 	case message.CommentTreeDataReady:
 		return m.handleCommentTreeDataReady(msg)
 
-	case message.CommentViewQuitMsg:
+	case message.CommentViewQuit:
 		m.commentView = nil
-		m.state = StateBrowsing
+		m.state = stateBrowsing
 
 		return m, nil
 
@@ -393,15 +393,15 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m.handleCategoryFetchingFinished(msg)
 	}
 
-	if m.state == StateReaderView {
+	if m.state == stateReaderView {
 		return m, m.readerView.Update(msg)
 	}
 
-	if m.state == StateCommentView {
+	if m.state == stateCommentView {
 		return m, m.commentView.Update(msg)
 	}
 
-	if m.state == StateHelpScreen {
+	if m.state == stateHelpScreen {
 		return m.updateHelpScreen(msg)
 	}
 

@@ -122,7 +122,7 @@ func init() {
 	rebuildThemeStyles()
 }
 
-func Init(t *theme.Theme) {
+func SetTheme(t *theme.Theme) {
 	current = t
 
 	rebuildThemeStyles()

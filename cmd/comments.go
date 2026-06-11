@@ -47,7 +47,7 @@ func (m commentModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			return m, m.view.Init()
 		}
-	case message.CommentViewQuitMsg:
+	case message.CommentViewQuit:
 		return m, tea.Quit
 	}
 

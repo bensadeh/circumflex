@@ -20,11 +20,7 @@ func (p *pager) updatePagination(availHeight, itemHeight, itemSpacing int, curre
 
 	p.Paginator.PerPage = max(1, availHeight/(itemHeight+itemSpacing))
 
-	if pages := len(p.VisibleItems(currentCategory)); pages < 1 {
-		p.Paginator.SetTotalPages(1)
-	} else {
-		p.Paginator.SetTotalPages(pages)
-	}
+	p.Paginator.SetTotalPages(max(1, len(p.VisibleItems(currentCategory))))
 
 	p.Paginator.Page = index / p.Paginator.PerPage
 	p.cursor = index % p.Paginator.PerPage

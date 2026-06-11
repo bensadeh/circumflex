@@ -65,9 +65,9 @@ func (m *Model) renderItem(w io.Writer, index int, item *hn.Story) {
 	title := syntax.ReplaceSpecialContentTags(item.Title, enableNerdFonts)
 	domain := syntax.HighlightDomain(item.Domain)
 
-	score := getScore(item.Points, enableNerdFonts)
-	author := getAuthor(item.Author, enableNerdFonts)
-	comments := getComments(item.CommentsCount, enableNerdFonts)
+	score := scoreLabel(item.Points, enableNerdFonts)
+	author := authorLabel(item.Author, enableNerdFonts)
+	comments := commentsLabel(item.CommentsCount, enableNerdFonts)
 	timeAgo := parseTime(item.Time, enableNerdFonts)
 
 	var desc string
@@ -91,20 +91,20 @@ func (m *Model) renderItem(w io.Writer, index int, item *hn.Story) {
 	)
 
 	switch {
-	case isSelected && m.state == StateAddFavoritesPrompt:
+	case isSelected && m.state == stateAddFavoritesPrompt:
 		title, desc = styleTitleAndDesc(title, s.selectedTitleAddToFavorites, s.selectedDescAddToFavorites, domain,
 			desc, syntax.AddToFavorites, enableNerdFonts)
 
-	case isSelected && m.state == StateRemoveFavoritesPrompt:
+	case isSelected && m.state == stateRemoveFavoritesPrompt:
 		title, desc = styleTitleAndDesc(title, s.selectedTitleRemoveFromFavorites, s.selectedDescRemoveFromFavorites, domain,
 			desc, syntax.RemoveFromFavorites, enableNerdFonts)
 
-	case isSelected && m.state == StateBrowsing:
+	case isSelected && m.state == stateBrowsing:
 		title, desc = styleTitleAndDesc(title, s.selectedTitle, s.selectedDesc, domain,
 			desc, syntax.Selected, enableNerdFonts)
 
 	case (markAsRead && m.cat.CurrentCategory() != categories.Favorites) ||
-		m.pager.transition != nil || m.state == StateReaderView:
+		m.pager.transition != nil || m.state == stateReaderView:
 		title, desc = styleTitleAndDesc(title, s.markAsReadTitle, s.markAsReadDesc, domain,
 			desc, syntax.MarkAsRead, enableNerdFonts)
 
@@ -116,7 +116,7 @@ func (m *Model) renderItem(w io.Writer, index int, item *hn.Story) {
 	_, _ = fmt.Fprintf(w, "%s\n%s", title, desc)
 }
 
-func getComments(numberOfComments int, enableNerdFonts bool) string {
+func commentsLabel(numberOfComments int, enableNerdFonts bool) string {
 	if numberOfComments == 0 && enableNerdFonts {
 		return "      "
 	}
@@ -132,7 +132,7 @@ func getComments(numberOfComments int, enableNerdFonts bool) string {
 	return fmt.Sprintf("| %d comments", numberOfComments)
 }
 
-func getScore(score int, enableNerdFonts bool) string {
+func scoreLabel(score int, enableNerdFonts bool) string {
 	if score == 0 {
 		return ""
 	}
@@ -144,7 +144,7 @@ func getScore(score int, enableNerdFonts bool) string {
 	return fmt.Sprintf("%d points ", score)
 }
 
-func getAuthor(author string, enableNerdFonts bool) string {
+func authorLabel(author string, enableNerdFonts bool) string {
 	if author == "" {
 		return ""
 	}

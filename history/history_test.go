@@ -16,7 +16,7 @@ func newTestPersistent(t *testing.T) *Persistent {
 
 	return &Persistent{
 		filePath:       path.Join(t.TempDir(), "history.json"),
-		VisitedStories: make(map[int]StoryInfo),
+		visitedStories: make(map[int]StoryInfo),
 	}
 }
 
@@ -24,7 +24,7 @@ func TestPersistent_MarkAndContains(t *testing.T) {
 	h := newTestPersistent(t)
 	assert.False(t, h.Contains(42))
 
-	err := h.MarkAsReadAndWriteToDisk(42, 10)
+	err := h.MarkRead(42, 10)
 	require.NoError(t, err)
 
 	assert.True(t, h.Contains(42))
@@ -37,8 +37,8 @@ func TestPersistent_CommentsLastVisited(t *testing.T) {
 	ts := h.CommentsLastVisited(1)
 	assert.Positive(t, ts)
 
-	// After marking with MarkAsReadAndWriteToDisk, returns the marked time
-	_ = h.MarkAsReadAndWriteToDisk(1, 5)
+	// After marking with MarkRead, returns the marked time
+	_ = h.MarkRead(1, 5)
 	ts2 := h.CommentsLastVisited(1)
 	assert.Positive(t, ts2)
 }
@@ -47,19 +47,19 @@ func TestPersistent_CommentsLastVisited_FallsBackToLastVisited(t *testing.T) {
 	h := newTestPersistent(t)
 
 	// Simulate old data where CommentsLastVisited is zero
-	h.VisitedStories[1] = StoryInfo{LastVisited: 100, CommentsOnLastVisit: 5}
+	h.visitedStories[1] = StoryInfo{LastVisited: 100, CommentsOnLastVisit: 5}
 
 	assert.Equal(t, int64(100), h.CommentsLastVisited(1))
 }
 
 func TestPersistent_ClearAndWriteToDisk(t *testing.T) {
 	h := newTestPersistent(t)
-	h.VisitedStories[1] = StoryInfo{LastVisited: 100, CommentsLastVisited: 100, CommentsOnLastVisit: 5}
-	h.VisitedStories[2] = StoryInfo{LastVisited: 200, CommentsLastVisited: 200, CommentsOnLastVisit: 10}
+	h.visitedStories[1] = StoryInfo{LastVisited: 100, CommentsLastVisited: 100, CommentsOnLastVisit: 5}
+	h.visitedStories[2] = StoryInfo{LastVisited: 200, CommentsLastVisited: 200, CommentsOnLastVisit: 10}
 
-	_ = h.ClearAndWriteToDisk()
+	_ = h.Clear()
 
-	assert.Empty(t, h.VisitedStories)
+	assert.Empty(t, h.visitedStories)
 	assert.False(t, h.Contains(1))
 	assert.False(t, h.Contains(2))
 }
@@ -69,9 +69,9 @@ func TestPersistent_WriteToDisk_RoundTrip(t *testing.T) {
 
 	h := &Persistent{
 		filePath:       filePath,
-		VisitedStories: make(map[int]StoryInfo),
+		visitedStories: make(map[int]StoryInfo),
 	}
-	h.VisitedStories[42] = StoryInfo{LastVisited: 1234567890, CommentsLastVisited: 1234567890, CommentsOnLastVisit: 15}
+	h.visitedStories[42] = StoryInfo{LastVisited: 1234567890, CommentsLastVisited: 1234567890, CommentsOnLastVisit: 15}
 
 	err := writeToDisk(h, filePath)
 	require.NoError(t, err)
@@ -91,61 +91,61 @@ func TestNonPersistent_NoOps(t *testing.T) {
 
 	assert.False(t, h.Contains(1))
 	assert.Positive(t, h.CommentsLastVisited(1))
-	assert.NoError(t, h.ClearAndWriteToDisk())
-	assert.NoError(t, h.MarkAsReadAndWriteToDisk(1, 5))
-	assert.NoError(t, h.MarkArticleAsReadAndWriteToDisk(1))
+	assert.NoError(t, h.Clear())
+	assert.NoError(t, h.MarkRead(1, 5))
+	assert.NoError(t, h.MarkArticleRead(1))
 }
 
 func TestPersistent_MarkAsRead_SkipsWithinThreshold(t *testing.T) {
 	h := newTestPersistent(t)
 
 	// First mark sets the timestamp
-	err := h.MarkAsReadAndWriteToDisk(1, 5)
+	err := h.MarkRead(1, 5)
 	require.NoError(t, err)
 
 	firstVisit := h.CommentsLastVisited(1)
 
 	// Marking again within 5 minutes should not update the timestamp
-	err = h.MarkAsReadAndWriteToDisk(1, 10)
+	err = h.MarkRead(1, 10)
 	require.NoError(t, err)
 
 	assert.Equal(t, firstVisit, h.CommentsLastVisited(1))
-	assert.Equal(t, 5, h.VisitedStories[1].CommentsOnLastVisit)
+	assert.Equal(t, 5, h.visitedStories[1].CommentsOnLastVisit)
 }
 
 func TestPersistent_MarkAsRead_UpdatesAfterThreshold(t *testing.T) {
 	h := newTestPersistent(t)
 
 	// Set a timestamp 6 minutes in the past
-	h.VisitedStories[1] = StoryInfo{
+	h.visitedStories[1] = StoryInfo{
 		LastVisited:         time.Now().Unix() - 6*60,
 		CommentsLastVisited: time.Now().Unix() - 6*60,
 		CommentsOnLastVisit: 5,
 	}
 
-	err := h.MarkAsReadAndWriteToDisk(1, 15)
+	err := h.MarkRead(1, 15)
 	require.NoError(t, err)
 
-	assert.Equal(t, 15, h.VisitedStories[1].CommentsOnLastVisit)
+	assert.Equal(t, 15, h.visitedStories[1].CommentsOnLastVisit)
 }
 
 func TestPersistent_MarkArticleAsRead_DoesNotUpdateCommentsLastVisited(t *testing.T) {
 	h := newTestPersistent(t)
 
 	// First visit to comments
-	_ = h.MarkAsReadAndWriteToDisk(1, 5)
+	_ = h.MarkRead(1, 5)
 	commentsTS := h.CommentsLastVisited(1)
 
 	// Simulate cooldown expiry for the article timestamp
-	info := h.VisitedStories[1]
+	info := h.visitedStories[1]
 	info.LastVisited = time.Now().Unix() - 6*60
-	h.VisitedStories[1] = info
+	h.visitedStories[1] = info
 
 	// Mark article as read (e.g. reader mode)
-	_ = h.MarkArticleAsReadAndWriteToDisk(1)
+	_ = h.MarkArticleRead(1)
 
 	// Article timestamp should be updated
-	assert.Greater(t, h.VisitedStories[1].LastVisited, info.LastVisited)
+	assert.Greater(t, h.visitedStories[1].LastVisited, info.LastVisited)
 
 	// Comments timestamp should be preserved
 	assert.Equal(t, commentsTS, h.CommentsLastVisited(1))
@@ -154,11 +154,11 @@ func TestPersistent_MarkArticleAsRead_DoesNotUpdateCommentsLastVisited(t *testin
 func TestPersistent_MarkArticleAsRead_FirstVisit(t *testing.T) {
 	h := newTestPersistent(t)
 
-	err := h.MarkArticleAsReadAndWriteToDisk(42)
+	err := h.MarkArticleRead(42)
 	require.NoError(t, err)
 
 	assert.True(t, h.Contains(42))
-	assert.Equal(t, int64(0), h.VisitedStories[42].CommentsLastVisited)
+	assert.Equal(t, int64(0), h.visitedStories[42].CommentsLastVisited)
 }
 
 func TestMock_ContainsKnownIDs(t *testing.T) {

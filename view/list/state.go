@@ -2,17 +2,17 @@ package list
 
 import "github.com/bensadeh/circumflex/hn"
 
-type ViewState int
+type viewState int
 
 const (
-	StateStartup ViewState = iota
-	StateBrowsing
-	StateFetching
-	StateAddFavoritesPrompt
-	StateRemoveFavoritesPrompt
-	StateHelpScreen
-	StateReaderView
-	StateCommentView
+	stateStartup viewState = iota
+	stateBrowsing
+	stateFetching
+	stateAddFavoritesPrompt
+	stateRemoveFavoritesPrompt
+	stateHelpScreen
+	stateReaderView
+	stateCommentView
 )
 
 type transition struct {

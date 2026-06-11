@@ -85,8 +85,8 @@ func TestQuit_ReturnsReaderViewQuitMsg(t *testing.T) {
 	require.NotNil(t, cmd)
 
 	msg := cmd()
-	_, ok := msg.(message.ReaderViewQuitMsg)
-	assert.True(t, ok, "quit should produce ReaderViewQuitMsg")
+	_, ok := msg.(message.ReaderViewQuit)
+	assert.True(t, ok, "quit should produce ReaderViewQuit")
 }
 
 func TestQuit_Standalone_ReturnsTeaQuit(t *testing.T) {

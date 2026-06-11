@@ -14,7 +14,7 @@ const (
 	panelLeftMargin = 1
 )
 
-func MainMenuText(screenWidth int, sections []Section) string {
+func mainMenuText(screenWidth int, sections []Section) string {
 	keys := new(keyList)
 
 	for _, sec := range sections {
@@ -33,7 +33,7 @@ func MainMenuText(screenWidth int, sections []Section) string {
 	return formatKeymaps(keys, screenWidth)
 }
 
-func ReaderText(screenWidth int) string {
+func readerText(screenWidth int) string {
 	keys := new(keyList)
 
 	nav := keys.addSection("Navigation")
@@ -55,7 +55,7 @@ func ReaderText(screenWidth int) string {
 	return formatKeymaps(keys, screenWidth)
 }
 
-func CommentText(screenWidth int, enableNerdFonts bool) string {
+func commentText(screenWidth int, enableNerdFonts bool) string {
 	keys := new(keyList)
 
 	read := keys.addSection("Read Mode")

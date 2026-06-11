@@ -14,7 +14,7 @@ import (
 
 var mods = []string{"dang", "tomhow"}
 
-func Author(author string, lastVisited, timePosted int64, focused bool) string {
+func renderAuthor(author string, lastVisited, timePosted int64, focused bool) string {
 	var styledAuthor string
 	if focused {
 		styledAuthor = style.BoldReverse(author) + " "
@@ -29,7 +29,7 @@ func Author(author string, lastVisited, timePosted int64, focused bool) string {
 	return styledAuthor
 }
 
-func AuthorLabel(author, originalPoster, topLevelAuthor string, enableNerdFonts bool) string {
+func renderAuthorLabel(author, originalPoster, topLevelAuthor string, enableNerdFonts bool) string {
 	label := computeLabel(author, originalPoster, topLevelAuthor, enableNerdFonts)
 	if label == "" {
 		return ""
@@ -117,8 +117,8 @@ func Header(c *Comment, depth int, originalPoster, topLevelAuthor string, lastVi
 		indentSize = 1
 	}
 
-	author := Author(c.Author, lastVisited, c.Time, focused)
-	authorLabel := AuthorLabel(c.Author, originalPoster, topLevelAuthor, enableNerdFonts)
+	author := renderAuthor(c.Author, lastVisited, c.Time, focused)
+	authorLabel := renderAuthorLabel(c.Author, originalPoster, topLevelAuthor, enableNerdFonts)
 	indentation := strings.Repeat(" ", indentSize)
 
 	return indentation + author + authorLabel + style.Faint(c.TimeAgo) + "\n"

@@ -17,7 +17,7 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
 		if key.Matches(msg, m.keymap.Quit, m.keymap.Help) {
-			m.state = StateBrowsing
+			m.state = stateBrowsing
 
 			return m, nil
 		}

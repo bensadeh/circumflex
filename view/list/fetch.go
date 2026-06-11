@@ -21,7 +21,7 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
+func (m *Model) fetchStoriesForFirstCategory() tea.Cmd {
 	categoryToFetch := m.cat.CurrentCategory()
 
 	// Favorites is served locally — it is never fetched over the network. Hand
@@ -40,7 +40,7 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 	}
 
 	service := m.service
-	numItems := m.getNumberOfItemsToFetch(categoryToFetch)
+	numItems := m.numberOfItemsToFetch(categoryToFetch)
 	endpoint := categories.Endpoint(categoryToFetch)
 	ctx := m.fetchCtx
 	fetchID := m.fetchID
@@ -75,7 +75,7 @@ func fetchItems(ctx context.Context, service hn.Service, numItems int, endpoint 
 	return stories, err
 }
 
-func FetchMemorialStatus() tea.Cmd {
+func fetchMemorialStatus() tea.Cmd {
 	return func() tea.Msg {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
@@ -86,7 +86,7 @@ func FetchMemorialStatus() tea.Cmd {
 	}
 }
 
-func (m *Model) getNumberOfItemsToFetch(cat categories.Category) int {
+func (m *Model) numberOfItemsToFetch(cat categories.Category) int {
 	if categories.Policy(cat) == categories.MultiPage {
 		return m.pager.Paginator.PerPage * m.config.PageMultiplier
 	}
@@ -94,7 +94,7 @@ func (m *Model) getNumberOfItemsToFetch(cat categories.Category) int {
 	return m.pager.Paginator.PerPage
 }
 
-func getHistory(debugMode bool, doNotMarkAsRead bool) (history.History, error) {
+func newHistory(debugMode bool, doNotMarkAsRead bool) (history.History, error) {
 	if debugMode {
 		return history.NewMockHistory(), nil
 	}
@@ -108,7 +108,7 @@ func getHistory(debugMode bool, doNotMarkAsRead bool) (history.History, error) {
 
 func (m *Model) fetchCategory(cat categories.Category, index, cursor int) tea.Cmd {
 	service := m.service
-	numItems := m.getNumberOfItemsToFetch(cat)
+	numItems := m.numberOfItemsToFetch(cat)
 	endpoint := categories.Endpoint(cat)
 	ctx := m.fetchCtx
 	fetchID := m.fetchID
@@ -162,7 +162,7 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 
 		clearProgress()
 
-		histErr := hist.MarkAsReadAndWriteToDisk(msg.ID, msg.CommentCount)
+		histErr := hist.MarkRead(msg.ID, msg.CommentCount)
 
 		var updatedStory *hn.Story
 		if isOnFavorites {
@@ -213,7 +213,7 @@ func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 
 		clearProgress()
 
-		histErr := hist.MarkArticleAsReadAndWriteToDisk(msg.ID)
+		histErr := hist.MarkArticleRead(msg.ID)
 
 		return message.ArticleReady{
 			Parsed:         parsed,

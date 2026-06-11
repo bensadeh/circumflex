@@ -17,10 +17,10 @@ func (Mock) CommentsLastVisited(_ int) int64 {
 	return time.Now().Unix()
 }
 
-func (Mock) ClearAndWriteToDisk() error { return nil }
+func (Mock) Clear() error { return nil }
 
-func (Mock) MarkAsReadAndWriteToDisk(_ int, _ int) error { return nil }
+func (Mock) MarkRead(_ int, _ int) error { return nil }
 
-func (Mock) MarkArticleAsReadAndWriteToDisk(_ int) error { return nil }
+func (Mock) MarkArticleRead(_ int) error { return nil }
 
-func (Mock) MarkAsUnreadAndWriteToDisk(_ int) error { return nil }
+func (Mock) MarkUnread(_ int) error { return nil }

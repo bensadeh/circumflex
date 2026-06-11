@@ -205,7 +205,7 @@ func getConfig() (*settings.Config, error) {
 	}
 
 	config.Theme = t
-	style.Init(t)
+	style.SetTheme(t)
 
 	config.CommentWidth = commentWidth
 	config.ArticleWidth = articleWidth

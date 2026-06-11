@@ -13,7 +13,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 )
 
-type ReaderViewQuitMsg struct{}
+type ReaderViewQuit struct{}
 
 type EnteringCommentSection struct {
 	ID           int
@@ -107,7 +107,7 @@ type CommentTreeDataReady struct {
 	HistoryWarning error // non-nil if marking as read failed
 }
 
-type CommentViewQuitMsg struct{}
+type CommentViewQuit struct{}
 
 type TimeRefreshTick struct{}
 

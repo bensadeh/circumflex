@@ -15,7 +15,7 @@ import (
 )
 
 func (m *Model) View() string {
-	if m.state == StateHelpScreen {
+	if m.state == stateHelpScreen {
 		return fmt.Sprintf("%s\n%s\n%s\n%s",
 			header.HelpHeader("Keyboard Shortcuts", m.width),
 			m.viewport.View(),
@@ -28,11 +28,11 @@ func (m *Model) View() string {
 		availHeight = m.height
 	)
 
-	if m.state == StateReaderView {
+	if m.state == stateReaderView {
 		return m.readerView.View()
 	}
 
-	if m.state == StateCommentView {
+	if m.state == stateCommentView {
 		return m.commentView.View()
 	}
 
@@ -105,11 +105,11 @@ func (m *Model) statusAndPaginationView() string {
 	centerContent = m.status.message
 
 	switch m.state {
-	case StateFetching:
+	case stateFetching:
 		rightContent = strings.Repeat(m.styles.InactivePaginationDot.String(), m.config.PageMultiplier)
-	case StateStartup, StateBrowsing, StateAddFavoritesPrompt, StateRemoveFavoritesPrompt, StateReaderView:
+	case stateStartup, stateBrowsing, stateAddFavoritesPrompt, stateRemoveFavoritesPrompt, stateReaderView:
 		rightContent = m.pager.Paginator.View()
-	case StateCommentView, StateHelpScreen:
+	case stateCommentView, stateHelpScreen:
 		// These views handle their own footer.
 	}
 

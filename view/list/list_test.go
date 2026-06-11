@@ -73,7 +73,7 @@ func newTestModelReady(t *testing.T) *Model {
 	// Simulate fetch completion: populate items and reset state
 	m.pager.items[categories.Top] = testItems()
 	m.status.StopSpinner()
-	m.state = StateBrowsing
+	m.state = stateBrowsing
 
 	return m
 }
@@ -108,30 +108,30 @@ func keyMsg(s string) tea.KeyPressMsg {
 
 func TestStartup_WaitsForWindowSizeMsg(t *testing.T) {
 	m := newTestModel(t)
-	assert.Equal(t, StateStartup, m.state)
+	assert.Equal(t, stateStartup, m.state)
 
 	// Non-WindowSizeMsg during startup should be ignored
 	m, cmd := m.Update(message.StatusMessageTimeout{})
-	assert.Equal(t, StateStartup, m.state)
+	assert.Equal(t, stateStartup, m.state)
 	assert.Nil(t, cmd)
 }
 
 func TestStartup_InitializesOnWindowSizeMsg(t *testing.T) {
 	m := newTestModel(t)
-	assert.Equal(t, StateStartup, m.state)
+	assert.Equal(t, stateStartup, m.state)
 
 	m, cmd := m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
-	assert.Equal(t, StateFetching, m.state)
+	assert.Equal(t, stateFetching, m.state)
 	assert.True(t, m.status.showSpinner)
 	assert.NotNil(t, cmd, "should return batch cmd with spinner + fetch")
 }
 
 func TestReaderViewQuit_RestoresState(t *testing.T) {
 	m := newTestModelReady(t)
-	m.state = StateReaderView
+	m.state = stateReaderView
 
-	m, _ = m.Update(message.ReaderViewQuitMsg{})
-	assert.Equal(t, StateBrowsing, m.state)
+	m, _ = m.Update(message.ReaderViewQuit{})
+	assert.Equal(t, stateBrowsing, m.state)
 }
 
 func TestStatusMessageTimeout_ClearsMessage(t *testing.T) {
@@ -163,13 +163,13 @@ func TestWindowResize_UpdatesDimensions(t *testing.T) {
 
 func TestCategoryFetchingFinished_UpdatesState(t *testing.T) {
 	m := newTestModelReady(t)
-	m.state = StateFetching
+	m.state = stateFetching
 	m.pager.transition = &transition{prevIndex: 0, oldItems: testItems()}
 	m.status.showSpinner = true
 
 	m, _ = m.Update(message.CategoryFetchingFinished{Index: 1, Cursor: 0, FetchID: m.fetchID})
 
-	assert.Equal(t, StateBrowsing, m.state)
+	assert.Equal(t, stateBrowsing, m.state)
 	assert.False(t, m.status.showSpinner)
 	assert.Nil(t, m.pager.transition)
 }
@@ -263,7 +263,7 @@ func TestTabToUncachedCategory(t *testing.T) {
 
 	m, cmd := m.Update(keyMsg("tab"))
 
-	assert.Equal(t, StateFetching, m.state)
+	assert.Equal(t, stateFetching, m.state)
 	assert.True(t, m.status.showSpinner)
 	assert.NotNil(t, cmd, "should return batch cmd with spinner + fetch")
 	assert.NotNil(t, m.pager.transition, "should have a transition with old items")
@@ -273,7 +273,7 @@ func TestEnterCommentSection(t *testing.T) {
 	m := newTestModelReady(t)
 
 	m, cmd := m.Update(keyMsg("enter"))
-	assert.Equal(t, StateFetching, m.state)
+	assert.Equal(t, stateFetching, m.state)
 	assert.True(t, m.status.showSpinner)
 	assert.NotNil(t, m.pager.transition)
 	assert.NotNil(t, cmd)
@@ -298,16 +298,16 @@ func TestCommentTreeDataReady_OpensCommentView(t *testing.T) {
 
 	thread := &comment.Thread{ID: 1, Title: "test", CommentsCount: 5}
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
-	assert.Equal(t, StateCommentView, m.state)
+	assert.Equal(t, stateCommentView, m.state)
 	assert.NotNil(t, m.commentView)
 }
 
 func TestCommentViewQuit_RestoresState(t *testing.T) {
 	m := newTestModelReady(t)
-	m.state = StateCommentView
+	m.state = stateCommentView
 
-	m, _ = m.Update(message.CommentViewQuitMsg{})
-	assert.Equal(t, StateBrowsing, m.state)
+	m, _ = m.Update(message.CommentViewQuit{})
+	assert.Equal(t, stateBrowsing, m.state)
 }
 
 func TestEnteringReaderMode_ReturnsCmd(t *testing.T) {
@@ -357,7 +357,7 @@ func TestArticleReady_WithParsedArticle(t *testing.T) {
 	m := newTestModelReady(t)
 
 	m, _ = m.Update(message.ArticleReady{Parsed: testParsedArticle(), Title: "Test", FetchID: m.fetchID})
-	assert.Equal(t, StateReaderView, m.state)
+	assert.Equal(t, stateReaderView, m.state)
 	assert.NotNil(t, m.readerView, "should create reader view")
 }
 
@@ -365,7 +365,7 @@ func TestAddFavoritesPrompt(t *testing.T) {
 	m := newTestModelReady(t)
 
 	m, _ = m.Update(keyMsg("f"))
-	assert.Equal(t, StateAddFavoritesPrompt, m.state)
+	assert.Equal(t, stateAddFavoritesPrompt, m.state)
 	assert.NotEmpty(t, m.status.message)
 }
 
@@ -374,11 +374,11 @@ func TestAddFavoritesConfirm(t *testing.T) {
 
 	// Enter prompt
 	m, _ = m.Update(keyMsg("f"))
-	assert.Equal(t, StateAddFavoritesPrompt, m.state)
+	assert.Equal(t, stateAddFavoritesPrompt, m.state)
 
 	// Confirm
 	m, cmd := m.Update(keyMsg("y"))
-	assert.Equal(t, StateBrowsing, m.state)
+	assert.Equal(t, stateBrowsing, m.state)
 	assert.NotNil(t, cmd, "should return AddToFavorites cmd")
 }
 
@@ -387,11 +387,11 @@ func TestAddFavoritesCancel(t *testing.T) {
 
 	// Enter prompt
 	m, _ = m.Update(keyMsg("f"))
-	assert.Equal(t, StateAddFavoritesPrompt, m.state)
+	assert.Equal(t, stateAddFavoritesPrompt, m.state)
 
 	// Cancel with any key other than "y"
 	m, _ = m.Update(keyMsg("n"))
-	assert.Equal(t, StateBrowsing, m.state)
+	assert.Equal(t, stateBrowsing, m.state)
 }
 
 func newFavoritesTestModel(t *testing.T) *Model {
@@ -408,7 +408,7 @@ func newFavoritesTestModel(t *testing.T) *Model {
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 	m.pager.items[categories.Top] = testItems()
 	m.status.StopSpinner()
-	m.state = StateBrowsing
+	m.state = stateBrowsing
 
 	return m
 }
@@ -438,13 +438,13 @@ func TestFavorites_TabToEmptyDoesNotFetch(t *testing.T) {
 	m, cmd := m.Update(keyMsg("tab"))
 
 	assert.Equal(t, categories.Favorites, m.cat.CurrentCategory())
-	assert.Equal(t, StateBrowsing, m.state, "favorites is local; tabbing to it must not fetch")
+	assert.Equal(t, stateBrowsing, m.state, "favorites is local; tabbing to it must not fetch")
 	assert.Nil(t, cmd)
 }
 
 func TestDisabledInput_IgnoresKeys(t *testing.T) {
 	m := newTestModelReady(t)
-	m.state = StateFetching
+	m.state = stateFetching
 
 	cursorBefore := m.pager.cursor
 	m, cmd := m.Update(keyMsg("j"))
@@ -457,18 +457,18 @@ func TestHelpScreen_Toggle(t *testing.T) {
 
 	// Enter help screen
 	m, _ = m.Update(keyMsg("i"))
-	assert.Equal(t, StateHelpScreen, m.state)
+	assert.Equal(t, stateHelpScreen, m.state)
 
 	// Exit help screen
 	m, _ = m.Update(keyMsg("q"))
-	assert.Equal(t, StateBrowsing, m.state)
+	assert.Equal(t, stateBrowsing, m.state)
 }
 
 func TestRefresh(t *testing.T) {
 	m := newTestModelReady(t)
 
 	m, cmd := m.Update(keyMsg("r"))
-	assert.Equal(t, StateFetching, m.state)
+	assert.Equal(t, stateFetching, m.state)
 	assert.True(t, m.status.showSpinner)
 	assert.NotNil(t, cmd)
 	assert.NotNil(t, m.pager.transition)
@@ -528,7 +528,7 @@ func TestSpinnerTick_WhenInactive(t *testing.T) {
 func TestViewReaderView_HasContent(t *testing.T) {
 	m := newTestModelReady(t)
 	m.readerView = reader.NewWithArticle(testParsedArticle(), "Test Title", 72, 80, 24, reader.Meta{})
-	m.state = StateReaderView
+	m.state = stateReaderView
 
 	got := m.View()
 	assert.NotEmpty(t, got)
@@ -543,7 +543,7 @@ func TestViewBrowsing_HasContent(t *testing.T) {
 
 func TestViewHelpScreen(t *testing.T) {
 	m := newTestModelReady(t)
-	m.state = StateHelpScreen
+	m.state = stateHelpScreen
 
 	got := m.View()
 	assert.NotEmpty(t, got)
@@ -564,15 +564,15 @@ type failingHistory struct {
 	writeErr error
 }
 
-func (f failingHistory) MarkAsReadAndWriteToDisk(_ int, _ int) error {
+func (f failingHistory) MarkRead(_ int, _ int) error {
 	return f.writeErr
 }
 
-func (f failingHistory) MarkArticleAsReadAndWriteToDisk(_ int) error {
+func (f failingHistory) MarkArticleRead(_ int) error {
 	return f.writeErr
 }
 
-func (f failingHistory) MarkAsUnreadAndWriteToDisk(_ int) error {
+func (f failingHistory) MarkUnread(_ int) error {
 	return f.writeErr
 }
 
@@ -589,7 +589,7 @@ func TestCommentTreeDataReady_HistoryWarning(t *testing.T) {
 		HistoryWarning: histErr,
 	})
 
-	assert.Equal(t, StateCommentView, m.state)
+	assert.Equal(t, stateCommentView, m.state)
 	assert.NotNil(t, cmd, "should return batched cmd with init + warning")
 }
 
@@ -604,7 +604,7 @@ func TestArticleReady_HistoryWarning(t *testing.T) {
 		HistoryWarning: histErr,
 	})
 
-	assert.Equal(t, StateReaderView, m.state)
+	assert.Equal(t, stateReaderView, m.state)
 	assert.NotNil(t, cmd, "should return batched cmd with init + warning")
 }
 
@@ -617,7 +617,7 @@ func TestArticleReady_NoHistoryWarning(t *testing.T) {
 		FetchID: m.fetchID,
 	})
 
-	assert.Equal(t, StateReaderView, m.state)
+	assert.Equal(t, stateReaderView, m.state)
 	assert.Nil(t, cmd, "Init returns nil, no warning — cmd should be nil")
 }
 
@@ -640,7 +640,7 @@ func TestEnteringCommentSection_HistoryWriteFailure(t *testing.T) {
 	m := newModel(config, cat, fav, 80, 24, &instantMockService{}, hist)
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 	m.pager.items[categories.Top] = testItems()
-	m.state = StateBrowsing
+	m.state = stateBrowsing
 
 	// Trigger the comment section fetch command
 	_, cmd := m.Update(message.EnteringCommentSection{ID: 1, CommentCount: 10})
@@ -667,7 +667,7 @@ func TestEnteringReaderMode_ValidationFailure_SkipsHistoryWrite(t *testing.T) {
 	m := newModel(config, cat, fav, 80, 24, &instantMockService{}, hist)
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 	m.pager.items[categories.Top] = testItems()
-	m.state = StateBrowsing
+	m.state = stateBrowsing
 
 	_, cmd := m.Update(message.EnteringReaderMode{
 		URL:    "https://youtube.com/watch?v=123",

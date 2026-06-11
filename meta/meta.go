@@ -43,24 +43,24 @@ func metaBlock(url, domain, author, timeAgo string, id, points int, enableNerdFo
 	contentWidth := width - paddingSize
 	columnWidth := contentWidth / 2
 
-	urlLine := getURL(url, domain, contentWidth)
+	header := urlLine(url, domain, contentWidth)
 
 	leftColumn := lipgloss.NewStyle().
 		Width(columnWidth).
 		Align(lipgloss.Left)
-	leftColumnText := getAuthor(author, enableNerdFonts) + " " + style.Faint(timeAgo) + newLine +
+	leftColumnText := authorLabel(author, enableNerdFonts) + " " + style.Faint(timeAgo) + newLine +
 		bottomLeft
 
 	rightColumn := lipgloss.NewStyle().
 		Width(columnWidth).
 		Align(lipgloss.Right)
-	rightColumnText := getID(id, enableNerdFonts) + newLine +
-		getScore(points, enableNerdFonts)
+	rightColumnText := idLabel(id, enableNerdFonts) + newLine +
+		scoreLabel(points, enableNerdFonts)
 
 	joined := lipgloss.JoinHorizontal(lipgloss.Left, leftColumn.Render(leftColumnText),
 		rightColumn.Render(rightColumnText))
 
-	return s.Render(urlLine + joined + footer)
+	return s.Render(header + joined + footer)
 }
 
 func readerModeLabel(enableNerdFonts bool) string {
@@ -97,7 +97,7 @@ func newCommentsLabel(newComments int, enableNerdFonts bool) string {
 	return fmt.Sprintf(" (%s new)", style.MetaNewComments(comments))
 }
 
-func getAuthor(author string, enableNerdFonts bool) string {
+func authorLabel(author string, enableNerdFonts bool) string {
 	if enableNerdFonts {
 		authorLabel := fmt.Sprintf("%s %s", nerdfonts.Author, author)
 
@@ -107,7 +107,7 @@ func getAuthor(author string, enableNerdFonts bool) string {
 	return fmt.Sprintf("by %s", style.MetaAuthor(author))
 }
 
-func getScore(points int, enableNerdFonts bool) string {
+func scoreLabel(points int, enableNerdFonts bool) string {
 	score := strconv.Itoa(points)
 
 	if enableNerdFonts {
@@ -119,7 +119,7 @@ func getScore(points int, enableNerdFonts bool) string {
 	return fmt.Sprintf("%s points", style.MetaScore(score))
 }
 
-func getID(id int, enableNerdFonts bool) string {
+func idLabel(id int, enableNerdFonts bool) string {
 	idStr := lipgloss.NewStyle().Faint(true).Foreground(style.MetaIDColor()).Render(strconv.Itoa(id))
 
 	if enableNerdFonts {
@@ -129,7 +129,7 @@ func getID(id int, enableNerdFonts bool) string {
 	return fmt.Sprintf("%s %s", "ID", idStr)
 }
 
-func getURL(url, domain string, contentWidth int) string {
+func urlLine(url, domain string, contentWidth int) string {
 	if domain == "" {
 		return ""
 	}

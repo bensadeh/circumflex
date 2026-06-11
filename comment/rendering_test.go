@@ -54,7 +54,7 @@ func TestSeparator(t *testing.T) {
 func TestAuthorOldComment(t *testing.T) {
 	t.Parallel()
 
-	result := Author("alice", 100, 50, false)
+	result := renderAuthor("alice", 100, 50, false)
 
 	assert.Contains(t, result, "alice")
 	assert.NotContains(t, result, "\u25cf")
@@ -63,7 +63,7 @@ func TestAuthorOldComment(t *testing.T) {
 func TestAuthorNewComment(t *testing.T) {
 	t.Parallel()
 
-	result := Author("alice", 50, 100, false)
+	result := renderAuthor("alice", 50, 100, false)
 
 	assert.Contains(t, result, "alice")
 	assert.Contains(t, result, "\u25cf")
@@ -72,7 +72,7 @@ func TestAuthorNewComment(t *testing.T) {
 func TestAuthorLabelMod(t *testing.T) {
 	t.Parallel()
 
-	result := AuthorLabel("dang", "someone", "", false)
+	result := renderAuthorLabel("dang", "someone", "", false)
 
 	assert.Contains(t, result, "mod")
 }
@@ -80,7 +80,7 @@ func TestAuthorLabelMod(t *testing.T) {
 func TestAuthorLabelOP(t *testing.T) {
 	t.Parallel()
 
-	result := AuthorLabel("alice", "alice", "", false)
+	result := renderAuthorLabel("alice", "alice", "", false)
 
 	assert.Contains(t, result, "OP")
 }
@@ -88,7 +88,7 @@ func TestAuthorLabelOP(t *testing.T) {
 func TestAuthorLabelGP(t *testing.T) {
 	t.Parallel()
 
-	result := AuthorLabel("bob", "alice", "bob", false)
+	result := renderAuthorLabel("bob", "alice", "bob", false)
 
 	assert.Contains(t, result, "GP")
 }
@@ -96,7 +96,7 @@ func TestAuthorLabelGP(t *testing.T) {
 func TestAuthorLabelRegular(t *testing.T) {
 	t.Parallel()
 
-	result := AuthorLabel("charlie", "alice", "bob", false)
+	result := renderAuthorLabel("charlie", "alice", "bob", false)
 
 	assert.Empty(t, result)
 }

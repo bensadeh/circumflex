@@ -46,7 +46,7 @@ type Model struct {
 	contentLines   int // excludes bottom padding
 	screenWidth    int
 	viewportHeight int
-	standalone     bool // quit sends tea.Quit instead of ReaderViewQuitMsg
+	standalone     bool // quit sends tea.Quit instead of ReaderViewQuit
 	showHelp       bool
 
 	parsed      *article.Parsed // nil when created with pre-rendered content
@@ -72,9 +72,9 @@ func newFromContent(content, title string, width, height int) *Model {
 }
 
 // NewWithArticle creates a reader view that can re-render on resize.
-func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, height int, m2 Meta) *Model {
+func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, height int, articleMeta Meta) *Model {
 	contentWidth := layout.ReaderContentWidth(width, maxWidth)
-	header := meta.ReaderModeMetaBlock(m2.URL, m2.Author, m2.TimeAgo, m2.ID, m2.Points, m2.NerdFonts, contentWidth)
+	header := meta.ReaderModeMetaBlock(articleMeta.URL, articleMeta.Author, articleMeta.TimeAgo, articleMeta.ID, articleMeta.Points, articleMeta.NerdFonts, contentWidth)
 	content := parsed.RenderWithHeader(contentWidth, header)
 
 	m := &Model{
@@ -83,7 +83,7 @@ func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, h
 		screenWidth: width,
 		parsed:      parsed,
 		maxWidth:    maxWidth,
-		articleMeta: m2,
+		articleMeta: articleMeta,
 	}
 
 	m.initViewport(content, width, height)
@@ -207,7 +207,7 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 			return tea.Quit
 		}
 
-		return func() tea.Msg { return message.ReaderViewQuitMsg{} }
+		return func() tea.Msg { return message.ReaderViewQuit{} }
 	}
 
 	if key.Matches(msg, m.keymap.GotoTop) {

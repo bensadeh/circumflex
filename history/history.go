@@ -13,10 +13,10 @@ import (
 type History interface {
 	Contains(id int) bool
 	CommentsLastVisited(id int) int64
-	ClearAndWriteToDisk() error
-	MarkAsReadAndWriteToDisk(id int, commentsOnLastVisit int) error
-	MarkArticleAsReadAndWriteToDisk(id int) error
-	MarkAsUnreadAndWriteToDisk(id int) error
+	Clear() error
+	MarkRead(id int, commentsOnLastVisit int) error
+	MarkArticleRead(id int) error
+	MarkUnread(id int) error
 }
 
 func NewPersistentHistory() (History, error) {
@@ -24,7 +24,7 @@ func NewPersistentHistory() (History, error) {
 
 	h := &Persistent{
 		filePath:       filePath,
-		VisitedStories: make(map[int]StoryInfo),
+		visitedStories: make(map[int]StoryInfo),
 	}
 
 	if !fileutil.Exists(filePath) {
@@ -40,7 +40,7 @@ func NewPersistentHistory() (History, error) {
 		return h, fmt.Errorf("could not read history at %s: %w", filePath, readErr)
 	}
 
-	deserializationErr := json.Unmarshal(historyFileContent, &h.VisitedStories)
+	deserializationErr := json.Unmarshal(historyFileContent, &h.visitedStories)
 	if deserializationErr != nil {
 		return h, fmt.Errorf("history at %s is corrupted: %w\n  To start fresh, delete the file and restart", filePath, deserializationErr)
 	}
@@ -57,7 +57,7 @@ func NewMockHistory() History {
 }
 
 func writeToDisk(h *Persistent, filePath string) error {
-	visitedStoriesJSON, err := json.Marshal(h.VisitedStories)
+	visitedStoriesJSON, err := json.Marshal(h.visitedStories)
 	if err != nil {
 		return err
 	}

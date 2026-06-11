@@ -16,7 +16,7 @@ func clearCmd() *cobra.Command {
 		DisableFlagsInUseLine: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			his := history.Persistent{}
-			if err := his.ClearAndWriteToDisk(); err != nil {
+			if err := his.Clear(); err != nil {
 				return err
 			}
 
