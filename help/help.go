@@ -47,25 +47,13 @@ func FromBinding(b key.Binding) Item {
 }
 
 func MainMenuHelpScreen(screenWidth int, sections []Section) string {
-	var sb strings.Builder
-
-	sb.WriteString(mainMenuText(screenWidth, sections) + newPar)
-
-	return sb.String()
+	return mainMenuText(screenWidth, sections) + newPar
 }
 
 func ReaderHelpScreen(screenWidth int) string {
-	var sb strings.Builder
-
-	sb.WriteString(readerText(screenWidth) + newPar)
-
-	return sb.String()
+	return readerText(screenWidth) + newPar
 }
 
 func CommentHelpScreen(screenWidth int, enableNerdFonts bool) string {
-	var sb strings.Builder
-
-	sb.WriteString(commentText(screenWidth, enableNerdFonts) + newPar)
-
-	return sb.String()
+	return commentText(screenWidth, enableNerdFonts) + newPar
 }

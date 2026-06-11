@@ -30,47 +30,21 @@ func renderAuthor(author string, lastVisited, timePosted int64, focused bool) st
 }
 
 func renderAuthorLabel(author, originalPoster, topLevelAuthor string, enableNerdFonts bool) string {
-	label := computeLabel(author, originalPoster, topLevelAuthor, enableNerdFonts)
-	if label == "" {
-		return ""
+	label := func(plain string) string {
+		if enableNerdFonts {
+			return nerdfonts.Author + " "
+		}
+
+		return plain
 	}
 
-	return colorizeLabel(author, originalPoster, topLevelAuthor, label)
-}
-
-func computeLabel(author, originalPoster, topLevelAuthor string, nerdFonts bool) string {
 	switch {
 	case IsMod(author):
-		if nerdFonts {
-			return nerdfonts.Author + " "
-		}
-
-		return "mod "
+		return style.CommentMod(label("mod "))
 	case author == originalPoster:
-		if nerdFonts {
-			return nerdfonts.Author + " "
-		}
-
-		return "OP "
+		return style.CommentOP(label("OP "))
 	case author == topLevelAuthor:
-		if nerdFonts {
-			return nerdfonts.Author + " "
-		}
-
-		return "GP "
-	default:
-		return ""
-	}
-}
-
-func colorizeLabel(author, originalPoster, topLevelAuthor, label string) string {
-	switch {
-	case IsMod(author):
-		return style.CommentMod(label)
-	case author == originalPoster:
-		return style.CommentOP(label)
-	case author == topLevelAuthor:
-		return style.CommentGP(label)
+		return style.CommentGP(label("GP "))
 	default:
 		return ""
 	}

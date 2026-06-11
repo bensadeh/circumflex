@@ -382,7 +382,7 @@ func highlightBackticks(text string) string {
 
 	isOnFirstBacktick := true
 
-	for range numberOfBackticks + 1 {
+	for range numberOfBackticks {
 		if isOnFirstBacktick {
 			text = strings.Replace(text, "`", codeStart, 1)
 		} else {

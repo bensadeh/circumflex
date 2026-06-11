@@ -130,53 +130,10 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 				}
 
 			case key.Matches(msg, m.keymap.EnterComments):
-				currentCategory := m.cat.CurrentCategory()
-				m.pager.transition = &transition{
-					prevIndex: m.cat.CurrentIndex(),
-					oldItems:  m.pager.items[currentCategory],
-				}
-				startSpinnerCmd := m.startFetch(0)
-
-				id := m.SelectedItem().ID
-				commentCount := m.SelectedItem().CommentsCount
-
-				enterCommentsCmd := func() tea.Msg {
-					return message.EnteringCommentSection{
-						ID:           id,
-						CommentCount: commentCount,
-					}
-				}
-
-				return tea.Batch(startSpinnerCmd, enterCommentsCmd)
+				return m.handleEnterComments()
 
 			case key.Matches(msg, m.keymap.ReaderMode):
-				selected := m.SelectedItem()
-
-				if err := article.Validate(selected.Title, selected.Domain); err != nil {
-					return m.status.NewStatusMessageWithDuration(friendlyError(err), statusMessageLong)
-				}
-
-				currentCategory := m.cat.CurrentCategory()
-				m.pager.transition = &transition{
-					prevIndex: m.cat.CurrentIndex(),
-					oldItems:  m.pager.items[currentCategory],
-				}
-				startSpinnerCmd := m.startFetch(readerModeTimeout)
-
-				enterReaderCmd := func() tea.Msg {
-					return message.EnteringReaderMode{
-						URL:          selected.URL,
-						Title:        selected.Title,
-						Domain:       selected.Domain,
-						ID:           selected.ID,
-						CommentCount: selected.CommentsCount,
-						Author:       selected.Author,
-						TimeAgo:      timeago.RelativeTime(selected.Time),
-						Points:       selected.Points,
-					}
-				}
-
-				return tea.Batch(startSpinnerCmd, enterReaderCmd)
+				return m.handleEnterReaderMode()
 			}
 		}
 	}
@@ -318,12 +275,7 @@ func (m *Model) handleTab(targetIndex int, targetCategory categories.Category, a
 		return nil
 	}
 
-	currentCategory := m.cat.CurrentCategory()
-	m.pager.transition = &transition{
-		prevIndex: m.cat.CurrentIndex(),
-		oldItems:  m.pager.items[currentCategory],
-	}
-
+	m.beginTransition()
 	advance()
 
 	startSpinnerCmd := m.startFetch(0)
@@ -356,25 +308,69 @@ func (m *Model) handleRefresh() tea.Cmd {
 	currentIndex := m.cat.CurrentIndex()
 	currentPage := m.pager.Paginator.Page
 
-	m.pager.transition = &transition{
-		prevIndex: currentIndex,
-		oldItems:  m.pager.items[currentCategory],
-	}
-
-	m.pager.Paginator.Page = 0
-	m.pager.cursor = min(m.pager.cursor, len(m.pager.items[currentCategory])-1)
+	m.beginTransition()
 	m.updatePagination()
 
-	m.pager.cursor = 0
+	// Stay on the same page during the transition; the cursor resets to the top.
 	m.pager.Paginator.Page = currentPage
+	m.pager.cursor = 0
 
 	startSpinnerCmd := m.startFetch(0)
 
-	changeCatCmd := func() tea.Msg {
+	refreshCmd := func() tea.Msg {
 		return message.Refresh{CurrentIndex: currentIndex, CurrentCategory: currentCategory}
 	}
 
-	return tea.Batch(startSpinnerCmd, changeCatCmd)
+	return tea.Batch(startSpinnerCmd, refreshCmd)
+}
+
+func (m *Model) handleEnterComments() tea.Cmd {
+	selected := m.SelectedItem()
+
+	m.beginTransition()
+	startSpinnerCmd := m.startFetch(0)
+
+	enterCommentsCmd := func() tea.Msg {
+		return message.EnteringCommentSection{
+			ID:           selected.ID,
+			CommentCount: selected.CommentsCount,
+		}
+	}
+
+	return tea.Batch(startSpinnerCmd, enterCommentsCmd)
+}
+
+func (m *Model) handleEnterReaderMode() tea.Cmd {
+	selected := m.SelectedItem()
+
+	if err := article.Validate(selected.Title, selected.Domain); err != nil {
+		return m.status.NewStatusMessageWithDuration(friendlyError(err), statusMessageLong)
+	}
+
+	m.beginTransition()
+	startSpinnerCmd := m.startFetch(readerModeTimeout)
+
+	enterReaderCmd := func() tea.Msg {
+		return message.EnteringReaderMode{
+			URL:          selected.URL,
+			Title:        selected.Title,
+			Domain:       selected.Domain,
+			ID:           selected.ID,
+			CommentCount: selected.CommentsCount,
+			Author:       selected.Author,
+			TimeAgo:      timeago.RelativeTime(selected.Time),
+			Points:       selected.Points,
+		}
+	}
+
+	return tea.Batch(startSpinnerCmd, enterReaderCmd)
+}
+
+func (m *Model) beginTransition() {
+	m.pager.transition = &transition{
+		prevIndex: m.cat.CurrentIndex(),
+		oldItems:  m.pager.items[m.cat.CurrentCategory()],
+	}
 }
 
 func (m *Model) resetPager() {

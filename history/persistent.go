@@ -49,7 +49,7 @@ func (his *Persistent) Clear() error {
 
 	his.visitedStories = make(map[int]StoryInfo)
 
-	return writeToDisk(his, his.filePath)
+	return his.writeToDisk()
 }
 
 func (his *Persistent) MarkRead(id int, commentsOnLastVisit int) error {
@@ -71,7 +71,7 @@ func (his *Persistent) MarkRead(id int, commentsOnLastVisit int) error {
 		CommentsOnLastVisit: commentsOnLastVisit,
 	}
 
-	return writeToDisk(his, his.filePath)
+	return his.writeToDisk()
 }
 
 func (his *Persistent) MarkArticleRead(id int) error {
@@ -97,7 +97,7 @@ func (his *Persistent) MarkArticleRead(id int) error {
 		}
 	}
 
-	return writeToDisk(his, his.filePath)
+	return his.writeToDisk()
 }
 
 func (his *Persistent) MarkUnread(id int) error {
@@ -106,5 +106,5 @@ func (his *Persistent) MarkUnread(id int) error {
 
 	delete(his.visitedStories, id)
 
-	return writeToDisk(his, his.filePath)
+	return his.writeToDisk()
 }

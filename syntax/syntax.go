@@ -1,6 +1,7 @@
 package syntax
 
 import (
+	"html"
 	"image/color"
 	"regexp"
 	"strings"
@@ -50,27 +51,24 @@ func HighlightYCStartupsInHeadlines(comment string, highlightType HighlightType,
 		return reYCWithSeason.ReplaceAllString(comment, highlightedStartup)
 	}
 
-	highlightedStartup := ansi.Reset + getYCBar(`$1`, highlightType) +
+	highlightedStartup := ansi.Reset + highlightWithColor(`$1`, style.HeadlineYCLabelColor(), highlightType) +
 		getHighlight(highlightType)
 
 	return reYCWithoutSeason.ReplaceAllString(comment, highlightedStartup)
 }
 
-func getYCBar(text string, highlightType HighlightType) string {
-	c := style.HeadlineYCLabelColor()
+func highlightWithColor(text string, c color.Color, highlightType HighlightType) string {
+	s := lipgloss.NewStyle().Foreground(c)
 
 	switch highlightType {
 	case Selected:
-		return lipgloss.NewStyle().Foreground(c).Reverse(true).Render(text)
-
+		s = s.Reverse(true)
 	case MarkAsRead:
-		return lipgloss.NewStyle().Foreground(c).Faint(true).Render(text)
-
+		s = s.Faint(true)
 	case Unselected, HeadlineInCommentSection, AddToFavorites, RemoveFromFavorites:
-		return lipgloss.NewStyle().Foreground(c).Render(text)
 	}
 
-	return lipgloss.NewStyle().Foreground(c).Render(text)
+	return s.Render(text)
 }
 
 func getYCBarNerdFonts(text string, highlightType HighlightType) string {
@@ -85,26 +83,9 @@ func getYCBarNerdFonts(text string, highlightType HighlightType) string {
 }
 
 func HighlightYear(comment string, highlightType HighlightType) string {
-	content := getYear(`$1`, highlightType)
+	content := highlightWithColor(`$1`, style.HeadlineYearColor(), highlightType)
 
 	return reYear.ReplaceAllString(comment, ansi.Reset+content+getHighlight(highlightType))
-}
-
-func getYear(text string, highlightType HighlightType) string {
-	c := style.HeadlineYearColor()
-
-	switch highlightType {
-	case Selected:
-		return lipgloss.NewStyle().Foreground(c).Reverse(true).Render(text)
-
-	case MarkAsRead:
-		return lipgloss.NewStyle().Foreground(c).Faint(true).Render(text)
-
-	case Unselected, HeadlineInCommentSection, AddToFavorites, RemoveFromFavorites:
-		return lipgloss.NewStyle().Foreground(c).Render(text)
-	}
-
-	return lipgloss.NewStyle().Foreground(c).Render(text)
 }
 
 func label(text string, fg color.Color, bg color.Color, highlightType HighlightType) string {
@@ -396,15 +377,7 @@ func HighlightAbbreviations(input string) string {
 }
 
 func ReplaceCharacters(input string) string {
-	input = strings.ReplaceAll(input, "&#x27;", "'")
-	input = strings.ReplaceAll(input, "&gt;", ">")
-	input = strings.ReplaceAll(input, "&lt;", "<")
-	input = strings.ReplaceAll(input, "&#x2F;", "/")
-	input = strings.ReplaceAll(input, "&quot;", `"`)
-	input = strings.ReplaceAll(input, "&#34;", `"`)
-	input = strings.ReplaceAll(input, "&amp;", "&")
-
-	return input
+	return html.UnescapeString(input)
 }
 
 func ReplaceHTML(input string) string {
@@ -436,34 +409,21 @@ func replaceDoubleDashesWithEmDash(paragraph string) string {
 	return reDoubleDash.ReplaceAllString(paragraph, `$1`+"—"+`$2`)
 }
 
+// The narrow ⅒ glyph gets a trailing space to preserve alignment.
+var fractionReplacer = strings.NewReplacer(
+	" 1/2", " ½", "1/2 ", "½ ",
+	" 1/3", " ⅓", "1/3 ", "⅓ ",
+	" 2/3", " ⅔", "2/3 ", "⅔ ",
+	" 1/4", " ¼", "1/4 ", "¼ ",
+	" 3/4", " ¾", "3/4 ", "¾ ",
+	" 1/5", " ⅕", "1/5 ", "⅕ ", "1/5th", "⅕th",
+	" 2/5", " ⅖", "2/5 ", "⅖ ",
+	" 3/5", " ⅗", "3/5 ", "⅗ ",
+	" 4/5", " ⅘", "4/5 ", "⅘ ",
+	" 1/6", " ⅙", "1/6 ", "⅙ ", "1/6th", "⅙th",
+	" 1/10", " ⅒ ", "1/10 ", "⅒  ", "1/10th", "⅒ th",
+)
+
 func convertFractions(text string) string {
-	text = strings.ReplaceAll(text, " 1/2", " ½")
-	text = strings.ReplaceAll(text, " 1/3", " ⅓")
-	text = strings.ReplaceAll(text, " 2/3", " ⅔")
-	text = strings.ReplaceAll(text, " 1/4", " ¼")
-	text = strings.ReplaceAll(text, " 3/4", " ¾")
-	text = strings.ReplaceAll(text, " 1/5", " ⅕")
-	text = strings.ReplaceAll(text, " 2/5", " ⅖")
-	text = strings.ReplaceAll(text, " 3/5", " ⅗")
-	text = strings.ReplaceAll(text, " 4/5", " ⅘")
-	text = strings.ReplaceAll(text, " 1/6", " ⅙")
-	text = strings.ReplaceAll(text, " 1/10", " ⅒ ")
-
-	text = strings.ReplaceAll(text, "1/2 ", "½ ")
-	text = strings.ReplaceAll(text, "1/3 ", "⅓ ")
-	text = strings.ReplaceAll(text, "2/3 ", "⅔ ")
-	text = strings.ReplaceAll(text, "1/4 ", "¼ ")
-	text = strings.ReplaceAll(text, "3/4 ", "¾ ")
-	text = strings.ReplaceAll(text, "1/5 ", "⅕ ")
-	text = strings.ReplaceAll(text, "2/5 ", "⅖ ")
-	text = strings.ReplaceAll(text, "3/5 ", "⅗ ")
-	text = strings.ReplaceAll(text, "4/5 ", "⅘ ")
-	text = strings.ReplaceAll(text, "1/6 ", "⅙ ")
-	text = strings.ReplaceAll(text, "1/10 ", "⅒  ")
-
-	text = strings.ReplaceAll(text, "1/5th", "⅕th")
-	text = strings.ReplaceAll(text, "1/6th", "⅙th")
-	text = strings.ReplaceAll(text, "1/10th", "⅒ th")
-
-	return text
+	return fractionReplacer.Replace(text)
 }

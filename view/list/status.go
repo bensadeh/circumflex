@@ -3,7 +3,6 @@ package list
 import (
 	"time"
 
-	clxspinner "github.com/bensadeh/circumflex/spinner"
 	"github.com/bensadeh/circumflex/view/message"
 
 	"charm.land/bubbles/v2/spinner"
@@ -38,10 +37,7 @@ func (s *statusBar) hideStatusMessage() {
 }
 
 func (s *statusBar) StartSpinner() tea.Cmd {
-	s.spinner = spinner.New()
-	s.spinner.Spinner = clxspinner.Random()
-	s.spinner.Style = defaultStyles().Spinner
-
+	s.spinner = newSpinner()
 	s.showSpinner = true
 
 	return s.spinner.Tick

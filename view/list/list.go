@@ -11,7 +11,6 @@ import (
 	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/hn/provider"
 	"github.com/bensadeh/circumflex/settings"
-	clxspinner "github.com/bensadeh/circumflex/spinner"
 	"github.com/bensadeh/circumflex/view/comments"
 	"github.com/bensadeh/circumflex/view/message"
 	"github.com/bensadeh/circumflex/view/reader"
@@ -80,10 +79,6 @@ func New(config *settings.Config, cat *categories.Categories, favorites *favorit
 func newModel(config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int, service hn.Service, hist history.History) *Model {
 	s := defaultStyles()
 
-	sp := spinner.New()
-	sp.Spinner = clxspinner.Random()
-	sp.Style = s.Spinner
-
 	p := paginator.New()
 	p.Type = paginator.Dots
 	p.ActiveDot = s.ActivePaginationDot.String()
@@ -102,7 +97,7 @@ func newModel(config *settings.Config, cat *categories.Categories, favorites *fa
 			Paginator: p,
 		},
 		status: statusBar{
-			spinner: sp,
+			spinner: newSpinner(),
 		},
 		itemStyles: newItemStyles(),
 		history:    hist,

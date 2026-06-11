@@ -73,7 +73,7 @@ func TestPersistent_WriteToDisk_RoundTrip(t *testing.T) {
 	}
 	h.visitedStories[42] = StoryInfo{LastVisited: 1234567890, CommentsLastVisited: 1234567890, CommentsOnLastVisit: 15}
 
-	err := writeToDisk(h, filePath)
+	err := h.writeToDisk()
 	require.NoError(t, err)
 
 	// Verify file was created

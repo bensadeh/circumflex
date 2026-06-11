@@ -28,7 +28,7 @@ func NewPersistentHistory() (History, error) {
 	}
 
 	if !fileutil.Exists(filePath) {
-		if err := writeToDisk(h, filePath); err != nil {
+		if err := h.writeToDisk(); err != nil {
 			return h, fmt.Errorf("could not create history at %s: %w", filePath, err)
 		}
 
@@ -56,11 +56,11 @@ func NewMockHistory() History {
 	return &Mock{}
 }
 
-func writeToDisk(h *Persistent, filePath string) error {
-	visitedStoriesJSON, err := json.Marshal(h.visitedStories)
+func (his *Persistent) writeToDisk() error {
+	visitedStoriesJSON, err := json.Marshal(his.visitedStories)
 	if err != nil {
 		return err
 	}
 
-	return fileutil.WriteAtomic(filePath, string(visitedStoriesJSON))
+	return fileutil.WriteAtomic(his.filePath, string(visitedStoriesJSON))
 }
