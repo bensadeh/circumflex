@@ -111,14 +111,14 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 				return m.handleOpenComments()
 
 			case key.Matches(msg, m.keymap.AddFavorite):
-				m.status.SetPermanentStatusMessage(getAddItemConfirmationMessage(), false)
+				m.status.SetPermanentStatusMessage(getAddItemConfirmationMessage())
 				m.state = StateAddFavoritesPrompt
 
 				return nil
 
 			case key.Matches(msg, m.keymap.RemoveFavorite):
 				if m.cat.CurrentCategory() == categories.Favorites {
-					m.status.SetPermanentStatusMessage(getRemoveItemConfirmationMessage(), false)
+					m.status.SetPermanentStatusMessage(getRemoveItemConfirmationMessage())
 					m.state = StateRemoveFavoritesPrompt
 
 					return nil
@@ -180,10 +180,6 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			}
 		}
 	}
-
-	// Epilogue: delegate + cursor clamp (reached when no handler returned a command)
-	cmd := m.delegate.Update(msg, m)
-	cmds = append(cmds, cmd)
 
 	itemsOnPage := m.pager.Paginator.ItemsOnPage(len(m.VisibleItems()))
 	if m.pager.cursor > itemsOnPage-1 {

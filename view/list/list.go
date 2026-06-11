@@ -2,7 +2,6 @@ package list
 
 import (
 	"context"
-	"io"
 	"time"
 
 	"github.com/bensadeh/circumflex/categories"
@@ -34,22 +33,6 @@ const (
 	statusMessageLong     = 3 * time.Second
 )
 
-// ItemDelegate — if it also implements help.KeyMap, delegate-related help
-// items will be added to the help view.
-type ItemDelegate interface {
-	Render(w io.Writer, m *Model, index int, item *hn.Story)
-
-	Height() int
-
-	Spacing() int
-
-	// Update is the update loop for items. All messages in the list's update
-	// loop will pass through here except when the user is setting a filter.
-	// Use this method to perform item-level updates appropriate to this
-	// delegate.
-	Update(msg tea.Msg, m *Model) tea.Cmd
-}
-
 type Model struct {
 	styles styles
 
@@ -59,7 +42,7 @@ type Model struct {
 	width  int
 	height int
 
-	delegate    ItemDelegate
+	itemStyles  itemStyles
 	history     history.History
 	config      *settings.Config
 	service     hn.Service
@@ -85,13 +68,13 @@ type Model struct {
 	statusEndStyle  lipgloss.Style
 }
 
-func New(delegate ItemDelegate, config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int) *Model {
-	return newModel(delegate, config, cat, favorites, width, height,
+func New(config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int) *Model {
+	return newModel(config, cat, favorites, width, height,
 		provider.NewService(config.DebugMode, config.DebugFallible),
 		getHistory(config.DebugMode || config.DebugFallible, config.DoNotMarkSubmissionsAsRead))
 }
 
-func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int, service hn.Service, hist history.History) *Model {
+func newModel(config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int, service hn.Service, hist history.History) *Model {
 	s := defaultStyles()
 
 	sp := spinner.New()
@@ -118,13 +101,13 @@ func newModel(delegate ItemDelegate, config *settings.Config, cat *categories.Ca
 		status: statusBar{
 			spinner: sp,
 		},
-		delegate:  delegate,
-		history:   hist,
-		config:    config,
-		service:   service,
-		favorites: favorites,
-		cat:       cat,
-		keymap:    defaultKeyMap(),
+		itemStyles: newItemStyles(),
+		history:    hist,
+		config:     config,
+		service:    service,
+		favorites:  favorites,
+		cat:        cat,
+		keymap:     defaultKeyMap(),
 
 		contentStyle:    lipgloss.NewStyle(),
 		underlineStyle:  lipgloss.NewStyle().Underline(true),
@@ -372,18 +355,14 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 			return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
 		}
 
-		if msg.Parsed != nil {
-			m.readerView = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.width, m.height, reader.Meta{
-				URL:       msg.URL,
-				Author:    msg.Author,
-				TimeAgo:   msg.TimeAgo,
-				ID:        msg.ID,
-				Points:    msg.Points,
-				NerdFonts: m.config.EnableNerdFonts,
-			})
-		} else {
-			m.readerView = reader.New(msg.Content, msg.Title, m.width, m.height)
-		}
+		m.readerView = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.width, m.height, reader.Meta{
+			URL:       msg.URL,
+			Author:    msg.Author,
+			TimeAgo:   msg.TimeAgo,
+			ID:        msg.ID,
+			Points:    msg.Points,
+			NerdFonts: m.config.EnableNerdFonts,
+		})
 
 		m.state = StateReaderView
 

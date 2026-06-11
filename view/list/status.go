@@ -8,7 +8,6 @@ import (
 
 	"charm.land/bubbles/v2/spinner"
 	tea "charm.land/bubbletea/v2"
-	"charm.land/lipgloss/v2"
 )
 
 type statusBar struct {
@@ -29,10 +28,8 @@ func (s *statusBar) NewStatusMessageWithDuration(msg string, d time.Duration) te
 	})
 }
 
-func (s *statusBar) SetPermanentStatusMessage(msg string, faint bool) {
-	s.message = lipgloss.NewStyle().
-		Faint(faint).
-		Render(msg)
+func (s *statusBar) SetPermanentStatusMessage(msg string) {
+	s.message = msg
 }
 
 func (s *statusBar) hideStatusMessage() {

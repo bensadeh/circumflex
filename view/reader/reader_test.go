@@ -14,7 +14,7 @@ import (
 
 func TestNew_PreRenderedContent(t *testing.T) {
 	content := "line1\nline2\nline3"
-	m := New(content, "Test Title", 80, 24)
+	m := newFromContent(content, "Test Title", 80, 24)
 
 	assert.Equal(t, "Test Title", m.title)
 	assert.Equal(t, 80, m.screenWidth)
@@ -39,7 +39,6 @@ func TestResize_RerenderChangesContent(t *testing.T) {
 	m := NewWithArticle(parsed, "Article", 72, 120, 40, Meta{URL: "https://example.com"})
 
 	contentBefore := m.viewport.View()
-	linesBefore := m.contentLines
 
 	// Simulate a significant resize.
 	m.Update(tea.WindowSizeMsg{Width: 60, Height: 30})
@@ -50,12 +49,10 @@ func TestResize_RerenderChangesContent(t *testing.T) {
 	// Content should have changed because the render width changed.
 	contentAfter := m.viewport.View()
 	assert.NotEqual(t, contentBefore, contentAfter, "content should change after resize")
-
-	_ = linesBefore
 }
 
 func TestResize_PreRendered_NoRerender(t *testing.T) {
-	m := New("line1\nline2\nline3", "Title", 80, 24)
+	m := newFromContent("line1\nline2\nline3", "Title", 80, 24)
 
 	contentBefore := m.contentLines
 
@@ -82,7 +79,7 @@ func TestResize_PreservesScrollPosition(t *testing.T) {
 }
 
 func TestQuit_ReturnsReaderViewQuitMsg(t *testing.T) {
-	m := New("content", "Title", 80, 24)
+	m := newFromContent("content", "Title", 80, 24)
 
 	cmd := m.Update(tea.KeyPressMsg{Code: 'q', Text: "q"})
 	require.NotNil(t, cmd)
@@ -93,7 +90,7 @@ func TestQuit_ReturnsReaderViewQuitMsg(t *testing.T) {
 }
 
 func TestQuit_Standalone_ReturnsTeaQuit(t *testing.T) {
-	m := New("content", "Title", 80, 24)
+	m := newFromContent("content", "Title", 80, 24)
 	m.standalone = true
 
 	cmd := m.Update(tea.KeyPressMsg{Code: 'q', Text: "q"})
@@ -104,14 +101,14 @@ func TestQuit_Standalone_ReturnsTeaQuit(t *testing.T) {
 }
 
 func TestOpenInBrowser_NoMetaIsNoop(t *testing.T) {
-	m := New("content", "Title", 80, 24)
+	m := newFromContent("content", "Title", 80, 24)
 
 	assert.Nil(t, m.openStoryInBrowser(), "no URL and no ID should not open anything")
 	assert.Nil(t, m.openCommentsInBrowser(), "no ID should not open a comments page")
 }
 
 func TestOpenInBrowser_SelfPostFallsBackToItemURL(t *testing.T) {
-	m := New("content", "Title", 80, 24)
+	m := newFromContent("content", "Title", 80, 24)
 	m.articleMeta = Meta{ID: 42}
 
 	assert.NotNil(t, m.openStoryInBrowser(), "self-post should fall back to the HN item URL")
@@ -119,14 +116,14 @@ func TestOpenInBrowser_SelfPostFallsBackToItemURL(t *testing.T) {
 }
 
 func TestOpenInBrowser_WithURLReturnsCmd(t *testing.T) {
-	m := New("content", "Title", 80, 24)
+	m := newFromContent("content", "Title", 80, 24)
 	m.articleMeta = Meta{URL: "https://example.com", ID: 42}
 
 	assert.NotNil(t, m.openStoryInBrowser())
 }
 
 func TestHelpToggle(t *testing.T) {
-	m := New("content", "Title", 80, 24)
+	m := newFromContent("content", "Title", 80, 24)
 	assert.False(t, m.showHelp)
 
 	// Press 'i' to open help.
@@ -145,7 +142,7 @@ func TestHelpToggle(t *testing.T) {
 func TestHeaderLines_DetectsSectionMarkers(t *testing.T) {
 	// Content with section markers (■).
 	content := "intro\n■ Section One\nbody\n■ Section Two\nend"
-	m := New(content, "Title", 80, 24)
+	m := newFromContent(content, "Title", 80, 24)
 
 	assert.Len(t, m.headerLines, 2)
 }
@@ -159,7 +156,7 @@ func TestJumpToHeader(t *testing.T) {
 	lines[10] = "■ First"
 	lines[30] = "■ Second"
 
-	m := New(strings.Join(lines, "\n"), "Title", 80, 60)
+	m := newFromContent(strings.Join(lines, "\n"), "Title", 80, 60)
 	require.Len(t, m.headerLines, 2)
 
 	// Jump forward from top.
@@ -175,17 +172,8 @@ func TestJumpToHeader(t *testing.T) {
 	assert.Equal(t, 10, m.viewport.YOffset())
 }
 
-// parseTestArticle creates a minimal Parsed article for testing re-render.
-// Uses the real Parse pipeline with a simple HTML string via the block API.
 func parseTestArticle(t *testing.T) *article.Parsed {
 	t.Helper()
 
-	// article.Parsed is opaque (unexported fields), so we use Fetch-like
-	// construction. Since we can't hit the network, build one via the
-	// exported constructor if available, or test with a nil-safe fallback.
-	//
-	// The Parsed type needs blocks and url. Since those are unexported,
-	// we rely on the fact that NewWithArticle only calls RenderWithHeader.
-	// We build a minimal Parsed that returns stable, width-dependent output.
 	return article.NewParsedFromMarkdown("# Hello\n\nThis is a test paragraph with enough words to cause wrapping at narrow widths.\n\n## Second Section\n\nAnother paragraph here.")
 }

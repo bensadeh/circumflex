@@ -41,7 +41,7 @@ func (m *Model) updatePagination() {
 	// We subtract one from the height because we don't want any spacing
 	availHeight -= lipgloss.Height(m.statusAndPaginationView()) - 1
 
-	m.pager.updatePagination(availHeight, m.delegate.Height(), m.delegate.Spacing(), m.cat.CurrentCategory())
+	m.pager.updatePagination(availHeight, itemHeight, itemSpacing, m.cat.CurrentCategory())
 }
 
 func (p *pager) updateCursor(currentCategory categories.Category) {
@@ -70,15 +70,6 @@ func (p *pager) CursorDown(currentCategory categories.Category) {
 
 func (p *pager) Index() int {
 	return p.Paginator.Page*p.Paginator.PerPage + p.cursor
-}
-
-func (p *pager) Cursor() int {
-	return p.cursor
-}
-
-func (p *pager) Select(index int) {
-	p.Paginator.Page = index / p.Paginator.PerPage
-	p.cursor = index % p.Paginator.PerPage
 }
 
 func (p *pager) VisibleItems(currentCategory categories.Category) []*hn.Story {

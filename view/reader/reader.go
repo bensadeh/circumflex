@@ -56,10 +56,10 @@ type Model struct {
 
 const (
 	headerHeight = 2 // title + overline separator
-	footerHeight = 2 // underline separator + keybinding hints
+	footerHeight = 2 // underline separator + blank line, mirroring the comment view's footer
 )
 
-func New(content, title string, width, height int) *Model {
+func newFromContent(content, title string, width, height int) *Model {
 	m := &Model{
 		keymap:      defaultKeyMap(),
 		title:       title,
@@ -316,7 +316,7 @@ func (m *Model) View() string {
 
 	content := scrollbar.Attach(m.viewport.View(), m.screenWidth, m.contentLines, m.viewportHeight, m.viewport.YOffset())
 
-	return m.titleHeader + "\n" + content + "\n" + m.footerSeparator() + "\n" + m.modeIndicator()
+	return m.titleHeader + "\n" + content + "\n" + m.footerSeparator() + "\n"
 }
 
 func (m *Model) rebuildTitleHeader() {
@@ -343,10 +343,6 @@ func (m *Model) footerSeparator() string {
 	}
 
 	return s.Render(strings.Repeat(" ", m.screenWidth))
-}
-
-func (m *Model) modeIndicator() string {
-	return ""
 }
 
 // clampScroll prevents scrolling down past the last content line while still
@@ -463,7 +459,7 @@ func (s standaloneModel) View() tea.View {
 }
 
 func Run(content, title string, articleMeta Meta) error {
-	m := New(content, title, 0, 0)
+	m := newFromContent(content, title, 0, 0)
 	m.standalone = true
 	m.articleMeta = articleMeta
 

@@ -13,8 +13,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bensadeh/circumflex/timeago"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -118,26 +116,6 @@ func TestFilterNil_WithNils(t *testing.T) {
 	result := filterNil(input)
 	require.Len(t, result, 1)
 	assert.Equal(t, 5, *result[0])
-}
-
-func TestRelativeTime(t *testing.T) {
-	tests := []struct {
-		offset   time.Duration
-		contains string
-	}{
-		{10 * time.Second, "few seconds"},
-		{5 * time.Minute, "minutes ago"},
-		{2 * time.Hour, "hours ago"},
-		{2 * 24 * time.Hour, "days ago"},
-		{60 * 24 * time.Hour, "months ago"},
-		{400 * 24 * time.Hour, "year ago"},
-	}
-
-	for _, tt := range tests {
-		unixTime := time.Now().Add(-tt.offset).Unix()
-		result := timeago.RelativeTime(unixTime)
-		assert.Contains(t, result, tt.contains, "offset: %v", tt.offset)
-	}
 }
 
 func TestFetchHNItem_WithMockServer(t *testing.T) {

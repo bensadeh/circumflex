@@ -68,8 +68,7 @@ func filterByLine(lines []string, rs *ruleSet) string {
 func filterByParagraph(paragraphs []string, rs *ruleSet) string {
 	var sb strings.Builder
 
-	for i, paragraph := range paragraphs {
-		isOnFirstOrLastParagraph := i == 0 || i == len(paragraphs)-1
+	for _, paragraph := range paragraphs {
 		parNoLeadingWhitespace := strings.TrimLeft(paragraph, " ")
 
 		if len(parNoLeadingWhitespace) == 1 {
@@ -77,13 +76,6 @@ func filterByParagraph(paragraphs []string, rs *ruleSet) string {
 		}
 
 		if contains(rs.skipParContainsRules, paragraph) {
-			continue
-		}
-
-		if isOnFirstOrLastParagraph {
-			sb.WriteString(paragraph)
-			sb.WriteString("\n\n")
-
 			continue
 		}
 

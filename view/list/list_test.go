@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/favorites"
@@ -23,8 +24,6 @@ import (
 
 // instantMockService implements hn.Service without the 1-second sleep.
 type instantMockService struct{}
-
-func (instantMockService) Init(_ int) {}
 
 func (instantMockService) FetchItems(_ context.Context, _ int, _ string) ([]*hn.Story, error) {
 	return testItems(), nil
@@ -59,7 +58,7 @@ func newTestModel(t *testing.T) *Model {
 	service := &instantMockService{}
 	hist := history.NewMockHistory()
 
-	return newModel(NewDefaultDelegate(), config, cat, fav, 80, 24, service, hist)
+	return newModel(config, cat, fav, 80, 24, service, hist)
 }
 
 // newTestModelReady creates a model that has completed startup (already received
@@ -183,13 +182,9 @@ func TestShowStatusMessage_SetsMessage(t *testing.T) {
 }
 
 func TestQuit(t *testing.T) {
-	m := newTestModelReady(t)
-
 	for _, k := range []string{"q", "esc", "ctrl+c"} {
-		m2 := newTestModelReady(t)
-		_, cmd := m2.Update(keyMsg(k))
-		_ = m
-		// tea.Quit returns a special Cmd; we verify it's non-nil
+		m := newTestModelReady(t)
+		_, cmd := m.Update(keyMsg(k))
 		assert.NotNil(t, cmd, "key %q should return quit cmd", k)
 	}
 }
@@ -354,10 +349,14 @@ func TestArticleReady_WithError(t *testing.T) {
 	assert.NotNil(t, cmd, "should return batch cmd with status message and editor finished")
 }
 
-func TestArticleReady_WithContent(t *testing.T) {
+func testParsedArticle() *article.Parsed {
+	return article.NewParsedFromMarkdown("# Test\n\nArticle content for the reader view.")
+}
+
+func TestArticleReady_WithParsedArticle(t *testing.T) {
 	m := newTestModelReady(t)
 
-	m, _ = m.Update(message.ArticleReady{Content: "article content", Title: "Test", FetchID: m.fetchID})
+	m, _ = m.Update(message.ArticleReady{Parsed: testParsedArticle(), Title: "Test", FetchID: m.fetchID})
 	assert.Equal(t, StateReaderView, m.state)
 	assert.NotNil(t, m.readerView, "should create reader view")
 }
@@ -405,7 +404,7 @@ func newFavoritesTestModel(t *testing.T) *Model {
 	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.json"))
 	require.NoError(t, err)
 
-	m := newModel(NewDefaultDelegate(), config, cat, fav, 80, 24, &instantMockService{}, history.NewMockHistory())
+	m := newModel(config, cat, fav, 80, 24, &instantMockService{}, history.NewMockHistory())
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 	m.pager.items[categories.Top] = testItems()
 	m.status.StopSpinner()
@@ -528,7 +527,7 @@ func TestSpinnerTick_WhenInactive(t *testing.T) {
 
 func TestViewReaderView_HasContent(t *testing.T) {
 	m := newTestModelReady(t)
-	m.readerView = reader.New("test content", "Test Title", 80, 24)
+	m.readerView = reader.NewWithArticle(testParsedArticle(), "Test Title", 72, 80, 24, reader.Meta{})
 	m.state = StateReaderView
 
 	got := m.View()
@@ -599,7 +598,7 @@ func TestArticleReady_HistoryWarning(t *testing.T) {
 	histErr := errors.New("disk full")
 
 	m, cmd := m.Update(message.ArticleReady{
-		Content:        "article content",
+		Parsed:         testParsedArticle(),
 		Title:          "Test",
 		FetchID:        m.fetchID,
 		HistoryWarning: histErr,
@@ -613,7 +612,7 @@ func TestArticleReady_NoHistoryWarning(t *testing.T) {
 	m := newTestModelReady(t)
 
 	m, cmd := m.Update(message.ArticleReady{
-		Content: "article content",
+		Parsed:  testParsedArticle(),
 		Title:   "Test",
 		FetchID: m.fetchID,
 	})
@@ -638,7 +637,7 @@ func TestEnteringCommentSection_HistoryWriteFailure(t *testing.T) {
 	require.NoError(t, err)
 
 	hist := failingHistory{writeErr: errors.New("permission denied")}
-	m := newModel(NewDefaultDelegate(), config, cat, fav, 80, 24, &instantMockService{}, hist)
+	m := newModel(config, cat, fav, 80, 24, &instantMockService{}, hist)
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 	m.pager.items[categories.Top] = testItems()
 	m.state = StateBrowsing
@@ -665,7 +664,7 @@ func TestEnteringReaderMode_ValidationFailure_SkipsHistoryWrite(t *testing.T) {
 	// Even with a failing history, validation failure should return before
 	// attempting the history write — so HistoryWarning must be nil.
 	hist := failingHistory{writeErr: errors.New("should not be reached")}
-	m := newModel(NewDefaultDelegate(), config, cat, fav, 80, 24, &instantMockService{}, hist)
+	m := newModel(config, cat, fav, 80, 24, &instantMockService{}, hist)
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 	m.pager.items[categories.Top] = testItems()
 	m.state = StateBrowsing

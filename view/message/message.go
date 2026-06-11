@@ -87,7 +87,6 @@ type AddToFavorites struct {
 
 type ArticleReady struct {
 	Parsed         *article.Parsed
-	Content        string
 	Title          string
 	URL            string
 	Author         string

@@ -50,7 +50,7 @@ func Run(config *settings.Config, cat *categories.Categories) {
 		os.Exit(1)
 	}
 
-	m := model{list: list.New(list.NewDefaultDelegate(), config, cat, fav, 0, 0)}
+	m := model{list: list.New(config, cat, fav, 0, 0)}
 
 	p := tea.NewProgram(m)
 

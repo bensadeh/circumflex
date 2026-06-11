@@ -11,96 +11,66 @@ import (
 	"github.com/bensadeh/circumflex/syntax"
 	"github.com/bensadeh/circumflex/timeago"
 
-	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	xansi "github.com/charmbracelet/x/ansi"
 )
 
-const nerdFontSpacing = 2
+const (
+	nerdFontSpacing = 2
 
-type DefaultItemStyles struct {
-	NormalTitle lipgloss.Style
-	NormalDesc  lipgloss.Style
+	itemHeight  = 2
+	itemSpacing = 1
+)
 
-	SelectedTitle lipgloss.Style
-	SelectedDesc  lipgloss.Style
+type itemStyles struct {
+	normalTitle lipgloss.Style
+	normalDesc  lipgloss.Style
 
-	MarkAsReadTitle lipgloss.Style
-	MarkAsReadDesc  lipgloss.Style
+	selectedTitle lipgloss.Style
+	selectedDesc  lipgloss.Style
 
-	SelectedTitleAddToFavorites lipgloss.Style
-	SelectedDescAddToFavorites  lipgloss.Style
+	markAsReadTitle lipgloss.Style
+	markAsReadDesc  lipgloss.Style
 
-	SelectedTitleRemoveFromFavorites lipgloss.Style
-	SelectedDescRemoveFromFavorites  lipgloss.Style
+	selectedTitleAddToFavorites lipgloss.Style
+	selectedDescAddToFavorites  lipgloss.Style
+
+	selectedTitleRemoveFromFavorites lipgloss.Style
+	selectedDescRemoveFromFavorites  lipgloss.Style
 }
 
-func NewDefaultItemStyles() (s DefaultItemStyles) {
-	s.NormalTitle = lipgloss.NewStyle()
-	s.NormalDesc = s.NormalTitle.Copy().
-		Faint(true)
+func newItemStyles() (s itemStyles) {
+	s.normalTitle = lipgloss.NewStyle()
+	s.normalDesc = s.normalTitle.Faint(true)
 
-	s.SelectedTitle = lipgloss.NewStyle().
-		Reverse(true)
+	s.selectedTitle = lipgloss.NewStyle().Reverse(true)
+	s.selectedDesc = s.selectedTitle.Bold(false).Faint(true).Reverse(false)
 
-	s.SelectedDesc = s.SelectedTitle.Copy().
-		Bold(false).
-		Faint(true).
-		Reverse(false)
+	s.markAsReadTitle = s.normalTitle.Italic(true).Faint(true)
+	s.markAsReadDesc = s.normalDesc
 
-	s.MarkAsReadTitle = s.NormalTitle.Copy().Italic(true).Faint(true)
-	s.MarkAsReadDesc = s.NormalDesc.Copy()
+	s.selectedTitleAddToFavorites = s.normalTitle.Foreground(lipgloss.Green).Reverse(true)
+	s.selectedDescAddToFavorites = s.normalDesc
 
-	s.SelectedTitleAddToFavorites = s.NormalTitle.Copy().Foreground(lipgloss.Green).Reverse(true)
-	s.SelectedDescAddToFavorites = s.NormalDesc.Copy()
-
-	s.SelectedTitleRemoveFromFavorites = s.NormalTitle.Copy().Foreground(lipgloss.Red).Reverse(true)
-	s.SelectedDescRemoveFromFavorites = s.NormalDesc.Copy()
+	s.selectedTitleRemoveFromFavorites = s.normalTitle.Foreground(lipgloss.Red).Reverse(true)
+	s.selectedDescRemoveFromFavorites = s.normalDesc
 
 	return s
 }
 
-type DefaultDelegate struct {
-	Styles  DefaultItemStyles
-	spacing int
-}
-
-func NewDefaultDelegate() *DefaultDelegate {
-	return &DefaultDelegate{
-		Styles:  NewDefaultItemStyles(),
-		spacing: 1,
-	}
-}
-
-func (d *DefaultDelegate) Height() int {
-	return 2
-}
-
-func (d *DefaultDelegate) Spacing() int {
-	return d.spacing
-}
-
-func (d *DefaultDelegate) Update(tea.Msg, *Model) tea.Cmd {
-	return nil
-}
-
-func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *hn.Story) {
-	var (
-		title, desc, domain string
-		s                   = &d.Styles
-	)
-
+func (m *Model) renderItem(w io.Writer, index int, item *hn.Story) {
+	s := &m.itemStyles
 	enableNerdFonts := m.config.EnableNerdFonts
 
-	title = item.Title
-	title = syntax.ReplaceSpecialContentTags(title, enableNerdFonts)
-
-	domain = syntax.HighlightDomain(item.Domain)
+	title := syntax.ReplaceSpecialContentTags(item.Title, enableNerdFonts)
+	domain := syntax.HighlightDomain(item.Domain)
 
 	score := getScore(item.Points, enableNerdFonts)
 	author := getAuthor(item.Author, enableNerdFonts)
 	comments := getComments(item.CommentsCount, enableNerdFonts)
 	timeAgo := parseTime(item.Time, enableNerdFonts)
+
+	var desc string
 
 	if enableNerdFonts {
 		spacing := strings.Repeat(" ", nerdFontSpacing)
@@ -110,7 +80,7 @@ func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *hn.Stor
 	}
 
 	if m.width > 0 {
-		textWidth := m.width - s.NormalTitle.GetPaddingLeft() - s.NormalTitle.GetPaddingRight()
+		textWidth := m.width - s.normalTitle.GetPaddingLeft() - s.normalTitle.GetPaddingRight()
 		title = xansi.Truncate(title, textWidth, ellipsis)
 		desc = xansi.Truncate(desc, textWidth, ellipsis)
 	}
@@ -122,27 +92,24 @@ func (d *DefaultDelegate) Render(w io.Writer, m *Model, index int, item *hn.Stor
 
 	switch {
 	case isSelected && m.state == StateAddFavoritesPrompt:
-		title, desc = styleTitleAndDesc(title, s.SelectedTitleAddToFavorites, s.SelectedDescAddToFavorites, domain,
+		title, desc = styleTitleAndDesc(title, s.selectedTitleAddToFavorites, s.selectedDescAddToFavorites, domain,
 			desc, syntax.AddToFavorites, enableNerdFonts)
 
 	case isSelected && m.state == StateRemoveFavoritesPrompt:
-		title, desc = styleTitleAndDesc(title, s.SelectedTitleRemoveFromFavorites, s.SelectedDescRemoveFromFavorites, domain,
+		title, desc = styleTitleAndDesc(title, s.selectedTitleRemoveFromFavorites, s.selectedDescRemoveFromFavorites, domain,
 			desc, syntax.RemoveFromFavorites, enableNerdFonts)
 
 	case isSelected && m.state == StateBrowsing:
-		title, desc = styleTitleAndDesc(title, s.SelectedTitle, s.SelectedDesc, domain,
+		title, desc = styleTitleAndDesc(title, s.selectedTitle, s.selectedDesc, domain,
 			desc, syntax.Selected, enableNerdFonts)
 
-	case markAsRead && m.cat.CurrentCategory() != categories.Favorites:
-		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(true), s.MarkAsReadDesc, domain,
-			desc, syntax.MarkAsRead, enableNerdFonts)
-
-	case m.pager.transition != nil || m.state == StateReaderView:
-		title, desc = styleTitleAndDesc(title, s.MarkAsReadTitle.Italic(true), s.MarkAsReadDesc, domain,
+	case (markAsRead && m.cat.CurrentCategory() != categories.Favorites) ||
+		m.pager.transition != nil || m.state == StateReaderView:
+		title, desc = styleTitleAndDesc(title, s.markAsReadTitle, s.markAsReadDesc, domain,
 			desc, syntax.MarkAsRead, enableNerdFonts)
 
 	default:
-		title, desc = styleTitleAndDesc(title, s.NormalTitle, s.NormalDesc, domain,
+		title, desc = styleTitleAndDesc(title, s.normalTitle, s.normalDesc, domain,
 			desc, syntax.Unselected, enableNerdFonts)
 	}
 

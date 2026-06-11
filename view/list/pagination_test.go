@@ -76,18 +76,6 @@ func TestPager_CursorDown(t *testing.T) {
 	assert.Equal(t, 4, p.cursor)
 }
 
-func TestPager_Select(t *testing.T) {
-	p := newTestPager(30, 10)
-
-	p.Select(15)
-	assert.Equal(t, 1, p.Paginator.Page)
-	assert.Equal(t, 5, p.cursor)
-
-	p.Select(0)
-	assert.Equal(t, 0, p.Paginator.Page)
-	assert.Equal(t, 0, p.cursor)
-}
-
 func TestPager_VisibleItems(t *testing.T) {
 	p := newTestPager(5, 10)
 
@@ -138,7 +126,8 @@ func TestPager_UpdatePagination(t *testing.T) {
 func TestPager_UpdatePagination_RestoresIndex(t *testing.T) {
 	p := newTestPager(20, 5)
 	p.Paginator.SetTotalPages(20)
-	p.Select(12)
+	p.Paginator.Page = 2
+	p.cursor = 2
 
 	p.updatePagination(30, 2, 1, 0)
 
@@ -151,15 +140,6 @@ func TestPager_UpdateCursor(t *testing.T) {
 
 	p.updateCursor(0)
 	assert.Equal(t, 2, p.cursor)
-}
-
-func TestPager_Cursor(t *testing.T) {
-	p := newTestPager(10, 5)
-
-	assert.Equal(t, 0, p.Cursor())
-
-	p.cursor = 3
-	assert.Equal(t, 3, p.Cursor())
 }
 
 func TestPager_CategoryHasStories_MultipleCategories(t *testing.T) {

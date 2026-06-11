@@ -1,15 +1,15 @@
-package list
+package timeago
 
 import (
 	"testing"
 	"time"
 
-	"github.com/bensadeh/circumflex/timeago"
-
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRelativeTime(t *testing.T) {
+	t.Parallel()
+
 	now := time.Now()
 
 	tests := []struct {
@@ -43,8 +43,10 @@ func TestRelativeTime(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			unixTime := now.Add(-tt.offset).Unix()
-			assert.Equal(t, tt.expected, timeago.RelativeTime(unixTime))
+			assert.Equal(t, tt.expected, RelativeTime(unixTime))
 		})
 	}
 }

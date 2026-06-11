@@ -1,6 +1,7 @@
 package syntax
 
 import (
+	"strconv"
 	"strings"
 	"testing"
 
@@ -305,10 +306,7 @@ func TestHighlightAbbreviations(t *testing.T) {
 func TestHighlightReferences(t *testing.T) {
 	t.Run("highlights numbered references", func(t *testing.T) {
 		for i := range 11 {
-			ref := "[" + strings.Repeat("", 0) + string(rune('0'+i)) + "]"
-			if i == 10 {
-				ref = "[10]"
-			}
+			ref := "[" + strconv.Itoa(i) + "]"
 
 			result := HighlightReferences("see " + ref)
 			assert.Contains(t, result, "[")

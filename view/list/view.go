@@ -55,10 +55,8 @@ func (m *Model) View() string {
 	}
 
 	rankings := ranking.Rankings(
-		false,
 		m.pager.Paginator.PerPage,
 		totalItems,
-		m.pager.cursor,
 		m.pager.Paginator.Page,
 		m.pager.Paginator.TotalPages,
 		readStatuses,
@@ -136,17 +134,17 @@ func (m *Model) populatedView() string {
 			return m.favoritesEmptyMessage()
 		}
 
-		return m.styles.NoItems.Render("")
+		return ""
 	}
 
 	start, end := m.pager.Paginator.GetSliceBounds(len(allItems))
 	itemsToShow := allItems[start:end]
 
 	for i, item := range itemsToShow {
-		m.delegate.Render(&b, m, i+start, item)
+		m.renderItem(&b, i+start, item)
 
 		if i != len(itemsToShow)-1 {
-			fmt.Fprint(&b, strings.Repeat("\n", m.delegate.Spacing()+1))
+			fmt.Fprint(&b, strings.Repeat("\n", itemSpacing+1))
 		}
 	}
 
@@ -155,7 +153,7 @@ func (m *Model) populatedView() string {
 	// have been.
 	itemsOnPage := m.pager.Paginator.ItemsOnPage(len(allItems))
 	if itemsOnPage < m.pager.Paginator.PerPage {
-		n := (m.pager.Paginator.PerPage - itemsOnPage) * (m.delegate.Height() + m.delegate.Spacing())
+		n := (m.pager.Paginator.PerPage - itemsOnPage) * (itemHeight + itemSpacing)
 
 		_, _ = fmt.Fprint(&b, strings.Repeat("\n", n))
 	}
