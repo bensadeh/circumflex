@@ -14,6 +14,7 @@ import (
 	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/timeago"
 	"github.com/bensadeh/circumflex/version"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/bobesa/go-domain-util/domainutil"
 	"resty.dev/v3"
@@ -91,45 +92,29 @@ func (s *Service) fetchStoriesList(ctx context.Context, category string) ([]int,
 func (s *Service) fetchItemsInParallel(ctx context.Context, ids []int) ([]*hn.Story, error) {
 	items := make([]*hn.Story, len(ids))
 
-	ctx, cancel := context.WithCancelCause(ctx)
-	defer cancel(nil)
-
-	var (
-		wg       sync.WaitGroup
-		firstErr error
-		errOnce  sync.Once
-	)
-
-	fail := func(err error) {
-		errOnce.Do(func() {
-			firstErr = err
-			cancel(err)
-		})
-	}
+	g, ctx := errgroup.WithContext(ctx)
+	g.SetLimit(maxConcurrency)
 
 	for i, id := range ids {
-		wg.Add(1)
-
-		go func(i, id int) {
-			defer wg.Done()
-
+		g.Go(func() error {
 			raw, err := s.fetchHNItem(ctx, id)
 			if err != nil {
-				if !errors.Is(err, errItemNotFound) {
-					fail(err)
+				// Deleted items are skipped rather than failing the whole page.
+				if errors.Is(err, errItemNotFound) {
+					return nil
 				}
 
-				return
+				return err
 			}
 
 			items[i] = mapStoryItem(raw)
-		}(i, id)
+
+			return nil
+		})
 	}
 
-	wg.Wait()
-
-	if firstErr != nil {
-		return nil, firstErr
+	if err := g.Wait(); err != nil {
+		return nil, err
 	}
 
 	return filterNil(items), nil

@@ -24,15 +24,7 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 
 	case tea.WindowSizeMsg:
 		m.setSize(msg.Width, msg.Height)
-
-		m.viewport.SetWidth(msg.Width)
-		m.viewport.SetHeight(msg.Height - headerAndFooterHeight)
-
-		content := lipgloss.NewStyle().
-			Width(msg.Width).
-			SetString(help.MainMenuHelpScreen(msg.Width, m.keymap.MainMenuSections()))
-
-		m.viewport.SetContent(content.String())
+		m.resizeHelpViewport(msg.Width, msg.Height)
 
 		return m, nil
 	}
@@ -41,4 +33,15 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 	cmds = append(cmds, cmd)
 
 	return m, tea.Batch(cmds...)
+}
+
+func (m *Model) resizeHelpViewport(width, height int) {
+	m.viewport.SetWidth(width)
+	m.viewport.SetHeight(height - headerAndFooterHeight)
+
+	content := lipgloss.NewStyle().
+		Width(width).
+		SetString(help.MainMenuHelpScreen(width, m.keymap.MainMenuSections()))
+
+	m.viewport.SetContent(content.String())
 }

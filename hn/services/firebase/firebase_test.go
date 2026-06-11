@@ -382,6 +382,54 @@ func TestFetchItems_WithMockServer(t *testing.T) {
 	assert.Equal(t, "Third", result[2].Title)
 }
 
+func TestFetchItems_BoundedConcurrency(t *testing.T) {
+	t.Parallel()
+
+	const itemCount = maxConcurrency + 10
+
+	var inFlight, peak atomic.Int64
+
+	storyIDs := make([]int, itemCount)
+	for i := range storyIDs {
+		storyIDs[i] = i + 1
+	}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		if strings.HasSuffix(r.URL.Path, "topstories.json") {
+			_ = json.NewEncoder(w).Encode(storyIDs)
+
+			return
+		}
+
+		current := inFlight.Add(1)
+		defer inFlight.Add(-1)
+
+		for {
+			observed := peak.Load()
+			if current <= observed || peak.CompareAndSwap(observed, current) {
+				break
+			}
+		}
+
+		time.Sleep(10 * time.Millisecond)
+
+		_ = json.NewEncoder(w).Encode(hnItem{ID: 1, Title: "Story", By: "user", Time: 1700000000})
+	}))
+	defer server.Close()
+
+	s := NewService()
+	s.baseURL = server.URL
+
+	result, err := s.FetchItems(context.Background(), itemCount, "topstories")
+	require.NoError(t, err)
+
+	assert.Len(t, result, itemCount)
+	assert.LessOrEqual(t, peak.Load(), int64(maxConcurrency))
+	assert.Greater(t, peak.Load(), int64(1), "requests should actually overlap")
+}
+
 func TestFetchComments_ItemFetchError(t *testing.T) {
 	now := time.Now()
 

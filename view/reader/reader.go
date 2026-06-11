@@ -106,29 +106,27 @@ func (m *Model) initViewport(content string, width, height int) {
 	vp.KeyMap.PageUp.SetEnabled(false)
 	vp.MouseWheelEnabled = false
 
+	m.viewport = vp
+	m.viewportHeight = vpHeight
+	m.setContent(content)
+	m.rebuildTitleHeader()
+}
+
+func (m *Model) setContent(content string) {
 	trimmed := strings.TrimRight(content, "\n")
 	lines := strings.Split(trimmed, "\n")
-	contentLineCount := len(lines)
 
-	var headers []int
+	m.contentLines = len(lines)
+	m.headerLines = nil
 
 	for i, line := range lines {
 		if strings.Contains(line, sectionMarker) {
-			headers = append(headers, i)
+			m.headerLines = append(m.headerLines, i)
 		}
 	}
 
 	// Add bottom padding so G scrolls the last content line to the bottom.
-	padding := strings.Repeat("\n", vpHeight)
-	padded := trimmed + padding
-
-	vp.SetContent(padded)
-
-	m.viewport = vp
-	m.headerLines = headers
-	m.contentLines = contentLineCount
-	m.viewportHeight = vpHeight
-	m.rebuildTitleHeader()
+	m.viewport.SetContent(trimmed + strings.Repeat("\n", m.viewportHeight))
 }
 
 func (m *Model) Init() tea.Cmd {
@@ -189,24 +187,7 @@ func (m *Model) rerender() {
 
 	contentWidth := layout.ReaderContentWidth(m.screenWidth, m.maxWidth)
 	hdr := meta.ReaderModeMetaBlock(m.articleMeta.URL, m.articleMeta.Author, m.articleMeta.TimeAgo, m.articleMeta.ID, m.articleMeta.Points, m.articleMeta.NerdFonts, contentWidth)
-	content := m.parsed.RenderWithHeader(contentWidth, hdr)
-	trimmed := strings.TrimRight(content, "\n")
-	lines := strings.Split(trimmed, "\n")
-
-	m.contentLines = len(lines)
-
-	var headers []int
-
-	for i, line := range lines {
-		if strings.Contains(line, sectionMarker) {
-			headers = append(headers, i)
-		}
-	}
-
-	m.headerLines = headers
-
-	padding := strings.Repeat("\n", m.viewportHeight)
-	m.viewport.SetContent(trimmed + padding)
+	m.setContent(m.parsed.RenderWithHeader(contentWidth, hdr))
 
 	maxOffset := max(0, m.contentLines-m.viewportHeight)
 	m.viewport.SetYOffset(min(yOffset, maxOffset))

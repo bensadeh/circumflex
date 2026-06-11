@@ -301,28 +301,19 @@ func (m *Model) handleCancelFetch() tea.Cmd {
 }
 
 func (m *Model) handleTabForward() tea.Cmd {
-	return m.handleTab(
-		m.cat.NextIndex(),
-		m.cat.NextCategory(),
-		m.changeToNextCategory,
-		func() { m.cat.Next() },
-	)
+	return m.handleTab(m.cat.NextIndex(), m.cat.NextCategory(), m.cat.Next)
 }
 
 func (m *Model) handleTabBackward() tea.Cmd {
-	return m.handleTab(
-		m.cat.PrevIndex(),
-		m.cat.PrevCategory(),
-		m.changeToPrevCategory,
-		func() { m.cat.Prev() },
-	)
+	return m.handleTab(m.cat.PrevIndex(), m.cat.PrevCategory(), m.cat.Prev)
 }
 
-func (m *Model) handleTab(targetIndex int, targetCategory categories.Category, changeCategory func(), advance func()) tea.Cmd {
+func (m *Model) handleTab(targetIndex int, targetCategory categories.Category, advance func()) tea.Cmd {
 	// Favorites is served locally and never fetched, so switch to it directly
 	// even when empty.
 	if categories.IsFavorites(targetCategory) || m.pager.categoryHasStories(targetCategory) {
-		changeCategory()
+		advance()
+		m.resetPager()
 
 		return nil
 	}
@@ -386,17 +377,7 @@ func (m *Model) handleRefresh() tea.Cmd {
 	return tea.Batch(startSpinnerCmd, changeCatCmd)
 }
 
-func (m *Model) changeToNextCategory() {
-	m.cat.Next()
-	currentCategory := m.cat.CurrentCategory()
-
-	m.pager.Paginator.Page = 0
-	m.pager.cursor = max(0, min(m.pager.cursor, len(m.pager.items[currentCategory])-1))
-	m.updatePagination()
-}
-
-func (m *Model) changeToPrevCategory() {
-	m.cat.Prev()
+func (m *Model) resetPager() {
 	currentCategory := m.cat.CurrentCategory()
 
 	m.pager.Paginator.Page = 0

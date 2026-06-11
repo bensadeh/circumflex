@@ -46,18 +46,7 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 	fetchID := m.fetchID
 
 	return func() tea.Msg {
-		setProgressIndeterminate()
-
-		stories, err := service.FetchItems(ctx, numItems, endpoint)
-
-		switch {
-		case errors.Is(err, context.Canceled):
-			clearProgress()
-		case err != nil:
-			setProgressError()
-		default:
-			clearProgress()
-		}
+		stories, err := fetchItems(ctx, service, numItems, endpoint)
 
 		return message.FetchingFinished{
 			Stories:  stories,
@@ -66,6 +55,24 @@ func (m *Model) FetchStoriesForFirstCategory() tea.Cmd {
 			FetchID:  fetchID,
 		}
 	}
+}
+
+// fetchItems wraps service.FetchItems with the terminal progress lifecycle.
+func fetchItems(ctx context.Context, service hn.Service, numItems int, endpoint string) ([]*hn.Story, error) {
+	setProgressIndeterminate()
+
+	stories, err := service.FetchItems(ctx, numItems, endpoint)
+
+	switch {
+	case errors.Is(err, context.Canceled):
+		clearProgress()
+	case err != nil:
+		setProgressError()
+	default:
+		clearProgress()
+	}
+
+	return stories, err
 }
 
 func FetchMemorialStatus() tea.Cmd {
@@ -99,64 +106,21 @@ func getHistory(debugMode bool, doNotMarkAsRead bool) (history.History, error) {
 	return history.NewPersistentHistory()
 }
 
-func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) tea.Cmd {
+func (m *Model) fetchCategory(cat categories.Category, index, cursor int) tea.Cmd {
 	service := m.service
-	numItems := m.getNumberOfItemsToFetch(msg.Category)
-	endpoint := categories.Endpoint(msg.Category)
+	numItems := m.getNumberOfItemsToFetch(cat)
+	endpoint := categories.Endpoint(cat)
 	ctx := m.fetchCtx
 	fetchID := m.fetchID
 
 	return func() tea.Msg {
-		setProgressIndeterminate()
-
-		stories, err := service.FetchItems(ctx, numItems, endpoint)
-
-		switch {
-		case errors.Is(err, context.Canceled):
-			clearProgress()
-		case err != nil:
-			setProgressError()
-		default:
-			clearProgress()
-		}
+		stories, err := fetchItems(ctx, service, numItems, endpoint)
 
 		return message.CategoryFetchingFinished{
 			Stories:  stories,
-			Category: msg.Category,
-			Index:    msg.Index,
-			Cursor:   msg.Cursor,
-			Err:      err,
-			FetchID:  fetchID,
-		}
-	}
-}
-
-func (m *Model) refresh(msg message.Refresh) tea.Cmd {
-	service := m.service
-	numItems := m.getNumberOfItemsToFetch(msg.CurrentCategory)
-	endpoint := categories.Endpoint(msg.CurrentCategory)
-	ctx := m.fetchCtx
-	fetchID := m.fetchID
-
-	return func() tea.Msg {
-		setProgressIndeterminate()
-
-		stories, err := service.FetchItems(ctx, numItems, endpoint)
-
-		switch {
-		case errors.Is(err, context.Canceled):
-			clearProgress()
-		case err != nil:
-			setProgressError()
-		default:
-			clearProgress()
-		}
-
-		return message.CategoryFetchingFinished{
-			Stories:  stories,
-			Category: msg.CurrentCategory,
-			Index:    msg.CurrentIndex,
-			Cursor:   0,
+			Category: cat,
+			Index:    index,
+			Cursor:   cursor,
 			Err:      err,
 			FetchID:  fetchID,
 		}

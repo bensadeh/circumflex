@@ -7,7 +7,6 @@ import (
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/favorites"
 	"github.com/bensadeh/circumflex/header"
-	"github.com/bensadeh/circumflex/help"
 	"github.com/bensadeh/circumflex/history"
 	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/hn/provider"
@@ -232,14 +231,7 @@ func (m *Model) handleWindowResize(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 		return m, m.commentView.Update(msg)
 	}
 
-	m.viewport.SetWidth(msg.Width)
-	m.viewport.SetHeight(msg.Height - headerAndFooterHeight)
-
-	content := lipgloss.NewStyle().
-		Width(msg.Width).
-		SetString(help.MainMenuHelpScreen(msg.Width, m.keymap.MainMenuSections()))
-
-	m.viewport.SetContent(content.String())
+	m.resizeHelpViewport(msg.Width, msg.Height)
 
 	return m, nil
 }
@@ -263,13 +255,8 @@ func (m *Model) handleStartup(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 	cmds = append(cmds, FetchMemorialStatus())
 	cmds = append(cmds, scheduleTimeRefresh())
 
-	m.viewport = viewport.New(viewport.WithWidth(msg.Width), viewport.WithHeight(msg.Height-headerAndFooterHeight))
-
-	content := lipgloss.NewStyle().
-		Width(msg.Width).
-		SetString(help.MainMenuHelpScreen(msg.Width, m.keymap.MainMenuSections()))
-
-	m.viewport.SetContent(content.String())
+	m.viewport = viewport.New()
+	m.resizeHelpViewport(msg.Width, msg.Height)
 
 	return m, tea.Batch(cmds...)
 }
@@ -385,10 +372,10 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, nil
 
 	case message.FetchAndChangeToCategory:
-		return m, m.fetchAndChangeToCategory(msg)
+		return m, m.fetchCategory(msg.Category, msg.Index, msg.Cursor)
 
 	case message.Refresh:
-		return m, tea.Batch(m.refresh(msg), FetchMemorialStatus())
+		return m, tea.Batch(m.fetchCategory(msg.CurrentCategory, msg.CurrentIndex, 0), FetchMemorialStatus())
 
 	case message.ShowStatusMessage:
 		cmds = append(cmds, m.status.NewStatusMessageWithDuration(msg.Message, msg.Duration))
