@@ -1,7 +1,6 @@
 package article
 
 import (
-	"errors"
 	"regexp"
 	"slices"
 	"strings"
@@ -38,10 +37,7 @@ func convertToMarkdownBlocks(text string) []*block {
 			if strings.HasPrefix(lineWithoutFormatting, "```") {
 				isInsideCode = false
 
-				appendedBlocks, err := appendNonEmptyBuffer(temp, blocks)
-				if err == nil {
-					blocks = appendedBlocks
-				}
+				blocks = appendNonEmptyBuffer(temp, blocks)
 
 				temp.reset()
 
@@ -54,10 +50,7 @@ func convertToMarkdownBlocks(text string) []*block {
 		}
 
 		if line == "" {
-			appendedBlocks, err := appendNonEmptyBuffer(temp, blocks)
-			if err == nil {
-				blocks = appendedBlocks
-			}
+			blocks = appendNonEmptyBuffer(temp, blocks)
 
 			temp.reset()
 
@@ -153,38 +146,8 @@ func convertToMarkdownBlocks(text string) []*block {
 			temp.kind = blockDivider
 			temp.text = line
 
-		case strings.HasPrefix(lineWithoutFormatting, "# "):
-			temp.kind = blockH1
-			temp.text = lineWithoutFormatting
-
-			isInsideText = true
-
-		case strings.HasPrefix(lineWithoutFormatting, "## "):
-			temp.kind = blockH2
-			temp.text = lineWithoutFormatting
-
-			isInsideText = true
-
-		case strings.HasPrefix(lineWithoutFormatting, "### "):
-			temp.kind = blockH3
-			temp.text = lineWithoutFormatting
-
-			isInsideText = true
-
-		case strings.HasPrefix(lineWithoutFormatting, "#### "):
-			temp.kind = blockH4
-			temp.text = lineWithoutFormatting
-
-			isInsideText = true
-
-		case strings.HasPrefix(lineWithoutFormatting, "##### "):
-			temp.kind = blockH5
-			temp.text = lineWithoutFormatting
-
-			isInsideText = true
-
-		case strings.HasPrefix(lineWithoutFormatting, "###### "):
-			temp.kind = blockH6
+		case headerLevel(lineWithoutFormatting) > 0:
+			temp.kind = blockH1 + blockKind(headerLevel(lineWithoutFormatting)-1)
 			temp.text = lineWithoutFormatting
 
 			isInsideText = true
@@ -218,17 +181,26 @@ func isSameTypeAsPreviousItem(itemType blockKind, blocks []*block) bool {
 	return blocks[previousItem].Kind == itemType
 }
 
-func appendNonEmptyBuffer(temp *tempBuffer, blocks []*block) ([]*block, error) {
+func appendNonEmptyBuffer(temp *tempBuffer, blocks []*block) []*block {
 	if temp.kind == blockText && temp.text == "" {
-		return nil, errors.New("buffer is empty")
+		return blocks
 	}
 
-	b := block{
-		Kind: temp.kind,
-		Text: temp.text,
+	return append(blocks, &block{Kind: temp.kind, Text: temp.text})
+}
+
+// headerLevel returns 1-6 for a Markdown header line, 0 otherwise.
+func headerLevel(text string) int {
+	level := 0
+	for level < len(text) && text[level] == '#' {
+		level++
 	}
 
-	return append(blocks, &b), nil
+	if level == 0 || level > 6 || level >= len(text) || text[level] != ' ' {
+		return 0
+	}
+
+	return level
 }
 
 type tempBuffer struct {

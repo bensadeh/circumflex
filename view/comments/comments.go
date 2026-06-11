@@ -208,102 +208,70 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		return cmd
 	}
 
-	if key.Matches(msg, m.keymap.ToggleMode) {
+	switch {
+	case key.Matches(msg, m.keymap.ToggleMode):
 		m.toggleMode()
 
-		return nil
-	}
-
-	if key.Matches(msg, m.keymap.GotoTop) {
+	case key.Matches(msg, m.keymap.GotoTop):
 		m.gotoTop()
 
-		return nil
-	}
-
-	if key.Matches(msg, m.keymap.GotoBottom) {
+	case key.Matches(msg, m.keymap.GotoBottom):
 		m.gotoBottom()
 
-		return nil
-	}
-
-	if key.Matches(msg, m.keymap.NextTopLevel) {
+	case key.Matches(msg, m.keymap.NextTopLevel):
 		m.jumpToTopLevel(1)
 
-		return nil
-	}
-
-	if key.Matches(msg, m.keymap.PrevTopLevel) {
+	case key.Matches(msg, m.keymap.PrevTopLevel):
 		m.jumpToTopLevel(-1)
 
-		return nil
-	}
-
-	if key.Matches(msg, m.keymap.Collapse) {
+	case key.Matches(msg, m.keymap.Collapse):
 		if m.mode == modeRead {
 			m.collapseLevel()
 		} else {
 			m.setCollapsed(true)
 		}
 
-		return nil
-	}
-
-	if key.Matches(msg, m.keymap.Expand) {
+	case key.Matches(msg, m.keymap.Expand):
 		if m.mode == modeRead {
 			m.expandLevel()
 		} else {
 			m.setCollapsed(false)
 		}
 
-		return nil
-	}
-
-	if key.Matches(msg, m.keymap.ToggleCollapse) {
+	case key.Matches(msg, m.keymap.ToggleCollapse):
 		if m.mode == modeRead {
 			m.toggleCollapseAll()
 		} else {
 			m.toggleCollapse()
 		}
 
-		return nil
-	}
-
-	if m.mode == modeRead && key.Matches(msg, m.keymap.HalfPageDown) {
+	case m.mode == modeRead && key.Matches(msg, m.keymap.HalfPageDown):
 		m.halfPageDown()
 
-		return nil
-	}
-
-	if m.mode == modeRead && key.Matches(msg, m.keymap.HalfPageUp) {
+	case m.mode == modeRead && key.Matches(msg, m.keymap.HalfPageUp):
 		m.halfPageUp()
 
-		return nil
-	}
-
-	if m.mode == modeRead && key.Matches(msg, m.keymap.PageDown) {
+	case m.mode == modeRead && key.Matches(msg, m.keymap.PageDown):
 		m.pageDown()
 
-		return nil
-	}
-
-	if m.mode == modeRead && key.Matches(msg, m.keymap.PageUp) {
+	case m.mode == modeRead && key.Matches(msg, m.keymap.PageUp):
 		m.pageUp()
 
-		return nil
-	}
-
-	if m.mode == modeNavigate {
+	case m.mode == modeNavigate:
 		return m.handleNavigateKeys(msg)
+
+	default:
+		before := m.viewport.YOffset()
+
+		var cmd tea.Cmd
+
+		m.viewport, cmd = m.viewport.Update(msg)
+		m.clampScroll(before)
+
+		return cmd
 	}
 
-	before := m.viewport.YOffset()
-
-	var cmd tea.Cmd
-
-	m.viewport, cmd = m.viewport.Update(msg)
-	m.clampScroll(before)
-
-	return cmd
+	return nil
 }
 
 func (m *Model) handleNavigateKeys(msg tea.KeyPressMsg) tea.Cmd {

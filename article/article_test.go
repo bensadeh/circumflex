@@ -9,6 +9,8 @@ import (
 )
 
 func TestConvertToMarkdownBlocks_Text(t *testing.T) {
+	t.Parallel()
+
 	blocks := convertToMarkdownBlocks("Hello world")
 
 	require.Len(t, blocks, 1)
@@ -17,6 +19,8 @@ func TestConvertToMarkdownBlocks_Text(t *testing.T) {
 }
 
 func TestConvertToMarkdownBlocks_MultipleTextParagraphs(t *testing.T) {
+	t.Parallel()
+
 	input := "First paragraph\n\nSecond paragraph"
 	blocks := convertToMarkdownBlocks(input)
 
@@ -28,6 +32,8 @@ func TestConvertToMarkdownBlocks_MultipleTextParagraphs(t *testing.T) {
 }
 
 func TestConvertToMarkdownBlocks_TextJoinsLines(t *testing.T) {
+	t.Parallel()
+
 	input := "Line one\ncontinued"
 	blocks := convertToMarkdownBlocks(input)
 
@@ -37,6 +43,8 @@ func TestConvertToMarkdownBlocks_TextJoinsLines(t *testing.T) {
 }
 
 func TestConvertToMarkdownBlocks_Headers(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		input    string
 		kind     blockKind
@@ -51,14 +59,20 @@ func TestConvertToMarkdownBlocks_Headers(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		blocks := convertToMarkdownBlocks(tt.input)
-		require.Len(t, blocks, 1, "input: %s", tt.input)
-		assert.Equal(t, tt.kind, blocks[0].Kind, "input: %s", tt.input)
-		assert.Equal(t, tt.wantText, blocks[0].Text, "input: %s", tt.input)
+		t.Run(tt.input, func(t *testing.T) {
+			t.Parallel()
+
+			blocks := convertToMarkdownBlocks(tt.input)
+			require.Len(t, blocks, 1)
+			assert.Equal(t, tt.kind, blocks[0].Kind)
+			assert.Equal(t, tt.wantText, blocks[0].Text)
+		})
 	}
 }
 
 func TestConvertToMarkdownBlocks_Code(t *testing.T) {
+	t.Parallel()
+
 	input := "```\nfunc main() {}\n```"
 	blocks := convertToMarkdownBlocks(input)
 
@@ -68,6 +82,8 @@ func TestConvertToMarkdownBlocks_Code(t *testing.T) {
 }
 
 func TestConvertToMarkdownBlocks_Quote(t *testing.T) {
+	t.Parallel()
+
 	input := "> This is a quote"
 	blocks := convertToMarkdownBlocks(input)
 
@@ -77,6 +93,8 @@ func TestConvertToMarkdownBlocks_Quote(t *testing.T) {
 }
 
 func TestConvertToMarkdownBlocks_List(t *testing.T) {
+	t.Parallel()
+
 	input := "- item one\n- item two"
 	blocks := convertToMarkdownBlocks(input)
 
@@ -87,6 +105,8 @@ func TestConvertToMarkdownBlocks_List(t *testing.T) {
 }
 
 func TestConvertToMarkdownBlocks_NumberedList(t *testing.T) {
+	t.Parallel()
+
 	input := "1. first\n2. second"
 	blocks := convertToMarkdownBlocks(input)
 
@@ -95,6 +115,8 @@ func TestConvertToMarkdownBlocks_NumberedList(t *testing.T) {
 }
 
 func TestConvertToMarkdownBlocks_Table(t *testing.T) {
+	t.Parallel()
+
 	input := "| A | B |\n| - | - |\n| 1 | 2 |"
 	blocks := convertToMarkdownBlocks(input)
 
@@ -103,6 +125,8 @@ func TestConvertToMarkdownBlocks_Table(t *testing.T) {
 }
 
 func TestConvertToMarkdownBlocks_Divider(t *testing.T) {
+	t.Parallel()
+
 	input := "* * *"
 	blocks := convertToMarkdownBlocks(input)
 
@@ -111,6 +135,8 @@ func TestConvertToMarkdownBlocks_Divider(t *testing.T) {
 }
 
 func TestConvertToMarkdownBlocks_Image(t *testing.T) {
+	t.Parallel()
+
 	input := "![alt text](https://example.com/img.png)"
 	blocks := convertToMarkdownBlocks(input)
 
@@ -119,11 +145,15 @@ func TestConvertToMarkdownBlocks_Image(t *testing.T) {
 }
 
 func TestConvertToMarkdownBlocks_EmptyInput(t *testing.T) {
+	t.Parallel()
+
 	blocks := convertToMarkdownBlocks("")
 	assert.Empty(t, blocks)
 }
 
 func TestConvertToMarkdownBlocks_ReplacesEnDashAndEmDash(t *testing.T) {
+	t.Parallel()
+
 	input := "word–word—word"
 	blocks := convertToMarkdownBlocks(input)
 
@@ -134,6 +164,8 @@ func TestConvertToMarkdownBlocks_ReplacesEnDashAndEmDash(t *testing.T) {
 }
 
 func TestConvertToMarkdownBlocks_MultiBlockQuote(t *testing.T) {
+	t.Parallel()
+
 	input := "> line one\n> line two"
 	blocks := convertToMarkdownBlocks(input)
 
@@ -144,6 +176,8 @@ func TestConvertToMarkdownBlocks_MultiBlockQuote(t *testing.T) {
 }
 
 func TestConvertToMarkdownBlocks_Mixed(t *testing.T) {
+	t.Parallel()
+
 	input := "# Header\n\nSome text.\n\n```\ncode\n```\n\n> quote"
 	blocks := convertToMarkdownBlocks(input)
 
@@ -155,6 +189,8 @@ func TestConvertToMarkdownBlocks_Mixed(t *testing.T) {
 }
 
 func TestIsListItem(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		input string
 		want  bool
@@ -168,11 +204,17 @@ func TestIsListItem(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.Equal(t, tt.want, isListItem(tt.input), "input: %q", tt.input)
+		t.Run(tt.input, func(t *testing.T) {
+			t.Parallel()
+
+			assert.Equal(t, tt.want, isListItem(tt.input))
+		})
 	}
 }
 
 func TestConvertToTerminalFormat_BasicText(t *testing.T) {
+	t.Parallel()
+
 	blocks := []*block{
 		{Kind: blockText, Text: "Hello world"},
 	}
@@ -181,7 +223,9 @@ func TestConvertToTerminalFormat_BasicText(t *testing.T) {
 	assert.Contains(t, result, "Hello world")
 }
 
-func TestConvertToTerminalFormat_MultiplBlocks(t *testing.T) {
+func TestConvertToTerminalFormat_MultipleBlocks(t *testing.T) {
+	t.Parallel()
+
 	blocks := []*block{
 		{Kind: blockText, Text: "First paragraph"},
 		{Kind: blockText, Text: "Second paragraph"},
@@ -195,6 +239,8 @@ func TestConvertToTerminalFormat_MultiplBlocks(t *testing.T) {
 }
 
 func TestConvertToTerminalFormat_Code(t *testing.T) {
+	t.Parallel()
+
 	blocks := []*block{
 		{Kind: blockCode, Text: "\nfmt.Println()\n"},
 	}
@@ -204,6 +250,8 @@ func TestConvertToTerminalFormat_Code(t *testing.T) {
 }
 
 func TestConvertToTerminalFormat_Divider(t *testing.T) {
+	t.Parallel()
+
 	blocks := []*block{
 		{Kind: blockDivider, Text: "* * *"},
 	}
@@ -213,6 +261,8 @@ func TestConvertToTerminalFormat_Divider(t *testing.T) {
 }
 
 func TestUnescapeCharacters(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		input    string
 		expected string
@@ -235,23 +285,33 @@ func TestUnescapeCharacters(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.Equal(t, tt.expected, unescapeCharacters(tt.input), "input: %q", tt.input)
+		t.Run(tt.input, func(t *testing.T) {
+			t.Parallel()
+
+			assert.Equal(t, tt.expected, unescapeCharacters(tt.input))
+		})
 	}
 }
 
 func TestRemoveImageReference(t *testing.T) {
+	t.Parallel()
+
 	input := "Text ![alt](http://img.png) more"
 	result := removeImageReference(input)
 	assert.Equal(t, "Text alt more", result)
 }
 
 func TestRemoveHrefs(t *testing.T) {
+	t.Parallel()
+
 	input := `Click <a href="http://example.com">here</a>`
 	result := removeHrefs(input)
 	assert.Equal(t, "Click here", result)
 }
 
 func TestIt_ReplacesItalicMarkers(t *testing.T) {
+	t.Parallel()
+
 	input := italicStart + "italic text" + italicStop
 	result := it(input)
 	assert.Contains(t, result, "\u001B[3m")
@@ -260,12 +320,16 @@ func TestIt_ReplacesItalicMarkers(t *testing.T) {
 }
 
 func TestPreFormatHeader(t *testing.T) {
+	t.Parallel()
+
 	input := "## My Header"
 	result := preFormatHeader(input)
 	assert.Equal(t, "My Header", result)
 }
 
 func TestTrimLeadingZero(t *testing.T) {
+	t.Parallel()
+
 	input := indentLevel2 + "01. item"
 	result := trimLeadingZero(input)
 	assert.Equal(t, indentLevel2+" 1. item", result)

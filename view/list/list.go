@@ -215,6 +215,40 @@ func (m *Model) handleFetchingFinished(msg message.FetchingFinished) (*Model, te
 	return m, nil
 }
 
+func (m *Model) handleArticleReady(msg message.ArticleReady) (*Model, tea.Cmd) {
+	if msg.FetchID != m.fetchID {
+		return m, nil
+	}
+
+	m.pager.transition = nil
+	m.status.StopSpinner()
+
+	if msg.Err != nil {
+		m.state = stateBrowsing
+
+		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
+	}
+
+	m.readerView = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.width, m.height, reader.Meta{
+		URL:       msg.URL,
+		Author:    msg.Author,
+		TimeAgo:   msg.TimeAgo,
+		ID:        msg.ID,
+		Points:    msg.Points,
+		NerdFonts: m.config.EnableNerdFonts,
+	})
+
+	m.state = stateReaderView
+
+	initCmd := m.readerView.Init()
+	if msg.HistoryWarning != nil {
+		return m, tea.Batch(initCmd,
+			m.status.NewStatusMessageWithDuration("Could not save read status", statusMessageShort))
+	}
+
+	return m, initCmd
+}
+
 func (m *Model) handleWindowResize(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 	m.setSize(msg.Width, msg.Height)
 
@@ -328,37 +362,7 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, m.handleEnteringReaderMode(msg)
 
 	case message.ArticleReady:
-		if msg.FetchID != m.fetchID {
-			return m, nil
-		}
-
-		m.pager.transition = nil
-		m.status.StopSpinner()
-
-		if msg.Err != nil {
-			m.state = stateBrowsing
-
-			return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
-		}
-
-		m.readerView = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.width, m.height, reader.Meta{
-			URL:       msg.URL,
-			Author:    msg.Author,
-			TimeAgo:   msg.TimeAgo,
-			ID:        msg.ID,
-			Points:    msg.Points,
-			NerdFonts: m.config.EnableNerdFonts,
-		})
-
-		m.state = stateReaderView
-
-		initCmd := m.readerView.Init()
-		if msg.HistoryWarning != nil {
-			return m, tea.Batch(initCmd,
-				m.status.NewStatusMessageWithDuration("Could not save read status", statusMessageShort))
-		}
-
-		return m, initCmd
+		return m.handleArticleReady(msg)
 
 	case message.ReaderViewQuit:
 		m.readerView = nil

@@ -76,12 +76,12 @@ func Parse(ctx context.Context, url string) (*Parsed, error) {
 
 	a, err := readability.FromReader(bytes.NewReader(resp.Bytes()), parsedURL)
 	if err != nil {
-		return nil, fmt.Errorf("could not parse article from %s", parsedURL.Host)
+		return nil, fmt.Errorf("could not parse article from %s: %w", parsedURL.Host, err)
 	}
 
 	var buf bytes.Buffer
 	if err := a.RenderHTML(&buf); err != nil {
-		return nil, fmt.Errorf("could not extract readable content from %s", parsedURL.Host)
+		return nil, fmt.Errorf("could not extract readable content from %s: %w", parsedURL.Host, err)
 	}
 
 	raw := ansi.Strip(buf.String())

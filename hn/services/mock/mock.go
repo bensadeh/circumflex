@@ -10,10 +10,15 @@ import (
 
 type Service struct{}
 
-func (Service) FetchItems(_ context.Context, _ int, category string) (items []*hn.Story, err error) {
-	time.Sleep(time.Second * 2)
+func (Service) FetchItems(ctx context.Context, _ int, category string) ([]*hn.Story, error) {
+	// Simulate network latency without ignoring cancellation.
+	select {
+	case <-time.After(2 * time.Second):
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
 
-	items = []*hn.Story{
+	items := []*hn.Story{
 		{
 			Title:         "Lorem ipsum dolor amet et quasi architecto",
 			Points:        31,
@@ -206,6 +211,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*h
 		{
 			Title:         "Quis autem vel eum iure reprehenderit",
 			Points:        97,
+			ID:            22,
 			Author:        "chi",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "venturebeat.com",
@@ -214,6 +220,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*h
 		{
 			Title:         "Perferendis doloribus asperiores repellat",
 			Points:        50,
+			ID:            23,
 			Author:        "psi",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "techcrunch.com",
@@ -222,6 +229,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*h
 		{
 			Title:         "Obcaecati cupiditate non provident",
 			Points:        68,
+			ID:            24,
 			Author:        "omega",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "newyorker.com",
@@ -230,6 +238,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*h
 		{
 			Title:         "Quae ab illo inventore veritatis et quasi architecto",
 			Points:        115,
+			ID:            25,
 			Author:        "alfa",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "nytimes.com",
@@ -238,6 +247,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*h
 		{
 			Title:         "Qui ratione voluptatem sequi nesciunt",
 			Points:        102,
+			ID:            26,
 			Author:        "beta",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "archive.org",
@@ -246,6 +256,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*h
 		{
 			Title:         "Nisi ut aliquid ex ea commodi consequatur?",
 			Points:        74,
+			ID:            27,
 			Author:        "gamma",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "sciencedirect.com",
@@ -254,6 +265,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*h
 		{
 			Title:         "Temporibus autem quibusdam et aut officiis debitis",
 			Points:        47,
+			ID:            28,
 			Author:        "delta",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "smithsonianmag.com",
@@ -262,6 +274,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*h
 		{
 			Title:         "Id est laborum et dolorum fuga",
 			Points:        90,
+			ID:            29,
 			Author:        "epsilon",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "vice.com",
@@ -270,6 +283,7 @@ func (Service) FetchItems(_ context.Context, _ int, category string) (items []*h
 		{
 			Title:         "Omnis voluptas assumenda est, omnis dolor repellendus",
 			Points:        22,
+			ID:            30,
 			Author:        "zeta",
 			Time:          time.Now().Add(-time.Hour).Unix(),
 			Domain:        "abc.com",
