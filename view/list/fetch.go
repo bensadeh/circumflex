@@ -87,22 +87,16 @@ func (m *Model) getNumberOfItemsToFetch(cat categories.Category) int {
 	return m.pager.Paginator.PerPage
 }
 
-func getHistory(debugMode bool, doNotMarkAsRead bool) history.History {
+func getHistory(debugMode bool, doNotMarkAsRead bool) (history.History, error) {
 	if debugMode {
-		return history.NewMockHistory()
+		return history.NewMockHistory(), nil
 	}
 
 	if doNotMarkAsRead {
-		return history.NewNonPersistentHistory()
+		return history.NewNonPersistentHistory(), nil
 	}
 
-	h, err := history.NewPersistentHistory()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
-	}
-
-	return h
+	return history.NewPersistentHistory()
 }
 
 func (m *Model) fetchAndChangeToCategory(msg message.FetchAndChangeToCategory) tea.Cmd {

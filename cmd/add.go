@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"strconv"
 
 	"github.com/bensadeh/circumflex/favorites"
 	"github.com/bensadeh/circumflex/settings"
@@ -17,35 +15,33 @@ func addCmd() *cobra.Command {
 		Short:                 "add item to list of favorites",
 		Args:                  cobra.ExactArgs(1),
 		DisableFlagsInUseLine: true,
-		Run: func(cmd *cobra.Command, args []string) {
-			id, err := strconv.Atoi(args[0])
+		RunE: func(cmd *cobra.Command, args []string) error {
+			id, err := parseID(args[0])
 			if err != nil {
-				fmt.Fprintln(os.Stderr, "Argument must be a valid ID")
-				os.Exit(1)
+				return err
 			}
 
 			service := newService()
 
 			story, err := service.FetchItem(cmd.Context(), id)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-				os.Exit(1)
+				return err
 			}
 
 			fav, err := favorites.New(settings.FavoritesPath())
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-				os.Exit(1)
+				return err
 			}
 
 			fav.Add(favorites.ItemFromStory(story))
 
 			if err := fav.Write(); err != nil {
-				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-				os.Exit(1)
+				return err
 			}
 
 			fmt.Println("Item added to favorites")
+
+			return nil
 		},
 	}
 }

@@ -43,21 +43,22 @@ func (m model) View() tea.View {
 	return v
 }
 
-func Run(config *settings.Config, cat *categories.Categories) {
+func Run(config *settings.Config, cat *categories.Categories) error {
 	fav, err := favorites.New(settings.FavoritesPath())
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		return err
 	}
 
-	m := model{list: list.New(config, cat, fav, 0, 0)}
+	l, err := list.New(config, cat, fav, 0, 0)
+	if err != nil {
+		return err
+	}
 
-	p := tea.NewProgram(m)
+	p := tea.NewProgram(model{list: l})
 
 	finalModel, err := p.Run()
 	if err != nil {
-		fmt.Println("Error running program:", err)
-		os.Exit(1)
+		return err
 	}
 
 	if fm, ok := finalModel.(model); ok {
@@ -69,4 +70,6 @@ func Run(config *settings.Config, cat *categories.Categories) {
 			fmt.Fprintf(os.Stderr, "circumflex: could not open browser: %v\n", browserErr)
 		}
 	}
+
+	return nil
 }

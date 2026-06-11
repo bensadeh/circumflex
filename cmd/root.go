@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/bensadeh/circumflex/ansi"
@@ -44,16 +45,18 @@ func Root() *cobra.Command {
 		PersistentPreRun: func(cmd *cobra.Command, _ []string) {
 			nerdFontChanged = cmd.Flags().Changed("nerdfonts")
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			config := getConfig()
+		RunE: func(cmd *cobra.Command, args []string) error {
+			config, err := getConfig()
+			if err != nil {
+				return err
+			}
 
 			cat, err := categories.New(selectedCategories)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-				os.Exit(1)
+				return err
 			}
 
-			view.Run(config, cat)
+			return view.Run(config, cat)
 		},
 	}
 
@@ -193,13 +196,12 @@ func configureFlags(rootCmd *cobra.Command) {
 	rootCmd.Flag("debug-fallible").Hidden = true
 }
 
-func getConfig() *settings.Config {
+func getConfig() (*settings.Config, error) {
 	config := settings.Default()
 
 	t, err := theme.Load(settings.ThemePath())
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: could not load theme config\n  %v\n", err)
-		os.Exit(1)
+		return nil, fmt.Errorf("could not load theme config: %w", err)
 	}
 
 	config.Theme = t
@@ -214,7 +216,16 @@ func getConfig() *settings.Config {
 	config.DebugFallible = debugFallible
 	config.PageMultiplier = settings.ClampPageMultiplier(pageMultiplier)
 
-	return config
+	return config, nil
+}
+
+func parseID(arg string) (int, error) {
+	id, err := strconv.Atoi(arg)
+	if err != nil {
+		return 0, fmt.Errorf("%q is not a valid story ID", arg)
+	}
+
+	return id, nil
 }
 
 func resolveNerdFonts(flag, changed bool) bool {

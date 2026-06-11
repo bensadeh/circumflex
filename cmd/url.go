@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/view/reader"
@@ -16,20 +15,20 @@ func urlCmd() *cobra.Command {
 		Short:                 "open the provided url in reader mode",
 		Args:                  cobra.ExactArgs(1),
 		DisableFlagsInUseLine: true,
-		Run: func(cmd *cobra.Command, args []string) {
-			config := getConfig()
+		RunE: func(cmd *cobra.Command, args []string) error {
+			config, err := getConfig()
+			if err != nil {
+				return err
+			}
+
 			url := args[0]
 
 			content, err := article.Fetch(cmd.Context(), url, readerWidth(config.ArticleWidth))
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error reading article: %v\n", err)
-				os.Exit(1)
+				return fmt.Errorf("could not read article: %w", err)
 			}
 
-			if err := reader.Run(content, "Reader Mode", reader.Meta{URL: url}); err != nil {
-				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-				os.Exit(1)
-			}
+			return reader.Run(content, "Reader Mode", reader.Meta{URL: url})
 		},
 	}
 }

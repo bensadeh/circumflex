@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/bensadeh/circumflex/history"
 
@@ -15,14 +14,15 @@ func clearCmd() *cobra.Command {
 		Short:                 "clear the history of visited IDs",
 		Args:                  cobra.NoArgs,
 		DisableFlagsInUseLine: true,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			his := history.Persistent{}
 			if err := his.ClearAndWriteToDisk(); err != nil {
-				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-				os.Exit(1)
+				return err
 			}
 
 			fmt.Println("List of visited IDs cleared")
+
+			return nil
 		},
 	}
 }

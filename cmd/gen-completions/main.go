@@ -9,32 +9,36 @@ import (
 )
 
 func main() {
-	if len(os.Args) != 2 {
-		fmt.Fprintf(os.Stderr, "usage: %s <output-dir>\n", os.Args[0])
+	if err := run(); err != nil {
+		fmt.Fprintf(os.Stderr, "gen-completions: %v\n", err)
 		os.Exit(1)
+	}
+}
+
+func run() error {
+	if len(os.Args) != 2 {
+		return fmt.Errorf("usage: %s <output-dir>", os.Args[0])
 	}
 
 	outDir := filepath.Clean(os.Args[1])
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
-		fmt.Fprintf(os.Stderr, "could not create %s: %v\n", outDir, err)
-		os.Exit(1)
+		return err
 	}
 
 	root := cmd.Root()
 	root.DisableAutoGenTag = true
 
 	if err := root.GenBashCompletionFileV2(filepath.Join(outDir, "clx.bash"), true); err != nil {
-		fmt.Fprintf(os.Stderr, "bash: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("bash: %w", err)
 	}
 
 	if err := root.GenZshCompletionFile(filepath.Join(outDir, "_clx")); err != nil {
-		fmt.Fprintf(os.Stderr, "zsh: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("zsh: %w", err)
 	}
 
 	if err := root.GenFishCompletionFile(filepath.Join(outDir, "clx.fish"), true); err != nil {
-		fmt.Fprintf(os.Stderr, "fish: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("fish: %w", err)
 	}
+
+	return nil
 }

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/bensadeh/circumflex/settings"
 	"github.com/bensadeh/circumflex/theme"
@@ -11,20 +10,21 @@ import (
 )
 
 func defaultThemeCmd() *cobra.Command {
-	path := settings.ThemePath()
-
 	return &cobra.Command{
 		Use:                   "default-theme",
 		Short:                 "write default theme config file",
 		Args:                  cobra.NoArgs,
 		DisableFlagsInUseLine: true,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
+			path := settings.ThemePath()
+
 			if err := theme.WriteDefaultConfig(path); err != nil {
-				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-				os.Exit(1)
+				return err
 			}
 
 			fmt.Printf("Default theme written to %s\n", path)
+
+			return nil
 		},
 	}
 }

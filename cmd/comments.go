@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/bensadeh/circumflex/comment"
@@ -76,27 +75,26 @@ func commentsCmd() *cobra.Command {
 		Short:                 "read the comment section of a story",
 		Args:                  cobra.ExactArgs(1),
 		DisableFlagsInUseLine: true,
-		Run: func(cmd *cobra.Command, args []string) {
-			id, err := strconv.Atoi(args[0])
+		RunE: func(cmd *cobra.Command, args []string) error {
+			id, err := parseID(args[0])
 			if err != nil {
-				fmt.Fprintln(os.Stderr, "Argument must be a valid ID")
-				os.Exit(1)
+				return err
+			}
+
+			config, err := getConfig()
+			if err != nil {
+				return err
 			}
 
 			service := newService()
 
 			tree, err := service.FetchComments(cmd.Context(), id, nil)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-				os.Exit(1)
+				return err
 			}
 
-			thread := comment.ToThread(tree)
-
-			config := getConfig()
-
 			m := commentModel{
-				thread:      thread,
+				thread:      comment.ToThread(tree),
 				lastVisited: time.Now().Unix(),
 				config:      config,
 			}
@@ -105,13 +103,14 @@ func commentsCmd() *cobra.Command {
 
 			finalModel, err := p.Run()
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-				os.Exit(1)
+				return err
 			}
 
 			if cm, ok := finalModel.(commentModel); ok && cm.browserErr != nil {
 				fmt.Fprintf(os.Stderr, "circumflex: could not open browser: %v\n", cm.browserErr)
 			}
+
+			return nil
 		},
 	}
 }

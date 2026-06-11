@@ -68,10 +68,14 @@ type Model struct {
 	statusEndStyle  lipgloss.Style
 }
 
-func New(config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int) *Model {
+func New(config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int) (*Model, error) {
+	hist, err := getHistory(config.DebugMode || config.DebugFallible, config.DoNotMarkSubmissionsAsRead)
+	if err != nil {
+		return nil, err
+	}
+
 	return newModel(config, cat, favorites, width, height,
-		provider.NewService(config.DebugMode, config.DebugFallible),
-		getHistory(config.DebugMode || config.DebugFallible, config.DoNotMarkSubmissionsAsRead))
+		provider.NewService(config.DebugMode, config.DebugFallible), hist), nil
 }
 
 func newModel(config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int, service hn.Service, hist history.History) *Model {

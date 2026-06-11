@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"strconv"
 
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/view/reader"
@@ -17,38 +15,34 @@ func articleCmd() *cobra.Command {
 		Short:                 "read the linked article of a story",
 		Args:                  cobra.ExactArgs(1),
 		DisableFlagsInUseLine: true,
-		Run: func(cmd *cobra.Command, args []string) {
-			id, convErr := strconv.Atoi(args[0])
-			if convErr != nil {
-				fmt.Fprintln(os.Stderr, "Argument must be a valid ID")
-				os.Exit(1)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			id, err := parseID(args[0])
+			if err != nil {
+				return err
+			}
+
+			config, err := getConfig()
+			if err != nil {
+				return err
 			}
 
 			service := newService()
 
 			item, err := service.FetchItem(cmd.Context(), id)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-				os.Exit(1)
+				return err
 			}
 
 			if item.URL == "" {
-				fmt.Fprintln(os.Stderr, "Could not find any links associated with the ID "+args[0])
-				os.Exit(1)
+				return fmt.Errorf("no link associated with ID %d", id)
 			}
-
-			config := getConfig()
 
 			content, err := article.Fetch(cmd.Context(), item.URL, readerWidth(config.ArticleWidth))
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error reading article: %v\n", err)
-				os.Exit(1)
+				return fmt.Errorf("could not read article: %w", err)
 			}
 
-			if err := reader.Run(content, item.Title, reader.Meta{URL: item.URL, ID: item.ID}); err != nil {
-				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-				os.Exit(1)
-			}
+			return reader.Run(content, item.Title, reader.Meta{URL: item.URL, ID: item.ID})
 		},
 	}
 }
