@@ -17,6 +17,7 @@
 - A cancelled comment fetch now reports the cancellation instead of returning a partial comment section as if fully loaded
 - Page down (<kbd>Space</kbd>/<kbd>f</kbd>/<kbd>PgDn</kbd>) and page up (<kbd>b</kbd>/<kbd>PgUp</kbd>) now work in the comment section's navigate mode
 - The nerd font YC label now dims on stories marked as read and is emboldened in comment section headlines
+- Fixed a bug where `clx clear` would not clear anything
 
 ## 4.3
 

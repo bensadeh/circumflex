@@ -19,8 +19,23 @@ type History interface {
 	MarkUnread(id int) error
 }
 
+func historyPath() string {
+	return filepath.Join(settings.CachePath(), "history.json")
+}
+
+// ClearPersistent wipes the on-disk history without reading it first,
+// so even a corrupted history file can be cleared.
+func ClearPersistent() error {
+	h := &Persistent{
+		filePath:       historyPath(),
+		visitedStories: make(map[int]StoryInfo),
+	}
+
+	return h.writeToDisk()
+}
+
 func NewPersistentHistory() (History, error) {
-	filePath := filepath.Join(settings.CachePath(), "history.json")
+	filePath := historyPath()
 
 	h := &Persistent{
 		filePath:       filePath,

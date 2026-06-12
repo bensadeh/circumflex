@@ -41,5 +41,11 @@ func WriteAtomic(path string, content string) error {
 		return err
 	}
 
-	return os.Rename(tmpPath, path)
+	if err := os.Rename(tmpPath, path); err != nil {
+		_ = os.Remove(tmpPath)
+
+		return err
+	}
+
+	return nil
 }

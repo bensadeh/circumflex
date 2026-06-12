@@ -15,8 +15,7 @@ func clearCmd() *cobra.Command {
 		Args:                  cobra.NoArgs,
 		DisableFlagsInUseLine: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			his := history.Persistent{}
-			if err := his.Clear(); err != nil {
+			if err := history.ClearPersistent(); err != nil {
 				return err
 			}
 

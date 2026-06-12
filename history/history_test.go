@@ -11,6 +11,35 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// TestMain fences the whole package into a temp cache dir as a backstop:
+// even a test that forgets sandboxedHistoryPath cannot reach the real history
+// file, because XDG_CACHE_HOME wins over every platform fallback in CachePath.
+func TestMain(m *testing.M) {
+	dir, err := os.MkdirTemp("", "clx-history-test-")
+	if err != nil {
+		panic(err)
+	}
+	defer func() { _ = os.RemoveAll(dir) }()
+
+	if err := os.Setenv("XDG_CACHE_HOME", dir); err != nil {
+		panic(err)
+	}
+
+	m.Run()
+}
+
+// sandboxedHistoryPath points settings.CachePath at a fresh temp dir and
+// returns the history file path inside it. Overriding XDG_CACHE_HOME directly
+// avoids the HOME-based fallbacks, which resolve to real directories on some
+// platforms (e.g. %LocalAppData% on Windows ignores HOME entirely).
+func sandboxedHistoryPath(t *testing.T) string {
+	t.Helper()
+
+	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+
+	return path.Join(settings.CachePath(), "history.json")
+}
+
 func newTestPersistent(t *testing.T) *Persistent {
 	t.Helper()
 
@@ -173,11 +202,7 @@ func TestMock_ContainsKnownIDs(t *testing.T) {
 }
 
 func TestNewPersistentHistory_CorruptFile(t *testing.T) {
-	dir := t.TempDir()
-	t.Setenv("HOME", dir)
-	t.Setenv("XDG_CACHE_HOME", "")
-
-	filePath := path.Join(settings.CachePath(), "history.json")
+	filePath := sandboxedHistoryPath(t)
 	require.NoError(t, os.MkdirAll(path.Dir(filePath), 0o700))
 	require.NoError(t, os.WriteFile(filePath, []byte("not valid json{{{"), 0o600))
 
@@ -189,12 +214,34 @@ func TestNewPersistentHistory_CorruptFile(t *testing.T) {
 	assert.Contains(t, err.Error(), "delete the file")
 }
 
-func TestNewPersistentHistory_ValidFile(t *testing.T) {
-	dir := t.TempDir()
-	t.Setenv("HOME", dir)
-	t.Setenv("XDG_CACHE_HOME", "")
+func TestClearPersistent_WipesCorruptFile(t *testing.T) {
+	filePath := sandboxedHistoryPath(t)
+	require.NoError(t, os.MkdirAll(path.Dir(filePath), 0o700))
+	require.NoError(t, os.WriteFile(filePath, []byte("not valid json{{{"), 0o600))
 
-	filePath := path.Join(settings.CachePath(), "history.json")
+	require.NoError(t, ClearPersistent())
+
+	content, err := os.ReadFile(filePath)
+	require.NoError(t, err)
+	assert.JSONEq(t, "{}", string(content))
+
+	h, err := NewPersistentHistory()
+	require.NoError(t, err)
+	assert.False(t, h.Contains(42))
+}
+
+func TestClearPersistent_CreatesFileWhenMissing(t *testing.T) {
+	filePath := sandboxedHistoryPath(t)
+
+	require.NoError(t, ClearPersistent())
+
+	content, err := os.ReadFile(filePath)
+	require.NoError(t, err)
+	assert.JSONEq(t, "{}", string(content))
+}
+
+func TestNewPersistentHistory_ValidFile(t *testing.T) {
+	filePath := sandboxedHistoryPath(t)
 	require.NoError(t, os.MkdirAll(path.Dir(filePath), 0o700))
 	require.NoError(t, os.WriteFile(filePath, []byte(`{"42":{"LastVisited":100,"CommentsLastVisited":100,"CommentsOnLastVisit":5}}`), 0o600))
 

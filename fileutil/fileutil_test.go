@@ -65,6 +65,22 @@ func TestWriteAtomic_FailedWriteKeepsOriginal(t *testing.T) {
 	assert.Equal(t, "original", string(got))
 }
 
+func TestWriteAtomic_FailedRenameRemovesTempFile(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+
+	// Renaming a file onto an existing directory fails.
+	target := filepath.Join(dir, "occupied")
+	require.NoError(t, os.Mkdir(target, 0o700))
+
+	require.Error(t, WriteAtomic(target, "x"))
+
+	entries, err := os.ReadDir(dir)
+	require.NoError(t, err)
+	assert.Len(t, entries, 1, "only the directory should remain, no temp files")
+}
+
 func TestExists(t *testing.T) {
 	t.Parallel()
 
