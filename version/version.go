@@ -2,5 +2,5 @@ package version
 
 const (
 	Name    = "circumflex"
-	Version = "4.4-dev"
+	Version = "4.4"
 )

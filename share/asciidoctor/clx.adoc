@@ -99,6 +99,12 @@ Jump to next/previous top-level comment.
 _h_, _l_::
 Collapse/expand one level.
 
+_o_::
+Open link to article in browser.
+
+_c_::
+Open comment section in browser.
+
 _Enter_::
 Toggle collapse all.
 
@@ -126,6 +132,12 @@ Jump to next/previous top-level comment.
 
 _h_, _l_::
 Collapse/expand current comment.
+
+_o_::
+Open link to article in browser.
+
+_c_::
+Open comment section in browser.
 
 _Enter_::
 Toggle collapse for current comment.
@@ -155,6 +167,12 @@ Go to top/bottom.
 
 _n_, _N_::
 Jump to next/previous section.
+
+_o_::
+Open link to article in browser.
+
+_c_::
+Open comment section in browser.
 
 _i_, _?_::
 Bring up the help screen.

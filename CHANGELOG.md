@@ -1,10 +1,10 @@
 # Changelog
 
-## 4.4 (Unreleased)
+## 4.4
 
 **New features**
 
-- Open the story (<kbd>o</kbd>) and comments (<kbd>c</kbd>) directly from the reader and comment views, with <kbd>Ctrl+O</kbd> as a back-key (Thanks, @aymericbeaumet! [#204](https://github.com/bensadeh/circumflex/pull/204))
+- Open the story (<kbd>o</kbd>) and comments (<kbd>c</kbd>) directly from the reader and comment views (Thanks, @aymericbeaumet! [#204](https://github.com/bensadeh/circumflex/pull/204))
 
 **Improvements**
 
