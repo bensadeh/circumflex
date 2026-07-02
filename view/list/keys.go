@@ -327,7 +327,7 @@ func (m *Model) handleRefresh() tea.Cmd {
 func (m *Model) handleEnterComments() tea.Cmd {
 	selected := m.SelectedItem()
 
-	m.beginTransition()
+	m.beginDetailTransition()
 	startSpinnerCmd := m.startFetch(0)
 
 	enterCommentsCmd := func() tea.Msg {
@@ -347,7 +347,7 @@ func (m *Model) handleEnterReaderMode() tea.Cmd {
 		return m.status.NewStatusMessageWithDuration(friendlyError(err), statusMessageLong)
 	}
 
-	m.beginTransition()
+	m.beginDetailTransition()
 	startSpinnerCmd := m.startFetch(readerModeTimeout)
 
 	enterReaderCmd := func() tea.Msg {
@@ -366,11 +366,49 @@ func (m *Model) handleEnterReaderMode() tea.Cmd {
 	return tea.Batch(startSpinnerCmd, enterReaderCmd)
 }
 
+// handleOpenAdjacentStory moves the selection one story up or down and opens
+// it in the view the request came from, so the comment section and reader
+// can page through the front page without going back to it.
+func (m *Model) handleOpenAdjacentStory(msg message.OpenAdjacentStory) tea.Cmd {
+	fromReader := m.state == stateReaderView
+	if !fromReader && m.state != stateCommentView {
+		return nil
+	}
+
+	items := m.VisibleItems()
+	newIndex := m.Index() + msg.Direction
+
+	if newIndex < 0 || newIndex >= len(items) {
+		return nil
+	}
+
+	// Validate before moving so a story the reader can't open leaves the
+	// current story open and the selection in place.
+	if fromReader {
+		if err := article.Validate(items[newIndex].Title, items[newIndex].Domain); err != nil {
+			return m.status.NewStatusMessageWithDuration(friendlyError(err), statusMessageLong)
+		}
+	}
+
+	m.pager.setIndex(newIndex)
+
+	if fromReader {
+		return m.handleEnterReaderMode()
+	}
+
+	return m.handleEnterComments()
+}
+
 func (m *Model) beginTransition() {
 	m.pager.transition = &transition{
 		prevIndex: m.cat.CurrentIndex(),
 		oldItems:  m.pager.items[m.cat.CurrentCategory()],
 	}
+}
+
+func (m *Model) beginDetailTransition() {
+	m.beginTransition()
+	m.pager.transition.detail = true
 }
 
 func (m *Model) resetPager() {

@@ -19,14 +19,13 @@ func (m *Model) View() string {
 		return fmt.Sprintf("%s\n%s\n%s\n%s",
 			header.HelpHeader("Keyboard Shortcuts", m.width),
 			m.viewport.View(),
-			m.bottomBar(),
+			m.bottomBar(m.width),
 			help.Footer(m.width))
 	}
 
-	var (
-		sections    []string
-		availHeight = m.height
-	)
+	if m.isWide() {
+		return m.wideView()
+	}
 
 	if m.state == stateReaderView {
 		return m.readerView.View()
@@ -35,6 +34,15 @@ func (m *Model) View() string {
 	if m.state == stateCommentView {
 		return m.commentView.View()
 	}
+
+	return m.listView()
+}
+
+func (m *Model) listView() string {
+	var (
+		sections    []string
+		availHeight = m.height
+	)
 
 	v := m.titleView()
 	sections = append(sections, v)
@@ -60,7 +68,7 @@ func (m *Model) View() string {
 		m.pager.Paginator.Page,
 		m.pager.Paginator.TotalPages,
 		readStatuses,
-		m.pager.transition != nil)
+		m.dimList())
 
 	rankingsAndContent := lipgloss.JoinHorizontal(lipgloss.Top, rankings, content)
 	sections = append(sections, rankingsAndContent)
@@ -71,27 +79,30 @@ func (m *Model) View() string {
 
 func (m *Model) titleView() string {
 	var sv string
-	if m.status.showSpinner {
+	// In the wide layout the spinner always shows centered in the detail pane
+	// instead, so loading feedback stays in one place for every kind of fetch.
+	if m.status.showSpinner && !m.isWide() {
 		sv = m.status.spinnerView()
 	}
 
 	return header.Header(
 		m.cat.ActiveCategories(),
 		m.cat.CurrentIndex(),
-		m.width,
-		sv)
+		m.listWidth(),
+		sv,
+		m.wideStoryOpen())
 }
 
 // bottomBar renders the footer rule (underlined spaces). When the HN memorial
 // is active it carries the same color as the header rule (style.MemorialColor),
 // so the top and bottom rules match.
-func (m *Model) bottomBar() string {
+func (m *Model) bottomBar(width int) string {
 	s := m.underlineStyle
 	if header.MemorialActive() {
 		s = s.Foreground(style.MemorialColor())
 	}
 
-	return strings.Repeat(s.Render(" "), m.width)
+	return strings.Repeat(s.Render(" "), width)
 }
 
 func (m *Model) statusAndPaginationView() string {
@@ -100,28 +111,52 @@ func (m *Model) statusAndPaginationView() string {
 		rightContent  string
 	)
 
-	underline := m.bottomBar()
+	underline := m.bottomBar(m.listWidth())
 
 	centerContent = m.status.message
 
+	// The page dots dim along with the list while a story is open.
+	paginatorView := m.pager.Paginator.View()
+	if m.wideStoryOpen() {
+		paginatorView = m.dimmedPaginatorView()
+	}
+
 	switch m.state {
 	case stateFetching:
-		rightContent = strings.Repeat(m.styles.InactivePaginationDot.String(), m.config.PageMultiplier)
+		// A story fetch in the wide layout keeps the paginator so the left
+		// pane doesn't change; the loading state shows in the detail pane.
+		if m.isWide() && m.detailLoading() {
+			rightContent = paginatorView
+		} else {
+			rightContent = strings.Repeat(m.styles.InactivePaginationDot.String(), m.config.PageMultiplier)
+		}
 	case stateStartup, stateBrowsing, stateAddFavoritesPrompt, stateRemoveFavoritesPrompt, stateReaderView:
-		rightContent = m.pager.Paginator.View()
-	case stateCommentView, stateHelpScreen:
-		// These views handle their own footer.
+		rightContent = paginatorView
+	case stateCommentView:
+		// Full screen, the comment view handles its own footer; in the wide
+		// layout the list keeps its paginator next to it.
+		if m.isWide() {
+			rightContent = paginatorView
+		}
+	case stateHelpScreen:
+		// The help screen handles its own footer.
 	}
 
 	left := m.statusLeftStyle.Render("")
 
 	center := m.statusMidStyle.
-		Width(m.width - statusBarEdgeWidth - statusBarEdgeWidth).
+		Width(m.listWidth() - statusBarEdgeWidth - statusBarEdgeWidth).
 		Render(centerContent)
 
 	right := m.statusEndStyle.Render(rightContent)
 
 	return underline + "\n" + left + center + right
+}
+
+// dimmedPaginatorView renders every page dot faint, dropping the
+// active-page marker while the list is backgrounded.
+func (m *Model) dimmedPaginatorView() string {
+	return strings.Repeat(m.styles.InactivePaginationDot.String(), m.pager.Paginator.TotalPages)
 }
 
 func (m *Model) populatedView() string {

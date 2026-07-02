@@ -109,6 +109,13 @@ type CommentTreeDataReady struct {
 
 type CommentViewQuit struct{}
 
+// OpenAdjacentStory asks the front page to open the next (+1) or previous
+// (-1) story in the same view the request came from: comment section or
+// reader mode.
+type OpenAdjacentStory struct {
+	Direction int
+}
+
 type TimeRefreshTick struct{}
 
 type MemorialStatusReady struct {

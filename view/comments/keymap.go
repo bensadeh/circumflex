@@ -28,6 +28,8 @@ type keyMap struct {
 
 	OpenLink     key.Binding
 	OpenComments key.Binding
+	NextStory    key.Binding
+	PrevStory    key.Binding
 
 	// Shared between modes: collapse/expand all in scroll, individual in navigate.
 	NextComment    key.Binding
@@ -110,6 +112,14 @@ func defaultKeyMap() keyMap {
 		OpenComments: key.NewBinding(
 			key.WithKeys("c"),
 			key.WithHelp("c", "open comments in browser"),
+		),
+		NextStory: key.NewBinding(
+			key.WithKeys("J"),
+			key.WithHelp("J", "open next story"),
+		),
+		PrevStory: key.NewBinding(
+			key.WithKeys("K"),
+			key.WithHelp("K", "open previous story"),
 		),
 	}
 }

@@ -18,4 +18,5 @@ const (
 type transition struct {
 	prevIndex int
 	oldItems  []*hn.Story
+	detail    bool // opening a story's comments/article rather than switching category
 }

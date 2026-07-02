@@ -33,14 +33,21 @@ func Underline(width int) string {
 	return bar
 }
 
-func Header(allCategories []categories.Category, selectedSubHeader int, width int, spinnerView string) string {
+// Header renders the logo (or spinner) and category tabs. With dim set, the
+// logo colors render faint, matching a list that is dimmed behind an open
+// story in the wide layout.
+func Header(allCategories []categories.Category, selectedSubHeader int, width int, spinnerView string, dim bool) string {
 	leftPad := strings.Repeat(" ", layout.HeaderLogoLeftPadding)
 	rightPad := strings.Repeat(" ", layout.HeaderLogoRightPadding)
 
 	var title string
-	if spinnerView != "" {
+
+	switch {
+	case spinnerView != "":
 		title = spinnerView
-	} else {
+	case dim:
+		title = leftPad + style.LogoFaint("c", "l", "x") + rightPad
+	default:
 		title = leftPad + style.Logo("c", "l", "x") + rightPad
 	}
 

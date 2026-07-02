@@ -38,6 +38,7 @@ type Model struct {
 	title         string
 	titleHeader   string
 	showHelp      bool
+	standalone    bool // no front page to page through with J/K
 
 	prerendered []renderedComment
 
@@ -128,6 +129,17 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 	return &m
 }
 
+// NewStandalone creates a comment section for `clx comments`, where there is
+// no front page to go back to or page through.
+func NewStandalone(thread *comment.Thread, lastVisited int64, commentWidth, indent int, enableNerdFonts bool, width, height int) *Model {
+	m := New(thread, lastVisited, commentWidth, indent, enableNerdFonts, width, height)
+	m.standalone = true
+	m.keymap.NextStory.SetEnabled(false)
+	m.keymap.PrevStory.SetEnabled(false)
+
+	return m
+}
+
 func (m *Model) Init() tea.Cmd {
 	return nil
 }
@@ -190,9 +202,17 @@ func (m *Model) handleGlobalKeys(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 		return m.openStoryInBrowser(), true
 	case key.Matches(msg, m.keymap.OpenComments):
 		return m.openCommentsInBrowser(), true
+	case key.Matches(msg, m.keymap.NextStory):
+		return openAdjacentStory(1), true
+	case key.Matches(msg, m.keymap.PrevStory):
+		return openAdjacentStory(-1), true
 	}
 
 	return nil, false
+}
+
+func openAdjacentStory(direction int) tea.Cmd {
+	return func() tea.Msg { return message.OpenAdjacentStory{Direction: direction} }
 }
 
 func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
@@ -309,7 +329,7 @@ func (m *Model) handleNavigateKeys(msg tea.KeyPressMsg) tea.Cmd {
 func (m *Model) View() string {
 	if m.showHelp {
 		content := help.FitToHeight(
-			help.CommentHelpScreen(m.rc.screenWidth, m.rc.enableNerdFonts),
+			help.CommentHelpScreen(m.rc.screenWidth, m.rc.enableNerdFonts, m.standalone),
 			m.rc.viewportHeight,
 		)
 

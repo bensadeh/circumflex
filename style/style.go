@@ -261,6 +261,12 @@ func Logo(a, b, c string) string {
 	return logoCStyle.Render(a) + logoLStyle.Render(b) + logoXStyle.Render(c)
 }
 
+func LogoFaint(a, b, c string) string {
+	return logoCStyle.Faint(true).Render(a) +
+		logoLStyle.Faint(true).Render(b) +
+		logoXStyle.Faint(true).Render(c)
+}
+
 func IndentCycle() []func(string) string { return indentCycleFuncs }
 
 // sgrResetPattern matches the two SGR-reset forms that appear in our rendered

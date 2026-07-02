@@ -29,6 +29,9 @@ type itemStyles struct {
 	selectedTitle lipgloss.Style
 	selectedDesc  lipgloss.Style
 
+	openStoryTitle lipgloss.Style
+	openStoryDesc  lipgloss.Style
+
 	markAsReadTitle lipgloss.Style
 	markAsReadDesc  lipgloss.Style
 
@@ -45,6 +48,9 @@ func newItemStyles() (s itemStyles) {
 
 	s.selectedTitle = lipgloss.NewStyle().Reverse(true)
 	s.selectedDesc = s.selectedTitle.Bold(false).Faint(true).Reverse(false)
+
+	s.openStoryTitle = lipgloss.NewStyle().Faint(true).Bold(true)
+	s.openStoryDesc = s.normalDesc
 
 	s.markAsReadTitle = s.normalTitle.Italic(true).Faint(true)
 	s.markAsReadDesc = s.normalDesc
@@ -79,8 +85,8 @@ func (m *Model) renderItem(w io.Writer, index int, item *hn.Story) {
 		desc = score + author + timeAgo + comments
 	}
 
-	if m.width > 0 {
-		textWidth := m.width - s.normalTitle.GetPaddingLeft() - s.normalTitle.GetPaddingRight()
+	if m.listWidth() > 0 {
+		textWidth := m.listWidth() - s.normalTitle.GetPaddingLeft() - s.normalTitle.GetPaddingRight()
 		title = xansi.Truncate(title, textWidth, ellipsis)
 		desc = xansi.Truncate(desc, textWidth, ellipsis)
 	}
@@ -103,8 +109,14 @@ func (m *Model) renderItem(w io.Writer, index int, item *hn.Story) {
 		title, desc = styleTitleAndDesc(title, s.selectedTitle, s.selectedDesc, domain,
 			desc, syntax.Selected, enableNerdFonts)
 
+	// The open story renders faint but bold — dimmed with the rest of the
+	// list, yet marking where J/K story-to-story navigation currently is.
+	case isSelected && m.wideStoryOpen():
+		title, desc = styleTitleAndDesc(title, s.openStoryTitle, s.openStoryDesc, domain,
+			desc, syntax.MarkAsRead, enableNerdFonts)
+
 	case (markAsRead && m.cat.CurrentCategory() != categories.Favorites) ||
-		m.pager.transition != nil || m.state == stateReaderView:
+		m.dimList():
 		title, desc = styleTitleAndDesc(title, s.markAsReadTitle, s.markAsReadDesc, domain,
 			desc, syntax.MarkAsRead, enableNerdFonts)
 

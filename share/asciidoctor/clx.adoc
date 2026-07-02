@@ -105,6 +105,9 @@ Open link to article in browser.
 _c_::
 Open comment section in browser.
 
+_J_, _K_::
+Open the comment section of the next/previous story on the front page.
+
 _Enter_::
 Toggle collapse all.
 
@@ -138,6 +141,9 @@ Open link to article in browser.
 
 _c_::
 Open comment section in browser.
+
+_J_, _K_::
+Open the comment section of the next/previous story on the front page.
 
 _Enter_::
 Toggle collapse for current comment.
@@ -173,6 +179,9 @@ Open link to article in browser.
 
 _c_::
 Open comment section in browser.
+
+_J_, _K_::
+Open the next/previous story on the front page in Reader Mode.
 
 _i_, _?_::
 Bring up the help screen.
@@ -216,6 +225,11 @@ Default: 3.
 
 *-v, --version*::
 Show the current version of *circumflex*.
+
+*-w* _value_, *--wide-view*=_value_::
+Show the comment section and Reader Mode in a pane next to the front page instead of replacing it.
+Set to _always_, _never_, or the minimum terminal width in columns at which the split kicks in.
+Default: 240.
 
 == Commands
 

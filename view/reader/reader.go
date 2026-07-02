@@ -272,6 +272,14 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		return m.openCommentsInBrowser()
 	}
 
+	if key.Matches(msg, m.keymap.NextStory) {
+		return openAdjacentStory(1)
+	}
+
+	if key.Matches(msg, m.keymap.PrevStory) {
+		return openAdjacentStory(-1)
+	}
+
 	before := m.viewport.YOffset()
 
 	var cmd tea.Cmd
@@ -285,7 +293,7 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 func (m *Model) View() string {
 	if m.showHelp {
 		content := help.FitToHeight(
-			help.ReaderHelpScreen(m.screenWidth),
+			help.ReaderHelpScreen(m.screenWidth, m.standalone),
 			m.viewportHeight,
 		)
 
@@ -383,6 +391,10 @@ func (m *Model) openCommentsInBrowser() tea.Cmd {
 	return message.OpenInBrowser(hn.ItemURL(m.articleMeta.ID))
 }
 
+func openAdjacentStory(direction int) tea.Cmd {
+	return func() tea.Msg { return message.OpenAdjacentStory{Direction: direction} }
+}
+
 func (m *Model) jumpToHeader(direction int) {
 	if len(m.headerLines) == 0 {
 		return
@@ -443,6 +455,10 @@ func Run(content, title string, articleMeta Meta) error {
 	m := newFromContent(content, title, 0, 0)
 	m.standalone = true
 	m.articleMeta = articleMeta
+
+	// Standalone has no front page to page through.
+	m.keymap.NextStory.SetEnabled(false)
+	m.keymap.PrevStory.SetEnabled(false)
 
 	p := tea.NewProgram(standaloneModel{inner: m})
 

@@ -40,6 +40,13 @@ func (m *Model) updatePagination() {
 	m.pager.updatePagination(availHeight, itemHeight, itemSpacing, m.cat.CurrentCategory())
 }
 
+// setIndex moves the selection to an absolute index, flipping to the page
+// that contains it.
+func (p *pager) setIndex(index int) {
+	p.Paginator.Page = index / p.Paginator.PerPage
+	p.cursor = index % p.Paginator.PerPage
+}
+
 func (p *pager) updateCursor(currentCategory categories.Category) {
 	p.cursor = max(0, min(p.cursor, p.Paginator.ItemsOnPage(len(p.VisibleItems(currentCategory)))-1))
 }

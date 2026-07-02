@@ -31,6 +31,7 @@ var (
 	nerdFontChanged    bool
 	pageMultiplier     int
 	selectedCategories string
+	wideView           string
 )
 
 func Root() *cobra.Command {
@@ -101,6 +102,8 @@ func configureFlags(rootCmd *cobra.Command) {
 		"set the categories in the header\n(available: "+strings.Join(categories.AvailableNames(), ", ")+")")
 	rootCmd.PersistentFlags().IntVar(&pageMultiplier, "pages", settings.Default().PageMultiplier,
 		"set pages to fetch per category (1-5)")
+	rootCmd.PersistentFlags().StringVarP(&wideView, "wide-view", "w", strconv.Itoa(settings.DefaultWideViewMinWidth),
+		"show stories in a pane next to the front page: \"always\", \"never\"\nor the minimum terminal width in columns")
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug-mode", "q", false,
 		"enable debug mode (offline mode) by using mock data for the endpoints")
@@ -130,6 +133,11 @@ func getConfig() (*settings.Config, error) {
 	config.DebugMode = debugMode
 	config.DebugFallible = debugFallible
 	config.PageMultiplier = settings.ClampPageMultiplier(pageMultiplier)
+
+	config.WideViewMinWidth, err = settings.ParseWideView(wideView)
+	if err != nil {
+		return nil, err
+	}
 
 	return config, nil
 }

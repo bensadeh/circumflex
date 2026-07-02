@@ -185,7 +185,7 @@ func (m *Model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*M
 		return m, tea.Batch(cmds...)
 	}
 
-	m.commentView = comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, m.width, m.height)
+	m.commentView = comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, m.detailWidth(), m.height)
 	m.state = stateCommentView
 
 	cmds = append(cmds, m.commentView.Init())
@@ -229,7 +229,7 @@ func (m *Model) handleArticleReady(msg message.ArticleReady) (*Model, tea.Cmd) {
 		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
 	}
 
-	m.readerView = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.width, m.height, reader.Meta{
+	m.readerView = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.detailWidth(), m.height, reader.Meta{
 		URL:       msg.URL,
 		Author:    msg.Author,
 		TimeAgo:   msg.TimeAgo,
@@ -252,12 +252,16 @@ func (m *Model) handleArticleReady(msg message.ArticleReady) (*Model, tea.Cmd) {
 func (m *Model) handleWindowResize(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
 	m.setSize(msg.Width, msg.Height)
 
+	// The detail views are sized to their pane, which is the full screen when
+	// the terminal is too narrow for the wide layout.
+	detailMsg := tea.WindowSizeMsg{Width: m.detailWidth(), Height: msg.Height}
+
 	if m.state == stateReaderView {
-		return m, m.readerView.Update(msg)
+		return m, m.readerView.Update(detailMsg)
 	}
 
 	if m.state == stateCommentView {
-		return m, m.commentView.Update(msg)
+		return m, m.commentView.Update(detailMsg)
 	}
 
 	m.resizeHelpViewport(msg.Width, msg.Height)
@@ -387,6 +391,9 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		m.state = stateBrowsing
 
 		return m, nil
+
+	case message.OpenAdjacentStory:
+		return m, m.handleOpenAdjacentStory(msg)
 
 	case message.CategoryFetchingFinished:
 		return m.handleCategoryFetchingFinished(msg)

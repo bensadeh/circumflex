@@ -2,6 +2,11 @@
 
 ## 4.5 (Unreleased)
 
+**New features**
+
+- On terminals 240 columns or wider, the comment section and reader mode now open in a pane next to the front page instead of replacing it; configure with `--wide-view always`, `--wide-view never` or `--wide-view <columns>`
+- Open the next (<kbd>J</kbd>) or previous (<kbd>K</kbd>) story directly from the comment section and reader mode, without going back to the front page
+
 ## 4.4
 
 **New features**
