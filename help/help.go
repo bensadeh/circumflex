@@ -50,13 +50,10 @@ func MainMenuHelpScreen(screenWidth int, sections []Section) string {
 	return mainMenuText(screenWidth, sections) + newPar
 }
 
-// ReaderHelpScreen and CommentHelpScreen take a standalone flag that omits
-// keys needing a front page to act on (J/K story navigation), for
-// `clx article` and `clx comments`.
-func ReaderHelpScreen(screenWidth int, standalone bool) string {
-	return readerText(screenWidth, standalone) + newPar
+func ReaderHelpScreen(screenWidth int) string {
+	return readerText(screenWidth) + newPar
 }
 
-func CommentHelpScreen(screenWidth int, enableNerdFonts, standalone bool) string {
-	return commentText(screenWidth, enableNerdFonts, standalone) + newPar
+func CommentHelpScreen(screenWidth int, enableNerdFonts bool) string {
+	return commentText(screenWidth, enableNerdFonts) + newPar
 }

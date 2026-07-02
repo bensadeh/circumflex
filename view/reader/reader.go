@@ -293,7 +293,7 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 func (m *Model) View() string {
 	if m.showHelp {
 		content := help.FitToHeight(
-			help.ReaderHelpScreen(m.screenWidth, m.standalone),
+			help.ReaderHelpScreen(m.screenWidth),
 			m.viewportHeight,
 		)
 
@@ -455,10 +455,6 @@ func Run(content, title string, articleMeta Meta) error {
 	m := newFromContent(content, title, 0, 0)
 	m.standalone = true
 	m.articleMeta = articleMeta
-
-	// Standalone has no front page to page through.
-	m.keymap.NextStory.SetEnabled(false)
-	m.keymap.PrevStory.SetEnabled(false)
 
 	p := tea.NewProgram(standaloneModel{inner: m})
 

@@ -49,7 +49,10 @@ func newItemStyles() (s itemStyles) {
 	s.selectedTitle = lipgloss.NewStyle().Reverse(true)
 	s.selectedDesc = s.selectedTitle.Bold(false).Faint(true).Reverse(false)
 
-	s.openStoryTitle = lipgloss.NewStyle().Faint(true).Bold(true)
+	// Reverse video paints the bar with the foreground color, so a muted bar
+	// needs a muted foreground: gray reversed gives a dim bar with dark text,
+	// where Faint would only have dimmed the glyphs inside a bright bar.
+	s.openStoryTitle = lipgloss.NewStyle().Foreground(lipgloss.ANSIColor(8)).Reverse(true)
 	s.openStoryDesc = s.normalDesc
 
 	s.markAsReadTitle = s.normalTitle.Italic(true).Faint(true)
@@ -109,11 +112,11 @@ func (m *Model) renderItem(w io.Writer, index int, item *hn.Story) {
 		title, desc = styleTitleAndDesc(title, s.selectedTitle, s.selectedDesc, domain,
 			desc, syntax.Selected, enableNerdFonts)
 
-	// The open story renders faint but bold — dimmed with the rest of the
-	// list, yet marking where J/K story-to-story navigation currently is.
+	// The open story renders in faint reverse video — a muted version of the
+	// browsing highlight, marking where J/K story navigation currently is.
 	case isSelected && m.wideStoryOpen():
 		title, desc = styleTitleAndDesc(title, s.openStoryTitle, s.openStoryDesc, domain,
-			desc, syntax.MarkAsRead, enableNerdFonts)
+			desc, syntax.Selected, enableNerdFonts)
 
 	case (markAsRead && m.cat.CurrentCategory() != categories.Favorites) ||
 		m.dimList():

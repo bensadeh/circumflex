@@ -53,15 +53,15 @@ func openTestComments(t *testing.T, m *Model) {
 func TestWideView_Threshold(t *testing.T) {
 	m := newWideTestModel(t)
 
-	m.setSize(239, wideTestHeight)
+	m.setSize(199, wideTestHeight)
 	assert.False(t, m.isWide())
-	assert.Equal(t, 239, m.listWidth())
-	assert.Equal(t, 239, m.detailWidth())
+	assert.Equal(t, 199, m.listWidth())
+	assert.Equal(t, 199, m.detailWidth())
 
-	m.setSize(240, wideTestHeight)
+	m.setSize(200, wideTestHeight)
 	assert.True(t, m.isWide())
-	assert.Equal(t, (240-dividerWidth)/2, m.listWidth())
-	assert.Equal(t, 240-m.listWidth()-dividerWidth, m.detailWidth())
+	assert.Equal(t, (200-dividerWidth)/2, m.listWidth())
+	assert.Equal(t, 200-m.listWidth()-dividerWidth, m.detailWidth())
 }
 
 func TestWideView_ConfiguredThreshold(t *testing.T) {
@@ -133,13 +133,13 @@ func TestWideView_OpenStoryShowsReadingMarker(t *testing.T) {
 
 	assert.True(t, m.dimList())
 
-	// The open story renders faint and bold — dimmed with the list but
-	// marking the J/K reading position.
+	// The open story renders as a muted gray reverse-video bar — a dimmed
+	// version of the browsing highlight, marking the J/K reading position.
 	var open strings.Builder
 
 	m.renderItem(&open, m.Index(), m.SelectedItem())
-	assert.NotContains(t, open.String(), "\x1b[7", "open story should not use the browsing highlight")
-	assert.Contains(t, open.String(), "\x1b[1;2m", "open story should render bold and faint")
+	assert.NotContains(t, open.String(), "\x1b[7m", "open story should not use the full browsing highlight")
+	assert.Contains(t, open.String(), "\x1b[7;38;5;8m", "open story should render as a gray reversed bar")
 
 	var other strings.Builder
 
