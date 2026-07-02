@@ -133,13 +133,13 @@ func TestWideView_OpenStoryShowsReadingMarker(t *testing.T) {
 
 	assert.True(t, m.dimList())
 
-	// The open story renders as a muted gray reverse-video bar — a dimmed
-	// version of the browsing highlight, marking the J/K reading position.
+	// The open story renders on a muted bright-black bar — a dimmed version
+	// of the browsing highlight, marking the J/K reading position.
 	var open strings.Builder
 
 	m.renderItem(&open, m.Index(), m.SelectedItem())
 	assert.NotContains(t, open.String(), "\x1b[7m", "open story should not use the full browsing highlight")
-	assert.Contains(t, open.String(), "\x1b[7;38;5;8m", "open story should render as a gray reversed bar")
+	assert.Contains(t, open.String(), "\x1b[100m", "open story should render on a bright-black bar")
 
 	var other strings.Builder
 

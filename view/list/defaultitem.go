@@ -49,10 +49,12 @@ func newItemStyles() (s itemStyles) {
 	s.selectedTitle = lipgloss.NewStyle().Reverse(true)
 	s.selectedDesc = s.selectedTitle.Bold(false).Faint(true).Reverse(false)
 
-	// Reverse video paints the bar with the foreground color, so a muted bar
-	// needs a muted foreground: gray reversed gives a dim bar with dark text,
-	// where Faint would only have dimmed the glyphs inside a bright bar.
-	s.openStoryTitle = lipgloss.NewStyle().Foreground(lipgloss.ANSIColor(8)).Reverse(true)
+	// A muted highlight bar: the color scheme's bright black as background,
+	// text in the scheme's default foreground. Reversing a bright-black
+	// foreground would look the same on most schemes but renders the row
+	// invisible where bright black equals the background (Solarized Dark);
+	// this way the text always keeps the scheme's normal contrast.
+	s.openStoryTitle = lipgloss.NewStyle().Background(lipgloss.BrightBlack)
 	s.openStoryDesc = s.normalDesc
 
 	s.markAsReadTitle = s.normalTitle.Italic(true).Faint(true)
