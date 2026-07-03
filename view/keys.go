@@ -1,4 +1,4 @@
-package list
+package view
 
 import (
 	"context"
@@ -18,13 +18,10 @@ import (
 
 const readerModeTimeout = 15 * time.Second
 
-func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
-	var cmds []tea.Cmd
+func (m *model) handleBrowsing(msg tea.Msg) tea.Cmd {
+	numItems := len(m.list.VisibleItems())
 
-	numItems := len(m.VisibleItems())
-
-	switch msg := msg.(type) {
-	case tea.KeyPressMsg:
+	if msg, ok := msg.(tea.KeyPressMsg); ok {
 		switch {
 		case m.state == stateAddFavoritesPrompt && key.Matches(msg, m.keymap.Confirm):
 			return m.handleConfirmAddFavorites()
@@ -52,24 +49,22 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return tea.Quit
 
 		case key.Matches(msg, m.keymap.Up):
-			m.pager.CursorUp()
+			m.list.CursorUp()
 
 			return nil
 
 		case key.Matches(msg, m.keymap.Down):
-			m.pager.CursorDown(m.cat.CurrentCategory())
+			m.list.CursorDown()
 
 			return nil
 
 		case key.Matches(msg, m.keymap.PrevPage):
-			m.pager.Paginator.PrevPage()
-			m.pager.updateCursor(m.cat.CurrentCategory())
+			m.list.PrevPage()
 
 			return nil
 
 		case key.Matches(msg, m.keymap.NextPage):
-			m.pager.Paginator.NextPage()
-			m.pager.updateCursor(m.cat.CurrentCategory())
+			m.list.NextPage()
 
 			return nil
 
@@ -80,12 +75,12 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 			return m.handleTabBackward()
 
 		case key.Matches(msg, m.keymap.GoToTop):
-			m.pager.cursor = 0
+			m.list.GoToTop()
 
 			return nil
 
 		case key.Matches(msg, m.keymap.GoToBottom):
-			m.pager.cursor = max(0, m.pager.Paginator.ItemsOnPage(numItems)-1)
+			m.list.GoToBottom()
 
 			return nil
 
@@ -138,18 +133,15 @@ func (m *Model) handleBrowsing(msg tea.Msg) tea.Cmd {
 		}
 	}
 
-	itemsOnPage := m.pager.Paginator.ItemsOnPage(len(m.VisibleItems()))
-	if m.pager.cursor > itemsOnPage-1 {
-		m.pager.cursor = max(0, itemsOnPage-1)
-	}
+	m.list.ClampCursor()
 
-	return tea.Batch(cmds...)
+	return nil
 }
 
-func (m *Model) handleConfirmAddFavorites() tea.Cmd {
+func (m *model) handleConfirmAddFavorites() tea.Cmd {
 	m.state = stateBrowsing
 
-	selectedItem := m.SelectedItem()
+	selectedItem := m.list.SelectedItem()
 	addToFavorites := func() tea.Msg {
 		return message.AddToFavorites{Item: selectedItem}
 	}
@@ -157,12 +149,12 @@ func (m *Model) handleConfirmAddFavorites() tea.Cmd {
 	return tea.Batch(addToFavorites, m.status.NewStatusMessageWithDuration("Item added", statusMessageShort))
 }
 
-func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
+func (m *model) handleConfirmRemoveFavorites() tea.Cmd {
 	m.state = stateBrowsing
 
-	removedItem := m.favorites.Items()[m.Index()]
+	removedItem := m.favorites.Items()[m.list.Index()]
 
-	if err := m.favorites.Remove(m.Index()); err != nil {
+	if err := m.favorites.Remove(m.list.Index()); err != nil {
 		return m.status.NewStatusMessageWithDuration("Could not remove favorite", statusMessageLong)
 	}
 
@@ -175,21 +167,22 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 
 	m.syncFavorites()
 
-	isEmpty := len(m.pager.items[categories.Favorites]) == 0
-	isOnLastItem := m.Index() == len(m.pager.items[categories.Favorites])
+	favItems := m.list.Items(categories.Favorites)
+	isEmpty := len(favItems) == 0
+	isOnLastItem := m.list.Index() == len(favItems)
 
 	// Removing the last favorite leaves the (now empty) favorites tab in place
 	// rather than jumping to another category.
 	if isEmpty {
-		m.pager.cursor = 0
-		m.pager.Paginator.Page = 0
+		m.list.SetCursor(0)
+		m.list.SetPage(0)
 		m.updatePagination()
 
 		return m.status.NewStatusMessageWithDuration("Item removed", statusMessageShort)
 	}
 
 	if isOnLastItem {
-		m.pager.cursor--
+		m.list.SetIndex(m.list.Index() - 1)
 	}
 
 	m.updatePagination()
@@ -197,14 +190,14 @@ func (m *Model) handleConfirmRemoveFavorites() tea.Cmd {
 	return m.status.NewStatusMessageWithDuration("Item removed", statusMessageShort)
 }
 
-func (m *Model) handleCancelPrompt() tea.Cmd {
+func (m *model) handleCancelPrompt() tea.Cmd {
 	m.state = stateBrowsing
 
 	return m.status.NewStatusMessageWithDuration(
 		lipgloss.NewStyle().Faint(true).Render("Cancelled"), statusMessageShort)
 }
 
-func (m *Model) startFetch(timeout time.Duration) tea.Cmd {
+func (m *model) startFetch(timeout time.Duration) tea.Cmd {
 	if m.cancelFetch != nil {
 		m.cancelFetch()
 	}
@@ -225,17 +218,7 @@ func (m *Model) startFetch(timeout time.Duration) tea.Cmd {
 	return m.status.StartSpinner()
 }
 
-// CancelFetch cancels an in-progress fetch and returns the resulting command.
-// Returns nil if no fetch is active.
-func (m *Model) CancelFetch() tea.Cmd {
-	if m.state != stateFetching {
-		return nil
-	}
-
-	return m.handleCancelFetch()
-}
-
-func (m *Model) handleCancelFetch() tea.Cmd {
+func (m *model) handleCancelFetch() tea.Cmd {
 	if m.cancelFetch != nil {
 		m.cancelFetch()
 		m.cancelFetch = nil
@@ -243,10 +226,7 @@ func (m *Model) handleCancelFetch() tea.Cmd {
 
 	m.fetchID++
 
-	if m.pager.transition != nil {
-		m.cat.SetIndex(m.pager.transition.prevIndex)
-		m.pager.transition = nil
-	}
+	m.list.RollbackTransition()
 
 	clearProgress()
 	m.status.StopSpinner()
@@ -257,30 +237,30 @@ func (m *Model) handleCancelFetch() tea.Cmd {
 		lipgloss.NewStyle().Faint(true).Render("Cancelled"), statusMessageShort)
 }
 
-func (m *Model) handleTabForward() tea.Cmd {
+func (m *model) handleTabForward() tea.Cmd {
 	return m.handleTab(m.cat.NextIndex(), m.cat.NextCategory(), m.cat.Next)
 }
 
-func (m *Model) handleTabBackward() tea.Cmd {
+func (m *model) handleTabBackward() tea.Cmd {
 	return m.handleTab(m.cat.PrevIndex(), m.cat.PrevCategory(), m.cat.Prev)
 }
 
-func (m *Model) handleTab(targetIndex int, targetCategory categories.Category, advance func()) tea.Cmd {
+func (m *model) handleTab(targetIndex int, targetCategory categories.Category, advance func()) tea.Cmd {
 	// Favorites is served locally and never fetched, so switch to it directly
 	// even when empty.
-	if categories.IsFavorites(targetCategory) || m.pager.categoryHasStories(targetCategory) {
+	if categories.IsFavorites(targetCategory) || m.list.HasItems(targetCategory) {
 		advance()
-		m.resetPager()
+		m.list.ResetPager()
 
 		return nil
 	}
 
-	m.beginTransition()
+	m.list.BeginTransition()
 	advance()
 
 	startSpinnerCmd := m.startFetch(0)
 
-	cursor := m.pager.cursor
+	cursor := m.list.Cursor()
 	changeCatCmd := func() tea.Msg {
 		return message.FetchAndChangeToCategory{Index: targetIndex, Category: targetCategory, Cursor: cursor}
 	}
@@ -288,8 +268,8 @@ func (m *Model) handleTab(targetIndex int, targetCategory categories.Category, a
 	return tea.Batch(startSpinnerCmd, changeCatCmd)
 }
 
-func (m *Model) handleOpenLink() tea.Cmd {
-	selected := m.SelectedItem()
+func (m *model) handleOpenLink() tea.Cmd {
+	selected := m.list.SelectedItem()
 
 	url := selected.URL
 	if url == "" {
@@ -299,21 +279,21 @@ func (m *Model) handleOpenLink() tea.Cmd {
 	return message.OpenInBrowser(url)
 }
 
-func (m *Model) handleOpenComments() tea.Cmd {
-	return message.OpenInBrowser(hn.ItemURL(m.SelectedItem().ID))
+func (m *model) handleOpenComments() tea.Cmd {
+	return message.OpenInBrowser(hn.ItemURL(m.list.SelectedItem().ID))
 }
 
-func (m *Model) handleRefresh() tea.Cmd {
+func (m *model) handleRefresh() tea.Cmd {
 	currentCategory := m.cat.CurrentCategory()
 	currentIndex := m.cat.CurrentIndex()
-	currentPage := m.pager.Paginator.Page
+	currentPage := m.list.Page()
 
-	m.beginTransition()
+	m.list.BeginTransition()
 	m.updatePagination()
 
 	// Stay on the same page during the transition; the cursor resets to the top.
-	m.pager.Paginator.Page = currentPage
-	m.pager.cursor = 0
+	m.list.SetPage(currentPage)
+	m.list.SetCursor(0)
 
 	startSpinnerCmd := m.startFetch(0)
 
@@ -324,10 +304,10 @@ func (m *Model) handleRefresh() tea.Cmd {
 	return tea.Batch(startSpinnerCmd, refreshCmd)
 }
 
-func (m *Model) handleEnterComments() tea.Cmd {
-	selected := m.SelectedItem()
+func (m *model) handleEnterComments() tea.Cmd {
+	selected := m.list.SelectedItem()
 
-	m.beginDetailTransition()
+	m.list.BeginDetailTransition()
 	startSpinnerCmd := m.startFetch(0)
 
 	enterCommentsCmd := func() tea.Msg {
@@ -340,14 +320,14 @@ func (m *Model) handleEnterComments() tea.Cmd {
 	return tea.Batch(startSpinnerCmd, enterCommentsCmd)
 }
 
-func (m *Model) handleEnterReaderMode() tea.Cmd {
-	selected := m.SelectedItem()
+func (m *model) handleEnterReaderMode() tea.Cmd {
+	selected := m.list.SelectedItem()
 
 	if err := article.Validate(selected.Title, selected.Domain); err != nil {
 		return m.status.NewStatusMessageWithDuration(friendlyError(err), statusMessageLong)
 	}
 
-	m.beginDetailTransition()
+	m.list.BeginDetailTransition()
 	startSpinnerCmd := m.startFetch(readerModeTimeout)
 
 	enterReaderCmd := func() tea.Msg {
@@ -369,14 +349,14 @@ func (m *Model) handleEnterReaderMode() tea.Cmd {
 // handleOpenAdjacentStory moves the selection one story up or down and opens
 // it in the view the request came from, so the comment section and reader
 // can page through the front page without going back to it.
-func (m *Model) handleOpenAdjacentStory(msg message.OpenAdjacentStory) tea.Cmd {
+func (m *model) handleOpenAdjacentStory(msg message.OpenAdjacentStory) tea.Cmd {
 	fromReader := m.state == stateReaderView
 	if !fromReader && m.state != stateCommentView {
 		return nil
 	}
 
-	items := m.VisibleItems()
-	newIndex := m.Index() + msg.Direction
+	items := m.list.VisibleItems()
+	newIndex := m.list.Index() + msg.Direction
 
 	if newIndex < 0 || newIndex >= len(items) {
 		return nil
@@ -390,7 +370,7 @@ func (m *Model) handleOpenAdjacentStory(msg message.OpenAdjacentStory) tea.Cmd {
 		}
 	}
 
-	m.pager.setIndex(newIndex)
+	m.list.SetIndex(newIndex)
 
 	if fromReader {
 		return m.handleEnterReaderMode()
@@ -399,28 +379,8 @@ func (m *Model) handleOpenAdjacentStory(msg message.OpenAdjacentStory) tea.Cmd {
 	return m.handleEnterComments()
 }
 
-func (m *Model) beginTransition() {
-	m.pager.transition = &transition{
-		prevIndex: m.cat.CurrentIndex(),
-		oldItems:  m.pager.items[m.cat.CurrentCategory()],
-	}
-}
-
-func (m *Model) beginDetailTransition() {
-	m.beginTransition()
-	m.pager.transition.detail = true
-}
-
-func (m *Model) resetPager() {
-	currentCategory := m.cat.CurrentCategory()
-
-	m.pager.Paginator.Page = 0
-	m.pager.cursor = max(0, min(m.pager.cursor, len(m.pager.items[currentCategory])-1))
-	m.updatePagination()
-}
-
-func (m *Model) handleToggleRead() tea.Cmd {
-	item := m.SelectedItem()
+func (m *model) handleToggleRead() tea.Cmd {
+	item := m.list.SelectedItem()
 
 	if m.history.Contains(item.ID) {
 		if err := m.history.MarkUnread(item.ID); err != nil {

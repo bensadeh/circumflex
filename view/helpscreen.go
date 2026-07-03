@@ -1,4 +1,4 @@
-package list
+package view
 
 import (
 	"github.com/bensadeh/circumflex/help"
@@ -8,7 +8,7 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
+func (m *model) updateHelpScreen(msg tea.Msg) (*model, tea.Cmd) {
 	var (
 		cmd  tea.Cmd
 		cmds []tea.Cmd
@@ -29,19 +29,19 @@ func (m *Model) updateHelpScreen(msg tea.Msg) (*Model, tea.Cmd) {
 		return m, nil
 	}
 
-	m.viewport, cmd = m.viewport.Update(msg)
+	m.helpViewport, cmd = m.helpViewport.Update(msg)
 	cmds = append(cmds, cmd)
 
 	return m, tea.Batch(cmds...)
 }
 
-func (m *Model) resizeHelpViewport(width, height int) {
-	m.viewport.SetWidth(width)
-	m.viewport.SetHeight(height - headerAndFooterHeight)
+func (m *model) resizeHelpViewport(width, height int) {
+	m.helpViewport.SetWidth(width)
+	m.helpViewport.SetHeight(height - headerAndFooterHeight)
 
 	content := lipgloss.NewStyle().
 		Width(width).
 		SetString(help.MainMenuHelpScreen(width, m.keymap.MainMenuSections()))
 
-	m.viewport.SetContent(content.String())
+	m.helpViewport.SetContent(content.String())
 }

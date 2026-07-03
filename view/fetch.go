@@ -1,4 +1,4 @@
-package list
+package view
 
 import (
 	"context"
@@ -21,13 +21,13 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-func (m *Model) fetchStoriesForFirstCategory() tea.Cmd {
+func (m *model) fetchStoriesForFirstCategory() tea.Cmd {
 	categoryToFetch := m.cat.CurrentCategory()
 
 	// Favorites is served locally — it is never fetched over the network. Hand
 	// the already-synced items straight to the normal "fetch finished" path.
 	if categories.IsFavorites(categoryToFetch) {
-		stories := m.pager.items[categoryToFetch]
+		stories := m.list.Items(categoryToFetch)
 		fetchID := m.fetchID
 
 		return func() tea.Msg {
@@ -86,12 +86,12 @@ func fetchMemorialStatus() tea.Cmd {
 	}
 }
 
-func (m *Model) numberOfItemsToFetch(cat categories.Category) int {
+func (m *model) numberOfItemsToFetch(cat categories.Category) int {
 	if categories.Policy(cat) == categories.MultiPage {
-		return m.pager.Paginator.PerPage * m.config.PageMultiplier
+		return m.list.PerPage() * m.config.PageMultiplier
 	}
 
-	return m.pager.Paginator.PerPage
+	return m.list.PerPage()
 }
 
 func newHistory(debugMode bool, doNotMarkAsRead bool) (history.History, error) {
@@ -106,7 +106,7 @@ func newHistory(debugMode bool, doNotMarkAsRead bool) (history.History, error) {
 	return history.NewPersistentHistory()
 }
 
-func (m *Model) fetchCategory(cat categories.Category, index, cursor int) tea.Cmd {
+func (m *model) fetchCategory(cat categories.Category, index, cursor int) tea.Cmd {
 	service := m.service
 	numItems := m.numberOfItemsToFetch(cat)
 	endpoint := categories.Endpoint(cat)
@@ -127,7 +127,7 @@ func (m *Model) fetchCategory(cat categories.Category, index, cursor int) tea.Cm
 	}
 }
 
-func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection) tea.Cmd {
+func (m *model) handleEnteringCommentSection(msg message.EnteringCommentSection) tea.Cmd {
 	isOnFavorites := m.cat.CurrentCategory() == categories.Favorites
 	hist := m.history
 	service := m.service
@@ -188,7 +188,7 @@ func (m *Model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 	}
 }
 
-func (m *Model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd {
+func (m *model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd {
 	hist := m.history
 	ctx := m.fetchCtx
 	fetchID := m.fetchID

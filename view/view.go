@@ -1,3 +1,6 @@
+// Package view is the application coordinator: it owns the state machine,
+// routes messages, orchestrates fetches and lays out the panes. The story
+// list, comment section and reader render under its direction.
 package view
 
 import (
@@ -6,38 +9,29 @@ import (
 
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/favorites"
+	"github.com/bensadeh/circumflex/hn/provider"
 	"github.com/bensadeh/circumflex/settings"
-	"github.com/bensadeh/circumflex/view/list"
 
 	tea "charm.land/bubbletea/v2"
 )
 
-type model struct {
-	list *list.Model
+// teaModel adapts model's pointer-based Update to the tea.Model interface.
+type teaModel struct {
+	m *model
 }
 
-func (m model) Init() tea.Cmd {
+func (t teaModel) Init() tea.Cmd {
 	return nil
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if msg, ok := msg.(tea.KeyPressMsg); ok && msg.Mod == tea.ModCtrl && msg.Code == 'c' {
-		if cmd := m.list.CancelFetch(); cmd != nil {
-			return m, cmd
-		}
+func (t teaModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	_, cmd := t.m.Update(msg)
 
-		return m, tea.Quit
-	}
-
-	var cmd tea.Cmd
-
-	m.list, cmd = m.list.Update(msg)
-
-	return m, cmd
+	return t, cmd
 }
 
-func (m model) View() tea.View {
-	v := tea.NewView(m.list.View())
+func (t teaModel) View() tea.View {
+	v := tea.NewView(t.m.View())
 	v.AltScreen = true
 
 	return v
@@ -49,24 +43,27 @@ func Run(config *settings.Config, cat *categories.Categories) error {
 		return err
 	}
 
-	l, err := list.New(config, cat, fav, 0, 0)
+	hist, err := newHistory(config.DebugMode || config.DebugFallible, config.DoNotMarkSubmissionsAsRead)
 	if err != nil {
 		return err
 	}
 
-	p := tea.NewProgram(model{list: l})
+	service := provider.NewService(config.DebugMode, config.DebugFallible)
+	m := newModel(config, cat, fav, 0, 0, service, hist)
+
+	p := tea.NewProgram(teaModel{m: m})
 
 	finalModel, err := p.Run()
 	if err != nil {
 		return err
 	}
 
-	if fm, ok := finalModel.(model); ok {
-		if memErr := fm.list.MemorialErr(); memErr != nil {
+	if fm, ok := finalModel.(teaModel); ok {
+		if memErr := fm.m.memorialErr; memErr != nil {
 			fmt.Fprintf(os.Stderr, "circumflex: could not check HN memorial status: %v\n", memErr)
 		}
 
-		if browserErr := fm.list.BrowserErr(); browserErr != nil {
+		if browserErr := fm.m.browserErr; browserErr != nil {
 			fmt.Fprintf(os.Stderr, "circumflex: could not open browser: %v\n", browserErr)
 		}
 	}

@@ -10,15 +10,11 @@ const (
 )
 
 type styles struct {
-	Spinner lipgloss.Style
-
 	ActivePaginationDot   lipgloss.Style
 	InactivePaginationDot lipgloss.Style
 }
 
 func defaultStyles() (s styles) {
-	s.Spinner = lipgloss.NewStyle()
-
 	s.ActivePaginationDot = lipgloss.NewStyle().
 		SetString(bullet)
 

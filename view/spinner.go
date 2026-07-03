@@ -1,4 +1,4 @@
-package list
+package view
 
 import (
 	"image/color"
@@ -20,7 +20,7 @@ var lastSpinnerColor = -1
 func newSpinner() spinner.Model {
 	sp := spinner.New()
 	sp.Spinner = starSpinner()
-	sp.Style = defaultStyles().Spinner
+	sp.Style = lipgloss.NewStyle()
 
 	return sp
 }

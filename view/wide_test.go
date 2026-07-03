@@ -1,4 +1,4 @@
-package list
+package view
 
 import (
 	"strings"
@@ -23,13 +23,13 @@ const (
 
 // newWideTestModel returns a browsing model sized past the wide-layout
 // threshold, with items loaded.
-func newWideTestModel(t *testing.T) *Model {
+func newWideTestModel(t *testing.T) *model {
 	t.Helper()
 	m := newTestModel(t)
 
 	m, _ = m.Update(tea.WindowSizeMsg{Width: wideTestWidth, Height: wideTestHeight})
 
-	m.pager.items[categories.Top] = testItems()
+	m.list.SetItems(categories.Top, testItems())
 	m.status.StopSpinner()
 	m.state = stateBrowsing
 	m.updatePagination()
@@ -39,7 +39,7 @@ func newWideTestModel(t *testing.T) *Model {
 
 // openTestComments drives the model through the full open-story flow: Enter,
 // then the fetched comment tree arriving.
-func openTestComments(t *testing.T, m *Model) {
+func openTestComments(t *testing.T, m *model) {
 	t.Helper()
 
 	m, _ = m.Update(keyMsg("enter"))
@@ -109,47 +109,27 @@ func TestWideView_ShowsPlaceholderWhileBrowsing(t *testing.T) {
 func TestWideView_LeftPaneDimsOnceWhileStoryIsOpen(t *testing.T) {
 	m := newWideTestModel(t)
 
-	browsing := m.listView()
+	browsing := m.browsingView()
 
 	m, _ = m.Update(keyMsg("enter"))
 	require.Equal(t, stateFetching, m.state)
 
-	loading := m.listView()
+	loading := m.browsingView()
 	assert.NotEqual(t, browsing, loading, "left pane should dim when the story starts loading")
 
 	thread := comment.ToThread(&hn.CommentTree{ID: 1, Title: "First item", CommentsCount: 5})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
 	require.Equal(t, stateCommentView, m.state)
-	assert.Equal(t, loading, m.listView(), "left pane should not change again when the story arrives")
+	assert.Equal(t, loading, m.browsingView(), "left pane should not change again when the story arrives")
 
 	m, _ = m.Update(message.CommentViewQuit{})
 	require.Equal(t, stateBrowsing, m.state)
-	assert.Equal(t, browsing, m.listView(), "left pane should restore when the story closes")
-}
-
-func TestWideView_OpenStoryShowsReadingMarker(t *testing.T) {
-	m := newWideTestModel(t)
-	openTestComments(t, m)
-
-	assert.True(t, m.dimList())
-
-	// The open story renders on a muted bright-black bar — a dimmed version
-	// of the browsing highlight, marking the J/K reading position.
-	var open strings.Builder
-
-	m.renderItem(&open, m.Index(), m.SelectedItem())
-	assert.NotContains(t, open.String(), "\x1b[7m", "open story should not use the full browsing highlight")
-	assert.Contains(t, open.String(), "\x1b[100m", "open story should render on a bright-black bar")
-
-	var other strings.Builder
-
-	m.renderItem(&other, m.Index()+1, m.VisibleItems()[m.Index()+1])
-	assert.Contains(t, other.String(), "\x1b[3;2m", "other stories should dim")
+	assert.Equal(t, browsing, m.browsingView(), "left pane should restore when the story closes")
 }
 
 // openAdjacent presses J or K in the open detail view and delivers the
-// resulting OpenAdjacentStory message back to the list.
-func openAdjacent(t *testing.T, m *Model, key string) tea.Cmd {
+// resulting OpenAdjacentStory message back to the coordinator.
+func openAdjacent(t *testing.T, m *model, key string) tea.Cmd {
 	t.Helper()
 
 	m, cmd := m.Update(keyMsg(key))
@@ -163,20 +143,20 @@ func openAdjacent(t *testing.T, m *Model, key string) tea.Cmd {
 func TestWideView_AdjacentStoryNavigationFlipsPages(t *testing.T) {
 	m := newTestModel(t)
 	m, _ = m.Update(tea.WindowSizeMsg{Width: wideTestWidth, Height: 9})
-	m.pager.items[categories.Top] = testItems()
+	m.list.SetItems(categories.Top, testItems())
 	m.status.StopSpinner()
 	m.state = stateBrowsing
 	m.updatePagination()
-	require.Equal(t, 2, m.pager.Paginator.PerPage)
+	require.Equal(t, 2, m.list.PerPage())
 
 	openTestComments(t, m)
-	require.Equal(t, 0, m.Index())
+	require.Equal(t, 0, m.list.Index())
 
 	// J: second story on the same page.
 	openAdjacent(t, m, "J")
 	require.Equal(t, stateFetching, m.state)
-	assert.Equal(t, 1, m.Index())
-	assert.Equal(t, 0, m.pager.Paginator.Page)
+	assert.Equal(t, 1, m.list.Index())
+	assert.Equal(t, 0, m.list.Page())
 
 	thread := comment.ToThread(&hn.CommentTree{ID: 2, Title: "Second item", CommentsCount: 3})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
@@ -184,29 +164,29 @@ func TestWideView_AdjacentStoryNavigationFlipsPages(t *testing.T) {
 
 	// J again: third story, which lives on the next page.
 	openAdjacent(t, m, "J")
-	assert.Equal(t, 2, m.Index())
-	assert.Equal(t, 1, m.pager.Paginator.Page)
-	assert.Equal(t, 0, m.pager.cursor)
+	assert.Equal(t, 2, m.list.Index())
+	assert.Equal(t, 1, m.list.Page())
+	assert.Equal(t, 0, m.list.Cursor())
 
 	thread = comment.ToThread(&hn.CommentTree{ID: 3, Title: "Third item", CommentsCount: 1})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
 
 	// K: back to the second story, flipping back to the first page.
 	openAdjacent(t, m, "K")
-	assert.Equal(t, 1, m.Index())
-	assert.Equal(t, 0, m.pager.Paginator.Page)
-	assert.Equal(t, 1, m.pager.cursor)
+	assert.Equal(t, 1, m.list.Index())
+	assert.Equal(t, 0, m.list.Page())
+	assert.Equal(t, 1, m.list.Cursor())
 }
 
 func TestWideView_AdjacentStoryNavigationStopsAtEdges(t *testing.T) {
 	m := newWideTestModel(t)
 	openTestComments(t, m)
-	require.Equal(t, 0, m.Index())
+	require.Equal(t, 0, m.list.Index())
 
 	// K at the first story: nothing happens, the view stays open.
 	cmd := openAdjacent(t, m, "K")
 	assert.Nil(t, cmd)
-	assert.Equal(t, 0, m.Index())
+	assert.Equal(t, 0, m.list.Index())
 	assert.Equal(t, stateCommentView, m.state)
 }
 

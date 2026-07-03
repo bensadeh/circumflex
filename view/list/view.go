@@ -5,53 +5,17 @@ import (
 	"strings"
 
 	"github.com/bensadeh/circumflex/categories"
-	"github.com/bensadeh/circumflex/header"
-	"github.com/bensadeh/circumflex/help"
 	"github.com/bensadeh/circumflex/layout"
-	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/view/list/ranking"
 
 	"charm.land/lipgloss/v2"
 )
 
-func (m *Model) View() string {
-	if m.state == stateHelpScreen {
-		return fmt.Sprintf("%s\n%s\n%s\n%s",
-			header.HelpHeader("Keyboard Shortcuts", m.width),
-			m.viewport.View(),
-			m.bottomBar(m.width),
-			help.Footer(m.width))
-	}
+// View renders the rank gutter and the story items — the pane's content
+// between the coordinator's header and status bar.
+func (m *Model) View(f Frame) string {
+	content := m.contentStyle.Height(m.height).Render(m.populatedView(f))
 
-	if m.isWide() {
-		return m.wideView()
-	}
-
-	if m.state == stateReaderView {
-		return m.readerView.View()
-	}
-
-	if m.state == stateCommentView {
-		return m.commentView.View()
-	}
-
-	return m.listView()
-}
-
-func (m *Model) listView() string {
-	var (
-		sections    []string
-		availHeight = m.height
-	)
-
-	v := m.titleView()
-	sections = append(sections, v)
-	availHeight -= lipgloss.Height(v)
-
-	statusView := m.statusAndPaginationView()
-	availHeight -= lipgloss.Height(statusView)
-
-	content := m.contentStyle.Height(availHeight).Render(m.populatedView())
 	allItems := m.VisibleItems()
 	totalItems := len(allItems)
 
@@ -68,98 +32,42 @@ func (m *Model) listView() string {
 		m.pager.Paginator.Page,
 		m.pager.Paginator.TotalPages,
 		readStatuses,
-		m.dimList())
+		m.dimmed(f))
 
-	rankingsAndContent := lipgloss.JoinHorizontal(lipgloss.Top, rankings, content)
-	sections = append(sections, rankingsAndContent)
-	sections = append(sections, statusView)
-
-	return lipgloss.JoinVertical(lipgloss.Left, sections...)
+	return lipgloss.JoinHorizontal(lipgloss.Top, rankings, content)
 }
 
-func (m *Model) titleView() string {
-	var sv string
-	// In the wide layout the spinner always shows centered in the detail pane
-	// instead, so loading feedback stays in one place for every kind of fetch.
-	if m.status.showSpinner && !m.isWide() {
-		sv = m.status.spinnerView()
-	}
-
-	return header.Header(
-		m.cat.ActiveCategories(),
-		m.cat.CurrentIndex(),
-		m.listWidth(),
-		sv,
-		m.wideStoryOpen())
+// dimmed reports whether the pane renders in its faint "attention is
+// elsewhere" treatment: while its content is being replaced (category
+// switch, refresh) or while a story is open or loading next to it.
+func (m *Model) dimmed(f Frame) bool {
+	return m.InTransition() || f.DetailOpen
 }
 
-// bottomBar renders the footer rule (underlined spaces). When the HN memorial
-// is active it carries the same color as the header rule (style.MemorialColor),
-// so the top and bottom rules match.
-func (m *Model) bottomBar(width int) string {
-	s := m.underlineStyle
-	if header.MemorialActive() {
-		s = s.Foreground(style.MemorialColor())
-	}
-
-	return strings.Repeat(s.Render(" "), width)
+// storyOpen reports whether a story is open or loading in the wide layout's
+// detail pane, in which case the open story's row carries the reading marker
+// that J/K move story to story.
+func (m *Model) storyOpen(f Frame) bool {
+	return f.Wide && (f.DetailOpen || m.DetailLoading())
 }
 
-func (m *Model) statusAndPaginationView() string {
-	var (
-		centerContent string
-		rightContent  string
-	)
-
-	underline := m.bottomBar(m.listWidth())
-
-	centerContent = m.status.message
-
-	// The page dots dim along with the list while a story is open.
-	paginatorView := m.pager.Paginator.View()
-	if m.wideStoryOpen() {
-		paginatorView = m.dimmedPaginatorView()
-	}
-
-	switch m.state {
-	case stateFetching:
-		// A story fetch in the wide layout keeps the paginator so the left
-		// pane doesn't change; the loading state shows in the detail pane.
-		if m.isWide() && m.detailLoading() {
-			rightContent = paginatorView
-		} else {
-			rightContent = strings.Repeat(m.styles.InactivePaginationDot.String(), m.config.PageMultiplier)
-		}
-	case stateStartup, stateBrowsing, stateAddFavoritesPrompt, stateRemoveFavoritesPrompt, stateReaderView:
-		rightContent = paginatorView
-	case stateCommentView:
-		// Full screen, the comment view handles its own footer; in the wide
-		// layout the list keeps its paginator next to it.
-		if m.isWide() {
-			rightContent = paginatorView
-		}
-	case stateHelpScreen:
-		// The help screen handles its own footer.
-	}
-
-	left := m.statusLeftStyle.Render("")
-
-	center := m.statusMidStyle.
-		Width(m.listWidth() - statusBarEdgeWidth - statusBarEdgeWidth).
-		Render(centerContent)
-
-	right := m.statusEndStyle.Render(rightContent)
-
-	return underline + "\n" + left + center + right
+func (m *Model) PaginatorView() string {
+	return m.pager.Paginator.View()
 }
 
-// dimmedPaginatorView renders every page dot faint, dropping the
+// DimmedPaginatorView renders every page dot faint, dropping the
 // active-page marker while the list is backgrounded.
-func (m *Model) dimmedPaginatorView() string {
+func (m *Model) DimmedPaginatorView() string {
 	return strings.Repeat(m.styles.InactivePaginationDot.String(), m.pager.Paginator.TotalPages)
 }
 
-func (m *Model) populatedView() string {
+// InactiveDots renders n faint page dots, used as a placeholder while the
+// page count is not yet known.
+func (m *Model) InactiveDots(n int) string {
+	return strings.Repeat(m.styles.InactivePaginationDot.String(), n)
+}
+
+func (m *Model) populatedView(f Frame) string {
 	allItems := m.VisibleItems()
 
 	var b strings.Builder
@@ -176,7 +84,7 @@ func (m *Model) populatedView() string {
 	itemsToShow := allItems[start:end]
 
 	for i, item := range itemsToShow {
-		m.renderItem(&b, i+start, item)
+		m.renderItem(&b, i+start, item, f)
 
 		if i != len(itemsToShow)-1 {
 			fmt.Fprint(&b, strings.Repeat("\n", itemSpacing+1))

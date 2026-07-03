@@ -1,9 +1,10 @@
-package list
+package view
 
 import (
 	"context"
 	"errors"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -47,7 +48,7 @@ func testItems() []*hn.Story {
 	}
 }
 
-func newTestModel(t *testing.T) *Model {
+func newTestModel(t *testing.T) *model {
 	t.Helper()
 
 	config := settings.Default()
@@ -63,7 +64,7 @@ func newTestModel(t *testing.T) *Model {
 
 // newTestModelReady creates a model that has completed startup (already received
 // the initial WindowSizeMsg and is in browsing state).
-func newTestModelReady(t *testing.T) *Model {
+func newTestModelReady(t *testing.T) *model {
 	t.Helper()
 	m := newTestModel(t)
 
@@ -71,7 +72,7 @@ func newTestModelReady(t *testing.T) *Model {
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 
 	// Simulate fetch completion: populate items and reset state
-	m.pager.items[categories.Top] = testItems()
+	m.list.SetItems(categories.Top, testItems())
 	m.status.StopSpinner()
 	m.state = stateBrowsing
 
@@ -164,14 +165,14 @@ func TestWindowResize_UpdatesDimensions(t *testing.T) {
 func TestCategoryFetchingFinished_UpdatesState(t *testing.T) {
 	m := newTestModelReady(t)
 	m.state = stateFetching
-	m.pager.transition = &transition{prevIndex: 0, oldItems: testItems()}
+	m.list.BeginTransition()
 	m.status.showSpinner = true
 
 	m, _ = m.Update(message.CategoryFetchingFinished{Index: 1, Cursor: 0, FetchID: m.fetchID})
 
 	assert.Equal(t, stateBrowsing, m.state)
 	assert.False(t, m.status.showSpinner)
-	assert.Nil(t, m.pager.transition)
+	assert.False(t, m.list.InTransition())
 }
 
 func TestShowStatusMessage_SetsMessage(t *testing.T) {
@@ -193,23 +194,23 @@ func TestNavigationUpDown(t *testing.T) {
 	m := newTestModelReady(t)
 
 	// Start at cursor 0, move down
-	assert.Equal(t, 0, m.pager.cursor)
+	assert.Equal(t, 0, m.list.Cursor())
 	m, _ = m.Update(keyMsg("j"))
-	assert.Equal(t, 1, m.pager.cursor)
+	assert.Equal(t, 1, m.list.Cursor())
 
 	m, _ = m.Update(keyMsg("j"))
-	assert.Equal(t, 2, m.pager.cursor)
+	assert.Equal(t, 2, m.list.Cursor())
 
 	// Move up
 	m, _ = m.Update(keyMsg("k"))
-	assert.Equal(t, 1, m.pager.cursor)
+	assert.Equal(t, 1, m.list.Cursor())
 
 	// Can also use arrow keys
 	m, _ = m.Update(keyMsg("down"))
-	assert.Equal(t, 2, m.pager.cursor)
+	assert.Equal(t, 2, m.list.Cursor())
 
 	m, _ = m.Update(keyMsg("up"))
-	assert.Equal(t, 1, m.pager.cursor)
+	assert.Equal(t, 1, m.list.Cursor())
 }
 
 func TestNavigationUpDown_Clamped(t *testing.T) {
@@ -217,35 +218,33 @@ func TestNavigationUpDown_Clamped(t *testing.T) {
 
 	// Moving up from 0 stays at 0
 	m, _ = m.Update(keyMsg("k"))
-	assert.Equal(t, 0, m.pager.cursor)
+	assert.Equal(t, 0, m.list.Cursor())
 
-	// Moving down past end stays at last item
+	// Moving down past end stays at last item (all items fit on one page)
 	for range 100 {
 		m, _ = m.Update(keyMsg("j"))
 	}
 
-	itemsOnPage := m.pager.Paginator.ItemsOnPage(len(m.VisibleItems()))
-	assert.LessOrEqual(t, m.pager.cursor, itemsOnPage-1)
+	assert.LessOrEqual(t, m.list.Cursor(), len(m.list.VisibleItems())-1)
 }
 
 func TestGoToTopBottom(t *testing.T) {
 	m := newTestModelReady(t)
 
-	// Go to bottom
+	// Go to bottom (all items fit on one page)
 	m, _ = m.Update(keyMsg("G"))
-	itemsOnPage := m.pager.Paginator.ItemsOnPage(len(m.VisibleItems()))
-	assert.Equal(t, itemsOnPage-1, m.pager.cursor)
+	assert.Equal(t, len(m.list.VisibleItems())-1, m.list.Cursor())
 
 	// Go to top
 	m, _ = m.Update(keyMsg("g"))
-	assert.Equal(t, 0, m.pager.cursor)
+	assert.Equal(t, 0, m.list.Cursor())
 }
 
 func TestTabToCachedCategory(t *testing.T) {
 	m := newTestModelReady(t)
 
 	// Pre-populate the "best" category so tab doesn't need to fetch
-	m.pager.items[categories.Best] = testItems()
+	m.list.SetItems(categories.Best, testItems())
 
 	initialIndex := m.cat.CurrentIndex()
 	m, cmd := m.Update(keyMsg("tab"))
@@ -259,14 +258,14 @@ func TestTabToUncachedCategory(t *testing.T) {
 	m := newTestModelReady(t)
 
 	// "best" category is empty (uncached)
-	assert.Empty(t, m.pager.items[categories.Best])
+	assert.Empty(t, m.list.Items(categories.Best))
 
 	m, cmd := m.Update(keyMsg("tab"))
 
 	assert.Equal(t, stateFetching, m.state)
 	assert.True(t, m.status.showSpinner)
 	assert.NotNil(t, cmd, "should return batch cmd with spinner + fetch")
-	assert.NotNil(t, m.pager.transition, "should have a transition with old items")
+	assert.True(t, m.list.InTransition(), "should have a transition with old items")
 }
 
 func TestEnterCommentSection(t *testing.T) {
@@ -275,7 +274,7 @@ func TestEnterCommentSection(t *testing.T) {
 	m, cmd := m.Update(keyMsg("enter"))
 	assert.Equal(t, stateFetching, m.state)
 	assert.True(t, m.status.showSpinner)
-	assert.NotNil(t, m.pager.transition)
+	assert.True(t, m.list.InTransition())
 	assert.NotNil(t, cmd)
 }
 
@@ -394,7 +393,7 @@ func TestAddFavoritesCancel(t *testing.T) {
 	assert.Equal(t, stateBrowsing, m.state)
 }
 
-func newFavoritesTestModel(t *testing.T) *Model {
+func newFavoritesTestModel(t *testing.T) *model {
 	t.Helper()
 
 	config := settings.Default()
@@ -406,7 +405,7 @@ func newFavoritesTestModel(t *testing.T) *Model {
 
 	m := newModel(config, cat, fav, 80, 24, &instantMockService{}, history.NewMockHistory())
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
-	m.pager.items[categories.Top] = testItems()
+	m.list.SetItems(categories.Top, testItems())
 	m.status.StopSpinner()
 	m.state = stateBrowsing
 
@@ -428,7 +427,7 @@ func TestFavorites_EmptyShowsHint(t *testing.T) {
 	m.cat.SetIndex(1)
 	require.Equal(t, categories.Favorites, m.cat.CurrentCategory())
 
-	assert.Contains(t, m.populatedView(), "No favorites yet")
+	assert.Contains(t, m.list.View(m.listFrame()), "No favorites yet")
 	assert.Contains(t, m.View(), "No favorites yet")
 }
 
@@ -446,9 +445,9 @@ func TestDisabledInput_IgnoresKeys(t *testing.T) {
 	m := newTestModelReady(t)
 	m.state = stateFetching
 
-	cursorBefore := m.pager.cursor
+	cursorBefore := m.list.Cursor()
 	m, cmd := m.Update(keyMsg("j"))
-	assert.Equal(t, cursorBefore, m.pager.cursor, "cursor should not move when input is disabled")
+	assert.Equal(t, cursorBefore, m.list.Cursor(), "cursor should not move when input is disabled")
 	assert.Nil(t, cmd)
 }
 
@@ -471,7 +470,7 @@ func TestRefresh(t *testing.T) {
 	assert.Equal(t, stateFetching, m.state)
 	assert.True(t, m.status.showSpinner)
 	assert.NotNil(t, cmd)
-	assert.NotNil(t, m.pager.transition)
+	assert.True(t, m.list.InTransition())
 }
 
 func TestOpenLink_ReturnsCmd(t *testing.T) {
@@ -539,6 +538,16 @@ func TestViewBrowsing_HasContent(t *testing.T) {
 
 	got := m.View()
 	assert.NotEmpty(t, got)
+}
+
+// The browsing view must fill the terminal exactly: one row over and the
+// renderer clips the status bar off the bottom of the screen.
+func TestViewBrowsing_FillsScreenExactly(t *testing.T) {
+	m := newTestModelReady(t)
+
+	lines := strings.Split(m.View(), "\n")
+	require.Len(t, lines, 24)
+	assert.Contains(t, lines[23], "•", "last row should carry the paginator dots")
 }
 
 func TestViewHelpScreen(t *testing.T) {
@@ -626,8 +635,8 @@ func TestBrowserOpenFailed_RecordsErrorForExit(t *testing.T) {
 
 	m, _ = m.Update(message.BrowserOpenFailed{Err: errors.New("xdg-open not found")})
 
-	require.Error(t, m.BrowserErr())
-	assert.Contains(t, m.BrowserErr().Error(), "xdg-open not found")
+	require.Error(t, m.browserErr)
+	assert.Contains(t, m.browserErr.Error(), "xdg-open not found")
 }
 
 func TestEnteringCommentSection_HistoryWriteFailure(t *testing.T) {
@@ -639,7 +648,7 @@ func TestEnteringCommentSection_HistoryWriteFailure(t *testing.T) {
 	hist := failingHistory{writeErr: errors.New("permission denied")}
 	m := newModel(config, cat, fav, 80, 24, &instantMockService{}, hist)
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
-	m.pager.items[categories.Top] = testItems()
+	m.list.SetItems(categories.Top, testItems())
 	m.state = stateBrowsing
 
 	// Trigger the comment section fetch command
@@ -666,7 +675,7 @@ func TestEnteringReaderMode_ValidationFailure_SkipsHistoryWrite(t *testing.T) {
 	hist := failingHistory{writeErr: errors.New("should not be reached")}
 	m := newModel(config, cat, fav, 80, 24, &instantMockService{}, hist)
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
-	m.pager.items[categories.Top] = testItems()
+	m.list.SetItems(categories.Top, testItems())
 	m.state = stateBrowsing
 
 	_, cmd := m.Update(message.EnteringReaderMode{

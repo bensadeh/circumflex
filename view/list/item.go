@@ -69,7 +69,7 @@ func newItemStyles() (s itemStyles) {
 	return s
 }
 
-func (m *Model) renderItem(w io.Writer, index int, item *hn.Story) {
+func (m *Model) renderItem(w io.Writer, index int, item *hn.Story, f Frame) {
 	s := &m.itemStyles
 	enableNerdFonts := m.config.EnableNerdFonts
 
@@ -90,8 +90,8 @@ func (m *Model) renderItem(w io.Writer, index int, item *hn.Story) {
 		desc = score + author + timeAgo + comments
 	}
 
-	if m.listWidth() > 0 {
-		textWidth := m.listWidth() - s.normalTitle.GetPaddingLeft() - s.normalTitle.GetPaddingRight()
+	if m.width > 0 {
+		textWidth := m.width - s.normalTitle.GetPaddingLeft() - s.normalTitle.GetPaddingRight()
 		title = xansi.Truncate(title, textWidth, ellipsis)
 		desc = xansi.Truncate(desc, textWidth, ellipsis)
 	}
@@ -102,26 +102,26 @@ func (m *Model) renderItem(w io.Writer, index int, item *hn.Story) {
 	)
 
 	switch {
-	case isSelected && m.state == stateAddFavoritesPrompt:
+	case isSelected && f.Selection == SelectionAddFavorite:
 		title, desc = styleTitleAndDesc(title, s.selectedTitleAddToFavorites, s.selectedDescAddToFavorites, domain,
 			desc, syntax.AddToFavorites, enableNerdFonts)
 
-	case isSelected && m.state == stateRemoveFavoritesPrompt:
+	case isSelected && f.Selection == SelectionRemoveFavorite:
 		title, desc = styleTitleAndDesc(title, s.selectedTitleRemoveFromFavorites, s.selectedDescRemoveFromFavorites, domain,
 			desc, syntax.RemoveFromFavorites, enableNerdFonts)
 
-	case isSelected && m.state == stateBrowsing:
+	case isSelected && !m.dimmed(f):
 		title, desc = styleTitleAndDesc(title, s.selectedTitle, s.selectedDesc, domain,
 			desc, syntax.Selected, enableNerdFonts)
 
 	// The open story renders in faint reverse video — a muted version of the
 	// browsing highlight, marking where J/K story navigation currently is.
-	case isSelected && m.wideStoryOpen():
+	case isSelected && m.storyOpen(f):
 		title, desc = styleTitleAndDesc(title, s.openStoryTitle, s.openStoryDesc, domain,
 			desc, syntax.Selected, enableNerdFonts)
 
 	case (markAsRead && m.cat.CurrentCategory() != categories.Favorites) ||
-		m.dimList():
+		m.dimmed(f):
 		title, desc = styleTitleAndDesc(title, s.markAsReadTitle, s.markAsReadDesc, domain,
 			desc, syntax.MarkAsRead, enableNerdFonts)
 

@@ -1,82 +1,55 @@
+// Package list is the story-list pane: a pager over fetched stories plus its
+// rendering. It holds no application state — fetching, routing, the status
+// bar and the split-pane layout live in the view package, which drives this
+// pane through its methods and passes the per-render facts it cannot know
+// itself as a Frame.
 package list
 
 import (
-	"context"
-	"time"
-
 	"github.com/bensadeh/circumflex/categories"
-	"github.com/bensadeh/circumflex/favorites"
-	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/history"
 	"github.com/bensadeh/circumflex/hn"
-	"github.com/bensadeh/circumflex/hn/provider"
 	"github.com/bensadeh/circumflex/settings"
-	"github.com/bensadeh/circumflex/view/comments"
-	"github.com/bensadeh/circumflex/view/message"
-	"github.com/bensadeh/circumflex/view/reader"
 
 	"charm.land/bubbles/v2/paginator"
-	"charm.land/bubbles/v2/spinner"
-	"charm.land/bubbles/v2/viewport"
-	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 )
 
+// Selection is the highlight treatment of the selected row, driven by the
+// coordinator's modal state (the favorites prompts).
+type Selection int
+
 const (
-	statusBarEdgeWidth    = 5
-	headerHeight          = 2
-	footerHeight          = 2
-	headerAndFooterHeight = headerHeight + footerHeight
-	statusMessageShort    = 2 * time.Second
-	statusMessageLong     = 3 * time.Second
+	SelectionNormal Selection = iota
+	SelectionAddFavorite
+	SelectionRemoveFavorite
 )
 
-type Model struct {
-	styles styles
+// Frame carries the per-render facts the pane cannot know itself: how it is
+// being laid out and whether a story is open next to it.
+type Frame struct {
+	Wide       bool // rendering as the left pane of the wide layout
+	DetailOpen bool // a story's comments or article is open
+	Selection  Selection
+}
 
-	state  viewState
-	status statusBar
+type Model struct {
+	styles     styles
+	itemStyles itemStyles
+
 	pager  pager
 	width  int
-	height int
+	height int // rows available for list items
 
-	itemStyles  itemStyles
-	history     history.History
-	config      *settings.Config
-	service     hn.Service
-	favorites   *favorites.Favorites
-	cat         *categories.Categories
-	keymap      keyMap
-	fetchCtx    context.Context //nolint:containedctx // single active fetch context, accessed only from the Update goroutine
-	cancelFetch context.CancelFunc
-	fetchID     uint64
+	config  *settings.Config
+	cat     *categories.Categories
+	history history.History
 
-	viewport    viewport.Model
-	commentView *comments.Model
-	readerView  *reader.Model
-
-	memorialErr error
-	browserErr  error
-
-	// Cached styles for hot-path rendering.
-	contentStyle    lipgloss.Style
-	underlineStyle  lipgloss.Style
-	statusLeftStyle lipgloss.Style
-	statusMidStyle  lipgloss.Style
-	statusEndStyle  lipgloss.Style
+	// Cached style for hot-path rendering.
+	contentStyle lipgloss.Style
 }
 
-func New(config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int) (*Model, error) {
-	hist, err := newHistory(config.DebugMode || config.DebugFallible, config.DoNotMarkSubmissionsAsRead)
-	if err != nil {
-		return nil, err
-	}
-
-	return newModel(config, cat, favorites, width, height,
-		provider.NewService(config.DebugMode, config.DebugFallible), hist), nil
-}
-
-func newModel(config *settings.Config, cat *categories.Categories, favorites *favorites.Favorites, width, height int, service hn.Service, hist history.History) *Model {
+func New(config *settings.Config, cat *categories.Categories, hist history.History) *Model {
 	s := defaultStyles()
 
 	p := paginator.New()
@@ -84,353 +57,160 @@ func newModel(config *settings.Config, cat *categories.Categories, favorites *fa
 	p.ActiveDot = s.ActivePaginationDot.String()
 	p.InactiveDot = s.InactivePaginationDot.String()
 
-	items := make([][]*hn.Story, categories.Count())
-
-	m := Model{
-		styles: s,
-
-		state:  stateStartup,
-		width:  width,
-		height: height,
+	return &Model{
+		styles:     s,
+		itemStyles: newItemStyles(),
 		pager: pager{
-			items:     items,
+			items:     make([][]*hn.Story, categories.Count()),
 			Paginator: p,
 		},
-		status: statusBar{
-			spinner: newSpinner(),
-		},
-		itemStyles: newItemStyles(),
-		history:    hist,
-		config:     config,
-		service:    service,
-		favorites:  favorites,
-		cat:        cat,
-		keymap:     defaultKeyMap(),
-
-		contentStyle:    lipgloss.NewStyle(),
-		underlineStyle:  lipgloss.NewStyle().Underline(true),
-		statusLeftStyle: lipgloss.NewStyle().Inline(true).Width(statusBarEdgeWidth).MaxWidth(statusBarEdgeWidth),
-		statusMidStyle:  lipgloss.NewStyle().Inline(true).Align(lipgloss.Center),
-		statusEndStyle:  lipgloss.NewStyle().Inline(true).Width(statusBarEdgeWidth).Align(lipgloss.Center),
+		config:       config,
+		cat:          cat,
+		history:      hist,
+		contentStyle: lipgloss.NewStyle(),
 	}
-
-	m.updatePagination()
-
-	return &m
 }
 
-func (m *Model) syncFavorites() {
-	m.pager.items[categories.Favorites] = favItemsToStories(m.favorites.Items())
-}
-
-func (m *Model) setSize(width, height int) {
+// Resize sets the pane width and the rows available for items, and
+// repaginates to fit.
+func (m *Model) Resize(width, height int) {
 	m.width = width
 	m.height = height
 	m.updatePagination()
 }
 
-func (m *Model) handleCategoryFetchingFinished(msg message.CategoryFetchingFinished) (*Model, tea.Cmd) {
-	if msg.FetchID != m.fetchID {
-		return m, nil
-	}
+func (m *Model) updatePagination() {
+	// The pagination budget is one row larger than the pane: each item is
+	// itemHeight+itemSpacing rows, but the last item on a page omits its
+	// trailing spacing row.
+	m.pager.updatePagination(m.height+1, itemHeight, itemSpacing, m.cat.CurrentCategory())
+}
 
-	if msg.Err != nil {
-		if m.pager.transition != nil {
-			m.cat.SetIndex(m.pager.transition.prevIndex)
-		}
+func (m *Model) SetItems(cat categories.Category, items []*hn.Story) {
+	m.pager.items[cat] = items
+}
 
-		m.pager.transition = nil
-		m.state = stateBrowsing
-		m.status.StopSpinner()
-		m.updatePagination()
+func (m *Model) Items(cat categories.Category) []*hn.Story {
+	return m.pager.items[cat]
+}
 
-		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
-	}
+func (m *Model) HasItems(cat categories.Category) bool {
+	return m.pager.categoryHasStories(cat)
+}
 
-	m.pager.transition = nil
-	m.pager.items[msg.Category] = msg.Stories
-	m.pager.Paginator.Page = 0
-	m.state = stateBrowsing
-	m.status.StopSpinner()
-	m.cat.SetIndex(msg.Index)
+func (m *Model) CursorUp() {
+	m.pager.CursorUp()
+}
 
+func (m *Model) CursorDown() {
+	m.pager.CursorDown(m.cat.CurrentCategory())
+}
+
+func (m *Model) PrevPage() {
+	m.pager.Paginator.PrevPage()
+	m.pager.updateCursor(m.cat.CurrentCategory())
+}
+
+func (m *Model) NextPage() {
+	m.pager.Paginator.NextPage()
+	m.pager.updateCursor(m.cat.CurrentCategory())
+}
+
+func (m *Model) GoToTop() {
+	m.pager.cursor = 0
+}
+
+func (m *Model) GoToBottom() {
+	m.pager.cursor = max(0, m.pager.Paginator.ItemsOnPage(len(m.VisibleItems()))-1)
+}
+
+// ClampCursor keeps the cursor within the items on the current page, e.g.
+// after the item count shrinks.
+func (m *Model) ClampCursor() {
+	m.pager.updateCursor(m.cat.CurrentCategory())
+}
+
+// SetIndex moves the selection to an absolute index, flipping to the page
+// that contains it.
+func (m *Model) SetIndex(index int) {
+	m.pager.setIndex(index)
+}
+
+func (m *Model) SetPage(page int) {
+	m.pager.Paginator.Page = page
+}
+
+func (m *Model) SetCursor(cursor int) {
+	m.pager.cursor = cursor
+}
+
+// SetCursorClamped sets the cursor, capped to the last item on the current
+// page.
+func (m *Model) SetCursorClamped(cursor int) {
 	itemsOnPage := m.pager.Paginator.ItemsOnPage(len(m.VisibleItems()))
-	m.pager.cursor = min(msg.Cursor, itemsOnPage-1)
-
-	m.updatePagination()
-
-	return m, nil
+	m.pager.cursor = min(cursor, itemsOnPage-1)
 }
 
-func (m *Model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*Model, tea.Cmd) {
-	if msg.FetchID != m.fetchID {
-		return m, nil
+// ResetPager returns to the first page, keeping the cursor on a valid item.
+func (m *Model) ResetPager() {
+	currentCategory := m.cat.CurrentCategory()
+
+	m.pager.Paginator.Page = 0
+	m.pager.cursor = max(0, min(m.pager.cursor, len(m.pager.items[currentCategory])-1))
+	m.updatePagination()
+}
+
+func (m *Model) Page() int {
+	return m.pager.Paginator.Page
+}
+
+// Cursor is the selection's position on the current page (Index is the
+// absolute position across pages).
+func (m *Model) Cursor() int {
+	return m.pager.cursor
+}
+
+func (m *Model) PerPage() int {
+	return m.pager.Paginator.PerPage
+}
+
+// BeginTransition freezes the currently visible items so they stay on screen
+// (dimmed) while replacement content is fetched, and remembers the category
+// index to roll back to if the fetch fails or is cancelled.
+func (m *Model) BeginTransition() {
+	m.pager.transition = &transition{
+		prevIndex: m.cat.CurrentIndex(),
+		oldItems:  m.pager.items[m.cat.CurrentCategory()],
 	}
+}
 
-	var cmds []tea.Cmd
+// BeginDetailTransition marks the transition as opening a story's comments
+// or article rather than replacing the list itself.
+func (m *Model) BeginDetailTransition() {
+	m.BeginTransition()
+	m.pager.transition.detail = true
+}
 
+func (m *Model) EndTransition() {
 	m.pager.transition = nil
-	m.status.StopSpinner()
-
-	if msg.UpdatedStory != nil {
-		if err := m.favorites.UpdateStoryAndWriteToDisk(favorites.ItemFromStory(msg.UpdatedStory)); err != nil {
-			cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not update favorite on disk", statusMessageLong))
-		}
-	}
-
-	if msg.Err != nil {
-		m.state = stateBrowsing
-		cmds = append(cmds, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong))
-
-		return m, tea.Batch(cmds...)
-	}
-
-	m.commentView = comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, m.detailWidth(), m.height)
-	m.state = stateCommentView
-
-	cmds = append(cmds, m.commentView.Init())
-
-	if msg.HistoryWarning != nil {
-		cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not save read status", statusMessageShort))
-	}
-
-	return m, tea.Batch(cmds...)
 }
 
-func (m *Model) handleFetchingFinished(msg message.FetchingFinished) (*Model, tea.Cmd) {
-	if msg.FetchID != m.fetchID {
-		return m, nil
-	}
-
-	m.status.StopSpinner()
-	m.state = stateBrowsing
-
-	if msg.Err != nil {
-		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
-	}
-
-	m.pager.items[msg.Category] = msg.Stories
-	m.updatePagination()
-
-	return m, nil
-}
-
-func (m *Model) handleArticleReady(msg message.ArticleReady) (*Model, tea.Cmd) {
-	if msg.FetchID != m.fetchID {
-		return m, nil
+// RollbackTransition restores the category selection captured at
+// BeginTransition and ends the transition.
+func (m *Model) RollbackTransition() {
+	if m.pager.transition != nil {
+		m.cat.SetIndex(m.pager.transition.prevIndex)
 	}
 
 	m.pager.transition = nil
-	m.status.StopSpinner()
-
-	if msg.Err != nil {
-		m.state = stateBrowsing
-
-		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
-	}
-
-	m.readerView = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.detailWidth(), m.height, reader.Meta{
-		URL:       msg.URL,
-		Author:    msg.Author,
-		TimeAgo:   msg.TimeAgo,
-		ID:        msg.ID,
-		Points:    msg.Points,
-		NerdFonts: m.config.EnableNerdFonts,
-	})
-
-	m.state = stateReaderView
-
-	initCmd := m.readerView.Init()
-	if msg.HistoryWarning != nil {
-		return m, tea.Batch(initCmd,
-			m.status.NewStatusMessageWithDuration("Could not save read status", statusMessageShort))
-	}
-
-	return m, initCmd
 }
 
-func (m *Model) handleWindowResize(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
-	m.setSize(msg.Width, msg.Height)
-
-	// The detail views are sized to their pane, which is the full screen when
-	// the terminal is too narrow for the wide layout.
-	detailMsg := tea.WindowSizeMsg{Width: m.detailWidth(), Height: msg.Height}
-
-	if m.state == stateReaderView {
-		return m, m.readerView.Update(detailMsg)
-	}
-
-	if m.state == stateCommentView {
-		return m, m.commentView.Update(detailMsg)
-	}
-
-	m.resizeHelpViewport(msg.Width, msg.Height)
-
-	return m, nil
+func (m *Model) InTransition() bool {
+	return m.pager.transition != nil
 }
 
-func (m *Model) MemorialErr() error { return m.memorialErr }
-
-func (m *Model) BrowserErr() error { return m.browserErr }
-
-func (m *Model) handleStartup(msg tea.WindowSizeMsg) (*Model, tea.Cmd) {
-	m.setSize(msg.Width, msg.Height)
-
-	var cmds []tea.Cmd
-
-	spinnerCmd := m.startFetch(0)
-	cmds = append(cmds, spinnerCmd)
-
-	m.syncFavorites()
-
-	fetchCmd := m.fetchStoriesForFirstCategory()
-	cmds = append(cmds, fetchCmd)
-	cmds = append(cmds, fetchMemorialStatus())
-	cmds = append(cmds, scheduleTimeRefresh())
-
-	m.viewport = viewport.New()
-	m.resizeHelpViewport(msg.Width, msg.Height)
-
-	return m, tea.Batch(cmds...)
-}
-
-func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
-	if m.state == stateStartup {
-		if windowSizeMsg, ok := msg.(tea.WindowSizeMsg); ok {
-			return m.handleStartup(windowSizeMsg)
-		}
-
-		return m, nil
-	}
-
-	var cmds []tea.Cmd
-
-	switch msg := msg.(type) {
-	case spinner.TickMsg:
-		newSpinnerModel, cmd := m.status.spinner.Update(msg)
-
-		m.status.spinner = newSpinnerModel
-		if m.status.showSpinner {
-			cmds = append(cmds, cmd)
-		}
-
-	case message.TimeRefreshTick:
-		cmds = append(cmds, scheduleTimeRefresh())
-
-	case message.MemorialStatusReady:
-		// Only apply a definitive result; on error leave the current state so a
-		// failed re-check (e.g. during a refresh) never blanks an active bar.
-		if msg.Err == nil {
-			header.SetMemorial(msg.Active)
-		}
-
-		m.memorialErr = msg.Err
-
-	case message.FetchingFinished:
-		return m.handleFetchingFinished(msg)
-
-	case message.StatusMessageTimeout:
-		if msg.Generation == m.status.generation {
-			m.status.hideStatusMessage()
-			clearProgress()
-		}
-
-	case message.AddToFavorites:
-		m.favorites.Add(favorites.ItemFromStory(msg.Item))
-
-		if err := m.favorites.Write(); err != nil {
-			if removeErr := m.favorites.RemoveLast(); removeErr != nil {
-				cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not save or rollback favorite", statusMessageLong))
-			} else {
-				cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not save favorite to disk", statusMessageLong))
-			}
-
-			m.syncFavorites()
-
-			break
-		}
-
-		m.syncFavorites()
-		m.updatePagination()
-
-	case tea.WindowSizeMsg:
-		return m.handleWindowResize(msg)
-
-	case message.EnteringCommentSection:
-		return m, m.handleEnteringCommentSection(msg)
-
-	case message.BrowserOpenFailed:
-		m.browserErr = msg.Err
-
-	case message.EnteringReaderMode:
-		return m, m.handleEnteringReaderMode(msg)
-
-	case message.ArticleReady:
-		return m.handleArticleReady(msg)
-
-	case message.ReaderViewQuit:
-		m.readerView = nil
-		m.state = stateBrowsing
-
-		return m, nil
-
-	case message.FetchAndChangeToCategory:
-		return m, m.fetchCategory(msg.Category, msg.Index, msg.Cursor)
-
-	case message.Refresh:
-		return m, tea.Batch(m.fetchCategory(msg.CurrentCategory, msg.CurrentIndex, 0), fetchMemorialStatus())
-
-	case message.ShowStatusMessage:
-		cmds = append(cmds, m.status.NewStatusMessageWithDuration(msg.Message, msg.Duration))
-
-	case message.CommentTreeDataReady:
-		return m.handleCommentTreeDataReady(msg)
-
-	case message.CommentViewQuit:
-		m.commentView = nil
-		m.state = stateBrowsing
-
-		return m, nil
-
-	case message.OpenAdjacentStory:
-		return m, m.handleOpenAdjacentStory(msg)
-
-	case message.CategoryFetchingFinished:
-		return m.handleCategoryFetchingFinished(msg)
-	}
-
-	if m.state == stateReaderView {
-		return m, m.readerView.Update(msg)
-	}
-
-	if m.state == stateCommentView {
-		return m, m.commentView.Update(msg)
-	}
-
-	if m.state == stateHelpScreen {
-		return m.updateHelpScreen(msg)
-	}
-
-	cmds = append(cmds, m.handleBrowsing(msg))
-
-	return m, tea.Batch(cmds...)
-}
-
-func favItemsToStories(items []*favorites.Item) []*hn.Story {
-	stories := make([]*hn.Story, len(items))
-
-	for i, it := range items {
-		stories[i] = &hn.Story{
-			ID:            it.ID,
-			Title:         it.Title,
-			Points:        it.Points,
-			Author:        it.Author,
-			Time:          it.Time,
-			URL:           it.URL,
-			Domain:        it.Domain,
-			CommentsCount: it.CommentsCount,
-		}
-	}
-
-	return stories
+// DetailLoading reports whether a story's comments or article are being
+// fetched, as opposed to a fetch that replaces the list itself.
+func (m *Model) DetailLoading() bool {
+	return m.pager.transition != nil && m.pager.transition.detail
 }

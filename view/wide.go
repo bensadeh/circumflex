@@ -1,4 +1,4 @@
-package list
+package view
 
 import (
 	"strings"
@@ -20,14 +20,14 @@ const (
 	wideViewFloor = 40
 )
 
-func (m *Model) isWide() bool {
+func (m *model) isWide() bool {
 	return m.width >= max(m.config.WideViewMinWidth, wideViewFloor)
 }
 
 // listWidth is the width the list renders at: the left pane in the wide
 // layout, the full screen otherwise. The divider sits in the middle of the
 // screen, so both panes get an equal share.
-func (m *Model) listWidth() int {
+func (m *model) listWidth() int {
 	if m.isWide() {
 		return (m.width - dividerWidth) / 2
 	}
@@ -37,7 +37,7 @@ func (m *Model) listWidth() int {
 
 // detailWidth is the width the comment section and reader render at: the
 // right pane in the wide layout, the full screen otherwise.
-func (m *Model) detailWidth() int {
+func (m *model) detailWidth() int {
 	if m.isWide() {
 		return m.width - m.listWidth() - dividerWidth
 	}
@@ -47,28 +47,21 @@ func (m *Model) detailWidth() int {
 
 // detailLoading reports whether a story's comments or article are being
 // fetched, as opposed to a category fetch that replaces the list itself.
-func (m *Model) detailLoading() bool {
-	return m.state == stateFetching && m.pager.transition != nil && m.pager.transition.detail
-}
-
-// dimList reports whether the list renders in its faint "attention is
-// elsewhere" treatment: while its content is being replaced (category
-// switch, refresh) or while a story is open or loading next to it.
-func (m *Model) dimList() bool {
-	return m.pager.transition != nil || m.state == stateReaderView || m.state == stateCommentView
+func (m *model) detailLoading() bool {
+	return m.state == stateFetching && m.list.DetailLoading()
 }
 
 // wideStoryOpen reports whether a story is open or loading in the wide
 // layout's detail pane. The list chrome (header logo, page dots) dims with
 // it, and the open story's row carries the reading marker that J/K move
 // story to story.
-func (m *Model) wideStoryOpen() bool {
+func (m *model) wideStoryOpen() bool {
 	return m.isWide() &&
 		(m.state == stateCommentView || m.state == stateReaderView || m.detailLoading())
 }
 
-func (m *Model) wideView() string {
-	left := paneLines(m.listView(), m.listWidth(), m.height)
+func (m *model) wideView() string {
+	left := paneLines(m.browsingView(), m.listWidth(), m.height)
 	right := paneLines(m.detailPaneView(), m.detailWidth(), m.height)
 	divider := " " + style.Faint("│") + " "
 
@@ -87,7 +80,7 @@ func (m *Model) wideView() string {
 	return b.String()
 }
 
-func (m *Model) detailPaneView() string {
+func (m *model) detailPaneView() string {
 	switch {
 	case m.state == stateReaderView:
 		return m.readerView.View()
@@ -108,7 +101,7 @@ func (m *Model) detailPaneView() string {
 // placeholderPane frames centered content with the same header and footer
 // rules the comment section and reader draw, so opening a story fills the
 // pane in place instead of popping a full frame into an empty column.
-func (m *Model) placeholderPane(content string) string {
+func (m *model) placeholderPane(content string) string {
 	w := m.detailWidth()
 	body := lipgloss.Place(w, m.height-headerAndFooterHeight, lipgloss.Center, lipgloss.Center, content)
 

@@ -5,8 +5,14 @@ import (
 	"github.com/bensadeh/circumflex/hn"
 
 	"charm.land/bubbles/v2/paginator"
-	"charm.land/lipgloss/v2"
 )
+
+// transition freezes the visible items while their replacement is fetched.
+type transition struct {
+	prevIndex int
+	oldItems  []*hn.Story
+	detail    bool // opening a story's comments/article rather than switching category
+}
 
 type pager struct {
 	cursor     int
@@ -28,16 +34,6 @@ func (p *pager) updatePagination(availHeight, itemHeight, itemSpacing int, curre
 	if p.Paginator.Page >= p.Paginator.TotalPages-1 {
 		p.Paginator.Page = max(0, p.Paginator.TotalPages-1)
 	}
-}
-
-func (m *Model) updatePagination() {
-	availHeight := m.height
-	availHeight -= lipgloss.Height(m.titleView())
-
-	// We subtract one from the height because we don't want any spacing
-	availHeight -= lipgloss.Height(m.statusAndPaginationView()) - 1
-
-	m.pager.updatePagination(availHeight, itemHeight, itemSpacing, m.cat.CurrentCategory())
 }
 
 // setIndex moves the selection to an absolute index, flipping to the page
