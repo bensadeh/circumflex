@@ -31,7 +31,7 @@ func newWideTestModel(t *testing.T) *model {
 
 	m.list.SetItems(categories.Top, testItems())
 	m.status.StopSpinner()
-	m.state = stateBrowsing
+	m.fetching = false
 	m.updatePagination()
 
 	return m
@@ -43,11 +43,11 @@ func openTestComments(t *testing.T, m *model) {
 	t.Helper()
 
 	m, _ = m.Update(keyMsg("enter"))
-	require.Equal(t, stateFetching, m.state)
+	require.True(t, m.fetching)
 
 	thread := comment.ToThread(&hn.CommentTree{ID: 1, Title: "First item", CommentsCount: 5})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
-	require.Equal(t, stateCommentView, m.state)
+	require.Equal(t, screenComments, m.screen)
 }
 
 func TestWideView_Threshold(t *testing.T) {
@@ -112,18 +112,18 @@ func TestWideView_LeftPaneDimsOnceWhileStoryIsOpen(t *testing.T) {
 	browsing := m.browsingView()
 
 	m, _ = m.Update(keyMsg("enter"))
-	require.Equal(t, stateFetching, m.state)
+	require.True(t, m.fetching)
 
 	loading := m.browsingView()
 	assert.NotEqual(t, browsing, loading, "left pane should dim when the story starts loading")
 
 	thread := comment.ToThread(&hn.CommentTree{ID: 1, Title: "First item", CommentsCount: 5})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
-	require.Equal(t, stateCommentView, m.state)
+	require.Equal(t, screenComments, m.screen)
 	assert.Equal(t, loading, m.browsingView(), "left pane should not change again when the story arrives")
 
 	m, _ = m.Update(message.CommentViewQuit{})
-	require.Equal(t, stateBrowsing, m.state)
+	require.Equal(t, screenList, m.screen)
 	assert.Equal(t, browsing, m.browsingView(), "left pane should restore when the story closes")
 }
 
@@ -145,7 +145,7 @@ func TestWideView_AdjacentStoryNavigationFlipsPages(t *testing.T) {
 	m, _ = m.Update(tea.WindowSizeMsg{Width: wideTestWidth, Height: 9})
 	m.list.SetItems(categories.Top, testItems())
 	m.status.StopSpinner()
-	m.state = stateBrowsing
+	m.fetching = false
 	m.updatePagination()
 	require.Equal(t, 2, m.list.PerPage())
 
@@ -154,13 +154,13 @@ func TestWideView_AdjacentStoryNavigationFlipsPages(t *testing.T) {
 
 	// J: second story on the same page.
 	openAdjacent(t, m, "J")
-	require.Equal(t, stateFetching, m.state)
+	require.True(t, m.fetching)
 	assert.Equal(t, 1, m.list.Index())
 	assert.Equal(t, 0, m.list.Page())
 
 	thread := comment.ToThread(&hn.CommentTree{ID: 2, Title: "Second item", CommentsCount: 3})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
-	require.Equal(t, stateCommentView, m.state)
+	require.Equal(t, screenComments, m.screen)
 
 	// J again: third story, which lives on the next page.
 	openAdjacent(t, m, "J")
@@ -187,7 +187,7 @@ func TestWideView_AdjacentStoryNavigationStopsAtEdges(t *testing.T) {
 	cmd := openAdjacent(t, m, "K")
 	assert.Nil(t, cmd)
 	assert.Equal(t, 0, m.list.Index())
-	assert.Equal(t, stateCommentView, m.state)
+	assert.Equal(t, screenComments, m.screen)
 }
 
 func TestWideView_CommentSectionFillsDetailPane(t *testing.T) {
@@ -216,7 +216,7 @@ func TestWideView_QuitRestoresPlaceholder(t *testing.T) {
 	require.NotNil(t, cmd)
 	m, _ = m.Update(cmd())
 
-	assert.Equal(t, stateBrowsing, m.state)
+	assert.Equal(t, screenList, m.screen)
 	assert.Nil(t, m.commentView)
 	assert.Contains(t, m.View(), "Select a story")
 }

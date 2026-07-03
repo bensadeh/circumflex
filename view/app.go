@@ -27,7 +27,11 @@ const (
 )
 
 type model struct {
-	state  viewState
+	screen   screen
+	fetching bool
+	prompt   prompt
+	started  bool
+
 	status statusBar
 	width  int
 	height int
@@ -61,7 +65,7 @@ type model struct {
 
 func newModel(config *settings.Config, cat *categories.Categories, fav *favorites.Favorites, width, height int, service hn.Service, hist history.History) *model {
 	m := &model{
-		state:  stateStartup,
+		screen: screenList,
 		width:  width,
 		height: height,
 		status: statusBar{spinner: newSpinner()},
@@ -101,15 +105,15 @@ func (m *model) updatePagination() {
 func (m *model) listFrame() list.Frame {
 	f := list.Frame{
 		Wide:       m.isWide(),
-		DetailOpen: m.state == stateCommentView || m.state == stateReaderView,
+		DetailOpen: m.screen == screenComments || m.screen == screenReader,
 	}
 
-	switch m.state {
-	case stateAddFavoritesPrompt:
+	switch m.prompt {
+	case promptAddFavorite:
 		f.Selection = list.SelectionAddFavorite
-	case stateRemoveFavoritesPrompt:
+	case promptRemoveFavorite:
 		f.Selection = list.SelectionRemoveFavorite
-	case stateStartup, stateBrowsing, stateFetching, stateHelpScreen, stateReaderView, stateCommentView:
+	case promptNone:
 		// Normal selection highlight.
 	}
 

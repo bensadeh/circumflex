@@ -7,6 +7,7 @@ import (
 	"github.com/bensadeh/circumflex/view/message"
 	"github.com/bensadeh/circumflex/view/reader"
 
+	"charm.land/bubbles/v2/key"
 	"charm.land/bubbles/v2/spinner"
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
@@ -14,14 +15,14 @@ import (
 
 func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 	if msg, ok := msg.(tea.KeyPressMsg); ok && msg.Mod == tea.ModCtrl && msg.Code == 'c' {
-		if m.state == stateFetching {
+		if m.fetching {
 			return m, m.handleCancelFetch()
 		}
 
 		return m, tea.Quit
 	}
 
-	if m.state == stateStartup {
+	if !m.started {
 		if windowSizeMsg, ok := msg.(tea.WindowSizeMsg); ok {
 			return m.handleStartup(windowSizeMsg)
 		}
@@ -96,7 +97,7 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 
 	case message.ReaderViewQuit:
 		m.readerView = nil
-		m.state = stateBrowsing
+		m.screen = screenList
 
 		return m, nil
 
@@ -114,7 +115,7 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 
 	case message.CommentViewQuit:
 		m.commentView = nil
-		m.state = stateBrowsing
+		m.screen = screenList
 
 		return m, nil
 
@@ -125,19 +126,29 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 		return m.handleCategoryFetchingFinished(msg)
 	}
 
+	// While a fetch is in flight only the cancel key acts, whatever the
+	// screen; other keys would race the fetch's outcome.
+	if m.fetching {
+		if keyMsg, ok := msg.(tea.KeyPressMsg); ok && key.Matches(keyMsg, m.keymap.Cancel) {
+			cmds = append(cmds, m.handleCancelFetch())
+		}
+
+		return m, tea.Batch(cmds...)
+	}
+
 	// Route to the active view through a single exit so cmds gathered above
 	// (spinner ticks, the time-refresh reschedule) always survive delegation.
-	switch m.state {
-	case stateReaderView:
+	switch m.screen {
+	case screenReader:
 		cmds = append(cmds, m.readerView.Update(msg))
 
-	case stateCommentView:
+	case screenComments:
 		cmds = append(cmds, m.commentView.Update(msg))
 
-	case stateHelpScreen:
+	case screenHelp:
 		cmds = append(cmds, m.updateHelpScreen(msg))
 
-	case stateStartup, stateBrowsing, stateFetching, stateAddFavoritesPrompt, stateRemoveFavoritesPrompt:
+	case screenList:
 		cmds = append(cmds, m.handleBrowsing(msg))
 	}
 
@@ -145,6 +156,7 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 }
 
 func (m *model) handleStartup(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
+	m.started = true
 	m.setSize(msg.Width, msg.Height)
 
 	var cmds []tea.Cmd
@@ -176,11 +188,11 @@ func (m *model) handleWindowResize(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
 	// the terminal is too narrow for the wide layout.
 	detailMsg := tea.WindowSizeMsg{Width: m.detailWidth(), Height: msg.Height}
 
-	if m.state == stateReaderView {
+	if m.screen == screenReader {
 		return m, m.readerView.Update(detailMsg)
 	}
 
-	if m.state == stateCommentView {
+	if m.screen == screenComments {
 		return m, m.commentView.Update(detailMsg)
 	}
 
@@ -194,7 +206,7 @@ func (m *model) handleFetchingFinished(msg message.FetchingFinished) (*model, te
 
 	syncProgress(msg.Err)
 	m.status.StopSpinner()
-	m.state = stateBrowsing
+	m.fetching = false
 
 	if msg.Err != nil {
 		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
@@ -213,9 +225,10 @@ func (m *model) handleCategoryFetchingFinished(msg message.CategoryFetchingFinis
 
 	syncProgress(msg.Err)
 
+	m.fetching = false
+
 	if msg.Err != nil {
 		m.list.RollbackTransition()
-		m.state = stateBrowsing
 		m.status.StopSpinner()
 		m.updatePagination()
 
@@ -225,7 +238,6 @@ func (m *model) handleCategoryFetchingFinished(msg message.CategoryFetchingFinis
 	m.list.EndTransition()
 	m.list.SetItems(msg.Category, msg.Stories)
 	m.list.SetPage(0)
-	m.state = stateBrowsing
 	m.status.StopSpinner()
 	m.cat.SetIndex(msg.Index)
 	m.list.SetCursorClamped(msg.Cursor)
@@ -242,6 +254,8 @@ func (m *model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*m
 
 	syncProgress(msg.Err)
 
+	m.fetching = false
+
 	var cmds []tea.Cmd
 
 	m.list.EndTransition()
@@ -253,15 +267,16 @@ func (m *model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*m
 		}
 	}
 
+	// On error the screen stays where the fetch started: the front page keeps
+	// its dimmed list, and J/K keeps the story that was already open.
 	if msg.Err != nil {
-		m.state = stateBrowsing
 		cmds = append(cmds, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong))
 
 		return m, tea.Batch(cmds...)
 	}
 
 	m.commentView = comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, m.detailWidth(), m.height)
-	m.state = stateCommentView
+	m.screen = screenComments
 
 	cmds = append(cmds, m.commentView.Init())
 
@@ -278,12 +293,14 @@ func (m *model) handleArticleReady(msg message.ArticleReady) (*model, tea.Cmd) {
 	}
 
 	syncProgress(msg.Err)
+
+	m.fetching = false
 	m.list.EndTransition()
 	m.status.StopSpinner()
 
+	// On error the screen stays where the fetch started, like the comment
+	// section above.
 	if msg.Err != nil {
-		m.state = stateBrowsing
-
 		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
 	}
 
@@ -296,7 +313,7 @@ func (m *model) handleArticleReady(msg message.ArticleReady) (*model, tea.Cmd) {
 		NerdFonts: m.config.EnableNerdFonts,
 	})
 
-	m.state = stateReaderView
+	m.screen = screenReader
 
 	initCmd := m.readerView.Init()
 	if msg.HistoryWarning != nil {

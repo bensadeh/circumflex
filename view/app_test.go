@@ -17,6 +17,7 @@ import (
 	"github.com/bensadeh/circumflex/settings"
 	"github.com/bensadeh/circumflex/view/message"
 	"github.com/bensadeh/circumflex/view/reader"
+	xansi "github.com/charmbracelet/x/ansi"
 
 	tea "charm.land/bubbletea/v2"
 	"github.com/stretchr/testify/assert"
@@ -74,7 +75,7 @@ func newTestModelReady(t *testing.T) *model {
 	// Simulate fetch completion: populate items and reset state
 	m.list.SetItems(categories.Top, testItems())
 	m.status.StopSpinner()
-	m.state = stateBrowsing
+	m.fetching = false
 
 	return m
 }
@@ -109,30 +110,30 @@ func keyMsg(s string) tea.KeyPressMsg {
 
 func TestStartup_WaitsForWindowSizeMsg(t *testing.T) {
 	m := newTestModel(t)
-	assert.Equal(t, stateStartup, m.state)
+	assert.False(t, m.started)
 
 	// Non-WindowSizeMsg during startup should be ignored
 	m, cmd := m.Update(message.StatusMessageTimeout{})
-	assert.Equal(t, stateStartup, m.state)
+	assert.False(t, m.started)
 	assert.Nil(t, cmd)
 }
 
 func TestStartup_InitializesOnWindowSizeMsg(t *testing.T) {
 	m := newTestModel(t)
-	assert.Equal(t, stateStartup, m.state)
+	assert.False(t, m.started)
 
 	m, cmd := m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
-	assert.Equal(t, stateFetching, m.state)
+	assert.True(t, m.fetching)
 	assert.True(t, m.status.showSpinner)
 	assert.NotNil(t, cmd, "should return batch cmd with spinner + fetch")
 }
 
 func TestReaderViewQuit_RestoresState(t *testing.T) {
 	m := newTestModelReady(t)
-	m.state = stateReaderView
+	m.screen = screenReader
 
 	m, _ = m.Update(message.ReaderViewQuit{})
-	assert.Equal(t, stateBrowsing, m.state)
+	assert.Equal(t, screenList, m.screen)
 }
 
 func TestStatusMessageTimeout_ClearsMessage(t *testing.T) {
@@ -164,13 +165,13 @@ func TestWindowResize_UpdatesDimensions(t *testing.T) {
 
 func TestCategoryFetchingFinished_UpdatesState(t *testing.T) {
 	m := newTestModelReady(t)
-	m.state = stateFetching
+	m.fetching = true
 	m.list.BeginTransition()
 	m.status.showSpinner = true
 
 	m, _ = m.Update(message.CategoryFetchingFinished{Index: 1, Cursor: 0, FetchID: m.fetchID})
 
-	assert.Equal(t, stateBrowsing, m.state)
+	assert.False(t, m.fetching)
 	assert.False(t, m.status.showSpinner)
 	assert.False(t, m.list.InTransition())
 }
@@ -262,7 +263,7 @@ func TestTabToUncachedCategory(t *testing.T) {
 
 	m, cmd := m.Update(keyMsg("tab"))
 
-	assert.Equal(t, stateFetching, m.state)
+	assert.True(t, m.fetching)
 	assert.True(t, m.status.showSpinner)
 	assert.NotNil(t, cmd, "should return batch cmd with spinner + fetch")
 	assert.True(t, m.list.InTransition(), "should have a transition with old items")
@@ -272,7 +273,7 @@ func TestEnterCommentSection(t *testing.T) {
 	m := newTestModelReady(t)
 
 	m, cmd := m.Update(keyMsg("enter"))
-	assert.Equal(t, stateFetching, m.state)
+	assert.True(t, m.fetching)
 	assert.True(t, m.status.showSpinner)
 	assert.True(t, m.list.InTransition())
 	assert.NotNil(t, cmd)
@@ -297,16 +298,16 @@ func TestCommentTreeDataReady_OpensCommentView(t *testing.T) {
 
 	thread := &comment.Thread{ID: 1, Title: "test", CommentsCount: 5}
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
-	assert.Equal(t, stateCommentView, m.state)
+	assert.Equal(t, screenComments, m.screen)
 	assert.NotNil(t, m.commentView)
 }
 
 func TestCommentViewQuit_RestoresState(t *testing.T) {
 	m := newTestModelReady(t)
-	m.state = stateCommentView
+	m.screen = screenComments
 
 	m, _ = m.Update(message.CommentViewQuit{})
-	assert.Equal(t, stateBrowsing, m.state)
+	assert.Equal(t, screenList, m.screen)
 }
 
 func TestTimeRefreshTick_ReschedulesInEveryState(t *testing.T) {
@@ -314,14 +315,54 @@ func TestTimeRefreshTick_ReschedulesInEveryState(t *testing.T) {
 
 	thread := &comment.Thread{ID: 1, Title: "test", CommentsCount: 5}
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
-	require.Equal(t, stateCommentView, m.state)
+	require.Equal(t, screenComments, m.screen)
 
 	_, cmd := m.Update(message.TimeRefreshTick{})
 	assert.NotNil(t, cmd, "tick in comment view must reschedule the next refresh")
 
-	m.state = stateHelpScreen
+	m.screen = screenHelp
 	_, cmd = m.Update(message.TimeRefreshTick{})
 	assert.NotNil(t, cmd, "tick in help screen must reschedule the next refresh")
+}
+
+// In the narrow layout, J/K story navigation must keep the open story on
+// screen while the next one loads instead of flashing the front page.
+func TestNarrowAdjacentStory_StaysOnOpenStory(t *testing.T) {
+	m := newTestModelReady(t)
+
+	thread := &comment.Thread{ID: 1, Title: "An unmistakable thread title", CommentsCount: 5}
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
+	require.Equal(t, screenComments, m.screen)
+
+	m, cmd := m.Update(keyMsg("J"))
+	require.NotNil(t, cmd)
+	m, _ = m.Update(cmd())
+
+	require.True(t, m.fetching)
+	require.Equal(t, screenComments, m.screen)
+
+	view := m.View()
+	assert.Contains(t, view, "An unmistakable thread title")
+	assert.NotContains(t, view, "Second item", "the front page must not flash through during the fetch")
+
+	lines := strings.Split(view, "\n")
+	assert.NotEmpty(t, strings.TrimSpace(xansi.Strip(lines[len(lines)-1])),
+		"the last row should carry the loading spinner")
+}
+
+// Status messages raised while a detail view owns the full screen (e.g. J
+// toward a story with no article) surface on the view's bottom row.
+func TestNarrowDetail_StatusMessageShowsOnLastRow(t *testing.T) {
+	m := newTestModelReady(t)
+
+	thread := &comment.Thread{ID: 1, Title: "test", CommentsCount: 5}
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
+	require.Equal(t, screenComments, m.screen)
+
+	m.status.NewStatusMessageWithDuration("Story has no article to read", statusMessageShort)
+
+	lines := strings.Split(m.View(), "\n")
+	assert.Contains(t, xansi.Strip(lines[len(lines)-1]), "Story has no article to read")
 }
 
 func TestEnteringReaderMode_ReturnsCmd(t *testing.T) {
@@ -371,7 +412,7 @@ func TestArticleReady_WithParsedArticle(t *testing.T) {
 	m := newTestModelReady(t)
 
 	m, _ = m.Update(message.ArticleReady{Parsed: testParsedArticle(), Title: "Test", FetchID: m.fetchID})
-	assert.Equal(t, stateReaderView, m.state)
+	assert.Equal(t, screenReader, m.screen)
 	assert.NotNil(t, m.readerView, "should create reader view")
 }
 
@@ -379,7 +420,7 @@ func TestAddFavoritesPrompt(t *testing.T) {
 	m := newTestModelReady(t)
 
 	m, _ = m.Update(keyMsg("f"))
-	assert.Equal(t, stateAddFavoritesPrompt, m.state)
+	assert.Equal(t, promptAddFavorite, m.prompt)
 	assert.NotEmpty(t, m.status.message)
 }
 
@@ -388,11 +429,11 @@ func TestAddFavoritesConfirm(t *testing.T) {
 
 	// Enter prompt
 	m, _ = m.Update(keyMsg("f"))
-	assert.Equal(t, stateAddFavoritesPrompt, m.state)
+	assert.Equal(t, promptAddFavorite, m.prompt)
 
 	// Confirm
 	m, cmd := m.Update(keyMsg("y"))
-	assert.Equal(t, stateBrowsing, m.state)
+	assert.Equal(t, promptNone, m.prompt)
 	assert.NotNil(t, cmd, "should return AddToFavorites cmd")
 }
 
@@ -401,11 +442,11 @@ func TestAddFavoritesCancel(t *testing.T) {
 
 	// Enter prompt
 	m, _ = m.Update(keyMsg("f"))
-	assert.Equal(t, stateAddFavoritesPrompt, m.state)
+	assert.Equal(t, promptAddFavorite, m.prompt)
 
 	// Cancel with any key other than "y"
 	m, _ = m.Update(keyMsg("n"))
-	assert.Equal(t, stateBrowsing, m.state)
+	assert.Equal(t, promptNone, m.prompt)
 }
 
 func newFavoritesTestModel(t *testing.T) *model {
@@ -422,7 +463,7 @@ func newFavoritesTestModel(t *testing.T) *model {
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 	m.list.SetItems(categories.Top, testItems())
 	m.status.StopSpinner()
-	m.state = stateBrowsing
+	m.fetching = false
 
 	return m
 }
@@ -452,13 +493,13 @@ func TestFavorites_TabToEmptyDoesNotFetch(t *testing.T) {
 	m, cmd := m.Update(keyMsg("tab"))
 
 	assert.Equal(t, categories.Favorites, m.cat.CurrentCategory())
-	assert.Equal(t, stateBrowsing, m.state, "favorites is local; tabbing to it must not fetch")
+	assert.False(t, m.fetching, "favorites is local; tabbing to it must not fetch")
 	assert.Nil(t, cmd)
 }
 
 func TestDisabledInput_IgnoresKeys(t *testing.T) {
 	m := newTestModelReady(t)
-	m.state = stateFetching
+	m.fetching = true
 
 	cursorBefore := m.list.Cursor()
 	m, cmd := m.Update(keyMsg("j"))
@@ -471,18 +512,18 @@ func TestHelpScreen_Toggle(t *testing.T) {
 
 	// Enter help screen
 	m, _ = m.Update(keyMsg("i"))
-	assert.Equal(t, stateHelpScreen, m.state)
+	assert.Equal(t, screenHelp, m.screen)
 
 	// Exit help screen
 	m, _ = m.Update(keyMsg("q"))
-	assert.Equal(t, stateBrowsing, m.state)
+	assert.Equal(t, screenList, m.screen)
 }
 
 func TestRefresh(t *testing.T) {
 	m := newTestModelReady(t)
 
 	m, cmd := m.Update(keyMsg("r"))
-	assert.Equal(t, stateFetching, m.state)
+	assert.True(t, m.fetching)
 	assert.True(t, m.status.showSpinner)
 	assert.NotNil(t, cmd)
 	assert.True(t, m.list.InTransition())
@@ -542,7 +583,7 @@ func TestSpinnerTick_WhenInactive(t *testing.T) {
 func TestViewReaderView_HasContent(t *testing.T) {
 	m := newTestModelReady(t)
 	m.readerView = reader.NewWithArticle(testParsedArticle(), "Test Title", 72, 80, 24, reader.Meta{})
-	m.state = stateReaderView
+	m.screen = screenReader
 
 	got := m.View()
 	assert.NotEmpty(t, got)
@@ -567,7 +608,7 @@ func TestViewBrowsing_FillsScreenExactly(t *testing.T) {
 
 func TestViewHelpScreen(t *testing.T) {
 	m := newTestModelReady(t)
-	m.state = stateHelpScreen
+	m.screen = screenHelp
 
 	got := m.View()
 	assert.NotEmpty(t, got)
@@ -613,7 +654,7 @@ func TestCommentTreeDataReady_HistoryWarning(t *testing.T) {
 		HistoryWarning: histErr,
 	})
 
-	assert.Equal(t, stateCommentView, m.state)
+	assert.Equal(t, screenComments, m.screen)
 	assert.NotNil(t, cmd, "should return batched cmd with init + warning")
 }
 
@@ -628,7 +669,7 @@ func TestArticleReady_HistoryWarning(t *testing.T) {
 		HistoryWarning: histErr,
 	})
 
-	assert.Equal(t, stateReaderView, m.state)
+	assert.Equal(t, screenReader, m.screen)
 	assert.NotNil(t, cmd, "should return batched cmd with init + warning")
 }
 
@@ -641,7 +682,7 @@ func TestArticleReady_NoHistoryWarning(t *testing.T) {
 		FetchID: m.fetchID,
 	})
 
-	assert.Equal(t, stateReaderView, m.state)
+	assert.Equal(t, screenReader, m.screen)
 	assert.Nil(t, cmd, "Init returns nil, no warning — cmd should be nil")
 }
 
@@ -664,7 +705,7 @@ func TestEnteringCommentSection_HistoryWriteFailure(t *testing.T) {
 	m := newModel(config, cat, fav, 80, 24, &instantMockService{}, hist)
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 	m.list.SetItems(categories.Top, testItems())
-	m.state = stateBrowsing
+	m.fetching = false
 
 	// Trigger the comment section fetch command
 	_, cmd := m.Update(message.EnteringCommentSection{ID: 1, CommentCount: 10})
@@ -691,7 +732,7 @@ func TestEnteringReaderMode_ValidationFailure_SkipsHistoryWrite(t *testing.T) {
 	m := newModel(config, cat, fav, 80, 24, &instantMockService{}, hist)
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 	m.list.SetItems(categories.Top, testItems())
-	m.state = stateBrowsing
+	m.fetching = false
 
 	_, cmd := m.Update(message.EnteringReaderMode{
 		URL:    "https://youtube.com/watch?v=123",

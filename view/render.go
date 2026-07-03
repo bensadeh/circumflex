@@ -12,7 +12,7 @@ import (
 )
 
 func (m *model) View() string {
-	if m.state == stateHelpScreen {
+	if m.screen == screenHelp {
 		return fmt.Sprintf("%s\n%s\n%s\n%s",
 			header.HelpHeader("Keyboard Shortcuts", m.width),
 			m.helpViewport.View(),
@@ -24,15 +24,37 @@ func (m *model) View() string {
 		return m.wideView()
 	}
 
-	if m.state == stateReaderView {
-		return m.readerView.View()
+	if m.screen == screenReader {
+		return m.overlayDetailStatus(m.readerView.View())
 	}
 
-	if m.state == stateCommentView {
-		return m.commentView.View()
+	if m.screen == screenComments {
+		return m.overlayDetailStatus(m.commentView.View())
 	}
 
 	return m.browsingView()
+}
+
+// overlayDetailStatus writes fetch and status feedback onto the last row of a
+// full-screen detail view, which reserves that row as footer space. Narrow
+// J/K story navigation stays on the open story while the next one loads, so
+// its spinner and errors must surface here rather than on the front page.
+func (m *model) overlayDetailStatus(view string) string {
+	var status string
+
+	switch {
+	case m.fetching:
+		status = m.status.spinnerView()
+	case m.status.message != "":
+		status = m.status.message
+	default:
+		return view
+	}
+
+	lines := strings.Split(view, "\n")
+	lines[len(lines)-1] = m.statusMidStyle.Width(m.width).Render(status)
+
+	return strings.Join(lines, "\n")
 }
 
 // browsingView is the front page: category header, story list, status bar.
@@ -88,8 +110,8 @@ func (m *model) statusAndPaginationView() string {
 		paginatorView = m.list.DimmedPaginatorView()
 	}
 
-	switch m.state {
-	case stateFetching:
+	switch {
+	case m.fetching:
 		// A story fetch in the wide layout keeps the paginator so the left
 		// pane doesn't change; the loading state shows in the detail pane.
 		if m.isWide() && m.detailLoading() {
@@ -97,16 +119,14 @@ func (m *model) statusAndPaginationView() string {
 		} else {
 			rightContent = m.list.InactiveDots(m.config.PageMultiplier)
 		}
-	case stateStartup, stateBrowsing, stateAddFavoritesPrompt, stateRemoveFavoritesPrompt, stateReaderView:
-		rightContent = paginatorView
-	case stateCommentView:
+	case m.screen == screenComments:
 		// Full screen, the comment view handles its own footer; in the wide
 		// layout the list keeps its paginator next to it.
 		if m.isWide() {
 			rightContent = paginatorView
 		}
-	case stateHelpScreen:
-		// The help screen handles its own footer.
+	default:
+		rightContent = paginatorView
 	}
 
 	left := m.statusLeftStyle.Render("")

@@ -23,23 +23,17 @@ func (m *model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 	if msg, ok := msg.(tea.KeyPressMsg); ok {
 		switch {
-		case m.state == stateAddFavoritesPrompt && key.Matches(msg, m.keymap.Confirm):
+		case m.prompt == promptAddFavorite && key.Matches(msg, m.keymap.Confirm):
 			return m.handleConfirmAddFavorites()
 
-		case m.state == stateRemoveFavoritesPrompt && key.Matches(msg, m.keymap.Confirm):
+		case m.prompt == promptRemoveFavorite && key.Matches(msg, m.keymap.Confirm):
 			return m.handleConfirmRemoveFavorites()
 
-		case m.state == stateAddFavoritesPrompt || m.state == stateRemoveFavoritesPrompt:
+		case m.prompt != promptNone:
 			return m.handleCancelPrompt()
 
-		case m.state == stateFetching && key.Matches(msg, m.keymap.Cancel):
-			return m.handleCancelFetch()
-
-		case m.state != stateBrowsing:
-			return nil
-
 		case key.Matches(msg, m.keymap.Help):
-			m.state = stateHelpScreen
+			m.screen = screenHelp
 
 			return nil
 
@@ -107,14 +101,14 @@ func (m *model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 			case key.Matches(msg, m.keymap.AddFavorite):
 				m.status.SetPermanentStatusMessage(addItemConfirmationMessage())
-				m.state = stateAddFavoritesPrompt
+				m.prompt = promptAddFavorite
 
 				return nil
 
 			case key.Matches(msg, m.keymap.RemoveFavorite):
 				if m.cat.CurrentCategory() == categories.Favorites {
 					m.status.SetPermanentStatusMessage(removeItemConfirmationMessage())
-					m.state = stateRemoveFavoritesPrompt
+					m.prompt = promptRemoveFavorite
 
 					return nil
 				}
@@ -139,7 +133,7 @@ func (m *model) handleBrowsing(msg tea.Msg) tea.Cmd {
 }
 
 func (m *model) handleConfirmAddFavorites() tea.Cmd {
-	m.state = stateBrowsing
+	m.prompt = promptNone
 
 	selectedItem := m.list.SelectedItem()
 	addToFavorites := func() tea.Msg {
@@ -150,7 +144,7 @@ func (m *model) handleConfirmAddFavorites() tea.Cmd {
 }
 
 func (m *model) handleConfirmRemoveFavorites() tea.Cmd {
-	m.state = stateBrowsing
+	m.prompt = promptNone
 
 	removedItem := m.favorites.Items()[m.list.Index()]
 
@@ -191,7 +185,7 @@ func (m *model) handleConfirmRemoveFavorites() tea.Cmd {
 }
 
 func (m *model) handleCancelPrompt() tea.Cmd {
-	m.state = stateBrowsing
+	m.prompt = promptNone
 
 	return m.status.NewStatusMessageWithDuration(
 		lipgloss.NewStyle().Faint(true).Render("Cancelled"), statusMessageShort)
@@ -203,7 +197,7 @@ func (m *model) startFetch(timeout time.Duration) tea.Cmd {
 	}
 
 	m.fetchID++
-	m.state = stateFetching
+	m.fetching = true
 
 	setProgressIndeterminate()
 
@@ -232,7 +226,9 @@ func (m *model) handleCancelFetch() tea.Cmd {
 
 	clearProgress()
 	m.status.StopSpinner()
-	m.state = stateBrowsing
+	// The screen stays where the fetch started: canceling a J/K story fetch
+	// keeps the open story, canceling a category fetch keeps the front page.
+	m.fetching = false
 	m.updatePagination()
 
 	return m.status.NewStatusMessageWithDuration(
@@ -352,8 +348,8 @@ func (m *model) handleEnterReaderMode() tea.Cmd {
 // it in the view the request came from, so the comment section and reader
 // can page through the front page without going back to it.
 func (m *model) handleOpenAdjacentStory(msg message.OpenAdjacentStory) tea.Cmd {
-	fromReader := m.state == stateReaderView
-	if !fromReader && m.state != stateCommentView {
+	fromReader := m.screen == screenReader
+	if !fromReader && m.screen != screenComments {
 		return nil
 	}
 

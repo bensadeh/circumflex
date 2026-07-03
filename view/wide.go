@@ -48,7 +48,7 @@ func (m *model) detailWidth() int {
 // detailLoading reports whether a story's comments or article are being
 // fetched, as opposed to a category fetch that replaces the list itself.
 func (m *model) detailLoading() bool {
-	return m.state == stateFetching && m.list.DetailLoading()
+	return m.fetching && m.list.DetailLoading()
 }
 
 // wideStoryOpen reports whether a story is open or loading in the wide
@@ -57,7 +57,7 @@ func (m *model) detailLoading() bool {
 // story to story.
 func (m *model) wideStoryOpen() bool {
 	return m.isWide() &&
-		(m.state == stateCommentView || m.state == stateReaderView || m.detailLoading())
+		(m.screen == screenComments || m.screen == screenReader || m.detailLoading())
 }
 
 func (m *model) wideView() string {
@@ -82,16 +82,17 @@ func (m *model) wideView() string {
 
 func (m *model) detailPaneView() string {
 	switch {
-	case m.state == stateReaderView:
-		return m.readerView.View()
-
-	case m.state == stateCommentView:
-		return m.commentView.View()
-
 	// Every fetch — story, category switch, refresh, startup — spins here, so
-	// loading feedback always appears in the same spot.
+	// loading feedback always appears in the same spot. Checked before the
+	// screen so a J/K fetch spins instead of showing the outgoing story.
 	case m.status.showSpinner:
 		return m.placeholderPane(m.status.spinnerView())
+
+	case m.screen == screenReader:
+		return m.readerView.View()
+
+	case m.screen == screenComments:
+		return m.commentView.View()
 
 	default:
 		return m.placeholderPane(style.Faint("Select a story"))
