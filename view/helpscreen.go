@@ -8,31 +8,18 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-func (m *model) updateHelpScreen(msg tea.Msg) (*model, tea.Cmd) {
-	var (
-		cmd  tea.Cmd
-		cmds []tea.Cmd
-	)
+func (m *model) updateHelpScreen(msg tea.Msg) tea.Cmd {
+	if msg, ok := msg.(tea.KeyPressMsg); ok && key.Matches(msg, m.keymap.Quit, m.keymap.Help) {
+		m.state = stateBrowsing
 
-	switch msg := msg.(type) {
-	case tea.KeyPressMsg:
-		if key.Matches(msg, m.keymap.Quit, m.keymap.Help) {
-			m.state = stateBrowsing
-
-			return m, nil
-		}
-
-	case tea.WindowSizeMsg:
-		m.setSize(msg.Width, msg.Height)
-		m.resizeHelpViewport(msg.Width, msg.Height)
-
-		return m, nil
+		return nil
 	}
 
-	m.helpViewport, cmd = m.helpViewport.Update(msg)
-	cmds = append(cmds, cmd)
+	var cmd tea.Cmd
 
-	return m, tea.Batch(cmds...)
+	m.helpViewport, cmd = m.helpViewport.Update(msg)
+
+	return cmd
 }
 
 func (m *model) resizeHelpViewport(width, height int) {

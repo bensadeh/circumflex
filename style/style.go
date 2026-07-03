@@ -92,6 +92,10 @@ var (
 	logoCStyle lipgloss.Style
 	logoLStyle lipgloss.Style
 	logoXStyle lipgloss.Style
+
+	logoCFaintStyle lipgloss.Style
+	logoLFaintStyle lipgloss.Style
+	logoXFaintStyle lipgloss.Style
 )
 
 // Theme-dependent colors — rebuilt by rebuildThemeStyles whenever the theme changes.
@@ -182,6 +186,9 @@ func rebuildThemeStyles() {
 	logoCStyle = lipgloss.NewStyle().Foreground(headerCColor)
 	logoLStyle = lipgloss.NewStyle().Foreground(headerLColor)
 	logoXStyle = lipgloss.NewStyle().Foreground(headerXColor)
+	logoCFaintStyle = logoCStyle.Faint(true)
+	logoLFaintStyle = logoLStyle.Faint(true)
+	logoXFaintStyle = logoXStyle.Faint(true)
 
 	indentCycleFuncs = make([]func(string) string, len(current.Indent.Cycle))
 	for i, c := range current.Indent.Cycle {
@@ -262,9 +269,7 @@ func Logo(a, b, c string) string {
 }
 
 func LogoFaint(a, b, c string) string {
-	return logoCStyle.Faint(true).Render(a) +
-		logoLStyle.Faint(true).Render(b) +
-		logoXStyle.Faint(true).Render(c)
+	return logoCFaintStyle.Render(a) + logoLFaintStyle.Render(b) + logoXFaintStyle.Render(c)
 }
 
 func IndentCycle() []func(string) string { return indentCycleFuncs }

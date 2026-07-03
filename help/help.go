@@ -50,10 +50,10 @@ func MainMenuHelpScreen(screenWidth int, sections []Section) string {
 	return mainMenuText(screenWidth, sections) + newPar
 }
 
-func ReaderHelpScreen(screenWidth int) string {
-	return readerText(screenWidth) + newPar
+func ReaderHelpScreen(screenWidth int, withStoryNav bool) string {
+	return readerText(screenWidth, withStoryNav) + newPar
 }
 
-func CommentHelpScreen(screenWidth int, enableNerdFonts bool) string {
-	return commentText(screenWidth, enableNerdFonts) + newPar
+func CommentHelpScreen(screenWidth int, enableNerdFonts bool, withStoryNav bool) string {
+	return commentText(screenWidth, enableNerdFonts, withStoryNav) + newPar
 }

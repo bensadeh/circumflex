@@ -58,7 +58,7 @@ func (m *Model) PaginatorView() string {
 // DimmedPaginatorView renders every page dot faint, dropping the
 // active-page marker while the list is backgrounded.
 func (m *Model) DimmedPaginatorView() string {
-	return strings.Repeat(m.styles.InactivePaginationDot.String(), m.pager.Paginator.TotalPages)
+	return m.InactiveDots(m.pager.Paginator.TotalPages)
 }
 
 // InactiveDots renders n faint page dots, used as a placeholder while the

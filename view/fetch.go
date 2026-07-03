@@ -8,6 +8,8 @@ import (
 	"os"
 	"strings"
 	"time"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/categories"
@@ -46,7 +48,7 @@ func (m *model) fetchStoriesForFirstCategory() tea.Cmd {
 	fetchID := m.fetchID
 
 	return func() tea.Msg {
-		stories, err := fetchItems(ctx, service, numItems, endpoint)
+		stories, err := service.FetchItems(ctx, numItems, endpoint)
 
 		return message.FetchingFinished{
 			Stories:  stories,
@@ -55,24 +57,6 @@ func (m *model) fetchStoriesForFirstCategory() tea.Cmd {
 			FetchID:  fetchID,
 		}
 	}
-}
-
-// fetchItems wraps service.FetchItems with the terminal progress lifecycle.
-func fetchItems(ctx context.Context, service hn.Service, numItems int, endpoint string) ([]*hn.Story, error) {
-	setProgressIndeterminate()
-
-	stories, err := service.FetchItems(ctx, numItems, endpoint)
-
-	switch {
-	case errors.Is(err, context.Canceled):
-		clearProgress()
-	case err != nil:
-		setProgressError()
-	default:
-		clearProgress()
-	}
-
-	return stories, err
 }
 
 func fetchMemorialStatus() tea.Cmd {
@@ -114,7 +98,7 @@ func (m *model) fetchCategory(cat categories.Category, index, cursor int) tea.Cm
 	fetchID := m.fetchID
 
 	return func() tea.Msg {
-		stories, err := fetchItems(ctx, service, numItems, endpoint)
+		stories, err := service.FetchItems(ctx, numItems, endpoint)
 
 		return message.CategoryFetchingFinished{
 			Stories:  stories,
@@ -137,8 +121,11 @@ func (m *model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 	return func() tea.Msg {
 		lastVisited := hist.CommentsLastVisited(msg.ID)
 
+		// Percentage updates are the one progress write left outside the
+		// Update loop; the ctx guard stops a canceled fetch from writing
+		// over its successor's indicator.
 		onProgress := func(fetched, total int) {
-			if total <= 0 {
+			if total <= 0 || ctx.Err() != nil {
 				return
 			}
 
@@ -148,19 +135,11 @@ func (m *model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 
 		tree, err := service.FetchComments(ctx, msg.ID, onProgress)
 		if err != nil {
-			if errors.Is(err, context.Canceled) {
-				clearProgress()
-			} else {
-				setProgressError()
-			}
-
 			return message.CommentTreeDataReady{
 				Err:     err,
 				FetchID: fetchID,
 			}
 		}
-
-		clearProgress()
 
 		histErr := hist.MarkRead(msg.ID, msg.CommentCount)
 
@@ -198,20 +177,10 @@ func (m *model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 			return message.ArticleReady{Err: err, FetchID: fetchID}
 		}
 
-		setProgressIndeterminate()
-
 		parsed, err := article.Parse(ctx, msg.URL)
 		if err != nil {
-			if errors.Is(err, context.Canceled) {
-				clearProgress()
-			} else {
-				setProgressError()
-			}
-
 			return message.ArticleReady{Err: err, FetchID: fetchID}
 		}
-
-		clearProgress()
 
 		histErr := hist.MarkArticleRead(msg.ID)
 
@@ -238,6 +207,20 @@ func setProgressError()         { fmt.Fprint(os.Stderr, "\033]9;4;2;100\a") }
 
 func clearProgress() { fmt.Fprint(os.Stderr, "\033]9;4;0\a") }
 
+// syncProgress settles the indicator for a finished fetch: an error stays
+// visible until its status message expires, success clears it. Called only
+// from the Update loop after the fetchID guard, so a stale fetch can never
+// write over its successor's indicator.
+func syncProgress(err error) {
+	if err != nil {
+		setProgressError()
+
+		return
+	}
+
+	clearProgress()
+}
+
 func isTimeout(err error) bool {
 	var netErr net.Error
 
@@ -256,7 +239,8 @@ func friendlyError(err error) string {
 		return "Unknown error"
 	}
 
-	msg := strings.ToUpper(errStr[:1]) + errStr[1:]
+	first, size := utf8.DecodeRuneInString(errStr)
+	msg := string(unicode.ToUpper(first)) + errStr[size:]
 
 	if before, after, ok := strings.Cut(msg, "status "); ok {
 		msg = before + "status " + redText.Render(after)

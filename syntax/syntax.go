@@ -25,6 +25,10 @@ const (
 	Unselected HighlightType = iota
 	HeadlineInCommentSection
 	Selected
+	// OpenStory is the muted reading marker: bright-black background instead
+	// of Selected's reverse video. Every highlighter restores the row's base
+	// style after a token via getHighlight, so the two must stay in sync.
+	OpenStory
 	MarkAsRead
 	AddToFavorites
 	RemoveFromFavorites
@@ -63,6 +67,8 @@ func highlightWithColor(text string, c color.Color, highlightType HighlightType)
 	switch highlightType {
 	case Selected:
 		s = s.Reverse(true)
+	case OpenStory:
+		s = s.Background(lipgloss.BrightBlack)
 	case MarkAsRead:
 		s = s.Faint(true)
 	case Unselected, HeadlineInCommentSection, AddToFavorites, RemoveFromFavorites:
@@ -123,6 +129,12 @@ func borderStyle(bg color.Color, highlightType HighlightType) lipgloss.Style {
 			Reverse(true)
 	}
 
+	if highlightType == OpenStory {
+		return lipgloss.NewStyle().
+			Foreground(bg).
+			Background(lipgloss.BrightBlack)
+	}
+
 	return lipgloss.NewStyle().
 		Foreground(bg)
 }
@@ -151,6 +163,8 @@ func getHighlight(highlightType HighlightType) string {
 		return ansi.Bold
 	case Selected:
 		return ansi.Reverse
+	case OpenStory:
+		return ansi.BgBrightBlack
 	case MarkAsRead:
 		return ansi.Faint + ansi.Italic
 	case AddToFavorites:

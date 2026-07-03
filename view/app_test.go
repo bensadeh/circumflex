@@ -309,6 +309,21 @@ func TestCommentViewQuit_RestoresState(t *testing.T) {
 	assert.Equal(t, stateBrowsing, m.state)
 }
 
+func TestTimeRefreshTick_ReschedulesInEveryState(t *testing.T) {
+	m := newTestModelReady(t)
+
+	thread := &comment.Thread{ID: 1, Title: "test", CommentsCount: 5}
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
+	require.Equal(t, stateCommentView, m.state)
+
+	_, cmd := m.Update(message.TimeRefreshTick{})
+	assert.NotNil(t, cmd, "tick in comment view must reschedule the next refresh")
+
+	m.state = stateHelpScreen
+	_, cmd = m.Update(message.TimeRefreshTick{})
+	assert.NotNil(t, cmd, "tick in help screen must reschedule the next refresh")
+}
+
 func TestEnteringReaderMode_ReturnsCmd(t *testing.T) {
 	m := newTestModelReady(t)
 

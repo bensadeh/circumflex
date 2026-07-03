@@ -5,17 +5,18 @@ import (
 )
 
 const (
-	Reset     = "\033[0m"
-	Bold      = "\033[1m"
-	Faint     = "\033[2m"
-	Italic    = "\033[3m"
-	Reverse   = "\033[7m"
-	ItalicOff = "\033[23m"
-	Red       = "\033[31m"
-	Green     = "\033[32m"
-	Yellow    = "\033[33m"
-	Blue      = "\033[34m"
-	Cyan      = "\033[36m"
+	Reset         = "\033[0m"
+	Bold          = "\033[1m"
+	Faint         = "\033[2m"
+	Italic        = "\033[3m"
+	Reverse       = "\033[7m"
+	ItalicOff     = "\033[23m"
+	Red           = "\033[31m"
+	Green         = "\033[32m"
+	Yellow        = "\033[33m"
+	Blue          = "\033[34m"
+	Cyan          = "\033[36m"
+	BgBrightBlack = "\033[100m"
 )
 
 var (

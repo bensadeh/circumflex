@@ -125,19 +125,21 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 		return m.handleCategoryFetchingFinished(msg)
 	}
 
-	if m.state == stateReaderView {
-		return m, m.readerView.Update(msg)
-	}
+	// Route to the active view through a single exit so cmds gathered above
+	// (spinner ticks, the time-refresh reschedule) always survive delegation.
+	switch m.state {
+	case stateReaderView:
+		cmds = append(cmds, m.readerView.Update(msg))
 
-	if m.state == stateCommentView {
-		return m, m.commentView.Update(msg)
-	}
+	case stateCommentView:
+		cmds = append(cmds, m.commentView.Update(msg))
 
-	if m.state == stateHelpScreen {
-		return m.updateHelpScreen(msg)
-	}
+	case stateHelpScreen:
+		cmds = append(cmds, m.updateHelpScreen(msg))
 
-	cmds = append(cmds, m.handleBrowsing(msg))
+	case stateStartup, stateBrowsing, stateFetching, stateAddFavoritesPrompt, stateRemoveFavoritesPrompt:
+		cmds = append(cmds, m.handleBrowsing(msg))
+	}
 
 	return m, tea.Batch(cmds...)
 }
@@ -166,6 +168,10 @@ func (m *model) handleStartup(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
 func (m *model) handleWindowResize(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
 	m.setSize(msg.Width, msg.Height)
 
+	// Resize the help viewport unconditionally: a resize that arrives while a
+	// story is open must not leave help laid out for the old dimensions.
+	m.resizeHelpViewport(msg.Width, msg.Height)
+
 	// The detail views are sized to their pane, which is the full screen when
 	// the terminal is too narrow for the wide layout.
 	detailMsg := tea.WindowSizeMsg{Width: m.detailWidth(), Height: msg.Height}
@@ -178,8 +184,6 @@ func (m *model) handleWindowResize(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
 		return m, m.commentView.Update(detailMsg)
 	}
 
-	m.resizeHelpViewport(msg.Width, msg.Height)
-
 	return m, nil
 }
 
@@ -188,6 +192,7 @@ func (m *model) handleFetchingFinished(msg message.FetchingFinished) (*model, te
 		return m, nil
 	}
 
+	syncProgress(msg.Err)
 	m.status.StopSpinner()
 	m.state = stateBrowsing
 
@@ -205,6 +210,8 @@ func (m *model) handleCategoryFetchingFinished(msg message.CategoryFetchingFinis
 	if msg.FetchID != m.fetchID {
 		return m, nil
 	}
+
+	syncProgress(msg.Err)
 
 	if msg.Err != nil {
 		m.list.RollbackTransition()
@@ -232,6 +239,8 @@ func (m *model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*m
 	if msg.FetchID != m.fetchID {
 		return m, nil
 	}
+
+	syncProgress(msg.Err)
 
 	var cmds []tea.Cmd
 
@@ -268,6 +277,7 @@ func (m *model) handleArticleReady(msg message.ArticleReady) (*model, tea.Cmd) {
 		return m, nil
 	}
 
+	syncProgress(msg.Err)
 	m.list.EndTransition()
 	m.status.StopSpinner()
 

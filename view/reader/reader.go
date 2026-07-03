@@ -91,6 +91,13 @@ func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, h
 	return m
 }
 
+// DisableStoryNavigation removes the J/K adjacent-story bindings, for
+// standalone use where there is no story list to move through.
+func (m *Model) DisableStoryNavigation() {
+	m.keymap.NextStory.SetEnabled(false)
+	m.keymap.PrevStory.SetEnabled(false)
+}
+
 func (m *Model) initViewport(content string, width, height int) {
 	vpHeight := max(0, height-headerHeight-footerHeight)
 
@@ -273,11 +280,11 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 	}
 
 	if key.Matches(msg, m.keymap.NextStory) {
-		return openAdjacentStory(1)
+		return message.OpenAdjacentStoryCmd(1)
 	}
 
 	if key.Matches(msg, m.keymap.PrevStory) {
-		return openAdjacentStory(-1)
+		return message.OpenAdjacentStoryCmd(-1)
 	}
 
 	before := m.viewport.YOffset()
@@ -293,7 +300,7 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 func (m *Model) View() string {
 	if m.showHelp {
 		content := help.FitToHeight(
-			help.ReaderHelpScreen(m.screenWidth),
+			help.ReaderHelpScreen(m.screenWidth, m.keymap.NextStory.Enabled()),
 			m.viewportHeight,
 		)
 
@@ -391,10 +398,6 @@ func (m *Model) openCommentsInBrowser() tea.Cmd {
 	return message.OpenInBrowser(hn.ItemURL(m.articleMeta.ID))
 }
 
-func openAdjacentStory(direction int) tea.Cmd {
-	return func() tea.Msg { return message.OpenAdjacentStory{Direction: direction} }
-}
-
 func (m *Model) jumpToHeader(direction int) {
 	if len(m.headerLines) == 0 {
 		return
@@ -455,6 +458,7 @@ func Run(content, title string, articleMeta Meta) error {
 	m := newFromContent(content, title, 0, 0)
 	m.standalone = true
 	m.articleMeta = articleMeta
+	m.DisableStoryNavigation()
 
 	p := tea.NewProgram(standaloneModel{inner: m})
 

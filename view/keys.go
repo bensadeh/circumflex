@@ -205,6 +205,8 @@ func (m *model) startFetch(timeout time.Duration) tea.Cmd {
 	m.fetchID++
 	m.state = stateFetching
 
+	setProgressIndeterminate()
+
 	if timeout > 0 {
 		ctx, cancel := context.WithTimeout(context.Background(), timeout)
 		m.fetchCtx = ctx

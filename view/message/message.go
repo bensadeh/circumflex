@@ -116,6 +116,10 @@ type OpenAdjacentStory struct {
 	Direction int
 }
 
+func OpenAdjacentStoryCmd(direction int) tea.Cmd {
+	return func() tea.Msg { return OpenAdjacentStory{Direction: direction} }
+}
+
 type TimeRefreshTick struct{}
 
 type MemorialStatusReady struct {

@@ -94,11 +94,7 @@ func (m *model) setSize(width, height int) {
 // updatePagination gives the list pane its width and the rows left between
 // the header and the status bar, repaginating to fit.
 func (m *model) updatePagination() {
-	availHeight := m.height
-	availHeight -= lipgloss.Height(m.titleView())
-	availHeight -= lipgloss.Height(m.statusAndPaginationView())
-
-	m.list.Resize(m.listWidth(), availHeight)
+	m.list.Resize(m.listWidth(), m.height-headerAndFooterHeight)
 }
 
 // listFrame collects the per-render facts the list pane cannot know itself.

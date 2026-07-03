@@ -118,7 +118,7 @@ func (m *Model) renderItem(w io.Writer, index int, item *hn.Story, f Frame) {
 	// browsing highlight, marking where J/K story navigation currently is.
 	case isSelected && m.storyOpen(f):
 		title, desc = styleTitleAndDesc(title, s.openStoryTitle, s.openStoryDesc, domain,
-			desc, syntax.Selected, enableNerdFonts)
+			desc, syntax.OpenStory, enableNerdFonts)
 
 	case (markAsRead && m.cat.CurrentCategory() != categories.Favorites) ||
 		m.dimmed(f):

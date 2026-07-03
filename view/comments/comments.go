@@ -128,6 +128,13 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 	return &m
 }
 
+// DisableStoryNavigation removes the J/K adjacent-story bindings, for
+// standalone use where there is no story list to move through.
+func (m *Model) DisableStoryNavigation() {
+	m.keymap.NextStory.SetEnabled(false)
+	m.keymap.PrevStory.SetEnabled(false)
+}
+
 func (m *Model) Init() tea.Cmd {
 	return nil
 }
@@ -191,16 +198,12 @@ func (m *Model) handleGlobalKeys(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 	case key.Matches(msg, m.keymap.OpenComments):
 		return m.openCommentsInBrowser(), true
 	case key.Matches(msg, m.keymap.NextStory):
-		return openAdjacentStory(1), true
+		return message.OpenAdjacentStoryCmd(1), true
 	case key.Matches(msg, m.keymap.PrevStory):
-		return openAdjacentStory(-1), true
+		return message.OpenAdjacentStoryCmd(-1), true
 	}
 
 	return nil, false
-}
-
-func openAdjacentStory(direction int) tea.Cmd {
-	return func() tea.Msg { return message.OpenAdjacentStory{Direction: direction} }
 }
 
 func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
@@ -317,7 +320,7 @@ func (m *Model) handleNavigateKeys(msg tea.KeyPressMsg) tea.Cmd {
 func (m *Model) View() string {
 	if m.showHelp {
 		content := help.FitToHeight(
-			help.CommentHelpScreen(m.rc.screenWidth, m.rc.enableNerdFonts),
+			help.CommentHelpScreen(m.rc.screenWidth, m.rc.enableNerdFonts, m.keymap.NextStory.Enabled()),
 			m.rc.viewportHeight,
 		)
 

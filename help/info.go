@@ -33,7 +33,7 @@ func mainMenuText(screenWidth int, sections []Section) string {
 	return formatKeymaps(keys, screenWidth)
 }
 
-func readerText(screenWidth int) string {
+func readerText(screenWidth int, withStoryNav bool) string {
 	keys := new(keyList)
 
 	nav := keys.addSection("Navigation")
@@ -46,7 +46,10 @@ func readerText(screenWidth int) string {
 	open := keys.addSection("Open")
 	open.addKey("o", "Open story in browser")
 	open.addKey("c", "Open comments in browser")
-	open.addKey("J, K", "Open next / prev story")
+
+	if withStoryNav {
+		open.addKey("J, K", "Open next / prev story")
+	}
 
 	app := keys.addSection("App")
 	app.color = style.HeaderTertiary()
@@ -56,7 +59,7 @@ func readerText(screenWidth int) string {
 	return formatKeymaps(keys, screenWidth)
 }
 
-func commentText(screenWidth int, enableNerdFonts bool) string {
+func commentText(screenWidth int, enableNerdFonts bool, withStoryNav bool) string {
 	keys := new(keyList)
 
 	read := keys.addSection("Read Mode")
@@ -69,7 +72,11 @@ func commentText(screenWidth int, enableNerdFonts bool) string {
 	read.addBreak()
 	read.addKey("o", "Open story in browser")
 	read.addKey("c", "Open comments in browser")
-	read.addKey("J, K", "Open next / prev story")
+
+	if withStoryNav {
+		read.addKey("J, K", "Open next / prev story")
+	}
+
 	read.addKey("↩", "Toggle all")
 	read.addKey("⇥", "Navigate mode")
 	read.addBreak()
@@ -84,7 +91,11 @@ func commentText(screenWidth int, enableNerdFonts bool) string {
 	nav.addBreak()
 	nav.addKey("o", "Open story in browser")
 	nav.addKey("c", "Open comments in browser")
-	nav.addKey("J, K", "Open next / prev story")
+
+	if withStoryNav {
+		nav.addKey("J, K", "Open next / prev story")
+	}
+
 	nav.addKey("↩", "Toggle collapse")
 	nav.addKey("⇥", "Read mode")
 	nav.addBreak()
