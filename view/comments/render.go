@@ -105,7 +105,6 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 		focusedHeader := comment.Header(&fc.Comment, fc.Depth, rc.originalPoster, fc.TopLevelAuthor, rc.lastVisited, rc.enableNerdFonts, true)
 		out.headerFocused = style.PrefixLines(focusedHeader, pad)
 
-		// Render the comment content (expensive: syntax highlighting + wrapping).
 		var fg color.Color
 		if comment.IsMod(fc.Comment.Author) {
 			fg = style.CommentModFg()

@@ -96,7 +96,6 @@ func TestPrintCommentHighlighting(t *testing.T) {
 	input := "check `code` here"
 	result := Render(input, 70, 80, false, nil)
 
-	// Backticks are replaced with ANSI styling.
 	assert.NotContains(t, result, "`code`")
 }
 

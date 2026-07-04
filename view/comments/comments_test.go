@@ -58,7 +58,6 @@ func TestNew_StartsFullyCollapsed(t *testing.T) {
 
 	assert.Equal(t, 0, m.expandedDepth)
 
-	// Only top-level comments should be visible.
 	for _, vi := range m.visible {
 		assert.Equal(t, 0, m.flat[vi].Depth)
 	}
@@ -67,14 +66,12 @@ func TestNew_StartsFullyCollapsed(t *testing.T) {
 func TestExpandLevel_RevealsChildren(t *testing.T) {
 	m := newTestModel(t, testThread())
 
-	// Initially only depth-0 visible.
 	initialCount := len(m.visible)
 
 	m.expandLevel()
 	assert.Equal(t, 1, m.expandedDepth)
 	assert.Greater(t, len(m.visible), initialCount, "expanding should reveal more comments")
 
-	// Depth-1 comments should now be visible.
 	hasDepth1 := false
 
 	for _, vi := range m.visible {
@@ -91,7 +88,6 @@ func TestExpandLevel_RevealsChildren(t *testing.T) {
 func TestExpandLevel_FullExpand(t *testing.T) {
 	m := newTestModel(t, testThread())
 
-	// Expand all the way.
 	for range m.maxDepth + 1 {
 		m.expandLevel()
 	}
@@ -102,7 +98,6 @@ func TestExpandLevel_FullExpand(t *testing.T) {
 func TestCollapseLevel_HidesChildren(t *testing.T) {
 	m := newTestModel(t, testThread())
 
-	// Expand then collapse back.
 	m.expandLevel()
 	expanded := len(m.visible)
 
@@ -114,7 +109,7 @@ func TestCollapseLevel_HidesChildren(t *testing.T) {
 func TestCollapseLevel_ClampsAtZero(t *testing.T) {
 	m := newTestModel(t, testThread())
 
-	m.collapseLevel() // already at 0
+	m.collapseLevel()
 	assert.Equal(t, 0, m.expandedDepth)
 }
 
@@ -131,11 +126,9 @@ func TestExpandLevel_ClampsAtMax(t *testing.T) {
 func TestToggleCollapseAll_ExpandsThenCollapses(t *testing.T) {
 	m := newTestModel(t, testThread())
 
-	// First toggle expands all.
 	m.toggleCollapseAll()
 	assert.Len(t, m.visible, len(m.flat))
 
-	// Second toggle collapses all.
 	m.toggleCollapseAll()
 
 	for _, vi := range m.visible {
@@ -154,8 +147,8 @@ func TestToggleMode_SwitchesToNavigate(t *testing.T) {
 func TestToggleMode_SwitchesBackToRead(t *testing.T) {
 	m := newTestModel(t, testThread())
 
-	m.toggleMode() // read -> navigate
-	m.toggleMode() // navigate -> read
+	m.toggleMode()
+	m.toggleMode()
 
 	assert.Equal(t, modeRead, m.mode)
 	assert.Equal(t, -1, m.focusedIdx, "focus cleared in read mode")
@@ -175,12 +168,10 @@ func TestNavigateComment_ClampsAtBounds(t *testing.T) {
 	m := newTestModel(t, testThread())
 	m.toggleMode()
 
-	// Move backward from 0.
 	m.focusedIdx = 0
 	m.navigateComment(-1)
 	assert.Equal(t, 0, m.focusedIdx, "should not go below 0")
 
-	// Move forward past end.
 	m.focusedIdx = len(m.visible) - 1
 	m.navigateComment(1)
 	assert.Equal(t, len(m.visible)-1, m.focusedIdx, "should not exceed visible length")
@@ -189,14 +180,12 @@ func TestNavigateComment_ClampsAtBounds(t *testing.T) {
 func TestSetCollapsed_CollapsesAndExpands(t *testing.T) {
 	m := newTestModel(t, testThread())
 
-	// Fully expand so we can test individual collapse.
 	for range m.maxDepth + 1 {
 		m.expandLevel()
 	}
 
 	m.toggleMode()
 
-	// Focus on the first comment (alice, has descendants).
 	m.focusedIdx = 0
 	flatIdx := m.visible[m.focusedIdx]
 	require.Positive(t, m.flat[flatIdx].DescendantCount)
@@ -215,14 +204,12 @@ func TestSetCollapsed_CollapsesAndExpands(t *testing.T) {
 func TestSetCollapsed_NoOpOnLeaf(t *testing.T) {
 	m := newTestModel(t, testThread())
 
-	// Fully expand.
 	for range m.maxDepth + 1 {
 		m.expandLevel()
 	}
 
 	m.toggleMode()
 
-	// Find a leaf comment (no descendants).
 	for vi, fi := range m.visible {
 		if m.flat[fi].DescendantCount == 0 {
 			m.focusedIdx = vi
@@ -240,14 +227,12 @@ func TestSetCollapsed_NoOpOnLeaf(t *testing.T) {
 func TestToggleCollapse_Toggles(t *testing.T) {
 	m := newTestModel(t, testThread())
 
-	// Fully expand.
 	for range m.maxDepth + 1 {
 		m.expandLevel()
 	}
 
 	m.toggleMode()
 
-	// Focus on first comment with descendants.
 	m.focusedIdx = 0
 	flatIdx := m.visible[m.focusedIdx]
 	require.Positive(t, m.flat[flatIdx].DescendantCount)
@@ -362,7 +347,6 @@ func assertFocusOnScreen(t *testing.T, m *Model) {
 func TestViewportStable_ExpandLevel(t *testing.T) {
 	m := newScrollableModel(t)
 
-	// Expand once so we have content, then scroll partway down.
 	m.expandLevel()
 	m.viewport.SetYOffset(m.contentLines / 3)
 
@@ -379,7 +363,6 @@ func TestViewportStable_ExpandLevel(t *testing.T) {
 func TestViewportStable_CollapseLevel(t *testing.T) {
 	m := newScrollableModel(t)
 
-	// Fully expand, scroll down, then collapse one level.
 	for range m.maxDepth + 1 {
 		m.expandLevel()
 	}
@@ -402,7 +385,6 @@ func TestViewportStable_CollapseLevel(t *testing.T) {
 func TestViewportStable_IndividualCollapse(t *testing.T) {
 	m := newScrollableModel(t)
 
-	// Fully expand, enter navigate mode, scroll down, focus a comment with children.
 	for range m.maxDepth + 1 {
 		m.expandLevel()
 	}
@@ -410,7 +392,6 @@ func TestViewportStable_IndividualCollapse(t *testing.T) {
 	m.toggleMode()
 	m.viewport.SetYOffset(m.contentLines / 3)
 
-	// Find a visible comment with descendants below the current scroll.
 	found := false
 
 	for vi, fi := range m.visible {
@@ -450,8 +431,6 @@ func TestViewportStable_Resize(t *testing.T) {
 		"anchor comment should not move on screen after resize")
 }
 
-// linearChain builds a thread of a single depth-N chain where comment i has
-// comment i+1 as its only child.
 func linearChain(depth int) []flatComment {
 	var children []*comment.Comment
 	for i := depth; i >= 1; i-- {
@@ -576,7 +555,6 @@ func TestPrerenderComments_IndentCollapsesOnNarrowTerminal(t *testing.T) {
 func TestSyncExpandedDepth_MatchesCollapseState(t *testing.T) {
 	m := newTestModel(t, testThread())
 
-	// Expand to level 2, then individually collapse something in navigate mode.
 	m.expandLevel()
 	m.expandLevel()
 
@@ -584,7 +562,6 @@ func TestSyncExpandedDepth_MatchesCollapseState(t *testing.T) {
 	m.syncExpandedDepth()
 	assert.Equal(t, expected, m.expandedDepth, "sync should match actual state after uniform expand")
 
-	// Now individually collapse a comment to create a non-uniform state.
 	m.toggleMode()
 	m.focusedIdx = 0
 	m.setCollapsed(true)

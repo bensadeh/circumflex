@@ -62,7 +62,6 @@ func TestNext_WithoutFavorites(t *testing.T) {
 	assert.Equal(t, 2, c.CurrentIndex())
 	assert.Equal(t, Ask, c.CurrentCategory())
 
-	// Wraps around
 	c.Next()
 	assert.Equal(t, 0, c.CurrentIndex())
 	assert.Equal(t, Top, c.CurrentCategory())
@@ -73,7 +72,6 @@ func TestPrev_WithoutFavorites(t *testing.T) {
 
 	assert.Equal(t, 0, c.CurrentIndex())
 
-	// Wraps to last
 	c.Prev()
 	assert.Equal(t, 2, c.CurrentIndex())
 	assert.Equal(t, Ask, c.CurrentCategory())
@@ -86,14 +84,12 @@ func TestPrev_WithoutFavorites(t *testing.T) {
 func TestNext_WithFavorites(t *testing.T) {
 	c := newTestCategories(t, "top,best,favorites")
 
-	// 3 positions: top(0), best(1), favorites(2)
 	c.Next()
 	assert.Equal(t, Best, c.CurrentCategory())
 
 	c.Next()
 	assert.Equal(t, Favorites, c.CurrentCategory())
 
-	// Wraps around
 	c.Next()
 	assert.Equal(t, Top, c.CurrentCategory())
 }
@@ -101,7 +97,6 @@ func TestNext_WithFavorites(t *testing.T) {
 func TestPrev_WithFavorites(t *testing.T) {
 	c := newTestCategories(t, "top,best,favorites")
 
-	// Wraps to favorites
 	c.Prev()
 	assert.Equal(t, Favorites, c.CurrentCategory())
 

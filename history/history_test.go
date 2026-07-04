@@ -62,11 +62,9 @@ func TestPersistent_MarkAndContains(t *testing.T) {
 func TestPersistent_CommentsLastVisited(t *testing.T) {
 	h := newTestPersistent(t)
 
-	// Unvisited story returns current time (approximately)
 	ts := h.CommentsLastVisited(1)
 	assert.Positive(t, ts)
 
-	// After marking with MarkRead, returns the marked time
 	_ = h.MarkRead(1, 5)
 	ts2 := h.CommentsLastVisited(1)
 	assert.Positive(t, ts2)
@@ -105,11 +103,9 @@ func TestPersistent_WriteToDisk_RoundTrip(t *testing.T) {
 	err := h.writeToDisk()
 	require.NoError(t, err)
 
-	// Verify file was created
 	_, statErr := os.Stat(filePath)
 	require.NoError(t, statErr)
 
-	// Read it back
 	content, err := os.ReadFile(filePath)
 	require.NoError(t, err)
 	assert.Contains(t, string(content), "42")
@@ -128,13 +124,11 @@ func TestNonPersistent_NoOps(t *testing.T) {
 func TestPersistent_MarkAsRead_SkipsWithinThreshold(t *testing.T) {
 	h := newTestPersistent(t)
 
-	// First mark sets the timestamp
 	err := h.MarkRead(1, 5)
 	require.NoError(t, err)
 
 	firstVisit := h.CommentsLastVisited(1)
 
-	// Marking again within 5 minutes should not update the timestamp
 	err = h.MarkRead(1, 10)
 	require.NoError(t, err)
 
@@ -145,7 +139,6 @@ func TestPersistent_MarkAsRead_SkipsWithinThreshold(t *testing.T) {
 func TestPersistent_MarkAsRead_UpdatesAfterThreshold(t *testing.T) {
 	h := newTestPersistent(t)
 
-	// Set a timestamp 6 minutes in the past
 	h.visitedStories[1] = StoryInfo{
 		LastVisited:         time.Now().Unix() - 6*60,
 		CommentsLastVisited: time.Now().Unix() - 6*60,
@@ -161,7 +154,6 @@ func TestPersistent_MarkAsRead_UpdatesAfterThreshold(t *testing.T) {
 func TestPersistent_MarkArticleAsRead_DoesNotUpdateCommentsLastVisited(t *testing.T) {
 	h := newTestPersistent(t)
 
-	// First visit to comments
 	_ = h.MarkRead(1, 5)
 	commentsTS := h.CommentsLastVisited(1)
 
@@ -170,13 +162,9 @@ func TestPersistent_MarkArticleAsRead_DoesNotUpdateCommentsLastVisited(t *testin
 	info.LastVisited = time.Now().Unix() - 6*60
 	h.visitedStories[1] = info
 
-	// Mark article as read (e.g. reader mode)
 	_ = h.MarkArticleRead(1)
 
-	// Article timestamp should be updated
 	assert.Greater(t, h.visitedStories[1].LastVisited, info.LastVisited)
-
-	// Comments timestamp should be preserved
 	assert.Equal(t, commentsTS, h.CommentsLastVisited(1))
 }
 

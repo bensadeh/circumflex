@@ -234,7 +234,6 @@ func TestConvertToTerminalFormat_MultipleBlocks(t *testing.T) {
 	result := convertToTerminalFormat(blocks, 80)
 	assert.Contains(t, result, "First paragraph")
 	assert.Contains(t, result, "Second paragraph")
-	// Blocks are separated by double newlines
 	assert.Contains(t, result, "\n\n")
 }
 

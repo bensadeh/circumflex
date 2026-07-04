@@ -21,10 +21,8 @@ func TestConfigDir_FallbackWhenXDGUnset(t *testing.T) {
 
 	dir := ConfigDir()
 
-	// Should fall back to the platform default (os.UserConfigDir).
 	platformDir, err := os.UserConfigDir()
 	if err != nil {
-		// If os.UserConfigDir fails, we fall back to TempDir.
 		assert.Equal(t, filepath.Join(os.TempDir(), "circumflex"), dir)
 
 		return

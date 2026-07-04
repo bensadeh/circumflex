@@ -63,16 +63,12 @@ func newTestModel(t *testing.T) *model {
 	return newModel(config, cat, fav, 80, 24, service, hist)
 }
 
-// newTestModelReady creates a model that has completed startup (already received
-// the initial WindowSizeMsg and is in browsing state).
 func newTestModelReady(t *testing.T) *model {
 	t.Helper()
 	m := newTestModel(t)
 
-	// Send the initial WindowSizeMsg to complete startup
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 
-	// Simulate fetch completion: populate items and reset state
 	m.list.SetItems(categories.Top, testItems())
 	m.status.StopSpinner()
 	m.fetching = false
@@ -101,7 +97,6 @@ func keyMsg(s string) tea.KeyPressMsg {
 	case "ctrl+c":
 		return tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl}
 	default:
-		// Single character keys like "q", "j", "k", etc.
 		r := []rune(s)
 
 		return tea.KeyPressMsg{Code: r[0], Text: s}
@@ -112,7 +107,6 @@ func TestStartup_WaitsForWindowSizeMsg(t *testing.T) {
 	m := newTestModel(t)
 	assert.False(t, m.started)
 
-	// Non-WindowSizeMsg during startup should be ignored
 	m, cmd := m.Update(message.StatusMessageTimeout{})
 	assert.False(t, m.started)
 	assert.Nil(t, cmd)
@@ -194,7 +188,6 @@ func TestQuit(t *testing.T) {
 func TestNavigationUpDown(t *testing.T) {
 	m := newTestModelReady(t)
 
-	// Start at cursor 0, move down
 	assert.Equal(t, 0, m.list.Cursor())
 	m, _ = m.Update(keyMsg("j"))
 	assert.Equal(t, 1, m.list.Cursor())
@@ -202,11 +195,9 @@ func TestNavigationUpDown(t *testing.T) {
 	m, _ = m.Update(keyMsg("j"))
 	assert.Equal(t, 2, m.list.Cursor())
 
-	// Move up
 	m, _ = m.Update(keyMsg("k"))
 	assert.Equal(t, 1, m.list.Cursor())
 
-	// Can also use arrow keys
 	m, _ = m.Update(keyMsg("down"))
 	assert.Equal(t, 2, m.list.Cursor())
 
@@ -217,11 +208,9 @@ func TestNavigationUpDown(t *testing.T) {
 func TestNavigationUpDown_Clamped(t *testing.T) {
 	m := newTestModelReady(t)
 
-	// Moving up from 0 stays at 0
 	m, _ = m.Update(keyMsg("k"))
 	assert.Equal(t, 0, m.list.Cursor())
 
-	// Moving down past end stays at last item (all items fit on one page)
 	for range 100 {
 		m, _ = m.Update(keyMsg("j"))
 	}
@@ -232,11 +221,9 @@ func TestNavigationUpDown_Clamped(t *testing.T) {
 func TestGoToTopBottom(t *testing.T) {
 	m := newTestModelReady(t)
 
-	// Go to bottom (all items fit on one page)
 	m, _ = m.Update(keyMsg("G"))
 	assert.Equal(t, len(m.list.VisibleItems())-1, m.list.Cursor())
 
-	// Go to top
 	m, _ = m.Update(keyMsg("g"))
 	assert.Equal(t, 0, m.list.Cursor())
 }
@@ -244,21 +231,18 @@ func TestGoToTopBottom(t *testing.T) {
 func TestTabToCachedCategory(t *testing.T) {
 	m := newTestModelReady(t)
 
-	// Pre-populate the "best" category so tab doesn't need to fetch
 	m.list.SetItems(categories.Best, testItems())
 
 	initialIndex := m.cat.CurrentIndex()
 	m, cmd := m.Update(keyMsg("tab"))
 
 	assert.NotEqual(t, initialIndex, m.cat.CurrentIndex())
-	// No fetch needed since category is cached, cmd should be nil
-	assert.Nil(t, cmd)
+	assert.Nil(t, cmd, "cached category should not trigger a fetch")
 }
 
 func TestTabToUncachedCategory(t *testing.T) {
 	m := newTestModelReady(t)
 
-	// "best" category is empty (uncached)
 	assert.Empty(t, m.list.Items(categories.Best))
 
 	m, cmd := m.Update(keyMsg("tab"))
@@ -314,7 +298,6 @@ func TestEnteringCommentSection_ReturnsCmd(t *testing.T) {
 	_, cmd := m.Update(message.EnteringCommentSection{ID: 1, CommentCount: 10})
 	assert.NotNil(t, cmd, "should return cmd for async comment fetching")
 
-	// Execute the Cmd — it should produce a CommentTreeDataReady message
 	msg := cmd()
 	result, ok := msg.(message.CommentTreeDataReady)
 	assert.True(t, ok, "cmd should produce CommentTreeDataReady message")
@@ -419,7 +402,6 @@ func TestEnteringReaderMode_InvalidDomain(t *testing.T) {
 	})
 	assert.NotNil(t, cmd)
 
-	// Execute the Cmd — should produce ArticleReady with error
 	msg := cmd()
 	result, ok := msg.(message.ArticleReady)
 	assert.True(t, ok, "cmd should produce ArticleReady message")
@@ -456,11 +438,9 @@ func TestAddFavoritesPrompt(t *testing.T) {
 func TestAddFavoritesConfirm(t *testing.T) {
 	m := newTestModelReady(t)
 
-	// Enter prompt
 	m, _ = m.Update(keyMsg("f"))
 	assert.Equal(t, promptAddFavorite, m.prompt)
 
-	// Confirm
 	m, cmd := m.Update(keyMsg("y"))
 	assert.Equal(t, promptNone, m.prompt)
 	assert.NotNil(t, cmd, "should return AddToFavorites cmd")
@@ -469,11 +449,9 @@ func TestAddFavoritesConfirm(t *testing.T) {
 func TestAddFavoritesCancel(t *testing.T) {
 	m := newTestModelReady(t)
 
-	// Enter prompt
 	m, _ = m.Update(keyMsg("f"))
 	assert.Equal(t, promptAddFavorite, m.prompt)
 
-	// Cancel with any key other than "y"
 	m, _ = m.Update(keyMsg("n"))
 	assert.Equal(t, promptNone, m.prompt)
 }
@@ -500,7 +478,6 @@ func newFavoritesTestModel(t *testing.T) *model {
 func TestFavorites_HeaderAlwaysShown(t *testing.T) {
 	m := newFavoritesTestModel(t)
 
-	// Favorites has no items, yet its header label is rendered.
 	require.Empty(t, m.favorites.Items())
 	assert.Contains(t, m.View(), "favorites")
 }
@@ -508,7 +485,6 @@ func TestFavorites_HeaderAlwaysShown(t *testing.T) {
 func TestFavorites_EmptyShowsHint(t *testing.T) {
 	m := newFavoritesTestModel(t)
 
-	// Move to the (empty) favorites category.
 	m.cat.SetIndex(1)
 	require.Equal(t, categories.Favorites, m.cat.CurrentCategory())
 
@@ -539,11 +515,9 @@ func TestDisabledInput_IgnoresKeys(t *testing.T) {
 func TestHelpScreen_Toggle(t *testing.T) {
 	m := newTestModelReady(t)
 
-	// Enter help screen
 	m, _ = m.Update(keyMsg("i"))
 	assert.Equal(t, screenHelp, m.screen)
 
-	// Exit help screen
 	m, _ = m.Update(keyMsg("q"))
 	assert.Equal(t, screenList, m.screen)
 }
@@ -561,8 +535,7 @@ func TestRefresh(t *testing.T) {
 func TestOpenLink_ReturnsCmd(t *testing.T) {
 	m := newTestModelReady(t)
 
-	// handleOpenLink returns a tea.Cmd that calls browser.Open;
-	// we verify it produces a command without executing it.
+	// Don't execute the cmd — it would open a real browser.
 	cmd := m.handleOpenLink()
 	assert.NotNil(t, cmd)
 }
@@ -571,27 +544,20 @@ func TestSpinnerTick_WhenActive(t *testing.T) {
 	m := newTestModelReady(t)
 	m.status.showSpinner = true
 
-	// Create a spinner tick message
 	_, cmd := m.Update(m.status.spinner.Tick())
-	// When spinner is active, should return a follow-up tick cmd
-	assert.NotNil(t, cmd)
+	assert.NotNil(t, cmd, "active spinner should return a follow-up tick cmd")
 }
 
 func TestSpinnerAnimation_FrameAdvances(t *testing.T) {
 	m := newTestModelReady(t)
 
-	// Start the spinner
 	startCmd := m.status.StartSpinner()
 	assert.True(t, m.status.showSpinner)
 	assert.NotNil(t, startCmd)
 
-	// Record the initial spinner view
 	initialView := m.status.spinner.View()
-
-	// Execute the start cmd to get the first TickMsg
 	tickMsg := startCmd()
 
-	// Process the tick - this should advance the frame
 	m, cmd := m.Update(tickMsg)
 	afterFirstTick := m.status.spinner.View()
 
@@ -604,7 +570,6 @@ func TestSpinnerTick_WhenInactive(t *testing.T) {
 	m.status.showSpinner = false
 
 	_, cmd := m.Update(m.status.spinner.Tick())
-	// When spinner is inactive, no follow-up tick should be returned
 	// cmd may be non-nil from handleBrowsing, but the spinner-specific cmd won't be appended
 	_ = cmd
 }
@@ -651,7 +616,6 @@ func TestSpinnerView_WhenActive(t *testing.T) {
 	assert.NotEmpty(t, got)
 }
 
-// failingHistory is a history.History that returns errors on write operations.
 type failingHistory struct {
 	history.Mock
 
@@ -736,11 +700,9 @@ func TestEnteringCommentSection_HistoryWriteFailure(t *testing.T) {
 	m.list.SetItems(categories.Top, testItems())
 	m.fetching = false
 
-	// Trigger the comment section fetch command
 	_, cmd := m.Update(message.EnteringCommentSection{ID: 1, CommentCount: 10})
 	assert.NotNil(t, cmd)
 
-	// Execute the cmd — should produce CommentTreeDataReady with HistoryWarning
 	msg := cmd()
 	result, ok := msg.(message.CommentTreeDataReady)
 	assert.True(t, ok)
@@ -755,8 +717,6 @@ func TestEnteringReaderMode_ValidationFailure_SkipsHistoryWrite(t *testing.T) {
 	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.json"))
 	require.NoError(t, err)
 
-	// Even with a failing history, validation failure should return before
-	// attempting the history write — so HistoryWarning must be nil.
 	hist := failingHistory{writeErr: errors.New("should not be reached")}
 	m := newModel(config, cat, fav, 80, 24, &instantMockService{}, hist)
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})

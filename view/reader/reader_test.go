@@ -40,13 +40,11 @@ func TestResize_RerenderChangesContent(t *testing.T) {
 
 	contentBefore := m.viewport.View()
 
-	// Simulate a significant resize.
 	m.Update(tea.WindowSizeMsg{Width: 60, Height: 30})
 
 	assert.Equal(t, 60, m.screenWidth)
 	assert.Equal(t, 30-headerHeight-footerHeight, m.viewportHeight)
 
-	// Content should have changed because the render width changed.
 	contentAfter := m.viewport.View()
 	assert.NotEqual(t, contentBefore, contentAfter, "content should change after resize")
 }
@@ -58,7 +56,6 @@ func TestResize_PreRendered_NoRerender(t *testing.T) {
 
 	m.Update(tea.WindowSizeMsg{Width: 60, Height: 30})
 
-	// Pre-rendered content doesn't re-render — only viewport dimensions change.
 	assert.Equal(t, contentBefore, m.contentLines)
 	assert.Equal(t, 60, m.screenWidth)
 }
@@ -67,7 +64,6 @@ func TestResize_PreservesScrollPosition(t *testing.T) {
 	parsed := parseTestArticle(t)
 	m := NewWithArticle(parsed, "Article", 72, 120, 40, Meta{URL: "https://example.com"})
 
-	// Scroll down.
 	m.viewport.SetYOffset(5)
 
 	m.Update(tea.WindowSizeMsg{Width: 100, Height: 40})
@@ -126,21 +122,17 @@ func TestHelpToggle(t *testing.T) {
 	m := newFromContent("content", "Title", 80, 24)
 	assert.False(t, m.showHelp)
 
-	// Press 'i' to open help.
 	m.Update(tea.KeyPressMsg{Code: 'i', Text: "i"})
 	assert.True(t, m.showHelp)
 
-	// While in help, other keys are ignored.
 	m.Update(tea.KeyPressMsg{Code: 'j', Text: "j"})
 	assert.True(t, m.showHelp, "help should remain open on unrelated key")
 
-	// Press 'i' again to close.
 	m.Update(tea.KeyPressMsg{Code: 'i', Text: "i"})
 	assert.False(t, m.showHelp)
 }
 
 func TestHeaderLines_DetectsSectionMarkers(t *testing.T) {
-	// Content with section markers (■).
 	content := "intro\n■ Section One\nbody\n■ Section Two\nend"
 	m := newFromContent(content, "Title", 80, 24)
 
@@ -159,15 +151,12 @@ func TestJumpToHeader(t *testing.T) {
 	m := newFromContent(strings.Join(lines, "\n"), "Title", 80, 60)
 	require.Len(t, m.headerLines, 2)
 
-	// Jump forward from top.
 	m.jumpToHeader(1)
 	assert.Equal(t, 10, m.viewport.YOffset())
 
-	// Jump forward again.
 	m.jumpToHeader(1)
 	assert.Equal(t, 30, m.viewport.YOffset())
 
-	// Jump backward.
 	m.jumpToHeader(-1)
 	assert.Equal(t, 10, m.viewport.YOffset())
 }

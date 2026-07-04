@@ -55,7 +55,6 @@ func TestPager_CursorUp(t *testing.T) {
 	p.CursorUp()
 	assert.Equal(t, 1, p.cursor)
 
-	// Clamps at zero
 	p.cursor = 0
 	p.CursorUp()
 	assert.Equal(t, 0, p.cursor)
@@ -70,7 +69,6 @@ func TestPager_CursorDown(t *testing.T) {
 	p.CursorDown(0)
 	assert.Equal(t, 2, p.cursor)
 
-	// Clamps at last item on page
 	p.cursor = 4
 	p.CursorDown(0)
 	assert.Equal(t, 4, p.cursor)

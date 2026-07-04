@@ -55,7 +55,6 @@ func TestFlatten_DFSOrder(t *testing.T) {
 
 	flat := flatten(thread)
 
-	// DFS invariant: depth increases by exactly 1 when it increases.
 	for i := 1; i < len(flat); i++ {
 		if flat[i].Depth > flat[i-1].Depth {
 			assert.Equal(t, flat[i-1].Depth+1, flat[i].Depth,
@@ -322,13 +321,11 @@ func TestRenderFromFlat_LineCountMatchesContent(t *testing.T) {
 	totalNewlines := strings.Count(content, "\n")
 	assert.Equal(t, contentLines+rc.viewportHeight, totalNewlines)
 
-	// Every visible comment must have a positive line count.
 	for _, vi := range visible {
 		assert.Positive(t, metrics[vi].LineCount,
 			"visible comment must have positive LineCount (flat index %d)", vi)
 	}
 
-	// Last comment must end within content bounds.
 	last := metrics[visible[len(visible)-1]]
 	assert.LessOrEqual(t, last.StartLine+last.LineCount, contentLines)
 }

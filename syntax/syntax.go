@@ -307,7 +307,6 @@ func TrimURLs(comment string, highlightURLs bool) string {
 	// HN-truncated display text is restored to the complete URL.
 	comment = reAnchorWithURL.ReplaceAllString(comment, "$1")
 
-	// Strip any remaining anchor tags.
 	comment = reHTMLAnchor.ReplaceAllString(comment, "")
 
 	if !highlightURLs {

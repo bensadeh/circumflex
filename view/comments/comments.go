@@ -115,8 +115,8 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 		keymap:        km,
 		mode:          modeRead,
 		flat:          flat,
-		focusedIdx:    -1, // no focus in scroll mode
-		expandedDepth: 0,  // initial: only top-level visible
+		focusedIdx:    -1,
+		expandedDepth: 0, // initial: only top-level visible
 		maxDepth:      md,
 		title:         thread.Title,
 		prerendered:   prerenderComments(rc, flat),
@@ -510,7 +510,6 @@ func (m *Model) snapFocusToVisible(direction int) {
 	}
 
 	if direction > 0 {
-		// Scrolled down — pick the topmost visible comment.
 		for vi, fi := range m.visible {
 			if m.lineMetrics[fi].StartLine >= top && m.lineMetrics[fi].StartLine < bottom {
 				m.focusedIdx = vi
@@ -520,7 +519,6 @@ func (m *Model) snapFocusToVisible(direction int) {
 			}
 		}
 	} else {
-		// Scrolled up — pick the bottommost visible comment.
 		for vi, fi := range slices.Backward(m.visible) {
 			if m.lineMetrics[fi].StartLine >= top && m.lineMetrics[fi].StartLine < bottom {
 				m.focusedIdx = vi
@@ -848,7 +846,6 @@ func (m *Model) scrollToFocused() {
 	top := m.viewport.YOffset()
 	bottom := top + m.viewport.VisibleLineCount()
 
-	// Only scroll if the focused comment is outside the visible area.
 	if lm.StartLine < top {
 		// Scrolling up — put comment a few lines below the top.
 		m.viewport.SetYOffset(max(0, lm.StartLine-scrollPadding))

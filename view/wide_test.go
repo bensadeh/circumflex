@@ -21,8 +21,6 @@ const (
 	wideTestHeight = 30
 )
 
-// newWideTestModel returns a browsing model sized past the wide-layout
-// threshold, with items loaded.
 func newWideTestModel(t *testing.T) *model {
 	t.Helper()
 	m := newTestModel(t)
@@ -37,8 +35,6 @@ func newWideTestModel(t *testing.T) *model {
 	return m
 }
 
-// openTestComments drives the model through the full open-story flow: Enter,
-// then the fetched comment tree arriving.
 func openTestComments(t *testing.T, m *model) {
 	t.Helper()
 
@@ -152,7 +148,6 @@ func TestWideView_AdjacentStoryNavigationFlipsPages(t *testing.T) {
 	openTestComments(t, m)
 	require.Equal(t, 0, m.list.Index())
 
-	// J: second story on the same page.
 	openAdjacent(t, m, "J")
 	require.True(t, m.fetching)
 	assert.Equal(t, 1, m.list.Index())
@@ -162,7 +157,6 @@ func TestWideView_AdjacentStoryNavigationFlipsPages(t *testing.T) {
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
 	require.Equal(t, screenComments, m.screen)
 
-	// J again: third story, which lives on the next page.
 	openAdjacent(t, m, "J")
 	assert.Equal(t, 2, m.list.Index())
 	assert.Equal(t, 1, m.list.Page())
@@ -171,7 +165,6 @@ func TestWideView_AdjacentStoryNavigationFlipsPages(t *testing.T) {
 	thread = comment.ToThread(&hn.CommentTree{ID: 3, Title: "Third item", CommentsCount: 1})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
 
-	// K: back to the second story, flipping back to the first page.
 	openAdjacent(t, m, "K")
 	assert.Equal(t, 1, m.list.Index())
 	assert.Equal(t, 0, m.list.Page())
@@ -183,7 +176,6 @@ func TestWideView_AdjacentStoryNavigationStopsAtEdges(t *testing.T) {
 	openTestComments(t, m)
 	require.Equal(t, 0, m.list.Index())
 
-	// K at the first story: nothing happens, the view stays open.
 	cmd := openAdjacent(t, m, "K")
 	assert.Nil(t, cmd)
 	assert.Equal(t, 0, m.list.Index())
@@ -247,7 +239,6 @@ func TestWideView_NarrowBehaviorUnchanged(t *testing.T) {
 	m := newTestModelReady(t)
 	openTestComments(t, m)
 
-	// Full-screen comment section: no divider column, no list content.
 	view := m.View()
 	assert.NotContains(t, view, "Select a story")
 	assert.NotContains(t, view, "Second item")
@@ -257,12 +248,10 @@ func TestWideView_ResizeAcrossThreshold(t *testing.T) {
 	m := newWideTestModel(t)
 	openTestComments(t, m)
 
-	// Shrink below the threshold: the comment section takes the full screen.
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 120, Height: wideTestHeight})
 	assert.False(t, m.isWide())
 	assert.NotContains(t, m.View(), "Second item")
 
-	// Widen again: the list returns next to the comment section.
 	m, _ = m.Update(tea.WindowSizeMsg{Width: wideTestWidth, Height: wideTestHeight})
 	assert.True(t, m.isWide())
 	assert.Contains(t, m.View(), "Second item")

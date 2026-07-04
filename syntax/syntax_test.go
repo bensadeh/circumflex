@@ -194,7 +194,7 @@ func TestHighlightBackticks(t *testing.T) {
 	t.Run("single pair wraps in styled output", func(t *testing.T) {
 		result := HighlightBackticks("use `code` here")
 		assert.Contains(t, result, "code")
-		assert.Contains(t, result, "\033[") // contains ANSI styling
+		assert.Contains(t, result, "\033[")
 		assert.NotContains(t, result, "`")
 	})
 
@@ -289,7 +289,6 @@ func TestHighlightAbbreviations(t *testing.T) {
 	t.Run("IANAL and IAAL use different colors", func(t *testing.T) {
 		rIANAL := HighlightAbbreviations("IANAL")
 		rIAAL := HighlightAbbreviations("IAAL")
-		// Both produce ANSI output but with different color codes
 		assert.NotEqual(t, rIANAL, rIAAL)
 	})
 
