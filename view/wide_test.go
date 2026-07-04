@@ -207,6 +207,28 @@ func TestWideView_CommentSectionFillsDetailPane(t *testing.T) {
 	}
 }
 
+func TestWideView_HelpShowsInDetailPane(t *testing.T) {
+	m := newWideTestModel(t)
+
+	m, _ = m.Update(keyMsg("i"))
+	require.Equal(t, screenHelp, m.screen)
+
+	view := m.View()
+	assert.Contains(t, xansi.Strip(view), "Keyboard Shortcuts")
+	assert.Contains(t, view, "First item", "the story list should stay visible next to help")
+
+	lines := strings.Split(view, "\n")
+	assert.Len(t, lines, wideTestHeight)
+
+	for i, line := range lines {
+		assert.Equal(t, wideTestWidth, xansi.StringWidth(line), "line %d should span the full terminal width", i)
+	}
+
+	m, _ = m.Update(keyMsg("q"))
+	assert.Equal(t, screenList, m.screen)
+	assert.Contains(t, m.View(), "Select a story")
+}
+
 func TestWideView_QuitRestoresPlaceholder(t *testing.T) {
 	m := newWideTestModel(t)
 	openTestComments(t, m)

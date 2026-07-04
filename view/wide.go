@@ -88,6 +88,9 @@ func (m *model) detailPaneView() string {
 	case m.status.showSpinner:
 		return m.placeholderPane(m.status.spinnerView())
 
+	case m.screen == screenHelp:
+		return m.helpView()
+
 	case m.screen == screenReader:
 		return m.readerView.View()
 

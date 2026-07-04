@@ -172,7 +172,7 @@ func (m *model) handleStartup(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
 	cmds = append(cmds, scheduleTimeRefresh())
 
 	m.helpViewport = viewport.New()
-	m.resizeHelpViewport(msg.Width, msg.Height)
+	m.resizeHelpViewport()
 
 	return m, tea.Batch(cmds...)
 }
@@ -182,7 +182,7 @@ func (m *model) handleWindowResize(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
 
 	// Resize the help viewport unconditionally: a resize that arrives while a
 	// story is open must not leave help laid out for the old dimensions.
-	m.resizeHelpViewport(msg.Width, msg.Height)
+	m.resizeHelpViewport()
 
 	// The detail views are sized to their pane, which is the full screen when
 	// the terminal is too narrow for the wide layout.

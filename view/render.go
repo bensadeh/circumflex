@@ -1,23 +1,19 @@
 package view
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/bensadeh/circumflex/header"
-	"github.com/bensadeh/circumflex/help"
 	"github.com/bensadeh/circumflex/style"
 
 	"charm.land/lipgloss/v2"
 )
 
 func (m *model) View() string {
-	if m.screen == screenHelp {
-		return fmt.Sprintf("%s\n%s\n%s\n%s",
-			header.HelpHeader("Keyboard Shortcuts", m.width),
-			m.helpViewport.View(),
-			m.bottomBar(m.width),
-			help.Footer(m.width))
+	// In the wide layout help renders in the detail pane instead of taking
+	// over the screen, so the story list stays visible next to it.
+	if m.screen == screenHelp && !m.isWide() {
+		return m.helpView()
 	}
 
 	if m.isWide() {
