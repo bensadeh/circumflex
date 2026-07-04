@@ -2,12 +2,12 @@
 .\"     Title: clx
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.26
-.\"      Date: 2026-06-27
+.\"      Date: 2026-07-04
 .\"    Manual: circumflex
-.\"    Source: circumflex 4.4
+.\"    Source: circumflex 4.5-dev
 .\"  Language: English
 .\"
-.TH "CLX" "1" "2026-06-27" "circumflex 4.4" "circumflex"
+.TH "CLX" "1" "2026-07-04" "circumflex 4.5\-dev" "circumflex"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -158,6 +158,11 @@ Open link to article in browser.
 Open comment section in browser.
 .RE
 .sp
+\fIJ\fP, \fIK\fP
+.RS 4
+Open the comment section of the next/previous story on the front page.
+.RE
+.sp
 \fIEnter\fP
 .RS 4
 Toggle collapse all.
@@ -209,6 +214,11 @@ Open link to article in browser.
 \fIc\fP
 .RS 4
 Open comment section in browser.
+.RE
+.sp
+\fIJ\fP, \fIK\fP
+.RS 4
+Open the comment section of the next/previous story on the front page.
 .RE
 .sp
 \fIEnter\fP
@@ -265,6 +275,11 @@ Open link to article in browser.
 \fIc\fP
 .RS 4
 Open comment section in browser.
+.RE
+.sp
+\fIJ\fP, \fIK\fP
+.RS 4
+Open the next/previous story on the front page in Reader Mode.
 .RE
 .sp
 \fIi\fP, \fI?\fP
@@ -327,6 +342,13 @@ Default: 3.
 \fB\-v, \-\-version\fP
 .RS 4
 Show the current version of \fBcircumflex\fP.
+.RE
+.sp
+\fB\-w\fP \fIvalue\fP, \fB\-\-wide\-view\fP=\fIvalue\fP
+.RS 4
+Show the comment section and Reader Mode in a pane next to the front page instead of replacing it.
+Set to \fIalways\fP, \fInever\fP, or the minimum terminal width in columns at which the split kicks in.
+Default: 180.
 .RE
 .SH "COMMANDS"
 .sp

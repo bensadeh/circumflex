@@ -20,7 +20,7 @@ const (
 
 	// DefaultWideViewMinWidth is the terminal width at which the wide
 	// (split-pane) layout kicks in unless configured otherwise.
-	DefaultWideViewMinWidth = 200
+	DefaultWideViewMinWidth = 180
 )
 
 type Config struct {

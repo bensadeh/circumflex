@@ -229,7 +229,7 @@ Show the current version of *circumflex*.
 *-w* _value_, *--wide-view*=_value_::
 Show the comment section and Reader Mode in a pane next to the front page instead of replacing it.
 Set to _always_, _never_, or the minimum terminal width in columns at which the split kicks in.
-Default: 200.
+Default: 180.
 
 == Commands
 

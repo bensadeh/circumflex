@@ -53,15 +53,15 @@ func openTestComments(t *testing.T, m *model) {
 func TestWideView_Threshold(t *testing.T) {
 	m := newWideTestModel(t)
 
-	m.setSize(199, wideTestHeight)
+	m.setSize(179, wideTestHeight)
 	assert.False(t, m.isWide())
-	assert.Equal(t, 199, m.listWidth())
-	assert.Equal(t, 199, m.detailWidth())
+	assert.Equal(t, 179, m.listWidth())
+	assert.Equal(t, 179, m.detailWidth())
 
-	m.setSize(200, wideTestHeight)
+	m.setSize(180, wideTestHeight)
 	assert.True(t, m.isWide())
-	assert.Equal(t, (200-dividerWidth)/2, m.listWidth())
-	assert.Equal(t, 200-m.listWidth()-dividerWidth, m.detailWidth())
+	assert.Equal(t, (180-dividerWidth)/2, m.listWidth())
+	assert.Equal(t, 180-m.listWidth()-dividerWidth, m.detailWidth())
 }
 
 func TestWideView_ConfiguredThreshold(t *testing.T) {
