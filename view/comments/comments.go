@@ -2,33 +2,27 @@ package comments
 
 import (
 	"fmt"
-	"slices"
 	"strings"
 
-	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/help"
-	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/scrollbar"
 	"github.com/bensadeh/circumflex/style"
-	"github.com/bensadeh/circumflex/syntax"
 	"github.com/bensadeh/circumflex/timeago"
-	"github.com/bensadeh/circumflex/view/message"
+	"github.com/bensadeh/circumflex/view/pane"
 
-	"charm.land/bubbles/v2/key"
-	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	xansi "github.com/charmbracelet/x/ansi"
 )
 
 type Model struct {
-	viewport viewport.Model
-	keymap   keyMap
-	mode     mode
+	pane.Scroller
+
+	keymap keyMap
+	mode   mode
 
 	flat          []flatComment
 	visible       []int // indices into flat
@@ -42,8 +36,7 @@ type Model struct {
 
 	prerendered []renderedComment
 
-	lineMetrics  []lineMetrics // indexed by flat index
-	contentLines int           // excludes bottom padding
+	lineMetrics []lineMetrics // indexed by flat index
 }
 
 const (
@@ -55,21 +48,11 @@ const (
 func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, enableNerdFonts bool, width, height int) *Model {
 	km := defaultKeyMap()
 
-	vp := viewport.New(
-		viewport.WithWidth(width),
-		viewport.WithHeight(height-headerHeight-footerHeight),
-	)
-
 	// Viewport handles j/k in scroll mode (toggled off in navigate mode).
 	// h/l are always handled by us (collapse/expand), so disable them on viewport.
-	vp.KeyMap = viewport.DefaultKeyMap()
+	vp := pane.NewViewport(width, height-headerHeight-footerHeight)
 	vp.KeyMap.Left.SetEnabled(false)
 	vp.KeyMap.Right.SetEnabled(false)
-	vp.KeyMap.HalfPageDown.SetEnabled(false)
-	vp.KeyMap.HalfPageUp.SetEnabled(false)
-	vp.KeyMap.PageDown.SetEnabled(false)
-	vp.KeyMap.PageUp.SetEnabled(false)
-	vp.MouseWheelEnabled = false
 
 	flat := flatten(thread)
 
@@ -111,7 +94,7 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 	}
 
 	m := Model{
-		viewport:      vp,
+		Scroller:      pane.Scroller{Viewport: vp},
 		keymap:        km,
 		mode:          modeRead,
 		flat:          flat,
@@ -132,8 +115,7 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 // DisableStoryNavigation removes the J/K adjacent-story bindings, for
 // standalone use where there is no story list to move through.
 func (m *Model) DisableStoryNavigation() {
-	m.keymap.NextStory.SetEnabled(false)
-	m.keymap.PrevStory.SetEnabled(false)
+	m.keymap.DisableStoryNavigation()
 }
 
 func (m *Model) Init() tea.Cmd {
@@ -149,15 +131,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 			return nil
 		}
 
-		delta := m.viewport.MouseWheelDelta
-		maxOffset := max(0, m.contentLines-m.rc.viewportHeight)
-
-		switch msg.Button {
-		case tea.MouseWheelDown:
-			m.viewport.SetYOffset(min(m.viewport.YOffset()+delta, maxOffset))
-		case tea.MouseWheelUp:
-			m.viewport.SetYOffset(max(0, m.viewport.YOffset()-delta))
-		}
+		m.HandleMouseWheel(msg)
 
 		return nil
 
@@ -166,9 +140,9 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		screenPos := m.screenPosition(anchorIdx)
 
 		m.rc.screenWidth = msg.Width
-		m.rc.viewportHeight = msg.Height - headerHeight - footerHeight
-		m.viewport.SetWidth(msg.Width)
-		m.viewport.SetHeight(msg.Height - headerHeight - footerHeight)
+		m.rc.viewportHeight = max(0, msg.Height-headerHeight-footerHeight)
+		m.Viewport.SetWidth(msg.Width)
+		m.Viewport.SetHeight(m.rc.viewportHeight)
 
 		cw := min(msg.Width-2*layout.CommentSectionLeftMargin, m.rc.commentWidth)
 		m.rc.header = buildCommentHeader(m.rc.story, m.rc.enableNerdFonts, m.rc.newComments, cw) + "\n"
@@ -184,140 +158,6 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 	return nil
 }
 
-// handleGlobalKeys dispatches the keys that work the same in both Read and
-// Navigate modes. The bool reports whether the key was consumed.
-func (m *Model) handleGlobalKeys(msg tea.KeyPressMsg) (tea.Cmd, bool) {
-	switch {
-	case key.Matches(msg, m.keymap.Quit):
-		return func() tea.Msg { return message.CommentViewQuit{} }, true
-	case key.Matches(msg, m.keymap.Help):
-		m.showHelp = true
-
-		return nil, true
-	case key.Matches(msg, m.keymap.OpenLink):
-		return m.openStoryInBrowser(), true
-	case key.Matches(msg, m.keymap.OpenComments):
-		return m.openCommentsInBrowser(), true
-	case key.Matches(msg, m.keymap.NextStory):
-		return message.OpenAdjacentStoryCmd(1), true
-	case key.Matches(msg, m.keymap.PrevStory):
-		return message.OpenAdjacentStoryCmd(-1), true
-	}
-
-	return nil, false
-}
-
-func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
-	if m.showHelp {
-		if key.Matches(msg, m.keymap.Quit, m.keymap.Help) {
-			m.showHelp = false
-		}
-
-		return nil
-	}
-
-	if cmd, handled := m.handleGlobalKeys(msg); handled {
-		return cmd
-	}
-
-	switch {
-	case key.Matches(msg, m.keymap.ToggleMode):
-		m.toggleMode()
-
-	case key.Matches(msg, m.keymap.GotoTop):
-		m.gotoTop()
-
-	case key.Matches(msg, m.keymap.GotoBottom):
-		m.gotoBottom()
-
-	case key.Matches(msg, m.keymap.NextTopLevel):
-		m.jumpToTopLevel(1)
-
-	case key.Matches(msg, m.keymap.PrevTopLevel):
-		m.jumpToTopLevel(-1)
-
-	case key.Matches(msg, m.keymap.Collapse):
-		if m.mode == modeRead {
-			m.collapseLevel()
-		} else {
-			m.setCollapsed(true)
-		}
-
-	case key.Matches(msg, m.keymap.Expand):
-		if m.mode == modeRead {
-			m.expandLevel()
-		} else {
-			m.setCollapsed(false)
-		}
-
-	case key.Matches(msg, m.keymap.ToggleCollapse):
-		if m.mode == modeRead {
-			m.toggleCollapseAll()
-		} else {
-			m.toggleCollapse()
-		}
-
-	case m.mode == modeRead && key.Matches(msg, m.keymap.HalfPageDown):
-		m.halfPageDown()
-
-	case m.mode == modeRead && key.Matches(msg, m.keymap.HalfPageUp):
-		m.halfPageUp()
-
-	case m.mode == modeRead && key.Matches(msg, m.keymap.PageDown):
-		m.pageDown()
-
-	case m.mode == modeRead && key.Matches(msg, m.keymap.PageUp):
-		m.pageUp()
-
-	case m.mode == modeNavigate:
-		return m.handleNavigateKeys(msg)
-
-	default:
-		before := m.viewport.YOffset()
-
-		var cmd tea.Cmd
-
-		m.viewport, cmd = m.viewport.Update(msg)
-		m.clampScroll(before)
-
-		return cmd
-	}
-
-	return nil
-}
-
-func (m *Model) handleNavigateKeys(msg tea.KeyPressMsg) tea.Cmd {
-	switch {
-	case key.Matches(msg, m.keymap.NextComment):
-		m.navigateComment(1)
-	case key.Matches(msg, m.keymap.PrevComment):
-		m.navigateComment(-1)
-	case key.Matches(msg, m.keymap.HalfPageDown):
-		m.halfPageDown()
-		m.snapFocusToVisible(1)
-	case key.Matches(msg, m.keymap.HalfPageUp):
-		m.halfPageUp()
-		m.snapFocusToVisible(-1)
-	case key.Matches(msg, m.keymap.PageDown):
-		m.pageDown()
-		m.snapFocusToVisible(1)
-	case key.Matches(msg, m.keymap.PageUp):
-		m.pageUp()
-		m.snapFocusToVisible(-1)
-	default:
-		before := m.viewport.YOffset()
-
-		var cmd tea.Cmd
-
-		m.viewport, cmd = m.viewport.Update(msg)
-		m.clampScroll(before)
-
-		return cmd
-	}
-
-	return nil
-}
-
 func (m *Model) View() string {
 	if m.showHelp {
 		content := help.FitToHeight(
@@ -327,31 +167,17 @@ func (m *Model) View() string {
 
 		return header.HelpHeader("Comment Section", m.rc.screenWidth) + "\n" +
 			content + "\n" +
-			m.footerSeparator() + "\n" +
+			pane.FooterSeparator(m.rc.screenWidth) + "\n" +
 			help.Footer(m.rc.screenWidth)
 	}
 
-	content := scrollbar.Attach(m.viewport.View(), m.rc.screenWidth, m.contentLines, m.rc.viewportHeight, m.viewport.YOffset())
+	content := scrollbar.Attach(m.Viewport.View(), m.rc.screenWidth, m.ContentLines, m.rc.viewportHeight, m.Viewport.YOffset())
 
-	return m.titleHeader + "\n" + content + "\n" + m.footerSeparator() + "\n" + m.modeIndicator()
+	return m.titleHeader + "\n" + content + "\n" + pane.FooterSeparator(m.rc.screenWidth) + "\n" + m.modeIndicator()
 }
 
 func (m *Model) rebuildTitleHeader() {
-	leftMargin := strings.Repeat(" ", layout.CommentSectionLeftMargin)
-	maxTitleWidth := max(0, m.rc.screenWidth-layout.CommentSectionLeftMargin)
-	title := syntax.ReplaceSpecialContentTags(m.title, m.rc.enableNerdFonts)
-	title = xansi.Truncate(title, maxTitleWidth, "…")
-
-	nf := m.rc.enableNerdFonts
-	title = syntax.HighlightYCStartupsInHeadlines(title, syntax.HeadlineInCommentSection, nf)
-	title = syntax.HighlightYear(title, syntax.HeadlineInCommentSection)
-	title = syntax.HighlightHackerNewsHeadlines(title, syntax.HeadlineInCommentSection)
-	title = syntax.HighlightSpecialContent(title, syntax.HeadlineInCommentSection, nf)
-
-	title = leftMargin + ansi.Bold + title + ansi.Reset
-	separator := header.Underline(m.rc.screenWidth)
-
-	m.titleHeader = title + "\n" + separator
+	m.titleHeader = pane.TitleHeader(m.title, m.rc.enableNerdFonts, layout.CommentSectionLeftMargin, m.rc.screenWidth)
 }
 
 // updateViewport re-renders the viewport content with the current focus state.
@@ -364,31 +190,17 @@ func (m *Model) updateViewport() {
 	}
 
 	content, contentLines, metrics := renderFromFlat(m.rc, m.flat, m.visible, m.prerendered, focusedFlatIdx)
-	m.contentLines = contentLines
+	m.ContentLines = contentLines
 	m.lineMetrics = metrics
-	m.viewport.SetContent(content)
-}
-
-func (m *Model) footerSeparator() string {
-	s := lipgloss.NewStyle().Underline(true).Width(m.rc.screenWidth)
-	if header.MemorialActive() {
-		s = s.Foreground(style.MemorialColor())
-	}
-
-	return s.Render(strings.Repeat(" ", m.rc.screenWidth))
+	m.Viewport.SetContent(content)
 }
 
 func (m *Model) openStoryInBrowser() tea.Cmd {
-	url := m.rc.story.URL
-	if url == "" {
-		url = hn.ItemURL(m.rc.story.ID)
-	}
-
-	return message.OpenInBrowser(url)
+	return pane.OpenStoryInBrowser(m.rc.story.URL, m.rc.story.ID)
 }
 
 func (m *Model) openCommentsInBrowser() tea.Cmd {
-	return message.OpenInBrowser(hn.ItemURL(m.rc.story.ID))
+	return pane.OpenCommentsInBrowser(m.rc.story.ID)
 }
 
 func (m *Model) modeIndicator() string {
@@ -447,417 +259,9 @@ func (m *Model) depthIndicator() string {
 	return "\u22ee" + colorFn(numStr)
 }
 
-func (m *Model) toggleMode() {
-	switch m.mode {
-	case modeRead:
-		m.mode = modeNavigate
-
-		// Disable viewport j/k so our navigate bindings take over.
-		m.viewport.KeyMap.Up.SetEnabled(false)
-		m.viewport.KeyMap.Down.SetEnabled(false)
-
-		if m.focusedIdx < 0 && len(m.visible) > 0 {
-			m.focusedIdx = m.findCommentAtScroll()
-		}
-
-		m.updateViewport()
-
-	case modeNavigate:
-		m.mode = modeRead
-
-		m.viewport.KeyMap.Up.SetEnabled(true)
-		m.viewport.KeyMap.Down.SetEnabled(true)
-
-		m.focusedIdx = -1
-
-		// Sync expandedDepth to the actual collapse state so the depth
-		// indicator matches what's on screen without changing the view.
-		m.syncExpandedDepth()
-
-		m.updateViewport()
-	}
-}
-
-// findCommentAtScroll returns the visible index of the comment whose header
-// line is topmost within the current viewport.
-func (m *Model) findCommentAtScroll() int {
-	yOffset := m.viewport.YOffset()
-	bottom := yOffset + m.viewport.VisibleLineCount()
-
-	for vi, flatIdx := range m.visible {
-		if m.lineMetrics[flatIdx].StartLine >= yOffset && m.lineMetrics[flatIdx].StartLine < bottom {
-			return vi
-		}
-	}
-
-	return 0
-}
-
-// snapFocusToVisible adjusts focusedIdx after a half-page scroll if the
-// focused comment's header is no longer on screen. direction > 0 picks the
-// topmost visible comment; direction < 0 picks the bottommost.
-func (m *Model) snapFocusToVisible(direction int) {
-	if len(m.visible) == 0 || m.focusedIdx < 0 {
-		return
-	}
-
-	flatIdx := m.visible[m.focusedIdx]
-	top := m.viewport.YOffset()
-	bottom := top + m.viewport.VisibleLineCount()
-
-	if m.lineMetrics[flatIdx].StartLine >= top && m.lineMetrics[flatIdx].StartLine < bottom {
-		return
-	}
-
-	if direction > 0 {
-		for vi, fi := range m.visible {
-			if m.lineMetrics[fi].StartLine >= top && m.lineMetrics[fi].StartLine < bottom {
-				m.focusedIdx = vi
-				m.updateViewport()
-
-				return
-			}
-		}
-	} else {
-		for vi, fi := range slices.Backward(m.visible) {
-			if m.lineMetrics[fi].StartLine >= top && m.lineMetrics[fi].StartLine < bottom {
-				m.focusedIdx = vi
-				m.updateViewport()
-
-				return
-			}
-		}
-	}
-}
-
 func (m *Model) rebuildContent() {
 	m.visible = computeVisible(m.flat)
 	m.updateViewport()
-}
-
-func (m *Model) setCollapsed(collapsed bool) {
-	if len(m.visible) == 0 || m.focusedIdx < 0 {
-		return
-	}
-
-	flatIdx := m.visible[m.focusedIdx]
-	fc := &m.flat[flatIdx]
-
-	if fc.DescendantCount == 0 || fc.Collapsed == collapsed {
-		return
-	}
-
-	screenPos := m.screenPosition(flatIdx)
-
-	fc.Collapsed = collapsed
-
-	m.rebuildContent()
-	m.syncExpandedDepth()
-
-	if m.focusedIdx >= len(m.visible) {
-		m.focusedIdx = len(m.visible) - 1
-		m.updateViewport()
-	}
-
-	m.restoreScreenPosition(flatIdx, screenPos)
-}
-
-func (m *Model) toggleCollapse() {
-	if len(m.visible) == 0 || m.focusedIdx < 0 {
-		return
-	}
-
-	flatIdx := m.visible[m.focusedIdx]
-	fc := &m.flat[flatIdx]
-
-	if fc.DescendantCount == 0 {
-		return
-	}
-
-	m.setCollapsed(!fc.Collapsed)
-}
-
-func (m *Model) navigateComment(direction int) {
-	if len(m.visible) == 0 {
-		return
-	}
-
-	newIdx := m.focusedIdx + direction
-	if newIdx < 0 || newIdx >= len(m.visible) {
-		return
-	}
-
-	m.focusedIdx = newIdx
-	m.updateViewport()
-	m.scrollToFocused()
-}
-
-func (m *Model) jumpToTopLevel(direction int) {
-	yOffset := m.viewport.YOffset()
-
-	if direction > 0 {
-		for vi, flatIdx := range m.visible {
-			if m.flat[flatIdx].Depth == 0 && m.lineMetrics[flatIdx].StartLine > yOffset {
-				m.viewport.SetYOffset(m.lineMetrics[flatIdx].StartLine)
-				m.setFocusIfNavigating(vi)
-
-				return
-			}
-		}
-	} else {
-		for i, flatIdx := range slices.Backward(m.visible) {
-			if m.flat[flatIdx].Depth == 0 && m.lineMetrics[flatIdx].StartLine < yOffset {
-				m.viewport.SetYOffset(m.lineMetrics[flatIdx].StartLine)
-				m.setFocusIfNavigating(i)
-
-				return
-			}
-		}
-
-		if yOffset > 0 {
-			m.viewport.SetYOffset(0)
-		}
-	}
-}
-
-func (m *Model) setFocusIfNavigating(visibleIdx int) {
-	if m.mode != modeNavigate {
-		return
-	}
-
-	m.focusedIdx = visibleIdx
-	m.updateViewport()
-}
-
-func (m *Model) toggleCollapseAll() {
-	allCollapsed := true
-
-	for i := range m.flat {
-		if m.flat[i].DescendantCount > 0 && !m.flat[i].Collapsed {
-			allCollapsed = false
-
-			break
-		}
-	}
-
-	if allCollapsed {
-		m.expandAll()
-	} else {
-		m.collapseAll()
-	}
-}
-
-func (m *Model) collapseAll() {
-	m.expandedDepth = 0
-	m.setCollapseToDepth()
-}
-
-func (m *Model) expandAll() {
-	m.expandedDepth = m.maxDepth
-	m.setCollapseToDepth()
-}
-
-// setCollapseToDepth sets collapse state based on expandedDepth:
-// comments at depth < expandedDepth are uncollapsed; the rest are collapsed.
-func (m *Model) setCollapseToDepth() {
-	anchorIdx := m.anchorComment()
-	screenPos := m.screenPosition(anchorIdx)
-
-	for i := range m.flat {
-		if m.flat[i].DescendantCount == 0 {
-			continue
-		}
-
-		m.flat[i].Collapsed = m.flat[i].Depth >= m.expandedDepth
-	}
-
-	m.rebuildContent()
-
-	// If the anchor is still visible after the collapse, restore its exact
-	// screen position so the viewport stays stable.
-	if anchorIdx >= 0 && m.lineMetrics[anchorIdx].LineCount > 0 {
-		m.restoreScreenPosition(anchorIdx, screenPos)
-
-		return
-	}
-
-	// The anchor was collapsed away. Find the nearest visible ancestor,
-	// then position the viewport at the next visible comment at the same
-	// depth or shallower (the next sibling or uncle). This works at any
-	// nesting level so collapsing never jumps out further than necessary.
-	ancestorIdx := -1
-
-	for i := anchorIdx - 1; i >= 0; i-- {
-		if m.lineMetrics[i].LineCount > 0 {
-			ancestorIdx = i
-
-			break
-		}
-	}
-
-	if ancestorIdx < 0 {
-		return
-	}
-
-	ancestorDepth := m.flat[ancestorIdx].Depth
-
-	for _, flatIdx := range m.visible {
-		if flatIdx > ancestorIdx && m.flat[flatIdx].Depth <= ancestorDepth {
-			m.viewport.SetYOffset(m.lineMetrics[flatIdx].SepStart)
-
-			return
-		}
-	}
-
-	// No next sibling — position at the end of the ancestor.
-	lm := m.lineMetrics[ancestorIdx]
-	m.viewport.SetYOffset(lm.StartLine + lm.LineCount)
-}
-
-// syncExpandedDepth derives expandedDepth from the actual collapse state,
-// so the depth indicator matches what's on screen after navigate mode
-// may have individually collapsed/expanded comments.
-func (m *Model) syncExpandedDepth() {
-	maxUncollapsed := -1
-
-	for i := range m.flat {
-		if m.flat[i].DescendantCount > 0 && !m.flat[i].Collapsed && m.flat[i].Depth > maxUncollapsed {
-			maxUncollapsed = m.flat[i].Depth
-		}
-	}
-
-	m.expandedDepth = maxUncollapsed + 1
-}
-
-func (m *Model) expandLevel() {
-	if m.expandedDepth >= m.maxDepth {
-		return
-	}
-
-	m.expandedDepth++
-	m.setCollapseToDepth()
-}
-
-func (m *Model) collapseLevel() {
-	if m.expandedDepth <= 0 {
-		return
-	}
-
-	m.expandedDepth--
-	m.setCollapseToDepth()
-}
-
-// anchorComment returns the flat index of the comment nearest to the top of
-// the viewport, used to keep the view stable across content rebuilds.
-// Uses SepStart so a comment whose separator is visible at the viewport
-// top is chosen as the anchor rather than the previous comment.
-func (m *Model) anchorComment() int {
-	yOffset := m.viewport.YOffset()
-
-	best := -1
-
-	for _, flatIdx := range m.visible {
-		if m.lineMetrics[flatIdx].SepStart > yOffset {
-			break
-		}
-
-		best = flatIdx
-	}
-
-	return best
-}
-
-func (m *Model) screenPosition(flatIdx int) int {
-	if flatIdx < 0 {
-		return 0
-	}
-
-	return m.lineMetrics[flatIdx].StartLine - m.viewport.YOffset()
-}
-
-func (m *Model) restoreScreenPosition(flatIdx, screenPos int) {
-	if flatIdx < 0 {
-		return
-	}
-
-	m.viewport.SetYOffset(max(0, m.lineMetrics[flatIdx].StartLine-screenPos))
-}
-
-// clampScroll prevents scrolling down past the last content line while still
-// allowing upward scrolling from a position beyond the clamp point (e.g. after
-// an n/N top-level jump).
-func (m *Model) clampScroll(before int) {
-	maxOffset := max(0, m.contentLines-m.rc.viewportHeight)
-	after := m.viewport.YOffset()
-
-	if after > before && after > maxOffset {
-		m.viewport.SetYOffset(max(before, maxOffset))
-	}
-}
-
-func (m *Model) halfPageDown() {
-	halfPage := m.rc.viewportHeight / 2
-	maxOffset := max(0, m.contentLines-m.rc.viewportHeight)
-	m.viewport.SetYOffset(min(m.viewport.YOffset()+halfPage, maxOffset))
-}
-
-func (m *Model) halfPageUp() {
-	halfPage := m.rc.viewportHeight / 2
-	m.viewport.SetYOffset(max(0, m.viewport.YOffset()-halfPage))
-}
-
-func (m *Model) pageDown() {
-	maxOffset := max(0, m.contentLines-m.rc.viewportHeight)
-	m.viewport.SetYOffset(min(m.viewport.YOffset()+m.rc.viewportHeight, maxOffset))
-}
-
-func (m *Model) pageUp() {
-	m.viewport.SetYOffset(max(0, m.viewport.YOffset()-m.rc.viewportHeight))
-}
-
-func (m *Model) gotoTop() {
-	if m.mode == modeNavigate && len(m.visible) > 0 {
-		m.focusedIdx = 0
-		m.updateViewport()
-	}
-
-	m.viewport.GotoTop()
-}
-
-func (m *Model) gotoBottom() {
-	if m.mode == modeNavigate && len(m.visible) > 0 {
-		m.focusedIdx = len(m.visible) - 1
-		m.updateViewport()
-	}
-
-	// Scroll so the last line of real content is at the bottom of the viewport,
-	// ignoring the bottom padding.
-	m.viewport.SetYOffset(max(0, m.contentLines-m.rc.viewportHeight))
-}
-
-func (m *Model) scrollToFocused() {
-	if len(m.visible) == 0 || m.focusedIdx < 0 || m.focusedIdx >= len(m.visible) {
-		return
-	}
-
-	flatIdx := m.visible[m.focusedIdx]
-	lm := m.lineMetrics[flatIdx]
-
-	top := m.viewport.YOffset()
-	bottom := top + m.viewport.VisibleLineCount()
-
-	if lm.StartLine < top {
-		// Scrolling up — put comment a few lines below the top.
-		m.viewport.SetYOffset(max(0, lm.StartLine-scrollPadding))
-	} else if lm.StartLine+lm.LineCount > bottom {
-		if lm.LineCount >= m.viewport.VisibleLineCount() {
-			// Comment is taller than viewport — show its start.
-			m.viewport.SetYOffset(max(0, lm.StartLine-scrollPadding))
-		} else {
-			// Comment fits — scroll just enough to show it fully.
-			m.viewport.SetYOffset(lm.StartLine - m.viewport.VisibleLineCount() + lm.LineCount + scrollPadding)
-		}
-	}
 }
 
 func buildCommentHeader(s storyFields, enableNerdFonts bool, newComments int, width int) string {

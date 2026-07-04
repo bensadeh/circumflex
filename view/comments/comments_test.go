@@ -321,16 +321,16 @@ func TestNavigateMode_PageKeysScrollAndSnapFocus(t *testing.T) {
 	m.toggleMode()
 	require.Equal(t, modeNavigate, m.mode)
 
-	top := m.viewport.YOffset()
+	top := m.Viewport.YOffset()
 	m.handleKeyPress(tea.KeyPressMsg{Code: 'f', Text: "f"})
 
-	assert.Greater(t, m.viewport.YOffset(), top, "page down should scroll in navigate mode")
+	assert.Greater(t, m.Viewport.YOffset(), top, "page down should scroll in navigate mode")
 	assertFocusOnScreen(t, m)
 
-	scrolled := m.viewport.YOffset()
+	scrolled := m.Viewport.YOffset()
 	m.handleKeyPress(tea.KeyPressMsg{Code: 'b', Text: "b"})
 
-	assert.Less(t, m.viewport.YOffset(), scrolled, "page up should scroll in navigate mode")
+	assert.Less(t, m.Viewport.YOffset(), scrolled, "page up should scroll in navigate mode")
 	assertFocusOnScreen(t, m)
 }
 
@@ -340,15 +340,15 @@ func assertFocusOnScreen(t *testing.T, m *Model) {
 	require.GreaterOrEqual(t, m.focusedIdx, 0)
 
 	start := m.lineMetrics[m.visible[m.focusedIdx]].StartLine
-	assert.GreaterOrEqual(t, start, m.viewport.YOffset())
-	assert.Less(t, start, m.viewport.YOffset()+m.viewport.VisibleLineCount())
+	assert.GreaterOrEqual(t, start, m.Viewport.YOffset())
+	assert.Less(t, start, m.Viewport.YOffset()+m.Viewport.VisibleLineCount())
 }
 
 func TestViewportStable_ExpandLevel(t *testing.T) {
 	m := newScrollableModel(t)
 
 	m.expandLevel()
-	m.viewport.SetYOffset(m.contentLines / 3)
+	m.Viewport.SetYOffset(m.ContentLines / 3)
 
 	anchor := m.anchorComment()
 	posBefore := m.screenPosition(anchor)
@@ -367,7 +367,7 @@ func TestViewportStable_CollapseLevel(t *testing.T) {
 		m.expandLevel()
 	}
 
-	m.viewport.SetYOffset(m.contentLines / 3)
+	m.Viewport.SetYOffset(m.ContentLines / 3)
 
 	anchor := m.anchorComment()
 	posBefore := m.screenPosition(anchor)
@@ -390,12 +390,12 @@ func TestViewportStable_IndividualCollapse(t *testing.T) {
 	}
 
 	m.toggleMode()
-	m.viewport.SetYOffset(m.contentLines / 3)
+	m.Viewport.SetYOffset(m.ContentLines / 3)
 
 	found := false
 
 	for vi, fi := range m.visible {
-		if m.flat[fi].DescendantCount > 0 && m.lineMetrics[fi].StartLine >= m.viewport.YOffset() {
+		if m.flat[fi].DescendantCount > 0 && m.lineMetrics[fi].StartLine >= m.Viewport.YOffset() {
 			m.focusedIdx = vi
 			found = true
 
@@ -419,7 +419,7 @@ func TestViewportStable_Resize(t *testing.T) {
 	m := newScrollableModel(t)
 
 	m.expandLevel()
-	m.viewport.SetYOffset(m.contentLines / 3)
+	m.Viewport.SetYOffset(m.ContentLines / 3)
 
 	anchor := m.anchorComment()
 	posBefore := m.screenPosition(anchor)

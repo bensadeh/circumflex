@@ -1,6 +1,10 @@
 package comments
 
-import "charm.land/bubbles/v2/key"
+import (
+	"github.com/bensadeh/circumflex/view/pane"
+
+	"charm.land/bubbles/v2/key"
+)
 
 type mode int
 
@@ -13,23 +17,11 @@ const (
 )
 
 type keyMap struct {
-	Quit         key.Binding
+	pane.CommonKeyMap
+
 	ToggleMode   key.Binding
-	GotoTop      key.Binding
-	GotoBottom   key.Binding
 	NextTopLevel key.Binding
 	PrevTopLevel key.Binding
-	HalfPageDown key.Binding
-	HalfPageUp   key.Binding
-	PageDown     key.Binding
-	PageUp       key.Binding
-
-	Help key.Binding
-
-	OpenLink     key.Binding
-	OpenComments key.Binding
-	NextStory    key.Binding
-	PrevStory    key.Binding
 
 	// Shared between modes: collapse/expand all in scroll, individual in navigate.
 	NextComment    key.Binding
@@ -41,25 +33,10 @@ type keyMap struct {
 
 func defaultKeyMap() keyMap {
 	return keyMap{
-		Quit: key.NewBinding(
-			key.WithKeys("q", "esc"),
-			key.WithHelp("q/esc", "back"),
-		),
-		Help: key.NewBinding(
-			key.WithKeys("i", "?"),
-			key.WithHelp("i, ?", "help"),
-		),
+		CommonKeyMap: pane.DefaultCommonKeyMap(),
 		ToggleMode: key.NewBinding(
 			key.WithKeys("tab"),
 			key.WithHelp("tab", "toggle read/navigate mode"),
-		),
-		GotoTop: key.NewBinding(
-			key.WithKeys("g"),
-			key.WithHelp("g", "go to top"),
-		),
-		GotoBottom: key.NewBinding(
-			key.WithKeys("G"),
-			key.WithHelp("G", "go to bottom"),
 		),
 		NextTopLevel: key.NewBinding(
 			key.WithKeys("n"),
@@ -68,22 +45,6 @@ func defaultKeyMap() keyMap {
 		PrevTopLevel: key.NewBinding(
 			key.WithKeys("N"),
 			key.WithHelp("N", "prev top-level comment"),
-		),
-		HalfPageDown: key.NewBinding(
-			key.WithKeys("d"),
-			key.WithHelp("d", "half page down"),
-		),
-		HalfPageUp: key.NewBinding(
-			key.WithKeys("u"),
-			key.WithHelp("u", "half page up"),
-		),
-		PageDown: key.NewBinding(
-			key.WithKeys("pgdown", "space", "f"),
-			key.WithHelp("space/f", "page down"),
-		),
-		PageUp: key.NewBinding(
-			key.WithKeys("pgup", "b"),
-			key.WithHelp("b", "page up"),
 		),
 		NextComment: key.NewBinding(
 			key.WithKeys("j", "down"),
@@ -104,22 +65,6 @@ func defaultKeyMap() keyMap {
 		ToggleCollapse: key.NewBinding(
 			key.WithKeys("enter"),
 			key.WithHelp("enter", "toggle collapse"),
-		),
-		OpenLink: key.NewBinding(
-			key.WithKeys("o"),
-			key.WithHelp("o", "open story in browser"),
-		),
-		OpenComments: key.NewBinding(
-			key.WithKeys("c"),
-			key.WithHelp("c", "open comments in browser"),
-		),
-		NextStory: key.NewBinding(
-			key.WithKeys("J"),
-			key.WithHelp("J", "open next story"),
-		),
-		PrevStory: key.NewBinding(
-			key.WithKeys("K"),
-			key.WithHelp("K", "open previous story"),
 		),
 	}
 }
