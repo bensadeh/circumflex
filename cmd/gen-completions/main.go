@@ -21,7 +21,7 @@ func run() error {
 	}
 
 	outDir := filepath.Clean(os.Args[1])
-	if err := os.MkdirAll(outDir, 0o755); err != nil {
+	if err := os.MkdirAll(outDir, 0o750); err != nil {
 		return err
 	}
 
