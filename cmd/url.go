@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/view/reader"
 
 	"github.com/spf13/cobra"
@@ -20,6 +21,8 @@ func urlCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			style.SetTheme(config.Theme)
 
 			url := args[0]
 

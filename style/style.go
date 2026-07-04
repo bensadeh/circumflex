@@ -126,6 +126,9 @@ func init() {
 	rebuildThemeStyles()
 }
 
+// SetTheme swaps the package-global theme every render helper reads. It is a
+// deliberate global: one process, one theme. Commands call it once at startup,
+// before any rendering; it is not safe to call concurrently with rendering.
 func SetTheme(t *theme.Theme) {
 	current = t
 

@@ -49,6 +49,8 @@ func Root() *cobra.Command {
 				return err
 			}
 
+			style.SetTheme(config.Theme)
+
 			cat, err := categories.New(selectedCategories)
 			if err != nil {
 				return err
@@ -123,7 +125,6 @@ func getConfig() (*settings.Config, error) {
 	}
 
 	config.Theme = t
-	style.SetTheme(t)
 
 	config.CommentWidth = commentWidth
 	config.ArticleWidth = articleWidth

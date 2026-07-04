@@ -29,7 +29,6 @@ type CommentTree struct {
 	Points        int
 	Author        string
 	Time          int64
-	TimeAgo       string
 	URL           string
 	Domain        string
 	Content       string
@@ -41,7 +40,6 @@ type CommentNode struct {
 	ID       int
 	Author   string
 	Time     int64
-	TimeAgo  string
 	Content  string
 	Children []*CommentNode
 }

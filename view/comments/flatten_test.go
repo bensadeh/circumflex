@@ -16,7 +16,6 @@ func newComment(id int, author, content string, children ...*comment.Comment) *c
 		Author:   author,
 		Content:  content,
 		Time:     int64(id * 100),
-		TimeAgo:  "1 hour ago",
 		Children: children,
 	}
 }

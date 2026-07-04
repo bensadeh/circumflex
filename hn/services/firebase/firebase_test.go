@@ -71,7 +71,7 @@ func TestMapCommentTree(t *testing.T) {
 	assert.Equal(t, "example.com", tree.Domain)
 	assert.Equal(t, "<p>Self post content", tree.Content)
 	assert.Equal(t, 15, tree.CommentsCount)
-	assert.Contains(t, tree.TimeAgo, "hours ago")
+	assert.Equal(t, raw.Time, tree.Time)
 }
 
 func TestMapCommentNode(t *testing.T) {
@@ -87,7 +87,7 @@ func TestMapCommentNode(t *testing.T) {
 	assert.Equal(t, 100, node.ID)
 	assert.Equal(t, "commenter", node.Author)
 	assert.Equal(t, "This is a comment", node.Content)
-	assert.Contains(t, node.TimeAgo, "minutes ago")
+	assert.Equal(t, raw.Time, node.Time)
 }
 
 func TestMapCommentNode_Deleted(t *testing.T) {

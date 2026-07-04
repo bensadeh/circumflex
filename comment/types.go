@@ -5,7 +5,6 @@ type Comment struct {
 	Author   string
 	Content  string
 	Time     int64
-	TimeAgo  string
 	Children []*Comment
 }
 
@@ -16,7 +15,7 @@ type Thread struct {
 	URL           string
 	Domain        string
 	Points        int
-	TimeAgo       string
+	Time          int64
 	Content       string // self-text
 	CommentsCount int
 	Comments      []*Comment

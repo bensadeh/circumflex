@@ -7,6 +7,7 @@ import (
 
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/settings"
+	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/view/comments"
 	"github.com/bensadeh/circumflex/view/message"
 
@@ -86,6 +87,8 @@ func commentsCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			style.SetTheme(config.Theme)
 
 			service := newService()
 

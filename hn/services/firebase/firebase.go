@@ -12,7 +12,6 @@ import (
 
 	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/hn"
-	"github.com/bensadeh/circumflex/timeago"
 	"github.com/bensadeh/circumflex/version"
 	"golang.org/x/sync/errgroup"
 
@@ -289,7 +288,6 @@ func mapCommentTree(raw *hnItem) *hn.CommentTree {
 		Points:        raw.Score,
 		Author:        raw.By,
 		Time:          raw.Time,
-		TimeAgo:       timeago.RelativeTime(raw.Time),
 		URL:           raw.URL,
 		Domain:        domainutil.Domain(raw.URL),
 		Content:       raw.Text,
@@ -307,7 +305,6 @@ func mapCommentNode(raw *hnItem) *hn.CommentNode {
 		ID:      raw.ID,
 		Author:  raw.By,
 		Time:    raw.Time,
-		TimeAgo: timeago.RelativeTime(raw.Time),
 		Content: content,
 	}
 }

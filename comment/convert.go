@@ -13,7 +13,7 @@ func ToThread(t *hn.CommentTree) *Thread {
 		URL:           t.URL,
 		Domain:        t.Domain,
 		Points:        t.Points,
-		TimeAgo:       t.TimeAgo,
+		Time:          t.Time,
 		Content:       t.Content,
 		CommentsCount: t.CommentsCount,
 		Comments:      mapCommentNodes(t.Comments),
@@ -40,7 +40,6 @@ func mapCommentNode(n *hn.CommentNode) *Comment {
 		Author:   n.Author,
 		Content:  n.Content,
 		Time:     n.Time,
-		TimeAgo:  n.TimeAgo,
 		Children: mapCommentNodes(n.Children),
 	}
 }

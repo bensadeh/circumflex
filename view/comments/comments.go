@@ -15,6 +15,7 @@ import (
 	"github.com/bensadeh/circumflex/scrollbar"
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/syntax"
+	"github.com/bensadeh/circumflex/timeago"
 	"github.com/bensadeh/circumflex/view/message"
 
 	"charm.land/bubbles/v2/key"
@@ -79,7 +80,7 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 		URL:           thread.URL,
 		Domain:        thread.Domain,
 		Author:        thread.Author,
-		TimeAgo:       thread.TimeAgo,
+		TimeAgo:       timeago.RelativeTime(thread.Time),
 		ID:            thread.ID,
 		CommentsCount: thread.CommentsCount,
 		Points:        thread.Points,

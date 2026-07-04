@@ -10,6 +10,7 @@ import (
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/syntax"
+	"github.com/bensadeh/circumflex/timeago"
 )
 
 var mods = []string{"dang", "tomhow"}
@@ -95,7 +96,7 @@ func Header(c *Comment, depth int, originalPoster, topLevelAuthor string, lastVi
 	authorLabel := renderAuthorLabel(c.Author, originalPoster, topLevelAuthor, enableNerdFonts)
 	indentation := strings.Repeat(" ", indentSize)
 
-	return indentation + author + authorLabel + style.Faint(c.TimeAgo) + "\n"
+	return indentation + author + authorLabel + style.Faint(timeago.RelativeTime(c.Time)) + "\n"
 }
 
 func RenderContent(c *Comment, depth int, commentWidth, screenWidth int, enableNerdFonts bool, fg color.Color) string {

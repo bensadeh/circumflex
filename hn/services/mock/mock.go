@@ -301,45 +301,43 @@ func (Service) FetchItems(ctx context.Context, _ int, category string) ([]*hn.St
 
 func (Service) FetchComments(_ context.Context, _ int, _ func(fetched, total int)) (*hn.CommentTree, error) {
 	return &hn.CommentTree{
-		ID:      32145667,
-		Title:   "Mauris commodo odio (YC W05) quis diam fermentum, et suscipit augue pharetra [video]",
-		Points:  543,
-		Author:  "riemann",
-		TimeAgo: "6 hours ago",
-		URL:     "https://en.wikipedia.org/wiki/Riemann_hypothesis",
-		Domain:  "google.com",
+		ID:     32145667,
+		Title:  "Mauris commodo odio (YC W05) quis diam fermentum, et suscipit augue pharetra [video]",
+		Points: 543,
+		Author: "riemann",
+		Time:   time.Now().Add(-6 * time.Hour).Unix(),
+		URL:    "https://en.wikipedia.org/wiki/Riemann_hypothesis",
+		Domain: "google.com",
 		Comments: []*hn.CommentNode{
 			{
-				ID:      28,
-				Author:  "euler",
-				TimeAgo: "1 hour ago",
+				ID:     28,
+				Author: "euler",
+				Time:   time.Now().Add(-1 * time.Hour).Unix(),
 				Children: []*hn.CommentNode{
 					{
-						ID:      23,
-						Author:  "hilbert",
-						TimeAgo: "40 minutes ago",
+						ID:     23,
+						Author: "hilbert",
+						Time:   time.Now().Add(-40 * time.Minute).Unix(),
 						Children: []*hn.CommentNode{
 							{
-								ID:      33,
-								Author:  "riemann",
-								TimeAgo: "27 minutes ago",
+								ID:     33,
+								Author: "riemann",
+								Time:   time.Now().Add(-27 * time.Minute).Unix(),
 								Children: []*hn.CommentNode{
 									{
-										ID:      33,
-										Author:  "gauss",
-										TimeAgo: "26 minutes ago",
+										ID:     33,
+										Author: "gauss",
+										Time:   time.Now().Add(-26 * time.Minute).Unix(),
 										Children: []*hn.CommentNode{
 											{
-												ID:      33,
-												Time:    time.Now().Add(time.Minute).Unix(),
-												Author:  "cantor",
-												TimeAgo: "10 minutes ago",
+												ID:     33,
+												Time:   time.Now().Add(time.Minute).Unix(),
+												Author: "cantor",
 												Children: []*hn.CommentNode{
 													{
 														ID:      33,
 														Time:    time.Now().Add(time.Minute).Unix(),
 														Author:  "euler",
-														TimeAgo: "4 minutes ago",
 														Content: "Duis accumsan eros sit amet libero facilisis, id placerat tellus auctor.",
 													},
 												},
@@ -358,9 +356,9 @@ func (Service) FetchComments(_ context.Context, _ int, _ func(fetched, total int
 						Content: "Sed quis lectus quam. Donec `ls -ltr` vitae lorem porttitor, vel dignissim dolor interdum.",
 					},
 					{
-						ID:      33,
-						Author:  "ramanujan",
-						TimeAgo: "27 minutes ago",
+						ID:     33,
+						Author: "ramanujan",
+						Time:   time.Now().Add(-27 * time.Minute).Unix(),
 						Content: "Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe " +
 							"eveniet, ut et voluptates repudiandae.",
 					},
@@ -369,9 +367,9 @@ func (Service) FetchComments(_ context.Context, _ int, _ func(fetched, total int
 					"venenatis, molestie sem quis, sagittis felis.",
 			},
 			{
-				ID:      1,
-				Author:  "wolfgang",
-				TimeAgo: "6 minutes ago",
+				ID:     1,
+				Author: "wolfgang",
+				Time:   time.Now().Add(-6 * time.Minute).Unix(),
 				Content: "<p>Vivamus elementum auctor congue. Etiam[1] nulla nisl, varius vehicula[2] quam vel, aliquet " +
 					"iaculis enim. Donec felis elit[3], sollicitudin viverra velit eget, posuere[4] vestibulum eros. " +
 					"<p>[1] <a href=\"https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Boss_key\" rel=\"nofollow\">" +
@@ -382,14 +380,14 @@ func (Service) FetchComments(_ context.Context, _ int, _ func(fetched, total int
 					" <a href=\"https:&#x2F;&#x2F;redditshell.com&#x2F;\" rel=\"nofollow\">https:&#x2F;&#x2F;redditshell.com&#x2F;</a>",
 			},
 			{
-				ID:      5,
-				Author:  "hamilton",
-				TimeAgo: "2 hours ago",
+				ID:     5,
+				Author: "hamilton",
+				Time:   time.Now().Add(-2 * time.Hour).Unix(),
 				Children: []*hn.CommentNode{
 					{
 						ID:      41,
 						Author:  "euler",
-						TimeAgo: "1 hour ago",
+						Time:    time.Now().Add(-1 * time.Hour).Unix(),
 						Content: "<p>&gt; Godot doesn't fight you when you're building scenes. Making a scene feels a lot like creating a class using composition, and scenes can even inherit from other scenes (using another scene as the the root node of a scene allows you to inherit from it and override its properties in the editor and in code), allowing you to express patterns you're intimately familiar with from object-oriented programming.<p>I personally find the approach of nodes everywhere a bit odd.<p><pre><code>  EnemyObject\n    PathfindingObject\n      PathfindingBehavior (attached script)\n    ShootingObject\n      ShootingBehavior (attached script)\n    TalkingObject\n      TalkingBehavior (attached script)\n</code></pre>\nIt kind of feels like it would be nicer to be able to attach a number of scripts to the object that I actually want to control, instead of having Nodes that I don&#x27;t really see much of a use for, apart from them being script containers.</a>",
 					},
 				},
@@ -398,7 +396,7 @@ func (Service) FetchComments(_ context.Context, _ int, _ func(fetched, total int
 			{
 				ID:      4,
 				Author:  "hamilton",
-				TimeAgo: "1 hour ago",
+				Time:    time.Now().Add(-1 * time.Hour).Unix(),
 				Content: "<p> This comment tests parsing of YC-funded companies: xxxxxxCompany (YC S07)",
 			},
 		},
