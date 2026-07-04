@@ -193,7 +193,9 @@ func (m *model) handleCancelPrompt() tea.Cmd {
 
 // startFetch begins a fetch's lifecycle: it invalidates any predecessor and
 // captures the category index to restore if the fetch fails or is cancelled —
-// so callers that switch category must call it before advancing.
+// so callers that switch category must call it before advancing. The initial
+// terminal progress write is the caller's: indeterminate for fetches without
+// granular progress, percentage for the comment fetch, which reports it.
 func (m *model) startFetch(timeout time.Duration) tea.Cmd {
 	if m.cancelFetch != nil {
 		m.cancelFetch()
@@ -203,8 +205,6 @@ func (m *model) startFetch(timeout time.Duration) tea.Cmd {
 	m.fetching = true
 	m.detailFetch = false
 	m.rollbackIndex = m.cat.CurrentIndex()
-
-	setProgressIndeterminate()
 
 	if timeout > 0 {
 		ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -278,6 +278,8 @@ func (m *model) handleTab(targetIndex int, targetCategory categories.Category, a
 	// category we are leaving, not the one we advance to.
 	startSpinnerCmd := m.startFetch(0)
 
+	setProgressIndeterminate()
+
 	m.list.BeginTransition()
 	advance()
 
@@ -318,6 +320,8 @@ func (m *model) handleRefresh() tea.Cmd {
 
 	startSpinnerCmd := m.startFetch(0)
 
+	setProgressIndeterminate()
+
 	refreshCmd := func() tea.Msg {
 		return message.Refresh{CurrentIndex: currentIndex, CurrentCategory: currentCategory}
 	}
@@ -329,6 +333,9 @@ func (m *model) handleEnterComments() tea.Cmd {
 	selected := m.list.SelectedItem()
 
 	startSpinnerCmd := m.startDetailFetch(0)
+	// The comment fetch reports percentages, so its indicator starts at 0%
+	// instead of flashing indeterminate first.
+	setProgressPercent(0)
 
 	enterCommentsCmd := func() tea.Msg {
 		return message.EnteringCommentSection{
@@ -348,6 +355,8 @@ func (m *model) handleEnterReaderMode() tea.Cmd {
 	}
 
 	startSpinnerCmd := m.startDetailFetch(readerModeTimeout)
+
+	setProgressIndeterminate()
 
 	enterReaderCmd := func() tea.Msg {
 		return message.EnteringReaderMode{

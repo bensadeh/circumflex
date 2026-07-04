@@ -129,8 +129,7 @@ func (m *model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 				return
 			}
 
-			pct := min(fetched*100/total, 100)
-			fmt.Fprintf(os.Stderr, "\033]9;4;1;%d\a", pct)
+			setProgressPercent(min(fetched*100/total, 100))
 		}
 
 		tree, err := service.FetchComments(ctx, msg.ID, onProgress)
@@ -202,8 +201,9 @@ func (m *model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 // silently ignored by terminals that don't recognise the sequence).
 // Writes to stderr to avoid interfering with Bubble Tea's stdout.
 
-func setProgressIndeterminate() { fmt.Fprint(os.Stderr, "\033]9;4;3;0\a") }
-func setProgressError()         { fmt.Fprint(os.Stderr, "\033]9;4;2;100\a") }
+func setProgressIndeterminate()  { fmt.Fprint(os.Stderr, "\033]9;4;3;0\a") }
+func setProgressPercent(pct int) { fmt.Fprintf(os.Stderr, "\033]9;4;1;%d\a", pct) }
+func setProgressError()          { fmt.Fprint(os.Stderr, "\033]9;4;2;100\a") }
 
 func clearProgress() { fmt.Fprint(os.Stderr, "\033]9;4;0\a") }
 

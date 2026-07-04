@@ -162,6 +162,9 @@ func (m *model) handleStartup(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
 	var cmds []tea.Cmd
 
 	spinnerCmd := m.startFetch(0)
+
+	setProgressIndeterminate()
+
 	cmds = append(cmds, spinnerCmd)
 
 	m.syncFavorites()
