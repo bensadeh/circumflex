@@ -47,9 +47,11 @@ type model struct {
 	cat       *categories.Categories
 	keymap    keyMap
 
-	fetchCtx    context.Context //nolint:containedctx // single active fetch context, accessed only from the Update goroutine
-	cancelFetch context.CancelFunc
-	fetchID     uint64
+	fetchCtx      context.Context //nolint:containedctx // single active fetch context, accessed only from the Update goroutine
+	cancelFetch   context.CancelFunc
+	fetchID       uint64
+	detailFetch   bool // the in-flight fetch loads a story's comments or article, not the list
+	rollbackIndex int  // category index to restore if the fetch fails or is cancelled
 
 	helpViewport viewport.Model
 
@@ -104,8 +106,9 @@ func (m *model) updatePagination() {
 // listFrame collects the per-render facts the list pane cannot know itself.
 func (m *model) listFrame() list.Frame {
 	f := list.Frame{
-		Wide:       m.isWide(),
-		DetailOpen: m.screen == screenComments || m.screen == screenReader,
+		Wide:          m.isWide(),
+		DetailOpen:    m.screen == screenComments || m.screen == screenReader,
+		DetailLoading: m.detailLoading(),
 	}
 
 	switch m.prompt {

@@ -269,13 +269,42 @@ func TestTabToUncachedCategory(t *testing.T) {
 	assert.True(t, m.list.InTransition(), "should have a transition with old items")
 }
 
+func TestTabFetchError_RollsBackCategory(t *testing.T) {
+	m := newTestModelReady(t)
+	require.Equal(t, 0, m.cat.CurrentIndex())
+
+	m, _ = m.Update(keyMsg("tab"))
+	require.True(t, m.fetching)
+	require.Equal(t, 1, m.cat.CurrentIndex())
+
+	m, _ = m.Update(message.CategoryFetchingFinished{Err: errors.New("boom"), FetchID: m.fetchID})
+
+	assert.False(t, m.fetching)
+	assert.Equal(t, 0, m.cat.CurrentIndex(), "failed fetch should restore the category we left")
+	assert.False(t, m.list.InTransition())
+}
+
+func TestTabFetchCancel_RollsBackCategory(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, _ = m.Update(keyMsg("tab"))
+	require.True(t, m.fetching)
+	require.Equal(t, 1, m.cat.CurrentIndex())
+
+	m, _ = m.Update(keyMsg("esc"))
+
+	assert.False(t, m.fetching)
+	assert.Equal(t, 0, m.cat.CurrentIndex(), "cancelled fetch should restore the category we left")
+	assert.False(t, m.list.InTransition())
+}
+
 func TestEnterCommentSection(t *testing.T) {
 	m := newTestModelReady(t)
 
 	m, cmd := m.Update(keyMsg("enter"))
 	assert.True(t, m.fetching)
 	assert.True(t, m.status.showSpinner)
-	assert.True(t, m.list.InTransition())
+	assert.True(t, m.detailLoading())
 	assert.NotNil(t, cmd)
 }
 

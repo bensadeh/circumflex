@@ -48,7 +48,7 @@ func (m *model) detailWidth() int {
 // detailLoading reports whether a story's comments or article are being
 // fetched, as opposed to a category fetch that replaces the list itself.
 func (m *model) detailLoading() bool {
-	return m.fetching && m.list.DetailLoading()
+	return m.fetching && m.detailFetch
 }
 
 // wideStoryOpen reports whether a story is open or loading in the wide

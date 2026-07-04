@@ -26,11 +26,12 @@ const (
 )
 
 // Frame carries the per-render facts the pane cannot know itself: how it is
-// being laid out and whether a story is open next to it.
+// being laid out and whether a story is open or loading next to it.
 type Frame struct {
-	Wide       bool // rendering as the left pane of the wide layout
-	DetailOpen bool // a story's comments or article is open
-	Selection  Selection
+	Wide          bool // rendering as the left pane of the wide layout
+	DetailOpen    bool // a story's comments or article is open
+	DetailLoading bool // a story's comments or article is being fetched
+	Selection     Selection
 }
 
 type Model struct {
@@ -175,42 +176,19 @@ func (m *Model) PerPage() int {
 }
 
 // BeginTransition freezes the currently visible items so they stay on screen
-// (dimmed) while replacement content is fetched, and remembers the category
-// index to roll back to if the fetch fails or is cancelled.
+// (dimmed) while replacement content is fetched. Recovering from a failed or
+// cancelled fetch is the coordinator's job; it ends the transition and
+// restores the category selection it captured at fetch start.
 func (m *Model) BeginTransition() {
 	m.pager.transition = &transition{
-		prevIndex: m.cat.CurrentIndex(),
-		oldItems:  m.pager.items[m.cat.CurrentCategory()],
+		oldItems: m.pager.items[m.cat.CurrentCategory()],
 	}
-}
-
-// BeginDetailTransition marks the transition as opening a story's comments
-// or article rather than replacing the list itself.
-func (m *Model) BeginDetailTransition() {
-	m.BeginTransition()
-	m.pager.transition.detail = true
 }
 
 func (m *Model) EndTransition() {
 	m.pager.transition = nil
 }
 
-// RollbackTransition restores the category selection captured at
-// BeginTransition and ends the transition.
-func (m *Model) RollbackTransition() {
-	if m.pager.transition != nil {
-		m.cat.SetIndex(m.pager.transition.prevIndex)
-	}
-
-	m.pager.transition = nil
-}
-
 func (m *Model) InTransition() bool {
 	return m.pager.transition != nil
-}
-
-// DetailLoading reports whether a story's comments or article are being
-// fetched, as opposed to a fetch that replaces the list itself.
-func (m *Model) DetailLoading() bool {
-	return m.pager.transition != nil && m.pager.transition.detail
 }

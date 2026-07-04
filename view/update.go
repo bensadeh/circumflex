@@ -228,7 +228,7 @@ func (m *model) handleCategoryFetchingFinished(msg message.CategoryFetchingFinis
 	m.fetching = false
 
 	if msg.Err != nil {
-		m.list.RollbackTransition()
+		m.rollbackFetch()
 		m.status.StopSpinner()
 		m.updatePagination()
 
@@ -258,7 +258,6 @@ func (m *model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*m
 
 	var cmds []tea.Cmd
 
-	m.list.EndTransition()
 	m.status.StopSpinner()
 
 	if msg.UpdatedStory != nil {
@@ -295,7 +294,6 @@ func (m *model) handleArticleReady(msg message.ArticleReady) (*model, tea.Cmd) {
 	syncProgress(msg.Err)
 
 	m.fetching = false
-	m.list.EndTransition()
 	m.status.StopSpinner()
 
 	// On error the screen stays where the fetch started, like the comment

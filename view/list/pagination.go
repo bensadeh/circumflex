@@ -9,9 +9,7 @@ import (
 
 // transition freezes the visible items while their replacement is fetched.
 type transition struct {
-	prevIndex int
-	oldItems  []*hn.Story
-	detail    bool // opening a story's comments/article rather than switching category
+	oldItems []*hn.Story
 }
 
 type pager struct {

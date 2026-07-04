@@ -191,6 +191,9 @@ func (m *model) handleCancelPrompt() tea.Cmd {
 		lipgloss.NewStyle().Faint(true).Render("Cancelled"), statusMessageShort)
 }
 
+// startFetch begins a fetch's lifecycle: it invalidates any predecessor and
+// captures the category index to restore if the fetch fails or is cancelled —
+// so callers that switch category must call it before advancing.
 func (m *model) startFetch(timeout time.Duration) tea.Cmd {
 	if m.cancelFetch != nil {
 		m.cancelFetch()
@@ -198,6 +201,8 @@ func (m *model) startFetch(timeout time.Duration) tea.Cmd {
 
 	m.fetchID++
 	m.fetching = true
+	m.detailFetch = false
+	m.rollbackIndex = m.cat.CurrentIndex()
 
 	setProgressIndeterminate()
 
@@ -214,6 +219,22 @@ func (m *model) startFetch(timeout time.Duration) tea.Cmd {
 	return m.status.StartSpinner()
 }
 
+// startDetailFetch is startFetch for a story's comments or article: the list
+// stays in place, dimmed, while the detail loads.
+func (m *model) startDetailFetch(timeout time.Duration) tea.Cmd {
+	cmd := m.startFetch(timeout)
+	m.detailFetch = true
+
+	return cmd
+}
+
+// rollbackFetch recovers from a failed or cancelled fetch: it restores the
+// category selection captured at startFetch and unfreezes the list.
+func (m *model) rollbackFetch() {
+	m.cat.SetIndex(m.rollbackIndex)
+	m.list.EndTransition()
+}
+
 func (m *model) handleCancelFetch() tea.Cmd {
 	if m.cancelFetch != nil {
 		m.cancelFetch()
@@ -222,7 +243,7 @@ func (m *model) handleCancelFetch() tea.Cmd {
 
 	m.fetchID++
 
-	m.list.RollbackTransition()
+	m.rollbackFetch()
 
 	clearProgress()
 	m.status.StopSpinner()
@@ -253,10 +274,12 @@ func (m *model) handleTab(targetIndex int, targetCategory categories.Category, a
 		return nil
 	}
 
+	// startFetch first: it captures the rollback index, which must be the
+	// category we are leaving, not the one we advance to.
+	startSpinnerCmd := m.startFetch(0)
+
 	m.list.BeginTransition()
 	advance()
-
-	startSpinnerCmd := m.startFetch(0)
 
 	cursor := m.list.Cursor()
 	changeCatCmd := func() tea.Msg {
@@ -305,8 +328,7 @@ func (m *model) handleRefresh() tea.Cmd {
 func (m *model) handleEnterComments() tea.Cmd {
 	selected := m.list.SelectedItem()
 
-	m.list.BeginDetailTransition()
-	startSpinnerCmd := m.startFetch(0)
+	startSpinnerCmd := m.startDetailFetch(0)
 
 	enterCommentsCmd := func() tea.Msg {
 		return message.EnteringCommentSection{
@@ -325,8 +347,7 @@ func (m *model) handleEnterReaderMode() tea.Cmd {
 		return m.status.NewStatusMessageWithDuration(friendlyError(err), statusMessageLong)
 	}
 
-	m.list.BeginDetailTransition()
-	startSpinnerCmd := m.startFetch(readerModeTimeout)
+	startSpinnerCmd := m.startDetailFetch(readerModeTimeout)
 
 	enterReaderCmd := func() tea.Msg {
 		return message.EnteringReaderMode{
