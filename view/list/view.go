@@ -39,15 +39,15 @@ func (m *Model) View(f Frame) string {
 
 // dimmed reports whether the pane renders in its faint "attention is
 // elsewhere" treatment: while its content is being replaced (category
-// switch, refresh) or while a story is open or loading next to it.
+// switch, refresh) or while the detail pane is open or loading next to it.
 func (m *Model) dimmed(f Frame) bool {
 	return m.InTransition() || f.DetailOpen || f.DetailLoading
 }
 
-// storyOpen reports whether a story is open or loading in the wide layout's
-// detail pane, in which case the open story's row carries the reading marker
-// that J/K move story to story.
-func (m *Model) storyOpen(f Frame) bool {
+// detailOpen reports whether the detail pane is open or loading in the wide
+// layout, in which case the selected row carries the muted marker; for an
+// open story that is the reading marker J/K move story to story.
+func (m *Model) detailOpen(f Frame) bool {
 	return f.Wide && (f.DetailOpen || f.DetailLoading)
 }
 

@@ -51,13 +51,13 @@ func (m *model) detailLoading() bool {
 	return m.fetching && m.detailFetch
 }
 
-// wideStoryOpen reports whether a story is open or loading in the wide
-// layout's detail pane. The list chrome (header logo, page dots) dims with
-// it, and the open story's row carries the reading marker that J/K move
-// story to story.
-func (m *model) wideStoryOpen() bool {
+// wideDetailOpen reports whether the wide layout's detail pane is occupied:
+// a story open or loading, or the help screen. The list chrome (header logo,
+// page dots) dims with it, and an open story's row carries the reading
+// marker that J/K move story to story.
+func (m *model) wideDetailOpen() bool {
 	return m.isWide() &&
-		(m.screen == screenComments || m.screen == screenReader || m.detailLoading())
+		(m.screen == screenComments || m.screen == screenReader || m.screen == screenHelp || m.detailLoading())
 }
 
 func (m *model) wideView() string {

@@ -107,7 +107,7 @@ func (m *model) updatePagination() {
 func (m *model) listFrame() list.Frame {
 	f := list.Frame{
 		Wide:          m.isWide(),
-		DetailOpen:    m.screen == screenComments || m.screen == screenReader,
+		DetailOpen:    m.screen == screenComments || m.screen == screenReader || m.screen == screenHelp,
 		DetailLoading: m.detailLoading(),
 	}
 

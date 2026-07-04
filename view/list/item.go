@@ -114,9 +114,10 @@ func (m *Model) renderItem(w io.Writer, index int, item *hn.Story, f Frame) {
 		title, desc = styleTitleAndDesc(title, s.selectedTitle, s.selectedDesc, domain,
 			desc, syntax.Selected, enableNerdFonts)
 
-	// The open story renders in faint reverse video — a muted version of the
-	// browsing highlight, marking where J/K story navigation currently is.
-	case isSelected && m.storyOpen(f):
+	// While the detail pane is open the selected row renders a muted version
+	// of the browsing highlight — for an open story, this is where J/K story
+	// navigation currently is.
+	case isSelected && m.detailOpen(f):
 		title, desc = styleTitleAndDesc(title, s.openStoryTitle, s.openStoryDesc, domain,
 			desc, syntax.OpenStory, enableNerdFonts)
 

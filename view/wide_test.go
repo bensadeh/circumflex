@@ -202,12 +202,15 @@ func TestWideView_CommentSectionFillsDetailPane(t *testing.T) {
 func TestWideView_HelpShowsInDetailPane(t *testing.T) {
 	m := newWideTestModel(t)
 
+	browsing := m.browsingView()
+
 	m, _ = m.Update(keyMsg("i"))
 	require.Equal(t, screenHelp, m.screen)
 
 	view := m.View()
 	assert.Contains(t, xansi.Strip(view), "Keyboard Shortcuts")
 	assert.Contains(t, view, "First item", "the story list should stay visible next to help")
+	assert.NotEqual(t, browsing, m.browsingView(), "left pane should dim while help is open")
 
 	lines := strings.Split(view, "\n")
 	assert.Len(t, lines, wideTestHeight)
@@ -219,6 +222,7 @@ func TestWideView_HelpShowsInDetailPane(t *testing.T) {
 	m, _ = m.Update(keyMsg("q"))
 	assert.Equal(t, screenList, m.screen)
 	assert.Contains(t, m.View(), "Select a story")
+	assert.Equal(t, browsing, m.browsingView(), "left pane should restore when help closes")
 }
 
 func TestWideView_QuitRestoresPlaceholder(t *testing.T) {

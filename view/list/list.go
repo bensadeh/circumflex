@@ -29,7 +29,7 @@ const (
 // being laid out and whether a story is open or loading next to it.
 type Frame struct {
 	Wide          bool // rendering as the left pane of the wide layout
-	DetailOpen    bool // a story's comments or article is open
+	DetailOpen    bool // the detail pane is open: comments, article, or help
 	DetailLoading bool // a story's comments or article is being fetched
 	Selection     Selection
 }

@@ -29,7 +29,7 @@ func TestRenderItem_OpenStoryShowsReadingMarker(t *testing.T) {
 
 	f := Frame{Wide: true, DetailOpen: true}
 	require.True(t, m.dimmed(f))
-	require.True(t, m.storyOpen(f))
+	require.True(t, m.detailOpen(f))
 
 	var open strings.Builder
 

@@ -75,7 +75,7 @@ func (m *model) titleView() string {
 		m.cat.CurrentIndex(),
 		m.listWidth(),
 		sv,
-		m.wideStoryOpen())
+		m.wideDetailOpen())
 }
 
 // bottomBar renders the footer rule (underlined spaces). When the HN memorial
@@ -100,9 +100,9 @@ func (m *model) statusAndPaginationView() string {
 
 	centerContent = m.status.message
 
-	// The page dots dim along with the list while a story is open.
+	// The page dots dim along with the list while the detail pane is open.
 	paginatorView := m.list.PaginatorView()
-	if m.wideStoryOpen() {
+	if m.wideDetailOpen() {
 		paginatorView = m.list.DimmedPaginatorView()
 	}
 
