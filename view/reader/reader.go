@@ -66,7 +66,7 @@ func newFromContent(content, title string, width, height int, articleMeta Meta) 
 func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, height int, articleMeta Meta) *Model {
 	contentWidth := layout.ReaderContentWidth(width, maxWidth)
 	header := meta.ReaderModeMetaBlock(articleMeta.URL, articleMeta.Author, articleMeta.TimeAgo, articleMeta.ID, articleMeta.Points, articleMeta.NerdFonts, contentWidth)
-	content := parsed.RenderWithHeader(contentWidth, header)
+	content := parsed.RenderWithHeader(contentWidth, width, header)
 
 	m := &Model{
 		keymap:      defaultKeyMap(),
@@ -153,7 +153,7 @@ func (m *Model) rerender() {
 
 	contentWidth := layout.ReaderContentWidth(m.screenWidth, m.maxWidth)
 	hdr := meta.ReaderModeMetaBlock(m.articleMeta.URL, m.articleMeta.Author, m.articleMeta.TimeAgo, m.articleMeta.ID, m.articleMeta.Points, m.articleMeta.NerdFonts, contentWidth)
-	m.setContent(m.parsed.RenderWithHeader(contentWidth, hdr))
+	m.setContent(m.parsed.RenderWithHeader(contentWidth, m.screenWidth, hdr))
 
 	maxOffset := max(0, m.ContentLines-m.Viewport.Height())
 	m.Viewport.SetYOffset(min(yOffset, maxOffset))

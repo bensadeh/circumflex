@@ -128,7 +128,27 @@ func TestRenderBlocks_JoinsWithBlankLine(t *testing.T) {
 		{kind: blockParagraph, spans: []span{{text: "second"}}},
 	}
 
-	assert.Equal(t, "first\n\nsecond", renderBlocks(blocks, 80))
+	assert.Equal(t, "first\n\nsecond", renderBlocks(blocks, 80, 80))
+}
+
+func TestRenderBlocks_CodeExtendsToScreenWidth(t *testing.T) {
+	t.Parallel()
+
+	long := strings.Repeat("x", 100)
+	blocks := []block{
+		{kind: blockParagraph, spans: []span{{text: strings.Repeat("word ", 30)}}},
+		{kind: blockCode, text: long},
+	}
+
+	for line := range strings.SplitSeq(ansi.Strip(renderBlocks(blocks, 40, 120)), "\n") {
+		if strings.Contains(line, "word") {
+			assert.LessOrEqual(t, len(line), 40, "prose stays in the reading column")
+		}
+
+		if strings.Contains(line, "x") {
+			assert.Equal(t, "  "+long, line, "code gets the full screen width")
+		}
+	}
 }
 
 func TestRenderSpans_ItalicInvertsInsideQuotes(t *testing.T) {

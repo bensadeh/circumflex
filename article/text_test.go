@@ -35,7 +35,7 @@ func TestRenderBlocks_VerbatimKeepsIndentation(t *testing.T) {
 
 	blocks := []block{{kind: blockVerbatim, text: " * item one\n   continuation"}}
 
-	assert.Equal(t, " * item one\n   continuation", renderBlocks(blocks, 72))
+	assert.Equal(t, " * item one\n   continuation", renderBlocks(blocks, 72, 72))
 }
 
 func TestRenderBlocks_VerbatimWrapsLongLines(t *testing.T) {
@@ -43,7 +43,7 @@ func TestRenderBlocks_VerbatimWrapsLongLines(t *testing.T) {
 
 	blocks := []block{{kind: blockVerbatim, text: strings.Repeat("word ", 20)}}
 
-	for line := range strings.SplitSeq(renderBlocks(blocks, 30), "\n") {
+	for line := range strings.SplitSeq(renderBlocks(blocks, 30, 30), "\n") {
 		assert.LessOrEqual(t, len(line), 30)
 	}
 }

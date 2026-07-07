@@ -19,11 +19,13 @@ const (
 	blockIndent   = "  "
 )
 
-func renderBlocks(blocks []block, width int) string {
+// Prose wraps at the reading column; code and verbatim blocks break out to
+// codeWidth (the full screen space), mirroring the comment section.
+func renderBlocks(blocks []block, width, codeWidth int) string {
 	var parts []string
 
 	for i := range blocks {
-		if rendered := renderBlock(&blocks[i], width); rendered != "" {
+		if rendered := renderBlock(&blocks[i], width, codeWidth); rendered != "" {
 			parts = append(parts, rendered)
 		}
 	}
@@ -31,7 +33,7 @@ func renderBlocks(blocks []block, width int) string {
 	return strings.Join(parts, "\n\n")
 }
 
-func renderBlock(b *block, width int) string {
+func renderBlock(b *block, width, codeWidth int) string {
 	switch b.kind {
 	case blockParagraph:
 		return renderParagraph(b.spans, width)
@@ -46,7 +48,7 @@ func renderBlock(b *block, width int) string {
 		return renderQuote(b.spans, width)
 
 	case blockCode:
-		return renderCode(b.text, width)
+		return renderCode(b.text, codeWidth)
 
 	case blockTable:
 		return renderTable(b.rows, width)
@@ -58,7 +60,7 @@ func renderBlock(b *block, width int) string {
 		return renderDivider(width)
 
 	case blockVerbatim:
-		return lipgloss.Wrap(b.text, width, "")
+		return lipgloss.Wrap(b.text, codeWidth, "")
 
 	default:
 		return ""

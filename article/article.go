@@ -61,8 +61,16 @@ func NewParsedFromHTML(src string) *Parsed {
 	return &Parsed{blocks: parseBlocks(node)}
 }
 
-func (p *Parsed) RenderWithHeader(width int, header string) string {
+// RenderWithHeader wraps prose at contentWidth; code blocks extend to
+// screenWidth like in the comment section. A screenWidth of 0 keeps
+// everything at contentWidth.
+func (p *Parsed) RenderWithHeader(contentWidth, screenWidth int, header string) string {
 	margin := strings.Repeat(" ", layout.ReaderViewLeftMargin)
 
-	return header + style.PrefixLines(renderBlocks(p.blocks, width), margin)
+	codeWidth := contentWidth
+	if screenWidth > 0 {
+		codeWidth = max(contentWidth, screenWidth-layout.ReaderViewLeftMargin)
+	}
+
+	return header + style.PrefixLines(renderBlocks(p.blocks, contentWidth, codeWidth), margin)
 }

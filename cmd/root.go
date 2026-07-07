@@ -168,11 +168,11 @@ func newService() hn.Service {
 	return provider.NewService(debugMode, debugFallible)
 }
 
-func readerWidth(maxWidth int) int {
+func readerWidths(maxWidth int) (contentWidth, screenWidth int) {
 	w, _, err := term.GetSize(int(os.Stdout.Fd()))
 	if err != nil || w <= 0 {
-		return maxWidth
+		return maxWidth, 0
 	}
 
-	return layout.ReaderContentWidth(w, maxWidth)
+	return layout.ReaderContentWidth(w, maxWidth), w
 }

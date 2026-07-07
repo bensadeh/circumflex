@@ -56,10 +56,10 @@ func articleCmd() *cobra.Command {
 				NerdFonts: config.EnableNerdFonts,
 			}
 
-			width := readerWidth(config.ArticleWidth)
+			width, screenWidth := readerWidths(config.ArticleWidth)
 			header := meta.ReaderModeMetaBlock(articleMeta.URL, articleMeta.Author, articleMeta.TimeAgo,
 				articleMeta.ID, articleMeta.Points, articleMeta.NerdFonts, width)
-			content := parsed.RenderWithHeader(width, header)
+			content := parsed.RenderWithHeader(width, screenWidth, header)
 
 			return reader.Run(content, item.Title, articleMeta)
 		},
