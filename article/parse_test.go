@@ -189,6 +189,21 @@ func TestParseBlocks_ImplicitParagraphInContainer(t *testing.T) {
 	assert.Equal(t, "real paragraph", blocks[1].plainText())
 }
 
+func TestParseBlocks_BlockContentInsideCustomElement(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<markdown-accessiblity-table>
+		<table><tr><th>Tool</th><th>Stars</th></tr><tr><td>OfficeCLI</td><td>1k</td></tr></table>
+	</markdown-accessiblity-table>
+	<custom-note>inline only</custom-note>`)
+
+	require.Len(t, blocks, 2)
+	assert.Equal(t, blockTable, blocks[0].kind)
+	assert.Equal(t, []string{"Tool", "Stars"}, blocks[0].rows[0])
+	assert.Equal(t, blockParagraph, blocks[1].kind)
+	assert.Equal(t, "inline only", blocks[1].plainText())
+}
+
 func TestParseBlocks_Divider(t *testing.T) {
 	t.Parallel()
 

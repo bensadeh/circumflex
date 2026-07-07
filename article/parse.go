@@ -136,8 +136,33 @@ func (p *domParser) walk(n *html.Node) {
 		p.flushInline()
 
 	default:
-		p.inline = append(p.inline, collectInline(n, formatPlain, &p.images)...)
+		// Custom elements (e.g. GitHub's table wrappers) land here: treat
+		// them as containers when they hold block content, else as inline.
+		if hasBlockDescendant(n) {
+			p.flushInline()
+			p.walkChildren(n)
+			p.flushInline()
+		} else {
+			p.inline = append(p.inline, collectInline(n, formatPlain, &p.images)...)
+		}
 	}
+}
+
+func hasBlockDescendant(n *html.Node) bool {
+	for c := range n.Descendants() {
+		if c.Type != html.ElementNode {
+			continue
+		}
+
+		switch c.DataAtom {
+		case atom.P, atom.Div, atom.Ul, atom.Ol, atom.Table, atom.Pre, atom.Blockquote,
+			atom.H1, atom.H2, atom.H3, atom.H4, atom.H5, atom.H6, atom.Figure, atom.Hr,
+			atom.Section, atom.Article:
+			return true
+		}
+	}
+
+	return false
 }
 
 func (p *domParser) flushInline() {
