@@ -32,6 +32,10 @@ func Parse(ctx context.Context, url string) (*Parsed, error) {
 	blocks := parseBlocks(node)
 	blocks = applySiteRules(blocks, parsedURL.Hostname())
 
+	if len(blocks) == 0 {
+		return nil, fmt.Errorf("no readable content found at %s", parsedURL.Hostname())
+	}
+
 	return &Parsed{blocks: blocks}, nil
 }
 
