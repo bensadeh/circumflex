@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net"
 	"os"
 	"strings"
@@ -199,13 +200,16 @@ func (m *model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd
 
 // Terminal progress bar via OSC 9;4 (supported by Ghostty, ConEmu and others;
 // silently ignored by terminals that don't recognise the sequence).
-// Writes to stderr to avoid interfering with Bubble Tea's stdout.
+// Writes to stderr to avoid interfering with Bubble Tea's stdout; tests
+// swap the writer out so the sequences don't flood their output.
 
-func setProgressIndeterminate()  { fmt.Fprint(os.Stderr, "\033]9;4;3;0\a") }
-func setProgressPercent(pct int) { fmt.Fprintf(os.Stderr, "\033]9;4;1;%d\a", pct) }
-func setProgressError()          { fmt.Fprint(os.Stderr, "\033]9;4;2;100\a") }
+var progressOut io.Writer = os.Stderr
 
-func clearProgress() { fmt.Fprint(os.Stderr, "\033]9;4;0\a") }
+func setProgressIndeterminate()  { _, _ = fmt.Fprint(progressOut, "\033]9;4;3;0\a") }
+func setProgressPercent(pct int) { _, _ = fmt.Fprintf(progressOut, "\033]9;4;1;%d\a", pct) }
+func setProgressError()          { _, _ = fmt.Fprint(progressOut, "\033]9;4;2;100\a") }
+
+func clearProgress() { _, _ = fmt.Fprint(progressOut, "\033]9;4;0\a") }
 
 // syncProgress settles the indicator for a finished fetch: an error stays
 // visible until its status message expires, success clears it. Called only

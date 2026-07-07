@@ -95,8 +95,8 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 	case message.ArticleReady:
 		return m.handleArticleReady(msg)
 
-	case message.ReaderViewQuit:
-		m.readerView = nil
+	case message.ReaderViewQuit, message.CommentViewQuit:
+		m.detail = nil
 		m.screen = screenList
 
 		return m, nil
@@ -112,12 +112,6 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 
 	case message.CommentTreeDataReady:
 		return m.handleCommentTreeDataReady(msg)
-
-	case message.CommentViewQuit:
-		m.commentView = nil
-		m.screen = screenList
-
-		return m, nil
 
 	case message.OpenAdjacentStory:
 		return m, m.handleOpenAdjacentStory(msg)
@@ -138,17 +132,14 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 
 	// Route to the active view through a single exit so cmds gathered above
 	// (spinner ticks, the time-refresh reschedule) always survive delegation.
-	switch m.screen {
-	case screenReader:
-		cmds = append(cmds, m.readerView.Update(msg))
+	switch {
+	case m.detail != nil:
+		cmds = append(cmds, m.detail.Update(msg))
 
-	case screenComments:
-		cmds = append(cmds, m.commentView.Update(msg))
-
-	case screenHelp:
+	case m.screen == screenHelp:
 		cmds = append(cmds, m.updateHelpScreen(msg))
 
-	case screenList:
+	default:
 		cmds = append(cmds, m.handleBrowsing(msg))
 	}
 
@@ -187,16 +178,10 @@ func (m *model) handleWindowResize(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
 	// story is open must not leave help laid out for the old dimensions.
 	m.resizeHelpViewport()
 
-	// The detail views are sized to their pane, which is the full screen when
+	// The detail view is sized to its pane, which is the full screen when
 	// the terminal is too narrow for the wide layout.
-	detailMsg := tea.WindowSizeMsg{Width: m.detailWidth(), Height: msg.Height}
-
-	if m.screen == screenReader {
-		return m, m.readerView.Update(detailMsg)
-	}
-
-	if m.screen == screenComments {
-		return m, m.commentView.Update(detailMsg)
+	if m.detail != nil {
+		return m, m.detail.Update(tea.WindowSizeMsg{Width: m.detailWidth(), Height: msg.Height})
 	}
 
 	return m, nil
@@ -277,10 +262,10 @@ func (m *model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*m
 		return m, tea.Batch(cmds...)
 	}
 
-	m.commentView = comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, m.detailWidth(), m.height)
+	m.detail = comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, m.detailWidth(), m.height)
 	m.screen = screenComments
 
-	cmds = append(cmds, m.commentView.Init())
+	cmds = append(cmds, m.detail.Init())
 
 	if msg.HistoryWarning != nil {
 		cmds = append(cmds, m.status.NewStatusMessageWithDuration("Could not save read status", statusMessageShort))
@@ -305,7 +290,7 @@ func (m *model) handleArticleReady(msg message.ArticleReady) (*model, tea.Cmd) {
 		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
 	}
 
-	m.readerView = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.detailWidth(), m.height, reader.Meta{
+	m.detail = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.detailWidth(), m.height, reader.Meta{
 		URL:       msg.URL,
 		Author:    msg.Author,
 		TimeAgo:   msg.TimeAgo,
@@ -316,7 +301,7 @@ func (m *model) handleArticleReady(msg message.ArticleReady) (*model, tea.Cmd) {
 
 	m.screen = screenReader
 
-	initCmd := m.readerView.Init()
+	initCmd := m.detail.Init()
 	if msg.HistoryWarning != nil {
 		return m, tea.Batch(initCmd,
 			m.status.NewStatusMessageWithDuration("Could not save read status", statusMessageShort))

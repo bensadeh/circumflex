@@ -459,7 +459,7 @@ func TestPrerenderComments_IndentPlateausUnderDeepNesting(t *testing.T) {
 	rc := renderContext{
 		commentWidth: commentWidth,
 		indent:       indentSize,
-		screenWidth:  120,
+		paneWidth:    120,
 	}
 
 	rendered := prerenderComments(rc, flat)
@@ -510,7 +510,7 @@ func TestPrerenderComments_RepliesIndicatorAlignsWithChildAuthor(t *testing.T) {
 	rc := renderContext{
 		commentWidth: commentWidth,
 		indent:       indentSize,
-		screenWidth:  120,
+		paneWidth:    120,
 	}
 
 	rendered := prerenderComments(rc, flat)
@@ -541,7 +541,7 @@ func TestPrerenderComments_IndentCollapsesOnNarrowTerminal(t *testing.T) {
 	rc := renderContext{
 		commentWidth: 70,
 		indent:       5,
-		screenWidth:  30,
+		paneWidth:    30,
 	}
 
 	rendered := prerenderComments(rc, flat)

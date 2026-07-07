@@ -25,7 +25,9 @@ func TitleHeader(title string, enableNerdFonts bool, leftMargin, screenWidth int
 	t = syntax.HighlightHackerNewsHeadlines(t, syntax.HeadlineInCommentSection)
 	t = syntax.HighlightSpecialContent(t, syntax.HeadlineInCommentSection, enableNerdFonts)
 
-	return margin + ansi.Bold + t + ansi.Reset + "\n" + header.Underline(screenWidth)
+	row := xansi.Truncate(margin+ansi.Bold+t+ansi.Reset, screenWidth, "")
+
+	return row + "\n" + header.Underline(screenWidth)
 }
 
 func FooterSeparator(width int) string {

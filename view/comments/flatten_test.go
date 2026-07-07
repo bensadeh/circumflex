@@ -269,7 +269,7 @@ func defaultRenderContext() renderContext {
 		firstCommentID:  1,
 		commentWidth:    70,
 		enableNerdFonts: false,
-		screenWidth:     80,
+		paneWidth:       80,
 		viewportHeight:  40,
 	}
 }

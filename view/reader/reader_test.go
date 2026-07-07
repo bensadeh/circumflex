@@ -18,7 +18,7 @@ func TestNew_PreRenderedContent(t *testing.T) {
 	m := newFromContent(content, "Test Title", 80, 24, Meta{})
 
 	assert.Equal(t, "Test Title", m.title)
-	assert.Equal(t, 80, m.screenWidth)
+	assert.Equal(t, 80, m.paneWidth)
 	assert.Nil(t, m.parsed, "pre-rendered model should not have parsed")
 }
 
@@ -42,7 +42,7 @@ func TestResize_RerenderChangesContent(t *testing.T) {
 
 	m.Update(tea.WindowSizeMsg{Width: 60, Height: 30})
 
-	assert.Equal(t, 60, m.screenWidth)
+	assert.Equal(t, 60, m.paneWidth)
 	assert.Equal(t, 30-layout.PaneChromeHeight, m.Viewport.Height())
 
 	contentAfter := m.Viewport.View()
@@ -57,7 +57,7 @@ func TestResize_PreRendered_NoRerender(t *testing.T) {
 	m.Update(tea.WindowSizeMsg{Width: 60, Height: 30})
 
 	assert.Equal(t, contentBefore, m.ContentLines)
-	assert.Equal(t, 60, m.screenWidth)
+	assert.Equal(t, 60, m.paneWidth)
 }
 
 func TestResize_PreservesScrollPosition(t *testing.T) {

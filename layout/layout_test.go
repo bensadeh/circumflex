@@ -37,4 +37,13 @@ func TestReaderContentWidthCapsAtMax(t *testing.T) {
 
 	assert.Equal(t, 80, ReaderContentWidth(400, 80), "capped by max article width")
 	assert.Equal(t, 50-2*ReaderViewLeftMargin, ReaderContentWidth(50, 80))
+	assert.Equal(t, 1, ReaderContentWidth(2, 80), "degenerate panes floor at one column")
+}
+
+func TestCommentColumnWidthSharesOneRightEdge(t *testing.T) {
+	t.Parallel()
+
+	assert.Equal(t, 70, CommentColumnWidth(100, 70), "wide panes use the configured width")
+	assert.Equal(t, CommentContentWidth(50), CommentColumnWidth(50, 70), "narrow panes clamp to the content span")
+	assert.Equal(t, 1, CommentColumnWidth(1, 70), "degenerate panes floor at one column")
 }

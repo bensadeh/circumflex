@@ -9,9 +9,8 @@ import (
 	"github.com/bensadeh/circumflex/history"
 	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/settings"
-	"github.com/bensadeh/circumflex/view/comments"
 	"github.com/bensadeh/circumflex/view/list"
-	"github.com/bensadeh/circumflex/view/reader"
+	"github.com/bensadeh/circumflex/view/pane"
 
 	"charm.land/bubbles/v2/viewport"
 	"charm.land/lipgloss/v2"
@@ -33,9 +32,13 @@ type model struct {
 	width  int
 	height int
 
-	list        *list.Model
-	commentView *comments.Model
-	readerView  *reader.Model
+	list *list.Model
+
+	// detail is the open comment section or reader view, nil while browsing.
+	// Its nil-ness is the single source of truth for "a story is open";
+	// screen still says which view it is. Both render into the detail pane,
+	// which is the whole terminal when the wide layout is off.
+	detail pane.View
 
 	history   history.History
 	config    *settings.Config
@@ -105,7 +108,7 @@ func (m *model) updatePagination() {
 func (m *model) listFrame() list.Frame {
 	f := list.Frame{
 		Wide:          m.isWide(),
-		DetailOpen:    m.screen == screenComments || m.screen == screenReader || m.screen == screenHelp,
+		DetailOpen:    m.detail != nil || m.screen == screenHelp,
 		DetailLoading: m.detailLoading(),
 	}
 

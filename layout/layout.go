@@ -1,4 +1,14 @@
+// Package layout owns the terminal geometry: the wide-layout split arithmetic
+// and the width every text column derives from the pane it renders in.
+//
+// The detail views (comment section, reader) never see the pane split. The
+// parent hands each view a WindowSizeMsg sized to its pane, and the view lays
+// itself out as if that were the whole terminal — the same code path serves
+// the narrow full-screen layout, the wide split, and the standalone
+// subcommands. Widths named "pane" here are that logical screen.
 package layout
+
+import "github.com/bensadeh/circumflex/scrollbar"
 
 const (
 	RankWidth                      = 6
@@ -70,11 +80,22 @@ func (f Frame) PaneContentHeight() int {
 	return max(0, f.Height-PaneChromeHeight)
 }
 
-func ReaderContentWidth(screenWidth, maxWidth int) int {
-	w := screenWidth - 2*ReaderViewLeftMargin
-	if w <= 0 {
-		return maxWidth
-	}
+// ReaderContentWidth is the article text column: the configured maximum,
+// clamped to the pane minus symmetric margins. Never below one column, so
+// degenerate panes render narrow instead of overflowing.
+func ReaderContentWidth(paneWidth, maxWidth int) int {
+	return max(1, min(paneWidth-2*ReaderViewLeftMargin, maxWidth))
+}
 
-	return min(w, maxWidth)
+// CommentContentWidth is the columns a comment may span: from the left margin
+// to the scrollbar column. Deeper comments indent within it.
+func CommentContentWidth(paneWidth int) int {
+	return max(1, paneWidth-CommentSectionLeftMargin-scrollbar.Width)
+}
+
+// CommentColumnWidth is the top-level comment text column: the configured
+// width, clamped to the pane. The meta header and the footer indicator share
+// it, so all three right edges stay aligned however narrow the pane gets.
+func CommentColumnWidth(paneWidth, configuredWidth int) int {
+	return min(CommentContentWidth(paneWidth), configuredWidth)
 }

@@ -16,6 +16,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	xansi "github.com/charmbracelet/x/ansi"
 )
 
 type Model struct {
@@ -53,7 +54,7 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 	flat := flatten(thread)
 
 	newComments := comment.NewCommentsCount(thread, lastVisited)
-	clampedWidth := min(width-2*layout.CommentSectionLeftMargin, commentWidth)
+	clampedWidth := layout.CommentColumnWidth(width, commentWidth)
 
 	sf := storyFields{
 		URL:           thread.URL,
@@ -75,8 +76,8 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 		commentWidth:    commentWidth,
 		indent:          indent,
 		enableNerdFonts: enableNerdFonts,
-		screenWidth:     width,
-		viewportHeight:  height - layout.PaneChromeHeight,
+		paneWidth:       width,
+		viewportHeight:  max(0, height-layout.PaneChromeHeight),
 		lastVisited:     lastVisited,
 		story:           sf,
 		newComments:     newComments,
@@ -135,12 +136,12 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		anchorIdx := m.anchorComment()
 		screenPos := m.screenPosition(anchorIdx)
 
-		m.rc.screenWidth = msg.Width
+		m.rc.paneWidth = msg.Width
 		m.rc.viewportHeight = max(0, msg.Height-layout.PaneChromeHeight)
 		m.Viewport.SetWidth(msg.Width)
 		m.Viewport.SetHeight(m.rc.viewportHeight)
 
-		cw := min(msg.Width-2*layout.CommentSectionLeftMargin, m.rc.commentWidth)
+		cw := layout.CommentColumnWidth(msg.Width, m.rc.commentWidth)
 		m.rc.header = buildCommentHeader(m.rc.story, m.rc.enableNerdFonts, m.rc.newComments, cw) + "\n"
 
 		m.rebuildTitleHeader()
@@ -157,23 +158,23 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 func (m *Model) View() string {
 	if m.showHelp {
 		content := help.FitToHeight(
-			help.CommentHelpScreen(m.rc.screenWidth, m.rc.enableNerdFonts, m.keymap.NextStory.Enabled()),
+			help.CommentHelpScreen(m.rc.paneWidth, m.rc.enableNerdFonts, m.keymap.NextStory.Enabled()),
 			m.rc.viewportHeight,
 		)
 
-		return header.HelpHeader("Comment Section", m.rc.screenWidth) + "\n" +
+		return header.HelpHeader("Comment Section", m.rc.paneWidth) + "\n" +
 			content + "\n" +
-			pane.FooterSeparator(m.rc.screenWidth) + "\n" +
-			help.Footer(m.rc.screenWidth)
+			pane.FooterSeparator(m.rc.paneWidth) + "\n" +
+			help.Footer(m.rc.paneWidth)
 	}
 
-	content := scrollbar.Attach(m.Viewport.View(), m.rc.screenWidth, m.ContentLines, m.rc.viewportHeight, m.Viewport.YOffset())
+	content := scrollbar.Attach(m.Viewport.View(), m.rc.paneWidth, m.ContentLines, m.rc.viewportHeight, m.Viewport.YOffset())
 
-	return m.titleHeader + "\n" + content + "\n" + pane.FooterSeparator(m.rc.screenWidth) + "\n" + m.modeIndicator()
+	return m.titleHeader + "\n" + content + "\n" + pane.FooterSeparator(m.rc.paneWidth) + "\n" + m.modeIndicator()
 }
 
 func (m *Model) rebuildTitleHeader() {
-	m.titleHeader = pane.TitleHeader(m.title, m.rc.enableNerdFonts, layout.CommentSectionLeftMargin, m.rc.screenWidth)
+	m.titleHeader = pane.TitleHeader(m.title, m.rc.enableNerdFonts, layout.CommentSectionLeftMargin, m.rc.paneWidth)
 }
 
 // updateViewport re-renders the viewport content with the current focus state.
@@ -214,7 +215,7 @@ func (m *Model) modeIndicator() string {
 		diSlot = 1 + 1 + len(fmt.Sprintf("%d", m.maxDepth)) // " ⋮" + digits
 	}
 
-	commentWidth := min(m.rc.screenWidth-layout.CommentSectionLeftMargin, m.rc.commentWidth)
+	commentWidth := layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
 	totalWidth := layout.CommentSectionLeftMargin + commentWidth
 	padding := max(1, totalWidth-lipgloss.Width(label)-diSlot)
 
@@ -233,7 +234,7 @@ func (m *Model) modeIndicator() string {
 		}
 	}
 
-	return result
+	return xansi.Truncate(result, m.rc.paneWidth, "")
 }
 
 func (m *Model) depthIndicator() string {

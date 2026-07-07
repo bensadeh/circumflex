@@ -6,7 +6,6 @@ import (
 
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/layout"
-	"github.com/bensadeh/circumflex/scrollbar"
 	"github.com/bensadeh/circumflex/style"
 )
 
@@ -20,7 +19,7 @@ type renderContext struct {
 	commentWidth    int
 	indent          int
 	enableNerdFonts bool
-	screenWidth     int
+	paneWidth       int
 	viewportHeight  int
 	lastVisited     int64
 	story           storyFields // scalar fields needed for header rebuild on resize
@@ -62,9 +61,7 @@ type renderedComment struct {
 // collapse/expand operations only concatenate pre-rendered strings.
 func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 	leftMargin := strings.Repeat(" ", layout.CommentSectionLeftMargin)
-	// Comment content can reach the screen edge, so reserve the scrollbar's
-	// column; otherwise the overlay would clip the rightmost glyph.
-	contentWidth := rc.screenWidth - layout.CommentSectionLeftMargin - scrollbar.Width
+	contentWidth := layout.CommentContentWidth(rc.paneWidth)
 	commentWidth := min(contentWidth, rc.commentWidth)
 
 	rendered := make([]renderedComment, len(flat))
@@ -92,7 +89,7 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 		indentCols := comment.EffectiveIndentColumns(fc.Depth, rc.indent, commentWidth, layout.MinCommentWidth+symbolCols)
 		depthIndent := strings.Repeat(" ", indentCols)
 
-		screenWidth := contentWidth - indentCols
+		availableWidth := contentWidth - indentCols
 		adjustedCommentWidth := commentWidth - indentCols - symbolCols
 
 		pad := leftMargin + depthIndent
@@ -110,7 +107,7 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 			fg = style.CommentModFg()
 		}
 
-		content := comment.RenderContent(&fc.Comment, fc.Depth, adjustedCommentWidth, screenWidth, rc.enableNerdFonts, fg)
+		content := comment.RenderContent(&fc.Comment, fc.Depth, adjustedCommentWidth, availableWidth, rc.enableNerdFonts, fg)
 		contentWithMargin := style.PrefixLines(content+"\n", pad)
 		out.content = contentWithMargin
 		out.contentLines = strings.Count(contentWithMargin, "\n")

@@ -34,7 +34,15 @@ func (m *Model) View(f Frame) string {
 		readStatuses,
 		m.dimmed(f))
 
-	return lipgloss.JoinHorizontal(lipgloss.Top, rankings, content)
+	joined := lipgloss.JoinHorizontal(lipgloss.Top, rankings, content)
+
+	// The rank gutter is fixed-width, so in panes narrower than it the rows
+	// must clip rather than spill into the neighboring pane.
+	if m.width > 0 {
+		return lipgloss.NewStyle().MaxWidth(m.width).Render(joined)
+	}
+
+	return joined
 }
 
 // dimmed reports whether the pane renders in its faint "attention is

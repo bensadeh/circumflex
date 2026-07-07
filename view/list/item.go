@@ -7,6 +7,7 @@ import (
 
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/hn"
+	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/syntax"
 	"github.com/bensadeh/circumflex/timeago"
@@ -90,9 +91,13 @@ func (m *Model) renderItem(w io.Writer, index int, item *hn.Story, f Frame) {
 		desc = score + author + timeAgo + comments
 	}
 
+	// The row renders to the right of the rank gutter, and the domain is
+	// appended after the title below — both must fit inside the pane.
+	textWidth := max(0, m.width-layout.MainViewLeftMargin-s.normalTitle.GetPaddingLeft()-s.normalTitle.GetPaddingRight())
+
 	if m.width > 0 {
-		textWidth := m.width - s.normalTitle.GetPaddingLeft() - s.normalTitle.GetPaddingRight()
-		title = xansi.Truncate(title, textWidth, ellipsis)
+		titleWidth := max(0, textWidth-xansi.StringWidth(domain)-1)
+		title = xansi.Truncate(title, titleWidth, ellipsis)
 		desc = xansi.Truncate(desc, textWidth, ellipsis)
 	}
 
@@ -129,6 +134,12 @@ func (m *Model) renderItem(w io.Writer, index int, item *hn.Story, f Frame) {
 	default:
 		title, desc = styleTitleAndDesc(title, s.normalTitle, s.normalDesc, domain,
 			desc, syntax.Unselected, enableNerdFonts)
+	}
+
+	// In panes too narrow for the title budget above, the appended domain is
+	// what overflows — clamp the assembled row.
+	if m.width > 0 {
+		title = xansi.Truncate(title, textWidth, ellipsis)
 	}
 
 	_, _ = fmt.Fprintf(w, "%s\n%s", title, desc)

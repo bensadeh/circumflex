@@ -36,7 +36,7 @@ type Model struct {
 	headerLines []int // line indices containing ■ (section headers)
 	title       string
 	titleHeader string
-	screenWidth int
+	paneWidth   int
 	showHelp    bool
 
 	parsed      *article.Parsed // nil when created with pre-rendered content
@@ -48,7 +48,7 @@ func newFromContent(content, title string, width, height int, articleMeta Meta) 
 	m := &Model{
 		keymap:      defaultKeyMap(),
 		title:       title,
-		screenWidth: width,
+		paneWidth:   width,
 		articleMeta: articleMeta,
 	}
 
@@ -62,7 +62,7 @@ func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, h
 	m := &Model{
 		keymap:      defaultKeyMap(),
 		title:       title,
-		screenWidth: width,
+		paneWidth:   width,
 		parsed:      parsed,
 		maxWidth:    maxWidth,
 		articleMeta: articleMeta,
@@ -73,14 +73,14 @@ func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, h
 	return m
 }
 
-// renderArticle renders the article at the current screen width, prefixed with
+// renderArticle renders the article at the current pane width, prefixed with
 // its meta header. The single source of the width derivation shared by the
 // initial render and every resize.
 func (m *Model) renderArticle() string {
-	contentWidth := layout.ReaderContentWidth(m.screenWidth, m.maxWidth)
+	contentWidth := layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
 	header := meta.ReaderModeMetaBlock(m.articleMeta.URL, m.articleMeta.Author, m.articleMeta.TimeAgo, m.articleMeta.ID, m.articleMeta.Points, m.articleMeta.NerdFonts, contentWidth)
 
-	return m.parsed.RenderWithHeader(contentWidth, m.screenWidth, header)
+	return m.parsed.RenderWithHeader(contentWidth, m.paneWidth, header)
 }
 
 // DisableStoryNavigation removes the J/K adjacent-story bindings, for
@@ -131,7 +131,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		return nil
 
 	case tea.WindowSizeMsg:
-		m.screenWidth = msg.Width
+		m.paneWidth = msg.Width
 		m.Viewport.SetWidth(msg.Width)
 		m.Viewport.SetHeight(max(0, msg.Height-layout.PaneChromeHeight))
 
@@ -147,7 +147,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 	return m.Forward(msg)
 }
 
-// rerender re-renders the article at the current screen width and updates
+// rerender re-renders the article at the current pane width and updates
 // the viewport content, preserving the scroll position.
 func (m *Model) rerender() {
 	yOffset := m.Viewport.YOffset()
@@ -220,23 +220,23 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 func (m *Model) View() string {
 	if m.showHelp {
 		content := help.FitToHeight(
-			help.ReaderHelpScreen(m.screenWidth, m.keymap.NextStory.Enabled()),
+			help.ReaderHelpScreen(m.paneWidth, m.keymap.NextStory.Enabled()),
 			m.Viewport.Height(),
 		)
 
-		return header.HelpHeader("Reader Mode", m.screenWidth) + "\n" +
+		return header.HelpHeader("Reader Mode", m.paneWidth) + "\n" +
 			content + "\n" +
-			pane.FooterSeparator(m.screenWidth) + "\n" +
-			help.Footer(m.screenWidth)
+			pane.FooterSeparator(m.paneWidth) + "\n" +
+			help.Footer(m.paneWidth)
 	}
 
-	content := scrollbar.Attach(m.Viewport.View(), m.screenWidth, m.ContentLines, m.Viewport.Height(), m.Viewport.YOffset())
+	content := scrollbar.Attach(m.Viewport.View(), m.paneWidth, m.ContentLines, m.Viewport.Height(), m.Viewport.YOffset())
 
-	return m.titleHeader + "\n" + content + "\n" + pane.FooterSeparator(m.screenWidth) + "\n"
+	return m.titleHeader + "\n" + content + "\n" + pane.FooterSeparator(m.paneWidth) + "\n"
 }
 
 func (m *Model) rebuildTitleHeader() {
-	m.titleHeader = pane.TitleHeader(m.title, m.articleMeta.NerdFonts, layout.ReaderViewLeftMargin, m.screenWidth)
+	m.titleHeader = pane.TitleHeader(m.title, m.articleMeta.NerdFonts, layout.ReaderViewLeftMargin, m.paneWidth)
 }
 
 func (m *Model) jumpToHeader(direction int) {

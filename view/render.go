@@ -6,6 +6,8 @@ import (
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/style"
 
+	xansi "github.com/charmbracelet/x/ansi"
+
 	"charm.land/lipgloss/v2"
 )
 
@@ -20,12 +22,8 @@ func (m *model) View() string {
 		return m.wideView()
 	}
 
-	if m.screen == screenReader {
-		return m.overlayDetailStatus(m.readerView.View())
-	}
-
-	if m.screen == screenComments {
-		return m.overlayDetailStatus(m.commentView.View())
+	if m.detail != nil {
+		return m.overlayDetailStatus(m.detail.View())
 	}
 
 	return m.browsingView()
@@ -133,5 +131,10 @@ func (m *model) statusAndPaginationView() string {
 
 	right := m.statusEndStyle.Render(rightContent)
 
-	return underline + "\n" + left + center + right
+	// The fixed edge slots overflow panes narrower than their sum; the center
+	// can too when its width comes out non-positive and lipgloss renders the
+	// message at its natural width.
+	row := xansi.Truncate(left+center+right, m.listWidth(), "")
+
+	return underline + "\n" + row
 }

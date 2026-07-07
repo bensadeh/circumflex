@@ -41,7 +41,7 @@ func (m *model) detailLoading() bool {
 // marker that J/K move story to story.
 func (m *model) wideDetailOpen() bool {
 	return m.isWide() &&
-		(m.screen == screenComments || m.screen == screenReader || m.screen == screenHelp || m.detailLoading())
+		(m.detail != nil || m.screen == screenHelp || m.detailLoading())
 }
 
 func (m *model) wideView() string {
@@ -75,11 +75,8 @@ func (m *model) detailPaneView() string {
 	case m.screen == screenHelp:
 		return m.helpView()
 
-	case m.screen == screenReader:
-		return m.readerView.View()
-
-	case m.screen == screenComments:
-		return m.commentView.View()
+	case m.detail != nil:
+		return m.detail.View()
 
 	default:
 		return m.placeholderPane(style.Faint("Select a story"))

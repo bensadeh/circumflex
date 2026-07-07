@@ -10,6 +10,7 @@ import (
 	"github.com/bensadeh/circumflex/style"
 
 	"charm.land/lipgloss/v2"
+	xansi "github.com/charmbracelet/x/ansi"
 )
 
 // memorialActive mirrors the HN front-page black bar. It is global because the
@@ -53,14 +54,15 @@ func Header(allCategories []categories.Category, selectedSubHeader int, width in
 
 	cats := getCategories(allCategories, selectedSubHeader)
 	filler := getFiller(title, cats, width)
+	row := xansi.Truncate(title+cats+filler, width, "")
 
-	return title + cats + filler + "\n" + Underline(width)
+	return row + "\n" + Underline(width)
 }
 
 func HelpHeader(title string, width int) string {
 	padded := strings.Repeat(" ", layout.HeaderLeftMargin) + lipgloss.NewStyle().Bold(true).Render(title)
 
-	return padded + "\n" + Underline(width)
+	return xansi.Truncate(padded, width, "") + "\n" + Underline(width)
 }
 
 func getFiller(title string, categories string, width int) string {

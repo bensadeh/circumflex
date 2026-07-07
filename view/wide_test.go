@@ -236,7 +236,7 @@ func TestWideView_QuitRestoresPlaceholder(t *testing.T) {
 	m, _ = m.Update(cmd())
 
 	assert.Equal(t, screenList, m.screen)
-	assert.Nil(t, m.commentView)
+	assert.Nil(t, m.detail)
 	assert.Contains(t, m.View(), "Select a story")
 }
 

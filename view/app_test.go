@@ -311,7 +311,7 @@ func TestCommentTreeDataReady_OpensCommentView(t *testing.T) {
 	thread := &comment.Thread{ID: 1, Title: "test", CommentsCount: 5}
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
 	assert.Equal(t, screenComments, m.screen)
-	assert.NotNil(t, m.commentView)
+	assert.NotNil(t, m.detail)
 }
 
 func TestCommentViewQuit_RestoresState(t *testing.T) {
@@ -424,7 +424,7 @@ func TestArticleReady_WithParsedArticle(t *testing.T) {
 
 	m, _ = m.Update(message.ArticleReady{Parsed: testParsedArticle(), Title: "Test", FetchID: m.fetchID})
 	assert.Equal(t, screenReader, m.screen)
-	assert.NotNil(t, m.readerView, "should create reader view")
+	assert.NotNil(t, m.detail, "should create reader view")
 }
 
 func TestAddFavoritesPrompt(t *testing.T) {
@@ -576,7 +576,7 @@ func TestSpinnerTick_WhenInactive(t *testing.T) {
 
 func TestViewReaderView_HasContent(t *testing.T) {
 	m := newTestModelReady(t)
-	m.readerView = reader.NewWithArticle(testParsedArticle(), "Test Title", 72, 80, 24, reader.Meta{})
+	m.detail = reader.NewWithArticle(testParsedArticle(), "Test Title", 72, 80, 24, reader.Meta{})
 	m.screen = screenReader
 
 	got := m.View()
