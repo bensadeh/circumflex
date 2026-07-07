@@ -114,7 +114,8 @@ func TestParseBlocks_PreservesCodeVerbatim(t *testing.T) {
 
 	require.Len(t, blocks, 1)
 	assert.Equal(t, blockCode, blocks[0].kind)
-	assert.Equal(t, "func main() {\n\tfmt.Println(\"hi\")\n}", blocks[0].text)
+	assert.Equal(t, "func main() {\n        fmt.Println(\"hi\")\n}", blocks[0].text,
+		"tabs expand to 8 columns so the wrapper's width math matches the terminal")
 }
 
 func TestParseBlocks_Blockquote(t *testing.T) {
@@ -180,6 +181,38 @@ func TestParseBlocks_Strikethrough(t *testing.T) {
 	require.Len(t, spans, 3)
 	assert.Equal(t, formatStrike, spans[1].format)
 	assert.Equal(t, "$99", spans[1].text)
+}
+
+func TestParseBlocks_ImageAltStripsControlBytes(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, "<img src=\"x.png\" alt=\"cap\x1b[2Ationtext\x07\">")
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, blockImage, blocks[0].kind)
+	assert.Equal(t, "captiontext", blocks[0].plainText(), "control bytes in alt must be stripped")
+}
+
+func TestParseBlocks_LinkWithControlBytesNotLinked(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, "<p><a href=\"https://x.com/\x1b]2;pwned\x07\">click</a></p>")
+
+	require.Len(t, blocks, 1)
+	spans := blocks[0].spans
+	require.Len(t, spans, 1)
+	assert.Equal(t, "click", spans[0].text)
+	assert.Empty(t, spans[0].href, "a href containing control bytes must not become a hyperlink")
+}
+
+func TestParseBlocks_DedupeKeepsSameTextDifferentLevel(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, "<h1>FAQ</h1><h2>FAQ</h2><p>body</p>")
+
+	require.Len(t, blocks, 3, "a repeated title at a different heading level must survive dedup")
+	assert.Equal(t, blockHeading, blocks[0].kind)
+	assert.Equal(t, blockHeading, blocks[1].kind)
 }
 
 func TestParseBlocks_LinksKeepHref(t *testing.T) {

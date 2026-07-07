@@ -51,7 +51,7 @@ func renderBlock(b *block, width, codeWidth int) string {
 		return renderCode(b.text, codeWidth)
 
 	case blockTable:
-		return renderTable(b.rows, width)
+		return renderTable(b.rows, codeWidth)
 
 	case blockImage:
 		return renderImage(b.spans, width)

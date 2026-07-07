@@ -149,11 +149,45 @@ func TestApplySiteRules_DropBlockMatching(t *testing.T) {
 	assert.Equal(t, "Comments were 84 times better here", out[1].plainText())
 }
 
-func TestDropInline_LeavesOtherBlocksAlone(t *testing.T) {
+func TestApplySiteRules_StopAtHeadingIgnoresTrailingWhitespace(t *testing.T) {
 	t.Parallel()
 
-	pattern := []*regexp.Regexp{regexp.MustCompile(`x`)}
-	b := dropInline(block{kind: blockCode, text: "xyz"}, pattern)
+	blocks := []block{
+		paragraph("body"),
+		{kind: blockHeading, level: 1, text: "References [1]"},
+		paragraph("citation dump"),
+	}
 
-	assert.Equal(t, "yz", b.text)
+	out := applySiteRules(blocks, "en.wikipedia.org")
+
+	require.Len(t, out, 1, "heading with trailing space after [1] removal must still stop the article")
+	assert.Equal(t, "body", out[0].plainText())
+}
+
+func TestDropInline_CleansTableCells(t *testing.T) {
+	t.Parallel()
+
+	blocks := []block{
+		{kind: blockTable, rows: [][]string{{"Year", "Value"}, {"2007[1]", "Online[2]"}}},
+	}
+
+	out := applySiteRules(blocks, "en.wikipedia.org")
+
+	require.Len(t, out, 1)
+	assert.Equal(t, [][]string{{"Year", "Value"}, {"2007", "Online"}}, out[0].rows)
+}
+
+func TestDropInline_SkipsCodeBlocks(t *testing.T) {
+	t.Parallel()
+
+	pattern := []*regexp.Regexp{regexp.MustCompile(`\[\d+\]`)}
+
+	code := dropInline(block{kind: blockCode, text: "arr[1]"}, pattern)
+	assert.Equal(t, "arr[1]", code.text, "citation strippers must not rewrite code")
+
+	verbatim := dropInline(block{kind: blockVerbatim, text: "arr[1]"}, pattern)
+	assert.Equal(t, "arr[1]", verbatim.text)
+
+	prose := dropInline(block{kind: blockParagraph, spans: []span{{text: "fact[1]"}}}, pattern)
+	assert.Equal(t, "fact", prose.plainText(), "prose is still cleaned")
 }

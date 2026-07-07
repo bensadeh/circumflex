@@ -186,7 +186,7 @@ func applySiteRules(blocks []block, hostname string) []block {
 		text := b.plainText()
 		trimmed := strings.TrimSpace(text)
 
-		if b.kind == blockHeading && slices.Contains(rules.stopAtHeading, text) {
+		if b.kind == blockHeading && slices.Contains(rules.stopAtHeading, trimmed) {
 			break
 		}
 
@@ -256,6 +256,12 @@ func dropInline(b block, patterns []*regexp.Regexp) block {
 		return b
 	}
 
+	// Code and verbatim blocks are content, not prose: citation strippers
+	// like [\d+] would silently rewrite array indices and the like.
+	if b.kind == blockCode || b.kind == blockVerbatim {
+		return b
+	}
+
 	clean := func(text string) string {
 		for _, pattern := range patterns {
 			text = pattern.ReplaceAllString(text, "")
@@ -275,6 +281,20 @@ func dropInline(b block, patterns []*regexp.Regexp) block {
 		}
 
 		b.items = items
+	}
+
+	if len(b.rows) > 0 {
+		rows := make([][]string, len(b.rows))
+		for i, row := range b.rows {
+			cells := make([]string, len(row))
+			for j, cell := range row {
+				cells[j] = clean(cell)
+			}
+
+			rows[i] = cells
+		}
+
+		b.rows = rows
 	}
 
 	return b

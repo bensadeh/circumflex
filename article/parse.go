@@ -30,7 +30,7 @@ func dedupeBlocks(blocks []block) []block {
 	for _, b := range blocks {
 		if len(out) > 0 {
 			prev := out[len(out)-1]
-			if prev.kind == b.kind && prev.plainText() == b.plainText() {
+			if prev.kind == b.kind && prev.level == b.level && prev.plainText() == b.plainText() {
 				continue
 			}
 		}
@@ -194,7 +194,7 @@ func (p *domParser) emitImages() {
 }
 
 func (p *domParser) appendImage(n *html.Node) {
-	p.images = append(p.images, imageBlock(strings.TrimSpace(collapseWhitespace(attr(n, "alt")))))
+	p.images = append(p.images, imageBlock(altText(n)))
 }
 
 func imageBlock(caption string) block {
@@ -240,7 +240,7 @@ func (p *domParser) parseFigure(n *html.Node) {
 	}
 
 	if caption == "" && img != nil {
-		caption = strings.TrimSpace(collapseWhitespace(attr(img, "alt")))
+		caption = altText(img)
 	}
 
 	p.blocks = append(p.blocks, imageBlock(caption))
@@ -426,7 +426,10 @@ func preText(n *html.Node) string {
 		visit(c)
 	}
 
-	return sb.String()
+	// The terminal expands a tab to the next 8-column stop, but the wrapper
+	// counts it as one cell; expand here so widths agree, as the text/plain
+	// path does.
+	return strings.ReplaceAll(sb.String(), "\t", strings.Repeat(" ", 8))
 }
 
 // Bold has no case below on purpose: it unwraps to plain text.
@@ -466,7 +469,7 @@ func inlineSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 
 	case atom.Img:
 		if images != nil {
-			*images = append(*images, imageBlock(strings.TrimSpace(collapseWhitespace(attr(n, "alt")))))
+			*images = append(*images, imageBlock(altText(n)))
 		}
 
 		return nil
@@ -514,7 +517,7 @@ func linkSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 	spans := collectInline(n, format, images)
 
 	href := attr(n, "href")
-	if !strings.HasPrefix(href, "http://") && !strings.HasPrefix(href, "https://") {
+	if !isLinkableHref(href) {
 		return spans
 	}
 
@@ -523,6 +526,19 @@ func linkSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 	}
 
 	return spans
+}
+
+// isLinkableHref accepts only absolute http(s) URLs free of control characters,
+// so an attacker-supplied href cannot terminate the OSC 8 hyperlink sequence
+// early and inject terminal escapes.
+func isLinkableHref(href string) bool {
+	if !strings.HasPrefix(href, "http://") && !strings.HasPrefix(href, "https://") {
+		return false
+	}
+
+	return !strings.ContainsFunc(href, func(r rune) bool {
+		return r < 0x20 || r == 0x7f
+	})
 }
 
 var superscriptRunes = map[rune]rune{
@@ -655,6 +671,12 @@ func attr(n *html.Node, key string) string {
 	}
 
 	return ""
+}
+
+// altText reads an img alt attribute. Attribute values are stripped of control
+// sequences like text nodes are, since the source is equally untrusted.
+func altText(n *html.Node) string {
+	return strings.TrimSpace(collapseWhitespace(ansi.Strip(attr(n, "alt"))))
 }
 
 // Heading levels are remapped to a contiguous 1..n range so that articles

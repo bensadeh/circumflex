@@ -31,7 +31,7 @@ this footnote survives verbatim[1].
   ■ Code
 
   func main() {
-      fmt.Println("hello")
+          fmt.Println("hello")
   }
 
     ■ Quotes

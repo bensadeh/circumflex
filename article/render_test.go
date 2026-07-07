@@ -112,6 +112,22 @@ func TestRenderTable_AlignsColumns(t *testing.T) {
 	assert.Equal(t, "Longer  2", lines[3])
 }
 
+func TestRenderBlock_TableExtendsToCodeWidth(t *testing.T) {
+	t.Parallel()
+
+	b := block{kind: blockTable, rows: [][]string{
+		{"Platform", "Binary"},
+		{"macOS Apple Silicon", "officecli-mac-arm64-very-long-name"},
+	}}
+
+	narrow := ansi.Strip(renderBlock(&b, 20, 20))
+	wide := ansi.Strip(renderBlock(&b, 20, 80))
+
+	assert.Contains(t, narrow, "…", "at a narrow code width the table truncates")
+	assert.NotContains(t, wide, "…", "with screen room the table uses the full code width")
+	assert.Contains(t, wide, "officecli-mac-arm64-very-long-name")
+}
+
 func TestRenderDivider_FitsWidth(t *testing.T) {
 	t.Parallel()
 
