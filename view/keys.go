@@ -204,8 +204,8 @@ func (m *model) startFetch(timeout time.Duration) tea.Cmd {
 	m.fetchID++
 	m.fetching = true
 	m.detailFetch = false
-	m.detailErr = ""
 	m.rollbackIndex = m.cat.CurrentIndex()
+	m.rollbackStory = m.list.Index()
 
 	if timeout > 0 {
 		ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -230,9 +230,18 @@ func (m *model) startDetailFetch(timeout time.Duration) tea.Cmd {
 }
 
 // rollbackFetch recovers from a failed or cancelled fetch: it restores the
-// category selection captured at startFetch and unfreezes the list.
+// category selection captured at startFetch and unfreezes the list. For a
+// story fetch it also moves the list selection back to the story that is
+// still open, so the reading marker never points at a story the detail
+// view doesn't show. Category fetches keep their cursor: the transition
+// mechanics restore it.
 func (m *model) rollbackFetch() {
 	m.cat.SetIndex(m.rollbackIndex)
+
+	if m.detailFetch {
+		m.list.SetIndex(m.rollbackStory)
+	}
+
 	m.list.EndTransition()
 }
 
@@ -352,7 +361,7 @@ func (m *model) handleEnterReaderMode() tea.Cmd {
 	selected := m.list.SelectedItem()
 
 	if err := article.Validate(selected.Title, selected.Domain); err != nil {
-		return m.showDetailError(err)
+		return m.showDetailError(err, screenReader)
 	}
 
 	startSpinnerCmd := m.startDetailFetch(readerModeTimeout)
@@ -391,21 +400,35 @@ func (m *model) handleOpenAdjacentStory(msg message.OpenAdjacentStory) tea.Cmd {
 		return nil
 	}
 
-	// Validate before moving so a story the reader can't open leaves the
-	// current story open and the selection in place.
+	// Validate before moving so in the narrow layout a story the reader
+	// can't open leaves the current story open and the selection in place.
+	// The wide layout swaps the reader for the error view, so there the
+	// selection lands on the story that failed and J/K page on from it.
 	if fromReader {
 		if err := article.Validate(items[newIndex].Title, items[newIndex].Domain); err != nil {
-			return m.showDetailError(err)
+			if m.isWide() {
+				m.list.SetIndex(newIndex)
+			}
+
+			return m.showDetailError(err, screenReader)
 		}
 	}
 
+	previousIndex := m.list.Index()
 	m.list.SetIndex(newIndex)
 
+	var cmd tea.Cmd
 	if fromReader {
-		return m.handleEnterReaderMode()
+		cmd = m.handleEnterReaderMode()
+	} else {
+		cmd = m.handleEnterComments()
 	}
 
-	return m.handleEnterComments()
+	// startFetch ran after the selection moved, so it captured the incoming
+	// story; the one to restore on failure is the story we are leaving.
+	m.rollbackStory = previousIndex
+
+	return cmd
 }
 
 func (m *model) handleToggleRead() tea.Cmd {

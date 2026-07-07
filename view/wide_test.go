@@ -2,6 +2,7 @@ package view
 
 import (
 	"errors"
+	"io"
 	"strings"
 	"testing"
 
@@ -142,24 +143,143 @@ func TestWideView_LoadingShowsUnboldedTitle(t *testing.T) {
 	assert.Contains(t, m.detailPaneView(), "\x1b[1m", "the opened story's title regains its bold")
 }
 
-// A story load that fails parks its error centered in the detail pane — not
-// on the status bar — until the next keypress dismisses it.
-func TestWideView_StoryLoadErrorShowsInPane(t *testing.T) {
+// A story load that fails swaps the detail pane to an error view — not a
+// status-bar message. It counts as an open view, exactly like the narrow
+// layout keeping its story open: the reading marker sits on the story that
+// failed, scroll keys have nothing to act on, and J/K page on to the
+// neighboring stories.
+func TestWideView_StoryLoadErrorBecomesView(t *testing.T) {
+	var progress strings.Builder
+
+	progressOut = &progress
+
+	t.Cleanup(func() { progressOut = io.Discard })
+
 	m := newWideTestModel(t)
 	openTestComments(t, m)
 
 	openAdjacent(t, m, "J")
 	require.True(t, m.fetching)
+	require.Equal(t, 1, m.list.Index())
 
 	m, _ = m.Update(message.CommentTreeDataReady{Err: errors.New("boom"), FetchID: m.fetchID})
 
-	assert.Contains(t, xansi.Strip(m.detailPaneView()), "Boom")
-	assert.Empty(t, m.status.message, "wide layout errors bypass the status bar")
+	require.IsType(t, &errorView{}, m.detail, "the error should take the pane as a view of its own")
+	assert.Equal(t, screenComments, m.screen)
+	assert.Equal(t, 1, m.list.Index(), "the reading marker stays on the story that failed")
 
+	errorPane := m.detailPaneView()
+	assert.Contains(t, xansi.Strip(errorPane), "Boom")
+	assert.Contains(t, xansi.Strip(errorPane), "Second item", "the failed story's title heads the pane")
+	assert.NotContains(t, errorPane, "\x1b[1m", "the unopened story's title stays unbolded")
+	assert.Empty(t, m.status.message, "wide layout errors bypass the status bar")
+	assert.Contains(t, progress.String(), "\x1b]9;4;2;100\a", "the terminal progress indicator should show the error")
+
+	// Scroll keys have nothing to scroll in an error view; nothing changes
+	// and, crucially, nothing hidden receives the key.
 	m, _ = m.Update(keyMsg("j"))
-	assert.Empty(t, m.detailErr)
-	assert.NotContains(t, xansi.Strip(m.detailPaneView()), "Boom",
-		"the next keypress dismisses the error")
+	assert.Contains(t, xansi.Strip(m.detailPaneView()), "Boom")
+	assert.Equal(t, 1, m.list.Index())
+
+	// J pages on to the next story, like from any open view.
+	openAdjacent(t, m, "J")
+	require.True(t, m.fetching)
+	assert.Equal(t, 2, m.list.Index())
+
+	thread := comment.ToThread(&hn.CommentTree{ID: 3, Title: "Third item", CommentsCount: 3})
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
+	require.Equal(t, screenComments, m.screen)
+	assert.Contains(t, xansi.Strip(m.detailPaneView()), "3 comments")
+}
+
+// The terminal progress indicator settles on its own a few seconds after the
+// failure, like a status message expiring; the error view itself stays up. A
+// stale timeout from an older fetch must not touch a newer fetch's indicator.
+func TestWideView_ErrorProgressTimeout(t *testing.T) {
+	var progress strings.Builder
+
+	progressOut = &progress
+
+	t.Cleanup(func() { progressOut = io.Discard })
+
+	m := newWideTestModel(t)
+	openTestComments(t, m)
+
+	openAdjacent(t, m, "J")
+	m, _ = m.Update(message.CommentTreeDataReady{Err: errors.New("boom"), FetchID: m.fetchID})
+
+	require.Contains(t, progress.String(), "\x1b]9;4;2;100\a")
+
+	m, _ = m.Update(message.ErrorProgressTimeout{FetchID: m.fetchID - 1})
+
+	assert.False(t, strings.HasSuffix(progress.String(), "\x1b]9;4;0\a"),
+		"a stale timeout must not clear the indicator")
+
+	m, _ = m.Update(message.ErrorProgressTimeout{FetchID: m.fetchID})
+
+	assert.True(t, strings.HasSuffix(progress.String(), "\x1b]9;4;0\a"),
+		"the timeout should clear the indicator")
+	require.IsType(t, &errorView{}, m.detail, "the error view itself stays up")
+}
+
+// Quitting the error view returns to browsing and settles the terminal
+// progress indicator that held its error state while the view was up.
+func TestWideView_ErrorViewQuit(t *testing.T) {
+	var progress strings.Builder
+
+	progressOut = &progress
+
+	t.Cleanup(func() { progressOut = io.Discard })
+
+	m := newWideTestModel(t)
+	openTestComments(t, m)
+
+	openAdjacent(t, m, "J")
+	m, _ = m.Update(message.CommentTreeDataReady{Err: errors.New("boom"), FetchID: m.fetchID})
+	require.IsType(t, &errorView{}, m.detail)
+
+	m, cmd := m.Update(keyMsg("q"))
+	require.NotNil(t, cmd, "q in the error view should emit its quit message")
+	m, _ = m.Update(cmd())
+
+	assert.Nil(t, m.detail)
+	assert.Equal(t, screenList, m.screen)
+	assert.Contains(t, m.View(), "Select a story")
+	assert.True(t, strings.HasSuffix(progress.String(), "\x1b]9;4;0\a"),
+		"closing the error view should clear the terminal progress indicator")
+}
+
+// The same failure in the narrow layout keeps the outgoing story on screen —
+// the error only takes a status row there — so the selection moves back to
+// the story the screen still shows.
+func TestNarrowStoryLoadError_KeepsOpenStoryAndSelection(t *testing.T) {
+	m := newTestModelReady(t)
+	openTestComments(t, m)
+
+	openAdjacent(t, m, "J")
+	require.True(t, m.fetching)
+	require.Equal(t, 1, m.list.Index())
+
+	m, _ = m.Update(message.CommentTreeDataReady{Err: errors.New("boom"), FetchID: m.fetchID})
+
+	assert.NotNil(t, m.detail, "narrow layout keeps the outgoing story open")
+	assert.Equal(t, 0, m.list.Index(), "the selection moves back to the story still on screen")
+	assert.Contains(t, m.status.message, "Boom")
+}
+
+// Cancelling a J/K story fetch keeps the open story, so the selection must
+// move back to it as well.
+func TestWideView_CancelledStoryLoadRestoresSelection(t *testing.T) {
+	m := newWideTestModel(t)
+	openTestComments(t, m)
+
+	openAdjacent(t, m, "J")
+	require.True(t, m.fetching)
+	require.Equal(t, 1, m.list.Index())
+
+	m, _ = m.Update(keyMsg("esc"))
+	assert.False(t, m.fetching)
+	assert.Equal(t, 0, m.list.Index(), "cancel should move the selection back to the open story")
 }
 
 // openAdjacent presses J or K in the open detail view and delivers the

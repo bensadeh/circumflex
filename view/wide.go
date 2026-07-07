@@ -73,12 +73,6 @@ func (m *model) detailPaneView() string {
 	case m.status.showSpinner:
 		return m.loadingPane()
 
-	// A failed story load parks its error here until the next keypress;
-	// checked before the views so a J/K failure doesn't silently fall back
-	// to the story it navigated away from.
-	case m.detailErr != "":
-		return m.placeholderPane(m.detailErrView())
-
 	case m.screen == screenHelp:
 		return m.helpView()
 
@@ -107,15 +101,6 @@ func (m *model) loadingPane() string {
 
 	return pane.LoadingTitleHeader(title, m.config.EnableNerdFonts, layout.HeaderLeftMargin, w) +
 		"\n" + body + "\n" + m.bottomBar(w) + "\n"
-}
-
-// detailErrView wraps the load error to the pane so placeholderPane can
-// center the whole block.
-func (m *model) detailErrView() string {
-	return lipgloss.NewStyle().
-		Width(max(1, m.detailWidth()-2*layout.HeaderLeftMargin)).
-		Align(lipgloss.Center).
-		Render(m.detailErr)
 }
 
 // placeholderPane frames centered content with the same header and footer

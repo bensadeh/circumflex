@@ -109,6 +109,18 @@ type CommentTreeDataReady struct {
 
 type CommentViewQuit struct{}
 
+// ErrorViewQuit closes the error view a failed story load left in the
+// detail pane.
+type ErrorViewQuit struct{}
+
+// ErrorProgressTimeout settles the terminal progress indicator a few seconds
+// after a failed story load left it in its error state, like a status
+// message expiring. FetchID guards a newer fetch's indicator from being
+// cleared by a stale timeout.
+type ErrorProgressTimeout struct {
+	FetchID uint64
+}
+
 // OpenAdjacentStory asks the front page to open the next (+1) or previous
 // (-1) story in the same view the request came from: comment section or
 // reader mode.

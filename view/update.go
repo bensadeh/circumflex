@@ -19,6 +19,8 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 			return m, m.handleCancelFetch()
 		}
 
+		clearProgress()
+
 		return m, tea.Quit
 	}
 
@@ -101,6 +103,20 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 
 		return m, nil
 
+	case message.ErrorViewQuit:
+		m.detail = nil
+		m.screen = screenList
+		// Settle the terminal progress indicator in case the view is quit
+		// before its timeout fires.
+		clearProgress()
+
+		return m, nil
+
+	case message.ErrorProgressTimeout:
+		if msg.FetchID == m.fetchID {
+			clearProgress()
+		}
+
 	case message.FetchAndChangeToCategory:
 		return m, m.fetchCategory(msg.Category, msg.Index, msg.Cursor)
 
@@ -128,12 +144,6 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 		}
 
 		return m, tea.Batch(cmds...)
-	}
-
-	// A load error parked in the detail pane dismisses on the next keypress,
-	// which then acts as normal.
-	if _, ok := msg.(tea.KeyPressMsg); ok {
-		m.detailErr = ""
 	}
 
 	// Route to the active view through a single exit so cmds gathered above
@@ -260,10 +270,16 @@ func (m *model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*m
 		}
 	}
 
-	// On error the screen stays where the fetch started: the front page keeps
-	// its dimmed list, and J/K keeps the story that was already open.
+	// On error the story never opens. The wide layout replaces the pane with
+	// the error view, its reading marker on the story that failed; the narrow
+	// layout keeps the outgoing story on screen, so the selection moves back
+	// to match it.
 	if msg.Err != nil {
-		cmds = append(cmds, m.showDetailError(msg.Err))
+		if !m.isWide() {
+			m.rollbackFetch()
+		}
+
+		cmds = append(cmds, m.showDetailError(msg.Err, screenComments))
 
 		return m, tea.Batch(cmds...)
 	}
@@ -290,10 +306,15 @@ func (m *model) handleArticleReady(msg message.ArticleReady) (*model, tea.Cmd) {
 	m.fetching = false
 	m.status.StopSpinner()
 
-	// On error the screen stays where the fetch started, like the comment
-	// section above.
+	// On error the story never opens, mirroring the comment section above:
+	// the wide layout replaces the pane with the error view, the narrow
+	// layout keeps the outgoing story on screen and rolls the selection back.
 	if msg.Err != nil {
-		return m, m.showDetailError(msg.Err)
+		if !m.isWide() {
+			m.rollbackFetch()
+		}
+
+		return m, m.showDetailError(msg.Err, screenReader)
 	}
 
 	m.detail = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.detailWidth(), m.height, reader.Meta{

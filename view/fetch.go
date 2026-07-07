@@ -212,9 +212,9 @@ func setProgressError()          { _, _ = fmt.Fprint(progressOut, "\033]9;4;2;10
 func clearProgress() { _, _ = fmt.Fprint(progressOut, "\033]9;4;0\a") }
 
 // syncProgress settles the indicator for a finished fetch: an error stays
-// visible until its status message expires, success clears it. Called only
-// from the Update loop after the fetchID guard, so a stale fetch can never
-// write over its successor's indicator.
+// visible for the status message lifetime (see showDetailError), success
+// clears it. Called only from the Update loop after the fetchID guard, so a
+// stale fetch can never write over its successor's indicator.
 func syncProgress(err error) {
 	if err != nil {
 		setProgressError()
@@ -253,14 +253,24 @@ func friendlyError(err error) string {
 	return msg
 }
 
-// showDetailError surfaces a failed story load: centered in the wide layout's
-// detail pane, where the spinner for that load just was, or on the status bar
-// in the narrow layout, which keeps the previous view on screen.
-func (m *model) showDetailError(err error) tea.Cmd {
+// showDetailError surfaces a failed story load. In the wide layout the error
+// replaces whatever the pane was showing as a view of its own: J/K page on to
+// the neighboring stories in the target view — the one the failed load was
+// for — and quit returns to the front page. The narrow layout keeps the
+// previous view on screen and surfaces the error on the status bar instead.
+// Either way the terminal progress indicator settles after the usual status
+// message lifetime: the narrow layout via the message expiring, the wide via
+// the returned timeout.
+func (m *model) showDetailError(err error, target screen) tea.Cmd {
 	if m.isWide() {
-		m.detailErr = friendlyError(err)
+		m.detail = newErrorView(friendlyError(err), m.list.SelectedItem().Title, m.config.EnableNerdFonts, m.detailWidth(), m.height)
+		m.screen = target
 
-		return nil
+		fetchID := m.fetchID
+
+		return tea.Tick(statusMessageLong, func(time.Time) tea.Msg {
+			return message.ErrorProgressTimeout{FetchID: fetchID}
+		})
 	}
 
 	return m.status.NewStatusMessageWithDuration(friendlyError(err), statusMessageLong)

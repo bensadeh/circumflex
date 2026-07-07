@@ -19,8 +19,8 @@ func TitleHeader(title string, enableNerdFonts bool, leftMargin, screenWidth int
 }
 
 // LoadingTitleHeader is TitleHeader without the bold: the detail pane shows
-// it while the story loads, so the title gains its full weight only once the
-// content is in.
+// it while the story loads and on the error view when the load fails, so the
+// title gains its full weight only once the content is in.
 func LoadingTitleHeader(title string, enableNerdFonts bool, leftMargin, screenWidth int) string {
 	return titleHeader(title, syntax.Unselected, "", enableNerdFonts, leftMargin, screenWidth)
 }
