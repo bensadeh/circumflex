@@ -1,0 +1,71 @@
+<html>
+<body>
+	<h1>The Article Title</h1>
+	<p>
+		An opening paragraph with <em>italic text</em>, <strong>bold text</strong>,
+		inline <code>code.Sample()</code> and a <a href="https://example.com">link
+		that is unwrapped</a>. It has enough words to demonstrate word wrapping at
+		the golden test width without breaking anything.
+	</p>
+
+	<h2>Lists</h2>
+	<ul>
+		<li>first item</li>
+		<li>second item with enough trailing words to force the renderer to wrap
+			this entry onto a continuation line</li>
+		<li>parent item
+			<ul>
+				<li>nested item</li>
+				<li>another nested item
+					<ul><li>deeply nested</li></ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
+
+	<ol>
+		<li>step one</li>
+		<li>step two</li>
+		<li>step three</li>
+		<li>step four</li>
+		<li>step five</li>
+		<li>step six</li>
+		<li>step seven</li>
+		<li>step eight</li>
+		<li>step nine</li>
+		<li>step ten</li>
+	</ol>
+
+	<h2>Code</h2>
+	<pre><code>func main() {
+	fmt.Println("hello")
+}</code></pre>
+
+	<h3>Quotes</h3>
+	<blockquote>
+		<p>A quoted paragraph with <em>emphasis</em> inside of it.</p>
+		<p>A second quoted paragraph.</p>
+	</blockquote>
+
+	<h2>Media</h2>
+	<figure>
+		<img src="x.png" alt="alt text">
+		<figcaption>A captioned figure</figcaption>
+	</figure>
+	<p>A paragraph with an inline image <img src="y.png" alt="a chart"> in the
+		middle of it.</p>
+
+	<hr>
+
+	<table>
+		<thead>
+			<tr><th>Name</th><th>Value</th></tr>
+		</thead>
+		<tbody>
+			<tr><td>Foo</td><td>1</td></tr>
+			<tr><td>Bar</td><td>2</td></tr>
+		</tbody>
+	</table>
+	<!-- a comment that must not appear in the output -->
+</body>
+</html>

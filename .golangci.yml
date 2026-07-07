@@ -44,6 +44,11 @@ linters:
     - gomodguard       # deprecated, replaced by gomodguard_v2 — no allow/block list configured anyway
 
   settings:
+    exhaustive:
+      # External enum-like types with hundreds of constants (HTML tags, node
+      # types) — listing every case is impossible; internal enums stay checked.
+      ignore-enum-types: "html\\.NodeType|atom\\.Atom"
+
     gocognit:
       min-complexity: 32  # ConvertToMarkdownBlocks is a parser — inherently complex
 

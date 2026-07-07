@@ -26,6 +26,19 @@ func ReaderModeMetaBlock(url, author, timeAgo string, id, points int, enableNerd
 	return metaBlock(url, url, author, timeAgo, id, points, enableNerdFonts, bottomLeft, "", width) + newParagraph
 }
 
+// ReaderModeURLBlock is the reader-mode header for standalone URLs, where no
+// story metadata (author, points, ID) is available.
+func ReaderModeURLBlock(url string, enableNerdFonts bool, width int) string {
+	s := lipgloss.NewStyle().
+		BorderStyle(lipgloss.RoundedBorder()).
+		PaddingLeft(1).
+		PaddingRight(1).
+		MarginLeft(1).
+		Width(width + borderSize)
+
+	return s.Render(urlLine(url, url, width-paddingSize)+readerModeLabel(enableNerdFonts)) + newParagraph
+}
+
 func CommentSectionMetaBlock(url, domain, author, timeAgo string, id, commentsCount, points, newComments int, enableNerdFonts bool, rootComment string, width int) string {
 	bottomLeft := commentsLabel(commentsCount, enableNerdFonts) + newCommentsLabel(newComments, enableNerdFonts)
 

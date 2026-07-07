@@ -1,27 +1,86 @@
 package article
 
+import "strings"
+
 type blockKind int
 
 const (
-	blockText blockKind = iota
-	blockImage
-	blockH1
-	blockH2
-	blockH3
-	blockH4
-	blockH5
-	blockH6
+	blockParagraph blockKind = iota
+	blockHeading
+	blockList
 	blockQuote
 	blockCode
-	blockList
 	blockTable
+	blockImage
 	blockDivider
-
-	italicStart = "(CLX-ITALIC)"
-	italicStop  = "(CLX-ITALIC-STOP)"
 )
 
 type block struct {
-	Kind blockKind
-	Text string
+	kind  blockKind
+	level int        // blockHeading: 1-6
+	spans []span     // blockParagraph, blockQuote, blockImage (caption)
+	items []listItem // blockList
+	rows  [][]string // blockTable, first row is the header
+	text  string     // blockHeading, blockCode
+}
+
+type inlineFormat int
+
+const (
+	formatPlain inlineFormat = iota
+	formatItalic
+	formatCode
+)
+
+type span struct {
+	text   string
+	format inlineFormat
+}
+
+type listItem struct {
+	depth  int
+	number int // 1-based position for ordered items, 0 for bullets
+	spans  []span
+}
+
+func spanText(spans []span) string {
+	var sb strings.Builder
+	for _, s := range spans {
+		sb.WriteString(s.text)
+	}
+
+	return sb.String()
+}
+
+// plainText returns the unstyled text of a block, used for site-rule matching.
+func (b *block) plainText() string {
+	switch b.kind {
+	case blockHeading, blockCode:
+		return b.text
+
+	case blockParagraph, blockQuote, blockImage:
+		return spanText(b.spans)
+
+	case blockList:
+		var lines []string
+		for _, item := range b.items {
+			lines = append(lines, spanText(item.spans))
+		}
+
+		return strings.Join(lines, "\n")
+
+	case blockTable:
+		var lines []string
+		for _, row := range b.rows {
+			lines = append(lines, strings.Join(row, " "))
+		}
+
+		return strings.Join(lines, "\n")
+
+	case blockDivider:
+		return ""
+
+	default:
+		return ""
+	}
 }

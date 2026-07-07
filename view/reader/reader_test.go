@@ -130,5 +130,8 @@ func TestJumpToHeader(t *testing.T) {
 func parseTestArticle(t *testing.T) *article.Parsed {
 	t.Helper()
 
-	return article.NewParsedFromMarkdown("# Hello\n\nThis is a test paragraph with enough words to cause wrapping at narrow widths.\n\n## Second Section\n\nAnother paragraph here.")
+	return article.NewParsedFromHTML("<h1>Hello</h1>" +
+		"<p>This is a test paragraph with enough words to cause wrapping at narrow widths.</p>" +
+		"<h2>Second Section</h2>" +
+		"<p>Another paragraph here.</p>")
 }

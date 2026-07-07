@@ -1,0 +1,141 @@
+package article
+
+import (
+	"strings"
+	"testing"
+
+	"github.com/bensadeh/circumflex/ansi"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+func TestRenderList_GlyphsByDepth(t *testing.T) {
+	t.Parallel()
+
+	items := []listItem{
+		{depth: 0, spans: []span{{text: "zero"}}},
+		{depth: 1, spans: []span{{text: "one"}}},
+		{depth: 2, spans: []span{{text: "two"}}},
+		{depth: 3, spans: []span{{text: "three"}}},
+		{depth: 4, spans: []span{{text: "four"}}},
+	}
+
+	lines := strings.Split(renderList(items, 80), "\n")
+
+	require.Len(t, lines, 5)
+	assert.Equal(t, "  - zero", lines[0])
+	assert.Equal(t, "    • one", lines[1])
+	assert.Equal(t, "      ◦ two", lines[2])
+	assert.Equal(t, "        ▪ three", lines[3])
+	assert.Equal(t, "          ▫ four", lines[4])
+}
+
+func TestRenderList_NumberAlignment(t *testing.T) {
+	t.Parallel()
+
+	var items []listItem
+	for i := 1; i <= 10; i++ {
+		items = append(items, listItem{number: i, spans: []span{{text: "item"}}})
+	}
+
+	lines := strings.Split(renderList(items, 80), "\n")
+
+	require.Len(t, lines, 10)
+	assert.Equal(t, "   1. item", lines[0])
+	assert.Equal(t, "  10. item", lines[9])
+}
+
+func TestRenderList_WrapsWithAlignedContinuation(t *testing.T) {
+	t.Parallel()
+
+	items := []listItem{{spans: []span{{text: "a list item long enough that it must wrap"}}}}
+
+	lines := strings.Split(renderList(items, 30), "\n")
+
+	require.Greater(t, len(lines), 1)
+	assert.True(t, strings.HasPrefix(lines[0], "  - a"))
+	assert.True(t, strings.HasPrefix(lines[1], "    "), "continuation should align past the bullet")
+}
+
+func TestRenderHeading_MarkerAndIndent(t *testing.T) {
+	t.Parallel()
+
+	h1 := ansi.Strip(renderHeading(1, "Top", 80))
+	assert.Equal(t, "■ Top", h1)
+
+	h3 := ansi.Strip(renderHeading(3, "Deep", 80))
+	assert.Equal(t, "    ■ Deep", h3)
+}
+
+func TestRenderQuote_PrefixesIndentBar(t *testing.T) {
+	t.Parallel()
+
+	quote := renderQuote([]span{{text: "quoted words"}}, 80)
+
+	for line := range strings.SplitSeq(ansi.Strip(quote), "\n") {
+		assert.True(t, strings.HasPrefix(line, "   ▎"), "got %q", line)
+	}
+}
+
+func TestRenderCode_IndentsAllLines(t *testing.T) {
+	t.Parallel()
+
+	code := ansi.Strip(renderCode("line one\nline two", 80))
+
+	assert.Equal(t, "  line one\n  line two", code)
+}
+
+func TestRenderImage_LabelAndCaption(t *testing.T) {
+	t.Parallel()
+
+	image := ansi.Strip(renderImage([]span{{text: "a caption"}}, 80))
+
+	assert.Equal(t, "  ●●● Image a caption", image)
+}
+
+func TestRenderTable_AlignsColumns(t *testing.T) {
+	t.Parallel()
+
+	rows := [][]string{
+		{"Name", "Value"},
+		{"Foo", "1"},
+		{"Longer", "2"},
+	}
+
+	lines := strings.Split(ansi.Strip(renderTable(rows, 80)), "\n")
+
+	require.Len(t, lines, 4)
+	assert.Equal(t, "Name    Value", lines[0])
+	assert.Equal(t, "------  -----", lines[1])
+	assert.Equal(t, "Foo     1", lines[2])
+	assert.Equal(t, "Longer  2", lines[3])
+}
+
+func TestRenderDivider_FitsWidth(t *testing.T) {
+	t.Parallel()
+
+	divider := ansi.Strip(renderDivider(20))
+
+	assert.Equal(t, "  "+strings.Repeat("-", 16), divider)
+}
+
+func TestRenderBlocks_JoinsWithBlankLine(t *testing.T) {
+	t.Parallel()
+
+	blocks := []block{
+		{kind: blockParagraph, spans: []span{{text: "first"}}},
+		{kind: blockParagraph, spans: []span{{text: "second"}}},
+	}
+
+	assert.Equal(t, "first\n\nsecond", renderBlocks(blocks, 80))
+}
+
+func TestRenderSpans_ItalicInvertsInsideQuotes(t *testing.T) {
+	t.Parallel()
+
+	spans := []span{{text: "emphasis", format: formatItalic}}
+
+	assert.Contains(t, renderSpans(spans, false), ansi.Italic+"emphasis"+ansi.ItalicOff)
+	assert.Contains(t, renderSpans(spans, true), ansi.ItalicOff+"emphasis"+ansi.Italic)
+}

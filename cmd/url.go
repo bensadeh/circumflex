@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/view/reader"
 
@@ -26,12 +27,16 @@ func urlCmd() *cobra.Command {
 
 			url := args[0]
 
-			content, err := article.Fetch(cmd.Context(), url, readerWidth(config.ArticleWidth))
+			parsed, err := article.Parse(cmd.Context(), url)
 			if err != nil {
 				return fmt.Errorf("could not read article: %w", err)
 			}
 
-			return reader.Run(content, "Reader Mode", reader.Meta{URL: url})
+			width := readerWidth(config.ArticleWidth)
+			header := meta.ReaderModeURLBlock(url, config.EnableNerdFonts, width)
+			content := parsed.RenderWithHeader(width, header)
+
+			return reader.Run(content, "Reader Mode", reader.Meta{URL: url, NerdFonts: config.EnableNerdFonts})
 		},
 	}
 }

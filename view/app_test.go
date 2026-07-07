@@ -416,7 +416,7 @@ func TestArticleReady_WithError(t *testing.T) {
 }
 
 func testParsedArticle() *article.Parsed {
-	return article.NewParsedFromMarkdown("# Test\n\nArticle content for the reader view.")
+	return article.NewParsedFromHTML("<h1>Test</h1><p>Article content for the reader view.</p>")
 }
 
 func TestArticleReady_WithParsedArticle(t *testing.T) {

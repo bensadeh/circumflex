@@ -4,7 +4,9 @@ import (
 	"fmt"
 
 	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/style"
+	"github.com/bensadeh/circumflex/timeago"
 	"github.com/bensadeh/circumflex/view/reader"
 
 	"github.com/spf13/cobra"
@@ -40,12 +42,26 @@ func articleCmd() *cobra.Command {
 				return fmt.Errorf("no link associated with ID %d", id)
 			}
 
-			content, err := article.Fetch(cmd.Context(), item.URL, readerWidth(config.ArticleWidth))
+			parsed, err := article.Parse(cmd.Context(), item.URL)
 			if err != nil {
 				return fmt.Errorf("could not read article: %w", err)
 			}
 
-			return reader.Run(content, item.Title, reader.Meta{URL: item.URL, ID: item.ID})
+			articleMeta := reader.Meta{
+				URL:       item.URL,
+				Author:    item.Author,
+				TimeAgo:   timeago.RelativeTime(item.Time),
+				ID:        item.ID,
+				Points:    item.Points,
+				NerdFonts: config.EnableNerdFonts,
+			}
+
+			width := readerWidth(config.ArticleWidth)
+			header := meta.ReaderModeMetaBlock(articleMeta.URL, articleMeta.Author, articleMeta.TimeAgo,
+				articleMeta.ID, articleMeta.Points, articleMeta.NerdFonts, width)
+			content := parsed.RenderWithHeader(width, header)
+
+			return reader.Run(content, item.Title, articleMeta)
 		},
 	}
 }
