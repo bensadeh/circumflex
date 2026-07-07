@@ -252,3 +252,16 @@ func friendlyError(err error) string {
 
 	return msg
 }
+
+// showDetailError surfaces a failed story load: centered in the wide layout's
+// detail pane, where the spinner for that load just was, or on the status bar
+// in the narrow layout, which keeps the previous view on screen.
+func (m *model) showDetailError(err error) tea.Cmd {
+	if m.isWide() {
+		m.detailErr = friendlyError(err)
+
+		return nil
+	}
+
+	return m.status.NewStatusMessageWithDuration(friendlyError(err), statusMessageLong)
+}

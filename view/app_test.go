@@ -337,6 +337,20 @@ func TestTimeRefreshTick_ReschedulesInEveryState(t *testing.T) {
 	assert.NotNil(t, cmd, "tick in help screen must reschedule the next refresh")
 }
 
+// While a story loads in the narrow layout the front page stays up, dimmed;
+// the selected story carries the same muted reading marker the wide layout
+// uses instead of dimming into the rest.
+func TestNarrowLoading_SelectedStoryShowsReadingMarker(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, _ = m.Update(keyMsg("enter"))
+	require.True(t, m.fetching)
+
+	view := m.View()
+	assert.Contains(t, view, "\x1b[100m", "loading story should render on the bright-black bar")
+	assert.NotContains(t, view, "\x1b[7m", "loading story should not keep the browsing highlight")
+}
+
 // In the narrow layout, J/K story navigation must keep the open story on
 // screen while the next one loads instead of flashing the front page.
 func TestNarrowAdjacentStory_StaysOnOpenStory(t *testing.T) {

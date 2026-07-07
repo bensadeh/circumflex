@@ -25,10 +25,9 @@ const (
 	SelectionRemoveFavorite
 )
 
-// Frame carries the per-render facts the pane cannot know itself: how it is
-// being laid out and whether a story is open or loading next to it.
+// Frame carries the per-render facts the pane cannot know itself: whether a
+// story is open or loading in the detail pane.
 type Frame struct {
-	Wide          bool // rendering as the left pane of the wide layout
 	DetailOpen    bool // the detail pane is open: comments, article, or help
 	DetailLoading bool // a story's comments or article is being fetched
 	Selection     Selection

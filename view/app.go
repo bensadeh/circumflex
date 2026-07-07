@@ -53,6 +53,11 @@ type model struct {
 	detailFetch   bool // the in-flight fetch loads a story's comments or article, not the list
 	rollbackIndex int  // category index to restore if the fetch fails or is cancelled
 
+	// detailErr is a failed story load's message, centered in the wide
+	// layout's detail pane until the next keypress dismisses it. The narrow
+	// layout surfaces the same errors on the status bar instead.
+	detailErr string
+
 	helpViewport viewport.Model
 
 	memorialErr error
@@ -107,7 +112,6 @@ func (m *model) updatePagination() {
 // listFrame collects the per-render facts the list pane cannot know itself.
 func (m *model) listFrame() list.Frame {
 	f := list.Frame{
-		Wide:          m.isWide(),
 		DetailOpen:    m.detail != nil || m.screen == screenHelp,
 		DetailLoading: m.detailLoading(),
 	}

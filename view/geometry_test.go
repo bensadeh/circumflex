@@ -1,6 +1,7 @@
 package view
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -70,6 +71,20 @@ var geometrySurfaces = []geometrySurface{
 	}},
 	{"help", func(m *model) *model {
 		m.screen = screenHelp
+
+		return m
+	}},
+	{"loading", func(m *model) *model {
+		m, _ = m.Update(keyMsg("enter"))
+
+		return m
+	}},
+	{"loaderror", func(m *model) *model {
+		m, _ = m.Update(keyMsg("enter"))
+		m, _ = m.Update(message.CommentTreeDataReady{
+			Err:     errors.New("a load error message long enough to wrap in the narrowest detail pane"),
+			FetchID: m.fetchID,
+		})
 
 		return m
 	}},

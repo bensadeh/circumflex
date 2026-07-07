@@ -52,11 +52,13 @@ func (m *Model) dimmed(f Frame) bool {
 	return m.InTransition() || f.DetailOpen || f.DetailLoading
 }
 
-// detailOpen reports whether the detail pane is open or loading in the wide
-// layout, in which case the selected row carries the muted marker; for an
-// open story that is the reading marker J/K move story to story.
+// detailOpen reports whether a story is open or loading, in which case the
+// selected row carries the muted marker; for an open story that is the
+// reading marker J/K move story to story. The narrow layout only shows the
+// list in this state while a story loads, so the marker reads the same in
+// both layouts.
 func (m *Model) detailOpen(f Frame) bool {
-	return f.Wide && (f.DetailOpen || f.DetailLoading)
+	return f.DetailOpen || f.DetailLoading
 }
 
 func (m *Model) PaginatorView() string {

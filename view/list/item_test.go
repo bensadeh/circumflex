@@ -27,7 +27,7 @@ func TestRenderItem_OpenStoryShowsReadingMarker(t *testing.T) {
 	})
 	m.Resize(123, 21)
 
-	f := Frame{Wide: true, DetailOpen: true}
+	f := Frame{DetailOpen: true}
 	require.True(t, m.dimmed(f))
 	require.True(t, m.detailOpen(f))
 
@@ -56,7 +56,7 @@ func TestRenderItem_OpenStoryBarSurvivesHighlightedTokens(t *testing.T) {
 	})
 	m.Resize(123, 21)
 
-	f := Frame{Wide: true, DetailOpen: true}
+	f := Frame{DetailOpen: true}
 
 	var open strings.Builder
 

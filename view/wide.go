@@ -6,6 +6,7 @@ import (
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/style"
+	"github.com/bensadeh/circumflex/view/pane"
 
 	"charm.land/lipgloss/v2"
 	xansi "github.com/charmbracelet/x/ansi"
@@ -70,7 +71,13 @@ func (m *model) detailPaneView() string {
 	// loading feedback always appears in the same spot. Checked before the
 	// screen so a J/K fetch spins instead of showing the outgoing story.
 	case m.status.showSpinner:
-		return m.placeholderPane(m.status.spinnerView())
+		return m.loadingPane()
+
+	// A failed story load parks its error here until the next keypress;
+	// checked before the views so a J/K failure doesn't silently fall back
+	// to the story it navigated away from.
+	case m.detailErr != "":
+		return m.placeholderPane(m.detailErrView())
 
 	case m.screen == screenHelp:
 		return m.helpView()
@@ -81,6 +88,34 @@ func (m *model) detailPaneView() string {
 	default:
 		return m.placeholderPane(style.Faint("Select a story"))
 	}
+}
+
+// loadingPane is the detail pane while a fetch spins. A story fetch knows its
+// story up front — the selection moves before the fetch starts — so the title
+// heads the pane immediately, unbolded until the content arrives. A category
+// fetch loads the list itself and has no story to name.
+func (m *model) loadingPane() string {
+	spinner := m.status.spinnerView()
+
+	title := m.list.SelectedItem().Title
+	if !m.detailLoading() || title == "" {
+		return m.placeholderPane(spinner)
+	}
+
+	w := m.detailWidth()
+	body := lipgloss.Place(w, m.frame().PaneContentHeight(), lipgloss.Center, lipgloss.Center, spinner)
+
+	return pane.LoadingTitleHeader(title, m.config.EnableNerdFonts, layout.HeaderLeftMargin, w) +
+		"\n" + body + "\n" + m.bottomBar(w) + "\n"
+}
+
+// detailErrView wraps the load error to the pane so placeholderPane can
+// center the whole block.
+func (m *model) detailErrView() string {
+	return lipgloss.NewStyle().
+		Width(max(1, m.detailWidth()-2*layout.HeaderLeftMargin)).
+		Align(lipgloss.Center).
+		Render(m.detailErr)
 }
 
 // placeholderPane frames centered content with the same header and footer

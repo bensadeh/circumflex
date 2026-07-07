@@ -15,17 +15,28 @@ import (
 // TitleHeader renders the bold, highlighted story title over an underline
 // separator spanning the screen.
 func TitleHeader(title string, enableNerdFonts bool, leftMargin, screenWidth int) string {
+	return titleHeader(title, syntax.HeadlineInCommentSection, ansi.Bold, enableNerdFonts, leftMargin, screenWidth)
+}
+
+// LoadingTitleHeader is TitleHeader without the bold: the detail pane shows
+// it while the story loads, so the title gains its full weight only once the
+// content is in.
+func LoadingTitleHeader(title string, enableNerdFonts bool, leftMargin, screenWidth int) string {
+	return titleHeader(title, syntax.Unselected, "", enableNerdFonts, leftMargin, screenWidth)
+}
+
+func titleHeader(title string, highlight syntax.HighlightType, baseStyle string, enableNerdFonts bool, leftMargin, screenWidth int) string {
 	margin := strings.Repeat(" ", leftMargin)
 	maxTitleWidth := max(0, screenWidth-leftMargin)
 	t := syntax.ReplaceSpecialContentTags(title, enableNerdFonts)
 	t = xansi.Truncate(t, maxTitleWidth, "…")
 
-	t = syntax.HighlightYCStartupsInHeadlines(t, syntax.HeadlineInCommentSection, enableNerdFonts)
-	t = syntax.HighlightYear(t, syntax.HeadlineInCommentSection)
-	t = syntax.HighlightHackerNewsHeadlines(t, syntax.HeadlineInCommentSection)
-	t = syntax.HighlightSpecialContent(t, syntax.HeadlineInCommentSection, enableNerdFonts)
+	t = syntax.HighlightYCStartupsInHeadlines(t, highlight, enableNerdFonts)
+	t = syntax.HighlightYear(t, highlight)
+	t = syntax.HighlightHackerNewsHeadlines(t, highlight)
+	t = syntax.HighlightSpecialContent(t, highlight, enableNerdFonts)
 
-	row := xansi.Truncate(margin+ansi.Bold+t+ansi.Reset, screenWidth, "")
+	row := xansi.Truncate(margin+baseStyle+t+ansi.Reset, screenWidth, "")
 
 	return row + "\n" + header.Underline(screenWidth)
 }

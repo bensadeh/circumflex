@@ -130,6 +130,12 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 		return m, tea.Batch(cmds...)
 	}
 
+	// A load error parked in the detail pane dismisses on the next keypress,
+	// which then acts as normal.
+	if _, ok := msg.(tea.KeyPressMsg); ok {
+		m.detailErr = ""
+	}
+
 	// Route to the active view through a single exit so cmds gathered above
 	// (spinner ticks, the time-refresh reschedule) always survive delegation.
 	switch {
@@ -257,7 +263,7 @@ func (m *model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*m
 	// On error the screen stays where the fetch started: the front page keeps
 	// its dimmed list, and J/K keeps the story that was already open.
 	if msg.Err != nil {
-		cmds = append(cmds, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong))
+		cmds = append(cmds, m.showDetailError(msg.Err))
 
 		return m, tea.Batch(cmds...)
 	}
@@ -287,7 +293,7 @@ func (m *model) handleArticleReady(msg message.ArticleReady) (*model, tea.Cmd) {
 	// On error the screen stays where the fetch started, like the comment
 	// section above.
 	if msg.Err != nil {
-		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
+		return m, m.showDetailError(msg.Err)
 	}
 
 	m.detail = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.detailWidth(), m.height, reader.Meta{

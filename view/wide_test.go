@@ -1,6 +1,7 @@
 package view
 
 import (
+	"errors"
 	"strings"
 	"testing"
 
@@ -122,6 +123,43 @@ func TestWideView_LeftPaneDimsOnceWhileStoryIsOpen(t *testing.T) {
 	m, _ = m.Update(message.CommentViewQuit{})
 	require.Equal(t, screenList, m.screen)
 	assert.Equal(t, browsing, m.browsingView(), "left pane should restore when the story closes")
+}
+
+// A story fetch heads the detail pane with the incoming story's title right
+// away — unbolded until the content arrives and the full header takes over.
+func TestWideView_LoadingShowsUnboldedTitle(t *testing.T) {
+	m := newWideTestModel(t)
+
+	m, _ = m.Update(keyMsg("enter"))
+	require.True(t, m.fetching)
+
+	loading := m.detailPaneView()
+	assert.Contains(t, xansi.Strip(loading), "First item")
+	assert.NotContains(t, loading, "\x1b[1m", "loading title must not be bold")
+
+	thread := comment.ToThread(&hn.CommentTree{ID: 1, Title: "First item", CommentsCount: 5})
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
+	assert.Contains(t, m.detailPaneView(), "\x1b[1m", "the opened story's title regains its bold")
+}
+
+// A story load that fails parks its error centered in the detail pane — not
+// on the status bar — until the next keypress dismisses it.
+func TestWideView_StoryLoadErrorShowsInPane(t *testing.T) {
+	m := newWideTestModel(t)
+	openTestComments(t, m)
+
+	openAdjacent(t, m, "J")
+	require.True(t, m.fetching)
+
+	m, _ = m.Update(message.CommentTreeDataReady{Err: errors.New("boom"), FetchID: m.fetchID})
+
+	assert.Contains(t, xansi.Strip(m.detailPaneView()), "Boom")
+	assert.Empty(t, m.status.message, "wide layout errors bypass the status bar")
+
+	m, _ = m.Update(keyMsg("j"))
+	assert.Empty(t, m.detailErr)
+	assert.NotContains(t, xansi.Strip(m.detailPaneView()), "Boom",
+		"the next keypress dismisses the error")
 }
 
 // openAdjacent presses J or K in the open detail view and delivers the

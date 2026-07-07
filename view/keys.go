@@ -204,6 +204,7 @@ func (m *model) startFetch(timeout time.Duration) tea.Cmd {
 	m.fetchID++
 	m.fetching = true
 	m.detailFetch = false
+	m.detailErr = ""
 	m.rollbackIndex = m.cat.CurrentIndex()
 
 	if timeout > 0 {
@@ -351,7 +352,7 @@ func (m *model) handleEnterReaderMode() tea.Cmd {
 	selected := m.list.SelectedItem()
 
 	if err := article.Validate(selected.Title, selected.Domain); err != nil {
-		return m.status.NewStatusMessageWithDuration(friendlyError(err), statusMessageLong)
+		return m.showDetailError(err)
 	}
 
 	startSpinnerCmd := m.startDetailFetch(readerModeTimeout)
@@ -394,7 +395,7 @@ func (m *model) handleOpenAdjacentStory(msg message.OpenAdjacentStory) tea.Cmd {
 	// current story open and the selection in place.
 	if fromReader {
 		if err := article.Validate(items[newIndex].Title, items[newIndex].Domain); err != nil {
-			return m.status.NewStatusMessageWithDuration(friendlyError(err), statusMessageLong)
+			return m.showDetailError(err)
 		}
 	}
 
