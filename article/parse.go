@@ -47,6 +47,16 @@ type domParser struct {
 	images []block // images seen in inline flow, emitted after their paragraph
 }
 
+// Readability synthesizes elements (e.g. div-to-p conversion) with only the
+// tag name set, so DataAtom alone misidentifies them as unknown elements.
+func nodeAtom(n *html.Node) atom.Atom {
+	if n.DataAtom != 0 {
+		return n.DataAtom
+	}
+
+	return atom.Lookup([]byte(n.Data))
+}
+
 func (p *domParser) walkChildren(n *html.Node) {
 	for c := range n.ChildNodes() {
 		p.walk(c)
@@ -66,7 +76,7 @@ func (p *domParser) walk(n *html.Node) {
 		return
 	}
 
-	switch n.DataAtom {
+	switch nodeAtom(n) {
 	case atom.Script, atom.Style, atom.Noscript, atom.Template, atom.Iframe, atom.Head,
 		atom.Meta, atom.Link, atom.Title, atom.Form, atom.Button, atom.Input, atom.Select,
 		atom.Textarea, atom.Nav, atom.Svg:
@@ -154,7 +164,7 @@ func hasBlockDescendant(n *html.Node) bool {
 			continue
 		}
 
-		switch c.DataAtom {
+		switch nodeAtom(c) {
 		case atom.P, atom.Div, atom.Ul, atom.Ol, atom.Table, atom.Pre, atom.Blockquote,
 			atom.H1, atom.H2, atom.H3, atom.H4, atom.H5, atom.H6, atom.Figure, atom.Hr,
 			atom.Section, atom.Article:
@@ -204,7 +214,7 @@ func (p *domParser) parseFigure(n *html.Node) {
 			continue
 		}
 
-		switch c.DataAtom {
+		switch nodeAtom(c) {
 		case atom.Img:
 			if img == nil {
 				img = c
@@ -247,7 +257,7 @@ func (p *domParser) parseTable(n *html.Node) {
 				continue
 			}
 
-			switch c.DataAtom {
+			switch nodeAtom(c) {
 			case atom.Thead, atom.Tbody, atom.Tfoot:
 				visitRows(c)
 
@@ -275,7 +285,7 @@ func tableRow(tr *html.Node) []string {
 	empty := true
 
 	for c := range tr.ChildNodes() {
-		if c.Type != html.ElementNode || (c.DataAtom != atom.Td && c.DataAtom != atom.Th) {
+		if c.Type != html.ElementNode || (nodeAtom(c) != atom.Td && nodeAtom(c) != atom.Th) {
 			continue
 		}
 
@@ -295,13 +305,13 @@ func tableRow(tr *html.Node) []string {
 }
 
 func parseListItems(list *html.Node, depth int, images *[]block) []listItem {
-	ordered := list.DataAtom == atom.Ol
+	ordered := nodeAtom(list) == atom.Ol
 	number := startNumber(list) - 1
 
 	var items []listItem
 
 	for li := range list.ChildNodes() {
-		if li.Type != html.ElementNode || li.DataAtom != atom.Li {
+		if li.Type != html.ElementNode || nodeAtom(li) != atom.Li {
 			continue
 		}
 
@@ -314,7 +324,7 @@ func parseListItems(list *html.Node, depth int, images *[]block) []listItem {
 		var nested []listItem
 
 		for c := range li.ChildNodes() {
-			if c.Type == html.ElementNode && (c.DataAtom == atom.Ul || c.DataAtom == atom.Ol) {
+			if c.Type == html.ElementNode && (nodeAtom(c) == atom.Ul || nodeAtom(c) == atom.Ol) {
 				nested = append(nested, parseListItems(c, depth+1, images)...)
 
 				continue
@@ -402,7 +412,7 @@ func preText(n *html.Node) string {
 		case c.Type == html.TextNode:
 			sb.WriteString(ansi.Strip(c.Data))
 
-		case c.Type == html.ElementNode && c.DataAtom == atom.Br:
+		case c.Type == html.ElementNode && nodeAtom(c) == atom.Br:
 			sb.WriteByte('\n')
 
 		case c.Type == html.ElementNode:
@@ -447,7 +457,7 @@ func inlineSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 		return nil
 	}
 
-	switch n.DataAtom {
+	switch nodeAtom(n) {
 	case atom.Script, atom.Style, atom.Noscript, atom.Template, atom.Svg:
 		return nil
 

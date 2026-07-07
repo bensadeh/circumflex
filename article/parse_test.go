@@ -189,6 +189,29 @@ func TestParseBlocks_ImplicitParagraphInContainer(t *testing.T) {
 	assert.Equal(t, "real paragraph", blocks[1].plainText())
 }
 
+// Readability's div-to-p conversion creates elements with an empty DataAtom;
+// the walker must classify them by tag name, not atom.
+func TestParseBlocks_SynthesizedNodesWithoutAtoms(t *testing.T) {
+	t.Parallel()
+
+	node, err := html.Parse(strings.NewReader(
+		"<div><p>assistant · Claude Fable 5</p> <p>I could reasonably skip it</p></div><ul><li>item</li></ul>"))
+	require.NoError(t, err)
+
+	for n := range node.Descendants() {
+		n.DataAtom = 0
+	}
+
+	blocks := parseBlocks(node)
+
+	require.Len(t, blocks, 3)
+	assert.Equal(t, blockParagraph, blocks[0].kind)
+	assert.Equal(t, "assistant · Claude Fable 5", blocks[0].plainText())
+	assert.Equal(t, blockParagraph, blocks[1].kind)
+	assert.Equal(t, "I could reasonably skip it", blocks[1].plainText())
+	assert.Equal(t, blockList, blocks[2].kind)
+}
+
 func TestParseBlocks_BlockContentInsideCustomElement(t *testing.T) {
 	t.Parallel()
 
