@@ -27,7 +27,6 @@ func (discardLogger) Errorf(string, ...any) {}
 func (discardLogger) Warnf(string, ...any)  {}
 func (discardLogger) Debugf(string, ...any) {}
 
-// fetchDocument fetches a page and returns the readability-cleaned article DOM.
 func fetchDocument(ctx context.Context, url string, parsedURL *nurl.URL) (*html.Node, error) {
 	client := resty.New()
 

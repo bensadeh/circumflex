@@ -98,6 +98,57 @@ func TestRulesForHost_MatchesSubdomainsOnly(t *testing.T) {
 	assert.False(t, found)
 }
 
+func TestSiteRules_Merge(t *testing.T) {
+	t.Parallel()
+
+	shared := siteRules{
+		domains:             []string{"example.com"},
+		dropBlockContaining: []string{"shared junk"},
+	}
+	specific := siteRules{
+		domains:       []string{"example.com"},
+		stopAtHeading: []string{"Related Stories"},
+		dropInline:    []*regexp.Regexp{reWikipediaRef},
+	}
+
+	merged := shared.merge(specific)
+
+	assert.Equal(t, []string{"shared junk"}, merged.dropBlockContaining)
+	assert.Equal(t, []string{"Related Stories"}, merged.stopAtHeading)
+	assert.Len(t, merged.dropInline, 1)
+}
+
+func TestApplySiteRules_StopAtBlockEquals(t *testing.T) {
+	t.Parallel()
+
+	blocks := []block{
+		paragraph("the story"),
+		paragraph("You may also be interested in:"),
+		paragraph("trailing links"),
+	}
+
+	out := applySiteRules(blocks, "www.bbc.co.uk")
+
+	require.Len(t, out, 1)
+	assert.Equal(t, "the story", out[0].plainText())
+}
+
+func TestApplySiteRules_DropBlockMatching(t *testing.T) {
+	t.Parallel()
+
+	blocks := []block{
+		paragraph("real content"),
+		paragraph("84 Comments"),
+		paragraph("Comments were 84 times better here"),
+	}
+
+	out := applySiteRules(blocks, "arstechnica.com")
+
+	require.Len(t, out, 2)
+	assert.Equal(t, "real content", out[0].plainText())
+	assert.Equal(t, "Comments were 84 times better here", out[1].plainText())
+}
+
 func TestDropInline_LeavesOtherBlocksAlone(t *testing.T) {
 	t.Parallel()
 

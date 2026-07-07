@@ -193,8 +193,8 @@ func renderCode(text string, width int) string {
 	return style.PrefixLines(styleLines(wrapped, style.Faint), blockIndent)
 }
 
-// styleLines styles each line separately: lipgloss pads multi-line strings
-// to a uniform width, which would leave trailing whitespace on every line.
+// Styling line by line, because lipgloss pads multi-line strings to a uniform
+// width, leaving trailing whitespace on every line.
 func styleLines(text string, styleFn func(string) string) string {
 	lines := strings.Split(text, "\n")
 	for i, line := range lines {

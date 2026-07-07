@@ -18,9 +18,6 @@ type Parsed struct {
 	blocks []block
 }
 
-// Parse fetches an article and converts it to the intermediate block
-// representation: readability extracts the readable DOM, the walker maps it
-// to blocks, and per-site rules strip known boilerplate.
 func Parse(ctx context.Context, url string) (*Parsed, error) {
 	parsedURL, err := nurl.ParseRequestURI(url)
 	if err != nil {
@@ -38,8 +35,7 @@ func Parse(ctx context.Context, url string) (*Parsed, error) {
 	return &Parsed{blocks: blocks}, nil
 }
 
-// NewParsedFromHTML creates a Parsed value from an HTML fragment, bypassing
-// the network fetch and readability. Intended for tests.
+// NewParsedFromHTML skips fetching and readability extraction; for tests.
 func NewParsedFromHTML(src string) *Parsed {
 	node, err := html.Parse(strings.NewReader(src))
 	if err != nil {

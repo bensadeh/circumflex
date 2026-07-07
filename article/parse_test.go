@@ -206,6 +206,18 @@ func TestParseBlocks_SkipsEmptyContent(t *testing.T) {
 	assert.Empty(t, blocks)
 }
 
+func TestParseBlocks_DedupesConsecutiveDuplicates(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<img src="a.png" alt="hero"><img src="b.png" alt="hero">`+
+		`<p>Credit: Getty</p><p>Credit: Getty</p><p>Credit: Getty was here twice</p>`) //nolint:dupword // duplication is what is being tested
+
+	require.Len(t, blocks, 3)
+	assert.Equal(t, blockImage, blocks[0].kind)
+	assert.Equal(t, "Credit: Getty", blocks[1].plainText())
+	assert.Equal(t, "Credit: Getty was here twice", blocks[2].plainText())
+}
+
 func TestCollapseWhitespace(t *testing.T) {
 	t.Parallel()
 
@@ -218,6 +230,8 @@ func TestCollapseWhitespace(t *testing.T) {
 		{" a ", " a "},
 		{"\n", " "},
 		{"", ""},
+		{"a\u200bb", "ab"},
+		{"a\u00adb", "ab"},
 	}
 
 	for _, tt := range tests {

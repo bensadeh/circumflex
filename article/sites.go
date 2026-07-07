@@ -6,29 +6,50 @@ import (
 	"strings"
 )
 
-// siteRules is the per-domain cleanup vocabulary. Rules operate on the block
-// representation before any styling, so matches are against plain text.
+// Rules match against unstyled block text, before any rendering. All entries
+// whose domain matches the page's host are merged, so shared fragments and
+// site-specific additions compose. stopAt* truncates the article from the
+// first match on; dropBlock* removes single blocks; dropInline edits span text.
 type siteRules struct {
 	domains []string
 
-	// stopAtHeading truncates the article at a heading with this exact text.
-	stopAtHeading []string
-
-	// stopAtBlockContaining truncates the article at the first block
-	// containing this text.
+	stopAtHeading         []string
+	stopAtBlockEquals     []string
 	stopAtBlockContaining []string
 
-	// dropBlockEquals removes blocks whose entire text equals this string.
-	dropBlockEquals []string
-
-	// dropBlockContaining removes blocks containing this text.
+	dropBlockEquals     []string
 	dropBlockContaining []string
+	dropBlockMatching   []*regexp.Regexp
 
-	// dropInline deletes matches from the text of every span.
 	dropInline []*regexp.Regexp
 }
 
-var reWikipediaRef = regexp.MustCompile(`\[(\d+|edit)\]`)
+func (rs siteRules) matches(hostname string) bool {
+	for _, domain := range rs.domains {
+		if hostname == domain || strings.HasSuffix(hostname, "."+domain) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (rs siteRules) merge(other siteRules) siteRules {
+	rs.stopAtHeading = append(rs.stopAtHeading, other.stopAtHeading...)
+	rs.stopAtBlockEquals = append(rs.stopAtBlockEquals, other.stopAtBlockEquals...)
+	rs.stopAtBlockContaining = append(rs.stopAtBlockContaining, other.stopAtBlockContaining...)
+	rs.dropBlockEquals = append(rs.dropBlockEquals, other.dropBlockEquals...)
+	rs.dropBlockContaining = append(rs.dropBlockContaining, other.dropBlockContaining...)
+	rs.dropBlockMatching = append(rs.dropBlockMatching, other.dropBlockMatching...)
+	rs.dropInline = append(rs.dropInline, other.dropInline...)
+
+	return rs
+}
+
+var (
+	reWikipediaRef  = regexp.MustCompile(`\[(\d+|edit)\]`)
+	reCommentsCount = regexp.MustCompile(`^\d+ Comments$`)
+)
 
 var allSiteRules = []siteRules{
 	{
@@ -68,6 +89,14 @@ var allSiteRules = []siteRules{
 		},
 	},
 	{
+		domains: []string{"bbc.com", "bbc.co.uk"},
+		stopAtBlockEquals: []string{
+			"--",
+			"You may also be interested in:",
+		},
+		dropBlockContaining: []string{"(Image credit: "},
+	},
+	{
 		domains:             []string{"tomshardware.com"},
 		dropBlockContaining: []string{"(Image credit: "},
 	},
@@ -76,8 +105,13 @@ var allSiteRules = []siteRules{
 		dropBlockContaining: []string{"Credit: "},
 	},
 	{
-		domains:             []string{"arstechnica.com"},
-		dropBlockContaining: []string{"This story originally appeared on "},
+		domains: []string{"arstechnica.com"},
+		dropBlockContaining: []string{
+			"This story originally appeared on ",
+			"Credit: ",
+			"Listing image for first story",
+		},
+		dropBlockMatching: []*regexp.Regexp{reCommentsCount},
 	},
 	{
 		domains:       []string{"macrumors.com"},
@@ -150,8 +184,13 @@ func applySiteRules(blocks []block, hostname string) []block {
 	for _, b := range blocks {
 		b = dropInline(b, rules.dropInline)
 		text := b.plainText()
+		trimmed := strings.TrimSpace(text)
 
 		if b.kind == blockHeading && slices.Contains(rules.stopAtHeading, text) {
+			break
+		}
+
+		if slices.Contains(rules.stopAtBlockEquals, trimmed) {
 			break
 		}
 
@@ -159,11 +198,15 @@ func applySiteRules(blocks []block, hostname string) []block {
 			break
 		}
 
-		if slices.Contains(rules.dropBlockEquals, strings.TrimSpace(text)) {
+		if slices.Contains(rules.dropBlockEquals, trimmed) {
 			continue
 		}
 
 		if containsAny(text, rules.dropBlockContaining) {
+			continue
+		}
+
+		if matchesAny(trimmed, rules.dropBlockMatching) {
 			continue
 		}
 
@@ -174,15 +217,28 @@ func applySiteRules(blocks []block, hostname string) []block {
 }
 
 func rulesForHost(hostname string) (siteRules, bool) {
+	var merged siteRules
+
+	found := false
+
 	for _, rules := range allSiteRules {
-		for _, domain := range rules.domains {
-			if hostname == domain || strings.HasSuffix(hostname, "."+domain) {
-				return rules, true
-			}
+		if rules.matches(hostname) {
+			merged = merged.merge(rules)
+			found = true
 		}
 	}
 
-	return siteRules{}, false
+	return merged, found
+}
+
+func matchesAny(text string, patterns []*regexp.Regexp) bool {
+	for _, pattern := range patterns {
+		if pattern.MatchString(text) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func containsAny(text string, targets []string) bool {

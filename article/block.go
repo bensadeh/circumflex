@@ -52,7 +52,6 @@ func spanText(spans []span) string {
 	return sb.String()
 }
 
-// plainText returns the unstyled text of a block, used for site-rule matching.
 func (b *block) plainText() string {
 	switch b.kind {
 	case blockHeading, blockCode:

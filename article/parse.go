@@ -11,14 +11,34 @@ import (
 	"golang.org/x/net/html/atom"
 )
 
-// parseBlocks converts readability's cleaned DOM into the block representation.
 func parseBlocks(root *html.Node) []block {
 	p := &domParser{}
 	p.walkChildren(root)
 	p.flushInline()
-	normalizeHeadings(p.blocks)
 
-	return p.blocks
+	blocks := dedupeBlocks(p.blocks)
+	normalizeHeadings(blocks)
+
+	return blocks
+}
+
+// Responsive image markup often leaves the same image or credit line twice
+// in readability's output.
+func dedupeBlocks(blocks []block) []block {
+	var out []block
+
+	for _, b := range blocks {
+		if len(out) > 0 {
+			prev := out[len(out)-1]
+			if prev.kind == b.kind && prev.plainText() == b.plainText() {
+				continue
+			}
+		}
+
+		out = append(out, b)
+	}
+
+	return out
 }
 
 type domParser struct {
@@ -302,7 +322,6 @@ func startNumber(list *html.Node) int {
 	return 1
 }
 
-// parseQuote flattens a blockquote's content into spans, one line per inner block.
 func parseQuote(n *html.Node) []span {
 	sub := &domParser{}
 	sub.walkChildren(n)
@@ -375,9 +394,8 @@ func preText(n *html.Node) string {
 	return sb.String()
 }
 
-// collectInline flattens a node's content into styled spans. Anchors and bold
-// are unwrapped to plain text; images are diverted to the images sink so they
-// can be emitted as their own blocks (nil discards them).
+// Anchors and bold have no case below on purpose: they unwrap to plain text.
+// A nil images sink discards images instead of collecting them.
 func collectInline(n *html.Node, format inlineFormat, images *[]block) []span {
 	var spans []span
 
@@ -439,8 +457,6 @@ func inlineSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 	}
 }
 
-// normalizeSpans merges adjacent same-format spans, collapses whitespace
-// across span boundaries, and trims the edges of the sequence.
 func normalizeSpans(spans []span) []span {
 	var out []span
 
@@ -479,13 +495,20 @@ func normalizeSpans(spans []span) []span {
 	return out
 }
 
-// collapseWhitespace applies HTML whitespace rules to a text node: runs of
-// whitespace become a single space, preserved at the edges so that spacing
-// between adjacent nodes survives.
+var invisibleChars = strings.NewReplacer(
+	"\u200b", "", // zero-width space
+	"\ufeff", "", // byte order mark
+	"\u00ad", "", // soft hyphen
+)
+
+// Edge whitespace collapses to a single space rather than nothing so that
+// spacing between adjacent nodes survives.
 func collapseWhitespace(s string) string {
 	if s == "" {
 		return ""
 	}
+
+	s = invisibleChars.Replace(s)
 
 	collapsed := strings.Join(strings.Fields(s), " ")
 	if collapsed == "" {
@@ -530,8 +553,8 @@ func attr(n *html.Node, key string) string {
 	return ""
 }
 
-// normalizeHeadings remaps the heading levels in use to a contiguous 1..n
-// range so that articles starting at h3 still render as top-level sections.
+// Heading levels are remapped to a contiguous 1..n range so that articles
+// starting at h3 still render as top-level sections.
 func normalizeHeadings(blocks []block) {
 	var seen [7]bool
 
