@@ -263,7 +263,10 @@ func friendlyError(err error) string {
 // the returned timeout.
 func (m *model) showDetailError(err error, target screen) tea.Cmd {
 	if m.isWide() {
-		m.detail = newErrorView(friendlyError(err), m.list.SelectedItem().Title, m.config.EnableNerdFonts, m.detailWidth(), m.height)
+		// The placeholder renders from target, not m.detailTarget: validation
+		// errors arrive without a fetch, and the view outlives the fetch state.
+		metaBlock := func(paneWidth int) string { return m.placeholderMetaBlock(paneWidth, target) }
+		m.detail = newErrorView(friendlyError(err), m.list.SelectedItem().Title, m.config.EnableNerdFonts, metaBlock, m.detailWidth(), m.height)
 		m.screen = target
 
 		fetchID := m.fetchID

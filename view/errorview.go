@@ -20,16 +20,18 @@ type errorView struct {
 	title     string
 	nerdFonts bool
 	keymap    pane.CommonKeyMap
+	metaBlock func(paneWidth int) string // the loading pane's placeholder, kept so the box doesn't flash away
 	width     int
 	height    int
 }
 
-func newErrorView(msg, title string, nerdFonts bool, width, height int) *errorView {
+func newErrorView(msg, title string, nerdFonts bool, metaBlock func(paneWidth int) string, width, height int) *errorView {
 	return &errorView{
 		message:   msg,
 		title:     title,
 		nerdFonts: nerdFonts,
 		keymap:    pane.DefaultCommonKeyMap(),
+		metaBlock: metaBlock,
 		width:     width,
 		height:    height,
 	}
@@ -60,15 +62,16 @@ func (v *errorView) Update(msg tea.Msg) tea.Cmd {
 }
 
 // View keeps the failed story's title in the header, unbolded like the
-// loading pane's — the full weight belongs to stories that actually opened.
+// loading pane's — the full weight belongs to stories that actually opened —
+// and the meta block placeholder in its spot, so the transition from loading
+// to error moves nothing.
 func (v *errorView) View() string {
 	wrapped := lipgloss.NewStyle().
 		Width(max(1, v.width-2*layout.HeaderLeftMargin)).
 		Align(lipgloss.Center).
 		Render(v.message)
 
-	body := lipgloss.Place(v.width, max(0, v.height-layout.PaneChromeHeight),
-		lipgloss.Center, lipgloss.Center, wrapped)
+	body := placeholderBody(v.metaBlock(v.width), wrapped, v.width, max(0, v.height-layout.PaneChromeHeight))
 
 	return pane.LoadingTitleHeader(v.title, v.nerdFonts, layout.HeaderLeftMargin, v.width) +
 		"\n" + body + "\n" + pane.FooterSeparator(v.width) + "\n"

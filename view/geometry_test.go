@@ -79,6 +79,11 @@ var geometrySurfaces = []geometrySurface{
 
 		return m
 	}},
+	{"loadingreader", func(m *model) *model {
+		m, _ = m.Update(keyMsg("space"))
+
+		return m
+	}},
 	{"loaderror", func(m *model) *model {
 		m, _ = m.Update(keyMsg("enter"))
 		m, _ = m.Update(message.CommentTreeDataReady{

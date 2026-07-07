@@ -5,6 +5,7 @@ import (
 
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/layout"
+	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/view/pane"
 
@@ -84,10 +85,13 @@ func (m *model) detailPaneView() string {
 	}
 }
 
-// loadingPane is the detail pane while a fetch spins. A story fetch knows its
-// story up front — the selection moves before the fetch starts — so the title
-// heads the pane immediately, unbolded until the content arrives. A category
-// fetch loads the list itself and has no story to name.
+// loadingPane is the detail pane while a fetch spins — the whole terminal in
+// the narrow layout, where a story opened from the list shows the same pane.
+// A story fetch knows its story up front — the selection moves before the
+// fetch starts — so the title heads the pane immediately, unbolded until the
+// content arrives, over a dimmed placeholder for the meta block the loaded
+// view will draw. A category fetch loads the list itself and has no story to
+// name.
 func (m *model) loadingPane() string {
 	spinner := m.status.spinnerView()
 
@@ -97,10 +101,52 @@ func (m *model) loadingPane() string {
 	}
 
 	w := m.detailWidth()
-	body := lipgloss.Place(w, m.frame().PaneContentHeight(), lipgloss.Center, lipgloss.Center, spinner)
 
 	return pane.LoadingTitleHeader(title, m.config.EnableNerdFonts, layout.HeaderLeftMargin, w) +
-		"\n" + body + "\n" + m.bottomBar(w) + "\n"
+		"\n" + m.loadingBody(w) + "\n" + m.bottomBar(w) + "\n"
+}
+
+// loadingBody fills the pane content area with the meta block placeholder
+// over a centered spinner.
+func (m *model) loadingBody(w int) string {
+	box := m.placeholderMetaBlock(w, m.detailTarget)
+
+	return placeholderBody(box, m.status.spinnerView(), w, m.frame().PaneContentHeight())
+}
+
+// placeholderBody stacks the meta block placeholder over content centered in
+// the rest of the pane; a pane too short for both keeps just the content.
+// The box is clamped to the pane here because the error view renders it
+// outside the layouts' pane normalization, and its border has a minimum
+// width panes below the wide floor don't guarantee.
+func placeholderBody(box, content string, w, h int) string {
+	contentHeight := h - lipgloss.Height(box)
+	if contentHeight < 1 {
+		return lipgloss.Place(w, h, lipgloss.Center, lipgloss.Center, content)
+	}
+
+	boxLines := strings.Split(box, "\n")
+	for i, line := range boxLines {
+		boxLines[i] = xansi.Truncate(line, w, "")
+	}
+
+	return strings.Join(boxLines, "\n") + "\n" +
+		lipgloss.Place(w, contentHeight, lipgloss.Center, lipgloss.Center, content)
+}
+
+// placeholderMetaBlock sizes the placeholder to the exact meta block the
+// target view will draw: the reader and the comment section lay theirs out
+// at different widths, and only stories with a link get URL rows. target is
+// a parameter rather than m.detailTarget because the error view can outlive
+// the fetch that spawned it.
+func (m *model) placeholderMetaBlock(paneWidth int, target screen) string {
+	if target == screenReader {
+		return meta.PlaceholderMetaBlock(layout.ReaderContentWidth(paneWidth, m.config.ArticleWidth), true)
+	}
+
+	return meta.PlaceholderMetaBlock(
+		layout.CommentColumnWidth(paneWidth, m.config.CommentWidth),
+		m.list.SelectedItem().Domain != "")
 }
 
 // placeholderPane frames centered content with the same header and footer

@@ -26,6 +26,15 @@ func (m *model) View() string {
 		return m.overlayDetailStatus(m.detail.View())
 	}
 
+	// A story opened from the list shows the same loading pane the wide
+	// layout draws, sized to the whole terminal. J/K from an open story never
+	// gets here: the outgoing story holds the screen (the branch above) until
+	// its replacement arrives. paneLines clamps the pane to the terminal, the
+	// job the wide layout's row-by-row join does.
+	if m.detailLoading() {
+		return strings.Join(paneLines(m.loadingPane(), m.width, m.height), "\n")
+	}
+
 	return m.browsingView()
 }
 
@@ -62,8 +71,10 @@ func (m *model) browsingView() string {
 
 func (m *model) titleView() string {
 	var sv string
-	// In the wide layout the spinner always shows centered in the detail pane
-	// instead, so loading feedback stays in one place for every kind of fetch.
+	// The header spinner covers the one fetch that renders the list while it
+	// spins: a category fetch in the narrow layout. Everything else shows its
+	// feedback in the loading pane — the wide layout for every fetch, the
+	// narrow layout for a story opened from the list.
 	if m.status.showSpinner && !m.isWide() {
 		sv = m.status.spinnerView()
 	}

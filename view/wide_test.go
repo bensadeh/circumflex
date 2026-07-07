@@ -3,6 +3,7 @@ package view
 import (
 	"errors"
 	"io"
+	"slices"
 	"strings"
 	"testing"
 
@@ -141,6 +142,66 @@ func TestWideView_LoadingShowsUnboldedTitle(t *testing.T) {
 	thread := comment.ToThread(&hn.CommentTree{ID: 1, Title: "First item", CommentsCount: 5})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
 	assert.Contains(t, m.detailPaneView(), "\x1b[1m", "the opened story's title regains its bold")
+}
+
+// While a story loads, the pane reserves the meta block's spot with an
+// empty, dimmed box of the same size, so the block neither moves nor resizes
+// when the content arrives.
+func TestWideView_LoadingShowsMetaBlockPlaceholder(t *testing.T) {
+	m := newWideTestModel(t)
+
+	m, _ = m.Update(keyMsg("enter"))
+	require.True(t, m.fetching)
+
+	loading := m.detailPaneView()
+	loadingBox := metaBoxLines(t, loading)
+	assert.Contains(t, loadingBox[0], "\x1b[2m", "placeholder box must render dimmed")
+
+	thread := comment.ToThread(&hn.CommentTree{
+		ID: 1, Title: "First item", CommentsCount: 5,
+		URL: "https://example.com/story", Domain: "example.com",
+	})
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
+
+	loadedBox := metaBoxLines(t, m.detailPaneView())
+	assert.Len(t, loadingBox, len(loadedBox), "placeholder box must be as tall as the loaded meta block")
+	assert.Equal(t,
+		strings.TrimRight(xansi.Strip(loadedBox[0]), " "),
+		strings.TrimRight(xansi.Strip(loadingBox[0]), " "),
+		"placeholder box must be as wide as the loaded meta block")
+}
+
+// The placeholder box survives a failed load: the error view keeps it in
+// place instead of flashing it away with the loading pane.
+func TestWideView_ErrorViewKeepsMetaBlockPlaceholder(t *testing.T) {
+	m := newWideTestModel(t)
+
+	m, _ = m.Update(keyMsg("enter"))
+	require.True(t, m.fetching)
+
+	loadingBox := metaBoxLines(t, m.detailPaneView())
+
+	m, _ = m.Update(message.CommentTreeDataReady{Err: errors.New("server returned status 403"), FetchID: m.fetchID})
+	require.Equal(t, screenComments, m.screen)
+
+	assert.Equal(t, loadingBox, metaBoxLines(t, m.detailPaneView()),
+		"the placeholder box must not move or change when the load fails")
+}
+
+// metaBoxLines returns the view's rows from the meta block's top border down
+// to its bottom border.
+func metaBoxLines(t *testing.T, view string) []string {
+	t.Helper()
+
+	lines := strings.Split(view, "\n")
+
+	top := slices.IndexFunc(lines, func(l string) bool { return strings.ContainsRune(l, '╭') })
+	bottom := slices.IndexFunc(lines, func(l string) bool { return strings.ContainsRune(l, '╰') })
+
+	require.GreaterOrEqual(t, top, 0, "no meta block box in view")
+	require.Greater(t, bottom, top, "meta block box has no bottom border")
+
+	return lines[top : bottom+1]
 }
 
 // A story load that fails swaps the detail pane to an error view — not a

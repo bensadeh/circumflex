@@ -221,10 +221,12 @@ func (m *model) startFetch(timeout time.Duration) tea.Cmd {
 }
 
 // startDetailFetch is startFetch for a story's comments or article: the list
-// stays in place, dimmed, while the detail loads.
-func (m *model) startDetailFetch(timeout time.Duration) tea.Cmd {
+// stays in place, dimmed, while the detail loads. target is the view the
+// fetch opens, so the loading pane can lay out what that view will draw.
+func (m *model) startDetailFetch(timeout time.Duration, target screen) tea.Cmd {
 	cmd := m.startFetch(timeout)
 	m.detailFetch = true
+	m.detailTarget = target
 
 	return cmd
 }
@@ -342,7 +344,7 @@ func (m *model) handleRefresh() tea.Cmd {
 func (m *model) handleEnterComments() tea.Cmd {
 	selected := m.list.SelectedItem()
 
-	startSpinnerCmd := m.startDetailFetch(0)
+	startSpinnerCmd := m.startDetailFetch(0, screenComments)
 	// The comment fetch reports percentages, so its indicator starts at 0%
 	// instead of flashing indeterminate first.
 	setProgressPercent(0)
@@ -364,7 +366,7 @@ func (m *model) handleEnterReaderMode() tea.Cmd {
 		return m.showDetailError(err, screenReader)
 	}
 
-	startSpinnerCmd := m.startDetailFetch(readerModeTimeout)
+	startSpinnerCmd := m.startDetailFetch(readerModeTimeout, screenReader)
 
 	setProgressIndeterminate()
 

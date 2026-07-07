@@ -3,6 +3,7 @@ package meta
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/style"
@@ -41,6 +42,32 @@ func CommentSectionMetaBlock(url, domain, author, timeAgo string, id, commentsCo
 	bottomLeft := commentsLabel(commentsCount, enableNerdFonts) + newCommentsLabel(newComments, enableNerdFonts)
 
 	return metaBlock(url, domain, author, timeAgo, id, points, enableNerdFonts, bottomLeft, rootComment, width)
+}
+
+// PlaceholderMetaBlock is the meta block's loading stand-in: an empty, dimmed
+// box with the same dimensions as the block the loaded view will draw, so the
+// box sits in place from the first frame and the content fills it in without
+// moving it. hasURL mirrors urlLine: stories without a link have no URL rows
+// to reserve.
+func PlaceholderMetaBlock(width int, hasURL bool) string {
+	s := lipgloss.NewStyle().
+		BorderStyle(lipgloss.RoundedBorder()).
+		PaddingLeft(1).
+		PaddingRight(1).
+		MarginLeft(1).
+		Width(width + borderSize)
+
+	contentRows := 2
+	if hasURL {
+		contentRows = 4
+	}
+
+	lines := strings.Split(s.Render(strings.Repeat(newLine, contentRows-1)), newLine)
+	for i, line := range lines {
+		lines[i] = style.Faint(line)
+	}
+
+	return strings.Join(lines, newLine)
 }
 
 func metaBlock(url, domain, author, timeAgo string, id, points int, enableNerdFonts bool, bottomLeft, footer string, width int) string {
