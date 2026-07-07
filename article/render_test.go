@@ -159,3 +159,21 @@ func TestRenderSpans_ItalicInvertsInsideQuotes(t *testing.T) {
 	assert.Contains(t, renderSpans(spans, false), ansi.Italic+"emphasis"+ansi.ItalicOff)
 	assert.Contains(t, renderSpans(spans, true), ansi.ItalicOff+"emphasis"+ansi.Italic)
 }
+
+func TestRenderSpans_Strikethrough(t *testing.T) {
+	t.Parallel()
+
+	spans := []span{{text: "$99", format: formatStrike}}
+
+	assert.Contains(t, renderSpans(spans, false), ansi.Strikethrough+"$99"+ansi.StrikethroughOff)
+}
+
+func TestRenderSpans_Hyperlink(t *testing.T) {
+	t.Parallel()
+
+	spans := []span{{text: "click here", href: "https://example.com"}}
+	out := renderSpans(spans, false)
+
+	assert.Contains(t, out, "8;;https://example.com", "anchor text should carry an OSC 8 hyperlink")
+	assert.Equal(t, "click here", ansi.Strip(out), "hyperlink must not change the visible text")
+}

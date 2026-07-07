@@ -4,6 +4,9 @@ An opening paragraph with italic text, bold text, inline code.Sample()
 and a link that is unwrapped. It has enough words to demonstrate word
 wrapping at the golden test width without breaking anything.
 
+The price was $99 and is now $79. Energy is E = mc², water is H₂O, and
+this footnote survives verbatim[1].
+
   ■ Lists
 
   - first item

@@ -31,11 +31,13 @@ const (
 	formatPlain inlineFormat = iota
 	formatItalic
 	formatCode
+	formatStrike
 )
 
 type span struct {
 	text   string
 	format inlineFormat
+	href   string
 }
 
 type listItem struct {

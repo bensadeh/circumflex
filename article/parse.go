@@ -429,7 +429,7 @@ func preText(n *html.Node) string {
 	return sb.String()
 }
 
-// Anchors and bold have no case below on purpose: they unwrap to plain text.
+// Bold has no case below on purpose: it unwraps to plain text.
 // A nil images sink discards images instead of collecting them.
 func collectInline(n *html.Node, format inlineFormat, images *[]block) []span {
 	var spans []span
@@ -478,8 +478,24 @@ func inlineSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 
 		return collectInline(n, format, images)
 
+	case atom.Del, atom.S, atom.Strike:
+		if format == formatPlain {
+			format = formatStrike
+		}
+
+		return collectInline(n, format, images)
+
 	case atom.Code, atom.Kbd, atom.Samp:
 		return collectInline(n, formatCode, images)
+
+	case atom.A:
+		return linkSpans(n, format, images)
+
+	case atom.Sup:
+		return scriptSpans(n, format, images, superscriptRunes)
+
+	case atom.Sub:
+		return scriptSpans(n, format, images, subscriptRunes)
 
 	case atom.P, atom.Div, atom.Li:
 		spans := []span{{text: " ", format: format}}
@@ -490,6 +506,59 @@ func inlineSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 	default:
 		return collectInline(n, format, images)
 	}
+}
+
+// linkSpans unwraps an anchor to its text but keeps the target as an OSC 8
+// hyperlink, so links stay clickable without changing how they look.
+func linkSpans(n *html.Node, format inlineFormat, images *[]block) []span {
+	spans := collectInline(n, format, images)
+
+	href := attr(n, "href")
+	if !strings.HasPrefix(href, "http://") && !strings.HasPrefix(href, "https://") {
+		return spans
+	}
+
+	for i := range spans {
+		spans[i].href = href
+	}
+
+	return spans
+}
+
+var superscriptRunes = map[rune]rune{
+	'0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
+	'5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
+	'+': '⁺', '-': '⁻', '=': '⁼', '(': '⁽', ')': '⁾', 'n': 'ⁿ', 'i': 'ⁱ',
+}
+
+var subscriptRunes = map[rune]rune{
+	'0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄',
+	'5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉',
+	'+': '₊', '-': '₋', '=': '₌', '(': '₍', ')': '₎',
+}
+
+// scriptSpans converts sup/sub content to Unicode equivalents when every rune
+// has one, and otherwise leaves the content as regular inline text.
+func scriptSpans(n *html.Node, format inlineFormat, images *[]block, mapping map[rune]rune) []span {
+	spans := collectInline(n, format, images)
+
+	text := spanText(spans)
+	if text == "" {
+		return spans
+	}
+
+	var sb strings.Builder
+
+	for _, r := range text {
+		mapped, ok := mapping[r]
+		if !ok {
+			return spans
+		}
+
+		sb.WriteRune(mapped)
+	}
+
+	return []span{{text: sb.String(), format: format}}
 }
 
 func normalizeSpans(spans []span) []span {
@@ -509,10 +578,10 @@ func normalizeSpans(spans []span) []span {
 
 		prevSpace = strings.HasSuffix(text, " ")
 
-		if len(out) > 0 && out[len(out)-1].format == s.format {
+		if len(out) > 0 && out[len(out)-1].format == s.format && out[len(out)-1].href == s.href {
 			out[len(out)-1].text += text
 		} else {
-			out = append(out, span{text: text, format: s.format})
+			out = append(out, span{text: text, format: s.format, href: s.href})
 		}
 	}
 

@@ -170,6 +170,44 @@ func TestParseBlocks_InlineImageBecomesOwnBlock(t *testing.T) {
 	assert.Equal(t, "a chart", blocks[1].plainText())
 }
 
+func TestParseBlocks_Strikethrough(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<p>was <del>$99</del> now $79</p>`)
+
+	require.Len(t, blocks, 1)
+	spans := blocks[0].spans
+	require.Len(t, spans, 3)
+	assert.Equal(t, formatStrike, spans[1].format)
+	assert.Equal(t, "$99", spans[1].text)
+}
+
+func TestParseBlocks_LinksKeepHref(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<p><a href="https://a.com">first</a> and <a href="https://b.com">second</a> and <a href="#fn1">footnote</a></p>`)
+
+	require.Len(t, blocks, 1)
+	spans := blocks[0].spans
+
+	require.Len(t, spans, 4, "different hrefs must not merge; fragment link merges into plain text")
+	assert.Equal(t, "https://a.com", spans[0].href)
+	assert.Empty(t, spans[1].href)
+	assert.Equal(t, "https://b.com", spans[2].href)
+	assert.Equal(t, " and footnote", spans[3].text)
+	assert.Empty(t, spans[3].href)
+}
+
+func TestParseBlocks_SuperscriptAndSubscript(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<p>E = mc<sup>2</sup> and H<sub>2</sub>O and a note<sup>[1]</sup></p>`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, "E = mc² and H₂O and a note[1]", blocks[0].plainText(),
+		"mappable runes convert, unmappable content falls back verbatim")
+}
+
 func TestParseBlocks_IgnoresComments(t *testing.T) {
 	t.Parallel()
 

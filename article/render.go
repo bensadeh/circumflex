@@ -71,28 +71,39 @@ func renderSpans(spans []span, insideQuote bool) string {
 	var sb strings.Builder
 
 	for _, s := range spans {
+		var rendered string
+
 		switch s.format {
 		case formatPlain:
-			sb.WriteString(s.text)
+			rendered = s.text
 
 		case formatItalic:
 			// Quotes are rendered in italics, so italic runs invert instead.
 			if insideQuote {
-				sb.WriteString(ansi.ItalicOff + s.text + ansi.Italic)
+				rendered = ansi.ItalicOff + s.text + ansi.Italic
 			} else {
-				sb.WriteString(ansi.Italic + s.text + ansi.ItalicOff)
+				rendered = ansi.Italic + s.text + ansi.ItalicOff
 			}
 
 		case formatCode:
 			if insideQuote {
-				sb.WriteString(s.text)
+				rendered = s.text
 			} else {
-				sb.WriteString(ansi.Reset + style.CommentBacktick(s.text))
+				rendered = ansi.Reset + style.CommentBacktick(s.text)
 			}
 
+		case formatStrike:
+			rendered = ansi.Strikethrough + s.text + ansi.StrikethroughOff
+
 		default:
-			sb.WriteString(s.text)
+			rendered = s.text
 		}
+
+		if s.href != "" {
+			rendered = lipgloss.NewStyle().Hyperlink(s.href).Render(rendered)
+		}
+
+		sb.WriteString(rendered)
 	}
 
 	return sb.String()
