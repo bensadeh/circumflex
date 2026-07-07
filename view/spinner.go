@@ -40,7 +40,11 @@ func starSpinner() spinner.Spinner {
 	lastSpinnerColor = pick
 	s := lipgloss.NewStyle().Foreground(colors[pick])
 
-	chars := []string{"·", "✻", "✽", "✶", "✳", "✢", "✳", "✶", "✽", "✻"}
+	// Every glyph must be East Asian Narrow: ambiguous-width ones (· U+00B7,
+	// ✽ U+273D, ✳ U+2733) render double-width from a fallback font on some
+	// terminals, so the glyph wobbled horizontally whenever the animation
+	// crossed width classes.
+	chars := []string{"∙", "✻", "❋", "✶", "✻", "✢", "✻", "✶", "❋", "✻"}
 	frames := make([]string, len(chars))
 
 	for i, ch := range chars {
