@@ -55,8 +55,6 @@
   h5 = "green"
   h6 = "white"
   image = "red"
-  bbc_image = "cyan"
-  bbc_caption = "yellow"
 
 [header]
   c = "magenta"

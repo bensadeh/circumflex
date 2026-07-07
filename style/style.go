@@ -107,9 +107,7 @@ var (
 
 	metaIDColor color.Color
 
-	readerBBCImageColor   color.Color
-	readerBBCCaptionColor color.Color
-	readerImageColor      color.Color
+	readerImageColor color.Color
 
 	headerCColor         color.Color
 	headerLColor         color.Color
@@ -175,8 +173,6 @@ func rebuildThemeStyles() {
 	readerH4Style = fg(current.Reader.H4)
 	readerH5Style = fg(current.Reader.H5)
 	readerH6Style = fg(current.Reader.H6)
-	readerBBCImageColor = theme.ParseColor(current.Reader.BBCImage)
-	readerBBCCaptionColor = theme.ParseColor(current.Reader.BBCCaption)
 	readerImageColor = theme.ParseColor(current.Reader.Image)
 
 	headerCColor = theme.ParseColor(current.Header.C)
@@ -250,15 +246,13 @@ func MetaURL(s, url string) string    { return metaURLStyle.Hyperlink(url).Rende
 func MetaReaderMode(s string) string  { return metaReaderModeStyle.Render(s) }
 func MetaIDColor() color.Color        { return metaIDColor }
 
-func ReaderH1(s string) string           { return readerH1Style.Render(s) }
-func ReaderH2(s string) string           { return readerH2Style.Render(s) }
-func ReaderH3(s string) string           { return readerH3Style.Render(s) }
-func ReaderH4(s string) string           { return readerH4Style.Render(s) }
-func ReaderH5(s string) string           { return readerH5Style.Render(s) }
-func ReaderH6(s string) string           { return readerH6Style.Render(s) }
-func ReaderBBCImageColor() color.Color   { return readerBBCImageColor }
-func ReaderBBCCaptionColor() color.Color { return readerBBCCaptionColor }
-func ReaderImageColor() color.Color      { return readerImageColor }
+func ReaderH1(s string) string      { return readerH1Style.Render(s) }
+func ReaderH2(s string) string      { return readerH2Style.Render(s) }
+func ReaderH3(s string) string      { return readerH3Style.Render(s) }
+func ReaderH4(s string) string      { return readerH4Style.Render(s) }
+func ReaderH5(s string) string      { return readerH5Style.Render(s) }
+func ReaderH6(s string) string      { return readerH6Style.Render(s) }
+func ReaderImageColor() color.Color { return readerImageColor }
 
 func HeaderC() color.Color         { return headerCColor }
 func HeaderL() color.Color         { return headerLColor }

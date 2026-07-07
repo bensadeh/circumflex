@@ -31,23 +31,15 @@ func Validate(title, domain string) error {
 
 func isInvalidDomain(domain string) bool {
 	invalidDomains := [...]string{
-		"scmp.com",
-		"blog.chromium.org",
 		"bloomberg.com",
 		"chrome.google.com",
 		"drive.google.com",
 		"facebook.com",
-		"gizmodo.com",
-		"jalopnik.com",
 		"lttlabs.com",
 		"marketplace.atlassian.com",
-		"newsweek.com",
-		"npr.org",
 		"old.reddit.com",
 		"play.google.com",
 		"reddit.com",
-		"sciencedirect.com",
-		"security.googleblog.com",
 		"twitter.com",
 		"washingtonpost.com",
 		"wsj.com",

@@ -66,15 +66,13 @@ type MetaColors struct {
 }
 
 type ReaderColors struct {
-	H1         string `toml:"h1"`
-	H2         string `toml:"h2"`
-	H3         string `toml:"h3"`
-	H4         string `toml:"h4"`
-	H5         string `toml:"h5"`
-	H6         string `toml:"h6"`
-	Image      string `toml:"image"`
-	BBCImage   string `toml:"bbc_image"`
-	BBCCaption string `toml:"bbc_caption"`
+	H1    string `toml:"h1"`
+	H2    string `toml:"h2"`
+	H3    string `toml:"h3"`
+	H4    string `toml:"h4"`
+	H5    string `toml:"h5"`
+	H6    string `toml:"h6"`
+	Image string `toml:"image"`
 }
 
 type HeaderColors struct {
@@ -126,15 +124,13 @@ func Default() *Theme {
 			ReaderMode:  "green",
 		},
 		Reader: ReaderColors{
-			H1:         "blue",
-			H2:         "red",
-			H3:         "magenta",
-			H4:         "yellow",
-			H5:         "green",
-			H6:         "white",
-			Image:      "red",
-			BBCImage:   "cyan",
-			BBCCaption: "yellow",
+			H1:    "blue",
+			H2:    "red",
+			H3:    "magenta",
+			H4:    "yellow",
+			H5:    "green",
+			H6:    "white",
+			Image: "red",
 		},
 		Header: HeaderColors{
 			C: "magenta",
