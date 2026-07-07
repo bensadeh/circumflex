@@ -337,23 +337,19 @@ func TestTimeRefreshTick_ReschedulesInEveryState(t *testing.T) {
 	assert.NotNil(t, cmd, "tick in help screen must reschedule the next refresh")
 }
 
-// Opening a story from the list in the narrow layout swaps the screen to the
-// same loading pane the wide layout draws in its detail pane: the incoming
-// story's title over the meta block placeholder.
-func TestNarrowLoading_ShowsLoadingPane(t *testing.T) {
+// While a story loads in the narrow layout the front page stays up, dimmed;
+// the selected story carries the same muted reading marker the wide layout
+// uses instead of dimming into the rest, and the header carries the spinner.
+func TestNarrowLoading_SelectedStoryShowsReadingMarker(t *testing.T) {
 	m := newTestModelReady(t)
 
 	m, _ = m.Update(keyMsg("enter"))
 	require.True(t, m.fetching)
 
-	view := xansi.Strip(m.View())
-	assert.Contains(t, view, "First item", "the incoming story's title should head the loading pane")
-	assert.Contains(t, view, "╭", "the meta block placeholder should be reserved")
-	assert.NotContains(t, view, "Second item", "the front page must not stay up during the fetch")
-
-	for i, line := range strings.Split(view, "\n") {
-		assert.LessOrEqual(t, xansi.StringWidth(line), m.width, "line %d must fit the terminal", i)
-	}
+	view := m.View()
+	assert.Contains(t, view, "\x1b[100m", "loading story should render on the bright-black bar")
+	assert.NotContains(t, view, "\x1b[7m", "loading story should not keep the browsing highlight")
+	assert.Contains(t, xansi.Strip(view), "Second item", "the front page must stay up during the fetch")
 }
 
 // In the narrow layout, J/K story navigation must keep the open story on

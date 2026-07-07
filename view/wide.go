@@ -85,13 +85,11 @@ func (m *model) detailPaneView() string {
 	}
 }
 
-// loadingPane is the detail pane while a fetch spins — the whole terminal in
-// the narrow layout, where a story opened from the list shows the same pane.
-// A story fetch knows its story up front — the selection moves before the
-// fetch starts — so the title heads the pane immediately, unbolded until the
-// content arrives, over a dimmed placeholder for the meta block the loaded
-// view will draw. A category fetch loads the list itself and has no story to
-// name.
+// loadingPane is the detail pane while a fetch spins. A story fetch knows its
+// story up front — the selection moves before the fetch starts — so the title
+// heads the pane immediately, unbolded until the content arrives, over a
+// dimmed placeholder for the meta block the loaded view will draw. A category
+// fetch loads the list itself and has no story to name.
 func (m *model) loadingPane() string {
 	spinner := m.status.spinnerView()
 
