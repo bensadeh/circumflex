@@ -24,12 +24,24 @@ func Parse(ctx context.Context, url string) (*Parsed, error) {
 		return nil, fmt.Errorf("invalid URL: %w", err)
 	}
 
-	node, err := fetchDocument(ctx, url, parsedURL)
+	body, contentType, err := fetchPage(ctx, url, parsedURL)
 	if err != nil {
 		return nil, err
 	}
 
-	blocks := parseBlocks(node)
+	var blocks []block
+
+	if isPlainText(contentType, body) {
+		blocks = parseTextBlocks(string(body))
+	} else {
+		node, err := extractReadable(body, parsedURL)
+		if err != nil {
+			return nil, err
+		}
+
+		blocks = parseBlocks(node)
+	}
+
 	blocks = applySiteRules(blocks, parsedURL.Hostname())
 
 	if len(blocks) == 0 {

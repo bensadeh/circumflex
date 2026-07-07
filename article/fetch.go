@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	nurl "net/url"
+	"strings"
 	"time"
 
 	"github.com/bensadeh/circumflex/version"
@@ -27,7 +28,7 @@ func (discardLogger) Errorf(string, ...any) {}
 func (discardLogger) Warnf(string, ...any)  {}
 func (discardLogger) Debugf(string, ...any) {}
 
-func fetchDocument(ctx context.Context, url string, parsedURL *nurl.URL) (*html.Node, error) {
+func fetchPage(ctx context.Context, url string, parsedURL *nurl.URL) (body []byte, contentType string, err error) {
 	client := resty.New()
 
 	defer func() { _ = client.Close() }()
@@ -40,17 +41,21 @@ func fetchDocument(ctx context.Context, url string, parsedURL *nurl.URL) (*html.
 	resp, err := client.R().SetContext(ctx).Get(url)
 	if err != nil {
 		if ctx.Err() != nil {
-			return nil, ctx.Err()
+			return nil, "", ctx.Err()
 		}
 
-		return nil, fmt.Errorf("could not fetch URL: %w", err)
+		return nil, "", fmt.Errorf("could not fetch URL: %w", err)
 	}
 
 	if resp.StatusCode() >= 400 {
-		return nil, fmt.Errorf("server returned status %d for %s", resp.StatusCode(), parsedURL.Host)
+		return nil, "", fmt.Errorf("server returned status %d for %s", resp.StatusCode(), parsedURL.Host)
 	}
 
-	a, err := readability.FromReader(bytes.NewReader(resp.Bytes()), parsedURL)
+	return resp.Bytes(), resp.Header().Get("Content-Type"), nil
+}
+
+func extractReadable(body []byte, parsedURL *nurl.URL) (*html.Node, error) {
+	a, err := readability.FromReader(bytes.NewReader(body), parsedURL)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse article from %s: %w", parsedURL.Host, err)
 	}
@@ -60,4 +65,16 @@ func fetchDocument(ctx context.Context, url string, parsedURL *nurl.URL) (*html.
 	}
 
 	return a.Node, nil
+}
+
+// isPlainText sniffs the body as well as the header: some servers label HTML
+// as text/plain, and rendering markup verbatim would be worse than reflowing.
+func isPlainText(contentType string, body []byte) bool {
+	if !strings.HasPrefix(contentType, "text/plain") {
+		return false
+	}
+
+	head := strings.ToLower(string(body[:min(len(body), 256)]))
+
+	return !strings.Contains(head, "<!doctype html") && !strings.Contains(head, "<html")
 }

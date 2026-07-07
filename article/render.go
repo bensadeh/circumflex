@@ -57,6 +57,9 @@ func renderBlock(b *block, width int) string {
 	case blockDivider:
 		return renderDivider(width)
 
+	case blockVerbatim:
+		return lipgloss.Wrap(b.text, width, "")
+
 	default:
 		return ""
 	}

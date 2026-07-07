@@ -13,6 +13,7 @@ const (
 	blockTable
 	blockImage
 	blockDivider
+	blockVerbatim
 )
 
 type block struct {
@@ -54,7 +55,7 @@ func spanText(spans []span) string {
 
 func (b *block) plainText() string {
 	switch b.kind {
-	case blockHeading, blockCode:
+	case blockHeading, blockCode, blockVerbatim:
 		return b.text
 
 	case blockParagraph, blockQuote, blockImage:

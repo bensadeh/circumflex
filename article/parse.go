@@ -336,7 +336,7 @@ func parseQuote(n *html.Node) []span {
 		case blockParagraph, blockQuote:
 			line = b.spans
 
-		case blockHeading, blockCode:
+		case blockHeading, blockCode, blockVerbatim:
 			line = []span{{text: b.text}}
 
 		case blockList:
