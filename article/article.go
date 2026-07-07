@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/bensadeh/circumflex/layout"
+	"github.com/bensadeh/circumflex/scrollbar"
 	"github.com/bensadeh/circumflex/style"
 
 	"golang.org/x/net/html"
@@ -63,13 +64,14 @@ func NewParsedFromHTML(src string) *Parsed {
 
 // RenderWithHeader wraps prose at contentWidth; code blocks extend to
 // screenWidth like in the comment section. A screenWidth of 0 keeps
-// everything at contentWidth.
+// everything at contentWidth. The right edge reserves the scrollbar column so
+// a full-width code or table line is not clipped by the bar.
 func (p *Parsed) RenderWithHeader(contentWidth, screenWidth int, header string) string {
 	margin := strings.Repeat(" ", layout.ReaderViewLeftMargin)
 
 	codeWidth := contentWidth
 	if screenWidth > 0 {
-		codeWidth = max(contentWidth, screenWidth-layout.ReaderViewLeftMargin)
+		codeWidth = max(contentWidth, screenWidth-layout.ReaderViewLeftMargin-scrollbar.Width)
 	}
 
 	return header + style.PrefixLines(renderBlocks(p.blocks, contentWidth, codeWidth), margin)

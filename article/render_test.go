@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/scrollbar"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -110,6 +111,24 @@ func TestRenderTable_AlignsColumns(t *testing.T) {
 	assert.Equal(t, "------  -----", lines[1])
 	assert.Equal(t, "Foo     1", lines[2])
 	assert.Equal(t, "Longer  2", lines[3])
+}
+
+func TestRenderWithHeader_FullWidthLineClearsScrollbar(t *testing.T) {
+	t.Parallel()
+
+	const screenWidth = 80
+
+	parsed := NewParsedFromHTML("<pre><code>" + strings.Repeat("x", 200) + "</code></pre>")
+	out := ansi.Strip(parsed.RenderWithHeader(72, screenWidth, ""))
+
+	widest := 0
+	for line := range strings.SplitSeq(out, "\n") {
+		widest = max(widest, len([]rune(line)))
+	}
+
+	assert.LessOrEqual(t, widest, screenWidth-scrollbar.Width,
+		"the widest code line must leave the scrollbar column free")
+	assert.Greater(t, widest, 72, "code still breaks out past the reading column")
 }
 
 func TestRenderBlock_TableExtendsToCodeWidth(t *testing.T) {
