@@ -196,13 +196,25 @@ func TestParseBlocks_ImageAltStripsControlBytes(t *testing.T) {
 func TestParseBlocks_LinkWithControlBytesNotLinked(t *testing.T) {
 	t.Parallel()
 
-	blocks := blocksFromHTML(t, "<p><a href=\"https://x.com/\x1b]2;pwned\x07\">click</a></p>")
+	tests := map[string]string{
+		"C0 escape/BEL": "https://x.com/\x1b]2;pwned\x07",
+		"C1 ST/CSI":     "https://x.com/\u009c\u009b6n", // 8-bit string terminator then CSI
+		"DEL":           "https://x.com/\u007f",
+	}
 
-	require.Len(t, blocks, 1)
-	spans := blocks[0].spans
-	require.Len(t, spans, 1)
-	assert.Equal(t, "click", spans[0].text)
-	assert.Empty(t, spans[0].href, "a href containing control bytes must not become a hyperlink")
+	for name, href := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			blocks := blocksFromHTML(t, "<p><a href=\""+href+"\">click</a></p>")
+
+			require.Len(t, blocks, 1)
+			spans := blocks[0].spans
+			require.Len(t, spans, 1)
+			assert.Equal(t, "click", spans[0].text)
+			assert.Empty(t, spans[0].href, "a href with control characters must not become a hyperlink")
+		})
+	}
 }
 
 func TestParseBlocks_DedupeKeepsSameTextDifferentLevel(t *testing.T) {

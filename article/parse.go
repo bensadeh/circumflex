@@ -536,9 +536,7 @@ func isLinkableHref(href string) bool {
 		return false
 	}
 
-	return !strings.ContainsFunc(href, func(r rune) bool {
-		return r < 0x20 || r == 0x7f
-	})
+	return !strings.ContainsFunc(href, unicode.IsControl)
 }
 
 var superscriptRunes = map[rune]rune{

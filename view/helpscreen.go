@@ -31,7 +31,7 @@ func (m *model) resizeHelpViewport() {
 	width := m.detailWidth()
 
 	m.helpViewport.SetWidth(width)
-	m.helpViewport.SetHeight(m.height - headerAndFooterHeight)
+	m.helpViewport.SetHeight(m.frame().PaneContentHeight())
 
 	content := lipgloss.NewStyle().
 		Width(width).

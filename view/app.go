@@ -18,12 +18,9 @@ import (
 )
 
 const (
-	statusBarEdgeWidth    = 5
-	headerHeight          = 2
-	footerHeight          = 2
-	headerAndFooterHeight = headerHeight + footerHeight
-	statusMessageShort    = 2 * time.Second
-	statusMessageLong     = 3 * time.Second
+	statusBarEdgeWidth = 5
+	statusMessageShort = 2 * time.Second
+	statusMessageLong  = 3 * time.Second
 )
 
 type model struct {
@@ -100,7 +97,8 @@ func (m *model) setSize(width, height int) {
 // updatePagination gives the list pane its width and the rows left between
 // the header and the status bar, repaginating to fit.
 func (m *model) updatePagination() {
-	m.list.Resize(m.listWidth(), m.height-headerAndFooterHeight)
+	f := m.frame()
+	m.list.Resize(f.ListWidth(), f.PaneContentHeight())
 }
 
 // listFrame collects the per-render facts the list pane cannot know itself.

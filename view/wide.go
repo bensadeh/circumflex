@@ -4,45 +4,29 @@ import (
 	"strings"
 
 	"github.com/bensadeh/circumflex/header"
+	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/style"
 
 	"charm.land/lipgloss/v2"
 	xansi "github.com/charmbracelet/x/ansi"
 )
 
-const (
-	// dividerWidth is the columns between the panes: a one-column rule with a
-	// space of breathing room on each side.
-	dividerWidth = 3
-
-	// wideViewFloor is the narrowest terminal the split layout can render
-	// sanely; below it the wide view stays off even when configured "always".
-	wideViewFloor = 40
-)
-
 func (m *model) isWide() bool {
-	return m.width >= max(m.config.WideViewMinWidth, wideViewFloor)
+	return m.width >= max(m.config.WideViewMinWidth, layout.WideViewFloor)
 }
 
-// listWidth is the width the list renders at: the left pane in the wide
-// layout, the full screen otherwise. The divider sits in the middle of the
-// screen, so both panes get an equal share.
+// frame is the terminal geometry for the current render; all pane sizes derive
+// from it.
+func (m *model) frame() layout.Frame {
+	return layout.Frame{Width: m.width, Height: m.height, Wide: m.isWide()}
+}
+
 func (m *model) listWidth() int {
-	if m.isWide() {
-		return (m.width - dividerWidth) / 2
-	}
-
-	return m.width
+	return m.frame().ListWidth()
 }
 
-// detailWidth is the width the comment section and reader render at: the
-// right pane in the wide layout, the full screen otherwise.
 func (m *model) detailWidth() int {
-	if m.isWide() {
-		return m.width - m.listWidth() - dividerWidth
-	}
-
-	return m.width
+	return m.frame().DetailWidth()
 }
 
 // detailLoading reports whether a story's comments or article are being
@@ -107,7 +91,7 @@ func (m *model) detailPaneView() string {
 // pane in place instead of popping a full frame into an empty column.
 func (m *model) placeholderPane(content string) string {
 	w := m.detailWidth()
-	body := lipgloss.Place(w, m.height-headerAndFooterHeight, lipgloss.Center, lipgloss.Center, content)
+	body := lipgloss.Place(w, m.frame().PaneContentHeight(), lipgloss.Center, lipgloss.Center, content)
 
 	return "\n" + header.Underline(w) + "\n" + body + "\n" + m.bottomBar(w) + "\n"
 }

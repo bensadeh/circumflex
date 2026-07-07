@@ -44,11 +44,6 @@ type Model struct {
 	articleMeta Meta
 }
 
-const (
-	headerHeight = 2 // title + overline separator
-	footerHeight = 2 // underline separator + blank line, mirroring the comment view's footer
-)
-
 func newFromContent(content, title string, width, height int, articleMeta Meta) *Model {
 	m := &Model{
 		keymap:      defaultKeyMap(),
@@ -64,10 +59,6 @@ func newFromContent(content, title string, width, height int, articleMeta Meta) 
 
 // NewWithArticle creates a reader view that can re-render on resize.
 func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, height int, articleMeta Meta) *Model {
-	contentWidth := layout.ReaderContentWidth(width, maxWidth)
-	header := meta.ReaderModeMetaBlock(articleMeta.URL, articleMeta.Author, articleMeta.TimeAgo, articleMeta.ID, articleMeta.Points, articleMeta.NerdFonts, contentWidth)
-	content := parsed.RenderWithHeader(contentWidth, width, header)
-
 	m := &Model{
 		keymap:      defaultKeyMap(),
 		title:       title,
@@ -77,9 +68,19 @@ func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, h
 		articleMeta: articleMeta,
 	}
 
-	m.initViewport(content, width, height)
+	m.initViewport(m.renderArticle(), width, height)
 
 	return m
+}
+
+// renderArticle renders the article at the current screen width, prefixed with
+// its meta header. The single source of the width derivation shared by the
+// initial render and every resize.
+func (m *Model) renderArticle() string {
+	contentWidth := layout.ReaderContentWidth(m.screenWidth, m.maxWidth)
+	header := meta.ReaderModeMetaBlock(m.articleMeta.URL, m.articleMeta.Author, m.articleMeta.TimeAgo, m.articleMeta.ID, m.articleMeta.Points, m.articleMeta.NerdFonts, contentWidth)
+
+	return m.parsed.RenderWithHeader(contentWidth, m.screenWidth, header)
 }
 
 // DisableStoryNavigation removes the J/K adjacent-story bindings, for
@@ -89,7 +90,7 @@ func (m *Model) DisableStoryNavigation() {
 }
 
 func (m *Model) initViewport(content string, width, height int) {
-	m.Viewport = pane.NewViewport(width, height-headerHeight-footerHeight)
+	m.Viewport = pane.NewViewport(width, height-layout.PaneChromeHeight)
 	m.setContent(content)
 	m.rebuildTitleHeader()
 }
@@ -132,7 +133,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 	case tea.WindowSizeMsg:
 		m.screenWidth = msg.Width
 		m.Viewport.SetWidth(msg.Width)
-		m.Viewport.SetHeight(max(0, msg.Height-headerHeight-footerHeight))
+		m.Viewport.SetHeight(max(0, msg.Height-layout.PaneChromeHeight))
 
 		m.rebuildTitleHeader()
 
@@ -151,9 +152,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 func (m *Model) rerender() {
 	yOffset := m.Viewport.YOffset()
 
-	contentWidth := layout.ReaderContentWidth(m.screenWidth, m.maxWidth)
-	hdr := meta.ReaderModeMetaBlock(m.articleMeta.URL, m.articleMeta.Author, m.articleMeta.TimeAgo, m.articleMeta.ID, m.articleMeta.Points, m.articleMeta.NerdFonts, contentWidth)
-	m.setContent(m.parsed.RenderWithHeader(contentWidth, m.screenWidth, hdr))
+	m.setContent(m.renderArticle())
 
 	maxOffset := max(0, m.ContentLines-m.Viewport.Height())
 	m.Viewport.SetYOffset(min(yOffset, maxOffset))

@@ -39,18 +39,14 @@ type Model struct {
 	lineMetrics []lineMetrics // indexed by flat index
 }
 
-const (
-	headerHeight  = 2 // title + overline separator
-	footerHeight  = 2 // underline separator + mode indicator
-	scrollPadding = 2 // breathing room above/below when scrolling to a comment
-)
+const scrollPadding = 2 // breathing room above/below when scrolling to a comment
 
 func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, enableNerdFonts bool, width, height int) *Model {
 	km := defaultKeyMap()
 
 	// Viewport handles j/k in scroll mode (toggled off in navigate mode).
 	// h/l are always handled by us (collapse/expand), so disable them on viewport.
-	vp := pane.NewViewport(width, height-headerHeight-footerHeight)
+	vp := pane.NewViewport(width, height-layout.PaneChromeHeight)
 	vp.KeyMap.Left.SetEnabled(false)
 	vp.KeyMap.Right.SetEnabled(false)
 
@@ -80,7 +76,7 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 		indent:          indent,
 		enableNerdFonts: enableNerdFonts,
 		screenWidth:     width,
-		viewportHeight:  height - headerHeight - footerHeight,
+		viewportHeight:  height - layout.PaneChromeHeight,
 		lastVisited:     lastVisited,
 		story:           sf,
 		newComments:     newComments,
@@ -140,7 +136,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		screenPos := m.screenPosition(anchorIdx)
 
 		m.rc.screenWidth = msg.Width
-		m.rc.viewportHeight = max(0, msg.Height-headerHeight-footerHeight)
+		m.rc.viewportHeight = max(0, msg.Height-layout.PaneChromeHeight)
 		m.Viewport.SetWidth(msg.Width)
 		m.Viewport.SetHeight(m.rc.viewportHeight)
 

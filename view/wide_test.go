@@ -7,6 +7,7 @@ import (
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/hn"
+	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/settings"
 	"github.com/bensadeh/circumflex/view/message"
 
@@ -56,8 +57,8 @@ func TestWideView_Threshold(t *testing.T) {
 
 	m.setSize(180, wideTestHeight)
 	assert.True(t, m.isWide())
-	assert.Equal(t, (180-dividerWidth)/2, m.listWidth())
-	assert.Equal(t, 180-m.listWidth()-dividerWidth, m.detailWidth())
+	assert.Equal(t, (180-layout.PaneDividerWidth)/2, m.listWidth())
+	assert.Equal(t, 180-m.listWidth()-layout.PaneDividerWidth, m.detailWidth())
 }
 
 func TestWideView_ConfiguredThreshold(t *testing.T) {
@@ -69,7 +70,7 @@ func TestWideView_ConfiguredThreshold(t *testing.T) {
 	m.config.WideViewMinWidth, _ = settings.ParseWideView("always")
 	assert.True(t, m.isWide(), "always should split on any reasonably sized terminal")
 
-	m.setSize(wideViewFloor-1, wideTestHeight)
+	m.setSize(layout.WideViewFloor-1, wideTestHeight)
 	assert.False(t, m.isWide(), "always should still not split below the sanity floor")
 
 	m.setSize(120, wideTestHeight)
@@ -98,7 +99,7 @@ func TestWideView_ShowsPlaceholderWhileBrowsing(t *testing.T) {
 
 	// The placeholder pane draws the same header rule the detail views do, so
 	// both panes carry the rule even before a story opens.
-	assert.Equal(t, wideTestWidth-dividerWidth, strings.Count(xansi.Strip(lines[1]), "‾"),
+	assert.Equal(t, wideTestWidth-layout.PaneDividerWidth, strings.Count(xansi.Strip(lines[1]), "‾"),
 		"header rule should span both panes")
 }
 

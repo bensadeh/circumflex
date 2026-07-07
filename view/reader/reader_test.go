@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/view/message"
 
 	tea "charm.land/bubbletea/v2"
@@ -42,7 +43,7 @@ func TestResize_RerenderChangesContent(t *testing.T) {
 	m.Update(tea.WindowSizeMsg{Width: 60, Height: 30})
 
 	assert.Equal(t, 60, m.screenWidth)
-	assert.Equal(t, 30-headerHeight-footerHeight, m.Viewport.Height())
+	assert.Equal(t, 30-layout.PaneChromeHeight, m.Viewport.Height())
 
 	contentAfter := m.Viewport.View()
 	assert.NotEqual(t, contentBefore, contentAfter, "content should change after resize")
