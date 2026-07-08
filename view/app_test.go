@@ -86,6 +86,8 @@ func keyMsg(s string) tea.KeyPressMsg {
 		return tea.KeyPressMsg{Code: tea.KeyEnter}
 	case "esc":
 		return tea.KeyPressMsg{Code: tea.KeyEsc}
+	case "backspace":
+		return tea.KeyPressMsg{Code: tea.KeyBackspace}
 	case "up":
 		return tea.KeyPressMsg{Code: tea.KeyUp}
 	case "down":
@@ -183,6 +185,31 @@ func TestQuit(t *testing.T) {
 		_, cmd := m.Update(keyMsg(k))
 		assert.NotNil(t, cmd, "key %q should return quit cmd", k)
 	}
+}
+
+func TestBackspaceDoesNotQuitList(t *testing.T) {
+	m := newTestModelReady(t)
+
+	_, cmd := m.Update(keyMsg("backspace"))
+	assert.Nil(t, cmd, "backspace in the list must not quit the app")
+}
+
+func TestBackspaceClosesHelpScreen(t *testing.T) {
+	m := newTestModelReady(t)
+	m.screen = screenHelp
+
+	m, _ = m.Update(keyMsg("backspace"))
+	assert.Equal(t, screenList, m.screen, "backspace should leave the help screen")
+}
+
+func TestBackspaceInterruptsFetch(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, _ = m.Update(keyMsg("tab"))
+	require.True(t, m.fetching)
+
+	m, _ = m.Update(keyMsg("backspace"))
+	assert.False(t, m.fetching, "backspace should cancel an in-flight fetch")
 }
 
 func TestNavigationUpDown(t *testing.T) {

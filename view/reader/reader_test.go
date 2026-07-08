@@ -75,14 +75,22 @@ func TestResize_PreservesScrollPosition(t *testing.T) {
 }
 
 func TestQuit_ReturnsReaderViewQuitMsg(t *testing.T) {
-	m := newFromContent("content", "Title", 80, 24, Meta{})
+	keys := []tea.KeyPressMsg{
+		{Code: 'q', Text: "q"},
+		{Code: tea.KeyEsc},
+		{Code: tea.KeyBackspace},
+	}
 
-	cmd := m.Update(tea.KeyPressMsg{Code: 'q', Text: "q"})
-	require.NotNil(t, cmd)
+	for _, key := range keys {
+		m := newFromContent("content", "Title", 80, 24, Meta{})
 
-	msg := cmd()
-	_, ok := msg.(message.ReaderViewQuit)
-	assert.True(t, ok, "quit should produce ReaderViewQuit")
+		cmd := m.Update(key)
+		require.NotNil(t, cmd)
+
+		msg := cmd()
+		_, ok := msg.(message.ReaderViewQuit)
+		assert.True(t, ok, "back key should produce ReaderViewQuit")
+	}
 }
 
 func TestHelpToggle(t *testing.T) {

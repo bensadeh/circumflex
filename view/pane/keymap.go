@@ -22,7 +22,7 @@ type CommonKeyMap struct {
 func DefaultCommonKeyMap() CommonKeyMap {
 	return CommonKeyMap{
 		Quit: key.NewBinding(
-			key.WithKeys("q", "esc"),
+			key.WithKeys("q", "esc", "backspace"),
 			key.WithHelp("q/esc", "back"),
 		),
 		Help: key.NewBinding(

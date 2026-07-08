@@ -19,6 +19,7 @@ type keyMap struct {
 	GoToBottom     key.Binding
 	OpenLink       key.Binding
 	OpenComments   key.Binding
+	Back           key.Binding
 	Refresh        key.Binding
 	AddFavorite    key.Binding
 	RemoveFavorite key.Binding
@@ -95,6 +96,9 @@ func defaultKeyMap() keyMap {
 		),
 		GoToBottom: key.NewBinding(
 			key.WithKeys("G"),
+		),
+		Back: key.NewBinding(
+			key.WithKeys("backspace"),
 		),
 		Confirm: key.NewBinding(
 			key.WithKeys("y"),

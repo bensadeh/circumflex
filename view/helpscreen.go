@@ -12,7 +12,7 @@ import (
 )
 
 func (m *model) updateHelpScreen(msg tea.Msg) tea.Cmd {
-	if msg, ok := msg.(tea.KeyPressMsg); ok && key.Matches(msg, m.keymap.Quit, m.keymap.Help) {
+	if msg, ok := msg.(tea.KeyPressMsg); ok && key.Matches(msg, m.keymap.Quit, m.keymap.Help, m.keymap.Back) {
 		m.screen = screenList
 
 		return nil

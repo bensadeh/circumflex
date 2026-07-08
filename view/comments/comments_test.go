@@ -7,10 +7,29 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/layout"
+	"github.com/bensadeh/circumflex/view/message"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func TestBackKeysReturnCommentViewQuit(t *testing.T) {
+	keys := []tea.KeyPressMsg{
+		{Code: 'q', Text: "q"},
+		{Code: tea.KeyEsc},
+		{Code: tea.KeyBackspace},
+	}
+
+	for _, key := range keys {
+		m := New(testThread(), 0, 80, 1, false, 120, 30)
+
+		cmd := m.handleKeyPress(key)
+		require.NotNil(t, cmd)
+
+		_, ok := cmd().(message.CommentViewQuit)
+		assert.True(t, ok, "back key should produce CommentViewQuit")
+	}
+}
 
 // testThread builds a small but representative tree:
 //
