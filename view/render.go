@@ -46,7 +46,9 @@ func (m *model) overlayDetailStatus(view string) string {
 	}
 
 	lines := strings.Split(view, "\n")
-	lines[len(lines)-1] = m.statusMidStyle.Width(m.width).Render(status)
+	// Width pads but never truncates, and an error message can be wider than
+	// the screen.
+	lines[len(lines)-1] = xansi.Truncate(m.statusMidStyle.Width(m.width).Render(status), m.width, "")
 
 	return strings.Join(lines, "\n")
 }

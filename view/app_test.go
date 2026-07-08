@@ -292,16 +292,33 @@ func TestEnterCommentSection(t *testing.T) {
 	assert.NotNil(t, cmd)
 }
 
-func TestEnteringCommentSection_ReturnsCmd(t *testing.T) {
+func TestFetchComments_ReturnsCmd(t *testing.T) {
 	m := newTestModelReady(t)
 
-	_, cmd := m.Update(message.EnteringCommentSection{ID: 1, CommentCount: 10})
+	cmd := m.fetchComments(&hn.Story{ID: 1, CommentsCount: 10})
 	assert.NotNil(t, cmd, "should return cmd for async comment fetching")
 
 	msg := cmd()
 	result, ok := msg.(message.CommentTreeDataReady)
 	assert.True(t, ok, "cmd should produce CommentTreeDataReady message")
 	assert.NotNil(t, result.Thread)
+}
+
+// A fetch command carries the fetch id that was current when it was built, so
+// a result delivered after the user cancels must be dropped instead of opening
+// the story they backed out of.
+func TestFetchComments_ResultAfterCancelIsDropped(t *testing.T) {
+	m := newTestModelReady(t)
+
+	_ = m.startDetailFetch(0, screenComments)
+	cmd := m.fetchComments(m.list.SelectedItem())
+
+	_ = m.handleCancelFetch()
+	require.False(t, m.fetching)
+
+	m, _ = m.Update(cmd())
+	assert.Nil(t, m.detail, "a cancelled fetch's late result must not open its story")
+	assert.Equal(t, screenList, m.screen)
 }
 
 func TestCommentTreeDataReady_OpensCommentView(t *testing.T) {
@@ -392,28 +409,26 @@ func TestNarrowDetail_StatusMessageShowsOnLastRow(t *testing.T) {
 	assert.Contains(t, xansi.Strip(lines[len(lines)-1]), "Story has no article to read")
 }
 
-func TestEnteringReaderMode_ReturnsCmd(t *testing.T) {
+func TestFetchArticle_ReturnsCmd(t *testing.T) {
 	m := newTestModelReady(t)
 
-	_, cmd := m.Update(message.EnteringReaderMode{
-		URL:          "https://example.com",
-		Title:        "Test Article",
-		Domain:       "example.com",
-		ID:           1,
-		CommentCount: 10,
+	cmd := m.fetchArticle(&hn.Story{
+		URL:    "https://example.com",
+		Title:  "Test Article",
+		Domain: "example.com",
+		ID:     1,
 	})
 	assert.NotNil(t, cmd, "should return cmd for async article fetching")
 }
 
-func TestEnteringReaderMode_InvalidDomain(t *testing.T) {
+func TestFetchArticle_InvalidDomain(t *testing.T) {
 	m := newTestModelReady(t)
 
-	_, cmd := m.Update(message.EnteringReaderMode{
-		URL:          "https://youtube.com/watch?v=123",
-		Title:        "Test Video",
-		Domain:       "youtube.com",
-		ID:           1,
-		CommentCount: 10,
+	cmd := m.fetchArticle(&hn.Story{
+		URL:    "https://youtube.com/watch?v=123",
+		Title:  "Test Video",
+		Domain: "youtube.com",
+		ID:     1,
 	})
 	assert.NotNil(t, cmd)
 
@@ -703,7 +718,7 @@ func TestBrowserOpenFailed_RecordsErrorForExit(t *testing.T) {
 	assert.Contains(t, m.browserErr.Error(), "xdg-open not found")
 }
 
-func TestEnteringCommentSection_HistoryWriteFailure(t *testing.T) {
+func TestFetchComments_HistoryWriteFailure(t *testing.T) {
 	config := settings.Default()
 	cat, _ := categories.New("top,best,ask,show")
 	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.json"))
@@ -715,7 +730,7 @@ func TestEnteringCommentSection_HistoryWriteFailure(t *testing.T) {
 	m.list.SetItems(categories.Top, testItems())
 	m.fetching = false
 
-	_, cmd := m.Update(message.EnteringCommentSection{ID: 1, CommentCount: 10})
+	cmd := m.fetchComments(&hn.Story{ID: 1, CommentsCount: 10})
 	assert.NotNil(t, cmd)
 
 	msg := cmd()
@@ -726,7 +741,7 @@ func TestEnteringCommentSection_HistoryWriteFailure(t *testing.T) {
 	assert.Contains(t, result.HistoryWarning.Error(), "permission denied")
 }
 
-func TestEnteringReaderMode_ValidationFailure_SkipsHistoryWrite(t *testing.T) {
+func TestFetchArticle_ValidationFailure_SkipsHistoryWrite(t *testing.T) {
 	config := settings.Default()
 	cat, _ := categories.New("top,best,ask,show")
 	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.json"))
@@ -738,7 +753,7 @@ func TestEnteringReaderMode_ValidationFailure_SkipsHistoryWrite(t *testing.T) {
 	m.list.SetItems(categories.Top, testItems())
 	m.fetching = false
 
-	_, cmd := m.Update(message.EnteringReaderMode{
+	cmd := m.fetchArticle(&hn.Story{
 		URL:    "https://youtube.com/watch?v=123",
 		Title:  "Test Video",
 		Domain: "youtube.com",

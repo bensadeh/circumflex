@@ -18,6 +18,7 @@ import (
 	"github.com/bensadeh/circumflex/history"
 	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/hn/memorial"
+	"github.com/bensadeh/circumflex/timeago"
 	"github.com/bensadeh/circumflex/view/message"
 
 	tea "charm.land/bubbletea/v2"
@@ -112,7 +113,7 @@ func (m *model) fetchCategory(cat categories.Category, index, cursor int) tea.Cm
 	}
 }
 
-func (m *model) handleEnteringCommentSection(msg message.EnteringCommentSection) tea.Cmd {
+func (m *model) fetchComments(story *hn.Story) tea.Cmd {
 	isOnFavorites := m.cat.CurrentCategory() == categories.Favorites
 	hist := m.history
 	service := m.service
@@ -120,7 +121,7 @@ func (m *model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 	fetchID := m.fetchID
 
 	return func() tea.Msg {
-		lastVisited := hist.CommentsLastVisited(msg.ID)
+		lastVisited := hist.CommentsLastVisited(story.ID)
 
 		// Percentage updates are the one progress write left outside the
 		// Update loop; the ctx guard stops a canceled fetch from writing
@@ -133,7 +134,7 @@ func (m *model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 			setProgressPercent(min(fetched*100/total, 100))
 		}
 
-		tree, err := service.FetchComments(ctx, msg.ID, onProgress)
+		tree, err := service.FetchComments(ctx, story.ID, onProgress)
 		if err != nil {
 			return message.CommentTreeDataReady{
 				Err:     err,
@@ -141,7 +142,7 @@ func (m *model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 			}
 		}
 
-		histErr := hist.MarkRead(msg.ID, msg.CommentCount)
+		histErr := hist.MarkRead(story.ID, story.CommentsCount)
 
 		var updatedStory *hn.Story
 		if isOnFavorites {
@@ -167,31 +168,32 @@ func (m *model) handleEnteringCommentSection(msg message.EnteringCommentSection)
 	}
 }
 
-func (m *model) handleEnteringReaderMode(msg message.EnteringReaderMode) tea.Cmd {
+func (m *model) fetchArticle(story *hn.Story) tea.Cmd {
 	hist := m.history
 	ctx := m.fetchCtx
 	fetchID := m.fetchID
+	timeAgo := timeago.RelativeTime(story.Time)
 
 	return func() tea.Msg {
-		if err := article.Validate(msg.Title, msg.Domain); err != nil {
+		if err := article.Validate(story.Title, story.Domain); err != nil {
 			return message.ArticleReady{Err: err, FetchID: fetchID}
 		}
 
-		parsed, err := article.Parse(ctx, msg.URL)
+		parsed, err := article.Parse(ctx, story.URL)
 		if err != nil {
 			return message.ArticleReady{Err: err, FetchID: fetchID}
 		}
 
-		histErr := hist.MarkArticleRead(msg.ID)
+		histErr := hist.MarkArticleRead(story.ID)
 
 		return message.ArticleReady{
 			Parsed:         parsed,
-			Title:          msg.Title,
-			URL:            msg.URL,
-			Author:         msg.Author,
-			TimeAgo:        msg.TimeAgo,
-			ID:             msg.ID,
-			Points:         msg.Points,
+			Title:          story.Title,
+			URL:            story.URL,
+			Author:         story.Author,
+			TimeAgo:        timeAgo,
+			ID:             story.ID,
+			Points:         story.Points,
 			FetchID:        fetchID,
 			HistoryWarning: histErr,
 		}

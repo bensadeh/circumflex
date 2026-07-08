@@ -15,11 +15,6 @@ import (
 
 type ReaderViewQuit struct{}
 
-type EnteringCommentSection struct {
-	ID           int
-	CommentCount int
-}
-
 type BrowserOpenFailed struct {
 	Err error
 }
@@ -32,17 +27,6 @@ func OpenInBrowser(url string) tea.Cmd {
 
 		return nil
 	}
-}
-
-type EnteringReaderMode struct {
-	URL          string
-	Title        string
-	Domain       string
-	ID           int
-	CommentCount int
-	Author       string
-	TimeAgo      string
-	Points       int
 }
 
 type ShowStatusMessage struct {
@@ -59,17 +43,6 @@ type FetchingFinished struct {
 	Category categories.Category
 	Err      error
 	FetchID  uint64
-}
-
-type FetchAndChangeToCategory struct {
-	Index    int
-	Category categories.Category
-	Cursor   int
-}
-
-type Refresh struct {
-	CurrentCategory categories.Category
-	CurrentIndex    int
 }
 
 type CategoryFetchingFinished struct {

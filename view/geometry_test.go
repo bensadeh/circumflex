@@ -93,6 +93,24 @@ var geometrySurfaces = []geometrySurface{
 
 		return m
 	}},
+	// J/K from an open story: the narrow layout keeps the story on screen and
+	// overlays fetch feedback on its bottom row.
+	{"adjacentloading", func(m *model) *model {
+		m, _ = m.Update(message.CommentTreeDataReady{Thread: geometryThread(), FetchID: m.fetchID})
+		m, _ = m.Update(message.OpenAdjacentStory{Direction: 1})
+
+		return m
+	}},
+	{"adjacenterror", func(m *model) *model {
+		m, _ = m.Update(message.CommentTreeDataReady{Thread: geometryThread(), FetchID: m.fetchID})
+		m, _ = m.Update(message.OpenAdjacentStory{Direction: 1})
+		m, _ = m.Update(message.CommentTreeDataReady{
+			Err:     errors.New("dial tcp: lookup " + strings.Repeat("a-very-long-hostname.example.com.", 8) + ": no such host"),
+			FetchID: m.fetchID,
+		})
+
+		return m
+	}},
 }
 
 // geometryThread nests comments deep enough to hit the indent plateau and

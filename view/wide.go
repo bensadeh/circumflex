@@ -114,22 +114,26 @@ func (m *model) loadingBody(w int) string {
 
 // placeholderBody stacks the meta block placeholder over content centered in
 // the rest of the pane; a pane too short for both keeps just the content.
-// The box is clamped to the pane here because the error view renders it
-// outside the layouts' pane normalization, and its border has a minimum
-// width panes below the wide floor don't guarantee.
+// Every line is clamped to the pane here because the error view renders its
+// body outside the layouts' pane normalization, and neither the box border
+// nor lipgloss wrapping keeps within panes below the wide floor.
 func placeholderBody(box, content string, w, h int) string {
 	contentHeight := h - lipgloss.Height(box)
 	if contentHeight < 1 {
-		return lipgloss.Place(w, h, lipgloss.Center, lipgloss.Center, content)
+		return truncateLines(lipgloss.Place(w, h, lipgloss.Center, lipgloss.Center, content), w)
 	}
 
-	boxLines := strings.Split(box, "\n")
-	for i, line := range boxLines {
-		boxLines[i] = xansi.Truncate(line, w, "")
+	return truncateLines(box+"\n"+
+		lipgloss.Place(w, contentHeight, lipgloss.Center, lipgloss.Center, content), w)
+}
+
+func truncateLines(s string, w int) string {
+	lines := strings.Split(s, "\n")
+	for i, line := range lines {
+		lines[i] = xansi.Truncate(line, w, "")
 	}
 
-	return strings.Join(boxLines, "\n") + "\n" +
-		lipgloss.Place(w, contentHeight, lipgloss.Center, lipgloss.Center, content)
+	return strings.Join(lines, "\n")
 }
 
 // placeholderMetaBlock sizes the placeholder to the exact meta block the

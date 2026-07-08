@@ -85,14 +85,8 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		return m.handleWindowResize(msg)
 
-	case message.EnteringCommentSection:
-		return m, m.handleEnteringCommentSection(msg)
-
 	case message.BrowserOpenFailed:
 		m.browserErr = msg.Err
-
-	case message.EnteringReaderMode:
-		return m, m.handleEnteringReaderMode(msg)
 
 	case message.ArticleReady:
 		return m.handleArticleReady(msg)
@@ -116,12 +110,6 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 		if msg.FetchID == m.fetchID {
 			clearProgress()
 		}
-
-	case message.FetchAndChangeToCategory:
-		return m, m.fetchCategory(msg.Category, msg.Index, msg.Cursor)
-
-	case message.Refresh:
-		return m, tea.Batch(m.fetchCategory(msg.CurrentCategory, msg.CurrentIndex, 0), fetchMemorialStatus())
 
 	case message.ShowStatusMessage:
 		cmds = append(cmds, m.status.NewStatusMessageWithDuration(msg.Message, msg.Duration))

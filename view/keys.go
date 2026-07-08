@@ -8,7 +8,6 @@ import (
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/hn"
-	"github.com/bensadeh/circumflex/timeago"
 	"github.com/bensadeh/circumflex/view/message"
 
 	"charm.land/bubbles/v2/key"
@@ -196,6 +195,11 @@ func (m *model) handleCancelPrompt() tea.Cmd {
 // so callers that switch category must call it before advancing. The initial
 // terminal progress write is the caller's: indeterminate for fetches without
 // granular progress, percentage for the comment fetch, which reports it.
+// The fetch command itself (fetchComments, fetchArticle, fetchCategory) must
+// be built in the same Update cycle: it captures the fetch context and id at
+// call time, and deferring it to a later message would let a cancel or a
+// newer fetch in between hand it their identity — its stale result would
+// then pass the FetchID guard.
 func (m *model) startFetch(timeout time.Duration) tea.Cmd {
 	if m.cancelFetch != nil {
 		m.cancelFetch()
@@ -295,12 +299,7 @@ func (m *model) handleTab(targetIndex int, targetCategory categories.Category, a
 	m.list.BeginTransition()
 	advance()
 
-	cursor := m.list.Cursor()
-	changeCatCmd := func() tea.Msg {
-		return message.FetchAndChangeToCategory{Index: targetIndex, Category: targetCategory, Cursor: cursor}
-	}
-
-	return tea.Batch(startSpinnerCmd, changeCatCmd)
+	return tea.Batch(startSpinnerCmd, m.fetchCategory(targetCategory, targetIndex, m.list.Cursor()))
 }
 
 func (m *model) handleOpenLink() tea.Cmd {
@@ -334,11 +333,7 @@ func (m *model) handleRefresh() tea.Cmd {
 
 	setProgressIndeterminate()
 
-	refreshCmd := func() tea.Msg {
-		return message.Refresh{CurrentIndex: currentIndex, CurrentCategory: currentCategory}
-	}
-
-	return tea.Batch(startSpinnerCmd, refreshCmd)
+	return tea.Batch(startSpinnerCmd, m.fetchCategory(currentCategory, currentIndex, 0), fetchMemorialStatus())
 }
 
 func (m *model) handleEnterComments() tea.Cmd {
@@ -349,14 +344,7 @@ func (m *model) handleEnterComments() tea.Cmd {
 	// instead of flashing indeterminate first.
 	setProgressPercent(0)
 
-	enterCommentsCmd := func() tea.Msg {
-		return message.EnteringCommentSection{
-			ID:           selected.ID,
-			CommentCount: selected.CommentsCount,
-		}
-	}
-
-	return tea.Batch(startSpinnerCmd, enterCommentsCmd)
+	return tea.Batch(startSpinnerCmd, m.fetchComments(selected))
 }
 
 func (m *model) handleEnterReaderMode() tea.Cmd {
@@ -370,20 +358,7 @@ func (m *model) handleEnterReaderMode() tea.Cmd {
 
 	setProgressIndeterminate()
 
-	enterReaderCmd := func() tea.Msg {
-		return message.EnteringReaderMode{
-			URL:          selected.URL,
-			Title:        selected.Title,
-			Domain:       selected.Domain,
-			ID:           selected.ID,
-			CommentCount: selected.CommentsCount,
-			Author:       selected.Author,
-			TimeAgo:      timeago.RelativeTime(selected.Time),
-			Points:       selected.Points,
-		}
-	}
-
-	return tea.Batch(startSpinnerCmd, enterReaderCmd)
+	return tea.Batch(startSpinnerCmd, m.fetchArticle(selected))
 }
 
 // handleOpenAdjacentStory moves the selection one story up or down and opens

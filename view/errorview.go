@@ -66,10 +66,13 @@ func (v *errorView) Update(msg tea.Msg) tea.Cmd {
 // and the meta block placeholder in its spot, so the transition from loading
 // to error moves nothing.
 func (v *errorView) View() string {
+	// Width alone only breaks at spaces; an unbroken token wider than the
+	// pane (a URL, a hostname) needs the hard wrap.
+	wrapWidth := max(1, v.width-2*layout.HeaderLeftMargin)
 	wrapped := lipgloss.NewStyle().
-		Width(max(1, v.width-2*layout.HeaderLeftMargin)).
+		Width(wrapWidth).
 		Align(lipgloss.Center).
-		Render(v.message)
+		Render(lipgloss.Wrap(v.message, wrapWidth, ""))
 
 	body := placeholderBody(v.metaBlock(v.width), wrapped, v.width, max(0, v.height-layout.PaneChromeHeight))
 
