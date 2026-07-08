@@ -395,7 +395,7 @@ func parseQuote(n *html.Node) []span {
 		}
 
 		if len(spans) > 0 {
-			spans = append(spans, span{text: "\n"})
+			spans = append(spans, span{text: "\n\n"})
 		}
 
 		spans = append(spans, line...)

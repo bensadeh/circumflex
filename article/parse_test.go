@@ -166,7 +166,8 @@ func TestParseBlocks_Blockquote(t *testing.T) {
 
 	require.Len(t, blocks, 1)
 	assert.Equal(t, blockQuote, blocks[0].kind)
-	assert.Equal(t, "first line\nsecond line", blocks[0].plainText())
+	assert.Equal(t, "first line\n\nsecond line", blocks[0].plainText(),
+		"quoted paragraphs keep a blank line between them, like top-level blocks")
 }
 
 func TestParseBlocks_Table(t *testing.T) {
