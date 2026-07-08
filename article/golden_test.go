@@ -30,6 +30,7 @@ func TestGolden(t *testing.T) {
 	}{
 		{fixture: "article", hostname: "example.com"},
 		{fixture: "wikipedia", hostname: "en.wikipedia.org"},
+		{fixture: "math", hostname: "blog.example.com"},
 	}
 
 	for _, tt := range tests {
@@ -43,6 +44,11 @@ func TestGolden(t *testing.T) {
 			require.NoError(t, err)
 
 			blocks := parseBlocks(node)
+
+			if usesMathRenderer(src) {
+				convertMath(blocks)
+			}
+
 			blocks = applySiteRules(blocks, tt.hostname)
 
 			rendered := ansi.Strip(renderBlocks(blocks, goldenWidth, goldenWidth)) + "\n"

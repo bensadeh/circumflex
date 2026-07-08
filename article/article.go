@@ -41,6 +41,10 @@ func Parse(ctx context.Context, url string) (*Parsed, error) {
 		}
 
 		blocks = parseBlocks(node)
+
+		if usesMathRenderer(body) {
+			convertMath(blocks)
+		}
 	}
 
 	blocks = applySiteRules(blocks, parsedURL.Hostname())
