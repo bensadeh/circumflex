@@ -28,6 +28,17 @@ this footnote survives verbatim[1].
    9. step nine
   10. step ten
 
+  ■ Hard breaks
+
+Affected Versions:
+* US_FH1201V1.0BR_V1.2.0.14(408)_EN_TD
+* US_W15EV1.0br_V15.11.0.5(1068_1567_841)_EN_TDE
+* US_AC10V1.0re_V15.03.06.46_multi_TDE01
+
+A line above a double break
+
+and the line below it.
+
   ■ Code
 
   func main() {

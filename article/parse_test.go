@@ -54,6 +54,47 @@ func TestParseBlocks_LinkKeepsSurroundingSpaces(t *testing.T) {
 	assert.Equal(t, "thisrecent change and another one.", blocks[0].plainText())
 }
 
+func TestParseBlocks_BrIsHardBreak(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<p>Affected Versions: <br>
+		* US_FH1201<br>
+		* US_W15E</p>`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, "Affected Versions:\n* US_FH1201\n* US_W15E", blocks[0].plainText(),
+		"a br must break the line, not collapse into the surrounding spaces")
+}
+
+func TestParseBlocks_BrRunsCapAtBlankLine(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, "<p>above<br><br><br>below</p>")
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, "above\n\nbelow", blocks[0].plainText())
+}
+
+func TestParseBlocks_BrOnlyContentIsSkipped(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, "<p>a</p><br><br><p>b</p>")
+
+	require.Len(t, blocks, 2)
+	assert.Equal(t, "a", blocks[0].plainText())
+	assert.Equal(t, "b", blocks[1].plainText())
+}
+
+func TestParseBlocks_TableCellFlattensBr(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, "<table><tr><td>first<br>second</td><td>x</td></tr></table>")
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, []string{"first second", "x"}, blocks[0].rows[0],
+		"rows render as single lines, so cell breaks must flatten to spaces")
+}
+
 func TestParseBlocks_HeadingLevels(t *testing.T) {
 	t.Parallel()
 
@@ -377,4 +418,30 @@ func TestNormalizeSpans_MergesAndTrims(t *testing.T) {
 	require.Len(t, spans, 2)
 	assert.Equal(t, "a b ", spans[0].text)
 	assert.Equal(t, "c", spans[1].text)
+}
+
+func TestNormalizeSpans_NewlineWinsOverSpace(t *testing.T) {
+	t.Parallel()
+
+	spans := normalizeSpans([]span{
+		{text: "a "},
+		{text: "\n"},
+		{text: " b"},
+	})
+
+	require.Len(t, spans, 1)
+	assert.Equal(t, "a\nb", spans[0].text)
+}
+
+func TestNormalizeSpans_DropsEdgeNewlines(t *testing.T) {
+	t.Parallel()
+
+	spans := normalizeSpans([]span{
+		{text: "\n"},
+		{text: "a"},
+		{text: "\n"},
+	})
+
+	require.Len(t, spans, 1)
+	assert.Equal(t, "a", spans[0].text)
 }

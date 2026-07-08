@@ -136,7 +136,7 @@ func (p *domParser) walk(n *html.Node) {
 		p.blocks = append(p.blocks, block{kind: blockDivider})
 
 	case atom.Br:
-		p.inline = append(p.inline, span{text: " "})
+		p.inline = append(p.inline, span{text: "\n"})
 
 	case atom.Div, atom.Section, atom.Article, atom.Main, atom.Aside, atom.Header,
 		atom.Footer, atom.Details, atom.Summary, atom.Body, atom.Html, atom.Center,
@@ -289,7 +289,9 @@ func tableRow(tr *html.Node) []string {
 			continue
 		}
 
-		cell := strings.TrimSpace(spanText(normalizeSpans(collectInline(c, formatPlain, nil))))
+		// Rows render as single lines, so hard breaks inside a cell flatten
+		// back to spaces.
+		cell := strings.Join(strings.Fields(spanText(normalizeSpans(collectInline(c, formatPlain, nil)))), " ")
 		if cell != "" {
 			empty = false
 		}
@@ -465,7 +467,7 @@ func inlineSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 		return nil
 
 	case atom.Br:
-		return []span{{text: " ", format: format}}
+		return []span{{text: "\n", format: format}}
 
 	case atom.Img:
 		if images != nil {
@@ -575,39 +577,50 @@ func scriptSpans(n *html.Node, format inlineFormat, images *[]block, mapping map
 	return []span{{text: sb.String(), format: format}}
 }
 
+// Whitespace between spans collapses to a single separator: a hard break
+// (from <br>) wins over a space, and runs of breaks cap at one blank line.
+// Edge whitespace is dropped, so paragraphs never start or end blank.
 func normalizeSpans(spans []span) []span {
 	var out []span
 
-	prevSpace := true
+	emit := func(s span) {
+		if len(out) > 0 && out[len(out)-1].format == s.format && out[len(out)-1].href == s.href {
+			out[len(out)-1].text += s.text
+		} else {
+			out = append(out, s)
+		}
+	}
+
+	newlines := 0
+	space := false
 
 	for _, s := range spans {
-		text := s.text
-		if prevSpace {
-			text = strings.TrimPrefix(text, " ")
-		}
+		text := strings.TrimLeft(s.text, " \n")
+		lead := s.text[:len(s.text)-len(text)]
+
+		newlines += strings.Count(lead, "\n")
+		space = space || strings.Contains(lead, " ")
 
 		if text == "" {
 			continue
 		}
 
-		prevSpace = strings.HasSuffix(text, " ")
+		trimmed := strings.TrimRight(text, " \n")
+		trail := text[len(trimmed):]
 
-		if len(out) > 0 && out[len(out)-1].format == s.format && out[len(out)-1].href == s.href {
-			out[len(out)-1].text += text
-		} else {
-			out = append(out, span{text: text, format: s.format, href: s.href})
-		}
-	}
-
-	for len(out) > 0 {
-		last := &out[len(out)-1]
-
-		last.text = strings.TrimRight(last.text, " ")
-		if last.text != "" {
-			break
+		if len(out) > 0 {
+			switch {
+			case newlines > 0:
+				emit(span{text: strings.Repeat("\n", min(newlines, 2))})
+			case space:
+				emit(span{text: " "})
+			}
 		}
 
-		out = out[:len(out)-1]
+		newlines = strings.Count(trail, "\n")
+		space = strings.Contains(trail, " ")
+
+		emit(span{text: trimmed, format: s.format, href: s.href})
 	}
 
 	return out
