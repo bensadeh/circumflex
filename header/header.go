@@ -26,12 +26,11 @@ func MemorialActive() bool { return memorialActive.Load() }
 // black bar is up. Every view draws its top rule through here so the indicator
 // stays consistent across the list, help, comment, and reader screens.
 func Underline(width int) string {
-	bar := strings.Repeat("‾", width)
 	if memorialActive.Load() {
-		return style.MemorialUnderline(bar)
+		return style.MemorialUnderline(strings.Repeat("═", width))
 	}
 
-	return bar
+	return strings.Repeat("‾", width)
 }
 
 // Header renders the logo (or spinner) and category tabs. With dim set, the
@@ -46,6 +45,8 @@ func Header(allCategories []categories.Category, selectedSubHeader int, width in
 	switch {
 	case spinnerView != "":
 		title = spinnerView
+	case memorialActive.Load():
+		title = leftPad + style.Faint("clx") + rightPad
 	case dim:
 		title = leftPad + style.LogoFaint("c", "l", "x") + rightPad
 	default:
