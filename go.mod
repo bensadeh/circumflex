@@ -8,7 +8,6 @@ require (
 	charm.land/lipgloss/v2 v2.0.5
 	codeberg.org/readeck/go-readability/v2 v2.1.2
 	github.com/BurntSushi/toml v1.6.0
-	github.com/bobesa/go-domain-util v0.0.0-20250410211237-17ab3b2f4a95
 	github.com/charmbracelet/x/ansi v0.11.7
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.0.10

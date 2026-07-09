@@ -15,7 +15,7 @@ import (
 	"github.com/bensadeh/circumflex/version"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/bobesa/go-domain-util/domainutil"
+	"github.com/bensadeh/circumflex/domain"
 	"resty.dev/v3"
 )
 
@@ -276,7 +276,7 @@ func mapStoryItem(raw *hnItem) *hn.Story {
 		Author:        raw.By,
 		Time:          raw.Time,
 		URL:           raw.URL,
-		Domain:        domainutil.Domain(raw.URL),
+		Domain:        domain.FromURL(raw.URL),
 		CommentsCount: raw.Descendants,
 	}
 }
@@ -289,7 +289,7 @@ func mapCommentTree(raw *hnItem) *hn.CommentTree {
 		Author:        raw.By,
 		Time:          raw.Time,
 		URL:           raw.URL,
-		Domain:        domainutil.Domain(raw.URL),
+		Domain:        domain.FromURL(raw.URL),
 		Content:       raw.Text,
 		CommentsCount: raw.Descendants,
 	}
