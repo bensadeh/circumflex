@@ -1,6 +1,7 @@
 package reader
 
 import (
+	"image/color"
 	"strings"
 	"testing"
 
@@ -15,10 +16,10 @@ import (
 
 func TestNew_PreRenderedContent(t *testing.T) {
 	content := "line1\nline2\nline3"
-	m := newFromContent(content, "Test Title", 80, 24, Meta{})
+	m := newFromContent(content, "Test Title", 100, 24)
 
 	assert.Equal(t, "Test Title", m.title)
-	assert.Equal(t, 80, m.paneWidth)
+	assert.Equal(t, 100, m.paneWidth)
 	assert.Nil(t, m.parsed, "pre-rendered model should not have parsed")
 }
 
@@ -50,7 +51,7 @@ func TestResize_RerenderChangesContent(t *testing.T) {
 }
 
 func TestResize_PreRendered_NoRerender(t *testing.T) {
-	m := newFromContent("line1\nline2\nline3", "Title", 80, 24, Meta{})
+	m := newFromContent("line1\nline2\nline3", "Title", 80, 24)
 
 	contentBefore := m.ContentLines
 
@@ -82,7 +83,7 @@ func TestQuit_ReturnsReaderViewQuitMsg(t *testing.T) {
 	}
 
 	for _, key := range keys {
-		m := newFromContent("content", "Title", 80, 24, Meta{})
+		m := newFromContent("content", "Title", 80, 24)
 
 		cmd := m.Update(key)
 		require.NotNil(t, cmd)
@@ -94,7 +95,7 @@ func TestQuit_ReturnsReaderViewQuitMsg(t *testing.T) {
 }
 
 func TestHelpToggle(t *testing.T) {
-	m := newFromContent("content", "Title", 80, 24, Meta{})
+	m := newFromContent("content", "Title", 80, 24)
 	assert.False(t, m.showHelp)
 
 	m.Update(tea.KeyPressMsg{Code: 'i', Text: "i"})
@@ -109,7 +110,7 @@ func TestHelpToggle(t *testing.T) {
 
 func TestHeaderLines_DetectsSectionMarkers(t *testing.T) {
 	content := "intro\n■ Section One\nbody\n■ Section Two\nend"
-	m := newFromContent(content, "Title", 80, 24, Meta{})
+	m := newFromContent(content, "Title", 80, 24)
 
 	assert.Len(t, m.headerLines, 2)
 }
@@ -123,7 +124,7 @@ func TestJumpToHeader(t *testing.T) {
 	lines[10] = "■ First"
 	lines[30] = "■ Second"
 
-	m := newFromContent(strings.Join(lines, "\n"), "Title", 80, 60, Meta{})
+	m := newFromContent(strings.Join(lines, "\n"), "Title", 80, 60)
 	require.Len(t, m.headerLines, 2)
 
 	m.jumpToHeader(1)
@@ -134,6 +135,50 @@ func TestJumpToHeader(t *testing.T) {
 
 	m.jumpToHeader(-1)
 	assert.Equal(t, 10, m.Viewport.YOffset())
+}
+
+func TestReader_HideShowImagesToggle(t *testing.T) {
+	parsed := parseTestArticle(t)
+	m := NewWithArticle(parsed, "Article", 72, 120, 40, Meta{Images: true})
+
+	require.True(t, m.showImages, "starts shown when the flag enabled it")
+
+	m.Update(tea.KeyPressMsg{Code: 'h', Text: "h"})
+	assert.False(t, m.showImages, "h hides images")
+
+	m.Update(tea.KeyPressMsg{Code: 'l', Text: "l"})
+	assert.True(t, m.showImages, "l shows images")
+}
+
+func TestReader_BackgroundColorMsgRerendersWithTermBG(t *testing.T) {
+	parsed := parseTestArticle(t)
+	m := NewWithArticle(parsed, "Article", 72, 120, 40, Meta{Images: true})
+
+	require.Nil(t, m.termBG)
+
+	m.Update(tea.BackgroundColorMsg{Color: color.White})
+
+	assert.Equal(t, color.White, m.termBG, "a late terminal report reaches the renderer")
+}
+
+func TestRemapYOffset(t *testing.T) {
+	// Three blocks after a 3-line header. In the new render the middle block
+	// (an image, lines 10-18) collapsed to a single label line.
+	oldStarts := []int{3, 10, 20}
+	newStarts := []int{3, 10, 12}
+
+	const newTotal = 22
+
+	assert.Equal(t, 1, remapYOffset(1, oldStarts, newStarts, newTotal), "header lines keep their offset")
+	assert.Equal(t, 5, remapYOffset(5, oldStarts, newStarts, newTotal), "a line in an unchanged block keeps its offset")
+	assert.Equal(t, 9, remapYOffset(9, oldStarts, newStarts, newTotal), "the separator after an unchanged block keeps its offset")
+	assert.Equal(t, 10, remapYOffset(10, oldStarts, newStarts, newTotal), "the start of the shrunk block maps to its start")
+	assert.Equal(t, 10, remapYOffset(15, oldStarts, newStarts, newTotal), "deep inside the shrunk block clamps to its last line")
+	assert.Equal(t, 17, remapYOffset(25, oldStarts, newStarts, newTotal), "a block after the shrunk one shifts up with it")
+
+	// The reverse toggle: the label grows back into the tall image.
+	assert.Equal(t, 10, remapYOffset(10, newStarts, oldStarts, 30), "the label maps back to the top of the image")
+	assert.Equal(t, 25, remapYOffset(17, newStarts, oldStarts, 30), "text after the image shifts back down with it")
 }
 
 func parseTestArticle(t *testing.T) *article.Parsed {

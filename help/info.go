@@ -42,6 +42,7 @@ func readerText(screenWidth int, withStoryNav bool) string {
 	nav.addKey("␣, b", "Page down / up")
 	nav.addKey("g, G", "Top / bottom")
 	nav.addKey("n, N", "Next / prev section")
+	nav.addKey("h, l", "Hide / show images")
 
 	open := keys.addSection("Open")
 	open.addKey("o", "Open story in browser")

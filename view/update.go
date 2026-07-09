@@ -24,6 +24,14 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 		return m, tea.Quit
 	}
 
+	// Handled before the startup gate: the terminal's answer can arrive
+	// before the first WindowSizeMsg and must not be dropped.
+	if bg, ok := msg.(tea.BackgroundColorMsg); ok {
+		m.termBG = bg.Color
+
+		return m, nil
+	}
+
 	if !m.started {
 		if windowSizeMsg, ok := msg.(tea.WindowSizeMsg); ok {
 			return m.handleStartup(windowSizeMsg)
@@ -312,6 +320,8 @@ func (m *model) handleArticleReady(msg message.ArticleReady) (*model, tea.Cmd) {
 		ID:        msg.ID,
 		Points:    msg.Points,
 		NerdFonts: m.config.EnableNerdFonts,
+		Images:    m.config.EnableImages,
+		TermBG:    m.termBG,
 	})
 
 	m.screen = screenReader

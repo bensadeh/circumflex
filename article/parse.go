@@ -1,6 +1,7 @@
 package article
 
 import (
+	"slices"
 	"strconv"
 	"strings"
 	"unicode"
@@ -30,7 +31,15 @@ func dedupeBlocks(blocks []block) []block {
 	for _, b := range blocks {
 		if len(out) > 0 {
 			prev := out[len(out)-1]
-			if prev.kind == b.kind && prev.level == b.level && prev.plainText() == b.plainText() {
+
+			same := prev.kind == b.kind && prev.level == b.level && prev.plainText() == b.plainText()
+			if same && b.kind == blockImage && b.plainText() == "" {
+				// Uncaptioned images all share an empty caption, so fall back
+				// to the source to avoid collapsing genuinely distinct images.
+				same = prev.imageURL == b.imageURL
+			}
+
+			if same {
 				continue
 			}
 		}
@@ -194,16 +203,80 @@ func (p *domParser) emitImages() {
 }
 
 func (p *domParser) appendImage(n *html.Node) {
-	p.images = append(p.images, imageBlock(altText(n)))
+	p.images = append(p.images, imageBlock(altText(n), imageSrc(n), imageDisplayWidth(n)))
 }
 
-func imageBlock(caption string) block {
-	b := block{kind: blockImage}
+func imageBlock(caption, src string, dispWidth int) block {
+	b := block{kind: blockImage, imageURL: src, dispWidth: dispWidth}
 	if caption != "" {
 		b.spans = []span{{text: caption}}
 	}
 
 	return b
+}
+
+// imageDisplayWidth reads the img width attribute, the site's intended display
+// size in CSS px. A missing or non-positive value returns 0 so rendering falls
+// back to the image's intrinsic resolution.
+func imageDisplayWidth(n *html.Node) int {
+	if n == nil {
+		return 0
+	}
+
+	if w, err := strconv.Atoi(strings.TrimSpace(attr(n, "width"))); err == nil && w > 0 {
+		return w
+	}
+
+	return 0
+}
+
+// imageSrc picks the most promising source for an img, preferring the eager
+// attributes and falling back to the largest srcset candidate. Lazy-loaded
+// images often hold a placeholder in src and the real URL in a data-* attr.
+func imageSrc(n *html.Node) string {
+	for _, key := range []string{"src", "data-src", "data-original", "data-lazy-src"} {
+		if v := strings.TrimSpace(attr(n, key)); isFetchableImageURL(v) {
+			return v
+		}
+	}
+
+	return bestFromSrcset(attr(n, "srcset"))
+}
+
+// data: URIs, inline SVG, and lazy-load placeholders are skipped so imageSrc
+// falls through to the real source.
+func isFetchableImageURL(v string) bool {
+	return v != "" && !strings.HasPrefix(v, "data:") && !isPlaceholderURL(v)
+}
+
+// isPlaceholderURL flags the blank/grey spacer images sites show before the
+// real image lazy-loads (e.g. BBC's grey-placeholder.png).
+func isPlaceholderURL(v string) bool {
+	lower := strings.ToLower(v)
+	for _, marker := range placeholderMarkers {
+		if strings.Contains(lower, marker) {
+			return true
+		}
+	}
+
+	return false
+}
+
+var placeholderMarkers = []string{
+	"placeholder", "spacer.gif", "spacer.png", "blank.gif", "blank.png",
+	"transparent.gif", "transparent.png", "1x1.gif", "1x1.png",
+}
+
+// bestFromSrcset returns the last usable candidate, which is conventionally the
+// highest resolution in a "url descriptor, url descriptor" list.
+func bestFromSrcset(srcset string) string {
+	for _, candidate := range slices.Backward(strings.Split(srcset, ",")) {
+		if fields := strings.Fields(candidate); len(fields) > 0 && isFetchableImageURL(fields[0]) {
+			return fields[0]
+		}
+	}
+
+	return ""
 }
 
 func (p *domParser) parseFigure(n *html.Node) {
@@ -216,7 +289,9 @@ func (p *domParser) parseFigure(n *html.Node) {
 
 		switch nodeAtom(c) {
 		case atom.Img:
-			if img == nil {
+			// Prefer an img with a real source: BBC and others emit a grey
+			// placeholder img alongside the lazy-loaded real one.
+			if img == nil || (imageSrc(img) == "" && imageSrc(c) != "") {
 				img = c
 			}
 
@@ -243,7 +318,12 @@ func (p *domParser) parseFigure(n *html.Node) {
 		caption = altText(img)
 	}
 
-	p.blocks = append(p.blocks, imageBlock(caption))
+	src := ""
+	if img != nil {
+		src = imageSrc(img)
+	}
+
+	p.blocks = append(p.blocks, imageBlock(caption, src, imageDisplayWidth(img)))
 }
 
 func (p *domParser) parseTable(n *html.Node) {
@@ -471,7 +551,7 @@ func inlineSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 
 	case atom.Img:
 		if images != nil {
-			*images = append(*images, imageBlock(altText(n)))
+			*images = append(*images, imageBlock(altText(n), imageSrc(n), imageDisplayWidth(n)))
 		}
 
 		return nil

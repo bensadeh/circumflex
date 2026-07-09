@@ -32,11 +32,12 @@ func urlCmd() *cobra.Command {
 				return fmt.Errorf("could not read article: %w", err)
 			}
 
-			width, screenWidth := readerWidths(config.ArticleWidth)
-			header := meta.ReaderModeURLBlock(url, config.EnableNerdFonts, width)
-			content := parsed.RenderWithHeader(width, screenWidth, header)
+			articleMeta := reader.Meta{URL: url, NerdFonts: config.EnableNerdFonts, Images: config.EnableImages}
 
-			return reader.Run(content, "Reader Mode", reader.Meta{URL: url, NerdFonts: config.EnableNerdFonts})
+			return reader.Run(parsed, "Reader Mode", config.ArticleWidth, articleMeta,
+				func(contentWidth int) string {
+					return meta.ReaderModeURLBlock(url, config.EnableNerdFonts, contentWidth)
+				})
 		},
 	}
 }

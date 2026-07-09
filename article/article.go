@@ -19,6 +19,9 @@ type Parsed struct {
 	blocks []block
 }
 
+// Parse fetches the article at url and turns it into renderable blocks,
+// downloading and decoding its images so reader mode can display them. Whether
+// the images are actually shown is decided later, at render time.
 func Parse(ctx context.Context, url string) (*Parsed, error) {
 	parsedURL, err := nurl.ParseRequestURI(url)
 	if err != nil {
@@ -53,6 +56,8 @@ func Parse(ctx context.Context, url string) (*Parsed, error) {
 		return nil, fmt.Errorf("no readable content found at %s", parsedURL.Hostname())
 	}
 
+	fetchImages(ctx, blocks, parsedURL)
+
 	return &Parsed{blocks: blocks}, nil
 }
 
@@ -69,8 +74,13 @@ func NewParsedFromHTML(src string) *Parsed {
 // RenderWithHeader wraps prose at contentWidth; code blocks extend to
 // screenWidth like in the comment section. A screenWidth of 0 keeps
 // everything at contentWidth. The right edge reserves the scrollbar column so
-// a full-width code or table line is not clipped by the bar.
-func (p *Parsed) RenderWithHeader(contentWidth, screenWidth int, header string) string {
+// a full-width code or table line is not clipped by the bar. images controls
+// whether decoded images render as art or fall back to a text label.
+//
+// The second return value holds the line index each block starts on, so a
+// scroll position can be re-anchored to the same block after a re-render
+// changes block heights (image toggling, resizing).
+func (p *Parsed) RenderWithHeader(contentWidth, screenWidth int, header string, images ImageOptions) (string, []int) {
 	margin := strings.Repeat(" ", layout.ReaderViewLeftMargin)
 
 	codeWidth := contentWidth
@@ -78,5 +88,8 @@ func (p *Parsed) RenderWithHeader(contentWidth, screenWidth int, header string) 
 		codeWidth = max(contentWidth, screenWidth-layout.ReaderViewLeftMargin-scrollbar.Width)
 	}
 
-	return header + style.PrefixLines(renderBlocks(p.blocks, contentWidth, codeWidth), margin)
+	parts := renderParts(p.blocks, contentWidth, codeWidth, images)
+	body := header + style.PrefixLines(strings.Join(parts, "\n\n"), margin)
+
+	return body, blockStarts(parts, strings.Count(header, "\n"))
 }

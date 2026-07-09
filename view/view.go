@@ -21,7 +21,9 @@ type teaModel struct {
 }
 
 func (t teaModel) Init() tea.Cmd {
-	return nil
+	// The response feeds image transparency in reader mode; terminals that
+	// do not answer simply never deliver the message.
+	return tea.RequestBackgroundColor
 }
 
 func (t teaModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {

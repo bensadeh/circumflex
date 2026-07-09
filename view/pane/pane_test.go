@@ -2,6 +2,7 @@ package pane
 
 import (
 	"errors"
+	"image/color"
 	"testing"
 
 	"github.com/bensadeh/circumflex/view/message"
@@ -58,6 +59,28 @@ func TestStandalone_CreatesViewOnFirstWindowSize(t *testing.T) {
 
 	created.Update(tea.WindowSizeMsg{Width: 100, Height: 40})
 	assert.Len(t, fv.msgs, 1, "later WindowSizeMsgs should be forwarded")
+}
+
+func TestStandalone_ReplaysEarlyBackgroundColorToNewView(t *testing.T) {
+	fv := &fakeView{}
+	s := standalone{makeView: func(int, int) View { return fv }}
+
+	bg := tea.BackgroundColorMsg{Color: color.White}
+
+	next, _ := s.Update(bg)
+	withBG, ok := next.(standalone)
+	require.True(t, ok)
+
+	next, _ = withBG.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
+
+	require.Len(t, fv.msgs, 1, "the stashed background color is replayed on view creation")
+	assert.Equal(t, bg, fv.msgs[0])
+
+	created, ok := next.(standalone)
+	require.True(t, ok)
+
+	created.Update(bg)
+	assert.Len(t, fv.msgs, 2, "a report arriving after creation is forwarded directly")
 }
 
 func TestStandalone_QuitMessagesEndProgram(t *testing.T) {

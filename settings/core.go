@@ -31,6 +31,7 @@ type Config struct {
 	DebugMode                  bool
 	DebugFallible              bool
 	EnableNerdFonts            bool
+	EnableImages               bool
 	PageMultiplier             int
 	WideViewMinWidth           int
 	Theme                      *theme.Theme

@@ -51,7 +51,7 @@ func TestGolden(t *testing.T) {
 
 			blocks = applySiteRules(blocks, tt.hostname)
 
-			rendered := ansi.Strip(renderBlocks(blocks, goldenWidth, goldenWidth)) + "\n"
+			rendered := ansi.Strip(renderBlocks(blocks, goldenWidth, goldenWidth, showImages)) + "\n"
 
 			goldenPath := filepath.Join("testdata", tt.fixture+".golden")
 

@@ -2,12 +2,12 @@
 .\"     Title: clx
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.26
-.\"      Date: 2026-07-07
+.\"      Date: 2026-07-09
 .\"    Manual: circumflex
 .\"    Source: circumflex 4.5-dev
 .\"  Language: English
 .\"
-.TH "CLX" "1" "2026-07-07" "circumflex 4.5\-dev" "circumflex"
+.TH "CLX" "1" "2026-07-09" "circumflex 4.5\-dev" "circumflex"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -267,6 +267,11 @@ Go to top/bottom.
 Jump to next/previous section.
 .RE
 .sp
+\fIh\fP, \fIl\fP
+.RS 4
+Hide/show article images. See \fB\-\-reader\-mode\-images\fP.
+.RE
+.sp
 \fIo\fP
 .RS 4
 Open link to article in browser.
@@ -339,6 +344,14 @@ Ask and show always fetch one page because their story pools are small (~150\-20
 Default: 3.
 .RE
 .sp
+\fB\-\-reader\-mode\-images\fP
+.RS 4
+Show article images in Reader Mode as blocks of colored text (Unicode half\-blocks) instead of a text placeholder.
+Off by default; enable it per\-run with this flag or globally with \fBCLX_READER_MODE_IMAGES\fP.
+Images are scaled to their size on the page, centered, and look best in a terminal with truecolor support.
+JPEG, PNG, GIF and WebP images are drawn; other formats keep the placeholder.
+.RE
+.sp
 \fB\-v, \-\-version\fP
 .RS 4
 Show the current version of \fBcircumflex\fP.
@@ -409,6 +422,11 @@ Command used to open URLs (article links and comment pages).
 The URL is appended as the final argument.
 For example, \f(CRCLX_BROWSER="firefox \-\-new\-tab"\fP opens links in a new Firefox tab.
 When unset, the platform default opener is used (\fBopen\fP on macOS, \fBxdg\-open\fP on Linux, \fBrundll32\fP on Windows).
+.RE
+.sp
+\fBCLX_READER_MODE_IMAGES\fP
+.RS 4
+Set to \fB1\fP (or \fBtrue\fP) to show article images in Reader Mode by default, as if \fB\-\-reader\-mode\-images\fP were passed.
 .RE
 .SH "FILES"
 .sp

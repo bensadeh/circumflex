@@ -7,6 +7,12 @@
 - On terminals 180 columns or wider, the comment section and reader mode now open in a pane next to the front page instead of replacing it; configure with `--wide-view always`, `--wide-view never` or `--wide-view <columns>`
 - Open the next (<kbd>J</kbd>) or previous (<kbd>K</kbd>) story directly from the comment section and reader mode, without going back to the front page
 
+**Reader Mode**
+- Reader Mode now parses the DOM directly with fewer intermediary passes 
+  - Was: HTML → Markdown → Terminal 
+  - Now: DOM → Terminal
+- Added experimental support for showing images in the terminal
+
 ## 4.4
 
 **New features**

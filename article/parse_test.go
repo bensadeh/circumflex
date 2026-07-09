@@ -381,6 +381,29 @@ func TestParseBlocks_DedupesConsecutiveDuplicates(t *testing.T) {
 	assert.Equal(t, "Credit: Getty was here twice", blocks[2].plainText())
 }
 
+func TestParseFigure_PrefersRealImageOverPlaceholder(t *testing.T) {
+	t.Parallel()
+
+	// BBC pattern: a grey lazy-load placeholder img next to the real one.
+	blocks := blocksFromHTML(t, `<figure>`+
+		`<img src="https://static.example.com/grey-placeholder.png">`+
+		`<img src="https://ichef.example.com/real-photo.webp">`+
+		`<figcaption>A caption</figcaption></figure>`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, blockImage, blocks[0].kind)
+	assert.Equal(t, "https://ichef.example.com/real-photo.webp", blocks[0].imageURL)
+	assert.Equal(t, "A caption", blocks[0].plainText())
+}
+
+func TestIsPlaceholderURL(t *testing.T) {
+	t.Parallel()
+
+	assert.True(t, isPlaceholderURL("https://static.files.bbci.co.uk/.../grey-placeholder.png"))
+	assert.True(t, isPlaceholderURL("https://cdn.example.com/assets/spacer.gif"))
+	assert.False(t, isPlaceholderURL("https://ichef.bbci.co.uk/images/ic/480xn/p0nvtng9.jpg.webp"))
+}
+
 func TestCollapseWhitespace(t *testing.T) {
 	t.Parallel()
 

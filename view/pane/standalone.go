@@ -25,11 +25,17 @@ type standalone struct {
 	makeView func(width, height int) View
 	view     View
 
+	// bgMsg holds a background color report that arrived before the view
+	// existed, replayed once the view is created.
+	bgMsg tea.Msg
+
 	browserErr error
 }
 
 func (s standalone) Init() tea.Cmd {
-	return nil
+	// The response feeds image transparency in reader mode; terminals that
+	// do not answer simply never deliver the message.
+	return tea.RequestBackgroundColor
 }
 
 func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -44,9 +50,16 @@ func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case message.CommentViewQuit, message.ReaderViewQuit:
 		return s, tea.Quit
 
+	case tea.BackgroundColorMsg:
+		s.bgMsg = msg // forwarded below, or replayed if the view is not built yet
+
 	case tea.WindowSizeMsg:
 		if s.view == nil {
 			s.view = s.makeView(msg.Width, msg.Height)
+
+			if s.bgMsg != nil {
+				s.view.Update(s.bgMsg)
+			}
 
 			return s, s.view.Init()
 		}

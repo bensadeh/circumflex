@@ -11,6 +11,8 @@ type keyMap struct {
 
 	NextHeader key.Binding
 	PrevHeader key.Binding
+	HideImages key.Binding
+	ShowImages key.Binding
 }
 
 func defaultKeyMap() keyMap {
@@ -23,6 +25,14 @@ func defaultKeyMap() keyMap {
 		PrevHeader: key.NewBinding(
 			key.WithKeys("N"),
 			key.WithHelp("N", "prev section"),
+		),
+		HideImages: key.NewBinding(
+			key.WithKeys("h"),
+			key.WithHelp("h", "hide images"),
+		),
+		ShowImages: key.NewBinding(
+			key.WithKeys("l"),
+			key.WithHelp("l", "show images"),
 		),
 	}
 }

@@ -174,6 +174,9 @@ Go to top/bottom.
 _n_, _N_::
 Jump to next/previous section.
 
+_h_, _l_::
+Hide/show article images. See *--reader-mode-images*.
+
 _o_::
 Open link to article in browser.
 
@@ -222,6 +225,12 @@ Higher values fetch more stories but increase load time.
 Only applies to top, new and best.
 Ask and show always fetch one page because their story pools are small (~150-200 stories).
 Default: 3.
+
+*--reader-mode-images*::
+Show article images in Reader Mode as blocks of colored text (Unicode half-blocks) instead of a text placeholder.
+Off by default; enable it per-run with this flag or globally with *CLX_READER_MODE_IMAGES*.
+Images are scaled to their size on the page, centered, and look best in a terminal with truecolor support.
+JPEG, PNG, GIF and WebP images are drawn; other formats keep the placeholder.
 
 *-v, --version*::
 Show the current version of *circumflex*.
@@ -278,6 +287,9 @@ Command used to open URLs (article links and comment pages).
 The URL is appended as the final argument.
 For example, `CLX_BROWSER="firefox --new-tab"` opens links in a new Firefox tab.
 When unset, the platform default opener is used (*open* on macOS, *xdg-open* on Linux, *rundll32* on Windows).
+
+*CLX_READER_MODE_IMAGES*::
+Set to *1* (or *true*) to show article images in Reader Mode by default, as if *--reader-mode-images* were passed.
 
 == Files
 

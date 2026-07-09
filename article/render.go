@@ -2,6 +2,8 @@ package article
 
 import (
 	"fmt"
+	"image"
+	"image/color"
 	"strconv"
 	"strings"
 
@@ -14,26 +16,61 @@ import (
 )
 
 const (
-	sectionMarker = "■"
-	imageCircle   = "●"
-	blockIndent   = "  "
+	sectionMarker     = "■"
+	imageCircle       = "●"
+	blockIndent       = "  "
+	maxImageRows      = 40     // cap rendered image height so a tall image can still scroll past
+	minImageCols      = 8      // floor so a scaled-down thumbnail stays visible
+	referenceColumnPx = 640    // display width in CSS px that maps to the full content column
+	minAlpha          = 0x8000 // without a known terminal background, below half coverage renders transparent
 )
+
+// ImageOptions controls how image blocks render.
+type ImageOptions struct {
+	// Show renders decoded images as half-block art instead of a text label.
+	Show bool
+	// TerminalBG is the terminal's background color, used to composite
+	// semi-transparent pixels. When nil, pixels below half coverage render
+	// fully transparent instead of blended.
+	TerminalBG color.Color
+}
 
 // Prose wraps at the reading column; code and verbatim blocks break out to
 // codeWidth (the full screen space), mirroring the comment section.
-func renderBlocks(blocks []block, width, codeWidth int) string {
+func renderBlocks(blocks []block, width, codeWidth int, images ImageOptions) string {
+	return strings.Join(renderParts(blocks, width, codeWidth, images), "\n\n")
+}
+
+// renderParts renders each block to its own chunk, skipping blocks that
+// render empty. Chunks are joined with one blank line between them.
+func renderParts(blocks []block, width, codeWidth int, images ImageOptions) []string {
 	var parts []string
 
 	for i := range blocks {
-		if rendered := renderBlock(&blocks[i], width, codeWidth); rendered != "" {
+		if rendered := renderBlock(&blocks[i], width, codeWidth, images); rendered != "" {
 			parts = append(parts, rendered)
 		}
 	}
 
-	return strings.Join(parts, "\n\n")
+	return parts
 }
 
-func renderBlock(b *block, width, codeWidth int) string {
+// blockStarts returns the line index each part lands on in the joined output,
+// with the first part starting at firstLine. Scroll positions can then be
+// re-anchored to the same block across re-renders.
+func blockStarts(parts []string, firstLine int) []int {
+	starts := make([]int, len(parts))
+	line := firstLine
+
+	for i, part := range parts {
+		starts[i] = line
+		line += strings.Count(part, "\n") + 2 // the part's lines plus the blank separator
+	}
+
+	return starts
+}
+
+func renderBlock(b *block, width, codeWidth int, images ImageOptions) string {
 	switch b.kind {
 	case blockParagraph:
 		return renderParagraph(b.spans, width)
@@ -54,7 +91,7 @@ func renderBlock(b *block, width, codeWidth int) string {
 		return renderTable(b.rows, codeWidth)
 
 	case blockImage:
-		return renderImage(b.spans, width)
+		return renderImage(b, width, images)
 
 	case blockDivider:
 		return renderDivider(width)
@@ -220,11 +257,182 @@ func styleLines(text string, styleFn func(string) string) string {
 	return strings.Join(lines, "\n")
 }
 
-func renderImage(caption []span, width int) string {
-	text := imageLabel() + spanText(caption) + ansi.Reset
-	wrapped := lipgloss.Wrap(text, width-len(blockIndent), "")
+func renderImage(b *block, width int, images ImageOptions) string {
+	inner := width - len(blockIndent)
+
+	if images.Show && b.img != nil {
+		if art := renderImageArt(b.img, b.dispWidth, inner, images.TerminalBG); art != "" {
+			art = centerLines(art, inner)
+
+			if caption := spanText(b.spans); caption != "" {
+				art += "\n" + centerLines(captionLines(caption, inner), inner)
+			}
+
+			return style.PrefixLines(art, blockIndent)
+		}
+	}
+
+	text := imageLabel() + spanText(b.spans) + ansi.Reset
+	wrapped := lipgloss.Wrap(text, inner, "")
 
 	return style.PrefixLines(wrapped, blockIndent)
+}
+
+// renderImageArt downsamples img and prints it with the upper half-block ▀:
+// the glyph's foreground color is the top pixel and the cell's background color
+// is the pixel below it, so one text row shows two pixel rows. The width tracks
+// how large the image appears on the page (dispWidth, or its intrinsic size
+// when unknown) relative to a reference column, so a thumbnail stays a
+// thumbnail rather than filling availCols.
+func renderImageArt(img image.Image, dispWidth, availCols int, bg color.Color) string {
+	bounds := img.Bounds()
+	if availCols < 1 || bounds.Dx() <= 0 || bounds.Dy() <= 0 {
+		return ""
+	}
+
+	gridW := imageCols(dispWidth, bounds.Dx(), availCols)
+
+	gridH := max(2, gridW*bounds.Dy()/bounds.Dx())
+
+	if maxH := maxImageRows * 2; gridH > maxH {
+		gridH = maxH
+		gridW = max(1, gridH*bounds.Dx()/bounds.Dy())
+	}
+
+	if gridH%2 == 1 {
+		gridH++
+	}
+
+	var sb strings.Builder
+
+	rows := gridH / 2
+
+	for row := range rows {
+		for col := range gridW {
+			top := samplePixel(img, bounds, col, 2*row, gridW, gridH, bg)
+			bottom := samplePixel(img, bounds, col, 2*row+1, gridW, gridH, bg)
+			writeCell(&sb, top, bottom)
+		}
+
+		sb.WriteString(ansi.Reset)
+
+		if row < rows-1 {
+			sb.WriteByte('\n')
+		}
+	}
+
+	return sb.String()
+}
+
+// writeCell prints one terminal cell covering two pixels. Transparent pixels
+// keep the terminal's own background (a logo cut-out shows the terminal, not a
+// guessed page color), so a half-covered cell uses the half-block that leaves
+// the transparent side unpainted.
+func writeCell(sb *strings.Builder, top, bottom pixel) {
+	switch {
+	case top.opaque && bottom.opaque:
+		fmt.Fprintf(sb, "\x1b[38;2;%d;%d;%d;48;2;%d;%d;%dm▀", top.r, top.g, top.b, bottom.r, bottom.g, bottom.b)
+
+	case top.opaque:
+		fmt.Fprintf(sb, "\x1b[49;38;2;%d;%d;%dm▀", top.r, top.g, top.b)
+
+	case bottom.opaque:
+		fmt.Fprintf(sb, "\x1b[49;38;2;%d;%d;%dm▄", bottom.r, bottom.g, bottom.b)
+
+	default:
+		sb.WriteString("\x1b[49m ")
+	}
+}
+
+// imageCols maps an image's on-page size to a terminal column count: its
+// display width in CSS px (falling back to the intrinsic width) as a fraction
+// of referenceColumnPx, floored so it stays visible and capped at availCols.
+func imageCols(dispWidth, intrinsicWidth, availCols int) int {
+	px := dispWidth
+	if px <= 0 {
+		px = intrinsicWidth
+	}
+
+	cols := availCols * px / referenceColumnPx
+
+	return min(availCols, max(minImageCols, cols))
+}
+
+type pixel struct {
+	r, g, b uint8
+	opaque  bool
+}
+
+// samplePixel nearest-neighbour samples the source pixel for grid cell
+// (gx, gy). Fully transparent pixels stay unpainted so the terminal shows
+// through. Semi-transparent ones composite onto the terminal's background
+// when it is known; without it, pixels below half coverage count as
+// transparent and the rest are un-premultiplied so a semi-transparent edge
+// keeps its own hue instead of darkening toward black.
+func samplePixel(img image.Image, bounds image.Rectangle, gx, gy, gridW, gridH int, bg color.Color) pixel {
+	sx := bounds.Min.X + gx*bounds.Dx()/gridW
+	sy := bounds.Min.Y + gy*bounds.Dy()/gridH
+
+	r, g, b, a := img.At(sx, sy).RGBA()
+
+	switch {
+	case a == 0xffff:
+		return pixel{r: uint8(r >> 8), g: uint8(g >> 8), b: uint8(b >> 8), opaque: true}
+
+	case bg != nil:
+		if a == 0 {
+			return pixel{}
+		}
+
+		return compositePixel(r, g, b, a, bg)
+
+	case a < minAlpha:
+		return pixel{}
+
+	default:
+		return pixel{
+			r:      uint8(r * 0xffff / a >> 8),
+			g:      uint8(g * 0xffff / a >> 8),
+			b:      uint8(b * 0xffff / a >> 8),
+			opaque: true,
+		}
+	}
+}
+
+// compositePixel blends a premultiplied pixel onto the terminal background —
+// the same math a browser uses to draw the image over the page.
+func compositePixel(r, g, b, a uint32, bg color.Color) pixel {
+	bgR, bgG, bgB, _ := bg.RGBA()
+	inv := 0xffff - a
+
+	return pixel{
+		r:      uint8((r + inv*bgR/0xffff) >> 8),
+		g:      uint8((g + inv*bgG/0xffff) >> 8),
+		b:      uint8((b + inv*bgB/0xffff) >> 8),
+		opaque: true,
+	}
+}
+
+// centerLines pads each line to sit centered within width, so a scaled-down
+// image and its caption hang in the middle of the content column instead of
+// hugging the left edge. Full-width lines pass through unchanged.
+func centerLines(text string, width int) string {
+	return styleLines(text, func(line string) string {
+		pad := (width - xansi.StringWidth(line)) / 2
+		if pad <= 0 {
+			return line
+		}
+
+		return strings.Repeat(" ", pad) + line
+	})
+}
+
+func captionLines(caption string, width int) string {
+	wrapped := lipgloss.Wrap(caption, width, "")
+
+	return styleLines(wrapped, func(line string) string {
+		return lipgloss.NewStyle().Foreground(style.ReaderImageColor()).Faint(true).Italic(true).Render(line)
+	})
 }
 
 func imageLabel() string {

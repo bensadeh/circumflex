@@ -9,7 +9,6 @@ import (
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/hn/provider"
-	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/settings"
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/theme"
@@ -17,7 +16,6 @@ import (
 	"github.com/bensadeh/circumflex/view"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/term"
 )
 
 var (
@@ -29,6 +27,7 @@ var (
 	debugFallible      bool
 	nerdFontFlag       bool
 	nerdFontChanged    bool
+	enableImages       bool
 	pageMultiplier     int
 	selectedCategories string
 	wideView           string
@@ -100,6 +99,8 @@ func configureFlags(rootCmd *cobra.Command) {
 		"set the comment section indent size")
 	rootCmd.PersistentFlags().BoolVarP(&nerdFontFlag, "nerdfonts", "n", false,
 		"enable or disable Nerd Fonts")
+	rootCmd.PersistentFlags().BoolVar(&enableImages, "reader-mode-images", envImagesEnabled(),
+		"show article images in reader mode\n(opt-in; also set with CLX_READER_MODE_IMAGES=1)")
 	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", categories.Default,
 		"set the categories in the header\n(available: "+strings.Join(categories.AvailableNames(), ", ")+")")
 	rootCmd.PersistentFlags().IntVar(&pageMultiplier, "pages", settings.Default().PageMultiplier,
@@ -131,6 +132,7 @@ func getConfig() (*settings.Config, error) {
 	config.Indent = settings.ClampIndent(indent)
 	config.DoNotMarkSubmissionsAsRead = disableHistory
 	config.EnableNerdFonts = resolveNerdFonts(nerdFontFlag, nerdFontChanged)
+	config.EnableImages = enableImages
 	config.DebugMode = debugMode
 	config.DebugFallible = debugFallible
 	config.PageMultiplier = settings.ClampPageMultiplier(pageMultiplier)
@@ -164,15 +166,15 @@ func isGhostty() bool {
 	return os.Getenv("TERM_PROGRAM") == "ghostty"
 }
 
-func newService() hn.Service {
-	return provider.NewService(debugMode, debugFallible)
+// envImagesEnabled reads CLX_READER_MODE_IMAGES as the default for
+// --reader-mode-images, so images can be turned on globally without passing the
+// flag every time.
+func envImagesEnabled() bool {
+	enabled, err := strconv.ParseBool(os.Getenv("CLX_READER_MODE_IMAGES"))
+
+	return err == nil && enabled
 }
 
-func readerWidths(maxWidth int) (contentWidth, screenWidth int) {
-	w, _, err := term.GetSize(int(os.Stdout.Fd()))
-	if err != nil || w <= 0 {
-		return maxWidth, 0
-	}
-
-	return layout.ReaderContentWidth(w, maxWidth), w
+func newService() hn.Service {
+	return provider.NewService(debugMode, debugFallible)
 }

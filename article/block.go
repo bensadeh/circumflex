@@ -1,6 +1,9 @@
 package article
 
-import "strings"
+import (
+	"image"
+	"strings"
+)
 
 type blockKind int
 
@@ -17,12 +20,15 @@ const (
 )
 
 type block struct {
-	kind  blockKind
-	level int        // blockHeading: 1-6
-	spans []span     // blockParagraph, blockQuote, blockImage (caption)
-	items []listItem // blockList
-	rows  [][]string // blockTable, first row is the header
-	text  string     // blockHeading, blockCode
+	kind      blockKind
+	level     int         // blockHeading: 1-6
+	spans     []span      // blockParagraph, blockQuote, blockImage (caption)
+	items     []listItem  // blockList
+	rows      [][]string  // blockTable, first row is the header
+	text      string      // blockHeading, blockCode
+	imageURL  string      // blockImage: resolved source URL, empty if none
+	img       image.Image // blockImage: decoded pixels, nil until fetched or on failure
+	dispWidth int         // blockImage: intended display width in CSS px from the width attr, 0 if unknown
 }
 
 type inlineFormat int

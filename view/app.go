@@ -2,6 +2,7 @@ package view
 
 import (
 	"context"
+	"image/color"
 	"time"
 
 	"github.com/bensadeh/circumflex/categories"
@@ -31,6 +32,7 @@ type model struct {
 	status statusBar
 	width  int
 	height int
+	termBG color.Color // terminal background, reported once at startup; nil if unanswered
 
 	list *list.Model
 

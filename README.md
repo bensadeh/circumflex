@@ -88,6 +88,9 @@ headers using <kbd>n</kbd>/<kbd>N</kbd>, and you can scroll using the usual vim 
   <img src="screenshots/reader_mode.png" width="500" alt="reader mode"/>
 </p>
 
+Images are off by default. Enable them with the `--reader-mode-images` flag or by setting `CLX_READER_MODE_IMAGES=1`, and
+they render as blocks of colored text — best in a terminal with truecolor support.
+
 ### Favorites
 
 Press <kbd>f</kbd> to add the highlighted submission to your favorites. Remove it with <kbd>x</kbd>.

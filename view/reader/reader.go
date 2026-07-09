@@ -1,6 +1,7 @@
 package reader
 
 import (
+	"image/color"
 	"slices"
 	"strings"
 
@@ -26,6 +27,8 @@ type Meta struct {
 	ID        int
 	Points    int
 	NerdFonts bool
+	Images    bool
+	TermBG    color.Color // terminal background when already known, for image transparency
 }
 
 type Model struct {
@@ -42,14 +45,19 @@ type Model struct {
 	parsed      *article.Parsed // nil when created with pre-rendered content
 	maxWidth    int
 	articleMeta Meta
+	showImages  bool
+	termBG      color.Color // nil until the terminal reports it
+	buildHeader func(contentWidth int) string
+	blockStarts []int // line index of each article block in the current render
 }
 
-func newFromContent(content, title string, width, height int, articleMeta Meta) *Model {
+// newFromContent builds a reader over pre-rendered content with no parsed
+// article, used by tests to exercise the viewport and scrolling directly.
+func newFromContent(content, title string, width, height int) *Model {
 	m := &Model{
-		keymap:      defaultKeyMap(),
-		title:       title,
-		paneWidth:   width,
-		articleMeta: articleMeta,
+		keymap:    defaultKeyMap(),
+		title:     title,
+		paneWidth: width,
 	}
 
 	m.initViewport(content, width, height)
@@ -59,6 +67,15 @@ func newFromContent(content, title string, width, height int, articleMeta Meta) 
 
 // NewWithArticle creates a reader view that can re-render on resize.
 func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, height int, articleMeta Meta) *Model {
+	return newFromArticle(parsed, title, maxWidth, width, height, articleMeta, nil)
+}
+
+// A nil buildHeader falls back to the standard story meta block.
+func newFromArticle(parsed *article.Parsed, title string, maxWidth, width, height int, articleMeta Meta, buildHeader func(int) string) *Model {
+	if buildHeader == nil {
+		buildHeader = metaHeader(articleMeta)
+	}
+
 	m := &Model{
 		keymap:      defaultKeyMap(),
 		title:       title,
@@ -66,21 +83,35 @@ func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, h
 		parsed:      parsed,
 		maxWidth:    maxWidth,
 		articleMeta: articleMeta,
+		showImages:  articleMeta.Images,
+		termBG:      articleMeta.TermBG,
+		buildHeader: buildHeader,
 	}
 
-	m.initViewport(m.renderArticle(), width, height)
+	content, starts := m.renderArticle()
+	m.blockStarts = starts
+
+	m.initViewport(content, width, height)
 
 	return m
 }
 
-// renderArticle renders the article at the current pane width, prefixed with
-// its meta header. The single source of the width derivation shared by the
-// initial render and every resize.
-func (m *Model) renderArticle() string {
-	contentWidth := layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
-	header := meta.ReaderModeMetaBlock(m.articleMeta.URL, m.articleMeta.Author, m.articleMeta.TimeAgo, m.articleMeta.ID, m.articleMeta.Points, m.articleMeta.NerdFonts, contentWidth)
+// metaHeader builds the reader header from full story metadata.
+func metaHeader(m Meta) func(int) string {
+	return func(contentWidth int) string {
+		return meta.ReaderModeMetaBlock(m.URL, m.Author, m.TimeAgo, m.ID, m.Points, m.NerdFonts, contentWidth)
+	}
+}
 
-	return m.parsed.RenderWithHeader(contentWidth, m.paneWidth, header)
+// renderArticle renders the article at the current pane width, prefixed with
+// its meta header, returning the content and the blocks' starting lines. The
+// single source of the width derivation shared by the initial render and
+// every resize.
+func (m *Model) renderArticle() (string, []int) {
+	contentWidth := layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
+	images := article.ImageOptions{Show: m.showImages, TerminalBG: m.termBG}
+
+	return m.parsed.RenderWithHeader(contentWidth, m.paneWidth, m.buildHeader(contentWidth), images)
 }
 
 // DisableStoryNavigation removes the J/K adjacent-story bindings, for
@@ -142,20 +173,64 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		}
 
 		return nil
+
+	case tea.BackgroundColorMsg:
+		m.termBG = msg.Color
+
+		if m.parsed != nil {
+			m.rerender()
+		}
+
+		return nil
 	}
 
 	return m.Forward(msg)
 }
 
-// rerender re-renders the article at the current pane width and updates
-// the viewport content, preserving the scroll position.
+// rerender re-renders the article at the current pane width and updates the
+// viewport content. The scroll position is re-anchored to the block it was in
+// rather than kept as a raw line number, so a re-render that changes block
+// heights (toggling images, resizing) does not jump to unrelated content.
 func (m *Model) rerender() {
 	yOffset := m.Viewport.YOffset()
+	oldStarts := m.blockStarts
 
-	m.setContent(m.renderArticle())
+	content, starts := m.renderArticle()
+	m.blockStarts = starts
+
+	m.setContent(content)
 
 	maxOffset := max(0, m.ContentLines-m.Viewport.Height())
-	m.Viewport.SetYOffset(min(yOffset, maxOffset))
+	m.Viewport.SetYOffset(min(remapYOffset(yOffset, oldStarts, starts, m.ContentLines), maxOffset))
+}
+
+// remapYOffset translates a scroll offset between two renders of the same
+// blocks: the offset keeps its line position within the block it points into.
+// Lines above the first block (the meta header) map unchanged, and an offset
+// deeper than the block's new height clamps to the block's last line, so
+// hiding a tall image leaves its label at the top of the view.
+func remapYOffset(yOffset int, oldStarts, newStarts []int, newTotal int) int {
+	i, found := slices.BinarySearch(oldStarts, yOffset)
+	if !found {
+		i--
+	}
+
+	if i < 0 || i >= len(newStarts) {
+		return yOffset
+	}
+
+	// span covers the block's lines plus its trailing blank separator.
+	span := newTotal + 1 - newStarts[i]
+	if i+1 < len(newStarts) {
+		span = newStarts[i+1] - newStarts[i]
+	}
+
+	within := yOffset - oldStarts[i]
+	if within < span {
+		return newStarts[i] + within
+	}
+
+	return newStarts[i] + max(0, span-2)
 }
 
 func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
@@ -194,6 +269,12 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 
 	case key.Matches(msg, m.keymap.PrevHeader):
 		m.jumpToHeader(-1)
+
+	case key.Matches(msg, m.keymap.HideImages):
+		m.setShowImages(false)
+
+	case key.Matches(msg, m.keymap.ShowImages):
+		m.setShowImages(true)
 
 	case key.Matches(msg, m.keymap.Help):
 		m.showHelp = true
@@ -269,9 +350,22 @@ func (m *Model) jumpToHeader(direction int) {
 	}
 }
 
-func Run(content, title string, articleMeta Meta) error {
+// setShowImages toggles image display and re-renders in place, keeping the
+// scroll position. Images are always fetched, so this is instant.
+func (m *Model) setShowImages(show bool) {
+	if m.parsed == nil || m.showImages == show {
+		return
+	}
+
+	m.showImages = show
+	m.rerender()
+}
+
+// Run shows the article in a standalone reader. A nil buildHeader renders the
+// standard story meta block from articleMeta.
+func Run(parsed *article.Parsed, title string, maxWidth int, articleMeta Meta, buildHeader func(int) string) error {
 	return pane.RunStandalone(func(width, height int) pane.View {
-		m := newFromContent(content, title, width, height, articleMeta)
+		m := newFromArticle(parsed, title, maxWidth, width, height, articleMeta, buildHeader)
 		m.DisableStoryNavigation()
 
 		return m
