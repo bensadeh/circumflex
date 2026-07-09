@@ -230,6 +230,24 @@ func TestParseBlocks_InlineImageBecomesOwnBlock(t *testing.T) {
 	assert.Equal(t, "a chart", blocks[1].plainText())
 }
 
+func TestParseBlocks_SrcsetPrefersRightSizedVariant(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<img src="full.jpeg" srcset="a-300.jpeg 300w, a-1024.jpeg 1024w, a-768.jpeg 768w" alt="a">`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, "a-768.jpeg", blocks[0].imageURL, "smallest candidate covering maxRetainedPx wins over full-size src")
+}
+
+func TestParseBlocks_SrcsetWithoutUsableWidthsFallsBackToSrc(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<img src="full.jpeg" srcset="a-300.jpeg 300w, a-2x.jpeg 2x" alt="a">`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, "full.jpeg", blocks[0].imageURL, "no candidate covers maxRetainedPx, so the eager src wins")
+}
+
 func TestParseBlocks_Strikethrough(t *testing.T) {
 	t.Parallel()
 

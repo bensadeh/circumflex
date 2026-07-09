@@ -231,10 +231,15 @@ func imageDisplayWidth(n *html.Node) int {
 	return 0
 }
 
-// imageSrc picks the most promising source for an img, preferring the eager
-// attributes and falling back to the largest srcset candidate. Lazy-loaded
-// images often hold a placeholder in src and the real URL in a data-* attr.
+// imageSrc picks the most promising source for an img: a right-sized srcset
+// variant when the set advertises widths, then the eager attributes, then the
+// largest srcset candidate. Lazy-loaded images often hold a placeholder in
+// src and the real URL in a data-* attr.
 func imageSrc(n *html.Node) string {
+	if v := rightSizedFromSrcset(attr(n, "srcset")); v != "" {
+		return v
+	}
+
 	for _, key := range []string{"src", "data-src", "data-original", "data-lazy-src"} {
 		if v := strings.TrimSpace(attr(n, key)); isFetchableImageURL(v) {
 			return v
@@ -242,6 +247,35 @@ func imageSrc(n *html.Node) string {
 	}
 
 	return bestFromSrcset(attr(n, "srcset"))
+}
+
+// rightSizedFromSrcset returns the smallest width-annotated candidate that
+// still covers maxRetainedPx: anything larger is downloaded only to be thrown
+// away by boundImage, and a full-size WordPress original runs ~5x the bytes
+// of its 768w variant. Returns "" when no candidate is both usable and large
+// enough, leaving the eager-attribute chain to decide.
+func rightSizedFromSrcset(srcset string) string {
+	var best string
+
+	bestWidth := 0
+
+	for candidate := range strings.SplitSeq(srcset, ",") {
+		fields := strings.Fields(candidate)
+		if len(fields) < 2 || !isFetchableImageURL(fields[0]) {
+			continue
+		}
+
+		width, err := strconv.Atoi(strings.TrimSuffix(fields[1], "w"))
+		if err != nil || width < maxRetainedPx {
+			continue
+		}
+
+		if bestWidth == 0 || width < bestWidth {
+			best, bestWidth = fields[0], width
+		}
+	}
+
+	return best
 }
 
 // data: URIs, inline SVG, and lazy-load placeholders are skipped so imageSrc
