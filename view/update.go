@@ -3,6 +3,7 @@ package view
 import (
 	"github.com/bensadeh/circumflex/favorites"
 	"github.com/bensadeh/circumflex/header"
+	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/view/comments"
 	"github.com/bensadeh/circumflex/view/message"
 	"github.com/bensadeh/circumflex/view/reader"
@@ -313,16 +314,22 @@ func (m *model) handleArticleReady(msg message.ArticleReady) (*model, tea.Cmd) {
 		return m, m.showDetailError(msg.Err, screenReader)
 	}
 
-	m.detail = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.detailWidth(), m.height, reader.Meta{
+	block := meta.ReaderMode(meta.Data{
 		URL:       msg.URL,
 		Author:    msg.Author,
 		TimeAgo:   msg.TimeAgo,
 		ID:        msg.ID,
 		Points:    msg.Points,
 		NerdFonts: m.config.EnableNerdFonts,
+	})
+
+	m.detail = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.detailWidth(), m.height, reader.Options{
+		URL:       msg.URL,
+		ID:        msg.ID,
+		NerdFonts: m.config.EnableNerdFonts,
 		Images:    m.config.EnableImages,
 		TermBG:    m.termBG,
-	})
+	}, block.Render)
 
 	m.screen = screenReader
 

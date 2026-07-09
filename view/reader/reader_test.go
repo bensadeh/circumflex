@@ -25,19 +25,18 @@ func TestNew_PreRenderedContent(t *testing.T) {
 
 func TestNewWithArticle_StoresForRerender(t *testing.T) {
 	parsed := parseTestArticle(t)
-	m := NewWithArticle(parsed, "Article", 72, 120, 40, Meta{
-		URL:    "https://example.com",
-		Author: "alice",
-	})
+	m := NewWithArticle(parsed, "Article", 72, 120, 40, Options{URL: "https://example.com"},
+		func(int) string { return "injected header" })
 
 	assert.NotNil(t, m.parsed, "should retain parsed for re-rendering")
 	assert.Equal(t, 72, m.maxWidth)
 	assert.Equal(t, "Article", m.title)
+	assert.Contains(t, m.Viewport.View(), "injected header", "the injected header opens the article")
 }
 
 func TestResize_RerenderChangesContent(t *testing.T) {
 	parsed := parseTestArticle(t)
-	m := NewWithArticle(parsed, "Article", 72, 120, 40, Meta{URL: "https://example.com"})
+	m := NewWithArticle(parsed, "Article", 72, 120, 40, Options{URL: "https://example.com"}, nil)
 
 	contentBefore := m.Viewport.View()
 
@@ -63,7 +62,7 @@ func TestResize_PreRendered_NoRerender(t *testing.T) {
 
 func TestResize_PreservesScrollPosition(t *testing.T) {
 	parsed := parseTestArticle(t)
-	m := NewWithArticle(parsed, "Article", 72, 120, 40, Meta{URL: "https://example.com"})
+	m := NewWithArticle(parsed, "Article", 72, 120, 40, Options{URL: "https://example.com"}, nil)
 
 	m.Viewport.SetYOffset(5)
 
@@ -139,7 +138,7 @@ func TestJumpToHeader(t *testing.T) {
 
 func TestReader_HideShowImagesToggle(t *testing.T) {
 	parsed := parseTestArticle(t)
-	m := NewWithArticle(parsed, "Article", 72, 120, 40, Meta{Images: true})
+	m := NewWithArticle(parsed, "Article", 72, 120, 40, Options{Images: true}, nil)
 
 	require.True(t, m.showImages, "starts shown when the flag enabled it")
 
@@ -152,7 +151,7 @@ func TestReader_HideShowImagesToggle(t *testing.T) {
 
 func TestReader_BackgroundColorMsgRerendersWithTermBG(t *testing.T) {
 	parsed := parseTestArticle(t)
-	m := NewWithArticle(parsed, "Article", 72, 120, 40, Meta{Images: true})
+	m := NewWithArticle(parsed, "Article", 72, 120, 40, Options{Images: true}, nil)
 
 	require.Nil(t, m.termBG)
 

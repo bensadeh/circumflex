@@ -14,6 +14,7 @@ import (
 	"github.com/bensadeh/circumflex/favorites"
 	"github.com/bensadeh/circumflex/history"
 	"github.com/bensadeh/circumflex/hn"
+	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/settings"
 	"github.com/bensadeh/circumflex/view/message"
 	"github.com/bensadeh/circumflex/view/reader"
@@ -633,7 +634,8 @@ func TestSpinnerTick_WhenInactive(t *testing.T) {
 
 func TestViewReaderView_HasContent(t *testing.T) {
 	m := newTestModelReady(t)
-	m.detail = reader.NewWithArticle(testParsedArticle(), "Test Title", 72, 80, 24, reader.Meta{})
+	m.detail = reader.NewWithArticle(testParsedArticle(), "Test Title", 72, 80, 24, reader.Options{},
+		meta.ReaderMode(meta.Data{URL: "https://example.com"}).Render)
 	m.screen = screenReader
 
 	got := m.View()

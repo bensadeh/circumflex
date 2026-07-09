@@ -262,9 +262,18 @@ func (m *Model) rebuildContent() {
 }
 
 func buildCommentHeader(s storyFields, enableNerdFonts bool, newComments int, width int) string {
-	rootComment := renderRootComment(s.Content, width-2, enableNerdFonts) // subtract padding (1 left + 1 right)
-
-	return meta.CommentSectionMetaBlock(s.URL, s.Domain, s.Author, s.TimeAgo, s.ID, s.CommentsCount, s.Points, newComments, enableNerdFonts, rootComment, width)
+	return meta.CommentSection(meta.Data{
+		URL:           s.URL,
+		Domain:        s.Domain,
+		Author:        s.Author,
+		TimeAgo:       s.TimeAgo,
+		ID:            s.ID,
+		Points:        s.Points,
+		CommentsCount: s.CommentsCount,
+		NewComments:   newComments,
+		RootComment:   renderRootComment(s.Content, width-2, enableNerdFonts), // subtract padding (1 left + 1 right)
+		NerdFonts:     enableNerdFonts,
+	}).Render(width)
 }
 
 func renderRootComment(c string, contentWidth int, enableNerdFonts bool) string {
@@ -274,5 +283,5 @@ func renderRootComment(c string, contentWidth int, enableNerdFonts bool) string 
 
 	rendered := comment.Render(c, contentWidth, contentWidth, enableNerdFonts, nil)
 
-	return "\n\n" + lipgloss.Wrap(rendered, contentWidth, "")
+	return lipgloss.Wrap(rendered, contentWidth, "")
 }

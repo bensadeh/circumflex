@@ -9,7 +9,6 @@ import (
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/help"
 	"github.com/bensadeh/circumflex/layout"
-	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/scrollbar"
 	"github.com/bensadeh/circumflex/view/message"
 	"github.com/bensadeh/circumflex/view/pane"
@@ -20,12 +19,12 @@ import (
 
 const sectionMarker = "■"
 
-type Meta struct {
+// Options carries the reader's display knobs and the story identity its
+// browser-opening keys target. What the header above the article shows is
+// not the reader's concern: callers inject that via buildHeader.
+type Options struct {
 	URL       string
-	Author    string
-	TimeAgo   string
 	ID        int
-	Points    int
 	NerdFonts bool
 	Images    bool
 	TermBG    color.Color // terminal background when already known, for image transparency
@@ -44,7 +43,7 @@ type Model struct {
 
 	parsed      *article.Parsed // nil when created with pre-rendered content
 	maxWidth    int
-	articleMeta Meta
+	opts        Options
 	showImages  bool
 	termBG      color.Color // nil until the terminal reports it
 	buildHeader func(contentWidth int) string
@@ -66,25 +65,18 @@ func newFromContent(content, title string, width, height int) *Model {
 }
 
 // NewWithArticle creates a reader view that can re-render on resize.
-func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, height int, articleMeta Meta) *Model {
-	return newFromArticle(parsed, title, maxWidth, width, height, articleMeta, nil)
-}
-
-// A nil buildHeader falls back to the standard story meta block.
-func newFromArticle(parsed *article.Parsed, title string, maxWidth, width, height int, articleMeta Meta, buildHeader func(int) string) *Model {
-	if buildHeader == nil {
-		buildHeader = metaHeader(articleMeta)
-	}
-
+// buildHeader supplies the block drawn above the article for a given content
+// width; nil renders the article with no header.
+func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, height int, opts Options, buildHeader func(contentWidth int) string) *Model {
 	m := &Model{
 		keymap:      defaultKeyMap(),
 		title:       title,
 		paneWidth:   width,
 		parsed:      parsed,
 		maxWidth:    maxWidth,
-		articleMeta: articleMeta,
-		showImages:  articleMeta.Images,
-		termBG:      articleMeta.TermBG,
+		opts:        opts,
+		showImages:  opts.Images,
+		termBG:      opts.TermBG,
 		buildHeader: buildHeader,
 	}
 
@@ -96,22 +88,20 @@ func newFromArticle(parsed *article.Parsed, title string, maxWidth, width, heigh
 	return m
 }
 
-// metaHeader builds the reader header from full story metadata.
-func metaHeader(m Meta) func(int) string {
-	return func(contentWidth int) string {
-		return meta.ReaderModeMetaBlock(m.URL, m.Author, m.TimeAgo, m.ID, m.Points, m.NerdFonts, contentWidth)
-	}
-}
-
 // renderArticle renders the article at the current pane width, prefixed with
-// its meta header, returning the content and the blocks' starting lines. The
-// single source of the width derivation shared by the initial render and
-// every resize.
+// its header and a separating blank line, returning the content and the
+// blocks' starting lines. The single source of the width derivation shared
+// by the initial render and every resize.
 func (m *Model) renderArticle() (string, []int) {
 	contentWidth := layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
 	images := article.ImageOptions{Show: m.showImages, TerminalBG: m.termBG}
 
-	return m.parsed.RenderWithHeader(contentWidth, m.paneWidth, m.buildHeader(contentWidth), images)
+	header := ""
+	if m.buildHeader != nil {
+		header = m.buildHeader(contentWidth) + "\n\n"
+	}
+
+	return m.parsed.RenderWithHeader(contentWidth, m.paneWidth, header, images)
 }
 
 // DisableStoryNavigation removes the J/K adjacent-story bindings, for
@@ -282,10 +272,10 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		m.showHelp = true
 
 	case key.Matches(msg, m.keymap.OpenLink):
-		return pane.OpenStoryInBrowser(m.articleMeta.URL, m.articleMeta.ID)
+		return pane.OpenStoryInBrowser(m.opts.URL, m.opts.ID)
 
 	case key.Matches(msg, m.keymap.OpenComments):
-		return pane.OpenCommentsInBrowser(m.articleMeta.ID)
+		return pane.OpenCommentsInBrowser(m.opts.ID)
 
 	case key.Matches(msg, m.keymap.NextStory):
 		return message.OpenAdjacentStoryCmd(1)
@@ -319,7 +309,7 @@ func (m *Model) View() string {
 }
 
 func (m *Model) rebuildTitleHeader() {
-	m.titleHeader = pane.TitleHeader(m.title, m.articleMeta.NerdFonts, layout.ReaderViewLeftMargin, m.paneWidth)
+	m.titleHeader = pane.TitleHeader(m.title, m.opts.NerdFonts, layout.ReaderViewLeftMargin, m.paneWidth)
 }
 
 func (m *Model) jumpToHeader(direction int) {
@@ -363,11 +353,10 @@ func (m *Model) setShowImages(show bool) {
 	m.rerender()
 }
 
-// Run shows the article in a standalone reader. A nil buildHeader renders the
-// standard story meta block from articleMeta.
-func Run(parsed *article.Parsed, title string, maxWidth int, articleMeta Meta, buildHeader func(int) string) error {
+// Run shows the article in a standalone reader.
+func Run(parsed *article.Parsed, title string, maxWidth int, opts Options, buildHeader func(contentWidth int) string) error {
 	return pane.RunStandalone(func(width, height int) pane.View {
-		m := newFromArticle(parsed, title, maxWidth, width, height, articleMeta, buildHeader)
+		m := NewWithArticle(parsed, title, maxWidth, width, height, opts, buildHeader)
 		m.DisableStoryNavigation()
 
 		return m

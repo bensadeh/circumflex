@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/timeago"
 	"github.com/bensadeh/circumflex/view/reader"
@@ -46,17 +47,23 @@ func articleCmd() *cobra.Command {
 				return fmt.Errorf("could not read article: %w", err)
 			}
 
-			articleMeta := reader.Meta{
+			block := meta.ReaderMode(meta.Data{
 				URL:       item.URL,
 				Author:    item.Author,
 				TimeAgo:   timeago.RelativeTime(item.Time),
 				ID:        item.ID,
 				Points:    item.Points,
 				NerdFonts: config.EnableNerdFonts,
+			})
+
+			opts := reader.Options{
+				URL:       item.URL,
+				ID:        item.ID,
+				NerdFonts: config.EnableNerdFonts,
 				Images:    config.EnableImages,
 			}
 
-			return reader.Run(parsed, item.Title, config.ArticleWidth, articleMeta, nil)
+			return reader.Run(parsed, item.Title, config.ArticleWidth, opts, block.Render)
 		},
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/style"
+	"github.com/bensadeh/circumflex/timeago"
 	"github.com/bensadeh/circumflex/view/pane"
 
 	"charm.land/lipgloss/v2"
@@ -136,19 +137,30 @@ func truncateLines(s string, w int) string {
 	return strings.Join(lines, "\n")
 }
 
-// placeholderMetaBlock sizes the placeholder to the exact meta block the
-// target view will draw: the reader and the comment section lay theirs out
-// at different widths, and only stories with a link get URL rows. target is
-// a parameter rather than m.detailTarget because the error view can outlive
-// the fetch that spawned it.
+// placeholderMetaBlock is the skeleton of the exact meta block the target
+// view will draw, built through the same variant from what the list already
+// knows about the selected story: the reader and the comment section lay
+// theirs out at different widths, and only stories with a link get URL rows.
+// target is a parameter rather than m.detailTarget because the error view
+// can outlive the fetch that spawned it.
 func (m *model) placeholderMetaBlock(paneWidth int, target screen) string {
-	if target == screenReader {
-		return meta.PlaceholderMetaBlock(layout.ReaderContentWidth(paneWidth, m.config.ArticleWidth), true)
+	it := m.list.SelectedItem()
+	d := meta.Data{
+		URL:           it.URL,
+		Domain:        it.Domain,
+		Author:        it.Author,
+		TimeAgo:       timeago.RelativeTime(it.Time),
+		ID:            it.ID,
+		Points:        it.Points,
+		CommentsCount: it.CommentsCount,
+		NerdFonts:     m.config.EnableNerdFonts,
 	}
 
-	return meta.PlaceholderMetaBlock(
-		layout.CommentColumnWidth(paneWidth, m.config.CommentWidth),
-		m.list.SelectedItem().Domain != "")
+	if target == screenReader {
+		return meta.ReaderMode(d).Skeleton(layout.ReaderContentWidth(paneWidth, m.config.ArticleWidth))
+	}
+
+	return meta.CommentSection(d).Skeleton(layout.CommentColumnWidth(paneWidth, m.config.CommentWidth))
 }
 
 // placeholderPane frames centered content with the same header and footer
