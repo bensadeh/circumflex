@@ -248,6 +248,41 @@ func TestParseBlocks_SrcsetWithoutUsableWidthsFallsBackToSrc(t *testing.T) {
 	assert.Equal(t, "full.jpeg", blocks[0].imageURL, "no candidate covers maxRetainedPx, so the eager src wins")
 }
 
+func TestParseBlocks_SrcsetWithCommasInURL(t *testing.T) {
+	t.Parallel()
+
+	// Substack's CDN encodes transforms as comma-separated path segments; a
+	// naive split on "," shreds the URL into fragments and the picked
+	// "candidate" fails to parse, losing every image on the page.
+	blocks := blocksFromHTML(t, `<img src="full.png" srcset="`+
+		`https://cdn.example.com/fetch/$s_!x!,w_424,c_limit,f_auto/img.png 424w, `+
+		`https://cdn.example.com/fetch/$s_!x!,w_848,c_limit,f_auto/img.png 848w, `+
+		`https://cdn.example.com/fetch/$s_!x!,w_1456,c_limit,f_auto/img.png 1456w" alt="a">`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, "https://cdn.example.com/fetch/$s_!x!,w_848,c_limit,f_auto/img.png", blocks[0].imageURL)
+}
+
+func TestParseBlocks_SrcsetWithCommasInURLDensityOnly(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<img srcset="https://cdn.example.com/a,b,c/img.png 2x" alt="a">`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, "https://cdn.example.com/a,b,c/img.png", blocks[0].imageURL,
+		"bestFromSrcset must return the URL intact, commas and all")
+}
+
+func TestParseBlocks_SrcsetDescriptorlessCandidates(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<img srcset="small.png, large.png 1024w" alt="a">`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, "large.png", blocks[0].imageURL,
+		"the comma glued to small.png ends that candidate, it must not swallow large.png")
+}
+
 func TestParseBlocks_Strikethrough(t *testing.T) {
 	t.Parallel()
 

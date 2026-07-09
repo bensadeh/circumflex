@@ -249,6 +249,53 @@ func imageSrc(n *html.Node) string {
 	return bestFromSrcset(attr(n, "srcset"))
 }
 
+type srcsetCandidate struct {
+	url        string
+	descriptor string
+}
+
+const srcsetWhitespace = " \t\n\r\f"
+
+// splitSrcset splits a srcset attribute into url/descriptor candidates.
+// Candidates are comma-separated, but the URLs themselves may contain commas
+// (Substack's CDN encodes transforms as ",w_848,c_limit,…" path segments), so
+// a bare split on "," shreds them. Per the HTML spec a URL runs to the next
+// whitespace; a comma ends a candidate only glued to the URL's tail
+// (descriptor-less candidate) or after the descriptor.
+func splitSrcset(srcset string) []srcsetCandidate {
+	var candidates []srcsetCandidate
+
+	rest := srcset
+	for {
+		rest = strings.TrimLeft(rest, srcsetWhitespace+",")
+		if rest == "" {
+			return candidates
+		}
+
+		url := rest
+		rest = ""
+
+		if i := strings.IndexAny(url, srcsetWhitespace); i >= 0 {
+			url, rest = url[:i], url[i:]
+		}
+
+		if trimmed := strings.TrimRight(url, ","); trimmed != url {
+			candidates = append(candidates, srcsetCandidate{url: trimmed})
+
+			continue
+		}
+
+		descriptor := rest
+		rest = ""
+
+		if i := strings.IndexByte(descriptor, ','); i >= 0 {
+			descriptor, rest = descriptor[:i], descriptor[i+1:]
+		}
+
+		candidates = append(candidates, srcsetCandidate{url: url, descriptor: strings.TrimSpace(descriptor)})
+	}
+}
+
 // rightSizedFromSrcset returns the smallest width-annotated candidate that
 // still covers maxRetainedPx: anything larger is downloaded only to be thrown
 // away by boundImage, and a full-size WordPress original runs ~5x the bytes
@@ -259,19 +306,18 @@ func rightSizedFromSrcset(srcset string) string {
 
 	bestWidth := 0
 
-	for candidate := range strings.SplitSeq(srcset, ",") {
-		fields := strings.Fields(candidate)
-		if len(fields) < 2 || !isFetchableImageURL(fields[0]) {
+	for _, candidate := range splitSrcset(srcset) {
+		if candidate.descriptor == "" || !isFetchableImageURL(candidate.url) {
 			continue
 		}
 
-		width, err := strconv.Atoi(strings.TrimSuffix(fields[1], "w"))
+		width, err := strconv.Atoi(strings.TrimSuffix(strings.Fields(candidate.descriptor)[0], "w"))
 		if err != nil || width < maxRetainedPx {
 			continue
 		}
 
 		if bestWidth == 0 || width < bestWidth {
-			best, bestWidth = fields[0], width
+			best, bestWidth = candidate.url, width
 		}
 	}
 
@@ -305,9 +351,9 @@ var placeholderMarkers = []string{
 // bestFromSrcset returns the last usable candidate, which is conventionally the
 // highest resolution in a "url descriptor, url descriptor" list.
 func bestFromSrcset(srcset string) string {
-	for _, candidate := range slices.Backward(strings.Split(srcset, ",")) {
-		if fields := strings.Fields(candidate); len(fields) > 0 && isFetchableImageURL(fields[0]) {
-			return fields[0]
+	for _, candidate := range slices.Backward(splitSrcset(srcset)) {
+		if isFetchableImageURL(candidate.url) {
+			return candidate.url
 		}
 	}
 
