@@ -140,7 +140,9 @@ func (m *Model) setContent(content string) {
 	}
 
 	// Add bottom padding so G scrolls the last content line to the bottom.
-	m.Viewport.SetContent(trimmed + strings.Repeat("\n", m.Viewport.Height()))
+	// Handing over the existing split spares the viewport from re-splitting
+	// megabytes of image art.
+	m.Viewport.SetContentLines(append(lines, make([]string, m.Viewport.Height())...))
 }
 
 func (m *Model) Init() tea.Cmd {

@@ -269,24 +269,58 @@ func styleLines(text string, styleFn func(string) string) string {
 }
 
 func renderImage(b *block, width int, images ImageOptions) string {
-	inner := width - len(blockIndent)
-
 	if images.Show && b.img != nil {
-		if art := renderImageArt(b.img, b.dispWidth, inner, images.TerminalBG); art != "" {
-			art = centerLines(art, inner)
-
-			if caption := spanText(b.spans); caption != "" {
-				art += "\n" + centerLines(captionLines(caption, inner), inner)
-			}
-
-			return style.PrefixLines(art, blockIndent)
+		if part := cachedImagePart(b, width, images.TerminalBG); part != "" {
+			return part
 		}
 	}
 
+	inner := width - len(blockIndent)
 	text := imageLabel() + spanText(b.spans) + ansi.Reset
 	wrapped := lipgloss.Wrap(text, inner, "")
 
 	return style.PrefixLines(wrapped, blockIndent)
+}
+
+// artKey identifies the inputs the rendered art depends on, so a cached part
+// survives image toggling but not a resize or background change.
+type artKey struct {
+	width   int // never 0 for a real render, so the zero key means "not cached"
+	bg      color.RGBA
+	bgKnown bool
+}
+
+// cachedImagePart renders an image block's half-block art with its centered
+// caption, memoized on the block: hiding and re-showing images (or scrolling
+// re-renders) reuse it instead of re-sampling every pixel.
+func cachedImagePart(b *block, width int, bg color.Color) string {
+	key := artKey{width: width}
+	if bg != nil {
+		key.bg, _ = color.RGBAModel.Convert(bg).(color.RGBA)
+		key.bgKnown = true
+	}
+
+	if b.artFor == key {
+		return b.art
+	}
+
+	inner := width - len(blockIndent)
+
+	part := ""
+
+	if art := renderImageArt(b.img, b.dispWidth, inner, bg); art != "" {
+		art = centerLines(art, inner)
+
+		if caption := spanText(b.spans); caption != "" {
+			art += "\n" + centerLines(captionLines(caption, inner), inner)
+		}
+
+		part = style.PrefixLines(art, blockIndent)
+	}
+
+	b.art, b.artFor = part, key
+
+	return part
 }
 
 // renderImageArt downsamples img and prints it with the upper half-block ▀:
@@ -335,6 +369,16 @@ func renderImageArt(img image.Image, dispWidth, availCols int, bg color.Color) s
 	return sb.String()
 }
 
+// rgb8 holds the decimal strings for 0-255: a screenful of art writes
+// hundreds of thousands of cells, too hot for fmt.
+var rgb8 = func() (s [256]string) {
+	for i := range s {
+		s[i] = strconv.Itoa(i)
+	}
+
+	return s
+}()
+
 // writeCell prints one terminal cell covering two pixels. Transparent pixels
 // keep the terminal's own background (a logo cut-out shows the terminal, not a
 // guessed page color), so a half-covered cell uses the half-block that leaves
@@ -342,17 +386,33 @@ func renderImageArt(img image.Image, dispWidth, availCols int, bg color.Color) s
 func writeCell(sb *strings.Builder, top, bottom pixel) {
 	switch {
 	case top.opaque && bottom.opaque:
-		fmt.Fprintf(sb, "\x1b[38;2;%d;%d;%d;48;2;%d;%d;%dm▀", top.r, top.g, top.b, bottom.r, bottom.g, bottom.b)
+		sb.WriteString("\x1b[38;2;")
+		writeRGB(sb, top)
+		sb.WriteString(";48;2;")
+		writeRGB(sb, bottom)
+		sb.WriteString("m▀")
 
 	case top.opaque:
-		fmt.Fprintf(sb, "\x1b[49;38;2;%d;%d;%dm▀", top.r, top.g, top.b)
+		sb.WriteString("\x1b[49;38;2;")
+		writeRGB(sb, top)
+		sb.WriteString("m▀")
 
 	case bottom.opaque:
-		fmt.Fprintf(sb, "\x1b[49;38;2;%d;%d;%dm▄", bottom.r, bottom.g, bottom.b)
+		sb.WriteString("\x1b[49;38;2;")
+		writeRGB(sb, bottom)
+		sb.WriteString("m▄")
 
 	default:
 		sb.WriteString("\x1b[49m ")
 	}
+}
+
+func writeRGB(sb *strings.Builder, p pixel) {
+	sb.WriteString(rgb8[p.r])
+	sb.WriteByte(';')
+	sb.WriteString(rgb8[p.g])
+	sb.WriteByte(';')
+	sb.WriteString(rgb8[p.b])
 }
 
 // imageCols maps an image's on-page size to a terminal column count: its
@@ -384,7 +444,16 @@ func samplePixel(img image.Image, bounds image.Rectangle, gx, gy, gridW, gridH i
 	sx := bounds.Min.X + gx*bounds.Dx()/gridW
 	sy := bounds.Min.Y + gy*bounds.Dy()/gridH
 
-	r, g, b, a := img.At(sx, sy).RGBA()
+	var r, g, b, a uint32
+
+	// boundImage returns *image.RGBA, so most samples take the fast path
+	// instead of boxing a color.Color per pixel.
+	if rgba, ok := img.(*image.RGBA); ok {
+		c := rgba.RGBAAt(sx, sy)
+		r, g, b, a = uint32(c.R)*0x101, uint32(c.G)*0x101, uint32(c.B)*0x101, uint32(c.A)*0x101
+	} else {
+		r, g, b, a = img.At(sx, sy).RGBA()
+	}
 
 	switch {
 	case a == 0xffff:

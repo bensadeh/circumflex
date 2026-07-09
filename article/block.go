@@ -29,6 +29,8 @@ type block struct {
 	imageURL  string      // blockImage: resolved source URL, empty if none
 	img       image.Image // blockImage: decoded pixels, nil until fetched or on failure
 	dispWidth int         // blockImage: intended display width in CSS px from the width attr, 0 if unknown
+	art       string      // blockImage: rendered half-block art memoized for artFor; see cachedImagePart
+	artFor    artKey
 }
 
 type inlineFormat int
