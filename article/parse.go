@@ -155,14 +155,15 @@ func (p *domParser) walk(n *html.Node) {
 		p.flushInline()
 
 	default:
-		// Custom elements (e.g. GitHub's table wrappers) land here: treat
-		// them as containers when they hold block content, else as inline.
+		// Inline and custom elements (e.g. GitHub's table wrappers) land
+		// here: treat them as containers when they hold block content, else
+		// as inline flow so formatting tags keep their styling.
 		if hasBlockDescendant(n) {
 			p.flushInline()
 			p.walkChildren(n)
 			p.flushInline()
 		} else {
-			p.inline = append(p.inline, collectInline(n, formatPlain, &p.images)...)
+			p.inline = append(p.inline, inlineSpans(n, formatPlain, &p.images)...)
 		}
 	}
 }
@@ -514,7 +515,6 @@ func preText(n *html.Node) string {
 	return strings.ReplaceAll(sb.String(), "\t", strings.Repeat(" ", 8))
 }
 
-// Bold has no case below on purpose: it unwraps to plain text.
 // A nil images sink discards images instead of collecting them.
 func collectInline(n *html.Node, format inlineFormat, images *[]block) []span {
 	var spans []span
@@ -556,9 +556,23 @@ func inlineSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 
 		return nil
 
+	case atom.B, atom.Strong:
+		if format == formatPlain {
+			format = formatBold
+		}
+
+		return collectInline(n, format, images)
+
 	case atom.Em, atom.I, atom.Var, atom.Dfn:
 		if format == formatPlain {
 			format = formatItalic
+		}
+
+		return collectInline(n, format, images)
+
+	case atom.U, atom.Ins:
+		if format == formatPlain {
+			format = formatUnderline
 		}
 
 		return collectInline(n, format, images)
@@ -593,8 +607,8 @@ func inlineSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 	}
 }
 
-// linkSpans unwraps an anchor to its text but keeps the target as an OSC 8
-// hyperlink, so links stay clickable without changing how they look.
+// linkSpans unwraps an anchor to its text and keeps the target on each span,
+// for rendering as a styled OSC 8 hyperlink.
 func linkSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 	spans := collectInline(n, format, images)
 

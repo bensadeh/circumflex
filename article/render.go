@@ -114,6 +114,14 @@ func renderSpans(spans []span, insideQuote bool) string {
 		case formatPlain:
 			rendered = s.text
 
+		case formatBold:
+			// NormalIntensity clears faint along with bold, so the quote's
+			// faint is re-opened.
+			rendered = ansi.Bold + s.text + ansi.NormalIntensity
+			if insideQuote {
+				rendered += ansi.Faint
+			}
+
 		case formatItalic:
 			// Quotes are rendered in italics, so italic runs invert instead.
 			if insideQuote {
@@ -121,6 +129,9 @@ func renderSpans(spans []span, insideQuote bool) string {
 			} else {
 				rendered = ansi.Italic + s.text + ansi.ItalicOff
 			}
+
+		case formatUnderline:
+			rendered = ansi.Underline + s.text + ansi.UnderlineOff
 
 		case formatCode:
 			if insideQuote {
@@ -137,7 +148,7 @@ func renderSpans(spans []span, insideQuote bool) string {
 		}
 
 		if s.href != "" {
-			rendered = lipgloss.NewStyle().Hyperlink(s.href).Render(rendered)
+			rendered = style.ReaderLink(rendered, s.href)
 		}
 
 		sb.WriteString(rendered)

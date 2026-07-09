@@ -5,21 +5,35 @@ import (
 )
 
 const (
-	Reset            = "\033[0m"
-	Bold             = "\033[1m"
-	Faint            = "\033[2m"
-	Italic           = "\033[3m"
-	Reverse          = "\033[7m"
-	Strikethrough    = "\033[9m"
-	ItalicOff        = "\033[23m"
-	StrikethroughOff = "\033[29m"
-	Red              = "\033[31m"
-	Green            = "\033[32m"
-	Yellow           = "\033[33m"
-	Blue             = "\033[34m"
-	Cyan             = "\033[36m"
-	BgBrightBlack    = "\033[100m"
+	Reset             = "\033[0m"
+	Bold              = "\033[1m"
+	Faint             = "\033[2m"
+	Italic            = "\033[3m"
+	Underline         = "\033[4m"
+	Reverse           = "\033[7m"
+	Strikethrough     = "\033[9m"
+	NormalIntensity   = "\033[22m" // clears both Bold and Faint
+	ItalicOff         = "\033[23m"
+	UnderlineOff      = "\033[24m"
+	StrikethroughOff  = "\033[29m"
+	Red               = "\033[31m"
+	Green             = "\033[32m"
+	Yellow            = "\033[33m"
+	Blue              = "\033[34m"
+	Cyan              = "\033[36m"
+	DefaultForeground = "\033[39m"
+	BgBrightBlack     = "\033[100m"
 )
+
+const (
+	hyperlinkOpen       = "\033]8;;"
+	hyperlinkTerminator = "\033\\"
+)
+
+// Hyperlink wraps text in an OSC 8 hyperlink pointing at url.
+func Hyperlink(url, text string) string {
+	return hyperlinkOpen + url + hyperlinkTerminator + text + hyperlinkOpen + hyperlinkTerminator
+}
 
 var (
 	escSequences = regexp.MustCompile(

@@ -35,7 +35,9 @@ type inlineFormat int
 
 const (
 	formatPlain inlineFormat = iota
+	formatBold
 	formatItalic
+	formatUnderline
 	formatCode
 	formatStrike
 )

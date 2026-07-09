@@ -55,6 +55,7 @@
   h5 = "green"
   h6 = "white"
   image = "red"
+  link = "blue"
 
 [header]
   c = "magenta"

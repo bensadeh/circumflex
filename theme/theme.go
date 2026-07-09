@@ -73,6 +73,7 @@ type ReaderColors struct {
 	H5    string `toml:"h5"`
 	H6    string `toml:"h6"`
 	Image string `toml:"image"`
+	Link  string `toml:"link"`
 }
 
 type HeaderColors struct {
@@ -131,6 +132,7 @@ func Default() *Theme {
 			H5:    "green",
 			H6:    "white",
 			Image: "red",
+			Link:  "blue",
 		},
 		Header: HeaderColors{
 			C: "magenta",

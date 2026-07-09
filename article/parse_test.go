@@ -38,11 +38,28 @@ func TestParseBlocks_InlineFormatting(t *testing.T) {
 	assert.Equal(t, "plain italic code bold link end", blocks[0].plainText())
 
 	spans := blocks[0].spans
-	require.Len(t, spans, 5)
+	require.Len(t, spans, 7)
 	assert.Equal(t, formatItalic, spans[1].format)
 	assert.Equal(t, "italic", spans[1].text)
 	assert.Equal(t, formatCode, spans[3].format)
 	assert.Equal(t, "code", spans[3].text)
+	assert.Equal(t, formatBold, spans[5].format)
+	assert.Equal(t, "bold", spans[5].text)
+}
+
+func TestParseBlocks_UnderlineFormatting(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<p>plain <u>underlined</u> and <ins>inserted</ins> end</p>`)
+
+	require.Len(t, blocks, 1)
+
+	spans := blocks[0].spans
+	require.Len(t, spans, 5)
+	assert.Equal(t, formatUnderline, spans[1].format)
+	assert.Equal(t, "underlined", spans[1].text)
+	assert.Equal(t, formatUnderline, spans[3].format)
+	assert.Equal(t, "inserted", spans[3].text)
 }
 
 func TestParseBlocks_LinkKeepsSurroundingSpaces(t *testing.T) {

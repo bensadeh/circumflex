@@ -9,6 +9,7 @@ import (
 	"github.com/bensadeh/circumflex/theme"
 
 	"charm.land/lipgloss/v2"
+	xansi "github.com/charmbracelet/x/ansi"
 )
 
 const IndentSymbol = "▎"
@@ -88,6 +89,8 @@ var (
 	readerH4Style lipgloss.Style
 	readerH5Style lipgloss.Style
 	readerH6Style lipgloss.Style
+
+	readerLinkOpen string // SGR sequence opening a reader link: underline plus the theme color
 
 	logoCStyle lipgloss.Style
 	logoLStyle lipgloss.Style
@@ -174,6 +177,7 @@ func rebuildThemeStyles() {
 	readerH5Style = fg(current.Reader.H5)
 	readerH6Style = fg(current.Reader.H6)
 	readerImageColor = theme.ParseColor(current.Reader.Image)
+	readerLinkOpen = linkOpenSequence(theme.ParseColor(current.Reader.Link))
 
 	headerCColor = theme.ParseColor(current.Header.C)
 	headerLColor = theme.ParseColor(current.Header.L)
@@ -194,6 +198,18 @@ func rebuildThemeStyles() {
 		s := fg(c)
 		indentCycleFuncs[i] = func(text string) string { return s.Render(text) }
 	}
+}
+
+// A NoColor theme value means the terminal's default foreground, which is
+// already in effect, so only the underline is emitted.
+func linkOpenSequence(c color.Color) string {
+	s := xansi.Style{}.Underline(true)
+
+	if _, noColor := c.(lipgloss.NoColor); !noColor {
+		s = s.ForegroundColor(c)
+	}
+
+	return s.String()
 }
 
 func CommentModFg() color.Color { return commentModColor }
@@ -253,6 +269,14 @@ func ReaderH4(s string) string      { return readerH4Style.Render(s) }
 func ReaderH5(s string) string      { return readerH5Style.Render(s) }
 func ReaderH6(s string) string      { return readerH6Style.Render(s) }
 func ReaderImageColor() color.Color { return readerImageColor }
+
+// ReaderLink renders s as a clickable link: underlined, in the theme's link
+// color, wrapped in an OSC 8 hyperlink to url. It closes with targeted
+// resets (default foreground, underline off) instead of a full reset, so a
+// link inside an otherwise styled run leaves the surrounding style intact.
+func ReaderLink(s, url string) string {
+	return ansi.Hyperlink(url, readerLinkOpen+s+ansi.DefaultForeground+ansi.UnderlineOff)
+}
 
 func HeaderC() color.Color         { return headerCColor }
 func HeaderL() color.Color         { return headerLColor }

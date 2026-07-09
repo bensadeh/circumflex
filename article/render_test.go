@@ -424,6 +424,24 @@ func TestRenderSpans_Strikethrough(t *testing.T) {
 	assert.Contains(t, renderSpans(spans, false), ansi.Strikethrough+"$99"+ansi.StrikethroughOff)
 }
 
+func TestRenderSpans_Bold(t *testing.T) {
+	t.Parallel()
+
+	spans := []span{{text: "loud", format: formatBold}}
+
+	assert.Contains(t, renderSpans(spans, false), ansi.Bold+"loud"+ansi.NormalIntensity)
+	assert.Contains(t, renderSpans(spans, true), ansi.Bold+"loud"+ansi.NormalIntensity+ansi.Faint,
+		"inside a quote the faint must be re-opened, since SGR 22 clears it")
+}
+
+func TestRenderSpans_Underline(t *testing.T) {
+	t.Parallel()
+
+	spans := []span{{text: "marked", format: formatUnderline}}
+
+	assert.Contains(t, renderSpans(spans, false), ansi.Underline+"marked"+ansi.UnderlineOff)
+}
+
 func TestRenderSpans_Hyperlink(t *testing.T) {
 	t.Parallel()
 
@@ -431,7 +449,33 @@ func TestRenderSpans_Hyperlink(t *testing.T) {
 	out := renderSpans(spans, false)
 
 	assert.Contains(t, out, "8;;https://example.com", "anchor text should carry an OSC 8 hyperlink")
+	assert.Contains(t, out, "\x1b[4;34m", "link text should be underlined in the default theme's blue")
 	assert.Equal(t, "click here", ansi.Strip(out), "hyperlink must not change the visible text")
+}
+
+func TestRenderParagraph_StylingSurvivesWrapping(t *testing.T) {
+	t.Parallel()
+
+	spans := []span{{text: strings.Repeat("bold words here ", 5), format: formatBold}}
+
+	for line := range strings.SplitSeq(renderParagraph(spans, 20), "\n") {
+		assert.True(t, strings.HasPrefix(line, ansi.Bold), "every wrapped line must re-open bold: %q", line)
+	}
+}
+
+func TestRenderParagraph_HyperlinkSurvivesWrapping(t *testing.T) {
+	t.Parallel()
+
+	spans := []span{{text: strings.Repeat("linked words here ", 5), href: "https://example.com"}}
+
+	lines := strings.Split(renderParagraph(spans, 20), "\n")
+	require.Greater(t, len(lines), 1, "the link must be long enough to wrap")
+
+	for _, line := range lines {
+		assert.Contains(t, line, "8;;https://example.com", "every wrapped line must re-open the hyperlink: %q", line)
+		assert.GreaterOrEqual(t, strings.Count(line, "\x1b]8;;"), 2,
+			"every wrapped line must also close the hyperlink: %q", line)
+	}
 }
 
 // solidImage returns a 32×32 image filled with one opaque color.
