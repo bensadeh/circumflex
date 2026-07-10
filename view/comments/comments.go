@@ -9,6 +9,7 @@ import (
 	"github.com/bensadeh/circumflex/help"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/meta"
+	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/scrollbar"
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/timeago"
@@ -201,14 +202,42 @@ func (m *Model) openCommentsInBrowser() tea.Cmd {
 }
 
 func (m *Model) modeIndicator() string {
-	var label string
+	var icon, text string
 
 	switch m.mode {
 	case modeRead:
-		label = "  ☰ " + style.Faint("read")
+		icon, text = "☰", "read"
+		if m.rc.enableNerdFonts {
+			icon = nerdfonts.Comment
+		}
 	case modeNavigate:
-		label = "  … " + style.Faint(" nav")
+		text = " nav"
+
+		// Tree-view convention: + on a collapsed comment (expandable),
+		// − on an expanded one (collapsible), … / plain outline on a leaf.
+		icon = "…"
+		nfIcon := nerdfonts.CommentOutline
+
+		if fc := m.focusedComment(); fc != nil && fc.DescendantCount > 0 {
+			if fc.Collapsed {
+				icon, nfIcon = "+", nerdfonts.CommentPlusOutline
+			} else {
+				icon, nfIcon = "−", nerdfonts.CommentMinusOutline
+			}
+		}
+
+		if m.rc.enableNerdFonts {
+			icon = nfIcon
+		}
 	}
+
+	// Nerd font glyphs render wider than one cell, so they get extra room.
+	sep := " "
+	if m.rc.enableNerdFonts {
+		sep = "  "
+	}
+
+	label := "  " + icon + sep + style.Faint(text)
 
 	diSlot := 0
 	if m.maxDepth > 0 {

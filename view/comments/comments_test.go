@@ -7,6 +7,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/layout"
+	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/view/message"
 
 	"github.com/stretchr/testify/assert"
@@ -56,6 +57,39 @@ func newTestModel(t *testing.T, thread *comment.Thread) *Model {
 	t.Helper()
 
 	return New(thread, 0, 80, 1, false, 120, 200)
+}
+
+func TestModeIndicator_NerdFontIcons(t *testing.T) {
+	m := New(testThread(), 0, 80, 1, true, 120, 200)
+
+	assert.Contains(t, m.modeIndicator(), nerdfonts.Comment+"  ", "read mode shows the comment glyph, with extra room after the wide glyph")
+
+	// The thread starts fully collapsed, so the first focused comment
+	// offers expanding.
+	m.toggleMode()
+	assert.Contains(t, m.modeIndicator(), nerdfonts.CommentPlusOutline, "collapsed focused comment offers expanding")
+
+	m.setCollapsed(false)
+	assert.Contains(t, m.modeIndicator(), nerdfonts.CommentMinusOutline, "expanded focused comment offers collapsing")
+
+	m.gotoBottom() // E, a leaf
+	assert.Contains(t, m.modeIndicator(), nerdfonts.CommentOutline, "a leaf has nothing to toggle")
+}
+
+func TestModeIndicator_UnicodeFallback(t *testing.T) {
+	m := newTestModel(t, testThread())
+
+	assert.Contains(t, m.modeIndicator(), "☰ ")
+	assert.NotContains(t, m.modeIndicator(), "☰  ", "unicode glyphs are single-cell and need no extra room")
+
+	m.toggleMode()
+	assert.Contains(t, m.modeIndicator(), "+ ", "collapsed focused comment offers expanding")
+
+	m.setCollapsed(false)
+	assert.Contains(t, m.modeIndicator(), "− ", "expanded focused comment offers collapsing")
+
+	m.gotoBottom() // E, a leaf
+	assert.Contains(t, m.modeIndicator(), "… ", "a leaf has nothing to toggle")
 }
 
 func TestOpenInBrowser_ReturnsCmd(t *testing.T) {

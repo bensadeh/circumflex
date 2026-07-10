@@ -51,6 +51,21 @@ func TestFetchImages_TinyImageIsDecorativeNotFailed(t *testing.T) {
 	assert.False(t, blocks[1].decorative)
 }
 
+func TestHasImages(t *testing.T) {
+	t.Parallel()
+
+	decoded := &Parsed{blocks: []block{
+		{kind: blockParagraph},
+		{kind: blockImage, img: image.NewRGBA(image.Rect(0, 0, 100, 100))},
+	}}
+	assert.True(t, decoded.HasImages())
+
+	undecoded := &Parsed{blocks: []block{{kind: blockImage, imageURL: "https://example.com/a.png"}}}
+	assert.False(t, undecoded.HasImages(), "a failed fetch leaves nothing to toggle")
+
+	assert.False(t, NewParsedFromHTML("<p>text only</p>").HasImages())
+}
+
 func TestFetchImages_SVGFallsBackToRasterization(t *testing.T) {
 	t.Parallel()
 

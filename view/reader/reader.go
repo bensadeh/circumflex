@@ -9,12 +9,15 @@ import (
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/help"
 	"github.com/bensadeh/circumflex/layout"
+	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/scrollbar"
+	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/view/message"
 	"github.com/bensadeh/circumflex/view/pane"
 
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
+	xansi "github.com/charmbracelet/x/ansi"
 )
 
 const sectionMarker = "■"
@@ -305,7 +308,38 @@ func (m *Model) View() string {
 
 	content := scrollbar.Attach(m.Viewport.View(), m.paneWidth, m.ContentLines, m.Viewport.Height(), m.Viewport.YOffset())
 
-	return m.titleHeader + "\n" + content + "\n" + pane.FooterSeparator(m.paneWidth) + "\n"
+	return m.titleHeader + "\n" + content + "\n" + pane.FooterSeparator(m.paneWidth) + "\n" + m.imageIndicator()
+}
+
+// imageIndicator is the footer counterpart to the comment section's mode
+// indicator, present only when the article has images for h/l to toggle.
+func (m *Model) imageIndicator() string {
+	if m.parsed == nil || !m.parsed.HasImages() {
+		return ""
+	}
+
+	return imageStatusLine(m.showImages, m.opts.NerdFonts, m.paneWidth)
+}
+
+func imageStatusLine(show, enableNerdFonts bool, paneWidth int) string {
+	icon, label := "▣", "images shown"
+	if !show {
+		icon, label = "▢", "images hidden"
+	}
+
+	// Nerd font glyphs render wider than one cell, so they get extra room.
+	sep := " "
+
+	if enableNerdFonts {
+		icon = nerdfonts.Image
+		if !show {
+			icon = nerdfonts.ImageOff
+		}
+
+		sep = "  "
+	}
+
+	return xansi.Truncate("  "+icon+sep+style.Faint(label), paneWidth, "")
 }
 
 func (m *Model) rebuildTitleHeader() {

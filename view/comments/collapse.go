@@ -27,19 +27,18 @@ func (m *Model) setCollapsed(collapsed bool) {
 	m.restoreScreenPosition(flatIdx, screenPos)
 }
 
+func (m *Model) focusedComment() *flatComment {
+	if m.focusedIdx < 0 || m.focusedIdx >= len(m.visible) {
+		return nil
+	}
+
+	return &m.flat[m.visible[m.focusedIdx]]
+}
+
 func (m *Model) toggleCollapse() {
-	if len(m.visible) == 0 || m.focusedIdx < 0 {
-		return
+	if fc := m.focusedComment(); fc != nil && fc.DescendantCount > 0 {
+		m.setCollapsed(!fc.Collapsed)
 	}
-
-	flatIdx := m.visible[m.focusedIdx]
-	fc := &m.flat[flatIdx]
-
-	if fc.DescendantCount == 0 {
-		return
-	}
-
-	m.setCollapsed(!fc.Collapsed)
 }
 
 func (m *Model) toggleCollapseAll() {

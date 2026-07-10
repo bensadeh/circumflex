@@ -7,6 +7,7 @@ import (
 
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/layout"
+	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/view/message"
 
 	tea "charm.land/bubbletea/v2"
@@ -147,6 +148,28 @@ func TestReader_HideShowImagesToggle(t *testing.T) {
 
 	m.Update(tea.KeyPressMsg{Code: 'l', Text: "l"})
 	assert.True(t, m.showImages, "l shows images")
+}
+
+func TestImageIndicator_BlankWithoutImages(t *testing.T) {
+	parsed := parseTestArticle(t)
+	m := NewWithArticle(parsed, "Article", 72, 120, 40, Options{Images: true}, nil)
+
+	assert.Empty(t, m.imageIndicator(), "articles without images get no status line")
+}
+
+func TestImageStatusLine(t *testing.T) {
+	shown := imageStatusLine(true, false, 80)
+	assert.Contains(t, shown, "▣ ")
+	assert.NotContains(t, shown, "▣  ", "unicode glyphs are single-cell and need no extra room")
+	assert.Contains(t, shown, "images shown")
+
+	hidden := imageStatusLine(false, false, 80)
+	assert.Contains(t, hidden, "▢ ")
+	assert.NotContains(t, hidden, "▢  ")
+	assert.Contains(t, hidden, "images hidden")
+
+	assert.Contains(t, imageStatusLine(true, true, 80), nerdfonts.Image+"  ", "wide nerd font glyphs get extra room")
+	assert.Contains(t, imageStatusLine(false, true, 80), nerdfonts.ImageOff+"  ")
 }
 
 func TestReader_BackgroundColorMsgRerendersWithTermBG(t *testing.T) {

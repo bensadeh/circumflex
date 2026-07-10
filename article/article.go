@@ -73,6 +73,18 @@ func NewParsedFromHTML(src string) *Parsed {
 	return &Parsed{blocks: parseBlocks(node)}
 }
 
+// HasImages reports whether any block holds decoded image pixels, i.e.
+// whether toggling image display changes the render.
+func (p *Parsed) HasImages() bool {
+	for i := range p.blocks {
+		if p.blocks[i].kind == blockImage && p.blocks[i].img != nil {
+			return true
+		}
+	}
+
+	return false
+}
+
 // RenderWithHeader wraps prose at contentWidth; code blocks extend to
 // screenWidth like in the comment section. A screenWidth of 0 keeps
 // everything at contentWidth. The right edge reserves the scrollbar column so
