@@ -4,7 +4,6 @@ import (
 	"strings"
 	"testing"
 
-	"charm.land/lipgloss/v2"
 	xansi "github.com/charmbracelet/x/ansi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -49,17 +48,17 @@ func TestSkeletonMatchesRender(t *testing.T) {
 	for name, block := range blocks {
 		for _, nerdFonts := range []bool{false, true} {
 			for _, width := range []int{20, 60, 80} {
-				rendered := block.Render(width)
-				skeleton := block.Skeleton(width)
+				rendered := strings.Split(block.Render(width), "\n")
+				skeleton := strings.Split(block.Skeleton(width), "\n")
 
-				assert.Equal(t, lipgloss.Height(rendered), lipgloss.Height(skeleton),
+				require.Len(t, skeleton, len(rendered),
 					"%s: skeleton height must match render at width %d (nerdfonts %v)", name, width, nerdFonts)
 
-				for _, view := range []string{rendered, skeleton} {
-					for line := range strings.SplitSeq(view, "\n") {
-						assert.True(t, strings.HasPrefix(xansi.Strip(line), " "+bar),
-							"%s: every row carries the accent bar in the same column, got %q", name, line)
-					}
+				for i := range rendered {
+					assert.True(t, strings.HasPrefix(xansi.Strip(rendered[i]), " "+bar),
+						"%s: row %d must open with the accent bar, got %q", name, i, rendered[i])
+					assert.True(t, strings.HasPrefix(xansi.Strip(skeleton[i]), " "+bar),
+						"%s: skeleton row %d must carry the accent bar in the same column, got %q", name, i, skeleton[i])
 				}
 			}
 		}
