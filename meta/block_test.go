@@ -20,10 +20,11 @@ import (
 //  2. Blocks carry no left margin: every row opens with the accent bar. The
 //     hosting view supplies the margin, so the block can never disagree with
 //     the text column it heads about where the margin ends.
-//  3. No row extends past width-rightInset, and the right-aligned rows land
-//     exactly there. The right edge depends on nothing but the width — a
-//     change to the frame, the insets, or the hosting margins that moves it
-//     fails here.
+//  3. No row extends past width-rightInset. The right edge depends on
+//     nothing but the width — a change to the frame, the insets, or the
+//     hosting margins that pushes a row past it fails here. (That a
+//     truncated link row fills to the edge exactly is
+//     TestURLTruncatesWithEllipsis.)
 //
 // Any block redesign has to keep this sweep green.
 func TestBlockGeometryContract(t *testing.T) {
@@ -33,7 +34,6 @@ func TestBlockGeometryContract(t *testing.T) {
 			Domain:        "example.com",
 			Author:        "alice",
 			TimeAgo:       "2 hours ago",
-			ID:            12345,
 			Points:        100,
 			CommentsCount: 42,
 			NewComments:   3,
@@ -43,7 +43,6 @@ func TestBlockGeometryContract(t *testing.T) {
 		selfPost := Data{
 			Author:        "bob",
 			TimeAgo:       "1 hour ago",
-			ID:            678,
 			Points:        10,
 			CommentsCount: 3,
 			NerdFonts:     nerdFonts,
@@ -61,30 +60,23 @@ func TestBlockGeometryContract(t *testing.T) {
 			linkedWithText := linked
 			linkedWithText.RootComment = withRootComment.RootComment
 
-			// hasColumns marks the variants with right-aligned ID/points rows,
-			// which must reach the right edge exactly.
-			blocks := map[string]struct {
-				block      Block
-				hasColumns bool
-			}{
-				"comments linked":           {CommentSection(linked), true},
-				"comments self post":        {CommentSection(selfPost), true},
-				"comments root comment":     {CommentSection(withRootComment), true},
-				"comments linked with text": {CommentSection(linkedWithText), true},
-				"reader":                    {ReaderMode(linked), true},
-				"url only":                  {ReaderModeURL("https://example.com/story", nerdFonts), false},
+			blocks := map[string]Block{
+				"comments linked":           CommentSection(linked),
+				"comments self post":        CommentSection(selfPost),
+				"comments root comment":     CommentSection(withRootComment),
+				"comments linked with text": CommentSection(linkedWithText),
+				"reader":                    ReaderMode(linked),
+				"url only":                  ReaderModeURL("https://example.com/story", nerdFonts),
 			}
 
-			for name, tc := range blocks {
+			for name, block := range blocks {
 				label := fmt.Sprintf("%s at width %d (nerdfonts %v)", name, width, nerdFonts)
 
-				rendered := strings.Split(tc.block.Render(width), "\n")
-				skeleton := strings.Split(tc.block.Skeleton(width), "\n")
+				rendered := strings.Split(block.Render(width), "\n")
+				skeleton := strings.Split(block.Skeleton(width), "\n")
 
 				require.Len(t, skeleton, len(rendered),
 					"%s: skeleton height must match render", label)
-
-				edge := 0
 
 				for i := range rendered {
 					assert.True(t, strings.HasPrefix(xansi.Strip(rendered[i]), bar),
@@ -92,15 +84,8 @@ func TestBlockGeometryContract(t *testing.T) {
 					assert.True(t, strings.HasPrefix(xansi.Strip(skeleton[i]), bar),
 						"%s: skeleton row %d must carry the accent bar in the same column, got %q", label, i, skeleton[i])
 
-					rowWidth := xansi.StringWidth(rendered[i])
-					assert.LessOrEqual(t, rowWidth, width-rightInset,
+					assert.LessOrEqual(t, xansi.StringWidth(rendered[i]), width-rightInset,
 						"%s: row %d extends past the right inset: %q", label, i, rendered[i])
-					edge = max(edge, rowWidth)
-				}
-
-				if tc.hasColumns {
-					assert.Equal(t, width-rightInset, edge,
-						"%s: the right-aligned rows must end exactly at width-rightInset", label)
 				}
 			}
 		}
@@ -123,12 +108,16 @@ func TestURLIsTheFooter(t *testing.T) {
 	last := rows[len(rows)-1]
 	rule := rows[len(rows)-2]
 
-	assert.Contains(t, last, "https://example.com/story", "the URL must be the last row")
+	assert.Contains(t, last, "example.com/story", "the URL must be the last row")
+	assert.NotContains(t, last, "https://", "the scheme is stripped from the display")
 	assert.Equal(t, bar+" "+strings.Repeat("─", ContentWidth(60)), rule,
 		"a rule must separate the submission text from the URL")
 
 	assert.NotContains(t, CommentSection(linked).Render(60), "─",
 		"no rule without submission text")
+
+	assert.Contains(t, CommentSection(withText).Render(60), "https://example.com/story",
+		"the hyperlink target keeps the full URL")
 }
 
 // A URL wider than the content width shortens to a single-character

@@ -42,7 +42,6 @@
   author = "red"
   comments = "magenta"
   score = "yellow"
-  id = "green"
   new_comments = "cyan"
   url = "blue"
   reader_mode = "green"

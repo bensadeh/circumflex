@@ -59,7 +59,6 @@ type MetaColors struct {
 	Author      string `toml:"author"`
 	Comments    string `toml:"comments"`
 	Score       string `toml:"score"`
-	ID          string `toml:"id"`
 	NewComments string `toml:"new_comments"`
 	URL         string `toml:"url"`
 	ReaderMode  string `toml:"reader_mode"`
@@ -119,7 +118,6 @@ func Default() *Theme {
 			Author:      "red",
 			Comments:    "magenta",
 			Score:       "yellow",
-			ID:          "green",
 			NewComments: "cyan",
 			URL:         "blue",
 			ReaderMode:  "green",

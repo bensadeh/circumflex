@@ -8,7 +8,7 @@ const (
 	CommentOutline      = "󰆂"
 	CommentPlusOutline  = "󰆃"
 	CommentMinusOutline = "󱗠"
-	Tag                 = ""
+	Link                = "󰌹"
 	Document            = ""
 	Audio               = ""
 	Video               = ""

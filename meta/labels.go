@@ -3,23 +3,32 @@ package meta
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/style"
 
-	"charm.land/lipgloss/v2"
 	xansi "github.com/charmbracelet/x/ansi"
 )
 
 // urlRow is the block's footer: the story link on the block's last row,
-// truncated to a single ellipsis when it overruns the content width. Stories
-// without a link (domain is empty) have no URL row at all.
-func urlRow(url, domain string, contentWidth int) string {
+// truncated to a single ellipsis when it overruns the content width. The
+// scheme is stripped from the display — the row is visibly a link already —
+// but the hyperlink target keeps the full URL. Stories without a link
+// (domain is empty) have no URL row at all.
+func urlRow(url, domain string, contentWidth int, enableNerdFonts bool) string {
 	if domain == "" {
 		return ""
 	}
 
-	return style.MetaURL(xansi.Truncate(url, contentWidth, "…"), url)
+	display := strings.TrimPrefix(strings.TrimPrefix(url, "https://"), "http://")
+
+	display = strings.TrimSuffix(display, "/")
+	if enableNerdFonts {
+		display = nerdfonts.Link + " " + display
+	}
+
+	return style.MetaURL(xansi.Truncate(display, contentWidth, "…"), url)
 }
 
 func byline(author, timeAgo string, enableNerdFonts bool) string {
@@ -70,18 +79,8 @@ func scoreLabel(points int, enableNerdFonts bool) string {
 	score := strconv.Itoa(points)
 
 	if enableNerdFonts {
-		return style.MetaScore(fmt.Sprintf("%s %s", score, nerdfonts.Score))
+		return style.MetaScore(fmt.Sprintf("%s %s", nerdfonts.Score, score))
 	}
 
 	return fmt.Sprintf("%s points", style.MetaScore(score))
-}
-
-func idLabel(id int, enableNerdFonts bool) string {
-	idStr := lipgloss.NewStyle().Faint(true).Foreground(style.MetaIDColor()).Render(strconv.Itoa(id))
-
-	if enableNerdFonts {
-		return fmt.Sprintf("%s %s", idStr, lipgloss.NewStyle().Foreground(style.MetaIDColor()).Render(nerdfonts.Tag))
-	}
-
-	return fmt.Sprintf("%s %s", "ID", idStr)
 }

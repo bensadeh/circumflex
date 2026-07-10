@@ -138,8 +138,6 @@ var (
 
 	commentModColor color.Color
 
-	metaIDColor color.Color
-
 	readerImageColor color.Color
 
 	headerCColor         color.Color
@@ -198,7 +196,6 @@ func rebuildThemeStyles() {
 	metaNewCommentsStyle = fg(current.Meta.NewComments)
 	metaURLStyle = fg(current.Meta.URL)
 	metaReaderModeStyle = fg(current.Meta.ReaderMode)
-	metaIDColor = theme.ParseColor(current.Meta.ID)
 
 	readerH1Style = fg(current.Reader.H1)
 	readerH2Style = fg(current.Reader.H2)
@@ -290,7 +287,6 @@ func MetaScore(s string) string       { return metaScoreStyle.Render(s) }
 func MetaNewComments(s string) string { return metaNewCommentsStyle.Render(s) }
 func MetaURL(s, url string) string    { return metaURLStyle.Hyperlink(url).Render(s) }
 func MetaReaderMode(s string) string  { return metaReaderModeStyle.Render(s) }
-func MetaIDColor() color.Color        { return metaIDColor }
 
 func ReaderH1(s string) string      { return readerH1Style.Render(s) }
 func ReaderH2(s string) string      { return readerH2Style.Render(s) }

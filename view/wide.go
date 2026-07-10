@@ -150,7 +150,6 @@ func (m *model) placeholderMetaBlock(paneWidth int, target screen) string {
 		Domain:        it.Domain,
 		Author:        it.Author,
 		TimeAgo:       timeago.RelativeTime(it.Time),
-		ID:            it.ID,
 		Points:        it.Points,
 		CommentsCount: it.CommentsCount,
 		NerdFonts:     m.config.EnableNerdFonts,

@@ -296,7 +296,6 @@ func buildCommentHeader(s storyFields, enableNerdFonts bool, newComments int, wi
 		Domain:        s.Domain,
 		Author:        s.Author,
 		TimeAgo:       s.TimeAgo,
-		ID:            s.ID,
 		Points:        s.Points,
 		CommentsCount: s.CommentsCount,
 		NewComments:   newComments,

@@ -634,9 +634,15 @@ func TestSyncExpandedDepth_MatchesCollapseState(t *testing.T) {
 // top-level authors start and the block ends one cell inside the separator
 // rule's right edge (the block's rightInset). The block's own edge
 // arithmetic is meta's TestBlockGeometryContract; this pins the plumbing —
-// one margin, one width, shared by the block and the comments under it.
+// one margin, one width, shared by the block and the comments under it. The
+// thread's URL is longer than any column, so its truncated row is what
+// reaches the block's edge.
 func TestMetaBlockAlignsWithCommentColumn(t *testing.T) {
-	m := newTestModel(t, testThread())
+	thread := testThread()
+	thread.URL = "https://example.com/" + strings.Repeat("long-path/", 30)
+	thread.Domain = "example.com"
+
+	m := newTestModel(t, thread)
 
 	var barCols []int
 

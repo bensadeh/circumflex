@@ -330,7 +330,6 @@ func (m *model) handleArticleReady(msg message.ArticleReady) (*model, tea.Cmd) {
 		URL:       msg.URL,
 		Author:    msg.Author,
 		TimeAgo:   msg.TimeAgo,
-		ID:        msg.ID,
 		Points:    msg.Points,
 		NerdFonts: m.config.EnableNerdFonts,
 	})
