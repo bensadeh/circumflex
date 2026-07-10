@@ -85,12 +85,11 @@ func (p *domParser) walk(n *html.Node) {
 		return
 	}
 
-	switch nodeAtom(n) {
-	case atom.Script, atom.Style, atom.Noscript, atom.Template, atom.Iframe, atom.Head,
-		atom.Meta, atom.Link, atom.Title, atom.Form, atom.Button, atom.Input, atom.Select,
-		atom.Textarea, atom.Nav, atom.Svg:
+	if skippedElement(nodeAtom(n)) {
 		return
+	}
 
+	switch nodeAtom(n) {
 	case atom.P:
 		p.flushInline()
 		p.emitParagraph(collectInline(n, formatPlain, &p.images))
@@ -166,6 +165,20 @@ func (p *domParser) walk(n *html.Node) {
 			p.inline = append(p.inline, inlineSpans(n, formatPlain, &p.images)...)
 		}
 	}
+}
+
+// skippedElement reports whether the walker drops this element and its
+// subtree entirely; anything checking what the walker would render must
+// apply the same filter.
+func skippedElement(a atom.Atom) bool {
+	switch a {
+	case atom.Script, atom.Style, atom.Noscript, atom.Template, atom.Iframe, atom.Head,
+		atom.Meta, atom.Link, atom.Title, atom.Form, atom.Button, atom.Input, atom.Select,
+		atom.Textarea, atom.Nav, atom.Svg:
+		return true
+	}
+
+	return false
 }
 
 func hasBlockDescendant(n *html.Node) bool {
@@ -383,7 +396,10 @@ func (p *domParser) parseFigure(n *html.Node) {
 		}
 	}
 
-	if img == nil && figcaption == nil {
+	// A figure with no img but visible text beyond its caption is prose in
+	// figure markup — a testimonial blockquote, a captioned code listing —
+	// and collapsing it to a caption label would drop that content.
+	if img == nil && (figcaption == nil || hasProseOutsideCaption(n)) {
 		p.walkChildren(n)
 		p.flushInline()
 
@@ -405,6 +421,28 @@ func (p *domParser) parseFigure(n *html.Node) {
 	}
 
 	p.blocks = append(p.blocks, imageBlock(caption, src, imageDisplayWidth(img)))
+}
+
+func hasProseOutsideCaption(n *html.Node) bool {
+	for c := range n.ChildNodes() {
+		if c.Type == html.TextNode && strings.TrimSpace(c.Data) != "" {
+			return true
+		}
+
+		if c.Type != html.ElementNode {
+			continue
+		}
+
+		if a := nodeAtom(c); a == atom.Figcaption || skippedElement(a) {
+			continue
+		}
+
+		if hasProseOutsideCaption(c) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (p *domParser) parseTable(n *html.Node) {

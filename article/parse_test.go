@@ -218,6 +218,35 @@ func TestParseBlocks_FigurePrefersFigcaption(t *testing.T) {
 	assert.Equal(t, "The caption", blocks[0].plainText())
 }
 
+func TestParseBlocks_FigureWithoutImageKeepsProse(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<figure>
+		<blockquote>A most excellent product.</blockquote>
+		<figcaption>—Someone, CEO at Somewhere</figcaption>
+	</figure>`)
+
+	require.Len(t, blocks, 2)
+	assert.Equal(t, blockQuote, blocks[0].kind)
+	assert.Equal(t, "A most excellent product.", blocks[0].plainText())
+	assert.Equal(t, blockParagraph, blocks[1].kind)
+	assert.Equal(t, "—Someone, CEO at Somewhere", blocks[1].plainText())
+}
+
+func TestParseBlocks_FigureWithOnlyCaptionStaysImageBlock(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<figure>
+		<div style="height:400px"></div>
+		<figcaption>Benchmark results for the new model</figcaption>
+	</figure>`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, blockImage, blocks[0].kind)
+	assert.Empty(t, blocks[0].imageURL)
+	assert.Equal(t, "Benchmark results for the new model", blocks[0].plainText())
+}
+
 func TestParseBlocks_InlineImageBecomesOwnBlock(t *testing.T) {
 	t.Parallel()
 
