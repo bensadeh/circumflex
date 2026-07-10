@@ -24,6 +24,7 @@ type View interface {
 type standalone struct {
 	makeView func(width, height int) View
 	view     View
+	width    int
 
 	// bgMsg holds a background color report that arrived before the view
 	// existed, replayed once the view is created.
@@ -54,6 +55,9 @@ func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		s.bgMsg = msg // forwarded below, or replayed if the view is not built yet
 
 	case tea.WindowSizeMsg:
+		grew := msg.Width > s.width
+		s.width = msg.Width
+
 		if s.view == nil {
 			s.view = s.makeView(msg.Width, msg.Height)
 
@@ -62,6 +66,10 @@ func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 			return s, s.view.Init()
+		}
+
+		if grew {
+			return s, tea.Batch(RepaintAfterGrow(), s.view.Update(msg))
 		}
 	}
 

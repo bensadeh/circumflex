@@ -6,6 +6,7 @@ import (
 	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/view/comments"
 	"github.com/bensadeh/circumflex/view/message"
+	"github.com/bensadeh/circumflex/view/pane"
 	"github.com/bensadeh/circumflex/view/reader"
 
 	"charm.land/bubbles/v2/key"
@@ -20,9 +21,15 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 			return m, m.handleCancelFetch()
 		}
 
-		clearProgress()
-
 		return m, tea.Quit
+	}
+
+	// Ctrl+L forces a full repaint — the terminal convention for healing
+	// artifacts the cell-diff renderer cannot see, whatever desynced the
+	// terminal from its model (a torn escape sequence, glyph-width drift, a
+	// multiplexer quirk).
+	if msg, ok := msg.(tea.KeyPressMsg); ok && msg.Mod == tea.ModCtrl && msg.Code == 'l' {
+		return m, tea.ClearScreen
 	}
 
 	// Handled before the startup gate: the terminal's answer can arrive
@@ -185,6 +192,11 @@ func (m *model) handleStartup(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
 }
 
 func (m *model) handleWindowResize(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
+	var cmds []tea.Cmd
+	if msg.Width > m.width {
+		cmds = append(cmds, pane.RepaintAfterGrow())
+	}
+
 	m.setSize(msg.Width, msg.Height)
 
 	// Resize the help viewport unconditionally: a resize that arrives while a
@@ -194,10 +206,10 @@ func (m *model) handleWindowResize(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
 	// The detail view is sized to its pane, which is the full screen when
 	// the terminal is too narrow for the wide layout.
 	if m.detail != nil {
-		return m, m.detail.Update(tea.WindowSizeMsg{Width: m.detailWidth(), Height: msg.Height})
+		cmds = append(cmds, m.detail.Update(tea.WindowSizeMsg{Width: m.detailWidth(), Height: msg.Height}))
 	}
 
-	return m, nil
+	return m, tea.Batch(cmds...)
 }
 
 func (m *model) handleFetchingFinished(msg message.FetchingFinished) (*model, tea.Cmd) {

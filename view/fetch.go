@@ -202,16 +202,42 @@ func (m *model) fetchArticle(story *hn.Story) tea.Cmd {
 
 // Terminal progress bar via OSC 9;4 (supported by Ghostty, ConEmu and others;
 // silently ignored by terminals that don't recognise the sequence).
-// Writes to stderr to avoid interfering with Bubble Tea's stdout; tests
-// swap the writer out so the sequences don't flood their output.
+//
+// While the program runs, sequences ride progressCh into its message loop and
+// leave through its own output, serialized with frame flushes. Writing to the
+// terminal directly would race them: Bubble Tea flushes frames from its own
+// goroutine, backpressure splits a frame across several writes, and a
+// sequence landing between two chunks corrupts the terminal's parse — the
+// cell-diff renderer then leaves ghost text it believes was repainted.
+// progressOut serves tests and the final clear after the program exits.
 
 var progressOut io.Writer = os.Stderr
 
-func setProgressIndeterminate()  { _, _ = fmt.Fprint(progressOut, "\033]9;4;3;0\a") }
-func setProgressPercent(pct int) { _, _ = fmt.Fprintf(progressOut, "\033]9;4;1;%d\a", pct) }
-func setProgressError()          { _, _ = fmt.Fprint(progressOut, "\033]9;4;2;100\a") }
+// progressCh is wired by Run; nil whenever no program is running.
+var progressCh chan<- string
 
-func clearProgress() { _, _ = fmt.Fprint(progressOut, "\033]9;4;0\a") }
+const progressClearSeq = "\033]9;4;0\a"
+
+func setProgressIndeterminate()  { emitProgress("\033]9;4;3;0\a") }
+func setProgressPercent(pct int) { emitProgress(fmt.Sprintf("\033]9;4;1;%d\a", pct)) }
+func setProgressError()          { emitProgress("\033]9;4;2;100\a") }
+
+func clearProgress() { emitProgress(progressClearSeq) }
+
+func emitProgress(seq string) {
+	if progressCh != nil {
+		// Progress is cosmetic: if the program stopped consuming, drop the
+		// update rather than block.
+		select {
+		case progressCh <- seq:
+		default:
+		}
+
+		return
+	}
+
+	_, _ = fmt.Fprint(progressOut, seq)
+}
 
 // syncProgress settles the indicator for a finished fetch: an error stays
 // visible for the status message lifetime (see showDetailError), success

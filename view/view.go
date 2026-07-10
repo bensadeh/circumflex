@@ -55,7 +55,33 @@ func Run(config *settings.Config, cat *categories.Categories) error {
 
 	p := tea.NewProgram(teaModel{m: m})
 
+	// Progress sequences ride the program's message loop (see emitProgress).
+	// The forwarder goroutine exists because Send would deadlock called from
+	// Update itself; once the program stops, Send is a no-op.
+	ch := make(chan string, 64)
+	forwarderDone := make(chan struct{})
+	progressCh = ch
+
+	go func() {
+		for {
+			select {
+			case seq := <-ch:
+				p.Send(tea.RawMsg{Msg: seq})
+			case <-forwarderDone:
+				return
+			}
+		}
+	}()
+
 	finalModel, err := p.Run()
+
+	close(forwarderDone)
+
+	// The program has stopped writing, so a direct write can no longer
+	// interleave with a frame. Clearing here rather than in the quit paths
+	// guarantees the indicator never outlives the app, whatever the exit.
+	_, _ = fmt.Fprint(os.Stderr, progressClearSeq)
+
 	if err != nil {
 		return err
 	}
