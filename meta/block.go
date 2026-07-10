@@ -89,6 +89,14 @@ func (b Block) Skeleton(width int) string {
 	return strings.Join(lines, "\n")
 }
 
+// divider is a faint rule across the content width, drawn where two kinds
+// of prose inside a block would otherwise blur together. Panes smaller than
+// the block's insets leave no content column at all; the rule just vanishes
+// with it.
+func divider(contentWidth int) string {
+	return style.Faint(strings.Repeat("─", max(0, contentWidth)))
+}
+
 // columns lays two texts out side by side, the left flushed left and the
 // right flushed right, splitting the content width between them. The right
 // column takes the odd cell so its text always ends exactly on the block's

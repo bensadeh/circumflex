@@ -11,16 +11,15 @@ import (
 	xansi "github.com/charmbracelet/x/ansi"
 )
 
-// urlLine is the block's header: the story link over a blank separator line.
-// Stories without a link (domain is empty) have no URL rows at all.
-func urlLine(url, domain string, contentWidth int) string {
+// urlRow is the block's footer: the story link on the block's last row,
+// truncated to a single ellipsis when it overruns the content width. Stories
+// without a link (domain is empty) have no URL row at all.
+func urlRow(url, domain string, contentWidth int) string {
 	if domain == "" {
 		return ""
 	}
 
-	truncatedURL := xansi.Truncate(url, contentWidth, "")
-
-	return style.MetaURL(truncatedURL, url) + "\n\n"
+	return style.MetaURL(xansi.Truncate(url, contentWidth, "…"), url)
 }
 
 func byline(author, timeAgo string, enableNerdFonts bool) string {
