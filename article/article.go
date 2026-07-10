@@ -85,11 +85,12 @@ func (p *Parsed) HasImages() bool {
 	return false
 }
 
-// RenderWithHeader wraps prose and code at contentWidth; verbatim text and
-// tables extend to screenWidth. A screenWidth of 0 keeps everything at
-// contentWidth. The right edge reserves the scrollbar column so a full-width
-// line is not clipped by the bar. images controls whether decoded images
-// render as art or fall back to a text label.
+// RenderWithHeader wraps prose at contentWidth; code boxes span at least
+// contentWidth and grow toward screenWidth, which verbatim text and tables
+// extend to directly. A screenWidth of 0 keeps everything at contentWidth.
+// The right edge reserves the scrollbar column so a full-width line is not
+// clipped by the bar. images controls whether decoded images render as art
+// or fall back to a text label.
 //
 // The second return value holds the line index each block starts on, so a
 // scroll position can be re-anchored to the same block after a re-render

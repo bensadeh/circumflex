@@ -86,16 +86,30 @@ func TestRenderQuote_PrefixesIndentBar(t *testing.T) {
 	}
 }
 
-func TestRenderCode_BoxesAllLines(t *testing.T) {
+func TestRenderCode_BoxSpansReadingColumn(t *testing.T) {
 	t.Parallel()
 
-	code := ansi.Strip(renderCode("line one\nline two", 20))
+	code := ansi.Strip(renderCode("line one\nline two", 20, 40))
 
 	want := strings.Join([]string{
 		"╭──────────────────╮",
 		"│ line one         │",
 		"│ line two         │",
 		"╰──────────────────╯",
+	}, "\n")
+
+	assert.Equal(t, want, code)
+}
+
+func TestRenderCode_BoxGrowsWithLongLines(t *testing.T) {
+	t.Parallel()
+
+	code := ansi.Strip(renderCode("a line past the column", 20, 40))
+
+	want := strings.Join([]string{
+		"╭────────────────────────╮",
+		"│ a line past the column │",
+		"╰────────────────────────╯",
 	}, "\n")
 
 	assert.Equal(t, want, code)
@@ -328,7 +342,7 @@ func TestRenderWithHeader_FullWidthLineClearsScrollbar(t *testing.T) {
 
 	const screenWidth = 80
 
-	parsed := NewParsedFromHTML("<table><tr><td>" + strings.Repeat("x", 200) + "</td></tr></table>")
+	parsed := NewParsedFromHTML("<pre><code>" + strings.Repeat("x", 200) + "</code></pre>")
 	rendered, _ := parsed.RenderWithHeader(72, screenWidth, "", showImages)
 	out := ansi.Strip(rendered)
 
@@ -338,8 +352,8 @@ func TestRenderWithHeader_FullWidthLineClearsScrollbar(t *testing.T) {
 	}
 
 	assert.LessOrEqual(t, widest, screenWidth-scrollbar.Width,
-		"the widest table line must leave the scrollbar column free")
-	assert.Greater(t, widest, 72, "the table still breaks out past the reading column")
+		"the widest code line must leave the scrollbar column free")
+	assert.Greater(t, widest, 72, "code still breaks out past the reading column")
 }
 
 func TestRenderBlocks_ImageToggleKeepsBlockCount(t *testing.T) {
@@ -411,7 +425,7 @@ func TestRenderBlocks_JoinsWithBlankLine(t *testing.T) {
 	assert.Equal(t, "first\n\nsecond", renderBlocks(blocks, 80, 80, showImages))
 }
 
-func TestRenderBlocks_CodeStaysInReadingColumn(t *testing.T) {
+func TestRenderBlocks_CodeExtendsToScreenWidth(t *testing.T) {
 	t.Parallel()
 
 	long := strings.Repeat("x", 100)
@@ -426,7 +440,7 @@ func TestRenderBlocks_CodeStaysInReadingColumn(t *testing.T) {
 		}
 
 		if strings.Contains(line, "x") {
-			assert.Len(t, []rune(line), 40, "the code box spans the reading column, not the screen")
+			assert.Equal(t, "│ "+long+" │", line, "the code box grows past the reading column")
 		}
 	}
 }

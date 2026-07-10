@@ -38,21 +38,26 @@ func PrefixLines(s, prefix string) string {
 const RoundedBoxChrome = 4
 
 // RoundedBox frames pre-wrapped content in a faint rounded border with one
-// cell of horizontal padding, spanning exactly width cells.
+// cell of horizontal padding. The frame spans at least width cells and grows
+// with the content's widest line.
 func RoundedBox(content string, width int) string {
 	lines := strings.Split(content, "\n")
-	inner := width - RoundedBoxChrome
+
+	inner := max(0, width-RoundedBoxChrome)
+	for _, line := range lines {
+		inner = max(inner, lipgloss.Width(line))
+	}
 
 	var b strings.Builder
 
-	b.WriteString(Faint("╭" + strings.Repeat("─", max(0, width-2)) + "╮"))
+	b.WriteString(Faint("╭" + strings.Repeat("─", inner+2) + "╮"))
 
 	for _, line := range lines {
-		pad := strings.Repeat(" ", max(0, inner-lipgloss.Width(line)))
+		pad := strings.Repeat(" ", inner-lipgloss.Width(line))
 		b.WriteString("\n" + Faint("│") + " " + line + pad + " " + Faint("│"))
 	}
 
-	b.WriteString("\n" + Faint("╰"+strings.Repeat("─", max(0, width-2))+"╯"))
+	b.WriteString("\n" + Faint("╰"+strings.Repeat("─", inner+2)+"╯"))
 
 	return b.String()
 }

@@ -35,8 +35,9 @@ type ImageOptions struct {
 	TerminalBG color.Color
 }
 
-// Prose wraps at the reading column, and code renders in a box spanning it;
-// verbatim and table blocks break out to codeWidth (the full screen space).
+// Prose wraps at the reading column. Code renders in a box spanning at least
+// that column, growing with long lines up to codeWidth (the space left of
+// the scrollbar); verbatim and table blocks break out to codeWidth directly.
 func renderBlocks(blocks []block, width, codeWidth int, images ImageOptions) string {
 	return strings.Join(renderParts(blocks, width, codeWidth, images), "\n\n")
 }
@@ -85,7 +86,7 @@ func renderBlock(b *block, width, codeWidth int, images ImageOptions) string {
 		return renderQuote(b.spans, width)
 
 	case blockCode:
-		return renderCode(b.text, width)
+		return renderCode(b.text, width, codeWidth)
 
 	case blockTable:
 		return renderTable(b.rows, codeWidth)
@@ -251,10 +252,11 @@ func renderQuote(spans []span, width int) string {
 	return style.PrefixLines(styled, prefix)
 }
 
-// The box spans the reading column; its border and padding equal the old
-// blockIndent, so the code text keeps its column.
-func renderCode(text string, width int) string {
-	wrapped := lipgloss.Wrap(text, width-style.RoundedBoxChrome, "")
+// The box spans at least the reading column and grows with long code lines
+// up to codeWidth; its border and padding equal the old blockIndent, so the
+// code text keeps its column.
+func renderCode(text string, width, codeWidth int) string {
+	wrapped := lipgloss.Wrap(text, codeWidth-style.RoundedBoxChrome, "")
 
 	return style.RoundedBox(styleLines(wrapped, style.Faint), width)
 }

@@ -312,7 +312,7 @@ func renderRootComment(c string, contentWidth int, enableNerdFonts bool) string 
 		return ""
 	}
 
-	rendered := comment.Render(c, contentWidth, enableNerdFonts, nil)
+	rendered := comment.Render(c, contentWidth, contentWidth, enableNerdFonts, nil)
 
 	return lipgloss.Wrap(rendered, contentWidth, "")
 }

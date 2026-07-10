@@ -23,7 +23,7 @@ type section struct {
 	content string
 }
 
-func Render(commentHTML string, commentWidth int, enableNerdFonts bool, fg color.Color) string {
+func Render(commentHTML string, commentWidth, screenWidth int, enableNerdFonts bool, fg color.Color) string {
 	if commentHTML == "[deleted]" {
 		return style.Faint(commentHTML)
 	}
@@ -37,7 +37,7 @@ func Render(commentHTML string, commentWidth int, enableNerdFonts bool, fg color
 		case sectionQuote:
 			output.WriteString(formatQuote(s.content, commentWidth))
 		case sectionCode:
-			output.WriteString(formatCodeBlock(s.content, commentWidth))
+			output.WriteString(formatCodeBlock(s.content, commentWidth, screenWidth))
 		case sectionParagraph:
 			para := formatParagraph(s.content, commentWidth, enableNerdFonts)
 
@@ -105,18 +105,20 @@ func formatQuote(content string, commentWidth int) string {
 	return style.PrefixLines(wrapped, padStr)
 }
 
-func formatCodeBlock(content string, width int) string {
+// The box spans at least commentWidth and grows with long code lines up to
+// screenWidth (the space left of the scrollbar).
+func formatCodeBlock(content string, commentWidth, screenWidth int) string {
 	content = syntax.ReplaceHTML(content)
 	content = dedent(strings.Trim(content, "\n"))
 
-	wrapped := lipgloss.Wrap(content, width-style.RoundedBoxChrome, "")
+	wrapped := lipgloss.Wrap(content, screenWidth-style.RoundedBoxChrome, "")
 	lines := strings.Split(wrapped, "\n")
 
 	for i, line := range lines {
 		lines[i] = ansi.Faint + line + ansi.Reset
 	}
 
-	return style.RoundedBox(strings.Join(lines, "\n"), width)
+	return style.RoundedBox(strings.Join(lines, "\n"), commentWidth)
 }
 
 // dedent drops the whitespace indent shared by every line. HN marks code by
