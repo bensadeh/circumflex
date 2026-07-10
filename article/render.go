@@ -35,8 +35,8 @@ type ImageOptions struct {
 	TerminalBG color.Color
 }
 
-// Prose wraps at the reading column; code and verbatim blocks break out to
-// codeWidth (the full screen space), mirroring the comment section.
+// Prose wraps at the reading column, and code renders in a box spanning it;
+// verbatim and table blocks break out to codeWidth (the full screen space).
 func renderBlocks(blocks []block, width, codeWidth int, images ImageOptions) string {
 	return strings.Join(renderParts(blocks, width, codeWidth, images), "\n\n")
 }
@@ -85,7 +85,7 @@ func renderBlock(b *block, width, codeWidth int, images ImageOptions) string {
 		return renderQuote(b.spans, width)
 
 	case blockCode:
-		return renderCode(b.text, codeWidth)
+		return renderCode(b.text, width)
 
 	case blockTable:
 		return renderTable(b.rows, codeWidth)
@@ -251,10 +251,12 @@ func renderQuote(spans []span, width int) string {
 	return style.PrefixLines(styled, prefix)
 }
 
+// The box spans the reading column; its border and padding equal the old
+// blockIndent, so the code text keeps its column.
 func renderCode(text string, width int) string {
-	wrapped := lipgloss.Wrap(text, width-len(blockIndent), "")
+	wrapped := lipgloss.Wrap(text, width-style.RoundedBoxChrome, "")
 
-	return style.PrefixLines(styleLines(wrapped, style.Faint), blockIndent)
+	return style.RoundedBox(styleLines(wrapped, style.Faint), width)
 }
 
 // Styling line by line, because lipgloss pads multi-line strings to a uniform

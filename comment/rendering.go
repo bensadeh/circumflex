@@ -102,7 +102,7 @@ func Header(c *Comment, depth int, originalPoster, topLevelAuthor string, lastVi
 func RenderContent(c *Comment, depth int, commentWidth, screenWidth int, enableNerdFonts bool, fg color.Color) string {
 	coloredIndentSymbol := syntax.ColorizeIndentSymbol(style.IndentSymbol, depth)
 
-	formattedComment := Render(c.Content, commentWidth, screenWidth, enableNerdFonts, fg)
+	formattedComment := Render(c.Content, commentWidth, enableNerdFonts, fg)
 
 	padWidth := lipgloss.Width(coloredIndentSymbol)
 	wrapped := lipgloss.Wrap(formattedComment, screenWidth-padWidth, "")

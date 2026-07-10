@@ -32,6 +32,31 @@ func PrefixLines(s, prefix string) string {
 	return strings.Join(lines, "\n")
 }
 
+// RoundedBoxChrome is the width RoundedBox adds around its widest content
+// line: two border cells and two padding cells. Callers wrap content at
+// their available width minus this before boxing.
+const RoundedBoxChrome = 4
+
+// RoundedBox frames pre-wrapped content in a faint rounded border with one
+// cell of horizontal padding, spanning exactly width cells.
+func RoundedBox(content string, width int) string {
+	lines := strings.Split(content, "\n")
+	inner := width - RoundedBoxChrome
+
+	var b strings.Builder
+
+	b.WriteString(Faint("╭" + strings.Repeat("─", max(0, width-2)) + "╮"))
+
+	for _, line := range lines {
+		pad := strings.Repeat(" ", max(0, inner-lipgloss.Width(line)))
+		b.WriteString("\n" + Faint("│") + " " + line + pad + " " + Faint("│"))
+	}
+
+	b.WriteString("\n" + Faint("╰"+strings.Repeat("─", max(0, width-2))+"╯"))
+
+	return b.String()
+}
+
 var current = theme.Default()
 
 // Static styles — built once from lipgloss-builtin colors.

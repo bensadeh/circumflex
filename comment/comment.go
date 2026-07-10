@@ -23,7 +23,7 @@ type section struct {
 	content string
 }
 
-func Render(commentHTML string, commentWidth int, screenWidth int, enableNerdFonts bool, fg color.Color) string {
+func Render(commentHTML string, commentWidth int, enableNerdFonts bool, fg color.Color) string {
 	if commentHTML == "[deleted]" {
 		return style.Faint(commentHTML)
 	}
@@ -37,7 +37,7 @@ func Render(commentHTML string, commentWidth int, screenWidth int, enableNerdFon
 		case sectionQuote:
 			output.WriteString(formatQuote(s.content, commentWidth))
 		case sectionCode:
-			output.WriteString(formatCodeBlock(s.content, screenWidth))
+			output.WriteString(formatCodeBlock(s.content, commentWidth))
 		case sectionParagraph:
 			para := formatParagraph(s.content, commentWidth, enableNerdFonts)
 
@@ -105,23 +105,50 @@ func formatQuote(content string, commentWidth int) string {
 	return style.PrefixLines(wrapped, padStr)
 }
 
-func formatCodeBlock(content string, availableWidth int) string {
+func formatCodeBlock(content string, width int) string {
 	content = syntax.ReplaceHTML(content)
+	content = dedent(strings.Trim(content, "\n"))
 
-	wrapped := lipgloss.Wrap(content, availableWidth, "")
+	wrapped := lipgloss.Wrap(content, width-style.RoundedBoxChrome, "")
 	lines := strings.Split(wrapped, "\n")
 
-	var sb strings.Builder
-
 	for i, line := range lines {
-		sb.WriteString(ansi.Faint + line + ansi.Reset)
+		lines[i] = ansi.Faint + line + ansi.Reset
+	}
 
-		if i < len(lines)-1 {
-			sb.WriteString("\n")
+	return style.RoundedBox(strings.Join(lines, "\n"), width)
+}
+
+// dedent drops the whitespace indent shared by every line. HN marks code by
+// leading spaces, so the block always arrives indented; the box already sets
+// it apart, and keeping the indent would pad the box's inside.
+func dedent(text string) string {
+	lines := strings.Split(text, "\n")
+
+	indent := -1
+
+	for _, line := range lines {
+		trimmed := strings.TrimLeft(line, " ")
+		if trimmed == "" {
+			continue
+		}
+
+		if lineIndent := len(line) - len(trimmed); indent < 0 || lineIndent < indent {
+			indent = lineIndent
 		}
 	}
 
-	return sb.String()
+	if indent <= 0 {
+		return text
+	}
+
+	for i, line := range lines {
+		if len(line) >= indent {
+			lines[i] = line[indent:]
+		}
+	}
+
+	return strings.Join(lines, "\n")
 }
 
 func formatParagraph(content string, commentWidth int, enableNerdFonts bool) string {

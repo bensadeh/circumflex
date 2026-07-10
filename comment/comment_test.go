@@ -43,7 +43,7 @@ func TestIsQuote(t *testing.T) {
 func TestPrintDeleted(t *testing.T) {
 	t.Parallel()
 
-	result := Render("[deleted]", 70, 80, false, nil)
+	result := Render("[deleted]", 70, false, nil)
 
 	assert.Contains(t, result, "[deleted]")
 	assert.Contains(t, result, "\033[2m", "should contain faint ANSI escape")
@@ -52,7 +52,7 @@ func TestPrintDeleted(t *testing.T) {
 func TestPrintSimpleText(t *testing.T) {
 	t.Parallel()
 
-	result := Render("Hello &amp; world", 70, 80, false, nil)
+	result := Render("Hello &amp; world", 70, false, nil)
 
 	assert.Contains(t, result, "Hello & world")
 	assert.NotContains(t, result, "&amp;")
@@ -62,7 +62,7 @@ func TestPrintCodeBlock(t *testing.T) {
 	t.Parallel()
 
 	input := "<pre><code>fmt.Println(\"hello\")\n</code></pre>"
-	result := Render(input, 70, 80, false, nil)
+	result := Render(input, 70, false, nil)
 
 	assert.Contains(t, result, ansi.Faint, "code block should contain dimmed ANSI")
 	assert.Contains(t, result, ansi.Reset, "code block should contain reset ANSI")
@@ -75,7 +75,7 @@ func TestPrintQuoteBlock(t *testing.T) {
 	// HN API wraps each paragraph with <p>. The first <p> is stripped,
 	// subsequent <p> tags split into separate paragraphs.
 	input := "<p>intro<p>>This is quoted"
-	result := Render(input, 70, 80, false, nil)
+	result := Render(input, 70, false, nil)
 
 	assert.Contains(t, result, ansi.Italic, "quote should contain italic ANSI")
 	assert.Contains(t, result, ansi.Faint, "quote should contain dimmed ANSI")
@@ -85,7 +85,7 @@ func TestPrintQuoteBlock(t *testing.T) {
 func TestPrintConvertsSmileys(t *testing.T) {
 	t.Parallel()
 
-	result := Render("hello :)", 70, 80, false, nil)
+	result := Render("hello :)", 70, false, nil)
 
 	assert.NotContains(t, result, ":)")
 }
@@ -94,7 +94,7 @@ func TestPrintCommentHighlighting(t *testing.T) {
 	t.Parallel()
 
 	input := "check `code` here"
-	result := Render(input, 70, 80, false, nil)
+	result := Render(input, 70, false, nil)
 
 	assert.NotContains(t, result, "`code`")
 }
@@ -105,7 +105,7 @@ func TestPrintMultipleParagraphs(t *testing.T) {
 	// HN API prefixes each paragraph with <p>. The first is stripped;
 	// the second acts as the paragraph separator.
 	input := "<p>first paragraph<p>second paragraph"
-	result := Render(input, 70, 80, false, nil)
+	result := Render(input, 70, false, nil)
 
 	assert.Contains(t, result, "first paragraph")
 	assert.Contains(t, result, "second paragraph")
@@ -148,7 +148,7 @@ func TestRender_ModParagraphTintReappliedAfterEveryReset(t *testing.T) {
 	// \x1b[0m. Both forms must get the prefix reapplied.
 	input := "see `code`, @user, <a href=\"https://example.com\">https://example.com</a>, and <i>italic</i> here"
 
-	result := Render(input, 80, 80, false, style.CommentModFg())
+	result := Render(input, 80, false, style.CommentModFg())
 
 	prefix := expectedTintPrefix(t, style.CommentModFg())
 
@@ -191,7 +191,7 @@ func TestRender_ModParagraphLinesStartWithTint(t *testing.T) {
 	// Long enough to wrap onto multiple lines at width 40.
 	input := strings.Repeat("word ", 20)
 
-	result := Render(input, 40, 40, false, style.CommentModFg())
+	result := Render(input, 40, false, style.CommentModFg())
 	prefix := expectedTintPrefix(t, style.CommentModFg())
 
 	lines := strings.Split(result, "\n")
