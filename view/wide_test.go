@@ -144,9 +144,9 @@ func TestWideView_LoadingShowsUnboldedTitle(t *testing.T) {
 	assert.Contains(t, m.detailPaneView(), "\x1b[1m", "the opened story's title regains its bold")
 }
 
-// While a story loads, the pane reserves the meta block's spot with an
-// empty, dimmed box of the same size, so the block neither moves nor resizes
-// when the content arrives.
+// While a story loads, the pane reserves the meta block's spot with a bare,
+// dimmed accent bar spanning the same rows, so the block neither moves nor
+// resizes when the content arrives.
 func TestWideView_LoadingShowsMetaBlockPlaceholder(t *testing.T) {
 	m := newWideTestModel(t)
 
@@ -155,7 +155,7 @@ func TestWideView_LoadingShowsMetaBlockPlaceholder(t *testing.T) {
 
 	loading := m.detailPaneView()
 	loadingBox := metaBoxLines(t, loading)
-	assert.Contains(t, loadingBox[0], "\x1b[2m", "placeholder box must render dimmed")
+	assert.Contains(t, loadingBox[0], "\x1b[2m", "placeholder must render dimmed")
 
 	thread := comment.ToThread(&hn.CommentTree{
 		ID: 1, Title: "First item", CommentsCount: 5,
@@ -164,15 +164,11 @@ func TestWideView_LoadingShowsMetaBlockPlaceholder(t *testing.T) {
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
 
 	loadedBox := metaBoxLines(t, m.detailPaneView())
-	assert.Len(t, loadingBox, len(loadedBox), "placeholder box must be as tall as the loaded meta block")
-	assert.Equal(t,
-		strings.TrimRight(xansi.Strip(loadedBox[0]), " "),
-		strings.TrimRight(xansi.Strip(loadingBox[0]), " "),
-		"placeholder box must be as wide as the loaded meta block")
+	assert.Len(t, loadingBox, len(loadedBox), "placeholder must span the same rows as the loaded meta block")
 }
 
-// The placeholder box survives a failed load: the error view keeps it in
-// place instead of flashing it away with the loading pane.
+// The placeholder survives a failed load: the error view keeps it in place
+// instead of flashing it away with the loading pane.
 func TestWideView_ErrorViewKeepsMetaBlockPlaceholder(t *testing.T) {
 	m := newWideTestModel(t)
 
@@ -185,21 +181,24 @@ func TestWideView_ErrorViewKeepsMetaBlockPlaceholder(t *testing.T) {
 	require.Equal(t, screenComments, m.screen)
 
 	assert.Equal(t, loadingBox, metaBoxLines(t, m.detailPaneView()),
-		"the placeholder box must not move or change when the load fails")
+		"the placeholder must not move or change when the load fails")
 }
 
-// metaBoxLines returns the view's rows from the meta block's top border down
-// to its bottom border.
+// metaBoxLines returns the view's contiguous run of meta block rows, found
+// by the accent bar at their left edge.
 func metaBoxLines(t *testing.T, view string) []string {
 	t.Helper()
 
 	lines := strings.Split(view, "\n")
+	isBlockRow := func(l string) bool { return strings.HasPrefix(xansi.Strip(l), " ▌") }
 
-	top := slices.IndexFunc(lines, func(l string) bool { return strings.ContainsRune(l, '╭') })
-	bottom := slices.IndexFunc(lines, func(l string) bool { return strings.ContainsRune(l, '╰') })
+	top := slices.IndexFunc(lines, isBlockRow)
+	require.GreaterOrEqual(t, top, 0, "no meta block in view")
 
-	require.GreaterOrEqual(t, top, 0, "no meta block box in view")
-	require.Greater(t, bottom, top, "meta block box has no bottom border")
+	bottom := top
+	for bottom+1 < len(lines) && isBlockRow(lines[bottom+1]) {
+		bottom++
+	}
 
 	return lines[top : bottom+1]
 }

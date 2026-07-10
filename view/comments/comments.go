@@ -271,7 +271,7 @@ func buildCommentHeader(s storyFields, enableNerdFonts bool, newComments int, wi
 		Points:        s.Points,
 		CommentsCount: s.CommentsCount,
 		NewComments:   newComments,
-		RootComment:   renderRootComment(s.Content, width-2, enableNerdFonts), // subtract padding (1 left + 1 right)
+		RootComment:   renderRootComment(s.Content, meta.ContentWidth(width), enableNerdFonts),
 		NerdFonts:     enableNerdFonts,
 	}).Render(width)
 }

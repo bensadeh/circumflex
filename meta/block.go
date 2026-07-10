@@ -1,9 +1,9 @@
-// Package meta renders the story meta block: the framed box a detail view
-// draws above its content. Each block variant lives in its own file and owns
-// its layout; this file holds the pieces they share — the frame, the column
-// grid, and the Block type. A variant's Skeleton derives from the same body
-// as its Render, so redesigning a block can never leave its loading stand-in
-// a different size.
+// Package meta renders the story meta block: the accent-barred header a
+// detail view draws above its content. Each block variant lives in its own
+// file and owns its layout; this file holds the pieces they share — the
+// accent bar, the column grid, and the Block type. A variant's Skeleton
+// derives from the same body as its Render, so redesigning a block can never
+// leave its loading stand-in a different shape.
 package meta
 
 import (
@@ -14,10 +14,17 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-const (
-	borderSize  = 2
-	paddingSize = 2
-)
+// bar is the block's frame: a half-block accent bar down the left edge, in
+// the gutter column the old rounded border occupied. Heavier than the ▎ the
+// comment section uses for quotes and nesting, so the block reads as its own
+// element rather than another indent level.
+const bar = "▌"
+
+// textIndent is how much deeper than the surrounding text column the block's
+// text sits: the accent bar and its trailing space push the text one cell
+// right of the column's left margin, and the text gives that cell back on
+// the right so the edges stay flush.
+const textIndent = 1
 
 // Data is the story metadata a block can draw. A variant reads only the
 // fields it shows; leave the rest zero. Zero-valued strings mean "unknown"
@@ -36,39 +43,41 @@ type Data struct {
 }
 
 // Block is one meta block variant bound to its data. Render draws the loaded
-// block; Skeleton draws the loading stand-in: an empty, dimmed frame with
-// exactly the dimensions Render produces from the same Data, so the box
-// neither moves nor resizes when the content fills it in. width is the text
-// column the block sits above (the comment column or the article column).
+// block; Skeleton draws the loading stand-in: the same accent bar over the
+// same number of rows, with the text yet to fill in, so nothing moves when
+// the content arrives. width is the text column the block sits above (the
+// comment column or the article column).
 type Block struct {
 	body func(width int) string
 }
 
-func (b Block) Render(width int) string {
-	return frame(width).Render(b.body(width))
+// ContentWidth is the width of the text inside a block laid out at width;
+// callers wrap content they pre-render themselves (the root comment) at this
+// width.
+func ContentWidth(width int) int {
+	return width - textIndent
 }
 
-func (b Block) Skeleton(width int) string {
-	// The row count comes from the framed render, not the raw body: a body
-	// line wider than the frame wraps when drawn, and the skeleton must grow
-	// with it.
-	rows := lipgloss.Height(b.Render(width)) - borderSize
-
-	lines := strings.Split(frame(width).Render(strings.Repeat("\n", rows-1)), "\n")
+func (b Block) Render(width int) string {
+	lines := strings.Split(b.body(width), "\n")
 	for i, line := range lines {
-		lines[i] = style.Faint(line)
+		lines[i] = strings.TrimRight(" "+style.Faint(bar)+" "+line, " ")
 	}
 
 	return strings.Join(lines, "\n")
 }
 
-func frame(width int) lipgloss.Style {
-	return lipgloss.NewStyle().
-		BorderStyle(lipgloss.RoundedBorder()).
-		PaddingLeft(1).
-		PaddingRight(1).
-		MarginLeft(1).
-		Width(width + borderSize)
+func (b Block) Skeleton(width int) string {
+	// The row count comes from the render so the skeleton grows with
+	// whatever the body wraps to.
+	rows := lipgloss.Height(b.Render(width))
+
+	lines := make([]string, rows)
+	for i := range lines {
+		lines[i] = " " + style.Faint(bar)
+	}
+
+	return strings.Join(lines, "\n")
 }
 
 // columns lays two texts out side by side, the left flushed left and the

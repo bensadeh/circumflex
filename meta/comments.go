@@ -5,7 +5,7 @@ package meta
 // the story's own text underneath when it has one.
 func CommentSection(d Data) Block {
 	return Block{body: func(width int) string {
-		contentWidth := width - paddingSize
+		contentWidth := ContentWidth(width)
 
 		body := urlLine(d.URL, d.Domain, contentWidth) +
 			columns(contentWidth,

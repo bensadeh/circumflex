@@ -5,7 +5,7 @@ package meta
 // right.
 func ReaderMode(d Data) Block {
 	return Block{body: func(width int) string {
-		contentWidth := width - paddingSize
+		contentWidth := ContentWidth(width)
 
 		return urlLine(d.URL, d.URL, contentWidth) +
 			columns(contentWidth,
@@ -18,6 +18,6 @@ func ReaderMode(d Data) Block {
 // link and the reader-mode label — there is no story behind it.
 func ReaderModeURL(url string, nerdFonts bool) Block {
 	return Block{body: func(width int) string {
-		return urlLine(url, url, width-paddingSize) + readerModeLabel(nerdFonts)
+		return urlLine(url, url, ContentWidth(width)) + readerModeLabel(nerdFonts)
 	}}
 }

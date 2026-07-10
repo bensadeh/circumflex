@@ -11,9 +11,10 @@ import (
 )
 
 // The package contract: for the same Data, a block's skeleton has exactly
-// the dimensions of its rendered form. This is what lets a view reserve the
-// block's spot while fetching — the box must not move or resize when the
-// content arrives. Any block redesign has to keep this sweep green.
+// the rows of its rendered form, with the accent bar in the same column.
+// This is what lets a view reserve the block's spot while fetching — nothing
+// may move when the content arrives. Any block redesign has to keep this
+// sweep green.
 func TestSkeletonMatchesRender(t *testing.T) {
 	linked := Data{
 		URL:           "https://example.com/story",
@@ -53,8 +54,13 @@ func TestSkeletonMatchesRender(t *testing.T) {
 
 				assert.Equal(t, lipgloss.Height(rendered), lipgloss.Height(skeleton),
 					"%s: skeleton height must match render at width %d (nerdfonts %v)", name, width, nerdFonts)
-				assert.Equal(t, lipgloss.Width(rendered), lipgloss.Width(skeleton),
-					"%s: skeleton width must match render at width %d (nerdfonts %v)", name, width, nerdFonts)
+
+				for _, view := range []string{rendered, skeleton} {
+					for line := range strings.SplitSeq(view, "\n") {
+						assert.True(t, strings.HasPrefix(xansi.Strip(line), " "+bar),
+							"%s: every row carries the accent bar in the same column, got %q", name, line)
+					}
+				}
 			}
 		}
 	}
@@ -70,6 +76,6 @@ func TestSkeletonIsEmptyAndDimmed(t *testing.T) {
 		assert.Contains(t, line, "\x1b[2m", "every skeleton row renders dimmed")
 	}
 
-	frameRunes := strings.NewReplacer("╭", "", "╮", "", "╰", "", "╯", "", "│", "", "─", "", " ", "", "\n", "")
+	frameRunes := strings.NewReplacer(bar, "", " ", "", "\n", "")
 	assert.Empty(t, frameRunes.Replace(xansi.Strip(skeleton)), "skeleton must hold no text")
 }
