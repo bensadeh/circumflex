@@ -230,7 +230,7 @@ Default: 3.
 Show article images in Reader Mode as blocks of colored text (Unicode half-blocks) instead of a text placeholder.
 Off by default; enable it per-run with this flag or globally with *CLX_READER_MODE_IMAGES*.
 Images are scaled to their size on the page, centered, and look best in a terminal with truecolor support.
-JPEG, PNG, GIF and WebP images are drawn; other formats keep the placeholder.
+JPEG, PNG, GIF, WebP and SVG images are drawn; other formats keep the placeholder.
 
 *-v, --version*::
 Show the current version of *circumflex*.

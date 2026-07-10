@@ -16,6 +16,8 @@ import (
 
 	"github.com/bensadeh/circumflex/version"
 
+	"github.com/srwiley/oksvg"
+	"github.com/srwiley/rasterx"
 	xdraw "golang.org/x/image/draw"
 	"golang.org/x/sync/errgroup"
 	"resty.dev/v3"
@@ -25,8 +27,9 @@ const (
 	maxImages         = 256 // safety valve against pathological pages, not a working limit
 	imageConcurrency  = 8
 	imageFetchTimeout = 8 * time.Second
-	minImageDimension = 24  // skip tracking pixels and tiny icons
-	maxRetainedPx     = 512 // decoded images are downscaled to fit this box; see boundImage
+	minImageDimension = 24   // skip tracking pixels and tiny icons
+	maxRetainedPx     = 512  // decoded images are downscaled to fit this box; see boundImage
+	maxSVGRasterPx    = 2048 // a vector has no intrinsic resolution; bound the temporary raster
 )
 
 // fetchImages downloads and decodes the image blocks in place, resolving
@@ -124,8 +127,42 @@ func fetchImage(ctx context.Context, client *resty.Client, base *nurl.URL, rawUR
 
 	img, _, err := image.Decode(bytes.NewReader(resp.Bytes()))
 	if err != nil {
-		return nil
+		return decodeSVG(resp.Bytes())
 	}
 
 	return img
+}
+
+// decodeSVG rasterizes an SVG at its viewBox size, so downstream treats it
+// exactly like a decoded raster image (dispWidth from bounds, boundImage
+// downscale). Text elements are not supported by oksvg and are dropped —
+// invisible at terminal resolution anyway.
+func decodeSVG(data []byte) (img image.Image) {
+	// oksvg panics on some malformed path data; a broken SVG should fall
+	// back to the text label like any other undecodable image.
+	defer func() {
+		if recover() != nil {
+			img = nil
+		}
+	}()
+
+	icon, err := oksvg.ReadIconStream(bytes.NewReader(data))
+	if err != nil || icon.ViewBox.W <= 0 || icon.ViewBox.H <= 0 {
+		return nil
+	}
+
+	scale := 1.0
+	if long := max(icon.ViewBox.W, icon.ViewBox.H); long > maxSVGRasterPx {
+		scale = maxSVGRasterPx / long
+	}
+
+	width := max(1, int(icon.ViewBox.W*scale+0.5))
+	height := max(1, int(icon.ViewBox.H*scale+0.5))
+
+	icon.SetTarget(0, 0, float64(width), float64(height))
+
+	rgba := image.NewRGBA(image.Rect(0, 0, width, height))
+	icon.Draw(rasterx.NewDasher(width, height, rasterx.NewScannerGV(width, height, rgba, rgba.Bounds())), 1.0)
+
+	return rgba
 }

@@ -51,6 +51,47 @@ func TestFetchImages_TinyImageIsDecorativeNotFailed(t *testing.T) {
 	assert.False(t, blocks[1].decorative)
 }
 
+func TestFetchImages_SVGFallsBackToRasterization(t *testing.T) {
+	t.Parallel()
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50">` +
+			`<rect width="100" height="50" fill="#ff0000"/></svg>`))
+	}))
+	defer srv.Close()
+
+	base, err := nurl.Parse(srv.URL)
+	require.NoError(t, err)
+
+	blocks := []block{{kind: blockImage, imageURL: srv.URL + "/plot.svg"}}
+
+	fetchImages(context.Background(), blocks, base)
+
+	require.NotNil(t, blocks[0].img)
+	assert.Equal(t, 100, blocks[0].img.Bounds().Dx())
+	assert.Equal(t, 50, blocks[0].img.Bounds().Dy())
+
+	r, g, b, a := blocks[0].img.At(50, 25).RGBA()
+	assert.Equal(t, []uint32{0xffff, 0x0, 0x0, 0xffff}, []uint32{r, g, b, a}, "the rect fill is painted")
+}
+
+func TestDecodeSVG_BoundsOversizedViewBox(t *testing.T) {
+	t.Parallel()
+
+	img := decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8192 4096"></svg>`))
+
+	require.NotNil(t, img)
+	assert.Equal(t, maxSVGRasterPx, img.Bounds().Dx())
+	assert.Equal(t, maxSVGRasterPx/2, img.Bounds().Dy(), "aspect ratio is preserved")
+}
+
+func TestDecodeSVG_RejectsGarbage(t *testing.T) {
+	t.Parallel()
+
+	assert.Nil(t, decodeSVG([]byte("<html><body>404 not found</body></html>")))
+	assert.Nil(t, decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg"></svg>`)))
+}
+
 func TestBoundImage_DownscalesToFitBox(t *testing.T) {
 	t.Parallel()
 
