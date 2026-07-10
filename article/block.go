@@ -20,17 +20,18 @@ const (
 )
 
 type block struct {
-	kind      blockKind
-	level     int         // blockHeading: 1-6
-	spans     []span      // blockParagraph, blockQuote, blockImage (caption)
-	items     []listItem  // blockList
-	rows      [][]string  // blockTable, first row is the header
-	text      string      // blockHeading, blockCode
-	imageURL  string      // blockImage: resolved source URL, empty if none
-	img       image.Image // blockImage: decoded pixels, nil until fetched or on failure
-	dispWidth int         // blockImage: intended display width in CSS px from the width attr, 0 if unknown
-	art       string      // blockImage: rendered half-block art memoized for artFor; see cachedImagePart
-	artFor    artKey
+	kind       blockKind
+	level      int         // blockHeading: 1-6
+	spans      []span      // blockParagraph, blockQuote, blockImage (caption)
+	items      []listItem  // blockList
+	rows       [][]string  // blockTable, first row is the header
+	text       string      // blockHeading, blockCode
+	imageURL   string      // blockImage: resolved source URL, empty if none
+	img        image.Image // blockImage: decoded pixels, nil until fetched or on failure
+	decorative bool        // blockImage: fetched fine but sized like a divider or tracking pixel
+	dispWidth  int         // blockImage: intended display width in CSS px from the width attr, 0 if unknown
+	art        string      // blockImage: rendered half-block art memoized for artFor; see cachedImagePart
+	artFor     artKey
 }
 
 type inlineFormat int

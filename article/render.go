@@ -275,8 +275,16 @@ func renderImage(b *block, width int, images ImageOptions) string {
 		}
 	}
 
+	caption := spanText(b.spans)
+
+	// A bare label for an image that was deliberately skipped as decoration
+	// (divider strips, tracking pixels) tells the reader nothing.
+	if b.decorative && caption == "" {
+		return ""
+	}
+
 	inner := width - len(blockIndent)
-	text := imageLabel() + spanText(b.spans) + ansi.Reset
+	text := imageLabel() + caption + ansi.Reset
 	wrapped := lipgloss.Wrap(text, inner, "")
 
 	return style.PrefixLines(wrapped, blockIndent)

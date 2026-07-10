@@ -103,6 +103,23 @@ func TestRenderImage_LabelAndCaption(t *testing.T) {
 	assert.Equal(t, "  ●●● Image a caption", rendered)
 }
 
+func TestRenderImage_UncaptionedDecorationDisappears(t *testing.T) {
+	t.Parallel()
+
+	b := &block{kind: blockImage, decorative: true}
+
+	assert.Empty(t, renderImage(b, 80, showImages))
+	assert.Empty(t, renderImage(b, 80, hideImages))
+}
+
+func TestRenderImage_CaptionedDecorationKeepsLabel(t *testing.T) {
+	t.Parallel()
+
+	b := &block{kind: blockImage, decorative: true, spans: []span{{text: "a caption"}}}
+
+	assert.Equal(t, "  ●●● Image a caption", ansi.Strip(renderImage(b, 80, showImages)))
+}
+
 func TestRenderImageArt_HalfBlockGrid(t *testing.T) {
 	t.Parallel()
 

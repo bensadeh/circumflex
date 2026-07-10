@@ -31,7 +31,9 @@ const (
 
 // fetchImages downloads and decodes the image blocks in place, resolving
 // relative sources against base. Failures leave block.img nil, so rendering
-// falls back to the text label. Only the first maxImages are fetched.
+// falls back to the text label; images below minImageDimension are marked
+// decorative instead, so rendering can drop them. Only the first maxImages
+// are fetched.
 func fetchImages(ctx context.Context, blocks []block, base *nurl.URL) {
 	var targets []int
 
@@ -60,15 +62,24 @@ func fetchImages(ctx context.Context, blocks []block, base *nurl.URL) {
 
 	for _, i := range targets {
 		g.Go(func() error {
-			if img := fetchImage(ctx, client, base, blocks[i].imageURL); img != nil {
-				// Materialize the intrinsic-width fallback before downscaling
-				// so imageCols still sizes from the original resolution.
-				if blocks[i].dispWidth <= 0 {
-					blocks[i].dispWidth = img.Bounds().Dx()
-				}
-
-				blocks[i].img = boundImage(img)
+			img := fetchImage(ctx, client, base, blocks[i].imageURL)
+			if img == nil {
+				return nil
 			}
+
+			if bounds := img.Bounds(); bounds.Dx() < minImageDimension || bounds.Dy() < minImageDimension {
+				blocks[i].decorative = true
+
+				return nil
+			}
+
+			// Materialize the intrinsic-width fallback before downscaling
+			// so imageCols still sizes from the original resolution.
+			if blocks[i].dispWidth <= 0 {
+				blocks[i].dispWidth = img.Bounds().Dx()
+			}
+
+			blocks[i].img = boundImage(img)
 
 			return nil
 		})
@@ -113,10 +124,6 @@ func fetchImage(ctx context.Context, client *resty.Client, base *nurl.URL, rawUR
 
 	img, _, err := image.Decode(bytes.NewReader(resp.Bytes()))
 	if err != nil {
-		return nil
-	}
-
-	if bounds := img.Bounds(); bounds.Dx() < minImageDimension || bounds.Dy() < minImageDimension {
 		return nil
 	}
 

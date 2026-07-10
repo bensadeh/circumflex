@@ -48,6 +48,8 @@ func Parse(ctx context.Context, url string) (*Parsed, error) {
 		if usesMathRenderer(body) {
 			convertMath(blocks)
 		}
+
+		blocks = restoreLeadImage(body, blocks)
 	}
 
 	blocks = applySiteRules(blocks, parsedURL.Hostname())
