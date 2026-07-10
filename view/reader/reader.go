@@ -100,8 +100,10 @@ func (m *Model) renderArticle() (string, []int) {
 	images := article.ImageOptions{Show: m.showImages, TerminalBG: m.termBG}
 
 	header := ""
+
 	if m.buildHeader != nil {
-		header = m.buildHeader(contentWidth) + "\n\n"
+		margin := strings.Repeat(" ", layout.ReaderViewLeftMargin)
+		header = style.PrefixLines(m.buildHeader(contentWidth), margin) + "\n\n"
 	}
 
 	return m.parsed.RenderWithHeader(contentWidth, m.paneWidth, header, images)

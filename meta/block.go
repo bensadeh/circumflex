@@ -14,17 +14,22 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-// bar is the block's frame: a half-block accent bar down the left edge, in
-// the gutter column the old rounded border occupied. Heavier than the ▎ the
-// comment section uses for quotes and nesting, so the block reads as its own
-// element rather than another indent level.
+// bar is the block's frame: a half-block accent bar down the left edge of
+// the text column. Heavier than the ▎ the comment section uses for quotes
+// and nesting, so the block reads as its own element rather than another
+// indent level.
 const bar = "▌"
 
-// textIndent is how much deeper than the surrounding text column the block's
-// text sits: the accent bar and its trailing space push the text one cell
-// right of the column's left margin, and the text gives that cell back on
-// the right so the edges stay flush.
-const textIndent = 1
+// textIndent is how much deeper than the block's left edge its text sits:
+// the accent bar and its trailing space.
+const textIndent = 2
+
+// rightInset is the cell the block's text stops short of the column's right
+// edge: the block sits visibly inside the column it heads, its right-aligned
+// rows ending one cell in from where full text lines wrap. The insets exist
+// so the frame is confined to the block's left edge — however the frame or
+// the hosting margins change, rows still end at width-rightInset.
+const rightInset = 1
 
 // Data is the story metadata a block can draw. A variant reads only the
 // fields it shows; leave the rest zero. Zero-valued strings mean "unknown"
@@ -47,6 +52,10 @@ type Data struct {
 // same number of rows, with the text yet to fill in, so nothing moves when
 // the content arrives. width is the text column the block sits above (the
 // comment column or the article column).
+//
+// The output carries no left margin. The hosting view indents the block with
+// the same margin it gives the column's text — one margin, applied in one
+// place, is what keeps the bar aligned with the text below it.
 type Block struct {
 	body func(width int) string
 }
@@ -55,13 +64,13 @@ type Block struct {
 // callers wrap content they pre-render themselves (the root comment) at this
 // width.
 func ContentWidth(width int) int {
-	return width - textIndent
+	return width - textIndent - rightInset
 }
 
 func (b Block) Render(width int) string {
 	lines := strings.Split(b.body(width), "\n")
 	for i, line := range lines {
-		lines[i] = strings.TrimRight(" "+style.Faint(bar)+" "+line, " ")
+		lines[i] = strings.TrimRight(style.Faint(bar)+" "+line, " ")
 	}
 
 	return strings.Join(lines, "\n")
@@ -74,19 +83,22 @@ func (b Block) Skeleton(width int) string {
 
 	lines := make([]string, rows)
 	for i := range lines {
-		lines[i] = " " + style.Faint(bar)
+		lines[i] = style.Faint(bar)
 	}
 
 	return strings.Join(lines, "\n")
 }
 
 // columns lays two texts out side by side, the left flushed left and the
-// right flushed right, each taking half the content width.
+// right flushed right, splitting the content width between them. The right
+// column takes the odd cell so its text always ends exactly on the block's
+// right edge.
 func columns(contentWidth int, left, right string) string {
-	columnWidth := contentWidth / 2
+	leftWidth := contentWidth / 2
+	rightWidth := contentWidth - leftWidth
 
-	l := lipgloss.NewStyle().Width(columnWidth).Align(lipgloss.Left).Render(left)
-	r := lipgloss.NewStyle().Width(columnWidth).Align(lipgloss.Right).Render(right)
+	l := lipgloss.NewStyle().Width(leftWidth).Align(lipgloss.Left).Render(left)
+	r := lipgloss.NewStyle().Width(rightWidth).Align(lipgloss.Right).Render(right)
 
 	return lipgloss.JoinHorizontal(lipgloss.Left, l, r)
 }

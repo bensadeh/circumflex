@@ -291,7 +291,7 @@ func (m *Model) rebuildContent() {
 }
 
 func buildCommentHeader(s storyFields, enableNerdFonts bool, newComments int, width int) string {
-	return meta.CommentSection(meta.Data{
+	block := meta.CommentSection(meta.Data{
 		URL:           s.URL,
 		Domain:        s.Domain,
 		Author:        s.Author,
@@ -303,6 +303,8 @@ func buildCommentHeader(s storyFields, enableNerdFonts bool, newComments int, wi
 		RootComment:   renderRootComment(s.Content, meta.ContentWidth(width), enableNerdFonts),
 		NerdFonts:     enableNerdFonts,
 	}).Render(width)
+
+	return style.PrefixLines(block, strings.Repeat(" ", layout.CommentSectionLeftMargin))
 }
 
 func renderRootComment(c string, contentWidth int, enableNerdFonts bool) string {

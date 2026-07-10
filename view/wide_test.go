@@ -190,7 +190,8 @@ func metaBoxLines(t *testing.T, view string) []string {
 	t.Helper()
 
 	lines := strings.Split(view, "\n")
-	isBlockRow := func(l string) bool { return strings.HasPrefix(xansi.Strip(l), " ▌") }
+	prefix := strings.Repeat(" ", layout.CommentSectionLeftMargin) + "▌"
+	isBlockRow := func(l string) bool { return strings.HasPrefix(xansi.Strip(l), prefix) }
 
 	top := slices.IndexFunc(lines, isBlockRow)
 	require.GreaterOrEqual(t, top, 0, "no meta block in view")

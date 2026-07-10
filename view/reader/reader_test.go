@@ -7,10 +7,12 @@ import (
 
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/layout"
+	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/view/message"
 
 	tea "charm.land/bubbletea/v2"
+	xansi "github.com/charmbracelet/x/ansi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -210,4 +212,43 @@ func parseTestArticle(t *testing.T) *article.Parsed {
 		"<p>This is a test paragraph with enough words to cause wrapping at narrow widths.</p>" +
 		"<h2>Second Section</h2>" +
 		"<p>Another paragraph here.</p>")
+}
+
+// The reader hands its meta block the same left margin it gives the article
+// text, so the block's accent bar opens exactly where prose starts. The
+// block's right-edge arithmetic is meta's TestBlockGeometryContract; this
+// pins the plumbing — one margin shared by the block and the article.
+func TestMetaBlockAlignsWithArticleColumn(t *testing.T) {
+	block := meta.ReaderMode(meta.Data{
+		URL: "https://example.com/story", Author: "alice", TimeAgo: "1 hour ago", ID: 7, Points: 3,
+	})
+
+	m := NewWithArticle(parseTestArticle(t), "Article", 72, 120, 40, Options{}, block.Render)
+
+	var barCols []int
+
+	proseCol := -1
+
+	for line := range strings.SplitSeq(m.Viewport.View(), "\n") {
+		// The viewport pads rows to the pane width; only the leading columns
+		// matter here.
+		s := strings.TrimRight(xansi.Strip(line), " ")
+		trimmed := strings.TrimLeft(s, " ")
+
+		switch {
+		case strings.HasPrefix(trimmed, "▌"):
+			barCols = append(barCols, len(s)-len(trimmed))
+		case strings.HasPrefix(trimmed, "This is a test paragraph"):
+			proseCol = len(s) - len(trimmed)
+		}
+	}
+
+	require.NotEmpty(t, barCols, "no meta block rows in the view")
+	require.NotEqual(t, -1, proseCol, "no article prose in the view")
+
+	for _, col := range barCols {
+		assert.Equal(t, layout.ReaderViewLeftMargin, col, "the accent bar must open at the reader margin")
+	}
+
+	assert.Equal(t, layout.ReaderViewLeftMargin, proseCol, "article prose must start at the reader margin")
 }

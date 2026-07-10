@@ -10,6 +10,7 @@ import (
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/view/message"
 
+	xansi "github.com/charmbracelet/x/ansi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -626,4 +627,46 @@ func TestSyncExpandedDepth_MatchesCollapseState(t *testing.T) {
 			assert.LessOrEqual(t, m.flat[i].Depth, m.expandedDepth-1)
 		}
 	}
+}
+
+// The view hands its meta block the same left margin and column width it
+// gives the comments, so the block's accent bar opens exactly where
+// top-level authors start and the block ends one cell inside the separator
+// rule's right edge (the block's rightInset). The block's own edge
+// arithmetic is meta's TestBlockGeometryContract; this pins the plumbing —
+// one margin, one width, shared by the block and the comments under it.
+func TestMetaBlockAlignsWithCommentColumn(t *testing.T) {
+	m := newTestModel(t, testThread())
+
+	var barCols []int
+
+	blockEdge, sepWidth, authorCol := 0, 0, -1
+
+	for line := range strings.SplitSeq(m.Viewport.View(), "\n") {
+		// The viewport pads rows to the pane width; the trailing spaces are
+		// not part of the rendered content being measured.
+		s := strings.TrimRight(xansi.Strip(line), " ")
+		trimmed := strings.TrimLeft(s, " ")
+
+		switch {
+		case strings.HasPrefix(trimmed, "▌"):
+			barCols = append(barCols, len(s)-len(trimmed))
+			blockEdge = max(blockEdge, xansi.StringWidth(s))
+		case strings.HasPrefix(trimmed, "▁"):
+			sepWidth = xansi.StringWidth(s)
+		case authorCol == -1 && strings.HasPrefix(trimmed, "alice"):
+			authorCol = len(s) - len(trimmed)
+		}
+	}
+
+	require.NotEmpty(t, barCols, "no meta block rows in the view")
+	require.NotEqual(t, -1, authorCol, "no top-level comment header in the view")
+	require.NotZero(t, sepWidth, "no separator rule in the view")
+
+	for _, col := range barCols {
+		assert.Equal(t, layout.CommentSectionLeftMargin, col, "the accent bar must open at the comment margin")
+	}
+
+	assert.Equal(t, layout.CommentSectionLeftMargin, authorCol, "top-level authors must start at the comment margin")
+	assert.Equal(t, sepWidth-1, blockEdge, "the block must end one cell inside the separator's right edge")
 }

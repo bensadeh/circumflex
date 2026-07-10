@@ -157,10 +157,14 @@ func (m *model) placeholderMetaBlock(paneWidth int, target screen) string {
 	}
 
 	if target == screenReader {
-		return meta.ReaderMode(d).Skeleton(layout.ReaderContentWidth(paneWidth, m.config.ArticleWidth))
+		skeleton := meta.ReaderMode(d).Skeleton(layout.ReaderContentWidth(paneWidth, m.config.ArticleWidth))
+
+		return style.PrefixLines(skeleton, strings.Repeat(" ", layout.ReaderViewLeftMargin))
 	}
 
-	return meta.CommentSection(d).Skeleton(layout.CommentColumnWidth(paneWidth, m.config.CommentWidth))
+	skeleton := meta.CommentSection(d).Skeleton(layout.CommentColumnWidth(paneWidth, m.config.CommentWidth))
+
+	return style.PrefixLines(skeleton, strings.Repeat(" ", layout.CommentSectionLeftMargin))
 }
 
 // placeholderPane frames centered content with the same header and footer
