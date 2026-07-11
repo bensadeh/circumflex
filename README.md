@@ -10,7 +10,7 @@
 
 
 <p align="center">
-  <img src="screenshots/main_view.png" width="600" alt="Main view"/>
+  <img src="screenshots/main-view.png" width="600" alt="Main view"/>
 </p>
 
 ### Main features
@@ -73,7 +73,7 @@ In `navigate mode`, you can individually select comments and collapse specific t
 with many replies.
 
 <p align="center">
-  <img src="screenshots/comment_view.png" width="500" alt="comment section"/>
+  <img src="screenshots/comment-section.png" width="500" alt="comment section"/>
 </p>
 
 
@@ -85,11 +85,9 @@ Press <kbd>Space</kbd> to read the linked article in Reader Mode. Just like in t
 headers using <kbd>n</kbd>/<kbd>N</kbd>, and you can scroll using the usual vim bindings.
 
 <p align="center">
-  <img src="screenshots/reader_mode.png" width="500" alt="reader mode"/>
+  <img src="screenshots/reader-mode-1.png" width="49%" alt="reader mode"/>
+  <img src="screenshots/reader-mode-2.png" width="49%" alt="reader mode"/>
 </p>
-
-Images are off by default. Enable them with the `--reader-mode-images` flag or by setting `CLX_READER_MODE_IMAGES=1`, and
-they render as blocks of colored text — best in a terminal with truecolor support.
 
 ### Favorites
 
