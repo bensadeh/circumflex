@@ -2,7 +2,6 @@ package style
 
 import (
 	"image/color"
-	"regexp"
 	"strings"
 
 	"github.com/bensadeh/circumflex/ansi"
@@ -333,41 +332,9 @@ func IndentCycle() []func(string) string { return indentCycleFuncs }
 
 func IndentCycleFaint() []func(string) string { return indentCycleFaintFuncs }
 
-// sgrResetPattern matches the two SGR-reset forms that appear in our rendered
-// output: lipgloss emits the short form \x1b[m after styled spans, while our
-// own ansi.Reset (used by syntax.ReplaceHTML for </i> etc.) is the long form
-// \x1b[0m. Both wipe the foreground and so both need the tint reapplied.
-var sgrResetPattern = regexp.MustCompile(`\x1b\[0?m`)
-
-// PaintForeground re-applies the given foreground color throughout s so the
-// tint survives every SGR reset (from lipgloss spans and our own ansi.Reset)
-// and the outer indent-symbol prefix added per line by the caller. Returns s
-// unchanged when c renders no foreground escape.
-func PaintForeground(s string, c color.Color) string {
-	prefix := foregroundCode(c)
-	if prefix == "" {
-		return s
-	}
-
-	s = sgrResetPattern.ReplaceAllStringFunc(s, func(reset string) string {
-		return reset + prefix
-	})
-
-	// Prepend color to every non-empty line so it survives external
-	// prefixing (indent symbols, margins) that includes its own resets.
-	lines := strings.Split(s, "\n")
-	for i, line := range lines {
-		if line != "" {
-			lines[i] = prefix + line
-		}
-	}
-
-	return strings.Join(lines, "\n") + ansi.Reset
-}
-
-// foregroundCode returns the raw ANSI foreground escape for a color.Color,
-// with no trailing reset.
-func foregroundCode(c color.Color) string {
+// ForegroundCode returns the raw ANSI foreground escape for a color.Color,
+// with no trailing reset. Returns "" when the color renders no escape.
+func ForegroundCode(c color.Color) string {
 	const marker = "\xff"
 
 	rendered := lipgloss.NewStyle().Foreground(c).Render(marker)

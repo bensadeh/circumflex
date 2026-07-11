@@ -1,0 +1,44 @@
+=== width=72 screen=80 nerd=false ===
+First paragraph with an & ampersand, 'single quotes' and a newline
+inside that should join.
+
+Second paragraph with double spaces, CO₂ rising, ½ of the time, and
+ellipsis…
+
+Em dashes — both loose and stuck—together.
+
+[3mA fully italic paragraph.[0m
+=== width=72 screen=80 nerd=true ===
+First paragraph with an & ampersand, 'single quotes' and a newline
+inside that should join.
+
+Second paragraph with double spaces, CO₂ rising, ½ of the time, and
+ellipsis…
+
+Em dashes — both loose and stuck—together.
+
+[3mA fully italic paragraph.[0m
+=== width=40 screen=44 nerd=false ===
+First paragraph with an & ampersand,
+'single quotes' and a newline inside
+that should join.
+
+Second paragraph with double spaces, CO₂
+rising, ½ of the time, and ellipsis…
+
+Em dashes — both loose and
+stuck—together.
+
+[3mA fully italic paragraph.[0m
+=== width=40 screen=44 nerd=true ===
+First paragraph with an & ampersand,
+'single quotes' and a newline inside
+that should join.
+
+Second paragraph with double spaces, CO₂
+rising, ½ of the time, and ellipsis…
+
+Em dashes — both loose and
+stuck—together.
+
+[3mA fully italic paragraph.[0m

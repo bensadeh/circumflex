@@ -2,11 +2,9 @@ package comment
 
 import (
 	"image/color"
-	"regexp"
 	"strings"
 	"testing"
 
-	"charm.land/lipgloss/v2"
 	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/style"
 
@@ -14,36 +12,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestIsQuote(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name string
-		text string
-		want bool
-	}{
-		{"starts with >", ">quoted text", true},
-		{"starts with space >", " >quoted text", true},
-		{"starts with <i>>", "<i>>quoted text", true},
-		{"starts with <i> >", "<i> >quoted text", true},
-		{"plain text", "just regular text", false},
-		{"empty string", "", false},
-		{"contains > but not prefix", "this > is not a quote", false},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			assert.Equal(t, tt.want, isQuote(tt.text))
-		})
-	}
-}
-
 func TestPrintDeleted(t *testing.T) {
 	t.Parallel()
 
-	result := Render("[deleted]", 70, 80, false, nil)
+	result := renderBody("[deleted]", 70, 80, false, nil)
 
 	assert.Contains(t, result, "[deleted]")
 	assert.Contains(t, result, "\033[2m", "should contain faint ANSI escape")
@@ -52,7 +24,7 @@ func TestPrintDeleted(t *testing.T) {
 func TestPrintSimpleText(t *testing.T) {
 	t.Parallel()
 
-	result := Render("Hello &amp; world", 70, 80, false, nil)
+	result := renderBody("Hello &amp; world", 70, 80, false, nil)
 
 	assert.Contains(t, result, "Hello & world")
 	assert.NotContains(t, result, "&amp;")
@@ -62,7 +34,7 @@ func TestPrintCodeBlock(t *testing.T) {
 	t.Parallel()
 
 	input := "<pre><code>fmt.Println(\"hello\")\n</code></pre>"
-	result := Render(input, 70, 80, false, nil)
+	result := renderBody(input, 70, 80, false, nil)
 
 	assert.Contains(t, result, ansi.Faint, "code block should contain dimmed ANSI")
 	assert.Contains(t, result, ansi.Reset, "code block should contain reset ANSI")
@@ -75,7 +47,7 @@ func TestPrintQuoteBlock(t *testing.T) {
 	// HN API wraps each paragraph with <p>. The first <p> is stripped,
 	// subsequent <p> tags split into separate paragraphs.
 	input := "<p>intro<p>>This is quoted"
-	result := Render(input, 70, 80, false, nil)
+	result := renderBody(input, 70, 80, false, nil)
 
 	assert.Contains(t, result, ansi.Italic, "quote should contain italic ANSI")
 	assert.Contains(t, result, ansi.Faint, "quote should contain dimmed ANSI")
@@ -85,7 +57,7 @@ func TestPrintQuoteBlock(t *testing.T) {
 func TestPrintConvertsSmileys(t *testing.T) {
 	t.Parallel()
 
-	result := Render("hello :)", 70, 80, false, nil)
+	result := renderBody("hello :)", 70, 80, false, nil)
 
 	assert.NotContains(t, result, ":)")
 }
@@ -94,7 +66,7 @@ func TestPrintCommentHighlighting(t *testing.T) {
 	t.Parallel()
 
 	input := "check `code` here"
-	result := Render(input, 70, 80, false, nil)
+	result := renderBody(input, 70, 80, false, nil)
 
 	assert.NotContains(t, result, "`code`")
 }
@@ -105,113 +77,117 @@ func TestPrintMultipleParagraphs(t *testing.T) {
 	// HN API prefixes each paragraph with <p>. The first is stripped;
 	// the second acts as the paragraph separator.
 	input := "<p>first paragraph<p>second paragraph"
-	result := Render(input, 70, 80, false, nil)
+	result := renderBody(input, 70, 80, false, nil)
 
 	assert.Contains(t, result, "first paragraph")
 	assert.Contains(t, result, "second paragraph")
 	assert.Contains(t, result, "\n\n", "paragraphs should be separated by double newline")
 }
 
-// sgrResetForTest matches both reset forms that appear in our rendered
-// output: lipgloss's short form and our own long-form ansi.Reset constant.
-var sgrResetForTest = regexp.MustCompile(`\x1b\[0?m`)
-
-// expectedTintPrefix returns the raw ANSI foreground escape that
-// PaintForeground reapplies after each reset.
-func expectedTintPrefix(t *testing.T, c color.Color) string {
+// tintParams returns the SGR parameter string of a color's foreground
+// escape, e.g. "38;5;131".
+func tintParams(t *testing.T, c color.Color) string {
 	t.Helper()
 
-	const marker = "\xff"
+	code := style.ForegroundCode(c)
+	require.True(t, strings.HasPrefix(code, "\x1b[") && strings.HasSuffix(code, "m"),
+		"expected mod color to render a foreground escape, got %q", code)
 
-	rendered := lipgloss.NewStyle().Foreground(c).Render(marker)
-	idx := strings.Index(rendered, marker)
-	require.Positive(t, idx, "expected mod color to render with a non-empty foreground prefix")
-
-	return rendered[:idx]
+	return strings.TrimSuffix(strings.TrimPrefix(code, "\x1b["), "m")
 }
 
-func TestRender_ModParagraphTintReappliedAfterEveryReset(t *testing.T) {
-	t.Parallel()
+// assertTintedEverywhere walks the rendered bytes tracking SGR state and
+// fails if any visible character is reached while the tint foreground is
+// inactive. This is the semantic contract of the mod tint: no matter how
+// spans reset styling and wrapping re-opens it, the color holds wherever
+// text shows.
+func assertTintedEverywhere(t *testing.T, rendered, fgParams string) {
+	t.Helper()
 
-	// Every SGR reset emitted inside a mod paragraph must be immediately
-	// followed by the mod-tint foreground escape — otherwise plaintext after
-	// the span silently loses tint. Exercises four reset sources: inline
-	// code, mention, URL hyperlink, <i> tag.
-	//
-	// The anchor's display text is the URL itself so that TrimURLs takes the
-	// CommentURL highlighting path (it requires display text to start with
-	// http(s)://); otherwise the anchor is stripped to plain text with no
-	// styling and the test would lose URL-hyperlink coverage.
-	//
-	// Important: lipgloss emits the short form \x1b[m after styled spans;
-	// our own ansi.Reset (used by syntax.ReplaceHTML) is the long form
-	// \x1b[0m. Both forms must get the prefix reapplied.
-	input := "see `code`, @user, <a href=\"https://example.com\">https://example.com</a>, and <i>italic</i> here"
+	active := false
 
-	result := Render(input, 80, 80, false, style.CommentModFg())
+	for i := 0; i < len(rendered); {
+		if rendered[i] == '\n' {
+			i++
 
-	prefix := expectedTintPrefix(t, style.CommentModFg())
-
-	resets := sgrResetForTest.FindAllStringIndex(result, -1)
-	require.NotEmpty(t, resets, "test input should produce styled spans with resets")
-
-	var shortResets, longResets int
-
-	for _, r := range resets {
-		switch r[1] - r[0] {
-		case len("\x1b[m"):
-			shortResets++
-		case len("\x1b[0m"):
-			longResets++
-		}
-
-		after := r[1]
-		if after == len(result) {
-			// Trailing reset (PaintForeground appends one at the end) is fine.
 			continue
 		}
 
-		assert.Truef(t, strings.HasPrefix(result[after:], prefix),
-			"reset at offset %d (form %q) must be followed by mod-tint prefix %q, got %q",
-			r[0], result[r[0]:r[1]], prefix, snippet(result, after, len(prefix)+4))
-	}
+		if rendered[i] != '\x1b' {
+			assert.Truef(t, active, "visible byte %q at offset %d rendered without the tint", rendered[i], i)
+			i++
 
-	// Guard against the test losing coverage of either reset form if upstream
-	// emitters change. Both forms occur in the current rendered output.
-	assert.Positive(t, shortResets, "expected at least one short-form reset \\x1b[m from lipgloss")
-	assert.Positive(t, longResets, "expected at least one long-form reset \\x1b[0m from ansi.Reset")
+			continue
+		}
+
+		rest := rendered[i:]
+
+		switch {
+		case strings.HasPrefix(rest, "\x1b["): // SGR
+			end := strings.IndexByte(rest, 'm')
+			require.GreaterOrEqual(t, end, 0, "unterminated SGR sequence at offset %d", i)
+
+			params := rest[2:end]
+			if params == "" || params == "0" {
+				active = false
+			} else if strings.Contains(params, fgParams) {
+				active = true
+			}
+
+			i += end + 1
+
+		case strings.HasPrefix(rest, "\x1b]"): // OSC (hyperlinks), ends with BEL
+			end := strings.IndexByte(rest, '\a')
+			require.GreaterOrEqual(t, end, 0, "unterminated OSC sequence at offset %d", i)
+
+			i += end + 1
+
+		default:
+			i++
+		}
+	}
 }
 
-// TestRender_ModParagraphLinesStartWithTint verifies the per-line prepend
-// that lets the tint survive external indent-symbol prefixing (which emits
-// its own reset between the indent and the comment text).
-func TestRender_ModParagraphLinesStartWithTint(t *testing.T) {
+func TestRender_ModParagraphTintSurvivesStyledSpans(t *testing.T) {
 	t.Parallel()
 
-	// Long enough to wrap onto multiple lines at width 40.
+	// Four tint-killing span kinds in one paragraph: inline code, mention,
+	// hyperlink, italics. Every visible character must still carry the tint.
+	input := "see `code`, @user, <a href=\"https://example.com\">https://example.com</a>, and <i>italic</i> here"
+
+	result := renderBody(input, 80, 80, false, style.CommentModFg())
+
+	assertTintedEverywhere(t, result, tintParams(t, style.CommentModFg()))
+}
+
+func TestRender_ModParagraphTintSurvivesWrapping(t *testing.T) {
+	t.Parallel()
+
+	// Long enough to wrap onto multiple lines at width 40; the tint must be
+	// re-established on every wrapped line.
 	input := strings.Repeat("word ", 20)
 
-	result := Render(input, 40, 40, false, style.CommentModFg())
-	prefix := expectedTintPrefix(t, style.CommentModFg())
+	result := renderBody(input, 40, 40, false, style.CommentModFg())
 
 	lines := strings.Split(result, "\n")
 	require.Greater(t, len(lines), 1, "test input should wrap to multiple lines")
 
-	for i, line := range lines {
-		if line == "" {
-			continue
-		}
-
-		assert.Truef(t, strings.HasPrefix(line, prefix),
-			"line %d must start with mod-tint prefix to survive external indent prefixing, got %q",
-			i, snippet(line, 0, len(prefix)+4))
-	}
+	assertTintedEverywhere(t, result, tintParams(t, style.CommentModFg()))
 }
 
-// snippet returns up to n bytes of s starting at start, for test failure
-// messages. Keeps assertion output short and readable.
-func snippet(s string, start, n int) string {
-	end := min(start+n, len(s))
+func TestRender_QuoteStyleSurvivesEmbeddedLink(t *testing.T) {
+	t.Parallel()
 
-	return s[start:end]
+	// Text after a link inside a quote must return to the quote's faint
+	// italic instead of rendering plain.
+	input := "&gt; before <a href=\"https://example.com/x\">https://example.com/x</a> after"
+
+	result := renderBody(input, 80, 80, false, nil)
+
+	idx := strings.LastIndex(result, "after")
+	require.Positive(t, idx, "quote text should contain the trailing words")
+
+	head := result[:idx]
+	assert.Greater(t, strings.LastIndex(head, ansi.Italic+ansi.Faint), strings.LastIndex(head, "\x1b[m"),
+		"the faint italic base must be re-opened after the link's reset")
 }

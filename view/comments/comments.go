@@ -65,13 +65,14 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 		ID:            thread.ID,
 		CommentsCount: thread.CommentsCount,
 		Points:        thread.Points,
-		Content:       thread.Content,
 	}
 
-	hdr := buildCommentHeader(sf, enableNerdFonts, clampedWidth) + "\n"
+	rootBlocks := comment.Parse(thread.Content)
+	hdr := buildCommentHeader(sf, rootBlocks, enableNerdFonts, clampedWidth) + "\n"
 
 	rc := renderContext{
 		header:          hdr,
+		rootBlocks:      rootBlocks,
 		originalPoster:  thread.Author,
 		firstCommentID:  comment.FirstCommentID(thread.Comments),
 		commentWidth:    commentWidth,
@@ -143,7 +144,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		m.Viewport.SetHeight(m.rc.viewportHeight)
 
 		cw := layout.CommentColumnWidth(msg.Width, m.rc.commentWidth)
-		m.rc.header = buildCommentHeader(m.rc.story, m.rc.enableNerdFonts, cw) + "\n"
+		m.rc.header = buildCommentHeader(m.rc.story, m.rc.rootBlocks, m.rc.enableNerdFonts, cw) + "\n"
 
 		m.rebuildTitleHeader()
 		m.prerendered = prerenderComments(m.rc, m.flat)
@@ -312,26 +313,29 @@ func (m *Model) rebuildContent() {
 	m.updateViewport()
 }
 
-func buildCommentHeader(s storyFields, enableNerdFonts bool, width int) string {
+func buildCommentHeader(s storyFields, rootBlocks []comment.Block, enableNerdFonts bool, width int) string {
 	block := meta.CommentSection(meta.Data{
 		URL:         s.URL,
 		Domain:      s.Domain,
 		Author:      s.Author,
 		TimeAgo:     s.TimeAgo,
 		Points:      s.Points,
-		RootComment: renderRootComment(s.Content, meta.ContentWidth(width), enableNerdFonts),
+		RootComment: renderRootComment(rootBlocks, meta.ContentWidth(width), enableNerdFonts),
 		NerdFonts:   enableNerdFonts,
 	}).Render(width)
 
 	return style.PrefixLines(block, strings.Repeat(" ", layout.CommentSectionLeftMargin))
 }
 
-func renderRootComment(c string, contentWidth int, enableNerdFonts bool) string {
-	if c == "" {
-		return ""
-	}
-
-	rendered := comment.Render(c, contentWidth, contentWidth, enableNerdFonts, nil)
+// renderRootComment renders the story's self-text for the meta block. A
+// story without self-text renders empty, which the meta block treats as
+// absent.
+func renderRootComment(blocks []comment.Block, contentWidth int, enableNerdFonts bool) string {
+	rendered := comment.RenderBlocks(blocks, comment.RenderOptions{
+		CommentWidth: contentWidth,
+		ScreenWidth:  contentWidth,
+		NerdFonts:    enableNerdFonts,
+	})
 
 	return lipgloss.Wrap(rendered, contentWidth, "")
 }

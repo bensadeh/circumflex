@@ -8,10 +8,12 @@ import (
 
 // flatComment represents a single comment in the flattened view of the tree.
 // Comment is stored by value (not pointer) so mutations cannot affect the
-// original tree. Rendering artifacts like line positions are tracked
-// separately in lineMetrics.
+// original tree. Blocks is the parsed body, built once here and re-rendered
+// at whatever width the viewport dictates. Rendering artifacts like line
+// positions are tracked separately in lineMetrics.
 type flatComment struct {
 	Comment         comment.Comment
+	Blocks          []comment.Block
 	Depth           int
 	Collapsed       bool
 	DescendantCount int // total descendants
@@ -55,6 +57,7 @@ func flattenRecursive(c *comment.Comment, depth int, topLevelAuthor string, out 
 
 	fc := flatComment{
 		Comment:        copied,
+		Blocks:         comment.Parse(copied.Content),
 		Depth:          depth,
 		TopLevelAuthor: topLevelAuthor,
 	}

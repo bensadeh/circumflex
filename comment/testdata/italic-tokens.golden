@@ -1,0 +1,48 @@
+=== width=72 screen=80 nerd=false ===
+[3muse [0m[3;35mgit rebase[m[3m and[0m[33m @user[m[3m, see [0m[[31m1[m][3m and [0m[0m[33mYC W21[m[3m here[0m tail
+
+[3msee [0m]8;;https://example.com/docs[34mexample.com/docs[m]8;;[3m now[0m
+
+[3ma sentence with a [0m]8;;https://example.com/x[34mexample.com/x[m]8;;[3m inside[0m after
+
+Mixing [3;35mcode[m[3m in italics[0m with [36m$VAR[m outside.
+
+[2m ▎[3m[2ma quote with an italic run and ]8;;https://example.org/path[34mexample.org/path[m]8;;[3m[2m inside the text[0m
+=== width=72 screen=80 nerd=true ===
+[3muse [0m[3;35mgit rebase[m[3m and[0m[33m @user[m[3m, see [0m[[31m1[m][3m and [0m[0m[0m[33m[m[38;5;16;43m W21[m[33m[m[3m here[0m tail
+
+[3msee [0m]8;;https://example.com/docs[34mexample.com/docs[m]8;;[3m now[0m
+
+[3ma sentence with a [0m]8;;https://example.com/x[34mexample.com/x[m]8;;[3m inside[0m after
+
+Mixing [3;35mcode[m[3m in italics[0m with [36m$VAR[m outside.
+
+[2m ▎[3m[2ma quote with an italic run and ]8;;https://example.org/path[34mexample.org/path[m]8;;[3m[2m inside the text[0m
+=== width=40 screen=44 nerd=false ===
+[3muse [0m[3;35mgit rebase[m[3m and[0m[33m @user[m[3m, see [0m[[31m1[m][3m and [0m[0m[33mYC[m
+[33mW21[m[3m here[0m tail
+
+[3msee [0m]8;;https://example.com/docs[34mexample.com/docs[m]8;;[3m now[0m
+
+[3ma sentence with a [0m]8;;https://example.com/x[34mexample.com/x[m]8;;[3m inside[0m
+after
+
+Mixing [3;35mcode[m[3m in italics[0m with [36m$VAR[m
+outside.
+
+[2m ▎[3m[2ma quote with an italic run and[m
+[2m ▎[2;3m]8;;https://example.org/path[34mexample.org/path[m]8;;[3m[2m inside the text[0m
+=== width=40 screen=44 nerd=true ===
+[3muse [0m[3;35mgit rebase[m[3m and[0m[33m @user[m[3m, see [0m[[31m1[m][3m and[m
+[3m[0m[0m[0m[33m[m[38;5;16;43m W21[m[33m[m[3m here[0m tail
+
+[3msee [0m]8;;https://example.com/docs[34mexample.com/docs[m]8;;[3m now[0m
+
+[3ma sentence with a [0m]8;;https://example.com/x[34mexample.com/x[m]8;;[3m inside[0m
+after
+
+Mixing [3;35mcode[m[3m in italics[0m with [36m$VAR[m
+outside.
+
+[2m ▎[3m[2ma quote with an italic run and[m
+[2m ▎[2;3m]8;;https://example.org/path[34mexample.org/path[m]8;;[3m[2m inside the text[0m

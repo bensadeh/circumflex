@@ -1,0 +1,26 @@
+=== width=72 screen=80 nerd=false ===
+[32msee [3;35mcode[m[32m,[33m @user[m[32m, ]8;;https://example.com[34mexample.com[m]8;;[32m, and [3mitalic[0m[32m here[0m
+
+[32mA second paragraph with a longer run of plain text so the renderer wraps[m
+[32mit across lines and the tint must restart on every one.[0m
+=== width=72 screen=80 nerd=true ===
+[32msee [3;35mcode[m[32m,[33m @user[m[32m, ]8;;https://example.com[34mexample.com[m]8;;[32m, and [3mitalic[0m[32m here[0m
+
+[32mA second paragraph with a longer run of plain text so the renderer wraps[m
+[32mit across lines and the tint must restart on every one.[0m
+=== width=40 screen=44 nerd=false ===
+[32msee [3;35mcode[m[32m,[33m @user[m[32m, ]8;;https://example.com[34mexample.com[m]8;;[32m, and [3mitalic[0m[32m[m
+[32mhere[0m
+
+[32mA second paragraph with a longer run of[m
+[32mplain text so the renderer wraps it[m
+[32macross lines and the tint must restart[m
+[32mon every one.[0m
+=== width=40 screen=44 nerd=true ===
+[32msee [3;35mcode[m[32m,[33m @user[m[32m, ]8;;https://example.com[34mexample.com[m]8;;[32m, and [3mitalic[0m[32m[m
+[32mhere[0m
+
+[32mA second paragraph with a longer run of[m
+[32mplain text so the renderer wraps it[m
+[32macross lines and the tint must restart[m
+[32mon every one.[0m

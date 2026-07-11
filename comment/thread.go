@@ -2,14 +2,13 @@ package comment
 
 import (
 	"fmt"
-	"image/color"
 	"slices"
 	"strings"
 
 	"charm.land/lipgloss/v2"
+	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/style"
-	"github.com/bensadeh/circumflex/syntax"
 	"github.com/bensadeh/circumflex/timeago"
 )
 
@@ -99,17 +98,34 @@ func Header(c *Comment, depth int, originalPoster, topLevelAuthor string, lastVi
 	return indentation + author + authorLabel + style.Faint(timeago.RelativeTime(c.Time)) + "\n"
 }
 
-func RenderContent(c *Comment, depth int, commentWidth, screenWidth int, enableNerdFonts bool, fg color.Color) string {
-	coloredIndentSymbol := syntax.ColorizeIndentSymbol(style.IndentSymbol, depth)
+// RenderContent renders a comment body behind its depth-colored indent
+// symbol. The symbol's column is carved out of ScreenWidth before rendering —
+// code boxes grow up to the full width they are given, so it must already
+// exclude that column or the wrap below breaks border lines.
+func RenderContent(blocks []Block, depth int, opts RenderOptions) string {
+	coloredIndentSymbol := colorizeIndentSymbol(style.IndentSymbol, depth)
 	padWidth := lipgloss.Width(coloredIndentSymbol)
 
-	// Code boxes grow up to the full width Render is given; it must already
-	// exclude the indent-symbol column, or the wrap below breaks border lines.
-	formattedComment := Render(c.Content, commentWidth, screenWidth-padWidth, enableNerdFonts, fg)
+	opts.ScreenWidth -= padWidth
 
-	wrapped := lipgloss.Wrap(formattedComment, screenWidth-padWidth, "")
+	formattedComment := RenderBlocks(blocks, opts)
+
+	wrapped := lipgloss.Wrap(formattedComment, opts.ScreenWidth, "")
 
 	return style.PrefixLines(wrapped, coloredIndentSymbol)
+}
+
+// colorizeIndentSymbol colors the ▎ gutter by nesting depth, cycling through
+// the theme's indent palette. Top-level comments have no symbol.
+func colorizeIndentSymbol(indentSymbol string, level int) string {
+	if level == 0 {
+		return ansi.Reset
+	}
+
+	cycle := style.IndentCycle()
+	idx := (level - 1) % len(cycle)
+
+	return ansi.Reset + cycle[idx](indentSymbol)
 }
 
 func NewCommentsCount(thread *Thread, lastVisited int64) int {

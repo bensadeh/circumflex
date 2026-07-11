@@ -7,6 +7,35 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestColorizeIndentSymbol(t *testing.T) {
+	t.Parallel()
+
+	t.Run("level 0 returns reset with empty symbol", func(t *testing.T) {
+		t.Parallel()
+
+		assert.Equal(t, "\033[0m", colorizeIndentSymbol("|", 0))
+	})
+
+	t.Run("nested levels produce colored output", func(t *testing.T) {
+		t.Parallel()
+
+		for level := 1; level <= 18; level++ {
+			result := colorizeIndentSymbol("|", level)
+			assert.Contains(t, result, "|", "level %d should contain the symbol", level)
+			assert.True(t, strings.HasPrefix(result, "\033[0m"), "level %d should start with reset", level)
+			assert.Greater(t, len(result), len("\033[0m|"), "level %d should have ANSI codes", level)
+		}
+	})
+
+	t.Run("colors cycle across depths", func(t *testing.T) {
+		t.Parallel()
+
+		assert.Equal(t, colorizeIndentSymbol("|", 1), colorizeIndentSymbol("|", 13))
+		assert.Equal(t, colorizeIndentSymbol("|", 7), colorizeIndentSymbol("|", 19),
+			"level 19 should wrap to same color as level 7")
+	})
+}
+
 func TestEffectiveIndentColumns(t *testing.T) {
 	t.Parallel()
 

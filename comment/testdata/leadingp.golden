@@ -1,0 +1,16 @@
+=== width=72 screen=80 nerd=false ===
+Starts with a paragraph tag.
+
+Second paragraph.
+=== width=72 screen=80 nerd=true ===
+Starts with a paragraph tag.
+
+Second paragraph.
+=== width=40 screen=44 nerd=false ===
+Starts with a paragraph tag.
+
+Second paragraph.
+=== width=40 screen=44 nerd=true ===
+Starts with a paragraph tag.
+
+Second paragraph.

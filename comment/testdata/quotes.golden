@@ -1,0 +1,52 @@
+=== width=72 screen=80 nerd=false ===
+[2m ▎[3m[2mA simple quote line that is long enough to wrap once the comment[m
+[2m ▎[2;3mcolumn gets narrow.[0m
+
+A reply paragraph under the quote.
+
+[2m ▎[3m[2mA double-arrow quote.[0m
+
+[2m ▎[3m[2mAn italic-wrapped quote with nested italics and a link[m
+[2m ▎[2;3m]8;;https://example.com/docs/page[34mexample.com/docs/page[m]8;;[3m[2m inside.[0m
+
+[2m ▎[3m[2mA leading-space quote.[0m
+=== width=72 screen=80 nerd=true ===
+[2m ▎[3m[2mA simple quote line that is long enough to wrap once the comment[m
+[2m ▎[2;3mcolumn gets narrow.[0m
+
+A reply paragraph under the quote.
+
+[2m ▎[3m[2mA double-arrow quote.[0m
+
+[2m ▎[3m[2mAn italic-wrapped quote with nested italics and a link[m
+[2m ▎[2;3m]8;;https://example.com/docs/page[34mexample.com/docs/page[m]8;;[3m[2m inside.[0m
+
+[2m ▎[3m[2mA leading-space quote.[0m
+=== width=40 screen=44 nerd=false ===
+[2m ▎[3m[2mA simple quote line that is long[m
+[2m ▎[2;3menough to wrap once the comment column[m
+[2m ▎[2;3mgets narrow.[0m
+
+A reply paragraph under the quote.
+
+[2m ▎[3m[2mA double-arrow quote.[0m
+
+[2m ▎[3m[2mAn italic-wrapped quote with nested[m
+[2m ▎[2;3mitalics and a link[m
+[2m ▎[2;3m]8;;https://example.com/docs/page[34mexample.com/docs/page[m]8;;[3m[2m inside.[0m
+
+[2m ▎[3m[2mA leading-space quote.[0m
+=== width=40 screen=44 nerd=true ===
+[2m ▎[3m[2mA simple quote line that is long[m
+[2m ▎[2;3menough to wrap once the comment column[m
+[2m ▎[2;3mgets narrow.[0m
+
+A reply paragraph under the quote.
+
+[2m ▎[3m[2mA double-arrow quote.[0m
+
+[2m ▎[3m[2mAn italic-wrapped quote with nested[m
+[2m ▎[2;3mitalics and a link[m
+[2m ▎[2;3m]8;;https://example.com/docs/page[34mexample.com/docs/page[m]8;;[3m[2m inside.[0m
+
+[2m ▎[3m[2mA leading-space quote.[0m

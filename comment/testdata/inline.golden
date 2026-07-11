@@ -1,0 +1,56 @@
+=== width=72 screen=80 nerd=false ===
+Use [3;35mgit rebase[m and [3;35mgit push[m carefully.
+
+The [36m$HOME[m variable and [36m$PATH[m matter here.
+
+Mixing [3;35mcode[m with [36m$VAR[m gives backticks priority.
+
+Hey[32m @dang[m and[33m @someuser[m please look at [[31m1[m] and [[33m2[m].
+
+[31mIANAL[m but [32mIAAL[m friends disagree 😊 about this 😉 stuff 😑
+
+References: [[37m0[m] intro [[32m3[m] three [[92m10[m] ten
+=== width=72 screen=80 nerd=true ===
+Use [3;35mgit rebase[m and [3;35mgit push[m carefully.
+
+The [36m$HOME[m variable and [36m$PATH[m matter here.
+
+Mixing [3;35mcode[m with [36m$VAR[m gives backticks priority.
+
+Hey[32m @dang[m and[33m @someuser[m please look at [[31m1[m] and [[33m2[m].
+
+[31mIANAL[m but [32mIAAL[m friends disagree 😊 about this 😉 stuff 😑
+
+References: [[37m0[m] intro [[32m3[m] three [[92m10[m] ten
+=== width=40 screen=44 nerd=false ===
+Use [3;35mgit rebase[m and [3;35mgit push[m carefully.
+
+The [36m$HOME[m variable and [36m$PATH[m matter
+here.
+
+Mixing [3;35mcode[m with [36m$VAR[m gives backticks
+priority.
+
+Hey[32m @dang[m and[33m @someuser[m please look at
+[[31m1[m] and [[33m2[m].
+
+[31mIANAL[m but [32mIAAL[m friends disagree 😊 about
+this 😉 stuff 😑
+
+References: [[37m0[m] intro [[32m3[m] three [[92m10[m] ten
+=== width=40 screen=44 nerd=true ===
+Use [3;35mgit rebase[m and [3;35mgit push[m carefully.
+
+The [36m$HOME[m variable and [36m$PATH[m matter
+here.
+
+Mixing [3;35mcode[m with [36m$VAR[m gives backticks
+priority.
+
+Hey[32m @dang[m and[33m @someuser[m please look at
+[[31m1[m] and [[33m2[m].
+
+[31mIANAL[m but [32mIAAL[m friends disagree 😊 about
+this 😉 stuff 😑
+
+References: [[37m0[m] intro [[32m3[m] three [[92m10[m] ten

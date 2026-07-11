@@ -6,10 +6,10 @@ import (
 	"strings"
 
 	"github.com/bensadeh/circumflex/categories"
+	"github.com/bensadeh/circumflex/headline"
 	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/nerdfonts"
-	"github.com/bensadeh/circumflex/syntax"
 	"github.com/bensadeh/circumflex/timeago"
 
 	"charm.land/lipgloss/v2"
@@ -74,8 +74,8 @@ func (m *Model) renderItem(w io.Writer, index int, item *hn.Story, f Frame) {
 	s := &m.itemStyles
 	enableNerdFonts := m.config.EnableNerdFonts
 
-	title := syntax.ReplaceSpecialContentTags(item.Title, enableNerdFonts)
-	domain := syntax.HighlightDomain(item.Domain)
+	title := headline.ReplaceSpecialContentTags(item.Title, enableNerdFonts)
+	domain := headline.HighlightDomain(item.Domain)
 
 	score := scoreLabel(item.Points, enableNerdFonts)
 	author := authorLabel(item.Author, enableNerdFonts)
@@ -109,31 +109,31 @@ func (m *Model) renderItem(w io.Writer, index int, item *hn.Story, f Frame) {
 	switch {
 	case isSelected && f.Selection == SelectionAddFavorite:
 		title, desc = styleTitleAndDesc(title, s.selectedTitleAddToFavorites, s.selectedDescAddToFavorites, domain,
-			desc, syntax.AddToFavorites, enableNerdFonts)
+			desc, headline.AddToFavorites, enableNerdFonts)
 
 	case isSelected && f.Selection == SelectionRemoveFavorite:
 		title, desc = styleTitleAndDesc(title, s.selectedTitleRemoveFromFavorites, s.selectedDescRemoveFromFavorites, domain,
-			desc, syntax.RemoveFromFavorites, enableNerdFonts)
+			desc, headline.RemoveFromFavorites, enableNerdFonts)
 
 	case isSelected && !m.dimmed(f):
 		title, desc = styleTitleAndDesc(title, s.selectedTitle, s.selectedDesc, domain,
-			desc, syntax.Selected, enableNerdFonts)
+			desc, headline.Selected, enableNerdFonts)
 
 	// While the detail pane is open the selected row renders a muted version
 	// of the browsing highlight — for an open story, this is where J/K story
 	// navigation currently is.
 	case isSelected && m.detailOpen(f):
 		title, desc = styleTitleAndDesc(title, s.openStoryTitle, s.openStoryDesc, domain,
-			desc, syntax.OpenStory, enableNerdFonts)
+			desc, headline.OpenStory, enableNerdFonts)
 
 	case (markAsRead && m.cat.CurrentCategory() != categories.Favorites) ||
 		m.dimmed(f):
 		title, desc = styleTitleAndDesc(title, s.markAsReadTitle, s.markAsReadDesc, domain,
-			desc, syntax.MarkAsRead, enableNerdFonts)
+			desc, headline.MarkAsRead, enableNerdFonts)
 
 	default:
 		title, desc = styleTitleAndDesc(title, s.normalTitle, s.normalDesc, domain,
-			desc, syntax.Unselected, enableNerdFonts)
+			desc, headline.Unselected, enableNerdFonts)
 	}
 
 	// In panes too narrow for the title budget above, the appended domain is
@@ -186,13 +186,13 @@ func authorLabel(author string, enableNerdFonts bool) string {
 }
 
 func styleTitleAndDesc(title string, titleStyle lipgloss.Style, descStyle lipgloss.Style, domain string, desc string,
-	syntaxStyle syntax.HighlightType, enableNerdFont bool,
+	highlightType headline.HighlightType, enableNerdFont bool,
 ) (string, string) {
 	title = titleStyle.Render(title)
-	title = syntax.HighlightYCStartupsInHeadlines(title, syntaxStyle, enableNerdFont)
-	title = syntax.HighlightYear(title, syntaxStyle)
-	title = syntax.HighlightHackerNewsHeadlines(title, syntaxStyle)
-	title = syntax.HighlightSpecialContent(title, syntaxStyle, enableNerdFont)
+	title = headline.HighlightYCStartupsInHeadlines(title, highlightType, enableNerdFont)
+	title = headline.HighlightYear(title, highlightType)
+	title = headline.HighlightHackerNewsHeadlines(title, highlightType)
+	title = headline.HighlightSpecialContent(title, highlightType, enableNerdFont)
 
 	title = title + " " + domain
 	desc = descStyle.Render(desc)

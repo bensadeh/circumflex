@@ -8,6 +8,7 @@ import (
 
 	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/scrollbar"
+	"github.com/bensadeh/circumflex/style"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -489,6 +490,17 @@ func TestRenderSpans_Hyperlink(t *testing.T) {
 	assert.Contains(t, out, "8;;https://example.com", "anchor text should carry an OSC 8 hyperlink")
 	assert.Contains(t, out, "\x1b[4;34m", "link text should be underlined in the default theme's blue")
 	assert.Equal(t, "click here", ansi.Strip(out), "hyperlink must not change the visible text")
+}
+
+func TestHighlightMentions(t *testing.T) {
+	t.Parallel()
+
+	out := highlightMentions("thanks @someone and @dang here")
+
+	assert.Contains(t, out, style.CommentMention(" @someone"), "handles get the mention color")
+	assert.Contains(t, out, style.CommentMod(" @dang"), "@dang gets the mod color")
+	assert.Equal(t, "thanks @someone and @dang here", ansi.Strip(out),
+		"highlighting must not change the visible text")
 }
 
 func TestRenderParagraph_StylingSurvivesWrapping(t *testing.T) {

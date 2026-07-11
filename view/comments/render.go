@@ -13,7 +13,8 @@ import (
 // These values don't change between rebuilds unless the window is resized
 // or the model is re-created.
 type renderContext struct {
-	header          string // pre-computed meta block (raw, before margin wrapping)
+	header          string          // pre-computed meta block (raw, before margin wrapping)
+	rootBlocks      []comment.Block // parsed self-text, re-rendered on resize
 	originalPoster  string
 	firstCommentID  int
 	commentWidth    int
@@ -36,7 +37,6 @@ type storyFields struct {
 	ID            int
 	CommentsCount int
 	Points        int
-	Content       string
 }
 
 // renderedComment holds the pre-rendered output for a single flat comment.
@@ -107,7 +107,12 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 			fg = style.CommentModFg()
 		}
 
-		content := comment.RenderContent(&fc.Comment, fc.Depth, adjustedCommentWidth, availableWidth, rc.enableNerdFonts, fg)
+		content := comment.RenderContent(fc.Blocks, fc.Depth, comment.RenderOptions{
+			CommentWidth: adjustedCommentWidth,
+			ScreenWidth:  availableWidth,
+			NerdFonts:    rc.enableNerdFonts,
+			Fg:           fg,
+		})
 		contentWithMargin := style.PrefixLines(content+"\n", pad)
 		out.content = contentWithMargin
 		out.contentLines = strings.Count(contentWithMargin, "\n")

@@ -1,0 +1,20 @@
+=== width=72 screen=80 nerd=false ===
+We are hiring at Acme [0m[33mYC W21[m, come join us.
+
+Also check Beta [0m[33mYC S05[m and Gamma [0m[33mYC X25[m formats.
+=== width=72 screen=80 nerd=true ===
+We are hiring at Acme [0m[0m[33m[m[38;5;16;43m W21[m[33m[m, come join us.
+
+Also check Beta [0m[0m[33m[m[38;5;16;43m S05[m[33m[m and Gamma [0m[0m[33m[m[38;5;16;43m X25[m[33m[m formats.
+=== width=40 screen=44 nerd=false ===
+We are hiring at Acme [0m[33mYC W21[m, come join
+us.
+
+Also check Beta [0m[33mYC S05[m and Gamma [0m[33mYC X25[m
+formats.
+=== width=40 screen=44 nerd=true ===
+We are hiring at Acme [0m[0m[33m[m[38;5;16;43m W21[m[33m[m, come join
+us.
+
+Also check Beta [0m[0m[33m[m[38;5;16;43m S05[m[33m[m and Gamma
+[0m[0m[33m[m[38;5;16;43m X25[m[33m[m formats.

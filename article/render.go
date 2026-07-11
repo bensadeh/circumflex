@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"image"
 	"image/color"
+	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/style"
-	"github.com/bensadeh/circumflex/syntax"
 
 	"charm.land/lipgloss/v2"
 	xansi "github.com/charmbracelet/x/ansi"
@@ -160,9 +160,24 @@ func renderSpans(spans []span, insideQuote bool) string {
 
 func renderParagraph(spans []span, width int) string {
 	text := renderSpans(spans, false)
-	text = syntax.HighlightMentions(text)
+	text = highlightMentions(text)
 
 	return lipgloss.Wrap(text, width, "")
+}
+
+var reMention = regexp.MustCompile(`((?:^| )\B@[\w.]+)`)
+
+// highlightMentions colors @handles in article prose, giving @dang the mod
+// color. HN discussions embedded in articles read like comments.
+func highlightMentions(input string) string {
+	input = reMention.ReplaceAllString(input, style.CommentMention(`$1`))
+
+	input = strings.ReplaceAll(input, style.CommentMention("@dang"),
+		style.CommentMod("@dang"))
+	input = strings.ReplaceAll(input, style.CommentMention(" @dang"),
+		style.CommentMod(" @dang"))
+
+	return input
 }
 
 func renderHeading(level int, text string, width int) string {

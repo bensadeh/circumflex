@@ -1,0 +1,32 @@
+=== width=72 screen=80 nerd=false ===
+See ]8;;https://example.com/a/very/long/path/segment/that/keeps/going/on/and/on/forever[34mexample.com/a/very/long/path/segment/that/keeps/go…[m]8;; for details.
+
+Sentence ending with a URL ]8;;https://news.ycombinator.com/item?id=1[34mnews.ycombinator.com/item?id=1[m]8;;.
+
+[2m ▎[3m[2ma quote with ]8;;http://example.org[34mexample.org[m]8;;[3m[2m and trailing text[0m
+=== width=72 screen=80 nerd=true ===
+See ]8;;https://example.com/a/very/long/path/segment/that/keeps/going/on/and/on/forever[34mexample.com/a/very/long/path/segment/that/keeps/go…[m]8;; for details.
+
+Sentence ending with a URL ]8;;https://news.ycombinator.com/item?id=1[34mnews.ycombinator.com/item?id=1[m]8;;.
+
+[2m ▎[3m[2ma quote with ]8;;http://example.org[34mexample.org[m]8;;[3m[2m and trailing text[0m
+=== width=40 screen=44 nerd=false ===
+See
+]8;;https://example.com/a/very/long/path/segment/that/keeps/going/on/and/on/forever[34mexample.com/a/very/long/path/segment/tha[m]8;;
+]8;;https://example.com/a/very/long/path/segment/that/keeps/going/on/and/on/forever[34mt/keeps/go…[m]8;; for details.
+
+Sentence ending with a URL
+]8;;https://news.ycombinator.com/item?id=1[34mnews.ycombinator.com/item?id=1[m]8;;.
+
+[2m ▎[3m[2ma quote with ]8;;http://example.org[34mexample.org[m]8;;[3m[2m and trailing[m
+[2m ▎[2;3mtext[0m
+=== width=40 screen=44 nerd=true ===
+See
+]8;;https://example.com/a/very/long/path/segment/that/keeps/going/on/and/on/forever[34mexample.com/a/very/long/path/segment/tha[m]8;;
+]8;;https://example.com/a/very/long/path/segment/that/keeps/going/on/and/on/forever[34mt/keeps/go…[m]8;; for details.
+
+Sentence ending with a URL
+]8;;https://news.ycombinator.com/item?id=1[34mnews.ycombinator.com/item?id=1[m]8;;.
+
+[2m ▎[3m[2ma quote with ]8;;http://example.org[34mexample.org[m]8;;[3m[2m and trailing[m
+[2m ▎[2;3mtext[0m
