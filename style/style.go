@@ -106,12 +106,13 @@ var (
 	commentNewIndicatorStyle lipgloss.Style
 	commentBacktickStyle     lipgloss.Style
 
-	metaAuthorStyle      lipgloss.Style
-	metaCommentsStyle    lipgloss.Style
-	metaScoreStyle       lipgloss.Style
-	metaNewCommentsStyle lipgloss.Style
-	metaURLStyle         lipgloss.Style // hyperlink applied at call time
-	metaReaderModeStyle  lipgloss.Style
+	metaAuthorStyle           lipgloss.Style
+	metaCommentsStyle         lipgloss.Style
+	metaScoreStyle            lipgloss.Style
+	metaNewCommentsStyle      lipgloss.Style
+	metaNewCommentsFaintStyle lipgloss.Style
+	metaURLStyle              lipgloss.Style // hyperlink applied at call time
+	metaReaderModeStyle       lipgloss.Style
 
 	readerH1Style lipgloss.Style
 	readerH2Style lipgloss.Style
@@ -148,7 +149,10 @@ var (
 	headerTertiaryColor  color.Color
 )
 
-var indentCycleFuncs []func(string) string
+var (
+	indentCycleFuncs      []func(string) string
+	indentCycleFaintFuncs []func(string) string
+)
 
 //nolint:gochecknoinits // populate theme-dependent styles with defaults before any caller (including tests) uses them
 func init() {
@@ -194,6 +198,7 @@ func rebuildThemeStyles() {
 	metaCommentsStyle = fg(current.Meta.Comments)
 	metaScoreStyle = fg(current.Meta.Score)
 	metaNewCommentsStyle = fg(current.Meta.NewComments)
+	metaNewCommentsFaintStyle = metaNewCommentsStyle.Faint(true)
 	metaURLStyle = fg(current.Meta.URL)
 	metaReaderModeStyle = fg(current.Meta.ReaderMode)
 
@@ -221,9 +226,13 @@ func rebuildThemeStyles() {
 	logoXFaintStyle = logoXStyle.Faint(true)
 
 	indentCycleFuncs = make([]func(string) string, len(current.Indent.Cycle))
+	indentCycleFaintFuncs = make([]func(string) string, len(current.Indent.Cycle))
+
 	for i, c := range current.Indent.Cycle {
 		s := fg(c)
+		faint := s.Faint(true)
 		indentCycleFuncs[i] = func(text string) string { return s.Render(text) }
+		indentCycleFaintFuncs[i] = func(text string) string { return faint.Render(text) }
 	}
 }
 
@@ -281,12 +290,13 @@ func CommentGP(s string) string           { return commentGPStyle.Render(s) }
 func CommentNewIndicator(s string) string { return commentNewIndicatorStyle.Render(s) }
 func CommentBacktick(s string) string     { return commentBacktickStyle.Render(s) }
 
-func MetaAuthor(s string) string      { return metaAuthorStyle.Render(s) }
-func MetaComments(s string) string    { return metaCommentsStyle.Render(s) }
-func MetaScore(s string) string       { return metaScoreStyle.Render(s) }
-func MetaNewComments(s string) string { return metaNewCommentsStyle.Render(s) }
-func MetaURL(s, url string) string    { return metaURLStyle.Hyperlink(url).Render(s) }
-func MetaReaderMode(s string) string  { return metaReaderModeStyle.Render(s) }
+func MetaAuthor(s string) string           { return metaAuthorStyle.Render(s) }
+func MetaComments(s string) string         { return metaCommentsStyle.Render(s) }
+func MetaScore(s string) string            { return metaScoreStyle.Render(s) }
+func MetaNewComments(s string) string      { return metaNewCommentsStyle.Render(s) }
+func MetaNewCommentsFaint(s string) string { return metaNewCommentsFaintStyle.Render(s) }
+func MetaURL(s, url string) string         { return metaURLStyle.Hyperlink(url).Render(s) }
+func MetaReaderMode(s string) string       { return metaReaderModeStyle.Render(s) }
 
 func ReaderH1(s string) string      { return readerH1Style.Render(s) }
 func ReaderH2(s string) string      { return readerH2Style.Render(s) }
@@ -320,6 +330,8 @@ func LogoFaint(a, b, c string) string {
 }
 
 func IndentCycle() []func(string) string { return indentCycleFuncs }
+
+func IndentCycleFaint() []func(string) string { return indentCycleFaintFuncs }
 
 // sgrResetPattern matches the two SGR-reset forms that appear in our rendered
 // output: lipgloss emits the short form \x1b[m after styled spans, while our

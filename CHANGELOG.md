@@ -5,7 +5,7 @@
 **Design**
 
 - Re-stylize the meta block
-
+- Soften comment footer colors
 
 ## 4.5
 

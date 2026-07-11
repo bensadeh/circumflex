@@ -263,23 +263,22 @@ func (m *Model) modeIndicator() string {
 // commentCountLabel is the footer's comment tally: total comments and, in
 // parentheses, how many arrived since the last visit. The icon keeps full
 // strength like the footer's other icons; the counts stay faint — they
-// inform, they don't call for attention.
+// inform, they don't call for attention. In nerd-fonts mode the new-comment
+// count also takes the meta new-comments color — a hue shift within the same
+// faint register, hinting at fresh activity without shouting.
 func commentCountLabel(commentsCount, newComments int, enableNerdFonts bool) string {
-	label := fmt.Sprintf("%d comments", commentsCount)
 	if enableNerdFonts {
-		label = fmt.Sprintf("%d", commentsCount)
-	}
-
-	if newComments > 0 {
-		if enableNerdFonts {
-			label += fmt.Sprintf(" (%d)", newComments)
-		} else {
-			label += fmt.Sprintf(" (%d new)", newComments)
+		label := style.Faint(fmt.Sprintf("%d", commentsCount))
+		if newComments > 0 {
+			label += style.Faint(" (") + style.MetaNewCommentsFaint(fmt.Sprintf("%d", newComments)) + style.Faint(")")
 		}
+
+		return label + " " + nerdfonts.Comment
 	}
 
-	if enableNerdFonts {
-		return style.Faint(label) + " " + nerdfonts.Comment
+	label := fmt.Sprintf("%d comments", commentsCount)
+	if newComments > 0 {
+		label += fmt.Sprintf(" (%d new)", newComments)
 	}
 
 	return style.Faint(label)
@@ -298,7 +297,7 @@ func (m *Model) depthIndicator() string {
 
 	numStr := fmt.Sprintf("%d", level)
 
-	cycle := style.IndentCycle()
+	cycle := style.IndentCycleFaint()
 	if len(cycle) == 0 {
 		return icon + " " + style.Faint(numStr)
 	}
