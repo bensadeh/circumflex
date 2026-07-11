@@ -26,3 +26,41 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  update-gomod2nix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check tag is on main
+        run: |
+          git fetch origin main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "Tag is not on main branch, skipping gomod2nix update"
+            exit 1
+          fi
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+
+      - name: Update gomod2nix.toml
+        run: |
+          nix run github:nix-community/gomod2nix
+          git add gomod2nix.toml
+
+      - name: Run flake checks
+        run: nix flake check
+
+      - name: Commit gomod2nix.toml
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --cached --quiet || git commit -m "Update gomod2nix.toml"
+          git push origin HEAD:main
