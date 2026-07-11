@@ -3,15 +3,18 @@ package help
 import (
 	"strings"
 
+	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/style"
 )
 
-// Aligned with the default `meta` block: commentWidth (70) + border (2) outer,
-// MarginLeft 1. So the panels sit in the same screen position as the meta box.
+// Main-menu help geometry: the same left margin as the comment section and
+// reader views, and the default comment column's width, so the main help
+// sits exactly where the detail views' help screens sit. The reader and
+// comment help screens inherit their view's live geometry instead.
 const (
-	panelOuterWidth = 72
-	panelLeftMargin = 1
+	panelOuterWidth = 70
+	panelLeftMargin = layout.CommentSectionLeftMargin
 )
 
 func mainMenuText(screenWidth int, sections []Section) string {
@@ -30,10 +33,10 @@ func mainMenuText(screenWidth int, sections []Section) string {
 		}
 	}
 
-	return formatKeymaps(keys, screenWidth)
+	return formatKeymaps(keys, panelLeftMargin, mainMenuContentWidth(screenWidth))
 }
 
-func readerText(screenWidth int, withStoryNav bool) string {
+func readerText(leftMargin, contentWidth int, withStoryNav bool) string {
 	keys := new(keyList)
 
 	nav := keys.addSection("Navigation")
@@ -57,10 +60,10 @@ func readerText(screenWidth int, withStoryNav bool) string {
 	app.addKey("i, ?", "Help")
 	app.addKey("q, ⌫", "Back")
 
-	return formatKeymaps(keys, screenWidth)
+	return formatKeymaps(keys, leftMargin, contentWidth)
 }
 
-func commentText(screenWidth int, enableNerdFonts bool, withStoryNav bool) string {
+func commentText(leftMargin, contentWidth int, enableNerdFonts bool, withStoryNav bool) string {
 	keys := new(keyList)
 
 	read := keys.addSection("Read Mode")
@@ -109,16 +112,17 @@ func commentText(screenWidth int, enableNerdFonts bool, withStoryNav bool) strin
 	legend.addLabel(style.CommentMod(labelText("mod", enableNerdFonts)), "Moderator")
 	legend.addLabel(style.CommentNewIndicator("●"), "New comment indicator")
 
-	return formatKeymaps(keys, screenWidth)
+	return formatKeymaps(keys, leftMargin, contentWidth)
 }
 
-func formatKeymaps(keys *keyList, screenWidth int) string {
-	contentWidth := min(panelOuterWidth, screenWidth-panelLeftMargin)
+func mainMenuContentWidth(screenWidth int) int {
+	return min(panelOuterWidth, screenWidth-panelLeftMargin)
+}
+
+func formatKeymaps(keys *keyList, leftMargin, contentWidth int) string {
 	body := keys.print(contentWidth)
 
-	leftMargin := strings.Repeat(" ", panelLeftMargin)
-
-	return style.PrefixLines(body, leftMargin)
+	return style.PrefixLines(body, strings.Repeat(" ", leftMargin))
 }
 
 func labelText(fallback string, enableNerdFonts bool) string {

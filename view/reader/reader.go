@@ -297,15 +297,16 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 
 func (m *Model) View() string {
 	if m.showHelp {
+		contentWidth := layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
 		content := help.FitToHeight(
-			help.ReaderHelpScreen(m.paneWidth, m.keymap.NextStory.Enabled()),
+			help.ReaderHelpScreen(layout.ReaderViewLeftMargin, contentWidth, m.keymap.NextStory.Enabled()),
 			m.Viewport.Height(),
 		)
 
 		return header.HelpHeader("Reader Mode", m.paneWidth) + "\n" +
 			content + "\n" +
 			pane.FooterSeparator(m.paneWidth) + "\n" +
-			help.Footer(m.paneWidth)
+			help.Footer(layout.ReaderViewLeftMargin, contentWidth, m.opts.NerdFonts)
 	}
 
 	content := scrollbar.Attach(m.Viewport.View(), m.paneWidth, m.ContentLines, m.Viewport.Height(), m.Viewport.YOffset())
@@ -325,10 +326,11 @@ func (m *Model) footer() string {
 
 // readerModeLabel marks the article as a reader-mode rendering. The text is
 // faint — it's a reminder, not a headline — while the icon keeps full
-// strength like the footer's other icons.
+// strength like the footer's other icons. The icon trails the text so it
+// ends at the column's right edge, mirroring the help footer's version tag.
 func readerModeLabel(enableNerdFonts bool) string {
 	if enableNerdFonts {
-		return nerdfonts.Document + " " + style.Faint("Reader Mode")
+		return style.Faint("Reader Mode") + " " + nerdfonts.Document
 	}
 
 	return style.Faint("Reader Mode")

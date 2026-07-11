@@ -158,15 +158,16 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 
 func (m *Model) View() string {
 	if m.showHelp {
+		contentWidth := layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
 		content := help.FitToHeight(
-			help.CommentHelpScreen(m.rc.paneWidth, m.rc.enableNerdFonts, m.keymap.NextStory.Enabled()),
+			help.CommentHelpScreen(layout.CommentSectionLeftMargin, contentWidth, m.rc.enableNerdFonts, m.keymap.NextStory.Enabled()),
 			m.rc.viewportHeight,
 		)
 
 		return header.HelpHeader("Comment Section", m.rc.paneWidth) + "\n" +
 			content + "\n" +
 			pane.FooterSeparator(m.rc.paneWidth) + "\n" +
-			help.Footer(m.rc.paneWidth)
+			help.Footer(layout.CommentSectionLeftMargin, contentWidth, m.rc.enableNerdFonts)
 	}
 
 	content := scrollbar.Attach(m.Viewport.View(), m.rc.paneWidth, m.ContentLines, m.rc.viewportHeight, m.Viewport.YOffset())
@@ -278,7 +279,7 @@ func commentCountLabel(commentsCount, newComments int, enableNerdFonts bool) str
 	}
 
 	if enableNerdFonts {
-		return nerdfonts.Comment + " " + style.Faint(label)
+		return style.Faint(label) + " " + nerdfonts.Comment
 	}
 
 	return style.Faint(label)

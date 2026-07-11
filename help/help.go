@@ -50,10 +50,13 @@ func MainMenuHelpScreen(screenWidth int, sections []Section) string {
 	return mainMenuText(screenWidth, sections) + newPar
 }
 
-func ReaderHelpScreen(screenWidth int, withStoryNav bool) string {
-	return readerText(screenWidth, withStoryNav) + newPar
+// ReaderHelpScreen and CommentHelpScreen inherit the geometry of the view
+// they overlay — the same left margin and text column — so the help panels
+// and footer line up with the content and footer underneath.
+func ReaderHelpScreen(leftMargin, contentWidth int, withStoryNav bool) string {
+	return readerText(leftMargin, contentWidth, withStoryNav) + newPar
 }
 
-func CommentHelpScreen(screenWidth int, enableNerdFonts bool, withStoryNav bool) string {
-	return commentText(screenWidth, enableNerdFonts, withStoryNav) + newPar
+func CommentHelpScreen(leftMargin, contentWidth int, enableNerdFonts bool, withStoryNav bool) string {
+	return commentText(leftMargin, contentWidth, enableNerdFonts, withStoryNav) + newPar
 }

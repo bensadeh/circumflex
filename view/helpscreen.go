@@ -49,5 +49,5 @@ func (m *model) helpView() string {
 		header.HelpHeader("Keyboard Shortcuts", width),
 		m.helpViewport.View(),
 		m.bottomBar(width),
-		help.Footer(width))
+		help.MainMenuFooter(width, m.config.EnableNerdFonts))
 }

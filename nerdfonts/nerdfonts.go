@@ -9,6 +9,8 @@ const (
 	CommentPlusOutline  = "󰆃"
 	CommentMinusOutline = "󱗠"
 	Link                = "󰌹"
+	GitHub              = ""
+	Tag                 = ""
 	Document            = ""
 	Audio               = ""
 	Video               = ""
