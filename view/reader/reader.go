@@ -310,7 +310,27 @@ func (m *Model) View() string {
 
 	content := scrollbar.Attach(m.Viewport.View(), m.paneWidth, m.ContentLines, m.Viewport.Height(), m.Viewport.YOffset())
 
-	return m.titleHeader + "\n" + content + "\n" + pane.FooterSeparator(m.paneWidth) + "\n" + m.imageIndicator()
+	return m.titleHeader + "\n" + content + "\n" + pane.FooterSeparator(m.paneWidth) + "\n" + m.footer()
+}
+
+// footer is the line under the separator: the image indicator on the left
+// when the article has images, and the reader-mode label ending at the
+// article column's right edge.
+func (m *Model) footer() string {
+	totalWidth := layout.ReaderViewLeftMargin + layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
+	result := pane.FooterSections(totalWidth, m.imageIndicator(), readerModeLabel(m.opts.NerdFonts))
+
+	return xansi.Truncate(result, m.paneWidth, "")
+}
+
+// readerModeLabel marks the article as a reader-mode rendering. Faint —
+// it's a reminder, not a headline.
+func readerModeLabel(enableNerdFonts bool) string {
+	if enableNerdFonts {
+		return style.Faint(nerdfonts.Document + " Reader Mode")
+	}
+
+	return style.Faint("Reader Mode")
 }
 
 // imageIndicator is the footer counterpart to the comment section's mode

@@ -220,7 +220,7 @@ func parseTestArticle(t *testing.T) *article.Parsed {
 // pins the plumbing — one margin shared by the block and the article.
 func TestMetaBlockAlignsWithArticleColumn(t *testing.T) {
 	block := meta.ReaderMode(meta.Data{
-		URL: "https://example.com/story", Author: "alice", TimeAgo: "1 hour ago", Points: 3,
+		URL: "https://example.com/story", Author: "alice", TimeAgo: "1 hour ago",
 	})
 
 	m := NewWithArticle(parseTestArticle(t), "Article", 72, 120, 40, Options{}, block.Render)

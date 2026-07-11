@@ -30,22 +30,19 @@ import (
 func TestBlockGeometryContract(t *testing.T) {
 	for _, nerdFonts := range []bool{false, true} {
 		linked := Data{
-			URL:           "https://example.com/story",
-			Domain:        "example.com",
-			Author:        "alice",
-			TimeAgo:       "2 hours ago",
-			Points:        100,
-			CommentsCount: 42,
-			NewComments:   3,
-			NerdFonts:     nerdFonts,
+			URL:       "https://example.com/story",
+			Domain:    "example.com",
+			Author:    "alice",
+			TimeAgo:   "2 hours ago",
+			Points:    100,
+			NerdFonts: nerdFonts,
 		}
 
 		selfPost := Data{
-			Author:        "bob",
-			TimeAgo:       "1 hour ago",
-			Points:        10,
-			CommentsCount: 3,
-			NerdFonts:     nerdFonts,
+			Author:    "bob",
+			TimeAgo:   "1 hour ago",
+			Points:    10,
+			NerdFonts: nerdFonts,
 		}
 
 		for _, width := range []int{20, 21, 60, 61, 80} {

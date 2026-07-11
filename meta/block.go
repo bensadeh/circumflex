@@ -35,15 +35,13 @@ const rightInset = 1
 // fields it shows; leave the rest zero. Zero-valued strings mean "unknown"
 // and render nothing that depends on them.
 type Data struct {
-	URL           string
-	Domain        string
-	Author        string
-	TimeAgo       string
-	Points        int
-	CommentsCount int
-	NewComments   int
-	RootComment   string // story self-text, already rendered and wrapped by the caller
-	NerdFonts     bool
+	URL         string
+	Domain      string
+	Author      string
+	TimeAgo     string
+	Points      int
+	RootComment string // story self-text, already rendered and wrapped by the caller
+	NerdFonts   bool
 }
 
 // Block is one meta block variant bound to its data. Render draws the loaded
@@ -96,8 +94,16 @@ func divider(contentWidth int) string {
 	return style.Faint(strings.Repeat("─", max(0, contentWidth)))
 }
 
-// stack lays label rows out flush left, one per line, wrapped at the content
-// width so a long byline breaks instead of spilling past the block's edge.
-func stack(contentWidth int, rows ...string) string {
-	return lipgloss.Wrap(strings.Join(rows, "\n"), contentWidth, "")
+// columns lays two texts out side by side, the left flushed left and the
+// right flushed right, splitting the content width between them. The right
+// column takes the odd cell so its text always ends exactly on the block's
+// right edge.
+func columns(contentWidth int, left, right string) string {
+	leftWidth := contentWidth / 2
+	rightWidth := contentWidth - leftWidth
+
+	l := lipgloss.NewStyle().Width(leftWidth).Align(lipgloss.Left).Render(left)
+	r := lipgloss.NewStyle().Width(rightWidth).Align(lipgloss.Right).Render(right)
+
+	return lipgloss.JoinHorizontal(lipgloss.Left, l, r)
 }

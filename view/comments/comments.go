@@ -68,7 +68,7 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 		Content:       thread.Content,
 	}
 
-	hdr := buildCommentHeader(sf, enableNerdFonts, newComments, clampedWidth) + "\n"
+	hdr := buildCommentHeader(sf, enableNerdFonts, clampedWidth) + "\n"
 
 	rc := renderContext{
 		header:          hdr,
@@ -143,7 +143,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		m.Viewport.SetHeight(m.rc.viewportHeight)
 
 		cw := layout.CommentColumnWidth(msg.Width, m.rc.commentWidth)
-		m.rc.header = buildCommentHeader(m.rc.story, m.rc.enableNerdFonts, m.rc.newComments, cw) + "\n"
+		m.rc.header = buildCommentHeader(m.rc.story, m.rc.enableNerdFonts, cw) + "\n"
 
 		m.rebuildTitleHeader()
 		m.prerendered = prerenderComments(m.rc, m.flat)
@@ -239,31 +239,44 @@ func (m *Model) modeIndicator() string {
 
 	label := "  " + icon + sep + style.Faint(text)
 
-	diSlot := 0
-	if m.maxDepth > 0 {
-		diSlot = 1 + 1 + len(fmt.Sprintf("%d", m.maxDepth)) // " ⋮" + digits
+	di := ""
+	if m.mode == modeRead {
+		di = m.depthIndicator()
 	}
 
+	// Three sections across the comment column: the mode label at the left
+	// margin, the depth indicator between, and the counts ending at the
+	// column's right edge — the same edge the meta block and the separator
+	// rule share.
 	commentWidth := layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
 	totalWidth := layout.CommentSectionLeftMargin + commentWidth
-	padding := max(1, totalWidth-lipgloss.Width(label)-diSlot)
 
-	result := label + strings.Repeat(" ", padding)
+	result := pane.FooterSections(totalWidth,
+		label,
+		di,
+		commentCountLabel(m.rc.story.CommentsCount, m.rc.newComments, m.rc.enableNerdFonts))
 
-	if diSlot > 0 {
-		di := ""
-		if m.mode == modeRead {
-			di = m.depthIndicator()
-		}
+	return xansi.Truncate(result, m.rc.paneWidth, "")
+}
 
-		if di != "" {
-			result += di + strings.Repeat(" ", max(0, diSlot-lipgloss.Width(di)))
+// commentCountLabel is the footer's comment tally: total comments and, in
+// parentheses, how many arrived since the last visit. Faint like the rest of
+// the footer — the counts inform, they don't call for attention.
+func commentCountLabel(commentsCount, newComments int, enableNerdFonts bool) string {
+	label := fmt.Sprintf("%d comments", commentsCount)
+	if enableNerdFonts {
+		label = fmt.Sprintf("%s %d", nerdfonts.Comment, commentsCount)
+	}
+
+	if newComments > 0 {
+		if enableNerdFonts {
+			label += fmt.Sprintf(" (%d)", newComments)
 		} else {
-			result += strings.Repeat(" ", diSlot)
+			label += fmt.Sprintf(" (%d new)", newComments)
 		}
 	}
 
-	return xansi.Truncate(result, m.rc.paneWidth, "")
+	return style.Faint(label)
 }
 
 func (m *Model) depthIndicator() string {
@@ -290,17 +303,15 @@ func (m *Model) rebuildContent() {
 	m.updateViewport()
 }
 
-func buildCommentHeader(s storyFields, enableNerdFonts bool, newComments int, width int) string {
+func buildCommentHeader(s storyFields, enableNerdFonts bool, width int) string {
 	block := meta.CommentSection(meta.Data{
-		URL:           s.URL,
-		Domain:        s.Domain,
-		Author:        s.Author,
-		TimeAgo:       s.TimeAgo,
-		Points:        s.Points,
-		CommentsCount: s.CommentsCount,
-		NewComments:   newComments,
-		RootComment:   renderRootComment(s.Content, meta.ContentWidth(width), enableNerdFonts),
-		NerdFonts:     enableNerdFonts,
+		URL:         s.URL,
+		Domain:      s.Domain,
+		Author:      s.Author,
+		TimeAgo:     s.TimeAgo,
+		Points:      s.Points,
+		RootComment: renderRootComment(s.Content, meta.ContentWidth(width), enableNerdFonts),
+		NerdFonts:   enableNerdFonts,
 	}).Render(width)
 
 	return style.PrefixLines(block, strings.Repeat(" ", layout.CommentSectionLeftMargin))

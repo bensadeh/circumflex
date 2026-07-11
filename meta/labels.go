@@ -35,52 +35,22 @@ func byline(author, timeAgo string, enableNerdFonts bool) string {
 	return authorLabel(author, enableNerdFonts) + " " + style.Faint(timeAgo)
 }
 
+// scoreLabel puts the arrow after the number: the score sits on the block's
+// right edge, so the glyph belongs on the outside.
+func scoreLabel(points int, enableNerdFonts bool) string {
+	score := strconv.Itoa(points)
+
+	if enableNerdFonts {
+		return style.MetaScore(fmt.Sprintf("%s %s", score, nerdfonts.Score))
+	}
+
+	return fmt.Sprintf("%s points", style.MetaScore(score))
+}
+
 func authorLabel(author string, enableNerdFonts bool) string {
 	if enableNerdFonts {
 		return style.MetaAuthor(fmt.Sprintf("%s %s", nerdfonts.Author, author))
 	}
 
 	return fmt.Sprintf("by %s", style.MetaAuthor(author))
-}
-
-func readerModeLabel(enableNerdFonts bool) string {
-	if enableNerdFonts {
-		return style.MetaReaderMode(nerdfonts.Document + " Reader Mode")
-	}
-
-	return style.MetaReaderMode("Reader Mode")
-}
-
-func commentsLabel(commentsCount int, enableNerdFonts bool) string {
-	comments := strconv.Itoa(commentsCount)
-
-	if enableNerdFonts {
-		return style.MetaComments(fmt.Sprintf("%s %s", nerdfonts.Comment, comments))
-	}
-
-	return fmt.Sprintf("%s comments", style.MetaComments(comments))
-}
-
-func newCommentsLabel(newComments int, enableNerdFonts bool) string {
-	if newComments == 0 {
-		return ""
-	}
-
-	comments := strconv.Itoa(newComments)
-
-	if enableNerdFonts {
-		return fmt.Sprintf(" (%s)", style.MetaNewComments(comments))
-	}
-
-	return fmt.Sprintf(" (%s new)", style.MetaNewComments(comments))
-}
-
-func scoreLabel(points int, enableNerdFonts bool) string {
-	score := strconv.Itoa(points)
-
-	if enableNerdFonts {
-		return style.MetaScore(fmt.Sprintf("%s %s", nerdfonts.Score, score))
-	}
-
-	return fmt.Sprintf("%s points", style.MetaScore(score))
 }
