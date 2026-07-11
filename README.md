@@ -48,17 +48,6 @@ go run ./cmd/clx
 
 ## Features
 
-### Categories
-
-Switch between categories with <kbd>Tab</kbd>. The header shows `top`, `best`, `ask`, `show` and `favorites` by
-default. Pick which ones appear (and in what order) with the `--categories` flag:
-
-```console
-clx --categories top,new,best
-```
-
-Available categories are `top`, `best`, `new`, `ask`, `show` and `favorites`.
-
 ### Comment section
 
 Press <kbd>Enter</kbd> to view the comment section.
@@ -112,6 +101,17 @@ with:
 ```console
 clx clear
 ```
+
+### Categories
+
+Switch between categories with <kbd>Tab</kbd>. The header shows `top`, `best`, `ask`, `show` and `favorites` by
+default. Pick which ones appear (and in what order) with the `--categories` flag:
+
+```console
+clx --categories top,new,best
+```
+
+Available categories are `top`, `best`, `new`, `ask`, `show` and `favorites`.
 
 ### Theme
 
