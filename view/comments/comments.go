@@ -287,21 +287,25 @@ func commentCountLabel(commentsCount, newComments int, enableNerdFonts bool) str
 
 func (m *Model) depthIndicator() string {
 	level := m.expandedDepth
-	numStr := fmt.Sprintf("%d", level)
-
-	cycle := style.IndentCycle()
-
 	if level == 0 {
 		return ""
 	}
 
+	icon := "⋮"
+	if level == m.maxDepth {
+		icon = "∴"
+	}
+
+	numStr := fmt.Sprintf("%d", level)
+
+	cycle := style.IndentCycle()
 	if len(cycle) == 0 {
-		return "\u22ee" + style.Faint(numStr)
+		return icon + " " + style.Faint(numStr)
 	}
 
 	colorFn := cycle[(level-1)%len(cycle)]
 
-	return "\u22ee" + colorFn(numStr)
+	return icon + " " + colorFn(numStr)
 }
 
 func (m *Model) rebuildContent() {
