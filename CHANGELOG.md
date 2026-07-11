@@ -1,6 +1,8 @@
 # Changelog
 
-## 4.5 (Unreleased)
+## 4.6 (Unreleased)
+
+## 4.5
 
 This is the largest release since `4.0`, and the biggest feature is dual-pane mode. Dual-pane mode splits the front page
 and comment section / reader mode into their own panes, which tends to look better on wide screens.
