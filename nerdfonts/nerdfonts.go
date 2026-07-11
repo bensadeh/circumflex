@@ -5,7 +5,7 @@ const (
 	Author              = ""
 	Score               = "󰜷"
 	Comment             = "󰅺"
-	CommentOutline      = "󰆂"
+	CommentDraft        = ""
 	CommentPlusOutline  = "󰆃"
 	CommentMinusOutline = "󱗠"
 	Link                = "󰌹"

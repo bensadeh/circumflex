@@ -323,11 +323,12 @@ func (m *Model) footer() string {
 	return xansi.Truncate(result, m.paneWidth, "")
 }
 
-// readerModeLabel marks the article as a reader-mode rendering. Faint —
-// it's a reminder, not a headline.
+// readerModeLabel marks the article as a reader-mode rendering. The text is
+// faint — it's a reminder, not a headline — while the icon keeps full
+// strength like the footer's other icons.
 func readerModeLabel(enableNerdFonts bool) string {
 	if enableNerdFonts {
-		return style.Faint(nerdfonts.Document + " Reader Mode")
+		return nerdfonts.Document + " " + style.Faint("Reader Mode")
 	}
 
 	return style.Faint("Reader Mode")

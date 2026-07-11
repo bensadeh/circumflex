@@ -208,15 +208,15 @@ func (m *Model) modeIndicator() string {
 	case modeRead:
 		icon, text = "☰", "read"
 		if m.rc.enableNerdFonts {
-			icon = nerdfonts.Comment
+			icon = nerdfonts.Document
 		}
 	case modeNavigate:
 		text = " nav"
 
 		// Tree-view convention: + on a collapsed comment (expandable),
-		// − on an expanded one (collapsible), … / plain outline on a leaf.
+		// − on an expanded one (collapsible), … / draft outline on a leaf.
 		icon = "…"
-		nfIcon := nerdfonts.CommentOutline
+		nfIcon := nerdfonts.CommentDraft
 
 		if fc := m.focusedComment(); fc != nil && fc.DescendantCount > 0 {
 			if fc.Collapsed {
@@ -260,12 +260,13 @@ func (m *Model) modeIndicator() string {
 }
 
 // commentCountLabel is the footer's comment tally: total comments and, in
-// parentheses, how many arrived since the last visit. Faint like the rest of
-// the footer — the counts inform, they don't call for attention.
+// parentheses, how many arrived since the last visit. The icon keeps full
+// strength like the footer's other icons; the counts stay faint — they
+// inform, they don't call for attention.
 func commentCountLabel(commentsCount, newComments int, enableNerdFonts bool) string {
 	label := fmt.Sprintf("%d comments", commentsCount)
 	if enableNerdFonts {
-		label = fmt.Sprintf("%s %d", nerdfonts.Comment, commentsCount)
+		label = fmt.Sprintf("%d", commentsCount)
 	}
 
 	if newComments > 0 {
@@ -274,6 +275,10 @@ func commentCountLabel(commentsCount, newComments int, enableNerdFonts bool) str
 		} else {
 			label += fmt.Sprintf(" (%d new)", newComments)
 		}
+	}
+
+	if enableNerdFonts {
+		return nerdfonts.Comment + " " + style.Faint(label)
 	}
 
 	return style.Faint(label)
