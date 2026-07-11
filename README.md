@@ -73,7 +73,8 @@ In `navigate mode`, you can individually select comments and collapse specific t
 with many replies.
 
 <p align="center">
-  <img src="screenshots/comment-section.png" width="500" alt="comment section"/>
+  <img src="screenshots/comment-section-1.png" width="49%" alt="comment section"/>
+  <img src="screenshots/comment-section-2.png" width="49%" alt="comment section"/>
 </p>
 
 
