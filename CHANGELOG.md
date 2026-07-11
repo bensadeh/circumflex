@@ -2,22 +2,49 @@
 
 ## 4.5 (Unreleased)
 
+This is the largest release since `4.0`, and the biggest feature is dual-pane mode. Dual-pane mode splits the front page
+and comment section / reader mode into their own panes, which tends to look better on wide screens.
+
+The Reader Mode engine has also been completely reworked. The result is that we are able to tweak it a lot better, which
+in turn should result in better rendered articles. Articles with math and latex symbols are especially improved, and we
+can even show low res images. Higher resolution images are not supported in this release, but might be available pending
+support for it upstream.
+
+Lastly, the design has been tweaked ever so slightly to make it more consistent across screens.
+
 **New features**
 
-- On terminals 180 columns or wider, the comment section and reader mode now open in a pane next to the front page instead of replacing it; configure with `--wide-view always`, `--wide-view never` or `--wide-view <columns>`
-- Open the next (<kbd>J</kbd>) or previous (<kbd>K</kbd>) story directly from the comment section and reader mode, without going back to the front page
+- On terminals 180 columns or wider, the comment section and reader mode now open in a pane next to the front page
+  instead of replacing it; configure with `--wide-view always`, `--wide-view never` or `--wide-view <columns>`
+- Open the next (<kbd>J</kbd>) or previous (<kbd>K</kbd>) story directly from the comment section and reader mode,
+  without going back to the front page
 
 **Reader Mode**
-- Reader Mode now parses the DOM directly with fewer intermediary passes 
-  - Was: HTML → Markdown → Terminal 
-  - Now: DOM → Terminal
-- Added experimental support for showing images in the terminal
+
+- Reader Mode now parses the DOM directly with fewer intermediary passes
+    - Was: HTML → Markdown → Terminal
+    - Now: DOM → Terminal
+- Added support for showing images
+- LaTeX math is converted to Unicode on MathJax-powered pages
+- Plain-text pages are now shown as-is
+
+**Design**
+
+- Code blocks are now rendered inside an ASCII box
+- The meta block has been simplified
+- The in-memoriam indicator (x has passed away) is now a double line under the header instead
+  of a black bar
+
+**Infrastructure**
+
+- The example `theme.toml` is now generated from the code
 
 ## 4.4
 
 **New features**
 
-- Open the story (<kbd>o</kbd>) and comments (<kbd>c</kbd>) directly from the reader and comment views (Thanks, @aymericbeaumet! [#204](https://github.com/bensadeh/circumflex/pull/204))
+- Open the story (<kbd>o</kbd>) and comments (<kbd>c</kbd>) directly from the reader and comment views (Thanks,
+  @aymericbeaumet! [#204](https://github.com/bensadeh/circumflex/pull/204))
 
 **Improvements**
 
@@ -26,9 +53,12 @@
 
 **Fixes**
 
-- Reader mode site filters (e.g. removing "Listen to this story" paragraphs) now match paragraphs even when styling interrupts the text
-- A cancelled comment fetch now reports the cancellation instead of returning a partial comment section as if fully loaded
-- Page down (<kbd>Space</kbd>/<kbd>f</kbd>/<kbd>PgDn</kbd>) and page up (<kbd>b</kbd>/<kbd>PgUp</kbd>) now work in the comment section's navigate mode
+- Reader mode site filters (e.g. removing "Listen to this story" paragraphs) now match paragraphs even when styling
+  interrupts the text
+- A cancelled comment fetch now reports the cancellation instead of returning a partial comment section as if fully
+  loaded
+- Page down (<kbd>Space</kbd>/<kbd>f</kbd>/<kbd>PgDn</kbd>) and page up (<kbd>b</kbd>/<kbd>PgUp</kbd>) now work in the
+  comment section's navigate mode
 - The nerd font YC label now dims on stories marked as read and is emboldened in comment section headlines
 - Fixed a bug where `clx clear` would not clear anything
 
