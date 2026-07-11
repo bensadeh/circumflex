@@ -15,16 +15,15 @@ import (
 // nerd-font setting:
 //
 //  1. A block's skeleton has exactly the rows of its rendered form, with the
-//     accent bar in the same column — a view can reserve the block's spot
-//     while fetching and nothing moves when the content arrives.
-//  2. Blocks carry no left margin: every row opens with the accent bar. The
-//     hosting view supplies the margin, so the block can never disagree with
-//     the text column it heads about where the margin ends.
-//  3. No row extends past width-rightInset. The right edge depends on
-//     nothing but the width — a change to the frame, the insets, or the
-//     hosting margins that pushes a row past it fails here. (That a
-//     truncated link row fills to the edge exactly is
-//     TestURLTruncatesWithEllipsis.)
+//     closing rule as the last row of both — a view can reserve the block's
+//     spot while fetching and nothing moves when the content arrives.
+//  2. Blocks carry no left margin. The hosting view supplies the margin, so
+//     the block can never disagree with the text column it heads about where
+//     the margin ends.
+//  3. No row extends past width-rightInset, and the closing rule reaches
+//     that edge exactly. The right edge depends on nothing but the width —
+//     a change to the frame, the inset, or the hosting margins that pushes
+//     a row past it fails here.
 //
 // Any block redesign has to keep this sweep green.
 func TestBlockGeometryContract(t *testing.T) {
@@ -75,12 +74,17 @@ func TestBlockGeometryContract(t *testing.T) {
 				require.Len(t, skeleton, len(rendered),
 					"%s: skeleton height must match render", label)
 
-				for i := range rendered {
-					assert.True(t, strings.HasPrefix(xansi.Strip(rendered[i]), bar),
-						"%s: row %d must open with the accent bar, got %q", label, i, rendered[i])
-					assert.True(t, strings.HasPrefix(xansi.Strip(skeleton[i]), bar),
-						"%s: skeleton row %d must carry the accent bar in the same column, got %q", label, i, skeleton[i])
+				rule := strings.Repeat(separator, ContentWidth(width))
+				assert.Equal(t, rule, xansi.Strip(rendered[len(rendered)-1]),
+					"%s: the closing rule must be the last row, spanning to the right inset", label)
+				assert.Equal(t, rule, xansi.Strip(skeleton[len(skeleton)-1]),
+					"%s: the skeleton must close with the same rule", label)
 
+				for i, row := range skeleton[:len(skeleton)-1] {
+					assert.Empty(t, row, "%s: skeleton row %d must be blank", label, i)
+				}
+
+				for i := range rendered {
 					assert.LessOrEqual(t, xansi.StringWidth(rendered[i]), width-rightInset,
 						"%s: row %d extends past the right inset: %q", label, i, rendered[i])
 				}
@@ -89,10 +93,10 @@ func TestBlockGeometryContract(t *testing.T) {
 	}
 }
 
-// The URL is the block's last row. When the submission also carries its own
-// text, a rule sits between the text and the link so the link can't read as
-// the text's closing paragraph; with no text there is nothing to confuse and
-// no rule appears.
+// The URL is the block's last row before the closing rule. When the
+// submission also carries its own text, a light rule sits between the text
+// and the link so the link can't read as the text's closing paragraph; with
+// no text there is nothing to confuse and no light rule appears.
 func TestURLIsTheFooter(t *testing.T) {
 	linked := Data{URL: "https://example.com/story", Domain: "example.com"}
 
@@ -100,14 +104,14 @@ func TestURLIsTheFooter(t *testing.T) {
 	withText.RootComment = "A question for the community"
 
 	rows := strings.Split(xansi.Strip(CommentSection(withText).Render(60)), "\n")
-	require.GreaterOrEqual(t, len(rows), 3)
+	require.GreaterOrEqual(t, len(rows), 4)
 
-	last := rows[len(rows)-1]
-	rule := rows[len(rows)-2]
+	url := rows[len(rows)-2]
+	rule := rows[len(rows)-3]
 
-	assert.Contains(t, last, "example.com/story", "the URL must be the last row")
-	assert.NotContains(t, last, "https://", "the scheme is stripped from the display")
-	assert.Equal(t, bar+" "+strings.Repeat("─", ContentWidth(60)), rule,
+	assert.Contains(t, url, "example.com/story", "the URL must be the last row before the closing rule")
+	assert.NotContains(t, url, "https://", "the scheme is stripped from the display")
+	assert.Equal(t, strings.Repeat("─", ContentWidth(60)), rule,
 		"a rule must separate the submission text from the URL")
 
 	assert.NotContains(t, CommentSection(linked).Render(60), "─",
@@ -124,10 +128,11 @@ func TestURLTruncatesWithEllipsis(t *testing.T) {
 	rendered := CommentSection(Data{URL: url, Domain: "example.com"}).Render(30)
 
 	rows := strings.Split(xansi.Strip(rendered), "\n")
-	last := rows[len(rows)-1]
+	require.GreaterOrEqual(t, len(rows), 2)
+	urlRow := rows[len(rows)-2]
 
-	assert.True(t, strings.HasSuffix(last, "…"), "truncated URL must end in a single ellipsis, got %q", last)
-	assert.Equal(t, 30-rightInset, xansi.StringWidth(last), "truncated URL must fill exactly to the right inset")
+	assert.True(t, strings.HasSuffix(urlRow, "…"), "truncated URL must end in a single ellipsis, got %q", urlRow)
+	assert.Equal(t, 30-rightInset, xansi.StringWidth(urlRow), "truncated URL must fill exactly to the right inset")
 }
 
 func TestSkeletonIsEmptyAndDimmed(t *testing.T) {
@@ -136,10 +141,8 @@ func TestSkeletonIsEmptyAndDimmed(t *testing.T) {
 	lines := strings.Split(skeleton, "\n")
 	require.NotEmpty(t, lines)
 
-	for _, line := range lines {
-		assert.Contains(t, line, "\x1b[2m", "every skeleton row renders dimmed")
-	}
+	assert.Contains(t, lines[len(lines)-1], "\x1b[2m", "the closing rule renders dimmed")
 
-	frameRunes := strings.NewReplacer(bar, "", " ", "", "\n", "")
+	frameRunes := strings.NewReplacer(separator, "", " ", "", "\n", "")
 	assert.Empty(t, frameRunes.Replace(xansi.Strip(skeleton)), "skeleton must hold no text")
 }

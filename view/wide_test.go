@@ -144,9 +144,9 @@ func TestWideView_LoadingShowsUnboldedTitle(t *testing.T) {
 	assert.Contains(t, m.detailPaneView(), "\x1b[1m", "the opened story's title regains its bold")
 }
 
-// While a story loads, the pane reserves the meta block's spot with a bare,
-// dimmed accent bar spanning the same rows, so the block neither moves nor
-// resizes when the content arrives.
+// While a story loads, the pane reserves the meta block's spot: blank rows
+// closed by the block's dimmed rule, spanning the same rows as the loaded
+// block, so the block neither moves nor resizes when the content arrives.
 func TestWideView_LoadingShowsMetaBlockPlaceholder(t *testing.T) {
 	m := newWideTestModel(t)
 
@@ -155,7 +155,11 @@ func TestWideView_LoadingShowsMetaBlockPlaceholder(t *testing.T) {
 
 	loading := m.detailPaneView()
 	loadingBox := metaBoxLines(t, loading)
-	assert.Contains(t, loadingBox[0], "\x1b[2m", "placeholder must render dimmed")
+	assert.Contains(t, loadingBox[len(loadingBox)-1], "\x1b[2m", "the placeholder's closing rule must render dimmed")
+
+	for i, line := range loadingBox[:len(loadingBox)-1] {
+		assert.Empty(t, strings.TrimSpace(xansi.Strip(line)), "placeholder row %d must be blank", i)
+	}
 
 	thread := comment.ToThread(&hn.CommentTree{
 		ID: 1, Title: "First item", CommentsCount: 5,
@@ -184,24 +188,28 @@ func TestWideView_ErrorViewKeepsMetaBlockPlaceholder(t *testing.T) {
 		"the placeholder must not move or change when the load fails")
 }
 
-// metaBoxLines returns the view's contiguous run of meta block rows, found
-// by the accent bar at their left edge.
+// metaBoxLines returns the view's run of meta block rows: everything between
+// the pane's header rule and the block's closing rule. The block sits
+// directly under the header in the loading, loaded, and error panes alike,
+// so the slice is the block's spot whether it holds the skeleton or the
+// loaded content.
 func metaBoxLines(t *testing.T, view string) []string {
 	t.Helper()
 
 	lines := strings.Split(view, "\n")
-	prefix := strings.Repeat(" ", layout.CommentSectionLeftMargin) + "▌"
-	isBlockRow := func(l string) bool { return strings.HasPrefix(xansi.Strip(l), prefix) }
 
-	top := slices.IndexFunc(lines, isBlockRow)
-	require.GreaterOrEqual(t, top, 0, "no meta block in view")
+	top := slices.IndexFunc(lines, func(l string) bool {
+		return strings.Contains(xansi.Strip(l), "‾")
+	})
+	require.GreaterOrEqual(t, top, 0, "no pane header rule in view")
 
-	bottom := top
-	for bottom+1 < len(lines) && isBlockRow(lines[bottom+1]) {
-		bottom++
-	}
+	rulePrefix := strings.Repeat(" ", layout.CommentSectionLeftMargin) + "═"
+	bottom := slices.IndexFunc(lines, func(l string) bool {
+		return strings.HasPrefix(xansi.Strip(l), rulePrefix)
+	})
+	require.Greater(t, bottom, top, "no meta block closing rule in view")
 
-	return lines[top : bottom+1]
+	return lines[top+1 : bottom+1]
 }
 
 // A story load that fails swaps the detail pane to an error view — not a
