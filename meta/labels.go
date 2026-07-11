@@ -31,7 +31,13 @@ func urlRow(url, domain string, contentWidth int, enableNerdFonts bool) string {
 	return style.MetaURL(xansi.Truncate(display, contentWidth, "…"), url)
 }
 
+// byline is the opening rule's title. No author, no title — the frame falls
+// back to a plain rule rather than heading the block with an empty byline.
 func byline(author, timeAgo string, enableNerdFonts bool) string {
+	if author == "" {
+		return ""
+	}
+
 	return authorLabel(author, enableNerdFonts) + " " + style.Faint(timeAgo)
 }
 

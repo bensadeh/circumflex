@@ -144,9 +144,9 @@ func TestWideView_LoadingShowsUnboldedTitle(t *testing.T) {
 	assert.Contains(t, m.detailPaneView(), "\x1b[1m", "the opened story's title regains its bold")
 }
 
-// While a story loads, the pane reserves the meta block's spot: blank rows
-// closed by the block's dimmed rule, spanning the same rows as the loaded
-// block, so the block neither moves nor resizes when the content arrives.
+// While a story loads, the pane reserves the meta block's spot: the block's
+// empty dimmed frame, spanning the same rows as the loaded block, so the
+// block neither moves nor resizes when the content arrives.
 func TestWideView_LoadingShowsMetaBlockPlaceholder(t *testing.T) {
 	m := newWideTestModel(t)
 
@@ -157,8 +157,9 @@ func TestWideView_LoadingShowsMetaBlockPlaceholder(t *testing.T) {
 	loadingBox := metaBoxLines(t, loading)
 	assert.Contains(t, loadingBox[len(loadingBox)-1], "\x1b[2m", "the placeholder's closing rule must render dimmed")
 
+	frameRunes := strings.NewReplacer("╭", "", "╮", "", "╰", "", "╯", "", "│", "", "─", "", " ", "")
 	for i, line := range loadingBox[:len(loadingBox)-1] {
-		assert.Empty(t, strings.TrimSpace(xansi.Strip(line)), "placeholder row %d must be blank", i)
+		assert.Empty(t, frameRunes.Replace(strings.TrimSpace(xansi.Strip(line))), "placeholder row %d must hold no text", i)
 	}
 
 	thread := comment.ToThread(&hn.CommentTree{
@@ -203,7 +204,7 @@ func metaBoxLines(t *testing.T, view string) []string {
 	})
 	require.GreaterOrEqual(t, top, 0, "no pane header rule in view")
 
-	rulePrefix := strings.Repeat(" ", layout.CommentSectionLeftMargin) + "═"
+	rulePrefix := strings.Repeat(" ", layout.CommentSectionLeftMargin) + "╰"
 	bottom := slices.IndexFunc(lines, func(l string) bool {
 		return strings.HasPrefix(xansi.Strip(l), rulePrefix)
 	})

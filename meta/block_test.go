@@ -14,16 +14,17 @@ import (
 // The package contract, enforced across every variant, width parity, and
 // nerd-font setting:
 //
-//  1. A block's skeleton has exactly the rows of its rendered form, with the
-//     closing rule as the last row of both — a view can reserve the block's
-//     spot while fetching and nothing moves when the content arrives.
+//  1. A block's skeleton has exactly the rows of its rendered form, wrapped
+//     in the same frame — a view can reserve the block's spot while fetching
+//     and nothing moves when the content arrives.
 //  2. Blocks carry no left margin. The hosting view supplies the margin, so
 //     the block can never disagree with the text column it heads about where
 //     the margin ends.
-//  3. No row extends past width-rightInset, and the closing rule reaches
-//     that edge exactly. The right edge depends on nothing but the width —
-//     a change to the frame, the inset, or the hosting margins that pushes
-//     a row past it fails here.
+//  3. Every row spans exactly width-rightInset cells: the frame's opening
+//     rule, its body rows, and its closing rule all reach that edge and no
+//     further. The right edge depends on nothing but the width — a change to
+//     the frame, the inset, or the hosting margins that pushes a row past it
+//     fails here.
 //
 // Any block redesign has to keep this sweep green.
 func TestBlockGeometryContract(t *testing.T) {
@@ -74,23 +75,72 @@ func TestBlockGeometryContract(t *testing.T) {
 				require.Len(t, skeleton, len(rendered),
 					"%s: skeleton height must match render", label)
 
-				rule := strings.Repeat(separator, ContentWidth(width))
-				assert.Equal(t, rule, xansi.Strip(rendered[len(rendered)-1]),
-					"%s: the closing rule must be the last row, spanning to the right inset", label)
-				assert.Equal(t, rule, xansi.Strip(skeleton[len(skeleton)-1]),
-					"%s: the skeleton must close with the same rule", label)
+				edge := width - rightInset
 
-				for i, row := range skeleton[:len(skeleton)-1] {
-					assert.Empty(t, row, "%s: skeleton row %d must be blank", label, i)
+				opening := "╭" + strings.Repeat("─", edge-2) + "╮"
+				closing := "╰" + strings.Repeat("─", edge-2) + "╯"
+
+				assert.Equal(t, closing, xansi.Strip(rendered[len(rendered)-1]),
+					"%s: the closing rule must be the last row, spanning to the right inset", label)
+				assert.Equal(t, closing, xansi.Strip(skeleton[len(skeleton)-1]),
+					"%s: the skeleton must close with the same rule", label)
+				assert.Equal(t, opening, xansi.Strip(skeleton[0]),
+					"%s: the skeleton's opening rule carries no title", label)
+
+				for i, row := range skeleton[1 : len(skeleton)-1] {
+					assert.Equal(t, "│"+strings.Repeat(" ", edge-2)+"│", xansi.Strip(row),
+						"%s: skeleton row %d must be a blank framed row", label, i+1)
 				}
 
 				for i := range rendered {
-					assert.LessOrEqual(t, xansi.StringWidth(rendered[i]), width-rightInset,
-						"%s: row %d extends past the right inset: %q", label, i, rendered[i])
+					assert.Equal(t, edge, xansi.StringWidth(rendered[i]),
+						"%s: row %d must reach the frame's edge exactly: %q", label, i, rendered[i])
+				}
+
+				top := xansi.Strip(rendered[0])
+				assert.True(t, strings.HasPrefix(top, "╭") && strings.HasSuffix(top, "╮"),
+					"%s: the opening rule must span the block: %q", label, top)
+
+				for i, row := range rendered[1 : len(rendered)-1] {
+					s := xansi.Strip(row)
+					assert.True(t, strings.HasPrefix(s, "│") && strings.HasSuffix(s, "│"),
+						"%s: body row %d must sit inside the side borders: %q", label, i+1, s)
 				}
 			}
 		}
 	}
+}
+
+// The opening rule doubles as the block's header: the byline sits in it the
+// way a help-panel title does, and the score closes it against the right
+// corner. When the rule can't carry both, the score goes first, then the
+// byline — the frame never gives up its own corners.
+func TestOpeningRuleCarriesBylineAndScore(t *testing.T) {
+	d := Data{
+		URL:     "https://example.com/story",
+		Domain:  "example.com",
+		Author:  "alice",
+		TimeAgo: "2 hours ago",
+		Points:  100,
+	}
+
+	top := func(width int) string {
+		return strings.Split(xansi.Strip(CommentSection(d).Render(width)), "\n")[0]
+	}
+
+	wide := top(60)
+	assert.True(t, strings.HasPrefix(wide, "╭── by alice 2 hours ago ─"),
+		"the byline must open the rule: %q", wide)
+	assert.True(t, strings.HasSuffix(wide, "─ 100 points ──╮"),
+		"the score must close the rule right-aligned: %q", wide)
+
+	mid := top(30)
+	assert.Contains(t, mid, "by alice", "the byline stays when only the score is out of room: %q", mid)
+	assert.NotContains(t, mid, "points", "the score is the first thing to go: %q", mid)
+
+	narrow := top(20)
+	assert.Equal(t, "╭"+strings.Repeat("─", 17)+"╮", narrow,
+		"a rule too narrow for any text stays plain")
 }
 
 // The URL is the block's last row before the closing rule. When the
@@ -111,28 +161,29 @@ func TestURLIsTheFooter(t *testing.T) {
 
 	assert.Contains(t, url, "example.com/story", "the URL must be the last row before the closing rule")
 	assert.NotContains(t, url, "https://", "the scheme is stripped from the display")
-	assert.Equal(t, strings.Repeat("─", ContentWidth(60)), rule,
+	assert.Contains(t, rule, strings.Repeat("─", ContentWidth(60)),
 		"a rule must separate the submission text from the URL")
 
-	assert.NotContains(t, CommentSection(linked).Render(60), "─",
-		"no rule without submission text")
+	assert.Len(t, strings.Split(CommentSection(linked).Render(60), "\n"), 3,
+		"no rule row without submission text — just the URL inside the frame")
 
 	assert.Contains(t, CommentSection(withText).Render(60), "https://example.com/story",
 		"the hyperlink target keeps the full URL")
 }
 
 // A URL wider than the content width shortens to a single-character
-// ellipsis, never wrapping or spilling past the block's edge.
+// ellipsis, never wrapping or spilling past the frame.
 func TestURLTruncatesWithEllipsis(t *testing.T) {
 	url := "https://example.com/a/very/long/path/that/cannot/possibly/fit"
 	rendered := CommentSection(Data{URL: url, Domain: "example.com"}).Render(30)
 
 	rows := strings.Split(xansi.Strip(rendered), "\n")
-	require.GreaterOrEqual(t, len(rows), 2)
-	urlRow := rows[len(rows)-2]
+	require.Len(t, rows, 3)
+	urlRow := rows[1]
 
-	assert.True(t, strings.HasSuffix(urlRow, "…"), "truncated URL must end in a single ellipsis, got %q", urlRow)
-	assert.Equal(t, 30-rightInset, xansi.StringWidth(urlRow), "truncated URL must fill exactly to the right inset")
+	assert.True(t, strings.HasSuffix(urlRow, "… │"),
+		"truncated URL must end in a single ellipsis against the frame, got %q", urlRow)
+	assert.Equal(t, 30-rightInset, xansi.StringWidth(urlRow), "the URL row must fill the frame exactly")
 }
 
 func TestSkeletonIsEmptyAndDimmed(t *testing.T) {
@@ -141,8 +192,8 @@ func TestSkeletonIsEmptyAndDimmed(t *testing.T) {
 	lines := strings.Split(skeleton, "\n")
 	require.NotEmpty(t, lines)
 
-	assert.Contains(t, lines[len(lines)-1], "\x1b[2m", "the closing rule renders dimmed")
+	assert.Contains(t, lines[len(lines)-1], "\x1b[2m", "the frame renders dimmed")
 
-	frameRunes := strings.NewReplacer(separator, "", " ", "", "\n", "")
+	frameRunes := strings.NewReplacer("╭", "", "╮", "", "╰", "", "╯", "", "│", "", "─", "", " ", "", "\n", "")
 	assert.Empty(t, frameRunes.Replace(xansi.Strip(skeleton)), "skeleton must hold no text")
 }

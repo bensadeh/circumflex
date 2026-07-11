@@ -215,7 +215,7 @@ func parseTestArticle(t *testing.T) *article.Parsed {
 }
 
 // The reader hands its meta block the same left margin it gives the article
-// text, so the block's byline opens exactly where prose starts. The block's
+// text, so the block's frame opens exactly where prose starts. The block's
 // right-edge arithmetic is meta's TestBlockGeometryContract; this pins the
 // plumbing — one margin shared by the block and the article.
 func TestMetaBlockAlignsWithArticleColumn(t *testing.T) {
@@ -225,7 +225,7 @@ func TestMetaBlockAlignsWithArticleColumn(t *testing.T) {
 
 	m := NewWithArticle(parseTestArticle(t), "Article", 72, 120, 40, Options{}, block.Render)
 
-	bylineCol, ruleCol, proseCol := -1, -1, -1
+	openCol, ruleCol, proseCol := -1, -1, -1
 
 	for line := range strings.SplitSeq(m.Viewport.View(), "\n") {
 		// The viewport pads rows to the pane width; only the leading columns
@@ -234,20 +234,22 @@ func TestMetaBlockAlignsWithArticleColumn(t *testing.T) {
 		trimmed := strings.TrimLeft(s, " ")
 
 		switch {
-		case bylineCol == -1 && strings.HasPrefix(trimmed, "by alice"):
-			bylineCol = len(s) - len(trimmed)
-		case strings.HasPrefix(trimmed, "═"):
+		case openCol == -1 && strings.HasPrefix(trimmed, "╭"):
+			openCol = len(s) - len(trimmed)
+
+			assert.Contains(t, trimmed, "by alice", "the opening rule must carry the byline")
+		case strings.HasPrefix(trimmed, "╰"):
 			ruleCol = len(s) - len(trimmed)
 		case strings.HasPrefix(trimmed, "This is a test paragraph"):
 			proseCol = len(s) - len(trimmed)
 		}
 	}
 
-	require.NotEqual(t, -1, bylineCol, "no meta block byline in the view")
+	require.NotEqual(t, -1, openCol, "no meta block opening rule in the view")
 	require.NotEqual(t, -1, ruleCol, "no closing rule in the view")
 	require.NotEqual(t, -1, proseCol, "no article prose in the view")
 
-	assert.Equal(t, layout.ReaderViewLeftMargin, bylineCol, "the byline must open at the reader margin")
+	assert.Equal(t, layout.ReaderViewLeftMargin, openCol, "the opening rule must open at the reader margin")
 	assert.Equal(t, layout.ReaderViewLeftMargin, ruleCol, "the closing rule must open at the reader margin")
 	assert.Equal(t, layout.ReaderViewLeftMargin, proseCol, "article prose must start at the reader margin")
 }

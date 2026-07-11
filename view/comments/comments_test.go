@@ -630,13 +630,13 @@ func TestSyncExpandedDepth_MatchesCollapseState(t *testing.T) {
 }
 
 // The view hands its meta block the same left margin and column width it
-// gives the comments, so the block's byline opens exactly where top-level
+// gives the comments, so the block's frame opens exactly where top-level
 // authors start and the block ends one cell inside the separator rule's
 // right edge (the block's rightInset). The block's own edge arithmetic is
 // meta's TestBlockGeometryContract; this pins the plumbing — one margin, one
 // width, shared by the block and the comments under it. The thread's URL is
 // longer than any column, so its truncated row reaches the block's edge
-// alongside the closing rule.
+// alongside the rules.
 func TestMetaBlockAlignsWithCommentColumn(t *testing.T) {
 	thread := testThread()
 	thread.URL = "https://example.com/" + strings.Repeat("long-path/", 30)
@@ -644,7 +644,7 @@ func TestMetaBlockAlignsWithCommentColumn(t *testing.T) {
 
 	m := newTestModel(t, thread)
 
-	bylineCol, linkCol, ruleCol, authorCol := -1, -1, -1, -1
+	openCol, linkCol, ruleCol, authorCol := -1, -1, -1, -1
 	blockEdge, sepWidth := 0, 0
 
 	for line := range strings.SplitSeq(m.Viewport.View(), "\n") {
@@ -654,12 +654,14 @@ func TestMetaBlockAlignsWithCommentColumn(t *testing.T) {
 		trimmed := strings.TrimLeft(s, " ")
 
 		switch {
-		case bylineCol == -1 && strings.HasPrefix(trimmed, "by "):
-			bylineCol = len(s) - len(trimmed)
-		case linkCol == -1 && strings.HasPrefix(trimmed, "example.com"):
+		case openCol == -1 && strings.HasPrefix(trimmed, "╭"):
+			openCol = len(s) - len(trimmed)
+
+			assert.Contains(t, trimmed, "by ", "the opening rule must carry the byline")
+		case linkCol == -1 && strings.HasPrefix(trimmed, "│ example.com"):
 			linkCol = len(s) - len(trimmed)
 			blockEdge = max(blockEdge, xansi.StringWidth(s))
-		case strings.HasPrefix(trimmed, "═"):
+		case strings.HasPrefix(trimmed, "╰"):
 			ruleCol = len(s) - len(trimmed)
 			blockEdge = max(blockEdge, xansi.StringWidth(s))
 		case strings.HasPrefix(trimmed, "▁"):
@@ -669,13 +671,13 @@ func TestMetaBlockAlignsWithCommentColumn(t *testing.T) {
 		}
 	}
 
-	require.NotEqual(t, -1, bylineCol, "no meta block byline in the view")
+	require.NotEqual(t, -1, openCol, "no meta block opening rule in the view")
 	require.NotEqual(t, -1, linkCol, "no meta block URL row in the view")
 	require.NotEqual(t, -1, ruleCol, "no closing rule in the view")
 	require.NotEqual(t, -1, authorCol, "no top-level comment header in the view")
 	require.NotZero(t, sepWidth, "no separator rule in the view")
 
-	assert.Equal(t, layout.CommentSectionLeftMargin, bylineCol, "the byline must open at the comment margin")
+	assert.Equal(t, layout.CommentSectionLeftMargin, openCol, "the opening rule must open at the comment margin")
 	assert.Equal(t, layout.CommentSectionLeftMargin, linkCol, "the URL row must open at the comment margin")
 	assert.Equal(t, layout.CommentSectionLeftMargin, ruleCol, "the closing rule must open at the comment margin")
 	assert.Equal(t, layout.CommentSectionLeftMargin, authorCol, "top-level authors must start at the comment margin")
