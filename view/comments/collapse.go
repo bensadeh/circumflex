@@ -93,8 +93,9 @@ func (m *Model) setCollapseToDepth() {
 		return
 	}
 
-	// The anchor was collapsed away. Find the nearest visible ancestor,
-	// then position the viewport at the next visible comment at the same
+	// The anchor was collapsed away. Scan back to the nearest visible
+	// predecessor (the comment whose collapse hid the anchor), then
+	// position the viewport at the next visible comment at the same
 	// depth or shallower (the next sibling or uncle). This works at any
 	// nesting level so collapsing never jumps out further than necessary.
 	ancestorIdx := -1

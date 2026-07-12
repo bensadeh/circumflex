@@ -1,5 +1,6 @@
-// Package pane holds the viewport plumbing shared by the full-screen detail
-// views: the comment section and reader mode.
+// Package pane holds what the full-screen detail views — the comment section
+// and reader mode — share: the content-aware viewport and search engine,
+// frame chrome and footers, browser commands, and the standalone runner.
 package pane
 
 import (

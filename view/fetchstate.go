@@ -92,7 +92,12 @@ func (f *fetchState) finish(id uint64) (rollbackPoint, bool) {
 
 // abort cancels the in-flight fetch and moves to a new era, so a result the
 // fetch managed to deliver before the cancel took hold can never match.
-func (f *fetchState) abort() rollbackPoint {
+// ok=false means nothing was in flight and there is no rollback to apply.
+func (f *fetchState) abort() (rollbackPoint, bool) {
+	if f.kind == fetchNone {
+		return rollbackPoint{}, false
+	}
+
 	if f.cancel != nil {
 		f.cancel()
 	}
@@ -100,7 +105,7 @@ func (f *fetchState) abort() rollbackPoint {
 	f.id++
 	f.kind = fetchNone
 
-	return f.rollback
+	return f.rollback, true
 }
 
 // startFetch begins a list fetch: the stories replace the front page, and rb
@@ -161,7 +166,12 @@ func (m *model) finishFetch(id uint64, err error) (rollbackPoint, bool) {
 }
 
 func (m *model) handleCancelFetch() tea.Cmd {
-	m.rollbackFetch(m.fetch.abort())
+	rb, ok := m.fetch.abort()
+	if !ok {
+		return nil
+	}
+
+	m.rollbackFetch(rb)
 
 	clearProgress()
 	m.status.StopSpinner()

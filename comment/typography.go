@@ -55,7 +55,7 @@ var fractionReplacer = strings.NewReplacer(
 	" 3/5", " ⅗", "3/5 ", "⅗ ",
 	" 4/5", " ⅘", "4/5 ", "⅘ ",
 	" 1/6", " ⅙", "1/6 ", "⅙ ", "1/6th", "⅙th",
-	" 1/10", " ⅒ ", "1/10 ", "⅒  ", "1/10th", "⅒ th",
+	" 1/10", " ⅒ ", "1/10 ", "⅒ ", "1/10th", "⅒ th",
 )
 
 var smileys = []struct{ from, to string }{

@@ -52,7 +52,7 @@ func renderBlock(b *Block, opts RenderOptions) string {
 		return style.Faint("[deleted]")
 
 	case blockQuote:
-		return renderQuote(b.spans, opts.CommentWidth)
+		return renderQuote(b.spans, opts)
 
 	case blockCode:
 		return renderCode(b.text, opts.CommentWidth, opts.ScreenWidth)
@@ -92,7 +92,7 @@ func renderParagraph(spans []span, opts RenderOptions) string {
 
 // Quotes render faint italic behind a ▎ gutter. Embedded links re-open the
 // quote style after themselves, so the text around them stays quiet.
-func renderQuote(spans []span, commentWidth int) string {
+func renderQuote(spans []span, opts RenderOptions) string {
 	if len(spans) == 0 {
 		return ""
 	}
@@ -104,14 +104,14 @@ func renderQuote(spans []span, commentWidth int) string {
 	sb.WriteString(base.open)
 
 	for i := range spans {
-		sb.WriteString(renderSpan(&spans[i], base, false))
+		sb.WriteString(renderSpan(&spans[i], base, opts.NerdFonts))
 	}
 
 	sb.WriteString(ansi.Reset)
 
 	padStr := ansi.Faint + " " + style.IndentSymbol
 	padWidth := lipgloss.Width(padStr)
-	wrapped := lipgloss.Wrap(sb.String(), commentWidth-padWidth, "")
+	wrapped := lipgloss.Wrap(sb.String(), opts.CommentWidth-padWidth, "")
 
 	return style.PrefixLines(wrapped, padStr)
 }

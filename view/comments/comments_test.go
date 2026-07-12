@@ -687,6 +687,28 @@ func TestMetaBlockAlignsWithCommentColumn(t *testing.T) {
 	assert.Equal(t, sepWidth-1, blockEdge, "the block must end one cell inside the separator's right edge")
 }
 
+// Search match cells are computed on the plain header while focusOverrides
+// swaps in the focused variant at display time: the variants must strip to
+// identical plain text or highlights shift cells on the focused row.
+func TestPrerender_FocusedHeaderKeepsPlainText(t *testing.T) {
+	t.Parallel()
+
+	for _, nerd := range []bool{false, true} {
+		m := New(benchThread(), 0, 80, 1, nerd, 130, 45)
+
+		for i := range m.prerendered {
+			rc := &m.prerendered[i]
+			require.Len(t, rc.headerFocused, len(rc.header),
+				"nerd=%v comment %d: focused header line count", nerd, i)
+
+			for j := range rc.header {
+				require.Equal(t, xansi.Strip(rc.header[j]), xansi.Strip(rc.headerFocused[j]),
+					"nerd=%v comment %d line %d: focused header must strip to the plain header", nerd, i, j)
+			}
+		}
+	}
+}
+
 func TestFocusDecoration_AppliedAtViewTime(t *testing.T) {
 	m := newTestModel(t, testThread())
 	m.toggleMode()
