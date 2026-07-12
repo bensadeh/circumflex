@@ -12,7 +12,8 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 
-	_ "golang.org/x/image/webp" // WordPress and others increasingly serve WebP
+	_ "github.com/gen2brain/avif" // libavif via wazero; Hugo/Cloudflare pipelines emit AVIF
+	_ "golang.org/x/image/webp"   // WordPress and others increasingly serve WebP
 
 	"github.com/bensadeh/circumflex/version"
 
