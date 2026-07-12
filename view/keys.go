@@ -293,6 +293,14 @@ func (m *model) openReader(rollbackStory int) tea.Cmd {
 // it in the view the request came from, so the comment section and reader
 // can page through the front page without going back to it.
 func (m *model) handleOpenAdjacentStory(msg message.OpenAdjacentStory) tea.Cmd {
+	// The detail view mints this message a cycle after its keypress, so a
+	// rapid second press slips past the in-flight key gate and lands here
+	// mid-fetch: acting on it would move the selection again and record the
+	// half-open story as the rollback point.
+	if m.fetch.inFlight() {
+		return nil
+	}
+
 	fromReader := m.screen == screenReader
 	if !fromReader && m.screen != screenComments {
 		return nil

@@ -191,6 +191,23 @@ func TestStoriesReady_EmptyResultKeepsCursorAtZero(t *testing.T) {
 	assert.Equal(t, 0, m.list.Cursor())
 }
 
+// A second J/K minted before the first press began its fetch arrives
+// mid-flight; acting on it would move the selection again and record the
+// half-open story as the rollback point.
+func TestOpenAdjacentStory_IgnoredWhileFetchInFlight(t *testing.T) {
+	m := newTestModelReady(t)
+	m.screen = screenComments
+
+	m, _ = m.Update(message.OpenAdjacentStory{Direction: 1})
+	require.True(t, m.fetch.inFlight())
+	require.Equal(t, 1, m.list.Index())
+	firstFetch := m.fetch.id
+
+	m, _ = m.Update(message.OpenAdjacentStory{Direction: 1})
+	assert.Equal(t, 1, m.list.Index(), "selection must not move while a fetch is in flight")
+	assert.Equal(t, firstFetch, m.fetch.id, "the in-flight fetch must not be superseded")
+}
+
 func TestQuit(t *testing.T) {
 	for _, k := range []string{"q", "esc", "ctrl+c"} {
 		m := newTestModelReady(t)
