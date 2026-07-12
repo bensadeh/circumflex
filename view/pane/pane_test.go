@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"testing"
 
+	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/view/message"
 
 	tea "charm.land/bubbletea/v2"
@@ -110,4 +111,24 @@ func TestStandalone_CapturesBrowserError(t *testing.T) {
 	updated, ok := next.(standalone)
 	require.True(t, ok)
 	assert.Equal(t, err, updated.browserErr)
+}
+
+func TestSetLinesCountsAndPads(t *testing.T) {
+	s := Scroller{Viewport: NewViewport(80, 10)}
+
+	s.SetLines([]string{"one", "two", "three"})
+
+	assert.Equal(t, 3, s.ContentLines)
+	assert.Equal(t, 13, s.Viewport.TotalLineCount(),
+		"one viewport height of padding lets jump targets scroll to the top")
+}
+
+func TestPlainLinesStripsStyling(t *testing.T) {
+	s := Scroller{Viewport: NewViewport(80, 10)}
+
+	s.SetLines([]string{ansi.Red + "foo" + ansi.Reset, "bar"})
+	assert.Equal(t, []string{"foo", "bar"}, s.PlainLines())
+
+	s.SetLines([]string{ansi.Faint + "baz" + ansi.Reset})
+	assert.Equal(t, []string{"baz"}, s.PlainLines(), "a content change invalidates the cache")
 }

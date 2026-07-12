@@ -495,8 +495,10 @@ func linearChain(depth int) []flatComment {
 	return flatten(newThread(children...))
 }
 
-func leadingIndentCols(s string) int {
-	return len(s) - len(strings.TrimLeft(s, " ")) - layout.CommentSectionLeftMargin
+func leadingIndentCols(lines []string) int {
+	first := lines[0]
+
+	return len(first) - len(strings.TrimLeft(first, " ")) - layout.CommentSectionLeftMargin
 }
 
 func TestPrerenderComments_IndentPlateausUnderDeepNesting(t *testing.T) {
@@ -540,8 +542,8 @@ func TestPrerenderComments_IndentPlateausUnderDeepNesting(t *testing.T) {
 // indicatorLeadingCols returns the count of leading spaces on the line
 // containing the ↩ marker, or -1 if not found. Leading spaces are always
 // plain ASCII; any ANSI escapes sit to the right of them.
-func indicatorLeadingCols(s string) int {
-	for line := range strings.SplitSeq(s, "\n") {
+func indicatorLeadingCols(lines []string) int {
+	for _, line := range lines {
 		trimmed := strings.TrimLeft(line, " ")
 		if strings.Contains(trimmed, "↩") {
 			return len(line) - len(trimmed)

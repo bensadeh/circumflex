@@ -288,7 +288,7 @@ func TestRenderFromFlat_LineMetricsMonotonic(t *testing.T) {
 
 	visible := computeVisible(flat)
 	rc := defaultRenderContext()
-	_, _, metrics := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat), -1)
+	_, metrics := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat), -1)
 
 	prevStart := -1
 
@@ -315,19 +315,16 @@ func TestRenderFromFlat_LineCountMatchesContent(t *testing.T) {
 
 	visible := computeVisible(flat)
 	rc := defaultRenderContext()
-	content, contentLines, metrics := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat), -1)
-
-	// Total newlines = content lines + bottom padding.
-	totalNewlines := strings.Count(content, "\n")
-	assert.Equal(t, contentLines+rc.viewportHeight, totalNewlines)
+	lines, metrics := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat), -1)
 
 	for _, vi := range visible {
 		assert.Positive(t, metrics[vi].LineCount,
 			"visible comment must have positive LineCount (flat index %d)", vi)
 	}
 
+	// The last visible comment ends the content: metrics account for every line.
 	last := metrics[visible[len(visible)-1]]
-	assert.LessOrEqual(t, last.StartLine+last.LineCount, contentLines)
+	assert.Equal(t, len(lines), last.StartLine+last.LineCount)
 }
 
 func TestRenderFromFlat_CollapsedShowsFoldIndicator(t *testing.T) {
@@ -344,9 +341,9 @@ func TestRenderFromFlat_CollapsedShowsFoldIndicator(t *testing.T) {
 
 	visible := computeVisible(flat)
 	rc := defaultRenderContext()
-	content, _, _ := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat), -1)
+	lines, _ := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat), -1)
 
-	assert.Contains(t, content, "1 reply")
+	assert.Contains(t, strings.Join(lines, "\n"), "1 reply")
 }
 
 func TestRenderFromFlat_NonVisibleMetricsAreZero(t *testing.T) {
@@ -364,7 +361,7 @@ func TestRenderFromFlat_NonVisibleMetricsAreZero(t *testing.T) {
 	require.Len(t, visible, 1)
 
 	rc := defaultRenderContext()
-	_, _, metrics := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat), -1)
+	_, metrics := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat), -1)
 
 	assert.Equal(t, lineMetrics{}, metrics[1])
 }

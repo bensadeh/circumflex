@@ -125,7 +125,6 @@ func (m *Model) setContent(content string) {
 	trimmed := strings.TrimRight(content, "\n")
 	lines := strings.Split(trimmed, "\n")
 
-	m.ContentLines = len(lines)
 	m.headerLines = nil
 
 	for i, line := range lines {
@@ -134,10 +133,7 @@ func (m *Model) setContent(content string) {
 		}
 	}
 
-	// Add bottom padding so G scrolls the last content line to the bottom.
-	// Handing over the existing split spares the viewport from re-splitting
-	// megabytes of image art.
-	m.Viewport.SetContentLines(append(lines, make([]string, m.Viewport.Height())...))
+	m.SetLines(lines)
 }
 
 func (m *Model) Init() tea.Cmd {

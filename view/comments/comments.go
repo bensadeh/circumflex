@@ -181,7 +181,7 @@ func (m *Model) rebuildTitleHeader() {
 }
 
 // updateViewport re-renders the viewport content with the current focus state.
-// This is cheap: it concatenates pre-rendered strings, picking the focused
+// This is cheap: it concatenates pre-rendered lines, picking the focused
 // header variant for the focused comment.
 func (m *Model) updateViewport() {
 	focusedFlatIdx := -1
@@ -189,10 +189,9 @@ func (m *Model) updateViewport() {
 		focusedFlatIdx = m.visible[m.focusedIdx]
 	}
 
-	content, contentLines, metrics := renderFromFlat(m.rc, m.flat, m.visible, m.prerendered, focusedFlatIdx)
-	m.ContentLines = contentLines
+	lines, metrics := renderFromFlat(m.rc, m.flat, m.visible, m.prerendered, focusedFlatIdx)
 	m.lineMetrics = metrics
-	m.Viewport.SetContent(content)
+	m.SetLines(lines)
 }
 
 func (m *Model) openStoryInBrowser() tea.Cmd {

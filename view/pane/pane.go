@@ -3,16 +3,46 @@
 package pane
 
 import (
+	"github.com/bensadeh/circumflex/ansi"
+
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
 )
 
 // Scroller wraps a viewport with content-aware scrolling: paging and
 // clamping are computed against the real content length, ignoring the
-// bottom padding the views append so the last line can scroll to the top.
+// bottom padding SetLines appends so any line can scroll to the top.
 type Scroller struct {
 	Viewport     viewport.Model
 	ContentLines int // excludes bottom padding
+
+	lines      []string
+	plainLines []string
+}
+
+// SetLines replaces the viewport content. A viewport-height of padding is
+// appended so jump targets near the end can scroll to the top of the view;
+// ClampScroll keeps ordinary scrolling within the real content.
+func (s *Scroller) SetLines(lines []string) {
+	s.lines = lines
+	s.plainLines = nil
+	s.ContentLines = len(lines)
+	s.Viewport.SetContentLines(append(lines, make([]string, s.Viewport.Height())...))
+}
+
+// PlainLines is the content with ANSI styling stripped — the text as the
+// user sees it, for matching against. Stripped on first use after a
+// content change, so views that never need it don't pay for it.
+func (s *Scroller) PlainLines() []string {
+	if s.plainLines == nil && s.lines != nil {
+		s.plainLines = make([]string, len(s.lines))
+
+		for i, line := range s.lines {
+			s.plainLines[i] = ansi.Strip(line)
+		}
+	}
+
+	return s.plainLines
 }
 
 // NewViewport returns a viewport with the bindings the detail views handle

@@ -39,22 +39,32 @@ type storyFields struct {
 	Points        int
 }
 
-// renderedComment holds the pre-rendered output for a single flat comment.
+// renderedComment holds the pre-rendered lines for a single flat comment.
 // Built once by prerenderComments and reused by renderFromFlat on every
 // collapse/expand, avoiding the expensive syntax/wrapping pipeline.
 // Header and content are stored separately so that focus highlighting can
 // swap in a pre-rendered focused header without re-running the expensive
 // content pipeline. Rebuilt on window resize.
 type renderedComment struct {
-	sep              string // rendered separator (before the comment body)
-	sepLines         int
-	header           string // rendered header (author + label + time) with margins
-	headerFocused    string // same header but with author highlighted
-	headerLines      int    // line count is identical for both variants
-	content          string // rendered comment content with indentation and margins
-	contentLines     int
-	repliesCollapsed string // replies indicator when collapsed (empty if no descendants)
-	repliesLines     int    // line count of collapsed indicator
+	sep              []string // separator (before the comment body)
+	header           []string // header (author + label + time) with margins
+	headerFocused    []string // same header but with author highlighted
+	content          []string // comment content with indentation and margins
+	repliesCollapsed []string // replies indicator when collapsed (nil if no descendants)
+}
+
+// splitLines converts a newline-terminated rendered block into its lines.
+func splitLines(s string) []string {
+	if s == "" {
+		return nil
+	}
+
+	lines := strings.Split(s, "\n")
+	if last := len(lines) - 1; lines[last] == "" {
+		lines = lines[:last]
+	}
+
+	return lines
 }
 
 // prerenderComments renders every comment in flat upfront, so that subsequent
@@ -72,9 +82,7 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 
 		sep := comment.Separator(fc.Depth, commentWidth, fc.Comment.ID, rc.firstCommentID)
 		if sep != "" {
-			indentedSep := style.PrefixLines(sep, leftMargin)
-			out.sep = indentedSep
-			out.sepLines = strings.Count(indentedSep, "\n")
+			out.sep = splitLines(style.PrefixLines(sep, leftMargin))
 		}
 
 		// Reserve 1 col inside commentWidth for the colored indent symbol when
@@ -95,12 +103,10 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 		pad := leftMargin + depthIndent
 
 		header := comment.Header(&fc.Comment, fc.Depth, rc.originalPoster, fc.TopLevelAuthor, rc.lastVisited, rc.enableNerdFonts, false)
-		headerWithMargin := style.PrefixLines(header, pad)
-		out.header = headerWithMargin
-		out.headerLines = strings.Count(headerWithMargin, "\n")
+		out.header = splitLines(style.PrefixLines(header, pad))
 
 		focusedHeader := comment.Header(&fc.Comment, fc.Depth, rc.originalPoster, fc.TopLevelAuthor, rc.lastVisited, rc.enableNerdFonts, true)
-		out.headerFocused = style.PrefixLines(focusedHeader, pad)
+		out.headerFocused = splitLines(style.PrefixLines(focusedHeader, pad))
 
 		var fg color.Color
 		if comment.IsMod(fc.Comment.Author) {
@@ -113,9 +119,7 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 			NerdFonts:    rc.enableNerdFonts,
 			Fg:           fg,
 		})
-		contentWithMargin := style.PrefixLines(content+"\n", pad)
-		out.content = contentWithMargin
-		out.contentLines = strings.Count(contentWithMargin, "\n")
+		out.content = splitLines(style.PrefixLines(content+"\n", pad))
 
 		// Pre-render replies indicator (only shown when collapsed). The indicator
 		// sits at the first hidden reply's author column so that toggling
@@ -127,9 +131,7 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 			indicatorIndent := strings.Repeat(" ", childIndentCols+1)
 
 			collapsed := comment.RepliesIndicator(fc.DescendantCount, indicatorIndent, true)
-			indentedCollapsed := style.PrefixLines(collapsed, leftMargin)
-			out.repliesCollapsed = indentedCollapsed
-			out.repliesLines = strings.Count(indentedCollapsed, "\n")
+			out.repliesCollapsed = splitLines(style.PrefixLines(collapsed, leftMargin))
 		}
 	}
 
@@ -137,8 +139,8 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 }
 
 // renderFromFlat builds the full comment view content from the flat comment
-// list, respecting fold state. It returns the rendered content, the number of
-// content lines, and line metrics indexed by flat index for navigation.
+// list, respecting fold state. It returns the content lines and line metrics
+// indexed by flat index for navigation.
 //
 // focusedFlatIdx selects which comment gets the focused header variant;
 // pass -1 when no comment is focused (scroll mode).
@@ -146,12 +148,9 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 // The pre-rendered slice (indexed by flat index, built by prerenderComments)
 // avoids re-running the expensive syntax-highlighting and text-wrapping
 // pipeline on every collapse/expand or focus change.
-func renderFromFlat(rc renderContext, flat []flatComment, visible []int, prerendered []renderedComment, focusedFlatIdx int) (string, int, []lineMetrics) {
-	var sb strings.Builder
-	sb.WriteString(rc.header)
-	sb.WriteString("\n")
-
-	lineCount := strings.Count(rc.header, "\n") + 1
+func renderFromFlat(rc renderContext, flat []flatComment, visible []int, prerendered []renderedComment, focusedFlatIdx int) ([]string, []lineMetrics) {
+	lines := splitLines(rc.header)
+	lines = append(lines, "")
 
 	metrics := make([]lineMetrics, len(flat))
 
@@ -159,40 +158,29 @@ func renderFromFlat(rc renderContext, flat []flatComment, visible []int, prerend
 		fc := flat[flatIdx]
 		pre := &prerendered[flatIdx]
 
-		sepStart := lineCount
+		sepStart := len(lines)
+		lines = append(lines, pre.sep...)
 
-		sb.WriteString(pre.sep)
-		lineCount += pre.sepLines
-
-		startLine := lineCount
+		startLine := len(lines)
 
 		if flatIdx == focusedFlatIdx {
-			sb.WriteString(pre.headerFocused)
+			lines = append(lines, pre.headerFocused...)
 		} else {
-			sb.WriteString(pre.header)
+			lines = append(lines, pre.header...)
 		}
 
-		lineCount += pre.headerLines
-
-		sb.WriteString(pre.content)
-		lineCount += pre.contentLines
+		lines = append(lines, pre.content...)
 
 		if fc.DescendantCount > 0 && fc.Collapsed {
-			sb.WriteString(pre.repliesCollapsed)
-			lineCount += pre.repliesLines
+			lines = append(lines, pre.repliesCollapsed...)
 		}
 
 		metrics[flatIdx] = lineMetrics{
 			SepStart:  sepStart,
 			StartLine: startLine,
-			LineCount: lineCount - startLine,
+			LineCount: len(lines) - startLine,
 		}
 	}
 
-	contentLines := lineCount
-
-	// Add bottom padding so the last comments can be scrolled to the top.
-	sb.WriteString(strings.Repeat("\n", rc.viewportHeight))
-
-	return sb.String(), contentLines, metrics
+	return lines, metrics
 }
