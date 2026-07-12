@@ -40,11 +40,9 @@
 
 [meta]
   author = "red"
-  comments = "magenta"
   score = "yellow"
   new_comments = "cyan"
   url = "blue"
-  reader_mode = "green"
 
 [reader]
   h1 = "blue"
