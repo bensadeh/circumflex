@@ -15,6 +15,7 @@ const (
 	NormalIntensity   = "\033[22m" // clears both Bold and Faint
 	ItalicOff         = "\033[23m"
 	UnderlineOff      = "\033[24m"
+	ReverseOff        = "\033[27m"
 	StrikethroughOff  = "\033[29m"
 	Red               = "\033[31m"
 	Green             = "\033[32m"
