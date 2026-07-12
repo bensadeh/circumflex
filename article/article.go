@@ -28,7 +28,7 @@ func Parse(ctx context.Context, url string) (*Parsed, error) {
 		return nil, fmt.Errorf("invalid URL: %w", err)
 	}
 
-	body, contentType, err := fetchPage(ctx, url, parsedURL)
+	body, contentType, parsedURL, err := fetchArticle(ctx, url, parsedURL)
 	if err != nil {
 		return nil, err
 	}

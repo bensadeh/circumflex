@@ -1,0 +1,17 @@
+■ Resonance Capture During Migration
+
+A. Author¹
+
+    ■ Abstract
+
+For a 𝑝:𝑞 resonance, capture requires eccentricities above a threshold
+𝑒ₘᵢₙ.
+
+  ■ 1 Model
+
+The scaling factor is 1/√𝑑ₖ, which grows large (Assume components with
+mean 0 and variance 1.) in high dimensions.
+
+  ℰ=∑ᵢ₌₁ⁿ(𝑞ᵢ/2)    (1)
+
+Annotation-only math reads 𝑥² and plain MathML falls back to a+b.

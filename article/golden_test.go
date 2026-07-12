@@ -31,6 +31,7 @@ func TestGolden(t *testing.T) {
 		{fixture: "article", hostname: "example.com"},
 		{fixture: "wikipedia", hostname: "en.wikipedia.org"},
 		{fixture: "math", hostname: "blog.example.com"},
+		{fixture: "arxiv", hostname: "arxiv.org"},
 	}
 
 	for _, tt := range tests {

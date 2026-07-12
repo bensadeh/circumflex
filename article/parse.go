@@ -89,6 +89,14 @@ func (p *domParser) walk(n *html.Node) {
 		return
 	}
 
+	// Footnotes flow inline even when their content holds block markup, so
+	// the popup chrome never splits the surrounding paragraph.
+	if hasClass(n, "ltx_note") {
+		p.inline = append(p.inline, noteSpans(n, formatPlain, &p.images)...)
+
+		return
+	}
+
 	switch nodeAtom(n) {
 	case atom.P:
 		p.flushInline()
@@ -660,6 +668,10 @@ func inlineSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 		return nil
 	}
 
+	if hasClass(n, "ltx_note") {
+		return noteSpans(n, format, images)
+	}
+
 	switch nodeAtom(n) {
 	case atom.Script, atom.Style, atom.Noscript, atom.Template, atom.Svg:
 		return nil
@@ -713,6 +725,9 @@ func inlineSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 
 	case atom.Sub:
 		return scriptSpans(n, format, images, subscriptRunes)
+
+	case atom.Math:
+		return mathSpans(n, format)
 
 	case atom.P, atom.Div, atom.Li:
 		spans := []span{{text: " ", format: format}}
@@ -772,6 +787,56 @@ var subscriptRunes = map[rune]rune{
 	'a': 'ₐ', 'e': 'ₑ', 'h': 'ₕ', 'i': 'ᵢ', 'j': 'ⱼ', 'k': 'ₖ', 'l': 'ₗ',
 	'm': 'ₘ', 'n': 'ₙ', 'o': 'ₒ', 'p': 'ₚ', 'r': 'ᵣ', 's': 'ₛ', 't': 'ₜ',
 	'u': 'ᵤ', 'v': 'ᵥ', 'x': 'ₓ',
+}
+
+// noteSpans renders a LaTeXML footnote, whose markup carries popup chrome: the
+// superscript mark appears twice (outside and inside the note body), joined by
+// a "footnotemark: " label and a tag number. The note text reads best inline
+// as a parenthetical; a bare mark with no text (\footnotemark) keeps only its
+// superscript number.
+func noteSpans(n *html.Node, format inlineFormat, images *[]block) []span {
+	content := descendantWithClass(n, "ltx_note_content")
+	if content == nil {
+		return collectInline(n, format, images)
+	}
+
+	var spans []span
+
+	for c := range content.ChildNodes() {
+		if c.Type == html.ElementNode &&
+			(hasClass(c, "ltx_note_mark") || hasClass(c, "ltx_note_type") || hasClass(c, "ltx_tag_note")) {
+			continue
+		}
+
+		spans = append(spans, inlineSpans(c, format, images)...)
+	}
+
+	if len(normalizeSpans(spans)) == 0 {
+		if mark := descendantWithClass(n, "ltx_note_mark"); mark != nil {
+			return scriptSpans(mark, format, nil, superscriptRunes)
+		}
+
+		return nil
+	}
+
+	out := []span{{text: " (", format: format}}
+	out = append(out, spans...)
+
+	return append(out, span{text: ")", format: format})
+}
+
+func hasClass(n *html.Node, class string) bool {
+	return slices.Contains(strings.Fields(attr(n, "class")), class)
+}
+
+func descendantWithClass(n *html.Node, class string) *html.Node {
+	for c := range n.Descendants() {
+		if c.Type == html.ElementNode && hasClass(c, class) {
+			return c
+		}
+	}
+
+	return nil
 }
 
 // scriptSpans converts sup/sub content to Unicode equivalents when every rune

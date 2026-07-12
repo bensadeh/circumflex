@@ -4,7 +4,89 @@ import (
 	"regexp"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/bensadeh/circumflex/ansi"
+
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
+
+// mathSpans renders a MathML element. LaTeXML (behind arXiv's HTML papers)
+// keeps the original TeX in the alttext attribute or an annotation child;
+// converting that beats flattening the MathML layout tree, whose presentation
+// nodes double the content ("n" plus its annotation reads as "nn").
+func mathSpans(n *html.Node, format inlineFormat) []span {
+	tex := strings.TrimSpace(ansi.Strip(attr(n, "alttext")))
+	if tex == "" {
+		tex = strings.TrimSpace(texAnnotation(n))
+	}
+
+	text := mathMLText(n)
+	if tex != "" {
+		text = latexToUnicode(tex)
+	}
+
+	if text == "" {
+		return nil
+	}
+
+	return []span{{text: text, format: format}}
+}
+
+func texAnnotation(n *html.Node) string {
+	for c := range n.Descendants() {
+		if c.Type == html.ElementNode && nodeAtom(c) == atom.Annotation &&
+			strings.Contains(attr(c, "encoding"), "tex") {
+			return ansi.Strip(nodeText(c))
+		}
+	}
+
+	return ""
+}
+
+// mathMLText is the fallback for MathML without TeX source: the concatenated
+// presentation text, minus annotations, which duplicate it in other formats.
+func mathMLText(n *html.Node) string {
+	var sb strings.Builder
+
+	var visit func(*html.Node)
+
+	visit = func(c *html.Node) {
+		switch c.Type {
+		case html.TextNode:
+			sb.WriteString(ansi.Strip(c.Data))
+
+		case html.ElementNode:
+			if a := nodeAtom(c); a == atom.Annotation || a == atom.AnnotationXml {
+				return
+			}
+
+			for gc := range c.ChildNodes() {
+				visit(gc)
+			}
+
+		default:
+		}
+	}
+
+	for c := range n.ChildNodes() {
+		visit(c)
+	}
+
+	return strings.TrimSpace(collapseWhitespace(sb.String()))
+}
+
+func nodeText(n *html.Node) string {
+	var sb strings.Builder
+
+	for c := range n.Descendants() {
+		if c.Type == html.TextNode {
+			sb.WriteString(c.Data)
+		}
+	}
+
+	return sb.String()
+}
 
 // Pages that render math client-side ship raw LaTeX in their HTML; the
 // script include is the signal that $-delimited source is meant as math.
@@ -250,6 +332,18 @@ func (s *texScanner) expand(name string) string {
 
 	case "mathcal":
 		return mapRunes(s.uprightArg(), scriptStyleRune)
+
+	case "left", "right", "big", "Big", "bigg", "Bigg",
+		"bigl", "bigr", "Bigl", "Bigr", "biggl", "biggr", "Biggl", "Biggr":
+		// \left. and \right. are invisible delimiters; the dot goes with them.
+		s.skipByte('.')
+
+		return ""
+
+	case "phantom", "vphantom", "hphantom":
+		s.arg()
+
+		return ""
 	}
 
 	if texWrappers[name] {
@@ -562,4 +656,8 @@ var texSymbols = map[string]string{
 
 	// spacing
 	"quad": " ", "qquad": " ", "thinspace": " ", "enspace": " ",
+
+	// style and positioning switches with no plain-text counterpart
+	"displaystyle": "", "textstyle": "", "scriptstyle": "", "scriptscriptstyle": "",
+	"limits": "", "nolimits": "",
 }

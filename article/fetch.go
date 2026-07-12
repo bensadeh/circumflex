@@ -54,8 +54,53 @@ func fetchPage(ctx context.Context, url string, parsedURL *nurl.URL) (body []byt
 	return resp.Bytes(), resp.Header().Get("Content-Type"), nil
 }
 
+// fetchArticle retrieves the page reader mode will parse, preferring a known
+// full-text mirror of the URL when one exists. The returned URL is the one
+// actually fetched, so relative references resolve against the right base.
+func fetchArticle(ctx context.Context, url string, parsedURL *nurl.URL) ([]byte, string, *nurl.URL, error) {
+	if body, contentType, mirror := fetchFullText(ctx, parsedURL); mirror != nil {
+		return body, contentType, mirror, nil
+	}
+
+	if ctx.Err() != nil {
+		return nil, "", nil, ctx.Err()
+	}
+
+	body, contentType, err := fetchPage(ctx, url, parsedURL)
+
+	return body, contentType, parsedURL, err
+}
+
+// fetchFullText returns a nil URL when no mirror is known for the page or the
+// mirror did not serve it, e.g. an arXiv paper with no HTML conversion.
+func fetchFullText(ctx context.Context, parsedURL *nurl.URL) ([]byte, string, *nurl.URL) {
+	fullText := fullTextURL(parsedURL)
+	if fullText == "" {
+		return nil, "", nil
+	}
+
+	fullTextParsed, err := nurl.ParseRequestURI(fullText)
+	if err != nil {
+		return nil, "", nil
+	}
+
+	body, contentType, err := fetchPage(ctx, fullText, fullTextParsed)
+	if err != nil {
+		return nil, "", nil
+	}
+
+	return body, contentType, fullTextParsed
+}
+
 func extractReadable(body []byte, parsedURL *nurl.URL) (*html.Node, error) {
-	a, err := readability.FromReader(bytes.NewReader(body), parsedURL)
+	parser := readability.NewParser()
+
+	// LaTeXML footnote chrome (arXiv HTML papers) is told apart by class;
+	// keep those so the parser can fold the popup markup into a readable form.
+	parser.ClassesToPreserve = append(parser.ClassesToPreserve,
+		"ltx_note", "ltx_note_mark", "ltx_note_type", "ltx_note_content", "ltx_tag_note")
+
+	a, err := parser.Parse(bytes.NewReader(body), parsedURL)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse article from %s: %w", parsedURL.Host, err)
 	}
