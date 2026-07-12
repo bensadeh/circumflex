@@ -12,7 +12,7 @@ func CommentSection(d Data) Block {
 		score: scoreLabel(d.Points, d.NerdFonts),
 		body: func(width int) string {
 			contentWidth := ContentWidth(width)
-			url := urlRow(d.URL, d.Domain, contentWidth, d.NerdFonts)
+			url := urlRow(d.URL, d.Domain, contentWidth)
 
 			switch {
 			case d.RootComment != "" && url != "":

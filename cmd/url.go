@@ -35,7 +35,7 @@ func urlCmd() *cobra.Command {
 			opts := reader.Options{URL: url, NerdFonts: config.EnableNerdFonts, Images: config.EnableImages}
 
 			return reader.Run(parsed, "Reader Mode", config.ArticleWidth, opts,
-				meta.ReaderModeURL(url, config.EnableNerdFonts).Render)
+				meta.ReaderModeURL(url).Render)
 		},
 	}
 }

@@ -8,7 +8,6 @@ const (
 	CommentDraft        = ""
 	CommentPlusOutline  = "󰆃"
 	CommentMinusOutline = "󱗠"
-	Link                = "󰌹"
 	Search              = ""
 	GitHub              = ""
 	Tag                 = ""

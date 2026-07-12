@@ -63,7 +63,7 @@ func TestBlockGeometryContract(t *testing.T) {
 				"comments root comment":     CommentSection(withRootComment),
 				"comments linked with text": CommentSection(linkedWithText),
 				"reader":                    ReaderMode(linked),
-				"url only":                  ReaderModeURL("https://example.com/story", nerdFonts),
+				"url only":                  ReaderModeURL("https://example.com/story"),
 			}
 
 			for name, block := range blocks {

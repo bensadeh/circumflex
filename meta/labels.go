@@ -16,17 +16,13 @@ import (
 // scheme is stripped from the display — the row is visibly a link already —
 // but the hyperlink target keeps the full URL. Stories without a link
 // (domain is empty) have no URL row at all.
-func urlRow(url, domain string, contentWidth int, enableNerdFonts bool) string {
+func urlRow(url, domain string, contentWidth int) string {
 	if domain == "" {
 		return ""
 	}
 
 	display := strings.TrimPrefix(strings.TrimPrefix(url, "https://"), "http://")
-
 	display = strings.TrimSuffix(display, "/")
-	if enableNerdFonts {
-		display = nerdfonts.Link + " " + display
-	}
 
 	return style.MetaURL(xansi.Truncate(display, contentWidth, "…"), url)
 }

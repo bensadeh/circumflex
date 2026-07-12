@@ -8,15 +8,15 @@ func ReaderMode(d Data) Block {
 		title: byline(d.Author, d.TimeAgo, d.NerdFonts),
 		score: scoreLabel(d.Points, d.NerdFonts),
 		body: func(width int) string {
-			return urlRow(d.URL, d.URL, ContentWidth(width), d.NerdFonts)
+			return urlRow(d.URL, d.URL, ContentWidth(width))
 		},
 	}
 }
 
 // ReaderModeURL is the block for reading a bare URL (`clx url`): just the
 // link in an untitled frame — there is no story behind it.
-func ReaderModeURL(url string, nerdFonts bool) Block {
+func ReaderModeURL(url string) Block {
 	return Block{body: func(width int) string {
-		return urlRow(url, url, ContentWidth(width), nerdFonts)
+		return urlRow(url, url, ContentWidth(width))
 	}}
 }
