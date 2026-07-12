@@ -3,11 +3,11 @@ package comments
 import (
 	"slices"
 
-	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/view/pane"
 
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
+	xansi "github.com/charmbracelet/x/ansi"
 )
 
 // commentMatch locates one search hit in comment-relative coordinates:
@@ -92,7 +92,7 @@ func (m *Model) findAllMatches(query string) []commentMatch {
 func plainLines(lines []string) []string {
 	plain := make([]string, len(lines))
 	for i, line := range lines {
-		plain[i] = ansi.Strip(line)
+		plain[i] = xansi.Strip(line)
 	}
 
 	return plain

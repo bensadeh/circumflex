@@ -3,11 +3,11 @@
 package pane
 
 import (
-	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/style"
 
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
+	xansi "github.com/charmbracelet/x/ansi"
 )
 
 // Scroller wraps a viewport with content-aware scrolling: paging and
@@ -51,12 +51,14 @@ func (s *Scroller) pushViewport() {
 // PlainLines is the content with ANSI styling stripped — the text as the
 // user sees it, for matching against. Stripped on first use after a
 // content change, so views that never need it don't pay for it.
+// xansi.Strip (a parser walk) is used over ansi.Strip (a backtracking
+// regexp): measured ~6× faster on escape-heavy content like image art.
 func (s *Scroller) PlainLines() []string {
 	if s.plainLines == nil && s.lines != nil {
 		s.plainLines = make([]string, len(s.lines))
 
 		for i, line := range s.lines {
-			s.plainLines[i] = ansi.Strip(line)
+			s.plainLines[i] = xansi.Strip(line)
 		}
 	}
 

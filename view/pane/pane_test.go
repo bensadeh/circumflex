@@ -132,3 +132,17 @@ func TestPlainLinesStripsStyling(t *testing.T) {
 	s.SetLines([]string{ansi.Faint + "baz" + ansi.Reset})
 	assert.Equal(t, []string{"baz"}, s.PlainLines(), "a content change invalidates the cache")
 }
+
+// Match cells are computed from plain-line byte offsets, so stripping must
+// remove every escape form the renderers emit — hyperlink URLs especially,
+// which would otherwise both false-match queries and shift offsets.
+func TestPlainLinesStripsHyperlinksAndTruecolor(t *testing.T) {
+	s := Scroller{Viewport: NewViewport(80, 10)}
+
+	s.SetLines([]string{
+		"see " + ansi.Hyperlink("https://example.com/secret", "the link") + " here",
+		"\x1b[38;2;255;128;0mhalf\x1b[48;2;0;0;0mblock\x1b[0m",
+	})
+
+	assert.Equal(t, []string{"see the link here", "halfblock"}, s.PlainLines())
+}
