@@ -2,7 +2,6 @@ package message
 
 import (
 	"context"
-	"time"
 
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/browser"
@@ -13,7 +12,9 @@ import (
 	tea "charm.land/bubbletea/v2"
 )
 
-type ReaderViewQuit struct{}
+// DetailQuit closes the open detail view — comments or reader — and returns
+// to the story list.
+type DetailQuit struct{}
 
 type BrowserOpenFailed struct {
 	Err error
@@ -27,11 +28,6 @@ func OpenInBrowser(url string) tea.Cmd {
 
 		return nil
 	}
-}
-
-type ShowStatusMessage struct {
-	Message  string
-	Duration time.Duration
 }
 
 type StatusMessageTimeout struct {
@@ -79,8 +75,6 @@ type CommentTreeDataReady struct {
 	FetchID        uint64
 	HistoryWarning error // non-nil if marking as read failed
 }
-
-type CommentViewQuit struct{}
 
 // ErrorViewQuit closes the error view a failed story load left in the
 // detail pane.

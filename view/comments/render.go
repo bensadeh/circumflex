@@ -21,7 +21,6 @@ type renderContext struct {
 	indent          int
 	enableNerdFonts bool
 	paneWidth       int
-	viewportHeight  int
 	lastVisited     int64
 	story           storyFields // scalar fields needed for header rebuild on resize
 	newComments     int

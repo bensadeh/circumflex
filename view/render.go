@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/bensadeh/circumflex/header"
-	"github.com/bensadeh/circumflex/style"
+	"github.com/bensadeh/circumflex/view/pane"
 
 	xansi "github.com/charmbracelet/x/ansi"
 
@@ -78,16 +78,10 @@ func (m *model) titleView() string {
 		m.wideDetailOpen())
 }
 
-// bottomBar renders the footer rule (underlined spaces). When the HN memorial
-// is active it carries the same color as the header rule (style.MemorialColor),
-// so the top and bottom rules match.
+// bottomBar renders the footer rule, shared with the detail views so the
+// list's rule and theirs can never drift apart (memorial tint included).
 func (m *model) bottomBar(width int) string {
-	s := m.underlineStyle
-	if header.MemorialActive() {
-		s = s.Foreground(style.MemorialColor())
-	}
-
-	return strings.Repeat(s.Render(" "), width)
+	return pane.FooterSeparator(width)
 }
 
 func (m *model) statusAndPaginationView() string {

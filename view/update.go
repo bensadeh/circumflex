@@ -107,7 +107,7 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 	case message.ArticleReady:
 		return m.handleArticleReady(msg)
 
-	case message.ReaderViewQuit, message.CommentViewQuit:
+	case message.DetailQuit:
 		m.detail = nil
 		m.screen = screenList
 
@@ -126,9 +126,6 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 		if msg.FetchID == m.fetchID {
 			clearProgress()
 		}
-
-	case message.ShowStatusMessage:
-		cmds = append(cmds, m.status.NewStatusMessageWithDuration(msg.Message, msg.Duration))
 
 	case message.CommentTreeDataReady:
 		return m.handleCommentTreeDataReady(msg)

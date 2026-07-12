@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestBackKeysReturnCommentViewQuit(t *testing.T) {
+func TestBackKeysReturnDetailQuit(t *testing.T) {
 	keys := []tea.KeyPressMsg{
 		{Code: 'q', Text: "q"},
 		{Code: tea.KeyEsc},
@@ -29,8 +29,8 @@ func TestBackKeysReturnCommentViewQuit(t *testing.T) {
 		cmd := m.handleKeyPress(key)
 		require.NotNil(t, cmd)
 
-		_, ok := cmd().(message.CommentViewQuit)
-		assert.True(t, ok, "back key should produce CommentViewQuit")
+		_, ok := cmd().(message.DetailQuit)
+		assert.True(t, ok, "back key should produce DetailQuit")
 	}
 }
 

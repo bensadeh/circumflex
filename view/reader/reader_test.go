@@ -77,7 +77,7 @@ func TestResize_PreservesScrollPosition(t *testing.T) {
 	assert.LessOrEqual(t, m.Viewport.YOffset(), maxOffset)
 }
 
-func TestQuit_ReturnsReaderViewQuitMsg(t *testing.T) {
+func TestQuit_ReturnsDetailQuitMsg(t *testing.T) {
 	keys := []tea.KeyPressMsg{
 		{Code: 'q', Text: "q"},
 		{Code: tea.KeyEsc},
@@ -91,8 +91,8 @@ func TestQuit_ReturnsReaderViewQuitMsg(t *testing.T) {
 		require.NotNil(t, cmd)
 
 		msg := cmd()
-		_, ok := msg.(message.ReaderViewQuit)
-		assert.True(t, ok, "back key should produce ReaderViewQuit")
+		_, ok := msg.(message.DetailQuit)
+		assert.True(t, ok, "back key should produce DetailQuit")
 	}
 }
 
@@ -342,7 +342,7 @@ func TestReaderSearch_EscClearsThenQuits(t *testing.T) {
 
 	cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEscape})
 	require.NotNil(t, cmd)
-	assert.IsType(t, message.ReaderViewQuit{}, cmd(), "the second esc quits")
+	assert.IsType(t, message.DetailQuit{}, cmd(), "the second esc quits")
 }
 
 func TestReaderSearch_SurvivesRerender(t *testing.T) {

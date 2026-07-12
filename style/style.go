@@ -333,14 +333,13 @@ func IndentCycleFaint() []func(string) string { return indentCycleFaintFuncs }
 // ForegroundCode returns the raw ANSI foreground escape for a color.Color,
 // with no trailing reset. Returns "" when the color renders no escape.
 func ForegroundCode(c color.Color) string {
-	const marker = "\xff"
-
-	rendered := lipgloss.NewStyle().Foreground(c).Render(marker)
-	idx := strings.Index(rendered, marker)
-
-	if idx <= 0 {
+	if c == nil {
 		return ""
 	}
 
-	return rendered[:idx]
+	if _, noColor := c.(lipgloss.NoColor); noColor {
+		return ""
+	}
+
+	return xansi.Style{}.ForegroundColor(c).String()
 }

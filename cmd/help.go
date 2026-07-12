@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 
 	"github.com/bensadeh/circumflex/ansi"
@@ -13,7 +12,13 @@ import (
 	"golang.org/x/term"
 )
 
-const maxHelpWidth = 80
+const (
+	maxHelpWidth = 80
+	// fallbackCol aligns command descriptions when a command has no flags to
+	// derive the column from.
+	fallbackCol = 20
+	flagGap     = 2
+)
 
 func helpWidth() int {
 	w, _, err := term.GetSize(int(os.Stdout.Fd()))
@@ -30,26 +35,15 @@ func registerTemplateFuncs() {
 	cobra.AddTemplateFunc("header", func(s string) string {
 		return ansi.Bold + s + ansi.Reset
 	})
-	cobra.AddTemplateFunc("stylizeFlags", stylizeFlags)
-	cobra.AddTemplateFunc("flagUsages", func(flags *pflag.FlagSet) string {
-		// Wrap at w-1 because stylizeFlags adds 1 extra space to each flag line.
-		return splitDefaults(flags.FlagUsagesWrapped(w - 1))
+	cobra.AddTemplateFunc("flagSection", func(flags *pflag.FlagSet) string {
+		return flagSection(flags, w)
 	})
 	cobra.AddTemplateFunc("descCol", func(cmd *cobra.Command) int {
-		usage := cmd.Flags().FlagUsagesWrapped(w - 1)
-		for line := range strings.SplitSeq(usage, "\n") {
-			m := flagDefRe.FindStringSubmatchIndex(line)
-			if m != nil && m[1] < len(line) && line[m[1]] == ' ' {
-				col := m[1]
-				for col < len(line) && line[col] == ' ' {
-					col++
-				}
-
-				return col + 1 // +1 for the extra space we add in stylizeFlags
-			}
+		if col := flagDefColumn(cmd.Flags()); col > 0 {
+			return col
 		}
 
-		return 20
+		return fallbackCol
 	})
 	cobra.AddTemplateFunc("cmdName", func(use string, col int) string {
 		name, args, _ := strings.Cut(use, " ")
@@ -65,156 +59,156 @@ func registerTemplateFuncs() {
 		return colored + padded[len(use):]
 	})
 	cobra.AddTemplateFunc("wrapDesc", func(desc string, col int) string {
-		available := w - col
-		if available <= 0 || len(desc) <= available {
-			return desc
-		}
-
-		var b strings.Builder
-
-		indent := strings.Repeat(" ", col)
-
-		for len(desc) > available {
-			cut := strings.LastIndex(desc[:available], " ")
-			if cut <= 0 {
-				cut = available
-			}
-
-			b.WriteString(desc[:cut])
-			b.WriteString("\n" + indent)
-
-			desc = desc[cut:]
-			if len(desc) > 0 && desc[0] == ' ' {
-				desc = desc[1:]
-			}
-		}
-
-		b.WriteString(desc)
-
-		return b.String()
+		return wrapIndented(desc, col, w)
 	})
 }
 
-var (
-	// flagDefRe matches the flag definition part of a pflag usage line (without
-	// trailing padding). A line is a flag definition if m[1] is followed by a space.
-	flagDefRe = regexp.MustCompile(`^(\s+)(?:(-\w)(, ))?(--[\w-]+)( \w+)?`)
-	defaultRe = regexp.MustCompile(`\(default ([^)]+)\)`)
-)
+// flagDef is one flag's rendered definition: the colorized form plus the
+// width of its plain text, which the colorized form no longer reveals.
+type flagDef struct {
+	colored  string
+	width    int
+	usage    string
+	defValue string // display form of the default, "" when suppressed
+}
 
-// splitDefaults moves any "(default X)" segment to its own continuation line so
-// every flag's default value appears below the description rather than inline.
-func splitDefaults(s string) string {
-	var col int
+// flagDefs builds each visible flag's definition from the flag data —
+// shorthand, name, and value type come from pflag as fields rather than
+// being re-parsed out of its rendered usage text.
+func flagDefs(flags *pflag.FlagSet) []flagDef {
+	var defs []flagDef
 
-	for line := range strings.SplitSeq(s, "\n") {
-		m := flagDefRe.FindStringSubmatchIndex(line)
-		if m == nil || m[1] >= len(line) || line[m[1]] != ' ' {
-			continue
+	flags.VisitAll(func(f *pflag.Flag) {
+		if f.Hidden {
+			return
 		}
 
-		c := m[1]
-		for c < len(line) && line[c] == ' ' {
-			c++
+		varname, usage := pflag.UnquoteUsage(f)
+
+		plain, colored := "  ", "  "
+
+		if f.Shorthand != "" {
+			plain += "-" + f.Shorthand + ", "
+			colored += ansi.Cyan + "-" + f.Shorthand + ansi.Reset + ", "
+		} else {
+			plain += "    "
+			colored += "    "
 		}
 
-		col = c
+		plain += "--" + f.Name
+		colored += ansi.Cyan + "--" + f.Name + ansi.Reset
 
-		break
+		if varname != "" {
+			plain += " " + varname
+			colored += " " + ansi.Yellow + varname + ansi.Reset
+		}
+
+		defs = append(defs, flagDef{
+			colored:  colored,
+			width:    len(plain),
+			usage:    usage,
+			defValue: displayDefault(f),
+		})
+	})
+
+	return defs
+}
+
+// flagDefColumn is the description column: the widest flag definition plus a
+// gap. Command descriptions align to the same column.
+func flagDefColumn(flags *pflag.FlagSet) int {
+	col := 0
+	for _, d := range flagDefs(flags) {
+		col = max(col, d.width)
 	}
 
 	if col == 0 {
-		return s
+		return 0
 	}
 
-	indent := strings.Repeat(" ", col)
+	return col + flagGap
+}
+
+// flagSection renders a flag set as aligned, colorized usage lines: the
+// definition, the wrapped description beside it, and the default value on
+// its own line beneath.
+func flagSection(flags *pflag.FlagSet, width int) string {
+	defs := flagDefs(flags)
+	col := flagDefColumn(flags)
 
 	var b strings.Builder
 
-	first := true
-
-	for line := range strings.SplitSeq(s, "\n") {
-		if !first {
+	for i, d := range defs {
+		if i > 0 {
 			b.WriteByte('\n')
 		}
 
-		first = false
+		b.WriteString(d.colored)
+		b.WriteString(strings.Repeat(" ", col-d.width))
+		b.WriteString(wrapIndented(d.usage, col, width))
 
-		loc := defaultRe.FindStringIndex(line)
-		if loc == nil {
-			b.WriteString(line)
-
-			continue
-		}
-
-		before := strings.TrimRight(line[:loc[0]], " ")
-		if before == "" {
-			b.WriteString(line)
-
-			continue
-		}
-
-		b.WriteString(before)
-		b.WriteByte('\n')
-		b.WriteString(indent)
-		b.WriteString(line[loc[0]:loc[1]])
-
-		if loc[1] < len(line) {
-			b.WriteString(line[loc[1]:])
+		if d.defValue != "" {
+			b.WriteString("\n" + strings.Repeat(" ", col))
+			b.WriteString(ansi.Faint + "(default " + ansi.Red + d.defValue + ansi.Reset + ansi.Faint + ")" + ansi.Reset)
 		}
 	}
 
 	return b.String()
 }
 
-func stylizeFlags(s string) string {
-	var b strings.Builder
-
-	for line := range strings.SplitSeq(s, "\n") {
-		if b.Len() > 0 {
-			b.WriteByte('\n')
-		}
-
-		m := flagDefRe.FindStringSubmatchIndex(line)
-		if m == nil || m[1] >= len(line) || line[m[1]] != ' ' {
-			// Continuation line: shift right by 1 to match the extra space
-			// added to flag definition lines.
-			trimmed := strings.TrimLeft(line, " ")
-			if indent := len(line) - len(trimmed); indent > 6 {
-				b.WriteString(strings.Repeat(" ", indent+1) + trimmed)
-			} else {
-				b.WriteString(line)
-			}
-
-			continue
-		}
-
-		b.WriteString(line[m[2]:m[3]]) // leading whitespace
-
-		if m[4] >= 0 { // short flag
-			b.WriteString(ansi.Cyan + line[m[4]:m[5]] + ansi.Reset)
-			b.WriteString(line[m[6]:m[7]]) // ", "
-		}
-
-		b.WriteString(ansi.Cyan + line[m[8]:m[9]] + ansi.Reset) // long flag
-
-		if m[10] >= 0 { // type
-			b.WriteString(ansi.Yellow + line[m[10]:m[11]] + ansi.Reset)
-		}
-
-		// Write original padding + 1 extra space (for 2-space gap on longest flag),
-		// then the description.
-		b.WriteString(" " + line[m[1]:])
+// displayDefault is the default value as the help shows it: quoted for
+// strings, empty for zero values — which pflag's own usage also suppresses.
+func displayDefault(f *pflag.Flag) string {
+	switch f.DefValue {
+	case "", "false", "0", "[]", "0s", "map[]", "<nil>":
+		return ""
 	}
 
-	// Second pass: colorize default values across the full output.
-	// This runs after the per-line pass because defaults may appear anywhere
-	// in the description text, not just on the structured flag line.
-	result := b.String()
-	result = defaultRe.ReplaceAllString(result,
-		ansi.Faint+"(default "+ansi.Red+"${1}"+ansi.Reset+ansi.Faint+")"+ansi.Reset)
+	if f.Value.Type() == "string" {
+		return fmt.Sprintf("%q", f.DefValue)
+	}
 
-	return result
+	return f.DefValue
+}
+
+// wrapIndented word-wraps text to fit width, indenting continuation lines to
+// col. Embedded newlines are deliberate breaks and keep the same indent.
+func wrapIndented(desc string, col, w int) string {
+	indent := strings.Repeat(" ", col)
+
+	segments := strings.Split(desc, "\n")
+	for i, seg := range segments {
+		segments[i] = wrapSegment(seg, indent, w-col)
+	}
+
+	return strings.Join(segments, "\n"+indent)
+}
+
+func wrapSegment(desc, indent string, available int) string {
+	if available <= 0 || len(desc) <= available {
+		return desc
+	}
+
+	var b strings.Builder
+
+	for len(desc) > available {
+		cut := strings.LastIndex(desc[:available], " ")
+		if cut <= 0 {
+			cut = available
+		}
+
+		b.WriteString(desc[:cut])
+		b.WriteString("\n" + indent)
+
+		desc = desc[cut:]
+		if len(desc) > 0 && desc[0] == ' ' {
+			desc = desc[1:]
+		}
+	}
+
+	b.WriteString(desc)
+
+	return b.String()
 }
 
 const usageTemplate = `
@@ -239,11 +233,11 @@ const usageTemplate = `
 {{- if .HasAvailableLocalFlags}}
 
 {{header "Flags:"}}
-{{flagUsages .LocalFlags | trimTrailingWhitespaces | stylizeFlags}}{{end}}
+{{flagSection .LocalFlags}}{{end}}
 {{- if .HasAvailableInheritedFlags}}
 
 {{header "Global Flags:"}}
-{{flagUsages .InheritedFlags | trimTrailingWhitespaces | stylizeFlags}}{{end}}
+{{flagSection .InheritedFlags}}{{end}}
 {{- if .HasHelpSubCommands}}
 
 {{header "Additional help topics:"}}{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}

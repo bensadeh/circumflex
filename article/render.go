@@ -63,13 +63,18 @@ func renderParts(blocks []block, width, codeWidth int, images ImageOptions) []re
 	return parts
 }
 
+// partSeparator is the blank line between rendered blocks. blockStarts
+// derives its line offsets from the same constant, so the joined output and
+// the block positions cannot drift apart.
+const partSeparator = "\n\n"
+
 func joinParts(parts []renderedPart) string {
 	texts := make([]string, len(parts))
 	for i, part := range parts {
 		texts[i] = part.text
 	}
 
-	return strings.Join(texts, "\n\n")
+	return strings.Join(texts, partSeparator)
 }
 
 // blockStarts returns the line index each part lands on in the joined output,
@@ -81,7 +86,7 @@ func blockStarts(parts []renderedPart, firstLine int) []int {
 
 	for i, part := range parts {
 		starts[i] = line
-		line += strings.Count(part.text, "\n") + 2 // the part's lines plus the blank separator
+		line += strings.Count(part.text+partSeparator, "\n")
 	}
 
 	return starts

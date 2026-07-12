@@ -125,11 +125,11 @@ func TestStartup_InitializesOnWindowSizeMsg(t *testing.T) {
 	assert.NotNil(t, cmd, "should return batch cmd with spinner + fetch")
 }
 
-func TestReaderViewQuit_RestoresState(t *testing.T) {
+func TestDetailQuit_FromReaderRestoresState(t *testing.T) {
 	m := newTestModelReady(t)
 	m.screen = screenReader
 
-	m, _ = m.Update(message.ReaderViewQuit{})
+	m, _ = m.Update(message.DetailQuit{})
 	assert.Equal(t, screenList, m.screen)
 }
 
@@ -171,13 +171,6 @@ func TestCategoryFetchingFinished_UpdatesState(t *testing.T) {
 	assert.False(t, m.fetching)
 	assert.False(t, m.status.showSpinner)
 	assert.False(t, m.list.InTransition())
-}
-
-func TestShowStatusMessage_SetsMessage(t *testing.T) {
-	m := newTestModelReady(t)
-
-	_, cmd := m.Update(message.ShowStatusMessage{Message: "hello", Duration: time.Second})
-	assert.NotNil(t, cmd)
 }
 
 func TestQuit(t *testing.T) {
@@ -359,11 +352,11 @@ func TestCommentTreeDataReady_OpensCommentView(t *testing.T) {
 	assert.NotNil(t, m.detail)
 }
 
-func TestCommentViewQuit_RestoresState(t *testing.T) {
+func TestDetailQuit_FromCommentsRestoresState(t *testing.T) {
 	m := newTestModelReady(t)
 	m.screen = screenComments
 
-	m, _ = m.Update(message.CommentViewQuit{})
+	m, _ = m.Update(message.DetailQuit{})
 	assert.Equal(t, screenList, m.screen)
 }
 

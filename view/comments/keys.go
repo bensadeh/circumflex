@@ -12,7 +12,7 @@ import (
 func (m *Model) handleGlobalKeys(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 	switch {
 	case key.Matches(msg, m.keymap.Quit):
-		return func() tea.Msg { return message.CommentViewQuit{} }, true
+		return func() tea.Msg { return message.DetailQuit{} }, true
 	case key.Matches(msg, m.keymap.Help):
 		m.showHelp = true
 

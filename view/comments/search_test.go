@@ -98,7 +98,7 @@ func TestCommentSearch_EscClearsThenQuits(t *testing.T) {
 
 	cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEsc})
 	require.NotNil(t, cmd)
-	assert.IsType(t, message.CommentViewQuit{}, cmd(), "the second esc quits")
+	assert.IsType(t, message.DetailQuit{}, cmd(), "the second esc quits")
 }
 
 func TestCommentSearch_NKeepsTopLevelJumpWhenInactive(t *testing.T) {

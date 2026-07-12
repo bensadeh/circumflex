@@ -270,7 +270,6 @@ func defaultRenderContext() renderContext {
 		commentWidth:    70,
 		enableNerdFonts: false,
 		paneWidth:       80,
-		viewportHeight:  40,
 	}
 }
 

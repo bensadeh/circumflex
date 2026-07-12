@@ -264,7 +264,7 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		m.PrevMatch()
 
 	case key.Matches(msg, m.keymap.Quit):
-		return func() tea.Msg { return message.ReaderViewQuit{} }
+		return func() tea.Msg { return message.DetailQuit{} }
 
 	case key.Matches(msg, m.keymap.GotoTop):
 		m.Viewport.GotoTop()

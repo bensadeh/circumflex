@@ -79,7 +79,6 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 		indent:          indent,
 		enableNerdFonts: enableNerdFonts,
 		paneWidth:       width,
-		viewportHeight:  max(0, height-layout.PaneChromeHeight),
 		lastVisited:     lastVisited,
 		story:           sf,
 		newComments:     newComments,
@@ -141,9 +140,8 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		widthChanged := msg.Width != m.rc.paneWidth
 
 		m.rc.paneWidth = msg.Width
-		m.rc.viewportHeight = max(0, msg.Height-layout.PaneChromeHeight)
 		m.Viewport.SetWidth(msg.Width)
-		m.Viewport.SetHeight(m.rc.viewportHeight)
+		m.Viewport.SetHeight(max(0, msg.Height-layout.PaneChromeHeight))
 
 		// A height-only resize changes no wrapping: the header, prerendered
 		// comments, and match positions all stand. Only the bottom padding
@@ -182,7 +180,7 @@ func (m *Model) View() string {
 		contentWidth := layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
 		content := help.FitToHeight(
 			help.CommentHelpScreen(layout.CommentSectionLeftMargin, contentWidth, m.rc.enableNerdFonts, m.keymap.NextStory.Enabled()),
-			m.rc.viewportHeight,
+			m.Viewport.Height(),
 		)
 
 		return header.HelpHeader("Comment Section", m.rc.paneWidth) + "\n" +
@@ -191,7 +189,7 @@ func (m *Model) View() string {
 			help.Footer(layout.CommentSectionLeftMargin, contentWidth, m.rc.enableNerdFonts)
 	}
 
-	content := scrollbar.Attach(m.DecorateView(m.Viewport.View()), m.rc.paneWidth, m.ContentLines, m.rc.viewportHeight, m.Viewport.YOffset())
+	content := scrollbar.Attach(m.DecorateView(m.Viewport.View()), m.rc.paneWidth, m.ContentLines, m.Viewport.Height(), m.Viewport.YOffset())
 
 	return m.titleHeader + "\n" + content + "\n" + pane.FooterSeparator(m.rc.paneWidth) + "\n" + m.modeIndicator()
 }

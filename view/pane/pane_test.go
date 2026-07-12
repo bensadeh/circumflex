@@ -85,13 +85,11 @@ func TestStandalone_ReplaysEarlyBackgroundColorToNewView(t *testing.T) {
 }
 
 func TestStandalone_QuitMessagesEndProgram(t *testing.T) {
-	for _, quit := range []tea.Msg{message.CommentViewQuit{}, message.ReaderViewQuit{}} {
-		s := standalone{view: &fakeView{}}
+	s := standalone{view: &fakeView{}}
 
-		_, cmd := s.Update(quit)
-		require.NotNil(t, cmd)
-		assert.IsType(t, tea.QuitMsg{}, cmd(), "%T should end the program", quit)
-	}
+	_, cmd := s.Update(message.DetailQuit{})
+	require.NotNil(t, cmd)
+	assert.IsType(t, tea.QuitMsg{}, cmd(), "a detail quit should end the program")
 }
 
 func TestStandalone_CtrlCQuits(t *testing.T) {

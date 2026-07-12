@@ -122,7 +122,7 @@ func TestWideView_LeftPaneDimsOnceWhileStoryIsOpen(t *testing.T) {
 	require.Equal(t, screenComments, m.screen)
 	assert.Equal(t, loading, m.browsingView(), "left pane should not change again when the story arrives")
 
-	m, _ = m.Update(message.CommentViewQuit{})
+	m, _ = m.Update(message.DetailQuit{})
 	require.Equal(t, screenList, m.screen)
 	assert.Equal(t, browsing, m.browsingView(), "left pane should restore when the story closes")
 }
@@ -458,7 +458,7 @@ func TestWideView_QuitRestoresPlaceholder(t *testing.T) {
 	m := newWideTestModel(t)
 	openTestComments(t, m)
 
-	// q inside the comment view emits CommentViewQuit as a command; deliver it.
+	// q inside the comment view emits DetailQuit as a command; deliver it.
 	m, cmd := m.Update(keyMsg("q"))
 	require.NotNil(t, cmd)
 	m, _ = m.Update(cmd())

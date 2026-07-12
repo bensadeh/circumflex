@@ -63,7 +63,6 @@ type model struct {
 	browserErr  error
 
 	// Cached styles for hot-path rendering.
-	underlineStyle  lipgloss.Style
 	statusLeftStyle lipgloss.Style
 	statusMidStyle  lipgloss.Style
 	statusEndStyle  lipgloss.Style
@@ -83,7 +82,6 @@ func newModel(config *settings.Config, cat *categories.Categories, fav *favorite
 		cat:       cat,
 		keymap:    defaultKeyMap(),
 
-		underlineStyle:  lipgloss.NewStyle().Underline(true),
 		statusLeftStyle: lipgloss.NewStyle().Inline(true).Width(statusBarEdgeWidth).MaxWidth(statusBarEdgeWidth),
 		statusMidStyle:  lipgloss.NewStyle().Inline(true).Align(lipgloss.Center),
 		statusEndStyle:  lipgloss.NewStyle().Inline(true).Width(statusBarEdgeWidth).Align(lipgloss.Center),
