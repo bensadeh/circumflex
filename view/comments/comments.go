@@ -354,27 +354,28 @@ func commentCountLabel(commentsCount, newComments int, enableNerdFonts bool) str
 	return style.Faint(label)
 }
 
+// depthIndicator is the footer's expansion gauge: one dot per indent level,
+// filled up to the current expansion depth, a dim middle dot beyond it. Each
+// filled dot takes its level's indent-cycle color, so the gauge doubles as a
+// legend for the gutter markers. At zero expansion the all-dim gauge still
+// shows how deep the thread goes.
 func (m *Model) depthIndicator() string {
-	level := m.expandedDepth
-	if level == 0 {
-		return ""
-	}
-
-	icon := "⋮"
-	if level == m.maxDepth {
-		icon = "∴"
-	}
-
-	numStr := fmt.Sprintf("%d", level)
-
 	cycle := style.IndentCycleFaint()
-	if len(cycle) == 0 {
-		return icon + " " + style.Faint(numStr)
+
+	var b strings.Builder
+
+	for level := 1; level <= m.maxDepth; level++ {
+		switch {
+		case level > m.expandedDepth:
+			b.WriteString(style.Faint("·"))
+		case len(cycle) > 0:
+			b.WriteString(cycle[(level-1)%len(cycle)]("•"))
+		default:
+			b.WriteString(style.Faint("•"))
+		}
 	}
 
-	colorFn := cycle[(level-1)%len(cycle)]
-
-	return icon + " " + colorFn(numStr)
+	return b.String()
 }
 
 func (m *Model) rebuildContent() {

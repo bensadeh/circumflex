@@ -6,6 +6,7 @@
 
 - Re-stylize the meta block
 - Soften comment footer colors
+- Update indent level indicator
 
 ## 4.5
 
