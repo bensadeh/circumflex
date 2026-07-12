@@ -17,6 +17,13 @@ type CommonKeyMap struct {
 	OpenComments key.Binding
 	NextStory    key.Binding
 	PrevStory    key.Binding
+
+	// Search bindings apply while a search is active; n/N then take
+	// precedence over each view's own jump bindings.
+	Search      key.Binding
+	NextMatch   key.Binding
+	PrevMatch   key.Binding
+	ClearSearch key.Binding
 }
 
 func DefaultCommonKeyMap() CommonKeyMap {
@@ -68,6 +75,22 @@ func DefaultCommonKeyMap() CommonKeyMap {
 		PrevStory: key.NewBinding(
 			key.WithKeys("K"),
 			key.WithHelp("K", "open previous story"),
+		),
+		Search: key.NewBinding(
+			key.WithKeys("/"),
+			key.WithHelp("/", "search"),
+		),
+		NextMatch: key.NewBinding(
+			key.WithKeys("n"),
+			key.WithHelp("n", "next match"),
+		),
+		PrevMatch: key.NewBinding(
+			key.WithKeys("N"),
+			key.WithHelp("N", "prev match"),
+		),
+		ClearSearch: key.NewBinding(
+			key.WithKeys("esc"),
+			key.WithHelp("esc", "clear search"),
 		),
 	}
 }

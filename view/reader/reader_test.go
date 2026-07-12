@@ -264,3 +264,96 @@ func TestMetaBlockAlignsWithArticleColumn(t *testing.T) {
 	assert.Equal(t, layout.ReaderViewLeftMargin, ruleCol, "the closing rule must open at the reader margin")
 	assert.Equal(t, layout.ReaderViewLeftMargin, proseCol, "article prose must start at the reader margin")
 }
+
+func searchableReader(t *testing.T) *Model {
+	t.Helper()
+
+	lines := make([]string, 40)
+	for i := range lines {
+		lines[i] = "filler text"
+	}
+
+	lines[5] = "the needle is here"
+	lines[25] = "another needle below"
+
+	return newFromContent(strings.Join(lines, "\n"), "Title", 80, 20)
+}
+
+func commitSearch(m *Model, query string) {
+	m.Update(tea.KeyPressMsg{Code: '/', Text: "/"})
+
+	for _, r := range query {
+		m.Update(tea.KeyPressMsg{Code: r, Text: string(r)})
+	}
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+}
+
+func TestReaderSearch_CommitJumpsToFirstMatch(t *testing.T) {
+	m := searchableReader(t)
+
+	m.Update(tea.KeyPressMsg{Code: '/', Text: "/"})
+	assert.True(t, m.SearchPrompting())
+
+	for _, r := range "needle" {
+		m.Update(tea.KeyPressMsg{Code: r, Text: string(r)})
+	}
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+
+	assert.True(t, m.SearchActive())
+	require.Len(t, m.SearchMatches(), 2)
+	assert.Equal(t, 3, m.Viewport.YOffset(), "first match line 5 sits two lines below the top")
+}
+
+func TestReaderSearch_NCyclesMatchesNotSections(t *testing.T) {
+	m := searchableReader(t)
+	m.headerLines = []int{15}
+
+	commitSearch(m, "needle")
+	assert.Equal(t, 3, m.Viewport.YOffset())
+
+	m.Update(tea.KeyPressMsg{Code: 'n', Text: "n"})
+	assert.Equal(t, 23, m.Viewport.YOffset(), "n goes to the next match, not the section at 15")
+
+	m.Update(tea.KeyPressMsg{Code: 'n', Text: "n"})
+	assert.Equal(t, 3, m.Viewport.YOffset(), "n wraps around")
+
+	m.Update(tea.KeyPressMsg{Code: 'N', Text: "N"})
+	assert.Equal(t, 23, m.Viewport.YOffset())
+}
+
+func TestReaderSearch_NFallsBackToSectionsWhenInactive(t *testing.T) {
+	m := searchableReader(t)
+	m.headerLines = []int{15}
+
+	m.Update(tea.KeyPressMsg{Code: 'n', Text: "n"})
+
+	assert.Equal(t, 15, m.Viewport.YOffset())
+}
+
+func TestReaderSearch_EscClearsThenQuits(t *testing.T) {
+	m := searchableReader(t)
+	commitSearch(m, "needle")
+
+	cmd := m.Update(tea.KeyPressMsg{Code: tea.KeyEscape})
+	assert.Nil(t, cmd)
+	assert.False(t, m.SearchActive(), "the first esc only clears the search")
+
+	cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEscape})
+	require.NotNil(t, cmd)
+	assert.IsType(t, message.ReaderViewQuit{}, cmd(), "the second esc quits")
+}
+
+func TestReaderSearch_SurvivesRerender(t *testing.T) {
+	parsed := article.NewParsedFromHTML("<p>alpha needle</p><h2>Head</h2><p>beta needle</p>")
+	m := NewWithArticle(parsed, "Title", 72, 100, 30, Options{}, nil)
+
+	commitSearch(m, "needle")
+	require.Len(t, m.SearchMatches(), 2)
+
+	m.Update(tea.WindowSizeMsg{Width: 60, Height: 24})
+
+	assert.True(t, m.SearchActive())
+	assert.Len(t, m.SearchMatches(), 2, "matches are recomputed against the rewrapped text")
+}

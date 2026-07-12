@@ -4,6 +4,7 @@ package pane
 
 import (
 	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/style"
 
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
@@ -18,6 +19,7 @@ type Scroller struct {
 
 	lines      []string
 	plainLines []string
+	search     searchState
 }
 
 // SetLines replaces the viewport content. A viewport-height of padding is
@@ -27,7 +29,23 @@ func (s *Scroller) SetLines(lines []string) {
 	s.lines = lines
 	s.plainLines = nil
 	s.ContentLines = len(lines)
-	s.Viewport.SetContentLines(append(lines, make([]string, s.Viewport.Height())...))
+	s.pushViewport()
+}
+
+// pushViewport hands the content to the viewport with the jump padding
+// appended, overlaying search-match highlights. Only slice headers are
+// copied — the line strings themselves are shared.
+func (s *Scroller) pushViewport() {
+	padded := make([]string, len(s.lines)+s.Viewport.Height())
+	copy(padded, s.lines)
+
+	for _, m := range s.search.matches {
+		if m.Line >= 0 && m.Line < len(s.lines) {
+			padded[m.Line] = style.OverlaySpan(padded[m.Line], m.StartCell, m.EndCell)
+		}
+	}
+
+	s.Viewport.SetContentLines(padded)
 }
 
 // PlainLines is the content with ANSI styling stripped — the text as the

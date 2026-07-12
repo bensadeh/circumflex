@@ -181,6 +181,12 @@ func (m *Model) rerender() {
 
 	m.setContent(r.Body)
 
+	// A width change rewraps text, so match positions are stale; the scroll
+	// position is kept rather than re-jumped.
+	if m.SearchActive() {
+		m.SetSearchMatches(pane.FindMatches(m.PlainLines(), m.SearchQuery()))
+	}
+
 	maxOffset := max(0, m.ContentLines-m.Viewport.Height())
 	m.Viewport.SetYOffset(min(remapYOffset(yOffset, oldStarts, r.BlockStarts, m.ContentLines), maxOffset))
 }
@@ -223,7 +229,28 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		return nil
 	}
 
+	if m.SearchPrompting() {
+		if m.HandleSearchPromptKey(msg) == pane.PromptCommitted {
+			m.SetSearchMatches(pane.FindMatches(m.PlainLines(), m.SearchQuery()))
+			m.JumpToFirstMatchFrom(m.Viewport.YOffset())
+		}
+
+		return nil
+	}
+
 	switch {
+	case key.Matches(msg, m.keymap.Search):
+		m.StartSearchPrompt()
+
+	case m.SearchActive() && key.Matches(msg, m.keymap.ClearSearch):
+		m.ClearSearch()
+
+	case m.SearchActive() && key.Matches(msg, m.keymap.NextMatch):
+		m.NextMatch()
+
+	case m.SearchActive() && key.Matches(msg, m.keymap.PrevMatch):
+		m.PrevMatch()
+
 	case key.Matches(msg, m.keymap.Quit):
 		return func() tea.Msg { return message.ReaderViewQuit{} }
 
@@ -300,10 +327,18 @@ func (m *Model) View() string {
 
 // footer is the line under the separator: the image indicator on the left
 // when the article has images, and the reader-mode label ending at the
-// article column's right edge.
+// article column's right edge. A search in play takes over the left side
+// with its prompt or query, plus the match counter between.
 func (m *Model) footer() string {
 	totalWidth := layout.ReaderViewLeftMargin + layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
-	result := pane.FooterSections(totalWidth, m.imageIndicator(), readerModeLabel(m.opts.NerdFonts))
+
+	var result string
+
+	if search := m.SearchFooterLabel(); search != "" {
+		result = pane.FooterSections(totalWidth, "  "+search, m.SearchCountLabel(), readerModeLabel(m.opts.NerdFonts))
+	} else {
+		result = pane.FooterSections(totalWidth, m.imageIndicator(), readerModeLabel(m.opts.NerdFonts))
+	}
 
 	return xansi.Truncate(result, m.paneWidth, "")
 }
