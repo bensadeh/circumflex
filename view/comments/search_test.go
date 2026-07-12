@@ -42,30 +42,54 @@ func commitCommentSearch(m *Model, query string) {
 	m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
 }
 
-func TestCommentSearch_RevealsHiddenMatchesProgressively(t *testing.T) {
+func TestCommentSearch_ExpandsAllOnPromptOpen(t *testing.T) {
 	m := searchModel(t)
 
 	require.Equal(t, 0, m.lineMetrics[1].LineCount, "needle comments start hidden")
 
-	commitCommentSearch(m, "needle")
+	m.Update(tea.KeyPressMsg{Code: '/', Text: "/"})
+
+	for i := range m.flat {
+		assert.Positive(t, m.lineMetrics[i].LineCount, "comment %d is visible", i)
+	}
+
+	assert.Equal(t, m.maxDepth, m.expandedDepth, "the depth indicator reflects the full expansion")
+
+	for _, r := range "needle" {
+		m.Update(tea.KeyPressMsg{Code: r, Text: string(r)})
+	}
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
 
 	require.Len(t, m.searchMatches, 2)
 	assert.Equal(t, 0, m.searchCurrent)
 
-	assert.Positive(t, m.lineMetrics[1].LineCount, "the first match's comment is revealed")
-	assert.Equal(t, 0, m.lineMetrics[2].LineCount, "the deeper branch stays collapsed")
-	assert.False(t, m.flat[0].Collapsed, "the ancestor was expanded")
-	assert.True(t, m.flat[1].Collapsed, "the matched comment's own children stay put")
-
 	line, visible := m.matchLine(m.searchMatches[0])
 	require.True(t, visible)
 	assert.Equal(t, max(0, line-scrollPadding), m.Viewport.YOffset())
+}
+
+func TestCommentSearch_CanceledPromptKeepsExpansion(t *testing.T) {
+	m := searchModel(t)
+
+	m.Update(tea.KeyPressMsg{Code: '/', Text: "/"})
+	m.Update(tea.KeyPressMsg{Code: tea.KeyEsc})
+
+	assert.False(t, m.SearchPrompting())
+	assert.Positive(t, m.lineMetrics[1].LineCount, "the expansion outlives the canceled prompt")
+}
+
+func TestCommentSearch_JumpRevealsRecollapsedBranch(t *testing.T) {
+	m := searchModel(t)
+	commitCommentSearch(m, "needle")
+
+	m.collapseAll()
+	require.Equal(t, 0, m.lineMetrics[1].LineCount)
 
 	m.Update(tea.KeyPressMsg{Code: 'n', Text: "n"})
 
 	assert.Equal(t, 1, m.searchCurrent)
-	assert.Positive(t, m.lineMetrics[2].LineCount, "n reveals the deeper match")
-	assert.False(t, m.flat[1].Collapsed)
+	assert.Positive(t, m.lineMetrics[2].LineCount, "n reveals a match the user collapsed away")
 }
 
 func TestCommentSearch_HighlightsAndCounter(t *testing.T) {

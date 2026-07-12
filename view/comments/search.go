@@ -34,6 +34,9 @@ func (m *Model) handleSearchKeys(msg tea.KeyPressMsg) bool {
 
 	switch {
 	case key.Matches(msg, m.keymap.Search):
+		// Search covers every comment, so the prompt opens over the fully
+		// expanded tree — what's on screen is what's being searched.
+		m.expandAll()
 		m.StartSearchPrompt()
 
 	case m.SearchActive() && key.Matches(msg, m.keymap.ClearSearch):
@@ -52,6 +55,9 @@ func (m *Model) handleSearchKeys(msg tea.KeyPressMsg) bool {
 	return true
 }
 
+// commitSearch resolves the committed query against the fully expanded tree:
+// opening the prompt expanded everything, and the prompt consumes every key,
+// so no branch can have re-collapsed since.
 func (m *Model) commitSearch() {
 	m.searchMatches = m.findAllMatches(m.SearchQuery())
 	m.searchCurrent = 0
@@ -66,7 +72,8 @@ func (m *Model) clearSearch() {
 }
 
 // findAllMatches searches the thread header and every comment — those inside
-// collapsed branches included, so jumping can reveal them.
+// collapsed branches included; opening the prompt expands the tree to show
+// them.
 func (m *Model) findAllMatches(query string) []commentMatch {
 	var out []commentMatch
 
@@ -128,9 +135,10 @@ func (m *Model) matchLine(cm commentMatch) (int, bool) {
 	return lm.StartLine + cm.lineInComment, true
 }
 
-// jumpToSearchMatch makes match idx (wrapped into range) current, revealing
-// it first when it sits inside a collapsed branch, and scrolls it a couple
-// of lines below the viewport top.
+// jumpToSearchMatch makes match idx (wrapped into range) current and scrolls
+// it a couple of lines below the viewport top. Opening the prompt expanded
+// the whole tree, so the reveal only fires when the user re-collapsed a
+// branch while the search was active.
 func (m *Model) jumpToSearchMatch(idx int) {
 	n := len(m.searchMatches)
 	if n == 0 {
