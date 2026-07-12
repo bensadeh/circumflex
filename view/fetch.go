@@ -127,17 +127,10 @@ func (m *model) fetchComments(tok fetchToken, story *hn.Story) tea.Cmd {
 		histErr := hist.MarkRead(story.ID, story.CommentsCount)
 
 		var updatedStory *hn.Story
+
 		if isOnFavorites {
-			updatedStory = &hn.Story{
-				ID:            tree.ID,
-				Title:         tree.Title,
-				Points:        tree.Points,
-				Author:        tree.Author,
-				Time:          tree.Time,
-				URL:           tree.URL,
-				Domain:        tree.Domain,
-				CommentsCount: tree.CommentsCount,
-			}
+			story := tree.Story
+			updatedStory = &story
 		}
 
 		return message.CommentTreeDataReady{

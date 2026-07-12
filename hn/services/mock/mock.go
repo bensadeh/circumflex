@@ -301,13 +301,16 @@ func (Service) FetchItems(ctx context.Context, _ int, category string) ([]*hn.St
 
 func (Service) FetchComments(_ context.Context, _ int, _ func(fetched, total int)) (*hn.CommentTree, error) {
 	return &hn.CommentTree{
-		ID:     32145667,
-		Title:  "Mauris commodo odio (YC W05) quis diam fermentum, et suscipit augue pharetra [video]",
-		Points: 543,
-		Author: "riemann",
-		Time:   time.Now().Add(-6 * time.Hour).Unix(),
-		URL:    "https://en.wikipedia.org/wiki/Riemann_hypothesis",
-		Domain: "google.com",
+		Story: hn.Story{
+			ID:            32145667,
+			Title:         "Mauris commodo odio (YC W05) quis diam fermentum, et suscipit augue pharetra [video]",
+			Points:        543,
+			Author:        "riemann",
+			Time:          time.Now().Add(-6 * time.Hour).Unix(),
+			URL:           "https://en.wikipedia.org/wiki/Riemann_hypothesis",
+			Domain:        "google.com",
+			CommentsCount: 57,
+		},
 		Comments: []*hn.CommentNode{
 			{
 				ID:     28,
@@ -402,7 +405,6 @@ func (Service) FetchComments(_ context.Context, _ int, _ func(fetched, total int
 		},
 		Content: "<p>Lorem ipsum dolor sit amet, " +
 			"consectetur adipiscing elit. Integer a augue id elit efficitur tempor sit amet quis lectus.",
-		CommentsCount: 57,
 	}, nil
 }
 

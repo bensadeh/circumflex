@@ -283,15 +283,8 @@ func mapStoryItem(raw *hnItem) *hn.Story {
 
 func mapCommentTree(raw *hnItem) *hn.CommentTree {
 	return &hn.CommentTree{
-		ID:            raw.ID,
-		Title:         raw.Title,
-		Points:        raw.Score,
-		Author:        raw.By,
-		Time:          raw.Time,
-		URL:           raw.URL,
-		Domain:        domain.FromURL(raw.URL),
-		Content:       raw.Text,
-		CommentsCount: raw.Descendants,
+		Story:   *mapStoryItem(raw),
+		Content: raw.Text,
 	}
 }
 

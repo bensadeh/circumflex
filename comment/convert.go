@@ -7,16 +7,9 @@ import (
 // ToThread maps an hn.CommentTree (API layer) to a Thread (rendering layer).
 func ToThread(t *hn.CommentTree) *Thread {
 	return &Thread{
-		ID:            t.ID,
-		Title:         t.Title,
-		Author:        t.Author,
-		URL:           t.URL,
-		Domain:        t.Domain,
-		Points:        t.Points,
-		Time:          t.Time,
-		Content:       t.Content,
-		CommentsCount: t.CommentsCount,
-		Comments:      mapCommentNodes(t.Comments),
+		Story:    t.Story,
+		Content:  t.Content,
+		Comments: mapCommentNodes(t.Comments),
 	}
 }
 

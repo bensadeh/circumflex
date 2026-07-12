@@ -126,14 +126,16 @@ func geometryThread() *comment.Thread {
 	}
 
 	tree := &hn.CommentTree{
-		ID:            1,
-		Title:         "Show HN: A story title comfortably longer than the narrowest pane",
-		Author:        "op",
-		Content:       "Root story text with a link <a href=\"https://example.com\">example</a> and <code>inline code</code>.",
-		CommentsCount: 9,
-		Points:        42,
-		URL:           "https://example.com/a/rather/long/path",
-		Domain:        "example.com",
+		Story: hn.Story{
+			ID:            1,
+			Title:         "Show HN: A story title comfortably longer than the narrowest pane",
+			Author:        "op",
+			CommentsCount: 9,
+			Points:        42,
+			URL:           "https://example.com/a/rather/long/path",
+			Domain:        "example.com",
+		},
+		Content: "Root story text with a link <a href=\"https://example.com\">example</a> and <code>inline code</code>.",
 		Comments: []*hn.CommentNode{
 			deep,
 			{ID: 2, Author: "carol", Content: strings.Repeat("top level comment text ", 12)},

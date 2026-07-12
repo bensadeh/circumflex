@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/bensadeh/circumflex/comment"
+	"github.com/bensadeh/circumflex/hn"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -22,9 +23,7 @@ func newComment(id int, author, content string, children ...*comment.Comment) *c
 
 func newThread(comments ...*comment.Comment) *comment.Thread {
 	return &comment.Thread{
-		ID:       1,
-		Title:    "test",
-		Author:   "op",
+		Story:    hn.Story{ID: 1, Title: "test", Author: "op"},
 		Comments: comments,
 	}
 }

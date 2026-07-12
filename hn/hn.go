@@ -10,8 +10,10 @@ func ItemURL(id int) string {
 	return "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
 }
 
-// Story represents a Hacker News story as returned by FetchItems/FetchItem.
-// This is the list-view representation: no comment tree, no self-text.
+// Story is a Hacker News story's metadata as returned by
+// FetchItems/FetchItem: no comment tree, no self-text. Story-shaped types
+// (CommentTree, comment.Thread) embed it, so a field added here flows to
+// them without hand copying.
 type Story struct {
 	ID            int
 	Title         string
@@ -23,17 +25,12 @@ type Story struct {
 	CommentsCount int
 }
 
+// CommentTree is a story plus its self-text and fetched comment tree.
 type CommentTree struct {
-	ID            int
-	Title         string
-	Points        int
-	Author        string
-	Time          int64
-	URL           string
-	Domain        string
-	Content       string
-	CommentsCount int
-	Comments      []*CommentNode
+	Story
+
+	Content  string
+	Comments []*CommentNode
 }
 
 type CommentNode struct {

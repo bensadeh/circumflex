@@ -1,5 +1,7 @@
 package comment
 
+import "github.com/bensadeh/circumflex/hn"
+
 type Comment struct {
 	ID       int
 	Author   string
@@ -8,15 +10,11 @@ type Comment struct {
 	Children []*Comment
 }
 
+// Thread is the comment section's view of a story: the story metadata
+// (Author is the OP) plus self-text and the rendering-layer comment nodes.
 type Thread struct {
-	ID            int
-	Title         string
-	Author        string // OP
-	URL           string
-	Domain        string
-	Points        int
-	Time          int64
-	Content       string // self-text
-	CommentsCount int
-	Comments      []*Comment
+	hn.Story
+
+	Content  string // self-text
+	Comments []*Comment
 }

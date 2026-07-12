@@ -3,7 +3,9 @@ package view
 import (
 	"context"
 	"errors"
+	"fmt"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -33,7 +35,7 @@ func (instantMockService) FetchItems(_ context.Context, _ int, _ string) ([]*hn.
 }
 
 func (instantMockService) FetchComments(_ context.Context, _ int, _ func(int, int)) (*hn.CommentTree, error) {
-	return &hn.CommentTree{ID: 1, Title: "test", CommentsCount: 5}, nil
+	return &hn.CommentTree{Story: hn.Story{ID: 1, Title: "test", CommentsCount: 5}}, nil
 }
 
 func (instantMockService) FetchItem(_ context.Context, _ int) (*hn.Story, error) {
@@ -189,6 +191,33 @@ func TestStoriesReady_EmptyResultKeepsCursorAtZero(t *testing.T) {
 
 	assert.False(t, m.fetch.inFlight())
 	assert.Equal(t, 0, m.list.Cursor())
+}
+
+// favorites.Item is the one story shape that cannot share hn.Story — its
+// JSON tags are the on-disk favorites contract — so its copy pair is pinned
+// by a round trip instead: every hn.Story field, filled with a distinct
+// non-zero value, must survive Story → Item → Story.
+func TestFavorites_ItemRoundTripIsLossless(t *testing.T) {
+	t.Parallel()
+
+	story := &hn.Story{}
+
+	v := reflect.ValueOf(story).Elem()
+	for i := range v.NumField() {
+		switch f := v.Field(i); {
+		case f.CanInt():
+			f.SetInt(int64(i) + 1)
+		case f.Kind() == reflect.String:
+			f.SetString(fmt.Sprintf("field-%d", i))
+		default:
+			t.Fatalf("hn.Story field %s has kind %s — extend this test to fill it",
+				v.Type().Field(i).Name, f.Kind())
+		}
+	}
+
+	got := favItemsToStories([]*favorites.Item{favorites.ItemFromStory(story)})
+	require.Equal(t, story, got[0],
+		"a field added to hn.Story must be copied in both ItemFromStory and favItemsToStories")
 }
 
 // A second J/K minted before the first press began its fetch arrives
@@ -382,7 +411,7 @@ func TestCommentTreeDataReady_OpensCommentView(t *testing.T) {
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 	startTestFetch(m, screenComments)
 
-	thread := &comment.Thread{ID: 1, Title: "test", CommentsCount: 5}
+	thread := &comment.Thread{Story: hn.Story{ID: 1, Title: "test", CommentsCount: 5}}
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.id})
 	assert.Equal(t, screenComments, m.screen)
 	assert.NotNil(t, m.detail)
@@ -400,7 +429,7 @@ func TestTimeRefreshTick_ReschedulesInEveryState(t *testing.T) {
 	m := newTestModelReady(t)
 	startTestFetch(m, screenComments)
 
-	thread := &comment.Thread{ID: 1, Title: "test", CommentsCount: 5}
+	thread := &comment.Thread{Story: hn.Story{ID: 1, Title: "test", CommentsCount: 5}}
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.id})
 	require.Equal(t, screenComments, m.screen)
 
@@ -433,7 +462,7 @@ func TestNarrowAdjacentStory_StaysOnOpenStory(t *testing.T) {
 	m := newTestModelReady(t)
 	startTestFetch(m, screenComments)
 
-	thread := &comment.Thread{ID: 1, Title: "An unmistakable thread title", CommentsCount: 5}
+	thread := &comment.Thread{Story: hn.Story{ID: 1, Title: "An unmistakable thread title", CommentsCount: 5}}
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.id})
 	require.Equal(t, screenComments, m.screen)
 
@@ -459,7 +488,7 @@ func TestNarrowDetail_StatusMessageShowsOnLastRow(t *testing.T) {
 	m := newTestModelReady(t)
 	startTestFetch(m, screenComments)
 
-	thread := &comment.Thread{ID: 1, Title: "test", CommentsCount: 5}
+	thread := &comment.Thread{Story: hn.Story{ID: 1, Title: "test", CommentsCount: 5}}
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.id})
 	require.Equal(t, screenComments, m.screen)
 
@@ -757,7 +786,7 @@ func TestCommentTreeDataReady_HistoryWarning(t *testing.T) {
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 	startTestFetch(m, screenComments)
 
-	thread := &comment.Thread{ID: 1, Title: "test", CommentsCount: 5}
+	thread := &comment.Thread{Story: hn.Story{ID: 1, Title: "test", CommentsCount: 5}}
 	histErr := errors.New("disk full")
 
 	m, cmd := m.Update(message.CommentTreeDataReady{
