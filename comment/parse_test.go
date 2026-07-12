@@ -271,6 +271,27 @@ func TestTypography_SmileyNeedsWhitespace(t *testing.T) {
 		blocks := Parse(":)")
 		assert.Equal(t, []string{"😊"}, spanTexts(blocks[0]))
 	})
+
+	t.Run("glued to a word stays put", func(t *testing.T) {
+		t.Parallel()
+
+		blocks := Parse("hi to :Dave and :Python and a :/etc path")
+		assert.Equal(t, []string{"hi to :Dave and :Python and a :/etc path"}, spanTexts(blocks[0]))
+	})
+
+	t.Run("before punctuation converts", func(t *testing.T) {
+		t.Parallel()
+
+		blocks := Parse("fun :D, right :)")
+		assert.Equal(t, []string{"fun 😄, right 😊"}, spanTexts(blocks[0]))
+	})
+
+	t.Run("consecutive smileys share their boundary spaces", func(t *testing.T) {
+		t.Parallel()
+
+		blocks := Parse("great :) :)")
+		assert.Equal(t, []string{"great 😊 😊"}, spanTexts(blocks[0]))
+	})
 }
 
 func TestTokenize_InsideItalics(t *testing.T) {

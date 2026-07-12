@@ -76,9 +76,10 @@ var smileys = []struct{ from, to string }{
 	{`:|`, "😐"},
 }
 
-// convertSmileys replaces smileys that follow whitespace. The whole-text
-// exact match applies at block granularity: a comment that is nothing but
-// ":)" is a smiley, while a ":)" wrapped in markup or mid-paragraph is not.
+// convertSmileys replaces smileys that follow whitespace and end on a word
+// boundary. The whole-text exact match applies at block granularity: a
+// comment that is nothing but ":)" is a smiley, while a ":)" wrapped in
+// markup or mid-paragraph is not.
 func convertSmileys(b *Block) {
 	for _, sm := range smileys {
 		if len(b.spans) == 1 && b.spans[0].format == spanPlain && b.spans[0].text == sm.from {
@@ -93,9 +94,41 @@ func convertSmileys(b *Block) {
 				continue
 			}
 
-			s.text = strings.ReplaceAll(s.text, " "+sm.from, " "+sm.to)
+			s.text = replaceSmiley(s.text, sm.from, sm.to)
 		}
 	}
+}
+
+// replaceSmiley converts " <smiley>" occurrences not glued to a following
+// letter or digit, so the ":D" in ":Dave" and the ":/" in ":/etc" stay prose.
+func replaceSmiley(text, from, to string) string {
+	from = " " + from
+
+	var sb strings.Builder
+
+	for {
+		idx := strings.Index(text, from)
+		if idx < 0 {
+			break
+		}
+
+		end := idx + len(from)
+
+		r, size := utf8.DecodeRuneInString(text[end:])
+		if size > 0 && (unicode.IsLetter(r) || unicode.IsDigit(r)) {
+			sb.WriteString(text[:end])
+		} else {
+			sb.WriteString(text[:idx])
+			sb.WriteString(" ")
+			sb.WriteString(to)
+		}
+
+		text = text[end:]
+	}
+
+	sb.WriteString(text)
+
+	return sb.String()
 }
 
 // normalizeWhitespace joins soft line breaks, collapses space runs and trims
