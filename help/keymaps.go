@@ -1,7 +1,6 @@
 package help
 
 import (
-	"image/color"
 	"strings"
 
 	"github.com/bensadeh/circumflex/style"
@@ -28,7 +27,6 @@ type entry struct {
 
 type section struct {
 	title  string
-	color  color.Color
 	groups [][]entry
 }
 
@@ -87,12 +85,7 @@ func (k *keyList) print(width int) string {
 			continue
 		}
 
-		c := s.color
-		if c == nil {
-			c = titleColorFor(len(parts))
-		}
-
-		parts = append(parts, renderPanel(s, width, keyWidth, c))
+		parts = append(parts, renderPanel(s, width, keyWidth))
 	}
 
 	return strings.Join(parts, sectionSeparator)
@@ -112,18 +105,7 @@ func (k *keyList) maxKeyWidth() int {
 	return m
 }
 
-func titleColorFor(i int) color.Color {
-	switch i % 3 {
-	case 0:
-		return style.HeaderPrimary()
-	case 1:
-		return style.HeaderSecondary()
-	default:
-		return style.HeaderTertiary()
-	}
-}
-
-func renderPanel(s *section, panelWidth, keyWidth int, titleColor color.Color) string {
+func renderPanel(s *section, panelWidth, keyWidth int) string {
 	innerWidth := max(panelWidth-panelChromeWidth, 1)
 
 	grids := make([]string, 0, len(s.groups))
@@ -138,12 +120,12 @@ func renderPanel(s *section, panelWidth, keyWidth int, titleColor color.Color) s
 
 	body := strings.Join(grids, "\n")
 
-	return wrapPanel(s.title, body, panelWidth, innerWidth, titleColor)
+	return wrapPanel(s.title, body, panelWidth, innerWidth)
 }
 
-func wrapPanel(title, body string, panelWidth, innerWidth int, titleColor color.Color) string {
+func wrapPanel(title, body string, panelWidth, innerWidth int) string {
 	faint := lipgloss.NewStyle().Faint(true)
-	titleStyle := lipgloss.NewStyle().Bold(true).Foreground(titleColor)
+	titleStyle := lipgloss.NewStyle().Bold(true).Foreground(style.HeaderTertiary())
 
 	dashCount := max(panelWidth-2, 0)
 

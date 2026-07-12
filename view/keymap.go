@@ -3,7 +3,6 @@ package view
 import (
 	"charm.land/bubbles/v2/key"
 	"github.com/bensadeh/circumflex/help"
-	"github.com/bensadeh/circumflex/style"
 )
 
 type keyMap struct {
@@ -141,7 +140,6 @@ func (km keyMap) MainMenuSections() []help.Section {
 		},
 		{
 			Title: "App",
-			Color: style.HeaderTertiary(),
 			Items: fromBindings(km.Help, km.Quit),
 		},
 	}

@@ -1,7 +1,6 @@
 package help
 
 import (
-	"image/color"
 	"strings"
 
 	"charm.land/bubbles/v2/key"
@@ -29,7 +28,6 @@ func FitToHeight(content string, height int) string {
 
 type Section struct {
 	Title string
-	Color color.Color
 	Items []Item
 }
 

@@ -22,7 +22,6 @@ func mainMenuText(screenWidth int, sections []Section) string {
 
 	for _, sec := range sections {
 		s := keys.addSection(sec.Title)
-		s.color = sec.Color
 
 		for _, item := range sec.Items {
 			if item.Key == "" {
@@ -47,20 +46,20 @@ func readerText(leftMargin, contentWidth int, withStoryNav bool) string {
 	nav.addKey("n, N", "Next / prev section")
 	nav.addKey("h, l", "Hide / show images")
 
-	open := keys.addSection("Open")
-	open.addKey("o", "Open story in browser")
-	open.addKey("c", "Open comments in browser")
-
-	if withStoryNav {
-		open.addKey("J, K", "Open next / prev story")
-	}
-
 	search := keys.addSection("Search")
 	search.addKey("/", "Search article")
 	search.addKey("n, N", "Next / prev match")
 	search.addKey("esc", "Clear search")
 
 	app := keys.addSection("App")
+	app.addKey("o", "Open story in browser")
+	app.addKey("c", "Open comments in browser")
+
+	if withStoryNav {
+		app.addKey("J, K", "Open next / prev story")
+	}
+
+	app.addBreak()
 	app.addKey("i, ?", "Help")
 	app.addKey("q, ⌫", "Back")
 
@@ -78,18 +77,8 @@ func commentText(leftMargin, contentWidth int, enableNerdFonts bool, withStoryNa
 	read.addKey("n, N", "Next / prev top comment")
 	read.addKey("h, l", "Collapse / expand")
 	read.addBreak()
-	read.addKey("o", "Open story in browser")
-	read.addKey("c", "Open comments in browser")
-
-	if withStoryNav {
-		read.addKey("J, K", "Open next / prev story")
-	}
-
 	read.addKey("↩", "Toggle all")
 	read.addKey("⇥", "Navigate mode")
-	read.addBreak()
-	read.addKey("i, ?", "Help")
-	read.addKey("q, ⌫", "Back")
 
 	nav := keys.addSection("Navigate Mode")
 	nav.addKey("j, k", "Next / prev comment")
@@ -97,23 +86,25 @@ func commentText(leftMargin, contentWidth int, enableNerdFonts bool, withStoryNa
 	nav.addKey("n, N", "Next / prev top comment")
 	nav.addKey("h, l", "Collapse / expand")
 	nav.addBreak()
-	nav.addKey("o", "Open story in browser")
-	nav.addKey("c", "Open comments in browser")
-
-	if withStoryNav {
-		nav.addKey("J, K", "Open next / prev story")
-	}
-
 	nav.addKey("↩", "Toggle collapse")
 	nav.addKey("⇥", "Read mode")
-	nav.addBreak()
-	nav.addKey("i, ?", "Help")
-	nav.addKey("q, ⌫", "Back")
 
 	search := keys.addSection("Search")
 	search.addKey("/", "Search all comments")
 	search.addKey("n, N", "Next / prev match")
 	search.addKey("esc", "Clear search")
+
+	app := keys.addSection("App")
+	app.addKey("o", "Open story in browser")
+	app.addKey("c", "Open comments in browser")
+
+	if withStoryNav {
+		app.addKey("J, K", "Open next / prev story")
+	}
+
+	app.addBreak()
+	app.addKey("i, ?", "Help")
+	app.addKey("q, ⌫", "Back")
 
 	legend := keys.addSection("Legend")
 	legend.addLabel(style.CommentOP(labelText("OP", enableNerdFonts)), "Original Poster")
