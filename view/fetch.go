@@ -25,40 +25,26 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-func (m *model) fetchStoriesForFirstCategory() tea.Cmd {
+func (m *model) fetchStoriesForFirstCategory(tok fetchToken) tea.Cmd {
 	categoryToFetch := m.cat.CurrentCategory()
 
 	// Favorites is served locally — it is never fetched over the network. Hand
 	// the already-synced items straight to the normal "fetch finished" path.
 	if categories.IsFavorites(categoryToFetch) {
 		stories := m.list.Items(categoryToFetch)
-		fetchID := m.fetchID
+		index := m.cat.CurrentIndex()
 
 		return func() tea.Msg {
-			return message.FetchingFinished{
+			return message.StoriesReady{
 				Stories:  stories,
 				Category: categoryToFetch,
-				FetchID:  fetchID,
+				Index:    index,
+				FetchID:  tok.id,
 			}
 		}
 	}
 
-	service := m.service
-	numItems := m.numberOfItemsToFetch(categoryToFetch)
-	endpoint := categories.Endpoint(categoryToFetch)
-	ctx := m.fetchCtx
-	fetchID := m.fetchID
-
-	return func() tea.Msg {
-		stories, err := service.FetchItems(ctx, numItems, endpoint)
-
-		return message.FetchingFinished{
-			Stories:  stories,
-			Category: categoryToFetch,
-			Err:      err,
-			FetchID:  fetchID,
-		}
-	}
+	return m.fetchCategory(tok, categoryToFetch, m.cat.CurrentIndex(), m.list.Cursor())
 }
 
 func fetchMemorialStatus() tea.Cmd {
@@ -92,33 +78,29 @@ func newHistory(debugMode bool, doNotMarkAsRead bool) (history.History, error) {
 	return history.NewPersistentHistory()
 }
 
-func (m *model) fetchCategory(cat categories.Category, index, cursor int) tea.Cmd {
+func (m *model) fetchCategory(tok fetchToken, cat categories.Category, index, cursor int) tea.Cmd {
 	service := m.service
 	numItems := m.numberOfItemsToFetch(cat)
 	endpoint := categories.Endpoint(cat)
-	ctx := m.fetchCtx
-	fetchID := m.fetchID
 
 	return func() tea.Msg {
-		stories, err := service.FetchItems(ctx, numItems, endpoint)
+		stories, err := service.FetchItems(tok.ctx, numItems, endpoint)
 
-		return message.CategoryFetchingFinished{
+		return message.StoriesReady{
 			Stories:  stories,
 			Category: cat,
 			Index:    index,
 			Cursor:   cursor,
 			Err:      err,
-			FetchID:  fetchID,
+			FetchID:  tok.id,
 		}
 	}
 }
 
-func (m *model) fetchComments(story *hn.Story) tea.Cmd {
+func (m *model) fetchComments(tok fetchToken, story *hn.Story) tea.Cmd {
 	isOnFavorites := m.cat.CurrentCategory() == categories.Favorites
 	hist := m.history
 	service := m.service
-	ctx := m.fetchCtx
-	fetchID := m.fetchID
 
 	return func() tea.Msg {
 		lastVisited := hist.CommentsLastVisited(story.ID)
@@ -127,18 +109,18 @@ func (m *model) fetchComments(story *hn.Story) tea.Cmd {
 		// Update loop; the ctx guard stops a canceled fetch from writing
 		// over its successor's indicator.
 		onProgress := func(fetched, total int) {
-			if total <= 0 || ctx.Err() != nil {
+			if total <= 0 || tok.ctx.Err() != nil {
 				return
 			}
 
 			setProgressPercent(min(fetched*100/total, 100))
 		}
 
-		tree, err := service.FetchComments(ctx, story.ID, onProgress)
+		tree, err := service.FetchComments(tok.ctx, story.ID, onProgress)
 		if err != nil {
 			return message.CommentTreeDataReady{
 				Err:     err,
-				FetchID: fetchID,
+				FetchID: tok.id,
 			}
 		}
 
@@ -162,26 +144,24 @@ func (m *model) fetchComments(story *hn.Story) tea.Cmd {
 			Thread:         comment.ToThread(tree),
 			LastVisited:    lastVisited,
 			UpdatedStory:   updatedStory,
-			FetchID:        fetchID,
+			FetchID:        tok.id,
 			HistoryWarning: histErr,
 		}
 	}
 }
 
-func (m *model) fetchArticle(story *hn.Story) tea.Cmd {
+func (m *model) fetchArticle(tok fetchToken, story *hn.Story) tea.Cmd {
 	hist := m.history
-	ctx := m.fetchCtx
-	fetchID := m.fetchID
 	timeAgo := timeago.RelativeTime(story.Time)
 
 	return func() tea.Msg {
 		if err := article.Validate(story.Title, story.Domain); err != nil {
-			return message.ArticleReady{Err: err, FetchID: fetchID}
+			return message.ArticleReady{Err: err, FetchID: tok.id}
 		}
 
-		parsed, err := article.Parse(ctx, story.URL)
+		parsed, err := article.Parse(tok.ctx, story.URL)
 		if err != nil {
-			return message.ArticleReady{Err: err, FetchID: fetchID}
+			return message.ArticleReady{Err: err, FetchID: tok.id}
 		}
 
 		histErr := hist.MarkArticleRead(story.ID)
@@ -194,7 +174,7 @@ func (m *model) fetchArticle(story *hn.Story) tea.Cmd {
 			TimeAgo:        timeAgo,
 			ID:             story.ID,
 			Points:         story.Points,
-			FetchID:        fetchID,
+			FetchID:        tok.id,
 			HistoryWarning: histErr,
 		}
 	}
@@ -241,7 +221,7 @@ func emitProgress(seq string) {
 
 // syncProgress settles the indicator for a finished fetch: an error stays
 // visible for the status message lifetime (see showDetailError), success
-// clears it. Called only from the Update loop after the fetchID guard, so a
+// clears it. Called only from the Update loop after the finish guard, so a
 // stale fetch can never write over its successor's indicator.
 func syncProgress(err error) {
 	if err != nil {
@@ -291,13 +271,13 @@ func friendlyError(err error) string {
 // the returned timeout.
 func (m *model) showDetailError(err error, target screen) tea.Cmd {
 	if m.isWide() {
-		// The placeholder renders from target, not m.detailTarget: validation
+		// The placeholder renders from target, not m.fetch.target: validation
 		// errors arrive without a fetch, and the view outlives the fetch state.
 		metaBlock := func(paneWidth int) string { return m.placeholderMetaBlock(paneWidth, target) }
 		m.detail = newErrorView(friendlyError(err), m.list.SelectedItem().Title, m.config.EnableNerdFonts, metaBlock, m.detailWidth(), m.height)
 		m.screen = target
 
-		fetchID := m.fetchID
+		fetchID := m.fetch.id
 
 		return tea.Tick(statusMessageLong, func(time.Time) tea.Msg {
 			return message.ErrorProgressTimeout{FetchID: fetchID}

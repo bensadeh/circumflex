@@ -1,7 +1,6 @@
 package view
 
 import (
-	"context"
 	"fmt"
 	"time"
 
@@ -188,88 +187,6 @@ func (m *model) handleCancelPrompt() tea.Cmd {
 		lipgloss.NewStyle().Faint(true).Render("Cancelled"), statusMessageShort)
 }
 
-// startFetch begins a fetch's lifecycle: it invalidates any predecessor and
-// captures the category index to restore if the fetch fails or is cancelled —
-// so callers that switch category must call it before advancing. The initial
-// terminal progress write is the caller's: indeterminate for fetches without
-// granular progress, percentage for the comment fetch, which reports it.
-// The fetch command itself (fetchComments, fetchArticle, fetchCategory) must
-// be built in the same Update cycle: it captures the fetch context and id at
-// call time, and deferring it to a later message would let a cancel or a
-// newer fetch in between hand it their identity — its stale result would
-// then pass the FetchID guard.
-func (m *model) startFetch(timeout time.Duration) tea.Cmd {
-	if m.cancelFetch != nil {
-		m.cancelFetch()
-	}
-
-	m.fetchID++
-	m.fetching = true
-	m.detailFetch = false
-	m.rollbackIndex = m.cat.CurrentIndex()
-	m.rollbackStory = m.list.Index()
-
-	if timeout > 0 {
-		ctx, cancel := context.WithTimeout(context.Background(), timeout)
-		m.fetchCtx = ctx
-		m.cancelFetch = cancel
-	} else {
-		ctx, cancel := context.WithCancel(context.Background())
-		m.fetchCtx = ctx
-		m.cancelFetch = cancel
-	}
-
-	return m.status.StartSpinner()
-}
-
-// startDetailFetch is startFetch for a story's comments or article: the list
-// stays in place, dimmed, while the detail loads. target is the view the
-// fetch opens, so the loading pane can lay out what that view will draw.
-func (m *model) startDetailFetch(timeout time.Duration, target screen) tea.Cmd {
-	cmd := m.startFetch(timeout)
-	m.detailFetch = true
-	m.detailTarget = target
-
-	return cmd
-}
-
-// rollbackFetch recovers from a failed or cancelled fetch: it restores the
-// category selection captured at startFetch and unfreezes the list. For a
-// story fetch it also moves the list selection back to the story that is
-// still open, so the reading marker never points at a story the detail
-// view doesn't show. Category fetches keep their cursor: the transition
-// mechanics restore it.
-func (m *model) rollbackFetch() {
-	m.cat.SetIndex(m.rollbackIndex)
-
-	if m.detailFetch {
-		m.list.SetIndex(m.rollbackStory)
-	}
-
-	m.list.EndTransition()
-}
-
-func (m *model) handleCancelFetch() tea.Cmd {
-	if m.cancelFetch != nil {
-		m.cancelFetch()
-		m.cancelFetch = nil
-	}
-
-	m.fetchID++
-
-	m.rollbackFetch()
-
-	clearProgress()
-	m.status.StopSpinner()
-	// The screen stays where the fetch started: canceling a J/K story fetch
-	// keeps the open story, canceling a category fetch keeps the front page.
-	m.fetching = false
-	m.updatePagination()
-
-	return m.status.NewStatusMessageWithDuration(
-		lipgloss.NewStyle().Faint(true).Render("Cancelled"), statusMessageShort)
-}
-
 func (m *model) handleTabForward() tea.Cmd {
 	return m.handleTab(m.cat.NextIndex(), m.cat.NextCategory(), m.cat.Next)
 }
@@ -288,16 +205,15 @@ func (m *model) handleTab(targetIndex int, targetCategory categories.Category, a
 		return nil
 	}
 
-	// startFetch first: it captures the rollback index, which must be the
-	// category we are leaving, not the one we advance to.
-	startSpinnerCmd := m.startFetch(0)
+	// The rollback point is the category being left, captured before advance.
+	tok, startSpinnerCmd := m.startFetch(0, m.listRollback())
 
 	setProgressIndeterminate()
 
 	m.list.BeginTransition()
 	advance()
 
-	return tea.Batch(startSpinnerCmd, m.fetchCategory(targetCategory, targetIndex, m.list.Cursor()))
+	return tea.Batch(startSpinnerCmd, m.fetchCategory(tok, targetCategory, targetIndex, m.list.Cursor()))
 }
 
 func (m *model) handleOpenLink() tea.Cmd {
@@ -327,22 +243,15 @@ func (m *model) handleRefresh() tea.Cmd {
 	m.list.SetPage(currentPage)
 	m.list.SetCursor(0)
 
-	startSpinnerCmd := m.startFetch(0)
+	tok, startSpinnerCmd := m.startFetch(0, m.listRollback())
 
 	setProgressIndeterminate()
 
-	return tea.Batch(startSpinnerCmd, m.fetchCategory(currentCategory, currentIndex, 0), fetchMemorialStatus())
+	return tea.Batch(startSpinnerCmd, m.fetchCategory(tok, currentCategory, currentIndex, 0), fetchMemorialStatus())
 }
 
 func (m *model) handleEnterComments() tea.Cmd {
-	selected := m.list.SelectedItem()
-
-	startSpinnerCmd := m.startDetailFetch(0, screenComments)
-	// The comment fetch reports percentages, so its indicator starts at 0%
-	// instead of flashing indeterminate first.
-	setProgressPercent(0)
-
-	return tea.Batch(startSpinnerCmd, m.fetchComments(selected))
+	return m.openComments(m.list.Index())
 }
 
 func (m *model) handleEnterReaderMode() tea.Cmd {
@@ -352,11 +261,32 @@ func (m *model) handleEnterReaderMode() tea.Cmd {
 		return m.showDetailError(err, screenReader)
 	}
 
-	startSpinnerCmd := m.startDetailFetch(readerModeTimeout, screenReader)
+	return m.openReader(m.list.Index())
+}
+
+// openComments starts the comment fetch for the selected story. rollbackStory
+// is the selection to restore on failure or cancel: the story the screen
+// keeps showing, which for J/K navigation is the story being left rather
+// than the selected one.
+func (m *model) openComments(rollbackStory int) tea.Cmd {
+	selected := m.list.SelectedItem()
+
+	tok, startSpinnerCmd := m.startDetailFetch(0, screenComments, m.detailRollback(rollbackStory))
+	// The comment fetch reports percentages, so its indicator starts at 0%
+	// instead of flashing indeterminate first.
+	setProgressPercent(0)
+
+	return tea.Batch(startSpinnerCmd, m.fetchComments(tok, selected))
+}
+
+func (m *model) openReader(rollbackStory int) tea.Cmd {
+	selected := m.list.SelectedItem()
+
+	tok, startSpinnerCmd := m.startDetailFetch(readerModeTimeout, screenReader, m.detailRollback(rollbackStory))
 
 	setProgressIndeterminate()
 
-	return tea.Batch(startSpinnerCmd, m.fetchArticle(selected))
+	return tea.Batch(startSpinnerCmd, m.fetchArticle(tok, selected))
 }
 
 // handleOpenAdjacentStory moves the selection one story up or down and opens
@@ -392,18 +322,11 @@ func (m *model) handleOpenAdjacentStory(msg message.OpenAdjacentStory) tea.Cmd {
 	previousIndex := m.list.Index()
 	m.list.SetIndex(newIndex)
 
-	var cmd tea.Cmd
 	if fromReader {
-		cmd = m.handleEnterReaderMode()
-	} else {
-		cmd = m.handleEnterComments()
+		return m.openReader(previousIndex)
 	}
 
-	// startFetch ran after the selection moved, so it captured the incoming
-	// story; the one to restore on failure is the story we are leaving.
-	m.rollbackStory = previousIndex
-
-	return cmd
+	return m.openComments(previousIndex)
 }
 
 func (m *model) handleToggleRead() tea.Cmd {

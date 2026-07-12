@@ -1,0 +1,174 @@
+package view
+
+import (
+	"context"
+	"time"
+
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+)
+
+// fetchToken is a fetch's identity: the context its commands must fetch under
+// and the id their results must carry. Only begin hands one out, so a fetch
+// command can only be built for the fetch actually starting. A token held
+// across Update cycles goes stale — results built from it fail the finish
+// guard and are dropped.
+type fetchToken struct {
+	ctx context.Context //nolint:containedctx // fetch-scoped, never stored beyond the Update cycle
+	id  uint64
+}
+
+type fetchKind int
+
+const (
+	fetchNone   fetchKind = iota
+	fetchList             // replaces the front page's stories
+	fetchDetail           // loads a story's comments or article
+)
+
+// rollbackPoint is what a failed or cancelled fetch restores. The caller
+// captures it when the fetch starts — explicitly, so a caller that moves the
+// selection first (J/K story navigation) passes the story being left, not
+// the one arriving.
+type rollbackPoint struct {
+	categoryIndex int
+	storyIndex    int // -1 for list fetches: the transition mechanics restore the cursor
+}
+
+// fetchState owns the lifecycle of the single fetch the app allows in flight.
+type fetchState struct {
+	kind   fetchKind
+	ctx    context.Context //nolint:containedctx // single active fetch, accessed only from the Update goroutine
+	cancel context.CancelFunc
+
+	// id is the current fetch era, bumped by begin and abort. Results and the
+	// error-progress timeout carry the era they were made in, so anything
+	// stamped with an older one is ignored.
+	id uint64
+
+	target   screen // the view a detail fetch opens; the loading placeholder matches its meta block
+	rollback rollbackPoint
+}
+
+func (f *fetchState) inFlight() bool      { return f.kind != fetchNone }
+func (f *fetchState) detailLoading() bool { return f.kind == fetchDetail }
+
+// begin starts a fetch's lifecycle, invalidating any predecessor.
+func (f *fetchState) begin(timeout time.Duration, kind fetchKind, target screen, rb rollbackPoint) fetchToken {
+	if f.cancel != nil {
+		f.cancel()
+	}
+
+	f.id++
+	f.kind = kind
+	f.target = target
+	f.rollback = rb
+
+	if timeout > 0 {
+		f.ctx, f.cancel = context.WithTimeout(context.Background(), timeout)
+	} else {
+		f.ctx, f.cancel = context.WithCancel(context.Background())
+	}
+
+	return fetchToken{ctx: f.ctx, id: f.id}
+}
+
+// finish ends the in-flight fetch if id belongs to it; ok=false is a stale
+// result the caller must drop. The returned rollback is the restore point the
+// fetch was started with.
+func (f *fetchState) finish(id uint64) (rollbackPoint, bool) {
+	if f.kind == fetchNone || id != f.id {
+		return rollbackPoint{}, false
+	}
+
+	if f.cancel != nil {
+		f.cancel()
+	}
+
+	f.kind = fetchNone
+
+	return f.rollback, true
+}
+
+// abort cancels the in-flight fetch and moves to a new era, so a result the
+// fetch managed to deliver before the cancel took hold can never match.
+func (f *fetchState) abort() rollbackPoint {
+	if f.cancel != nil {
+		f.cancel()
+	}
+
+	f.id++
+	f.kind = fetchNone
+
+	return f.rollback
+}
+
+// startFetch begins a list fetch: the stories replace the front page, and rb
+// is the selection to restore if the fetch fails or is cancelled. The token
+// is only valid in this Update cycle: build the fetch command now, or a
+// cancel or newer fetch in between would leave the command's results stale.
+func (m *model) startFetch(timeout time.Duration, rb rollbackPoint) (fetchToken, tea.Cmd) {
+	return m.fetch.begin(timeout, fetchList, screenList, rb), m.status.StartSpinner()
+}
+
+// startDetailFetch begins a fetch of a story's comments or article: the list
+// stays in place, dimmed, while the detail loads. target is the view the
+// fetch opens, so the loading pane can lay out what that view will draw.
+func (m *model) startDetailFetch(timeout time.Duration, target screen, rb rollbackPoint) (fetchToken, tea.Cmd) {
+	return m.fetch.begin(timeout, fetchDetail, target, rb), m.status.StartSpinner()
+}
+
+// listRollback is the restore point for a fetch that replaces the list: the
+// category being left. Capture it before advancing to the incoming one.
+func (m *model) listRollback() rollbackPoint {
+	return rollbackPoint{categoryIndex: m.cat.CurrentIndex(), storyIndex: -1}
+}
+
+// detailRollback is the restore point for a story fetch: the current category
+// plus the story the reading marker moves back to on failure.
+func (m *model) detailRollback(storyIndex int) rollbackPoint {
+	return rollbackPoint{categoryIndex: m.cat.CurrentIndex(), storyIndex: storyIndex}
+}
+
+// rollbackFetch recovers from a failed or cancelled fetch: it restores the
+// category selection and unfreezes the list. For a story fetch it also moves
+// the list selection back to the story that is still open, so the reading
+// marker never points at a story the detail view doesn't show. Category
+// fetches keep their cursor: the transition mechanics restore it.
+func (m *model) rollbackFetch(rb rollbackPoint) {
+	m.cat.SetIndex(rb.categoryIndex)
+
+	if rb.storyIndex >= 0 {
+		m.list.SetIndex(rb.storyIndex)
+	}
+
+	m.list.EndTransition()
+}
+
+// finishFetch settles the bookkeeping every fetch result shares: the stale
+// guard, the terminal progress indicator, the spinner. ok=false is a stale
+// result the caller must drop without touching anything.
+func (m *model) finishFetch(id uint64, err error) (rollbackPoint, bool) {
+	rb, ok := m.fetch.finish(id)
+	if !ok {
+		return rollbackPoint{}, false
+	}
+
+	syncProgress(err)
+	m.status.StopSpinner()
+
+	return rb, true
+}
+
+func (m *model) handleCancelFetch() tea.Cmd {
+	m.rollbackFetch(m.fetch.abort())
+
+	clearProgress()
+	m.status.StopSpinner()
+	// The screen stays where the fetch started: canceling a J/K story fetch
+	// keeps the open story, canceling a category fetch keeps the front page.
+	m.updatePagination()
+
+	return m.status.NewStatusMessageWithDuration(
+		lipgloss.NewStyle().Faint(true).Render("Cancelled"), statusMessageShort)
+}

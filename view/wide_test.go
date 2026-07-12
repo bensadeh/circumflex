@@ -30,11 +30,7 @@ func newWideTestModel(t *testing.T) *model {
 	m := newTestModel(t)
 
 	m, _ = m.Update(tea.WindowSizeMsg{Width: wideTestWidth, Height: wideTestHeight})
-
-	m.list.SetItems(categories.Top, testItems())
-	m.status.StopSpinner()
-	m.fetching = false
-	m.updatePagination()
+	m, _ = m.Update(message.StoriesReady{Stories: testItems(), Category: categories.Top, FetchID: m.fetch.id})
 
 	return m
 }
@@ -43,10 +39,10 @@ func openTestComments(t *testing.T, m *model) {
 	t.Helper()
 
 	m, _ = m.Update(keyMsg("enter"))
-	require.True(t, m.fetching)
+	require.True(t, m.fetch.inFlight())
 
 	thread := comment.ToThread(&hn.CommentTree{ID: 1, Title: "First item", CommentsCount: 5})
-	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.id})
 	require.Equal(t, screenComments, m.screen)
 }
 
@@ -112,13 +108,13 @@ func TestWideView_LeftPaneDimsOnceWhileStoryIsOpen(t *testing.T) {
 	browsing := m.browsingView()
 
 	m, _ = m.Update(keyMsg("enter"))
-	require.True(t, m.fetching)
+	require.True(t, m.fetch.inFlight())
 
 	loading := m.browsingView()
 	assert.NotEqual(t, browsing, loading, "left pane should dim when the story starts loading")
 
 	thread := comment.ToThread(&hn.CommentTree{ID: 1, Title: "First item", CommentsCount: 5})
-	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.id})
 	require.Equal(t, screenComments, m.screen)
 	assert.Equal(t, loading, m.browsingView(), "left pane should not change again when the story arrives")
 
@@ -133,14 +129,14 @@ func TestWideView_LoadingShowsUnboldedTitle(t *testing.T) {
 	m := newWideTestModel(t)
 
 	m, _ = m.Update(keyMsg("enter"))
-	require.True(t, m.fetching)
+	require.True(t, m.fetch.inFlight())
 
 	loading := m.detailPaneView()
 	assert.Contains(t, xansi.Strip(loading), "First item")
 	assert.NotContains(t, loading, "\x1b[1m", "loading title must not be bold")
 
 	thread := comment.ToThread(&hn.CommentTree{ID: 1, Title: "First item", CommentsCount: 5})
-	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.id})
 	assert.Contains(t, m.detailPaneView(), "\x1b[1m", "the opened story's title regains its bold")
 }
 
@@ -151,7 +147,7 @@ func TestWideView_LoadingShowsMetaBlockPlaceholder(t *testing.T) {
 	m := newWideTestModel(t)
 
 	m, _ = m.Update(keyMsg("enter"))
-	require.True(t, m.fetching)
+	require.True(t, m.fetch.inFlight())
 
 	loading := m.detailPaneView()
 	loadingBox := metaBoxLines(t, loading)
@@ -166,7 +162,7 @@ func TestWideView_LoadingShowsMetaBlockPlaceholder(t *testing.T) {
 		ID: 1, Title: "First item", CommentsCount: 5,
 		URL: "https://example.com/story", Domain: "example.com",
 	})
-	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.id})
 
 	loadedBox := metaBoxLines(t, m.detailPaneView())
 	assert.Len(t, loadingBox, len(loadedBox), "placeholder must span the same rows as the loaded meta block")
@@ -178,11 +174,11 @@ func TestWideView_ErrorViewKeepsMetaBlockPlaceholder(t *testing.T) {
 	m := newWideTestModel(t)
 
 	m, _ = m.Update(keyMsg("enter"))
-	require.True(t, m.fetching)
+	require.True(t, m.fetch.inFlight())
 
 	loadingBox := metaBoxLines(t, m.detailPaneView())
 
-	m, _ = m.Update(message.CommentTreeDataReady{Err: errors.New("server returned status 403"), FetchID: m.fetchID})
+	m, _ = m.Update(message.CommentTreeDataReady{Err: errors.New("server returned status 403"), FetchID: m.fetch.id})
 	require.Equal(t, screenComments, m.screen)
 
 	assert.Equal(t, loadingBox, metaBoxLines(t, m.detailPaneView()),
@@ -229,10 +225,10 @@ func TestWideView_StoryLoadErrorBecomesView(t *testing.T) {
 	openTestComments(t, m)
 
 	openAdjacent(t, m, "J")
-	require.True(t, m.fetching)
+	require.True(t, m.fetch.inFlight())
 	require.Equal(t, 1, m.list.Index())
 
-	m, _ = m.Update(message.CommentTreeDataReady{Err: errors.New("boom"), FetchID: m.fetchID})
+	m, _ = m.Update(message.CommentTreeDataReady{Err: errors.New("boom"), FetchID: m.fetch.id})
 
 	require.IsType(t, &errorView{}, m.detail, "the error should take the pane as a view of its own")
 	assert.Equal(t, screenComments, m.screen)
@@ -253,11 +249,11 @@ func TestWideView_StoryLoadErrorBecomesView(t *testing.T) {
 
 	// J pages on to the next story, like from any open view.
 	openAdjacent(t, m, "J")
-	require.True(t, m.fetching)
+	require.True(t, m.fetch.inFlight())
 	assert.Equal(t, 2, m.list.Index())
 
 	thread := comment.ToThread(&hn.CommentTree{ID: 3, Title: "Third item", CommentsCount: 3})
-	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.id})
 	require.Equal(t, screenComments, m.screen)
 	assert.Contains(t, xansi.Strip(m.detailPaneView()), "3 comments")
 }
@@ -276,16 +272,16 @@ func TestWideView_ErrorProgressTimeout(t *testing.T) {
 	openTestComments(t, m)
 
 	openAdjacent(t, m, "J")
-	m, _ = m.Update(message.CommentTreeDataReady{Err: errors.New("boom"), FetchID: m.fetchID})
+	m, _ = m.Update(message.CommentTreeDataReady{Err: errors.New("boom"), FetchID: m.fetch.id})
 
 	require.Contains(t, progress.String(), "\x1b]9;4;2;100\a")
 
-	m, _ = m.Update(message.ErrorProgressTimeout{FetchID: m.fetchID - 1})
+	m, _ = m.Update(message.ErrorProgressTimeout{FetchID: m.fetch.id - 1})
 
 	assert.False(t, strings.HasSuffix(progress.String(), "\x1b]9;4;0\a"),
 		"a stale timeout must not clear the indicator")
 
-	m, _ = m.Update(message.ErrorProgressTimeout{FetchID: m.fetchID})
+	m, _ = m.Update(message.ErrorProgressTimeout{FetchID: m.fetch.id})
 
 	assert.True(t, strings.HasSuffix(progress.String(), "\x1b]9;4;0\a"),
 		"the timeout should clear the indicator")
@@ -305,7 +301,7 @@ func TestWideView_ErrorViewQuit(t *testing.T) {
 	openTestComments(t, m)
 
 	openAdjacent(t, m, "J")
-	m, _ = m.Update(message.CommentTreeDataReady{Err: errors.New("boom"), FetchID: m.fetchID})
+	m, _ = m.Update(message.CommentTreeDataReady{Err: errors.New("boom"), FetchID: m.fetch.id})
 	require.IsType(t, &errorView{}, m.detail)
 
 	m, cmd := m.Update(keyMsg("q"))
@@ -327,10 +323,10 @@ func TestNarrowStoryLoadError_KeepsOpenStoryAndSelection(t *testing.T) {
 	openTestComments(t, m)
 
 	openAdjacent(t, m, "J")
-	require.True(t, m.fetching)
+	require.True(t, m.fetch.inFlight())
 	require.Equal(t, 1, m.list.Index())
 
-	m, _ = m.Update(message.CommentTreeDataReady{Err: errors.New("boom"), FetchID: m.fetchID})
+	m, _ = m.Update(message.CommentTreeDataReady{Err: errors.New("boom"), FetchID: m.fetch.id})
 
 	assert.NotNil(t, m.detail, "narrow layout keeps the outgoing story open")
 	assert.Equal(t, 0, m.list.Index(), "the selection moves back to the story still on screen")
@@ -344,11 +340,11 @@ func TestWideView_CancelledStoryLoadRestoresSelection(t *testing.T) {
 	openTestComments(t, m)
 
 	openAdjacent(t, m, "J")
-	require.True(t, m.fetching)
+	require.True(t, m.fetch.inFlight())
 	require.Equal(t, 1, m.list.Index())
 
 	m, _ = m.Update(keyMsg("esc"))
-	assert.False(t, m.fetching)
+	assert.False(t, m.fetch.inFlight())
 	assert.Equal(t, 0, m.list.Index(), "cancel should move the selection back to the open story")
 }
 
@@ -368,22 +364,19 @@ func openAdjacent(t *testing.T, m *model, key string) tea.Cmd {
 func TestWideView_AdjacentStoryNavigationFlipsPages(t *testing.T) {
 	m := newTestModel(t)
 	m, _ = m.Update(tea.WindowSizeMsg{Width: wideTestWidth, Height: 9})
-	m.list.SetItems(categories.Top, testItems())
-	m.status.StopSpinner()
-	m.fetching = false
-	m.updatePagination()
+	m, _ = m.Update(message.StoriesReady{Stories: testItems(), Category: categories.Top, FetchID: m.fetch.id})
 	require.Equal(t, 2, m.list.PerPage())
 
 	openTestComments(t, m)
 	require.Equal(t, 0, m.list.Index())
 
 	openAdjacent(t, m, "J")
-	require.True(t, m.fetching)
+	require.True(t, m.fetch.inFlight())
 	assert.Equal(t, 1, m.list.Index())
 	assert.Equal(t, 0, m.list.Page())
 
 	thread := comment.ToThread(&hn.CommentTree{ID: 2, Title: "Second item", CommentsCount: 3})
-	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.id})
 	require.Equal(t, screenComments, m.screen)
 
 	openAdjacent(t, m, "J")
@@ -392,7 +385,7 @@ func TestWideView_AdjacentStoryNavigationFlipsPages(t *testing.T) {
 	assert.Equal(t, 0, m.list.Cursor())
 
 	thread = comment.ToThread(&hn.CommentTree{ID: 3, Title: "Third item", CommentsCount: 1})
-	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetchID})
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.id})
 
 	openAdjacent(t, m, "K")
 	assert.Equal(t, 1, m.list.Index())

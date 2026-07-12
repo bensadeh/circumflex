@@ -143,10 +143,10 @@ func (m *Model) SetCursor(cursor int) {
 }
 
 // SetCursorClamped sets the cursor, capped to the last item on the current
-// page.
+// page; an empty page keeps it at 0.
 func (m *Model) SetCursorClamped(cursor int) {
 	itemsOnPage := m.pager.Paginator.ItemsOnPage(len(m.VisibleItems()))
-	m.pager.cursor = min(cursor, itemsOnPage-1)
+	m.pager.cursor = max(0, min(cursor, itemsOnPage-1))
 }
 
 // ResetPager returns to the first page, keeping the cursor on a valid item.

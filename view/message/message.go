@@ -34,14 +34,11 @@ type StatusMessageTimeout struct {
 	Generation int
 }
 
-type FetchingFinished struct {
-	Stories  []*hn.Story
-	Category categories.Category
-	Err      error
-	FetchID  uint64
-}
-
-type CategoryFetchingFinished struct {
+// StoriesReady delivers a category's stories: a tab switch, a refresh, or
+// the startup fetch (including the fabricated result the local favorites
+// category is served through). Index and Cursor are the category selection
+// and list cursor to land on when the stories apply.
+type StoriesReady struct {
 	Stories  []*hn.Story
 	Category categories.Category
 	Index    int

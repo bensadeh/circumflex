@@ -17,7 +17,7 @@ import (
 
 func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 	if msg, ok := msg.(tea.KeyPressMsg); ok && msg.Mod == tea.ModCtrl && msg.Code == 'c' {
-		if m.fetching {
+		if m.fetch.inFlight() {
 			return m, m.handleCancelFetch()
 		}
 
@@ -71,9 +71,6 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 
 		m.memorialErr = msg.Err
 
-	case message.FetchingFinished:
-		return m.handleFetchingFinished(msg)
-
 	case message.StatusMessageTimeout:
 		if msg.Generation == m.status.generation {
 			m.status.hideStatusMessage()
@@ -123,7 +120,7 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 		return m, nil
 
 	case message.ErrorProgressTimeout:
-		if msg.FetchID == m.fetchID {
+		if msg.FetchID == m.fetch.id {
 			clearProgress()
 		}
 
@@ -133,13 +130,13 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 	case message.OpenAdjacentStory:
 		return m, m.handleOpenAdjacentStory(msg)
 
-	case message.CategoryFetchingFinished:
-		return m.handleCategoryFetchingFinished(msg)
+	case message.StoriesReady:
+		return m.handleStoriesReady(msg)
 	}
 
 	// While a fetch is in flight only the cancel key acts, whatever the
 	// screen; other keys would race the fetch's outcome.
-	if m.fetching {
+	if m.fetch.inFlight() {
 		if keyMsg, ok := msg.(tea.KeyPressMsg); ok && key.Matches(keyMsg, m.keymap.Cancel) {
 			cmds = append(cmds, m.handleCancelFetch())
 		}
@@ -169,7 +166,7 @@ func (m *model) handleStartup(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
 
 	var cmds []tea.Cmd
 
-	spinnerCmd := m.startFetch(0)
+	tok, spinnerCmd := m.startFetch(0, m.listRollback())
 
 	setProgressIndeterminate()
 
@@ -177,7 +174,7 @@ func (m *model) handleStartup(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
 
 	m.syncFavorites()
 
-	fetchCmd := m.fetchStoriesForFirstCategory()
+	fetchCmd := m.fetchStoriesForFirstCategory(tok)
 	cmds = append(cmds, fetchCmd)
 	cmds = append(cmds, fetchMemorialStatus())
 	cmds = append(cmds, scheduleTimeRefresh())
@@ -209,37 +206,14 @@ func (m *model) handleWindowResize(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
-func (m *model) handleFetchingFinished(msg message.FetchingFinished) (*model, tea.Cmd) {
-	if msg.FetchID != m.fetchID {
+func (m *model) handleStoriesReady(msg message.StoriesReady) (*model, tea.Cmd) {
+	rb, ok := m.finishFetch(msg.FetchID, msg.Err)
+	if !ok {
 		return m, nil
 	}
 
-	syncProgress(msg.Err)
-	m.status.StopSpinner()
-	m.fetching = false
-
 	if msg.Err != nil {
-		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
-	}
-
-	m.list.SetItems(msg.Category, msg.Stories)
-	m.updatePagination()
-
-	return m, nil
-}
-
-func (m *model) handleCategoryFetchingFinished(msg message.CategoryFetchingFinished) (*model, tea.Cmd) {
-	if msg.FetchID != m.fetchID {
-		return m, nil
-	}
-
-	syncProgress(msg.Err)
-
-	m.fetching = false
-
-	if msg.Err != nil {
-		m.rollbackFetch()
-		m.status.StopSpinner()
+		m.rollbackFetch(rb)
 		m.updatePagination()
 
 		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
@@ -248,7 +222,6 @@ func (m *model) handleCategoryFetchingFinished(msg message.CategoryFetchingFinis
 	m.list.EndTransition()
 	m.list.SetItems(msg.Category, msg.Stories)
 	m.list.SetPage(0)
-	m.status.StopSpinner()
 	m.cat.SetIndex(msg.Index)
 	m.list.SetCursorClamped(msg.Cursor)
 
@@ -258,17 +231,12 @@ func (m *model) handleCategoryFetchingFinished(msg message.CategoryFetchingFinis
 }
 
 func (m *model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*model, tea.Cmd) {
-	if msg.FetchID != m.fetchID {
+	rb, ok := m.finishFetch(msg.FetchID, msg.Err)
+	if !ok {
 		return m, nil
 	}
 
-	syncProgress(msg.Err)
-
-	m.fetching = false
-
 	var cmds []tea.Cmd
-
-	m.status.StopSpinner()
 
 	if msg.UpdatedStory != nil {
 		if err := m.favorites.UpdateStoryAndWriteToDisk(favorites.ItemFromStory(msg.UpdatedStory)); err != nil {
@@ -282,7 +250,7 @@ func (m *model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*m
 	// to match it.
 	if msg.Err != nil {
 		if !m.isWide() {
-			m.rollbackFetch()
+			m.rollbackFetch(rb)
 		}
 
 		cmds = append(cmds, m.showDetailError(msg.Err, screenComments))
@@ -303,21 +271,17 @@ func (m *model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*m
 }
 
 func (m *model) handleArticleReady(msg message.ArticleReady) (*model, tea.Cmd) {
-	if msg.FetchID != m.fetchID {
+	rb, ok := m.finishFetch(msg.FetchID, msg.Err)
+	if !ok {
 		return m, nil
 	}
-
-	syncProgress(msg.Err)
-
-	m.fetching = false
-	m.status.StopSpinner()
 
 	// On error the story never opens, mirroring the comment section above:
 	// the wide layout replaces the pane with the error view, the narrow
 	// layout keeps the outgoing story on screen and rolls the selection back.
 	if msg.Err != nil {
 		if !m.isWide() {
-			m.rollbackFetch()
+			m.rollbackFetch(rb)
 		}
 
 		return m, m.showDetailError(msg.Err, screenReader)

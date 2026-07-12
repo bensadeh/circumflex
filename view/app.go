@@ -1,7 +1,6 @@
 package view
 
 import (
-	"context"
 	"image/color"
 	"time"
 
@@ -24,10 +23,10 @@ const (
 )
 
 type model struct {
-	screen   screen
-	fetching bool
-	prompt   prompt
-	started  bool
+	screen  screen
+	fetch   fetchState
+	prompt  prompt
+	started bool
 
 	status statusBar
 	width  int
@@ -48,14 +47,6 @@ type model struct {
 	favorites *favorites.Favorites
 	cat       *categories.Categories
 	keymap    keyMap
-
-	fetchCtx      context.Context //nolint:containedctx // single active fetch context, accessed only from the Update goroutine
-	cancelFetch   context.CancelFunc
-	fetchID       uint64
-	detailFetch   bool   // the in-flight fetch loads a story's comments or article, not the list
-	detailTarget  screen // the view a detail fetch opens; the loading placeholder matches its meta block
-	rollbackIndex int    // category index to restore if the fetch fails or is cancelled
-	rollbackStory int    // list selection to restore if a story fetch fails or is cancelled
 
 	helpViewport viewport.Model
 

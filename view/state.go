@@ -1,8 +1,8 @@
 package view
 
 // The display is described by orthogonal facts on the model — the screen
-// that owns it, whether a fetch is in flight and what it loads (fetching,
-// detailFetch), and which front-page confirmation prompt is active — rather
+// that owns it, the in-flight fetch and what it loads (fetch, see
+// fetchstate.go), and which front-page confirmation prompt is active — rather
 // than one flat mode. A fetch keeps the screen it started on, so J/K story
 // navigation never falls back to the front page while the next story loads.
 

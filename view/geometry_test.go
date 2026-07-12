@@ -60,12 +60,14 @@ type geometrySurface struct {
 var geometrySurfaces = []geometrySurface{
 	{"browsing", func(m *model) *model { return m }},
 	{"comments", func(m *model) *model {
-		m, _ = m.Update(message.CommentTreeDataReady{Thread: geometryThread(), FetchID: m.fetchID})
+		m, _ = m.Update(keyMsg("enter"))
+		m, _ = m.Update(message.CommentTreeDataReady{Thread: geometryThread(), FetchID: m.fetch.id})
 
 		return m
 	}},
 	{"reader", func(m *model) *model {
-		m, _ = m.Update(message.ArticleReady{Parsed: geometryArticle(), Title: "A Story Title Long Enough To Truncate", FetchID: m.fetchID})
+		m, _ = m.Update(keyMsg("space"))
+		m, _ = m.Update(message.ArticleReady{Parsed: geometryArticle(), Title: "A Story Title Long Enough To Truncate", FetchID: m.fetch.id})
 
 		return m
 	}},
@@ -88,7 +90,7 @@ var geometrySurfaces = []geometrySurface{
 		m, _ = m.Update(keyMsg("enter"))
 		m, _ = m.Update(message.CommentTreeDataReady{
 			Err:     errors.New("a load error message long enough to wrap in the narrowest detail pane"),
-			FetchID: m.fetchID,
+			FetchID: m.fetch.id,
 		})
 
 		return m
@@ -96,17 +98,19 @@ var geometrySurfaces = []geometrySurface{
 	// J/K from an open story: the narrow layout keeps the story on screen and
 	// overlays fetch feedback on its bottom row.
 	{"adjacentloading", func(m *model) *model {
-		m, _ = m.Update(message.CommentTreeDataReady{Thread: geometryThread(), FetchID: m.fetchID})
+		m, _ = m.Update(keyMsg("enter"))
+		m, _ = m.Update(message.CommentTreeDataReady{Thread: geometryThread(), FetchID: m.fetch.id})
 		m, _ = m.Update(message.OpenAdjacentStory{Direction: 1})
 
 		return m
 	}},
 	{"adjacenterror", func(m *model) *model {
-		m, _ = m.Update(message.CommentTreeDataReady{Thread: geometryThread(), FetchID: m.fetchID})
+		m, _ = m.Update(keyMsg("enter"))
+		m, _ = m.Update(message.CommentTreeDataReady{Thread: geometryThread(), FetchID: m.fetch.id})
 		m, _ = m.Update(message.OpenAdjacentStory{Direction: 1})
 		m, _ = m.Update(message.CommentTreeDataReady{
 			Err:     errors.New("dial tcp: lookup " + strings.Repeat("a-very-long-hostname.example.com.", 8) + ": no such host"),
-			FetchID: m.fetchID,
+			FetchID: m.fetch.id,
 		})
 
 		return m
@@ -158,11 +162,7 @@ func newGeometryModel(t *testing.T, width, height, wideMinWidth int) *model {
 	m.config.WideViewMinWidth = wideMinWidth
 
 	m, _ = m.Update(tea.WindowSizeMsg{Width: width, Height: height})
-
-	m.list.SetItems(categories.Top, testItems())
-	m.status.StopSpinner()
-	m.fetching = false
-	m.updatePagination()
+	m, _ = m.Update(message.StoriesReady{Stories: testItems(), Category: categories.Top, FetchID: m.fetch.id})
 
 	return m
 }

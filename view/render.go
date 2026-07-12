@@ -37,7 +37,7 @@ func (m *model) overlayDetailStatus(view string) string {
 	var status string
 
 	switch {
-	case m.fetching:
+	case m.fetch.inFlight():
 		status = m.status.spinnerView()
 	case m.status.message != "":
 		status = m.status.message
@@ -101,7 +101,7 @@ func (m *model) statusAndPaginationView() string {
 	}
 
 	switch {
-	case m.fetching:
+	case m.fetch.inFlight():
 		// A story fetch in the wide layout keeps the paginator so the left
 		// pane doesn't change; the loading state shows in the detail pane.
 		if m.isWide() && m.detailLoading() {

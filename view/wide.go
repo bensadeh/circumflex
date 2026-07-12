@@ -35,7 +35,7 @@ func (m *model) detailWidth() int {
 // detailLoading reports whether a story's comments or article are being
 // fetched, as opposed to a category fetch that replaces the list itself.
 func (m *model) detailLoading() bool {
-	return m.fetching && m.detailFetch
+	return m.fetch.detailLoading()
 }
 
 // wideDetailOpen reports whether the wide layout's detail pane is occupied:
@@ -108,7 +108,7 @@ func (m *model) loadingPane() string {
 // loadingBody fills the pane content area with the meta block placeholder
 // over a centered spinner.
 func (m *model) loadingBody(w int) string {
-	box := m.placeholderMetaBlock(w, m.detailTarget)
+	box := m.placeholderMetaBlock(w, m.fetch.target)
 
 	return placeholderBody(box, m.status.spinnerView(), w, m.frame().PaneContentHeight())
 }
@@ -141,7 +141,7 @@ func truncateLines(s string, w int) string {
 // view will draw, built through the same variant from what the list already
 // knows about the selected story: the reader and the comment section lay
 // theirs out at different widths, and only stories with a link get URL rows.
-// target is a parameter rather than m.detailTarget because the error view
+// target is a parameter rather than m.fetch.target because the error view
 // can outlive the fetch that spawned it.
 func (m *model) placeholderMetaBlock(paneWidth int, target screen) string {
 	it := m.list.SelectedItem()
