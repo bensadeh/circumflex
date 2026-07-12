@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/nerdfonts"
@@ -743,5 +742,5 @@ func TestResize_HeightOnlyKeepsSearchMatches(t *testing.T) {
 	m.Update(tea.WindowSizeMsg{Width: 120, Height: 60})
 
 	assert.Same(t, before, &m.searchMatches[0], "height-only resize must not recompute matches")
-	assert.Contains(t, m.DecorateView(m.Viewport.View()), ansi.Reverse)
+	assert.Contains(t, m.DecorateView(m.Viewport.View()), currentHighlight)
 }

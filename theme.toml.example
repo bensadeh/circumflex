@@ -61,3 +61,7 @@
 
 [indent]
   cycle = ["red", "yellow", "green", "cyan", "blue", "magenta", "bright_red", "bright_yellow", "bright_green", "bright_cyan", "bright_blue", "bright_magenta"]
+
+[search]
+  match = "yellow"
+  current = "yellow"

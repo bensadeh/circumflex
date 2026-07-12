@@ -11,6 +11,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// Default-theme search highlights: yellow text for matches, black on a
+// yellow background for the current match, reverse/intensity cleared on both.
+const (
+	matchHighlight   = "\x1b[27m\x1b[22m\x1b[33m"
+	currentHighlight = "\x1b[27m\x1b[22m\x1b[43;30m"
+)
+
 // searchModel builds a thread where both "needle" matches start out hidden:
 //
 //	A "top level alpha"            (flat 0, collapsed)
@@ -69,6 +76,52 @@ func TestCommentSearch_ExpandsAllOnPromptOpen(t *testing.T) {
 	assert.Equal(t, max(0, line-scrollPadding), m.Viewport.YOffset())
 }
 
+func TestCommentSearch_LiveHitsWhileTyping(t *testing.T) {
+	m := searchModel(t)
+
+	m.Update(tea.KeyPressMsg{Code: '/', Text: "/"})
+
+	for _, r := range "needle" {
+		m.Update(tea.KeyPressMsg{Code: r, Text: string(r)})
+	}
+
+	require.Len(t, m.searchMatches, 2, "hits update while typing")
+
+	view := m.DecorateView(m.Viewport.View())
+	assert.Contains(t, view, matchHighlight)
+	assert.NotContains(t, view, currentHighlight, "no current match before commit")
+	assert.Contains(t, ansi.Strip(m.modeIndicator()), "2 matches", "the counter shows the live total")
+
+	for range len("needle") {
+		m.Update(tea.KeyPressMsg{Code: tea.KeyBackspace})
+	}
+
+	m.Update(tea.KeyPressMsg{Code: 'x', Text: "x"})
+	assert.Empty(t, m.searchMatches, "hits follow the query back down")
+	assert.Contains(t, ansi.Strip(m.modeIndicator()), "no matches")
+}
+
+func TestCommentSearch_CancelRestoresPriorMatches(t *testing.T) {
+	m := searchModel(t)
+	commitCommentSearch(m, "needle")
+	m.Update(tea.KeyPressMsg{Code: 'n', Text: "n"})
+
+	m.Update(tea.KeyPressMsg{Code: '/', Text: "/"})
+
+	for _, r := range "alpha" {
+		m.Update(tea.KeyPressMsg{Code: r, Text: string(r)})
+	}
+
+	require.Len(t, m.searchMatches, 1, "the prompt's live hits replace the committed ones")
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyEsc})
+
+	assert.Equal(t, "needle", m.SearchQuery(), "esc keeps the committed query")
+	assert.Len(t, m.searchMatches, 2, "esc falls back to the committed query's matches")
+	assert.Equal(t, 1, m.searchCurrent, "the current match survives the canceled prompt")
+	assert.Contains(t, ansi.Strip(m.modeIndicator()), "2/2")
+}
+
 func TestCommentSearch_CanceledPromptKeepsExpansion(t *testing.T) {
 	m := searchModel(t)
 
@@ -85,18 +138,23 @@ func TestCommentSearch_JumpRevealsRecollapsedBranch(t *testing.T) {
 
 	m.collapseAll()
 	require.Equal(t, 0, m.lineMetrics[1].LineCount)
+	assert.NotContains(t, m.DecorateView(m.Viewport.View()), currentHighlight,
+		"a current match hidden in a collapsed branch renders no highlight")
 
 	m.Update(tea.KeyPressMsg{Code: 'n', Text: "n"})
 
 	assert.Equal(t, 1, m.searchCurrent)
 	assert.Positive(t, m.lineMetrics[2].LineCount, "n reveals a match the user collapsed away")
+	assert.Contains(t, m.DecorateView(m.Viewport.View()), currentHighlight)
 }
 
 func TestCommentSearch_HighlightsAndCounter(t *testing.T) {
 	m := searchModel(t)
 	commitCommentSearch(m, "needle")
 
-	assert.Contains(t, m.DecorateView(m.Viewport.View()), ansi.Reverse)
+	view := m.DecorateView(m.Viewport.View())
+	assert.Contains(t, view, currentHighlight, "the current match gets its own color")
+	assert.Contains(t, view, matchHighlight, "the other match gets the base color")
 	assert.Contains(t, ansi.Strip(m.modeIndicator()), "1/2")
 
 	m.Update(tea.KeyPressMsg{Code: 'n', Text: "n"})
@@ -128,7 +186,8 @@ func TestCommentSearch_BackKeysClearThenQuit(t *testing.T) {
 			assert.Nil(t, cmd)
 			assert.False(t, m.SearchActive(), "the first press only clears the search")
 			assert.Empty(t, m.searchMatches)
-			assert.NotContains(t, m.DecorateView(m.Viewport.View()), ansi.Reverse)
+			assert.NotContains(t, m.DecorateView(m.Viewport.View()), matchHighlight)
+			assert.NotContains(t, m.DecorateView(m.Viewport.View()), currentHighlight)
 			assert.Positive(t, m.lineMetrics[1].LineCount, "the expansion persists")
 
 			cmd = m.Update(k.msg)
@@ -155,7 +214,7 @@ func TestCommentSearch_SurvivesResize(t *testing.T) {
 
 	assert.True(t, m.SearchActive())
 	assert.Len(t, m.searchMatches, 2, "matches are recomputed against the rewrapped comments")
-	assert.Contains(t, m.DecorateView(m.Viewport.View()), ansi.Reverse)
+	assert.Contains(t, m.DecorateView(m.Viewport.View()), currentHighlight)
 }
 
 func TestCommentSearch_FindsRootSelfText(t *testing.T) {
@@ -167,7 +226,7 @@ func TestCommentSearch_FindsRootSelfText(t *testing.T) {
 
 	require.Len(t, m.searchMatches, 1)
 	assert.Equal(t, -1, m.searchMatches[0].flatIdx, "the match sits in the thread header")
-	assert.Contains(t, m.DecorateView(m.Viewport.View()), ansi.Reverse)
+	assert.Contains(t, m.DecorateView(m.Viewport.View()), currentHighlight)
 }
 
 func TestCommentSearch_NavModeFocusFollowsMatch(t *testing.T) {

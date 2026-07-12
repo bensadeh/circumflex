@@ -23,6 +23,7 @@ type Theme struct {
 	Reader   ReaderColors   `toml:"reader"`
 	Header   HeaderColors   `toml:"header"`
 	Indent   IndentColors   `toml:"indent"`
+	Search   SearchColors   `toml:"search"`
 }
 
 type AppColors struct {
@@ -83,6 +84,15 @@ type IndentColors struct {
 	Cycle []string `toml:"cycle"`
 }
 
+// SearchColors color the search highlights: match recolors every matched
+// text, current paints the selected match as a block of that color with
+// black or bright white text on top, whichever contrasts better. An empty
+// value falls back to reverse video.
+type SearchColors struct {
+	Match   string `toml:"match"`
+	Current string `toml:"current"`
+}
+
 func Default() *Theme {
 	return &Theme{
 		App: AppColors{
@@ -138,6 +148,10 @@ func Default() *Theme {
 				"red", "yellow", "green", "cyan", "blue", "magenta",
 				"bright_red", "bright_yellow", "bright_green", "bright_cyan", "bright_blue", "bright_magenta",
 			},
+		},
+		Search: SearchColors{
+			Match:   "yellow",
+			Current: "yellow",
 		},
 	}
 }

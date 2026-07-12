@@ -161,8 +161,8 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 
 		// The rewrap moved text within comments, so comment-relative match
 		// positions are recomputed before the rebuild resolves them.
-		if m.SearchActive() {
-			m.searchMatches = m.findAllMatches(m.SearchQuery())
+		if query := m.ActiveQuery(); query != "" {
+			m.searchMatches = m.findAllMatches(query)
 			m.searchCurrent = min(m.searchCurrent, max(0, len(m.searchMatches)-1))
 		}
 
@@ -210,13 +210,15 @@ func (m *Model) updateViewport() {
 }
 
 // syncDecorations refreshes the display-time decorations: the focused header
-// override and, when a search is active, the match positions re-resolved
-// against the current line metrics.
+// override and, when a search is active or being typed, the match positions
+// re-resolved against the current line metrics.
 func (m *Model) syncDecorations() {
 	m.SetRowOverrides(m.focusOverrides())
 
-	if m.SearchActive() {
-		m.SetSearchMatches(m.absoluteMatches())
+	if m.SearchActive() || m.SearchPrompting() {
+		matches, current := m.absoluteMatches()
+		m.SetSearchMatches(matches)
+		m.SetCurrentMatch(current)
 	} else {
 		m.SetSearchMatches(nil)
 	}
@@ -252,17 +254,21 @@ func (m *Model) openCommentsInBrowser() tea.Cmd {
 
 func (m *Model) modeIndicator() string {
 	if search := m.SearchFooterLabel(); search != "" {
-		counter := ""
-		if !m.SearchPrompting() {
-			counter = pane.MatchCountLabel(m.searchCurrent, len(m.searchMatches))
+		// The counter takes over the comment count's slot on the right:
+		// position over the full match list once committed, the live total
+		// while the prompt is open.
+		counter := pane.MatchCountLabel(m.searchCurrent, len(m.searchMatches))
+
+		if m.SearchPrompting() {
+			counter = ""
+			if m.ActiveQuery() != "" {
+				counter = pane.MatchTotalLabel(len(m.searchMatches))
+			}
 		}
 
 		commentWidth := layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
 		totalWidth := layout.CommentSectionLeftMargin + commentWidth
-		result := pane.FooterSections(totalWidth,
-			"  "+search,
-			counter,
-			commentCountLabel(m.rc.story.CommentsCount, m.rc.newComments, m.rc.enableNerdFonts))
+		result := pane.FooterSections(totalWidth, "  "+search, counter)
 
 		return xansi.Truncate(result, m.rc.paneWidth, "")
 	}

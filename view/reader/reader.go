@@ -195,8 +195,8 @@ func (m *Model) rerender() {
 
 	// A width change rewraps text, so match positions are stale; the scroll
 	// position is kept rather than re-jumped.
-	if m.SearchActive() {
-		m.SetSearchMatches(pane.FindMatches(m.PlainLines(), m.SearchQuery()))
+	if query := m.ActiveQuery(); query != "" {
+		m.SetSearchMatches(pane.FindMatches(m.PlainLines(), query))
 	}
 
 	maxOffset := max(0, m.ContentLines-m.Viewport.Height())
@@ -242,9 +242,15 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 	}
 
 	if m.SearchPrompting() {
-		if m.HandleSearchPromptKey(msg) == pane.PromptCommitted {
+		switch m.HandleSearchPromptKey(msg) {
+		case pane.PromptCommitted:
 			m.SetSearchMatches(pane.FindMatches(m.PlainLines(), m.SearchQuery()))
 			m.JumpToFirstMatchFrom(m.Viewport.YOffset())
+
+		case pane.PromptPending, pane.PromptCanceled:
+			// Hits track the prompt live; a cancel falls back to the prior
+			// query's matches (or none).
+			m.SetSearchMatches(pane.FindMatches(m.PlainLines(), m.ActiveQuery()))
 		}
 
 		return nil
@@ -339,15 +345,15 @@ func (m *Model) View() string {
 
 // footer is the line under the separator: the image indicator on the left
 // when the article has images, and the reader-mode label ending at the
-// article column's right edge. A search in play takes over the left side
-// with its prompt or query, plus the match counter between.
+// article column's right edge. A search in play takes over the whole line:
+// its prompt or query on the left, the match counter on the right.
 func (m *Model) footer() string {
 	totalWidth := layout.ReaderViewLeftMargin + layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
 
 	var result string
 
 	if search := m.SearchFooterLabel(); search != "" {
-		result = pane.FooterSections(totalWidth, "  "+search, m.SearchCountLabel(), readerModeLabel(m.opts.NerdFonts))
+		result = pane.FooterSections(totalWidth, "  "+search, m.SearchCountLabel())
 	} else {
 		result = pane.FooterSections(totalWidth, m.imageIndicator(), readerModeLabel(m.opts.NerdFonts))
 	}

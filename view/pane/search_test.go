@@ -11,6 +11,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// Default-theme search highlights: yellow text for matches, black on a
+// yellow background for the current match, reverse/intensity cleared on both.
+const (
+	matchHighlight   = "\x1b[27m\x1b[22m\x1b[33m"
+	currentHighlight = "\x1b[27m\x1b[22m\x1b[43;30m"
+)
+
 func typeKeys(s *Scroller, text string) {
 	for _, r := range text {
 		s.HandleSearchPromptKey(tea.KeyPressMsg{Code: r, Text: string(r)})
@@ -175,11 +182,53 @@ func TestSearchHighlights_AppliedAndCleared(t *testing.T) {
 
 	s.search.query = "world"
 	s.SetSearchMatches(FindMatches(s.PlainLines(), "world"))
-	assert.Contains(t, s.DecorateView(s.Viewport.View()), ansi.Reverse, "matches render reversed")
+	assert.Contains(t, s.DecorateView(s.Viewport.View()), currentHighlight, "the only match is the current one")
 
 	s.ClearSearch()
-	assert.NotContains(t, s.DecorateView(s.Viewport.View()), ansi.Reverse)
+	assert.NotContains(t, s.DecorateView(s.Viewport.View()), currentHighlight)
+	assert.NotContains(t, s.DecorateView(s.Viewport.View()), matchHighlight)
 	assert.False(t, s.SearchActive())
+}
+
+func TestSetCurrentMatch_DistinguishesTiers(t *testing.T) {
+	t.Parallel()
+
+	s := &Scroller{Viewport: NewViewport(80, 10)}
+	s.SetLines([]string{"first needle", "second needle"})
+
+	s.search.query = "needle"
+	s.SetSearchMatches(FindMatches(s.PlainLines(), "needle"))
+	s.SetCurrentMatch(1)
+
+	rows := strings.Split(s.DecorateView(s.Viewport.View()), "\n")
+	assert.Contains(t, rows[0], matchHighlight)
+	assert.Contains(t, rows[1], currentHighlight)
+
+	s.SetCurrentMatch(-1)
+
+	view := s.DecorateView(s.Viewport.View())
+	assert.NotContains(t, view, currentHighlight, "-1 renders every match as non-current")
+	assert.Contains(t, view, matchHighlight)
+}
+
+func TestSearchPrompt_LiveMatchesHaveNoCurrent(t *testing.T) {
+	t.Parallel()
+
+	s := &Scroller{Viewport: NewViewport(80, 10)}
+	s.SetLines([]string{"hello world"})
+
+	s.StartSearchPrompt()
+	typeKeys(s, "world")
+	s.SetSearchMatches(FindMatches(s.PlainLines(), s.ActiveQuery()))
+
+	view := s.DecorateView(s.Viewport.View())
+	assert.Contains(t, view, matchHighlight, "hits highlight while typing")
+	assert.NotContains(t, view, currentHighlight, "no current match before commit")
+	assert.Equal(t, "1 match", ansi.Strip(s.SearchCountLabel()), "the counter shows the live total")
+
+	s.HandleSearchPromptKey(tea.KeyPressMsg{Code: tea.KeyEnter})
+	assert.Contains(t, s.DecorateView(s.Viewport.View()), currentHighlight, "commit promotes a hit to current")
+	assert.Equal(t, "1/1", ansi.Strip(s.SearchCountLabel()))
 }
 
 func TestSearchCountLabel_NoMatches(t *testing.T) {
@@ -220,13 +269,14 @@ func TestDecorateView_OverridesAndWindow(t *testing.T) {
 
 	rows := strings.Split(s.DecorateView(s.Viewport.View()), "\n")
 	assert.Contains(t, rows[1], "BBB", "the override replaces the row")
-	assert.Contains(t, rows[1], ansi.Reverse, "the match decorates on top of the override")
-	assert.NotContains(t, rows[0], ansi.Reverse)
-	assert.NotContains(t, rows[2], ansi.Reverse)
+	assert.Contains(t, rows[1], currentHighlight, "the current match decorates on top of the override")
+	assert.NotContains(t, rows[0], matchHighlight)
+	assert.NotContains(t, rows[2], matchHighlight)
 
 	s.Viewport.SetYOffset(2)
 
 	view := s.DecorateView(s.Viewport.View())
 	assert.NotContains(t, view, "BBB", "an override outside the window is skipped")
-	assert.Contains(t, view, ansi.Reverse, "the match at line 4 scrolled into view")
+	assert.Contains(t, view, matchHighlight, "the non-current match at line 4 scrolled into view")
+	assert.NotContains(t, view, currentHighlight, "the current match stayed above the window")
 }

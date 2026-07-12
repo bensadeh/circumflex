@@ -53,6 +53,18 @@ func (s *Scroller) SearchActive() bool { return s.search.query != "" }
 
 func (s *Scroller) SearchQuery() string { return s.search.query }
 
+// ActiveQuery is the text matches should be computed against: the live
+// prompt input while typing, the committed query otherwise. Views recompute
+// matches from it on every prompt key, so hits highlight as the user types,
+// and a canceled prompt falls back to the prior query's matches.
+func (s *Scroller) ActiveQuery() string {
+	if s.search.prompting {
+		return s.search.input
+	}
+
+	return s.search.query
+}
+
 // HandleSearchPromptKey feeds one key press to the open search prompt.
 // Printable characters append, enter commits the typed query, esc and
 // backspacing past empty cancel. Committing an empty query also cancels,
@@ -111,6 +123,15 @@ func (s *Scroller) SetSearchMatches(matches []Match) {
 	s.search.current = min(max(0, s.search.current), max(0, len(matches)-1))
 }
 
+// SetCurrentMatch marks matches[i] as the current match for highlighting,
+// for views that run match navigation outside the Scroller; -1 means the
+// current match isn't in the installed list (hidden in a collapsed branch).
+// Views that navigate through JumpToMatch/NextMatch/PrevMatch never call
+// this — the jumps track the current match themselves.
+func (s *Scroller) SetCurrentMatch(i int) {
+	s.search.current = i
+}
+
 func (s *Scroller) SearchMatches() []Match { return s.search.matches }
 
 // JumpToMatch scrolls match i (wrapped into range) to sit a couple of lines
@@ -160,9 +181,18 @@ func (s *Scroller) SearchFooterLabel() string {
 }
 
 // SearchCountLabel is the counter over the Scroller's own match list; views
-// that navigate a larger match set format theirs with MatchCountLabel.
+// that navigate a larger match set format theirs with MatchCountLabel and
+// MatchTotalLabel.
 func (s *Scroller) SearchCountLabel() string {
-	if !s.SearchActive() || s.search.prompting {
+	if s.search.prompting {
+		if s.search.input == "" {
+			return ""
+		}
+
+		return MatchTotalLabel(len(s.search.matches))
+	}
+
+	if !s.SearchActive() {
 		return ""
 	}
 
@@ -176,6 +206,19 @@ func MatchCountLabel(current, total int) string {
 	}
 
 	return style.Faint(fmt.Sprintf("%d/%d", current+1, total))
+}
+
+// MatchTotalLabel is the counter while the prompt is open: hits have no
+// current position yet, so only the running total shows.
+func MatchTotalLabel(total int) string {
+	switch total {
+	case 0:
+		return style.Faint("no matches")
+	case 1:
+		return style.Faint("1 match")
+	default:
+		return style.Faint(fmt.Sprintf("%d matches", total))
+	}
 }
 
 // FindMatches locates query in the given plain lines as cell spans.
@@ -192,6 +235,7 @@ func FindMatches(plainLines []string, query string) []Match {
 
 	for lineIdx, line := range plainLines {
 		from := 0
+		fromCell := 0
 
 		for {
 			start, end := indexMatch(line, query, from, caseless)
@@ -199,13 +243,17 @@ func FindMatches(plainLines []string, query string) []Match {
 				break
 			}
 
-			matches = append(matches, Match{
-				Line:      lineIdx,
-				StartCell: xansi.StringWidth(line[:start]),
-				EndCell:   xansi.StringWidth(line[:end]),
-			})
+			// Cell offsets accumulate segment by segment: measuring only
+			// line[from:start] keeps the line scanned once however many
+			// matches it has — a prefix width per match is quadratic on
+			// broad queries.
+			startCell := fromCell + xansi.StringWidth(line[from:start])
+			endCell := startCell + xansi.StringWidth(line[start:end])
+
+			matches = append(matches, Match{Line: lineIdx, StartCell: startCell, EndCell: endCell})
 
 			from = end
+			fromCell = endCell
 		}
 	}
 

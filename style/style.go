@@ -203,6 +203,9 @@ func rebuildThemeStyles() {
 	readerImageColor = theme.ParseColor(current.Reader.Image)
 	readerLinkOpen = linkOpenSequence(theme.ParseColor(current.Reader.Link))
 
+	searchMatchSGR = matchOverlaySGR(theme.ParseColor(current.Search.Match))
+	searchCurrentSGR = currentOverlaySGR(theme.ParseColor(current.Search.Current))
+
 	headerCColor = theme.ParseColor(current.Header.C)
 	headerLColor = theme.ParseColor(current.Header.L)
 	headerXColor = theme.ParseColor(current.Header.X)

@@ -87,10 +87,31 @@ func (s *Scroller) DecorateView(view string) string {
 		}
 	}
 
-	for _, m := range s.search.matches {
+	// While the prompt is open the hits are live-updating and none of them
+	// is the current one yet — n/N navigation starts on commit.
+	current := s.search.current
+	if s.search.prompting {
+		current = -1
+	}
+
+	// Spans are grouped per row and painted in one pass: match lists come in
+	// line order, so each row's spans arrive sorted, and a broad query can
+	// put dozens of hits on a single row.
+	var spansByRow map[int][]style.SearchSpan
+
+	for i, m := range s.search.matches {
 		if row, ok := visibleRow(m.Line); ok {
-			rows[row] = style.OverlaySpan(rows[row], m.StartCell, m.EndCell)
+			if spansByRow == nil {
+				spansByRow = make(map[int][]style.SearchSpan)
+			}
+
+			spansByRow[row] = append(spansByRow[row],
+				style.SearchSpan{StartCell: m.StartCell, EndCell: m.EndCell, Current: i == current})
 		}
+	}
+
+	for row, spans := range spansByRow {
+		rows[row] = style.OverlaySearchSpans(rows[row], spans)
 	}
 
 	return strings.Join(rows, "\n")

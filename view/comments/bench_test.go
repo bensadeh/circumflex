@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/bensadeh/circumflex/comment"
+
+	tea "charm.land/bubbletea/v2"
 )
 
 // benchThread approximates a large front-page thread: 100 top-level comments,
@@ -96,5 +98,18 @@ func BenchmarkViewWithSearch(b *testing.B) {
 
 	for b.Loop() {
 		_ = m.View()
+	}
+}
+
+// The live-search path: every prompt key recomputes all matches and renders.
+// A one-character query is the worst case — it hits nearly every line.
+func BenchmarkSearchPromptKeystroke(b *testing.B) {
+	m := benchModel(b, false)
+	m.Update(tea.KeyPressMsg{Code: '/', Text: "/"})
+
+	for b.Loop() {
+		m.Update(tea.KeyPressMsg{Code: 'e', Text: "e"})
+		_ = m.View()
+		m.Update(tea.KeyPressMsg{Code: tea.KeyBackspace})
 	}
 }

@@ -25,8 +25,17 @@ type commentMatch struct {
 // active, to match navigation. The bool reports whether the key was consumed.
 func (m *Model) handleSearchKeys(msg tea.KeyPressMsg) bool {
 	if m.SearchPrompting() {
-		if m.HandleSearchPromptKey(msg) == pane.PromptCommitted {
+		switch m.HandleSearchPromptKey(msg) {
+		case pane.PromptCommitted:
 			m.commitSearch()
+
+		case pane.PromptPending, pane.PromptCanceled:
+			// Hits track the prompt live; a cancel recomputes the prior
+			// query's matches (or none), where the untouched searchCurrent
+			// is valid again — the prompt consumed every key, so the list
+			// is the same one it indexed before.
+			m.searchMatches = m.findAllMatches(m.ActiveQuery())
+			m.syncDecorations()
 		}
 
 		return true
@@ -61,7 +70,7 @@ func (m *Model) handleSearchKeys(msg tea.KeyPressMsg) bool {
 func (m *Model) commitSearch() {
 	m.searchMatches = m.findAllMatches(m.SearchQuery())
 	m.searchCurrent = 0
-	m.SetSearchMatches(m.absoluteMatches())
+	m.syncDecorations()
 	m.jumpToFirstSearchMatchFrom(m.Viewport.YOffset())
 }
 
@@ -84,11 +93,16 @@ func (m *Model) findAllMatches(query string) []commentMatch {
 	for i := range m.prerendered {
 		pre := &m.prerendered[i]
 
-		lines := make([]string, 0, len(pre.header)+len(pre.content))
-		lines = append(lines, pre.header...)
-		lines = append(lines, pre.content...)
+		// Stripping is memoized per prerender: live search re-runs this on
+		// every prompt key, and only the substring scan should be paid then.
+		if pre.plain == nil {
+			lines := make([]string, 0, len(pre.header)+len(pre.content))
+			lines = append(lines, pre.header...)
+			lines = append(lines, pre.content...)
+			pre.plain = plainLines(lines)
+		}
 
-		for _, hit := range pane.FindMatches(plainLines(lines), query) {
+		for _, hit := range pane.FindMatches(pre.plain, query) {
 			out = append(out, commentMatch{flatIdx: i, lineInComment: hit.Line, startCell: hit.StartCell, endCell: hit.EndCell})
 		}
 	}
@@ -106,18 +120,25 @@ func plainLines(lines []string) []string {
 }
 
 // absoluteMatches resolves the matches currently on screen to viewport lines
-// for highlighting. Hidden matches resolve to nothing — they highlight once
-// revealed.
-func (m *Model) absoluteMatches() []pane.Match {
+// for highlighting, along with the current match's index in that list — -1
+// while the current match sits inside a collapsed branch. Hidden matches
+// resolve to nothing — they highlight once revealed.
+func (m *Model) absoluteMatches() ([]pane.Match, int) {
 	var out []pane.Match
 
-	for _, cm := range m.searchMatches {
+	current := -1
+
+	for i, cm := range m.searchMatches {
 		if line, visible := m.matchLine(cm); visible {
+			if i == m.searchCurrent {
+				current = len(out)
+			}
+
 			out = append(out, pane.Match{Line: line, StartCell: cm.startCell, EndCell: cm.endCell})
 		}
 	}
 
-	return out
+	return out, current
 }
 
 // matchLine resolves a match to its current viewport line; false means the
@@ -154,6 +175,7 @@ func (m *Model) jumpToSearchMatch(idx int) {
 	}
 
 	m.focusSearchMatch(cm)
+	m.syncDecorations()
 
 	line, _ := m.matchLine(cm)
 	m.Viewport.SetYOffset(max(0, line-scrollPadding))

@@ -50,6 +50,7 @@ type renderedComment struct {
 	headerFocused    []string // same header but with author highlighted
 	content          []string // comment content with indentation and margins
 	repliesCollapsed []string // replies indicator when collapsed (nil if no descendants)
+	plain            []string // header+content stripped for matching, memoized on first search
 }
 
 // splitLines converts a newline-terminated rendered block into its lines.

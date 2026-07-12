@@ -23,6 +23,7 @@ const (
 	Blue              = "\033[34m"
 	Cyan              = "\033[36m"
 	DefaultForeground = "\033[39m"
+	DefaultBackground = "\033[49m"
 	BgBrightBlack     = "\033[100m"
 )
 
