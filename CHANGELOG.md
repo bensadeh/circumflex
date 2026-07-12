@@ -2,6 +2,14 @@
 
 ## 4.6 (Unreleased)
 
+**New Features**
+
+- Added Search
+
+**Reader Mode**
+
+- Add support for displaying AVIF images
+
 **Design**
 
 - Re-stylize the meta block
