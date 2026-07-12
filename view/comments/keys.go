@@ -39,6 +39,10 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		return nil
 	}
 
+	if m.handleSearchKeys(msg) {
+		return nil
+	}
+
 	if cmd, handled := m.handleGlobalKeys(msg); handled {
 		return cmd
 	}

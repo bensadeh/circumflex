@@ -160,17 +160,23 @@ func (s *Scroller) SearchFooterLabel() string {
 	return ""
 }
 
-// SearchCountLabel is the "3/17" match counter, or "no matches".
+// SearchCountLabel is the counter over the Scroller's own match list; views
+// that navigate a larger match set format theirs with MatchCountLabel.
 func (s *Scroller) SearchCountLabel() string {
 	if !s.SearchActive() || s.search.prompting {
 		return ""
 	}
 
-	if len(s.search.matches) == 0 {
+	return MatchCountLabel(s.search.current, len(s.search.matches))
+}
+
+// MatchCountLabel is the "3/17" match counter, or "no matches".
+func MatchCountLabel(current, total int) string {
+	if total == 0 {
 		return style.Faint("no matches")
 	}
 
-	return style.Faint(fmt.Sprintf("%d/%d", s.search.current+1, len(s.search.matches)))
+	return style.Faint(fmt.Sprintf("%d/%d", current+1, total))
 }
 
 // FindMatches locates query in the given plain lines as cell spans.

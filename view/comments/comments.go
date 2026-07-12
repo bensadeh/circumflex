@@ -39,6 +39,9 @@ type Model struct {
 	prerendered []renderedComment
 
 	lineMetrics []lineMetrics // indexed by flat index
+
+	searchMatches []commentMatch // all matches in document order, hidden ones included
+	searchCurrent int
 }
 
 const scrollPadding = 2 // breathing room above/below when scrolling to a comment
@@ -148,6 +151,14 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 
 		m.rebuildTitleHeader()
 		m.prerendered = prerenderComments(m.rc, m.flat)
+
+		// The rewrap moved text within comments, so comment-relative match
+		// positions are recomputed before the rebuild resolves them.
+		if m.SearchActive() {
+			m.searchMatches = m.findAllMatches(m.SearchQuery())
+			m.searchCurrent = min(m.searchCurrent, max(0, len(m.searchMatches)-1))
+		}
+
 		m.rebuildContent()
 		m.restoreScreenPosition(anchorIdx, screenPos)
 
@@ -192,6 +203,12 @@ func (m *Model) updateViewport() {
 	lines, metrics := renderFromFlat(m.rc, m.flat, m.visible, m.prerendered, focusedFlatIdx)
 	m.lineMetrics = metrics
 	m.SetLines(lines)
+
+	// Collapse-state changes move comments to new lines, so the on-screen
+	// match positions are re-resolved with the fresh metrics.
+	if m.SearchActive() {
+		m.SetSearchMatches(m.absoluteMatches())
+	}
 }
 
 func (m *Model) openStoryInBrowser() tea.Cmd {
@@ -203,6 +220,22 @@ func (m *Model) openCommentsInBrowser() tea.Cmd {
 }
 
 func (m *Model) modeIndicator() string {
+	if search := m.SearchFooterLabel(); search != "" {
+		counter := ""
+		if !m.SearchPrompting() {
+			counter = pane.MatchCountLabel(m.searchCurrent, len(m.searchMatches))
+		}
+
+		commentWidth := layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
+		totalWidth := layout.CommentSectionLeftMargin + commentWidth
+		result := pane.FooterSections(totalWidth,
+			"  "+search,
+			counter,
+			commentCountLabel(m.rc.story.CommentsCount, m.rc.newComments, m.rc.enableNerdFonts))
+
+		return xansi.Truncate(result, m.rc.paneWidth, "")
+	}
+
 	var icon, text string
 
 	switch m.mode {
