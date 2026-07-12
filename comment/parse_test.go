@@ -248,6 +248,24 @@ func TestTypography_Symbols(t *testing.T) {
 	assert.Equal(t, []string{"wait… CO₂ rose ½ — twice—fast"}, spanTexts(blocks[0]))
 }
 
+func TestTypography_CO2NeedsWordBoundaries(t *testing.T) {
+	t.Parallel()
+
+	t.Run("inside a word stays put", func(t *testing.T) {
+		t.Parallel()
+
+		blocks := Parse("the ACO2 sensor, an MCO2X part, CO2e estimates")
+		assert.Equal(t, []string{"the ACO2 sensor, an MCO2X part, CO2e estimates"}, spanTexts(blocks[0]))
+	})
+
+	t.Run("against punctuation converts", func(t *testing.T) {
+		t.Parallel()
+
+		blocks := Parse("(CO2) and CO2-neutral and CO2.")
+		assert.Equal(t, []string{"(CO₂) and CO₂-neutral and CO₂."}, spanTexts(blocks[0]))
+	})
+}
+
 func TestTypography_SmileyNeedsWhitespace(t *testing.T) {
 	t.Parallel()
 

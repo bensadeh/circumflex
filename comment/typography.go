@@ -28,11 +28,14 @@ func applyTypography(b *Block) {
 	convertSmileys(b)
 }
 
-var reDoubleDash = regexp.MustCompile(`([a-zA-Z])--([a-zA-Z])`)
+var (
+	reDoubleDash = regexp.MustCompile(`([a-zA-Z])--([a-zA-Z])`)
+	reCO2        = regexp.MustCompile(`\bCO2\b`)
+)
 
 func replaceSymbols(text string) string {
 	text = strings.ReplaceAll(text, "...", "…")
-	text = strings.ReplaceAll(text, "CO2", "CO₂")
+	text = reCO2.ReplaceAllString(text, "CO₂")
 
 	text = strings.ReplaceAll(text, " -- ", " — ")
 	text = reDoubleDash.ReplaceAllString(text, `$1—$2`)
