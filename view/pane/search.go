@@ -97,19 +97,18 @@ func (s *Scroller) HandleSearchPromptKey(msg tea.KeyPressMsg) PromptResult {
 	return PromptPending
 }
 
-// ClearSearch drops the query, matches, and highlights.
+// ClearSearch drops the query and matches; highlights disappear on the next
+// frame since DecorateView applies them per render.
 func (s *Scroller) ClearSearch() {
 	s.search = searchState{}
-	s.pushViewport()
 }
 
-// SetSearchMatches installs the match list for the committed query and
-// repaints. The caller computes the matches — how content maps to matchable
-// text differs per view.
+// SetSearchMatches installs the match list for the committed query. The
+// caller computes the matches — how content maps to matchable text differs
+// per view. Highlighting happens in DecorateView.
 func (s *Scroller) SetSearchMatches(matches []Match) {
 	s.search.matches = matches
 	s.search.current = min(max(0, s.search.current), max(0, len(matches)-1))
-	s.pushViewport()
 }
 
 func (s *Scroller) SearchMatches() []Match { return s.search.matches }

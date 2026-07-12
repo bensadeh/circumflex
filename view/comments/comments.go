@@ -50,10 +50,7 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 	km := defaultKeyMap()
 
 	// Viewport handles j/k in scroll mode (toggled off in navigate mode).
-	// h/l are always handled by us (collapse/expand), so disable them on viewport.
 	vp := pane.NewViewport(width, height-layout.PaneChromeHeight)
-	vp.KeyMap.Left.SetEnabled(false)
-	vp.KeyMap.Right.SetEnabled(false)
 
 	flat := flatten(thread)
 
@@ -182,7 +179,7 @@ func (m *Model) View() string {
 			help.Footer(layout.CommentSectionLeftMargin, contentWidth, m.rc.enableNerdFonts)
 	}
 
-	content := scrollbar.Attach(m.Viewport.View(), m.rc.paneWidth, m.ContentLines, m.rc.viewportHeight, m.Viewport.YOffset())
+	content := scrollbar.Attach(m.DecorateView(m.Viewport.View()), m.rc.paneWidth, m.ContentLines, m.rc.viewportHeight, m.Viewport.YOffset())
 
 	return m.titleHeader + "\n" + content + "\n" + pane.FooterSeparator(m.rc.paneWidth) + "\n" + m.modeIndicator()
 }
@@ -191,24 +188,48 @@ func (m *Model) rebuildTitleHeader() {
 	m.titleHeader = pane.TitleHeader(m.title, m.rc.enableNerdFonts, layout.CommentSectionLeftMargin, m.rc.paneWidth)
 }
 
-// updateViewport re-renders the viewport content with the current focus state.
-// This is cheap: it concatenates pre-rendered lines, picking the focused
-// header variant for the focused comment.
+// updateViewport rebuilds the viewport content from the current fold state:
+// a concatenation of pre-rendered lines. Called on structural changes only
+// (collapse, expand, reveal, resize) — focus moves and search updates go
+// through syncDecorations instead, which costs nothing per document line.
 func (m *Model) updateViewport() {
-	focusedFlatIdx := -1
-	if m.mode == modeNavigate && m.focusedIdx >= 0 && m.focusedIdx < len(m.visible) {
-		focusedFlatIdx = m.visible[m.focusedIdx]
-	}
-
-	lines, metrics := renderFromFlat(m.rc, m.flat, m.visible, m.prerendered, focusedFlatIdx)
+	lines, metrics := renderFromFlat(m.rc, m.flat, m.visible, m.prerendered)
 	m.lineMetrics = metrics
 	m.SetLines(lines)
+	m.syncDecorations()
+}
 
-	// Collapse-state changes move comments to new lines, so the on-screen
-	// match positions are re-resolved with the fresh metrics.
+// syncDecorations refreshes the display-time decorations: the focused header
+// override and, when a search is active, the match positions re-resolved
+// against the current line metrics.
+func (m *Model) syncDecorations() {
+	m.SetRowOverrides(m.focusOverrides())
+
 	if m.SearchActive() {
 		m.SetSearchMatches(m.absoluteMatches())
+	} else {
+		m.SetSearchMatches(nil)
 	}
+}
+
+// focusOverrides swaps the focused comment's header rows for their focused
+// variant. Both variants render the same plain text, so row widths and
+// match cell offsets are unaffected.
+func (m *Model) focusOverrides() []pane.RowOverride {
+	if m.focusedComment() == nil {
+		return nil
+	}
+
+	flatIdx := m.visible[m.focusedIdx]
+	lm := m.lineMetrics[flatIdx]
+	focused := m.prerendered[flatIdx].headerFocused
+
+	overrides := make([]pane.RowOverride, len(focused))
+	for i, row := range focused {
+		overrides[i] = pane.RowOverride{Line: lm.StartLine + i, Content: row}
+	}
+
+	return overrides
 }
 
 func (m *Model) openStoryInBrowser() tea.Cmd {

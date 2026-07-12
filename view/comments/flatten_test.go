@@ -288,7 +288,7 @@ func TestRenderFromFlat_LineMetricsMonotonic(t *testing.T) {
 
 	visible := computeVisible(flat)
 	rc := defaultRenderContext()
-	_, metrics := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat), -1)
+	_, metrics := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat))
 
 	prevStart := -1
 
@@ -315,7 +315,7 @@ func TestRenderFromFlat_LineCountMatchesContent(t *testing.T) {
 
 	visible := computeVisible(flat)
 	rc := defaultRenderContext()
-	lines, metrics := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat), -1)
+	lines, metrics := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat))
 
 	for _, vi := range visible {
 		assert.Positive(t, metrics[vi].LineCount,
@@ -341,7 +341,7 @@ func TestRenderFromFlat_CollapsedShowsFoldIndicator(t *testing.T) {
 
 	visible := computeVisible(flat)
 	rc := defaultRenderContext()
-	lines, _ := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat), -1)
+	lines, _ := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat))
 
 	assert.Contains(t, strings.Join(lines, "\n"), "1 reply")
 }
@@ -361,7 +361,7 @@ func TestRenderFromFlat_NonVisibleMetricsAreZero(t *testing.T) {
 	require.Len(t, visible, 1)
 
 	rc := defaultRenderContext()
-	_, metrics := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat), -1)
+	_, metrics := renderFromFlat(rc, flat, visible, prerenderComments(rc, flat))
 
 	assert.Equal(t, lineMetrics{}, metrics[1])
 }

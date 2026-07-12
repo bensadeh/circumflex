@@ -72,7 +72,7 @@ func TestCommentSearch_HighlightsAndCounter(t *testing.T) {
 	m := searchModel(t)
 	commitCommentSearch(m, "needle")
 
-	assert.Contains(t, m.Viewport.View(), ansi.Reverse)
+	assert.Contains(t, m.DecorateView(m.Viewport.View()), ansi.Reverse)
 	assert.Contains(t, ansi.Strip(m.modeIndicator()), "1/2")
 
 	m.Update(tea.KeyPressMsg{Code: 'n', Text: "n"})
@@ -93,7 +93,7 @@ func TestCommentSearch_EscClearsThenQuits(t *testing.T) {
 	assert.Nil(t, cmd)
 	assert.False(t, m.SearchActive(), "the first esc only clears the search")
 	assert.Empty(t, m.searchMatches)
-	assert.NotContains(t, m.Viewport.View(), ansi.Reverse)
+	assert.NotContains(t, m.DecorateView(m.Viewport.View()), ansi.Reverse)
 	assert.Positive(t, m.lineMetrics[1].LineCount, "revealed comments stay revealed")
 
 	cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEsc})
@@ -118,7 +118,7 @@ func TestCommentSearch_SurvivesResize(t *testing.T) {
 
 	assert.True(t, m.SearchActive())
 	assert.Len(t, m.searchMatches, 2, "matches are recomputed against the rewrapped comments")
-	assert.Contains(t, m.Viewport.View(), ansi.Reverse)
+	assert.Contains(t, m.DecorateView(m.Viewport.View()), ansi.Reverse)
 }
 
 func TestCommentSearch_FindsRootSelfText(t *testing.T) {
@@ -130,7 +130,7 @@ func TestCommentSearch_FindsRootSelfText(t *testing.T) {
 
 	require.Len(t, m.searchMatches, 1)
 	assert.Equal(t, -1, m.searchMatches[0].flatIdx, "the match sits in the thread header")
-	assert.Contains(t, m.Viewport.View(), ansi.Reverse)
+	assert.Contains(t, m.DecorateView(m.Viewport.View()), ansi.Reverse)
 }
 
 func TestCommentSearch_NavModeFocusFollowsMatch(t *testing.T) {

@@ -144,7 +144,7 @@ func (m *Model) toggleMode() {
 			m.focusedIdx = m.findCommentAtScroll()
 		}
 
-		m.updateViewport()
+		m.syncDecorations()
 
 	case modeNavigate:
 		m.mode = modeRead
@@ -158,6 +158,6 @@ func (m *Model) toggleMode() {
 		// indicator matches what's on screen without changing the view.
 		m.syncExpandedDepth()
 
-		m.updateViewport()
+		m.syncDecorations()
 	}
 }

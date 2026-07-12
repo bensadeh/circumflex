@@ -685,3 +685,14 @@ func TestMetaBlockAlignsWithCommentColumn(t *testing.T) {
 	assert.Equal(t, layout.CommentSectionLeftMargin, authorCol, "top-level authors must start at the comment margin")
 	assert.Equal(t, sepWidth-1, blockEdge, "the block must end one cell inside the separator's right edge")
 }
+
+func TestFocusDecoration_AppliedAtViewTime(t *testing.T) {
+	m := newTestModel(t, testThread())
+	m.toggleMode()
+
+	raw := m.Viewport.View()
+	focused := m.prerendered[m.visible[m.focusedIdx]].headerFocused[0]
+
+	assert.NotContains(t, raw, focused, "the focused variant is not baked into the content")
+	assert.Contains(t, m.DecorateView(raw), focused, "the focused variant appears at display time")
+}

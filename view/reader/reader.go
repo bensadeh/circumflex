@@ -320,7 +320,7 @@ func (m *Model) View() string {
 			help.Footer(layout.ReaderViewLeftMargin, contentWidth, m.opts.NerdFonts)
 	}
 
-	content := scrollbar.Attach(m.Viewport.View(), m.paneWidth, m.ContentLines, m.Viewport.Height(), m.Viewport.YOffset())
+	content := scrollbar.Attach(m.DecorateView(m.Viewport.View()), m.paneWidth, m.ContentLines, m.Viewport.Height(), m.Viewport.YOffset())
 
 	return m.titleHeader + "\n" + content + "\n" + pane.FooterSeparator(m.paneWidth) + "\n" + m.footer()
 }

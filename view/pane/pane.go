@@ -3,6 +3,8 @@
 package pane
 
 import (
+	"strings"
+
 	"github.com/bensadeh/circumflex/style"
 
 	"charm.land/bubbles/v2/viewport"
@@ -17,9 +19,24 @@ type Scroller struct {
 	Viewport     viewport.Model
 	ContentLines int // excludes bottom padding
 
-	lines      []string
-	plainLines []string
-	search     searchState
+	lines        []string
+	plainLines   []string
+	search       searchState
+	rowOverrides []RowOverride
+}
+
+// RowOverride substitutes the rendered row at content line Line for display
+// only, leaving the stored content untouched. The comment section uses it to
+// swap in the focused header variant without rebuilding the document.
+type RowOverride struct {
+	Line    int
+	Content string
+}
+
+// SetRowOverrides installs the display-time row substitutions. Overrides
+// must not change a row's visible width.
+func (s *Scroller) SetRowOverrides(overrides []RowOverride) {
+	s.rowOverrides = overrides
 }
 
 // SetLines replaces the viewport content. A viewport-height of padding is
@@ -33,19 +50,49 @@ func (s *Scroller) SetLines(lines []string) {
 }
 
 // pushViewport hands the content to the viewport with the jump padding
-// appended, overlaying search-match highlights. Only slice headers are
-// copied — the line strings themselves are shared.
+// appended. Only slice headers are copied — the line strings themselves are
+// shared. Decorations (focus, search highlights) are NOT baked in here;
+// DecorateView applies them per frame to the visible rows only, keeping
+// focus moves and match updates off this O(document) path — the viewport
+// rescans every line's width on each content push.
 func (s *Scroller) pushViewport() {
 	padded := make([]string, len(s.lines)+s.Viewport.Height())
 	copy(padded, s.lines)
+	s.Viewport.SetContentLines(padded)
+}
 
-	for _, m := range s.search.matches {
-		if m.Line >= 0 && m.Line < len(s.lines) {
-			padded[m.Line] = style.OverlaySpan(padded[m.Line], m.StartCell, m.EndCell)
+// DecorateView applies the display-time decorations to the viewport's
+// rendered window: row overrides first, then search-match overlays on top,
+// so a match inside a focused header highlights the focused variant. Row k
+// of the view shows content line YOffset+k — the invariant that makes this
+// mapping valid is that pane content never scrolls horizontally.
+func (s *Scroller) DecorateView(view string) string {
+	if view == "" || (len(s.rowOverrides) == 0 && len(s.search.matches) == 0) {
+		return view
+	}
+
+	rows := strings.Split(view, "\n")
+	top := s.Viewport.YOffset()
+
+	visibleRow := func(line int) (int, bool) {
+		row := line - top
+
+		return row, row >= 0 && row < len(rows) && line < s.ContentLines
+	}
+
+	for _, o := range s.rowOverrides {
+		if row, ok := visibleRow(o.Line); ok {
+			rows[row] = o.Content
 		}
 	}
 
-	s.Viewport.SetContentLines(padded)
+	for _, m := range s.search.matches {
+		if row, ok := visibleRow(m.Line); ok {
+			rows[row] = style.OverlaySpan(rows[row], m.StartCell, m.EndCell)
+		}
+	}
+
+	return strings.Join(rows, "\n")
 }
 
 // PlainLines is the content with ANSI styling stripped — the text as the
@@ -66,7 +113,9 @@ func (s *Scroller) PlainLines() []string {
 }
 
 // NewViewport returns a viewport with the bindings the detail views handle
-// themselves (paging) disabled, along with mouse wheel handling.
+// themselves (paging) disabled, along with mouse wheel handling. Horizontal
+// scrolling is disabled entirely: pane content is pre-wrapped to fit, and
+// DecorateView's row mapping relies on a zero x-offset.
 func NewViewport(width, height int) viewport.Model {
 	vp := viewport.New(
 		viewport.WithWidth(width),
@@ -78,6 +127,9 @@ func NewViewport(width, height int) viewport.Model {
 	vp.KeyMap.HalfPageUp.SetEnabled(false)
 	vp.KeyMap.PageDown.SetEnabled(false)
 	vp.KeyMap.PageUp.SetEnabled(false)
+	vp.KeyMap.Left.SetEnabled(false)
+	vp.KeyMap.Right.SetEnabled(false)
+	vp.SetHorizontalStep(0)
 	vp.MouseWheelEnabled = false
 
 	return vp

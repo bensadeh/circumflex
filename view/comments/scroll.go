@@ -37,7 +37,7 @@ func (m *Model) snapFocusToVisible(direction int) {
 		for vi, fi := range m.visible {
 			if m.lineMetrics[fi].StartLine >= top && m.lineMetrics[fi].StartLine < bottom {
 				m.focusedIdx = vi
-				m.updateViewport()
+				m.syncDecorations()
 
 				return
 			}
@@ -46,7 +46,7 @@ func (m *Model) snapFocusToVisible(direction int) {
 		for vi, fi := range slices.Backward(m.visible) {
 			if m.lineMetrics[fi].StartLine >= top && m.lineMetrics[fi].StartLine < bottom {
 				m.focusedIdx = vi
-				m.updateViewport()
+				m.syncDecorations()
 
 				return
 			}
@@ -65,7 +65,7 @@ func (m *Model) navigateComment(direction int) {
 	}
 
 	m.focusedIdx = newIdx
-	m.updateViewport()
+	m.syncDecorations()
 	m.scrollToFocused()
 }
 
@@ -103,7 +103,7 @@ func (m *Model) setFocusIfNavigating(visibleIdx int) {
 	}
 
 	m.focusedIdx = visibleIdx
-	m.updateViewport()
+	m.syncDecorations()
 }
 
 // anchorComment returns the flat index of the comment nearest to the top of
@@ -145,7 +145,7 @@ func (m *Model) restoreScreenPosition(flatIdx, screenPos int) {
 func (m *Model) gotoTop() {
 	if m.mode == modeNavigate && len(m.visible) > 0 {
 		m.focusedIdx = 0
-		m.updateViewport()
+		m.syncDecorations()
 	}
 
 	m.Viewport.GotoTop()
@@ -154,7 +154,7 @@ func (m *Model) gotoTop() {
 func (m *Model) gotoBottom() {
 	if m.mode == modeNavigate && len(m.visible) > 0 {
 		m.focusedIdx = len(m.visible) - 1
-		m.updateViewport()
+		m.syncDecorations()
 	}
 
 	m.GotoBottom()

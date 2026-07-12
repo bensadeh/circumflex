@@ -175,7 +175,7 @@ func (m *Model) focusSearchMatch(cm commentMatch) {
 
 	if vi := slices.Index(m.visible, cm.flatIdx); vi >= 0 && vi != m.focusedIdx {
 		m.focusedIdx = vi
-		m.updateViewport()
+		m.syncDecorations()
 	}
 }
 

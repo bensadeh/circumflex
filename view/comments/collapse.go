@@ -21,7 +21,7 @@ func (m *Model) setCollapsed(collapsed bool) {
 
 	if m.focusedIdx >= len(m.visible) {
 		m.focusedIdx = len(m.visible) - 1
-		m.updateViewport()
+		m.syncDecorations()
 	}
 
 	m.restoreScreenPosition(flatIdx, screenPos)

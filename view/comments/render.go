@@ -142,13 +142,14 @@ func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
 // list, respecting fold state. It returns the content lines and line metrics
 // indexed by flat index for navigation.
 //
-// focusedFlatIdx selects which comment gets the focused header variant;
-// pass -1 when no comment is focused (scroll mode).
+// Focus highlighting is not baked in — the focused header variant is swapped
+// in at display time as a row override, so focus moves never rebuild the
+// document.
 //
 // The pre-rendered slice (indexed by flat index, built by prerenderComments)
 // avoids re-running the expensive syntax-highlighting and text-wrapping
-// pipeline on every collapse/expand or focus change.
-func renderFromFlat(rc renderContext, flat []flatComment, visible []int, prerendered []renderedComment, focusedFlatIdx int) ([]string, []lineMetrics) {
+// pipeline on every collapse/expand.
+func renderFromFlat(rc renderContext, flat []flatComment, visible []int, prerendered []renderedComment) ([]string, []lineMetrics) {
 	lines := splitLines(rc.header)
 	lines = append(lines, "")
 
@@ -162,13 +163,7 @@ func renderFromFlat(rc renderContext, flat []flatComment, visible []int, prerend
 		lines = append(lines, pre.sep...)
 
 		startLine := len(lines)
-
-		if flatIdx == focusedFlatIdx {
-			lines = append(lines, pre.headerFocused...)
-		} else {
-			lines = append(lines, pre.header...)
-		}
-
+		lines = append(lines, pre.header...)
 		lines = append(lines, pre.content...)
 
 		if fc.DescendantCount > 0 && fc.Collapsed {

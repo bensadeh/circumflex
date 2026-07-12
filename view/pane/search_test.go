@@ -175,10 +175,10 @@ func TestSearchHighlights_AppliedAndCleared(t *testing.T) {
 
 	s.search.query = "world"
 	s.SetSearchMatches(FindMatches(s.PlainLines(), "world"))
-	assert.Contains(t, s.Viewport.View(), ansi.Reverse, "matches render reversed")
+	assert.Contains(t, s.DecorateView(s.Viewport.View()), ansi.Reverse, "matches render reversed")
 
 	s.ClearSearch()
-	assert.NotContains(t, s.Viewport.View(), ansi.Reverse)
+	assert.NotContains(t, s.DecorateView(s.Viewport.View()), ansi.Reverse)
 	assert.False(t, s.SearchActive())
 }
 
@@ -206,4 +206,27 @@ func TestSearchFooterLabel_PromptShowsCursor(t *testing.T) {
 	label := s.SearchFooterLabel()
 	assert.True(t, strings.HasPrefix(ansi.Strip(label), "/que"))
 	assert.Contains(t, label, ansi.Reverse, "the prompt renders a block cursor")
+}
+
+func TestDecorateView_OverridesAndWindow(t *testing.T) {
+	t.Parallel()
+
+	s := &Scroller{Viewport: NewViewport(80, 3)}
+	s.SetLines([]string{"aaa", "bbb", "ccc", "ddd", "eee"})
+
+	s.SetRowOverrides([]RowOverride{{Line: 1, Content: "BBB"}})
+	s.search.query = "x"
+	s.SetSearchMatches([]Match{{Line: 1, StartCell: 0, EndCell: 3}, {Line: 4, StartCell: 0, EndCell: 3}})
+
+	rows := strings.Split(s.DecorateView(s.Viewport.View()), "\n")
+	assert.Contains(t, rows[1], "BBB", "the override replaces the row")
+	assert.Contains(t, rows[1], ansi.Reverse, "the match decorates on top of the override")
+	assert.NotContains(t, rows[0], ansi.Reverse)
+	assert.NotContains(t, rows[2], ansi.Reverse)
+
+	s.Viewport.SetYOffset(2)
+
+	view := s.DecorateView(s.Viewport.View())
+	assert.NotContains(t, view, "BBB", "an override outside the window is skipped")
+	assert.Contains(t, view, ansi.Reverse, "the match at line 4 scrolled into view")
 }
