@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/nerdfonts"
 
 	tea "charm.land/bubbletea/v2"
 	"github.com/stretchr/testify/assert"
@@ -241,7 +242,7 @@ func TestSearchCountLabel_NoMatches(t *testing.T) {
 	s.SetSearchMatches(nil)
 
 	assert.Equal(t, "no matches", ansi.Strip(s.SearchCountLabel()))
-	assert.Equal(t, "/absent", ansi.Strip(s.SearchFooterLabel()))
+	assert.Equal(t, "/absent", ansi.Strip(s.SearchFooterLabel(false)))
 }
 
 func TestSearchFooterLabel_PromptShowsCursor(t *testing.T) {
@@ -252,9 +253,12 @@ func TestSearchFooterLabel_PromptShowsCursor(t *testing.T) {
 	s.StartSearchPrompt()
 	typeKeys(s, "que")
 
-	label := s.SearchFooterLabel()
+	label := s.SearchFooterLabel(false)
 	assert.True(t, strings.HasPrefix(ansi.Strip(label), "/que"))
 	assert.Contains(t, label, ansi.Reverse, "the prompt renders a block cursor")
+
+	nerd := s.SearchFooterLabel(true)
+	assert.True(t, strings.HasPrefix(nerd, nerdfonts.Search+"  "), "nerd fonts swap the / for a magnifier")
 }
 
 func TestDecorateView_OverridesAndWindow(t *testing.T) {

@@ -253,7 +253,7 @@ func (m *Model) openCommentsInBrowser() tea.Cmd {
 }
 
 func (m *Model) modeIndicator() string {
-	if search := m.SearchFooterLabel(); search != "" {
+	if search := m.SearchFooterLabel(m.rc.enableNerdFonts); search != "" {
 		// The counter takes over the comment count's slot on the right:
 		// position over the full match list once committed, the live total
 		// while the prompt is open.

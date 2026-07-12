@@ -352,7 +352,7 @@ func (m *Model) footer() string {
 
 	var result string
 
-	if search := m.SearchFooterLabel(); search != "" {
+	if search := m.SearchFooterLabel(m.opts.NerdFonts); search != "" {
 		result = pane.FooterSections(totalWidth, "  "+search, m.SearchCountLabel())
 	} else {
 		result = pane.FooterSections(totalWidth, m.imageIndicator(), readerModeLabel(m.opts.NerdFonts))

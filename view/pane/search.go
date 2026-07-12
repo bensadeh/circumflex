@@ -7,6 +7,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/style"
 
 	tea "charm.land/bubbletea/v2"
@@ -167,14 +168,21 @@ func (s *Scroller) JumpToFirstMatchFrom(line int) {
 
 // SearchFooterLabel is the footer text for the search state: the live
 // prompt with a block cursor while typing, the committed query otherwise,
-// empty when no search is in play.
-func (s *Scroller) SearchFooterLabel() string {
+// empty when no search is in play. Nerd fonts swap the faint / for a
+// magnifier at full strength, like the footer's other icons, with extra
+// room after the wide glyph.
+func (s *Scroller) SearchFooterLabel(enableNerdFonts bool) string {
+	prompt := style.Faint("/")
+	if enableNerdFonts {
+		prompt = nerdfonts.Search + "  "
+	}
+
 	if s.search.prompting {
-		return style.Faint("/") + s.search.input + ansi.Reverse + " " + ansi.ReverseOff
+		return prompt + s.search.input + ansi.Reverse + " " + ansi.ReverseOff
 	}
 
 	if s.search.query != "" {
-		return style.Faint("/") + s.search.query
+		return prompt + s.search.query
 	}
 
 	return ""
