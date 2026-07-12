@@ -109,20 +109,33 @@ func TestCommentSearch_HighlightsAndCounter(t *testing.T) {
 	assert.Contains(t, ansi.Strip(m.modeIndicator()), "2/2", "N wraps back")
 }
 
-func TestCommentSearch_EscClearsThenQuits(t *testing.T) {
-	m := searchModel(t)
-	commitCommentSearch(m, "needle")
+func TestCommentSearch_BackKeysClearThenQuit(t *testing.T) {
+	keys := []struct {
+		name string
+		msg  tea.KeyPressMsg
+	}{
+		{"esc", tea.KeyPressMsg{Code: tea.KeyEsc}},
+		{"q", tea.KeyPressMsg{Code: 'q', Text: "q"}},
+		{"backspace", tea.KeyPressMsg{Code: tea.KeyBackspace}},
+	}
 
-	cmd := m.Update(tea.KeyPressMsg{Code: tea.KeyEsc})
-	assert.Nil(t, cmd)
-	assert.False(t, m.SearchActive(), "the first esc only clears the search")
-	assert.Empty(t, m.searchMatches)
-	assert.NotContains(t, m.DecorateView(m.Viewport.View()), ansi.Reverse)
-	assert.Positive(t, m.lineMetrics[1].LineCount, "revealed comments stay revealed")
+	for _, k := range keys {
+		t.Run(k.name, func(t *testing.T) {
+			m := searchModel(t)
+			commitCommentSearch(m, "needle")
 
-	cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEsc})
-	require.NotNil(t, cmd)
-	assert.IsType(t, message.DetailQuit{}, cmd(), "the second esc quits")
+			cmd := m.Update(k.msg)
+			assert.Nil(t, cmd)
+			assert.False(t, m.SearchActive(), "the first press only clears the search")
+			assert.Empty(t, m.searchMatches)
+			assert.NotContains(t, m.DecorateView(m.Viewport.View()), ansi.Reverse)
+			assert.Positive(t, m.lineMetrics[1].LineCount, "the expansion persists")
+
+			cmd = m.Update(k.msg)
+			require.NotNil(t, cmd)
+			assert.IsType(t, message.DetailQuit{}, cmd(), "the second press quits")
+		})
+	}
 }
 
 func TestCommentSearch_NKeepsTopLevelJumpWhenInactive(t *testing.T) {

@@ -332,17 +332,30 @@ func TestReaderSearch_NFallsBackToSectionsWhenInactive(t *testing.T) {
 	assert.Equal(t, 15, m.Viewport.YOffset())
 }
 
-func TestReaderSearch_EscClearsThenQuits(t *testing.T) {
-	m := searchableReader(t)
-	commitSearch(m, "needle")
+func TestReaderSearch_BackKeysClearThenQuit(t *testing.T) {
+	keys := []struct {
+		name string
+		msg  tea.KeyPressMsg
+	}{
+		{"esc", tea.KeyPressMsg{Code: tea.KeyEscape}},
+		{"q", tea.KeyPressMsg{Code: 'q', Text: "q"}},
+		{"backspace", tea.KeyPressMsg{Code: tea.KeyBackspace}},
+	}
 
-	cmd := m.Update(tea.KeyPressMsg{Code: tea.KeyEscape})
-	assert.Nil(t, cmd)
-	assert.False(t, m.SearchActive(), "the first esc only clears the search")
+	for _, k := range keys {
+		t.Run(k.name, func(t *testing.T) {
+			m := searchableReader(t)
+			commitSearch(m, "needle")
 
-	cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEscape})
-	require.NotNil(t, cmd)
-	assert.IsType(t, message.DetailQuit{}, cmd(), "the second esc quits")
+			cmd := m.Update(k.msg)
+			assert.Nil(t, cmd)
+			assert.False(t, m.SearchActive(), "the first press only clears the search")
+
+			cmd = m.Update(k.msg)
+			require.NotNil(t, cmd)
+			assert.IsType(t, message.DetailQuit{}, cmd(), "the second press quits")
+		})
+	}
 }
 
 func TestReaderSearch_SurvivesRerender(t *testing.T) {

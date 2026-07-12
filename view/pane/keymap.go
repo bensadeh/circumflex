@@ -88,9 +88,12 @@ func DefaultCommonKeyMap() CommonKeyMap {
 			key.WithKeys("N"),
 			key.WithHelp("N", "prev match"),
 		),
+		// The same keys as Quit: views route them here first while a search
+		// is active, so leaving search is one press and leaving the view a
+		// second.
 		ClearSearch: key.NewBinding(
-			key.WithKeys("esc"),
-			key.WithHelp("esc", "clear search"),
+			key.WithKeys("q", "esc", "backspace"),
+			key.WithHelp("q/esc", "clear search"),
 		),
 	}
 }
