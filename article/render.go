@@ -35,37 +35,53 @@ type ImageOptions struct {
 	TerminalBG color.Color
 }
 
+// renderedPart is one block's rendered chunk plus the kind that produced it,
+// so line positions in the joined output can be attributed to structure.
+type renderedPart struct {
+	text string
+	kind blockKind
+}
+
 // Prose wraps at the reading column. Code renders in a box spanning at least
 // that column, growing with long lines up to codeWidth (the space left of
 // the scrollbar); verbatim and table blocks break out to codeWidth directly.
 func renderBlocks(blocks []block, width, codeWidth int, images ImageOptions) string {
-	return strings.Join(renderParts(blocks, width, codeWidth, images), "\n\n")
+	return joinParts(renderParts(blocks, width, codeWidth, images))
 }
 
 // renderParts renders each block to its own chunk, skipping blocks that
 // render empty. Chunks are joined with one blank line between them.
-func renderParts(blocks []block, width, codeWidth int, images ImageOptions) []string {
-	var parts []string
+func renderParts(blocks []block, width, codeWidth int, images ImageOptions) []renderedPart {
+	var parts []renderedPart
 
 	for i := range blocks {
 		if rendered := renderBlock(&blocks[i], width, codeWidth, images); rendered != "" {
-			parts = append(parts, rendered)
+			parts = append(parts, renderedPart{text: rendered, kind: blocks[i].kind})
 		}
 	}
 
 	return parts
 }
 
+func joinParts(parts []renderedPart) string {
+	texts := make([]string, len(parts))
+	for i, part := range parts {
+		texts[i] = part.text
+	}
+
+	return strings.Join(texts, "\n\n")
+}
+
 // blockStarts returns the line index each part lands on in the joined output,
 // with the first part starting at firstLine. Scroll positions can then be
 // re-anchored to the same block across re-renders.
-func blockStarts(parts []string, firstLine int) []int {
+func blockStarts(parts []renderedPart, firstLine int) []int {
 	starts := make([]int, len(parts))
 	line := firstLine
 
 	for i, part := range parts {
 		starts[i] = line
-		line += strings.Count(part, "\n") + 2 // the part's lines plus the blank separator
+		line += strings.Count(part.text, "\n") + 2 // the part's lines plus the blank separator
 	}
 
 	return starts

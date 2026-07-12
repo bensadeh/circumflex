@@ -110,11 +110,25 @@ func TestHelpToggle(t *testing.T) {
 	assert.False(t, m.showHelp)
 }
 
-func TestHeaderLines_DetectsSectionMarkers(t *testing.T) {
-	content := "intro\n■ Section One\nbody\n■ Section Two\nend"
-	m := newFromContent(content, "Title", 80, 24)
+func TestHeaderLines_ComeFromArticleStructure(t *testing.T) {
+	parsed := article.NewParsedFromHTML("<p>intro</p><h2>Section One</h2><p>body</p><h2>Section Two</h2><p>end</p>")
+	m := NewWithArticle(parsed, "Title", 72, 80, 24, Options{}, nil)
 
-	assert.Len(t, m.headerLines, 2)
+	require.Len(t, m.headerLines, 2)
+
+	plain := m.PlainLines()
+	assert.Contains(t, plain[m.headerLines[0]], "Section One")
+	assert.Contains(t, plain[m.headerLines[1]], "Section Two")
+}
+
+func TestHeaderLines_SurviveRerender(t *testing.T) {
+	parsed := article.NewParsedFromHTML("<p>intro</p><h2>Section</h2><p>body</p>")
+	m := NewWithArticle(parsed, "Title", 72, 80, 24, Options{}, nil)
+
+	m.Update(tea.WindowSizeMsg{Width: 60, Height: 30})
+
+	require.Len(t, m.headerLines, 1)
+	assert.Contains(t, m.PlainLines()[m.headerLines[0]], "Section")
 }
 
 func TestJumpToHeader(t *testing.T) {
@@ -123,11 +137,8 @@ func TestJumpToHeader(t *testing.T) {
 		lines[i] = "text"
 	}
 
-	lines[10] = "■ First"
-	lines[30] = "■ Second"
-
 	m := newFromContent(strings.Join(lines, "\n"), "Title", 80, 60)
-	require.Len(t, m.headerLines, 2)
+	m.headerLines = []int{10, 30}
 
 	m.jumpToHeader(1)
 	assert.Equal(t, 10, m.Viewport.YOffset())

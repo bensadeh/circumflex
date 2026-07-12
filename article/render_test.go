@@ -344,8 +344,8 @@ func TestRenderWithHeader_FullWidthLineClearsScrollbar(t *testing.T) {
 	const screenWidth = 80
 
 	parsed := NewParsedFromHTML("<pre><code>" + strings.Repeat("x", 200) + "</code></pre>")
-	rendered, _ := parsed.RenderWithHeader(72, screenWidth, "", showImages)
-	out := ansi.Strip(rendered)
+	rendered := parsed.RenderWithHeader(72, screenWidth, "", showImages)
+	out := ansi.Strip(rendered.Body)
 
 	widest := 0
 	for line := range strings.SplitSeq(out, "\n") {
@@ -381,14 +381,27 @@ func TestRenderWithHeader_ReturnsBlockStarts(t *testing.T) {
 	t.Parallel()
 
 	parsed := NewParsedFromHTML("<h1>Title</h1><p>first paragraph</p><p>second paragraph</p>")
-	rendered, starts := parsed.RenderWithHeader(72, 0, "meta line one\nmeta line two\n", showImages)
+	rendered := parsed.RenderWithHeader(72, 0, "meta line one\nmeta line two\n", showImages)
 
-	lines := strings.Split(ansi.Strip(rendered), "\n")
+	lines := strings.Split(ansi.Strip(rendered.Body), "\n")
 
-	require.Len(t, starts, 3)
-	assert.Contains(t, lines[starts[0]], "Title", "first block starts below the two header lines")
-	assert.Contains(t, lines[starts[1]], "first paragraph")
-	assert.Contains(t, lines[starts[2]], "second paragraph")
+	require.Len(t, rendered.BlockStarts, 3)
+	assert.Contains(t, lines[rendered.BlockStarts[0]], "Title", "first block starts below the two header lines")
+	assert.Contains(t, lines[rendered.BlockStarts[1]], "first paragraph")
+	assert.Contains(t, lines[rendered.BlockStarts[2]], "second paragraph")
+}
+
+func TestRenderWithHeader_ReturnsHeadingStarts(t *testing.T) {
+	t.Parallel()
+
+	parsed := NewParsedFromHTML("<h1>Title</h1><p>first</p><h2>Section</h2><p>second</p>")
+	rendered := parsed.RenderWithHeader(72, 0, "", showImages)
+
+	lines := strings.Split(ansi.Strip(rendered.Body), "\n")
+
+	require.Len(t, rendered.HeadingStarts, 2)
+	assert.Contains(t, lines[rendered.HeadingStarts[0]], "Title")
+	assert.Contains(t, lines[rendered.HeadingStarts[1]], "Section")
 }
 
 func TestRenderBlock_TableExtendsToCodeWidth(t *testing.T) {

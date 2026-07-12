@@ -20,8 +20,6 @@ import (
 	xansi "github.com/charmbracelet/x/ansi"
 )
 
-const sectionMarker = "■"
-
 // Options carries the reader's display knobs and the story identity its
 // browser-opening keys target. What the header above the article shows is
 // not the reader's concern: callers inject that via buildHeader.
@@ -38,7 +36,7 @@ type Model struct {
 
 	keymap keyMap
 
-	headerLines []int // line indices containing ■ (section headers)
+	headerLines []int // section heading positions, from the article's block structure
 	title       string
 	titleHeader string
 	paneWidth   int
@@ -83,19 +81,19 @@ func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, h
 		buildHeader: buildHeader,
 	}
 
-	content, starts := m.renderArticle()
-	m.blockStarts = starts
+	r := m.renderArticle()
+	m.blockStarts = r.BlockStarts
+	m.headerLines = r.HeadingStarts
 
-	m.initViewport(content, width, height)
+	m.initViewport(r.Body, width, height)
 
 	return m
 }
 
 // renderArticle renders the article at the current pane width, prefixed with
-// its header and a separating blank line, returning the content and the
-// blocks' starting lines. The single source of the width derivation shared
-// by the initial render and every resize.
-func (m *Model) renderArticle() (string, []int) {
+// its header and a separating blank line. The single source of the width
+// derivation shared by the initial render and every resize.
+func (m *Model) renderArticle() article.Rendered {
 	contentWidth := layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
 	images := article.ImageOptions{Show: m.showImages, TerminalBG: m.termBG}
 
@@ -122,18 +120,7 @@ func (m *Model) initViewport(content string, width, height int) {
 }
 
 func (m *Model) setContent(content string) {
-	trimmed := strings.TrimRight(content, "\n")
-	lines := strings.Split(trimmed, "\n")
-
-	m.headerLines = nil
-
-	for i, line := range lines {
-		if strings.Contains(line, sectionMarker) {
-			m.headerLines = append(m.headerLines, i)
-		}
-	}
-
-	m.SetLines(lines)
+	m.SetLines(strings.Split(strings.TrimRight(content, "\n"), "\n"))
 }
 
 func (m *Model) Init() tea.Cmd {
@@ -188,13 +175,14 @@ func (m *Model) rerender() {
 	yOffset := m.Viewport.YOffset()
 	oldStarts := m.blockStarts
 
-	content, starts := m.renderArticle()
-	m.blockStarts = starts
+	r := m.renderArticle()
+	m.blockStarts = r.BlockStarts
+	m.headerLines = r.HeadingStarts
 
-	m.setContent(content)
+	m.setContent(r.Body)
 
 	maxOffset := max(0, m.ContentLines-m.Viewport.Height())
-	m.Viewport.SetYOffset(min(remapYOffset(yOffset, oldStarts, starts, m.ContentLines), maxOffset))
+	m.Viewport.SetYOffset(min(remapYOffset(yOffset, oldStarts, r.BlockStarts, m.ContentLines), maxOffset))
 }
 
 // remapYOffset translates a scroll offset between two renders of the same

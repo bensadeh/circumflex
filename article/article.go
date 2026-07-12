@@ -85,17 +85,27 @@ func (p *Parsed) HasImages() bool {
 	return false
 }
 
+// Rendered is one rendering of a Parsed article at a particular width.
+type Rendered struct {
+	Body string
+
+	// BlockStarts holds the line index each block starts on, so a scroll
+	// position can be re-anchored to the same block after a re-render
+	// changes block heights (image toggling, resizing).
+	BlockStarts []int
+
+	// HeadingStarts holds the line index of each section heading, for
+	// jumping between sections.
+	HeadingStarts []int
+}
+
 // RenderWithHeader wraps prose at contentWidth; code boxes span at least
 // contentWidth and grow toward screenWidth, which verbatim text and tables
 // extend to directly. A screenWidth of 0 keeps everything at contentWidth.
 // The right edge reserves the scrollbar column so a full-width line is not
 // clipped by the bar. images controls whether decoded images render as art
 // or fall back to a text label.
-//
-// The second return value holds the line index each block starts on, so a
-// scroll position can be re-anchored to the same block after a re-render
-// changes block heights (image toggling, resizing).
-func (p *Parsed) RenderWithHeader(contentWidth, screenWidth int, header string, images ImageOptions) (string, []int) {
+func (p *Parsed) RenderWithHeader(contentWidth, screenWidth int, header string, images ImageOptions) Rendered {
 	margin := strings.Repeat(" ", layout.ReaderViewLeftMargin)
 
 	codeWidth := contentWidth
@@ -104,7 +114,19 @@ func (p *Parsed) RenderWithHeader(contentWidth, screenWidth int, header string, 
 	}
 
 	parts := renderParts(p.blocks, contentWidth, codeWidth, images)
-	body := header + style.PrefixLines(strings.Join(parts, "\n\n"), margin)
+	starts := blockStarts(parts, strings.Count(header, "\n"))
 
-	return body, blockStarts(parts, strings.Count(header, "\n"))
+	var headings []int
+
+	for i, part := range parts {
+		if part.kind == blockHeading {
+			headings = append(headings, starts[i])
+		}
+	}
+
+	return Rendered{
+		Body:          header + style.PrefixLines(joinParts(parts), margin),
+		BlockStarts:   starts,
+		HeadingStarts: headings,
+	}
 }
