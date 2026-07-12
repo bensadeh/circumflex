@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
+	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/nerdfonts"
@@ -695,4 +696,30 @@ func TestFocusDecoration_AppliedAtViewTime(t *testing.T) {
 
 	assert.NotContains(t, raw, focused, "the focused variant is not baked into the content")
 	assert.Contains(t, m.DecorateView(raw), focused, "the focused variant appears at display time")
+}
+
+func TestResize_HeightOnlySkipsPrerender(t *testing.T) {
+	m := newTestModel(t, testThread())
+
+	before := &m.prerendered[0]
+
+	m.Update(tea.WindowSizeMsg{Width: 120, Height: 60})
+	assert.Same(t, before, &m.prerendered[0], "height-only resize must not re-prerender")
+	assert.Equal(t, m.ContentLines+m.Viewport.Height(), m.Viewport.TotalLineCount(),
+		"the bottom padding tracks the new height")
+
+	m.Update(tea.WindowSizeMsg{Width: 100, Height: 60})
+	assert.NotSame(t, before, &m.prerendered[0], "a width change re-prerenders")
+}
+
+func TestResize_HeightOnlyKeepsSearchMatches(t *testing.T) {
+	m := searchModel(t)
+	commitCommentSearch(m, "needle")
+
+	before := &m.searchMatches[0]
+
+	m.Update(tea.WindowSizeMsg{Width: 120, Height: 60})
+
+	assert.Same(t, before, &m.searchMatches[0], "height-only resize must not recompute matches")
+	assert.Contains(t, m.DecorateView(m.Viewport.View()), ansi.Reverse)
 }

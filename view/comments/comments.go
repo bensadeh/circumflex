@@ -138,10 +138,22 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		anchorIdx := m.anchorComment()
 		screenPos := m.screenPosition(anchorIdx)
 
+		widthChanged := msg.Width != m.rc.paneWidth
+
 		m.rc.paneWidth = msg.Width
 		m.rc.viewportHeight = max(0, msg.Height-layout.PaneChromeHeight)
 		m.Viewport.SetWidth(msg.Width)
 		m.Viewport.SetHeight(m.rc.viewportHeight)
+
+		// A height-only resize changes no wrapping: the header, prerendered
+		// comments, and match positions all stand. Only the bottom padding
+		// tracks the viewport height.
+		if !widthChanged {
+			m.RefreshPadding()
+			m.restoreScreenPosition(anchorIdx, screenPos)
+
+			return nil
+		}
 
 		cw := layout.CommentColumnWidth(msg.Width, m.rc.commentWidth)
 		m.rc.header = buildCommentHeader(m.rc.story, m.rc.rootBlocks, m.rc.enableNerdFonts, cw) + "\n"

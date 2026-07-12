@@ -142,14 +142,26 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		return nil
 
 	case tea.WindowSizeMsg:
+		widthChanged := msg.Width != m.paneWidth
+
 		m.paneWidth = msg.Width
 		m.Viewport.SetWidth(msg.Width)
 		m.Viewport.SetHeight(max(0, msg.Height-layout.PaneChromeHeight))
+
+		// A height-only resize changes no wrapping — only the bottom
+		// padding tracks the viewport height.
+		if !widthChanged {
+			m.RefreshPadding()
+
+			return nil
+		}
 
 		m.rebuildTitleHeader()
 
 		if m.parsed != nil {
 			m.rerender()
+		} else {
+			m.RefreshPadding()
 		}
 
 		return nil

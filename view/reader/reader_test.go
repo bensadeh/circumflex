@@ -357,3 +357,18 @@ func TestReaderSearch_SurvivesRerender(t *testing.T) {
 	assert.True(t, m.SearchActive())
 	assert.Len(t, m.SearchMatches(), 2, "matches are recomputed against the rewrapped text")
 }
+
+func TestResize_HeightOnlySkipsRerender(t *testing.T) {
+	parsed := article.NewParsedFromHTML("<h2>One</h2><p>body text</p><h2>Two</h2>")
+	m := NewWithArticle(parsed, "Title", 72, 80, 24, Options{}, nil)
+
+	before := &m.blockStarts[0]
+
+	m.Update(tea.WindowSizeMsg{Width: 80, Height: 40})
+	assert.Same(t, before, &m.blockStarts[0], "height-only resize must not re-render the article")
+	assert.Equal(t, m.ContentLines+m.Viewport.Height(), m.Viewport.TotalLineCount(),
+		"the bottom padding tracks the new height")
+
+	m.Update(tea.WindowSizeMsg{Width: 60, Height: 40})
+	assert.NotSame(t, before, &m.blockStarts[0], "a width change re-renders")
+}

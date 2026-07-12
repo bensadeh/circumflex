@@ -95,6 +95,13 @@ func (s *Scroller) DecorateView(view string) string {
 	return strings.Join(rows, "\n")
 }
 
+// RefreshPadding re-pushes the stored content so the bottom padding matches
+// the current viewport height, for height-only resizes where the content
+// itself is unchanged.
+func (s *Scroller) RefreshPadding() {
+	s.pushViewport()
+}
+
 // PlainLines is the content with ANSI styling stripped — the text as the
 // user sees it, for matching against. Stripped on first use after a
 // content change, so views that never need it don't pay for it.
