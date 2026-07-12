@@ -340,6 +340,42 @@ func TestTokenize_InsideItalics(t *testing.T) {
 	})
 }
 
+func TestParse_OperatorLeadIsNotAQuote(t *testing.T) {
+	t.Parallel()
+
+	t.Run("leading >= stays a verbatim paragraph", func(t *testing.T) {
+		t.Parallel()
+
+		blocks := Parse("&gt;= 3 versions are affected")
+		require.Equal(t, []blockKind{blockParagraph}, kinds(blocks))
+		assert.Equal(t, []string{">= 3 versions are affected"}, spanTexts(blocks[0]))
+	})
+
+	t.Run("leading >>= stays a verbatim paragraph", func(t *testing.T) {
+		t.Parallel()
+
+		blocks := Parse("&gt;&gt;= sequences monadic actions")
+		require.Equal(t, []blockKind{blockParagraph}, kinds(blocks))
+		assert.Equal(t, []string{">>= sequences monadic actions"}, spanTexts(blocks[0]))
+	})
+
+	t.Run("quoted operator text keeps its characters", func(t *testing.T) {
+		t.Parallel()
+
+		blocks := Parse("&gt; &gt;= 3 versions are affected")
+		require.Equal(t, []blockKind{blockParagraph}, kinds(blocks))
+		assert.Equal(t, []string{"> >= 3 versions are affected"}, spanTexts(blocks[0]))
+	})
+
+	t.Run("plain quotes still convert", func(t *testing.T) {
+		t.Parallel()
+
+		blocks := Parse("&gt; a normal quote")
+		require.Equal(t, []blockKind{blockQuote}, kinds(blocks))
+		assert.Equal(t, []string{"a normal quote"}, spanTexts(blocks[0]))
+	})
+}
+
 func TestParse_QuoteFoldsItalics(t *testing.T) {
 	t.Parallel()
 

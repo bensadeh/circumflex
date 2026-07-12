@@ -165,6 +165,14 @@ func detectQuote(b *Block) {
 		return
 	}
 
+	// A > run leading into = or < is a comparison operator (">= 3 versions",
+	// ">>="), not the quote convention — stripping its marker would change
+	// meaning, so the paragraph stays verbatim.
+	rest := strings.TrimLeft(first.text, "> ")
+	if strings.HasPrefix(rest, "=") || strings.HasPrefix(rest, "<") {
+		return
+	}
+
 	b.kind = blockQuote
 	foldItalics(b)
 }
