@@ -55,8 +55,12 @@ func readerText(leftMargin, contentWidth int, withStoryNav bool) string {
 		open.addKey("J, K", "Open next / prev story")
 	}
 
+	search := keys.addSection("Search")
+	search.addKey("/", "Search article")
+	search.addKey("n, N", "Next / prev match")
+	search.addKey("esc", "Clear search")
+
 	app := keys.addSection("App")
-	app.color = style.HeaderTertiary()
 	app.addKey("i, ?", "Help")
 	app.addKey("q, ⌫", "Back")
 
@@ -105,6 +109,11 @@ func commentText(leftMargin, contentWidth int, enableNerdFonts bool, withStoryNa
 	nav.addBreak()
 	nav.addKey("i, ?", "Help")
 	nav.addKey("q, ⌫", "Back")
+
+	search := keys.addSection("Search")
+	search.addKey("/", "Search all comments")
+	search.addKey("n, N", "Next / prev match")
+	search.addKey("esc", "Clear search")
 
 	legend := keys.addSection("Legend")
 	legend.addLabel(style.CommentOP(labelText("OP", enableNerdFonts)), "Original Poster")
