@@ -3,7 +3,6 @@ package pane
 import (
 	"strings"
 
-	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/headline"
 	"github.com/bensadeh/circumflex/style"
@@ -15,28 +14,26 @@ import (
 // TitleHeader renders the bold, highlighted story title over an underline
 // separator spanning the screen.
 func TitleHeader(title string, enableNerdFonts bool, leftMargin, screenWidth int) string {
-	return titleHeader(title, headline.HeadlineInCommentSection, ansi.Bold, enableNerdFonts, leftMargin, screenWidth)
+	return titleHeader(title, headline.HeadlineInCommentSection, enableNerdFonts, leftMargin, screenWidth)
 }
 
 // LoadingTitleHeader is TitleHeader without the bold: the detail pane shows
 // it while the story loads and on the error view when the load fails, so the
 // title gains its full weight only once the content is in.
 func LoadingTitleHeader(title string, enableNerdFonts bool, leftMargin, screenWidth int) string {
-	return titleHeader(title, headline.Unselected, "", enableNerdFonts, leftMargin, screenWidth)
+	return titleHeader(title, headline.Unselected, enableNerdFonts, leftMargin, screenWidth)
 }
 
-func titleHeader(title string, highlight headline.HighlightType, baseStyle string, enableNerdFonts bool, leftMargin, screenWidth int) string {
+func titleHeader(title string, highlight headline.HighlightType, enableNerdFonts bool, leftMargin, screenWidth int) string {
 	margin := strings.Repeat(" ", leftMargin)
 	maxTitleWidth := max(0, screenWidth-leftMargin)
-	t := headline.ReplaceSpecialContentTags(title, enableNerdFonts)
+
+	// Render the full title first, truncate the styled output after: the
+	// escape-aware cut cannot strand a half-eaten token pattern.
+	t := headline.Render(title, highlight, enableNerdFonts)
 	t = xansi.Truncate(t, maxTitleWidth, "…")
 
-	t = headline.HighlightYCStartupsInHeadlines(t, highlight, enableNerdFonts)
-	t = headline.HighlightYear(t, highlight)
-	t = headline.HighlightHackerNewsHeadlines(t, highlight)
-	t = headline.HighlightSpecialContent(t, highlight, enableNerdFonts)
-
-	row := xansi.Truncate(margin+baseStyle+t+ansi.Reset, screenWidth, "")
+	row := xansi.Truncate(margin+t, screenWidth, "")
 
 	return row + "\n" + header.Underline(screenWidth)
 }

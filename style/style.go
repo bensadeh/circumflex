@@ -87,15 +87,6 @@ var (
 
 // Theme-dependent styles — rebuilt by rebuildThemeStyles whenever the theme changes.
 var (
-	headlineAskHNStyle    lipgloss.Style
-	headlineShowHNStyle   lipgloss.Style
-	headlineTellHNStyle   lipgloss.Style
-	headlineThankHNStyle  lipgloss.Style
-	headlineLaunchHNStyle lipgloss.Style
-	headlineAudioStyle    lipgloss.Style
-	headlineVideoStyle    lipgloss.Style
-	headlinePDFStyle      lipgloss.Style
-
 	commentURLStyle          lipgloss.Style // hyperlink applied at call time
 	commentMentionStyle      lipgloss.Style
 	commentModStyle          lipgloss.Style
@@ -133,8 +124,16 @@ var (
 
 // Theme-dependent colors — rebuilt by rebuildThemeStyles whenever the theme changes.
 var (
-	headlineYCLabelColor color.Color
-	headlineYearColor    color.Color
+	headlineYCLabelColor  color.Color
+	headlineYearColor     color.Color
+	headlineAskHNColor    color.Color
+	headlineShowHNColor   color.Color
+	headlineTellHNColor   color.Color
+	headlineThankHNColor  color.Color
+	headlineLaunchHNColor color.Color
+	headlineAudioColor    color.Color
+	headlineVideoColor    color.Color
+	headlinePDFColor      color.Color
 
 	commentModColor color.Color
 
@@ -172,16 +171,16 @@ func rebuildThemeStyles() {
 		return lipgloss.NewStyle().Foreground(theme.ParseColor(c))
 	}
 
-	headlineAskHNStyle = fg(current.Headline.AskHN)
-	headlineShowHNStyle = fg(current.Headline.ShowHN)
-	headlineTellHNStyle = fg(current.Headline.TellHN)
-	headlineThankHNStyle = fg(current.Headline.ThankHN)
-	headlineLaunchHNStyle = fg(current.Headline.LaunchHN)
-	headlineAudioStyle = fg(current.Headline.Audio)
-	headlineVideoStyle = fg(current.Headline.Video)
-	headlinePDFStyle = fg(current.Headline.PDF)
 	headlineYCLabelColor = theme.ParseColor(current.Headline.YCLabel)
 	headlineYearColor = theme.ParseColor(current.Headline.Year)
+	headlineAskHNColor = theme.ParseColor(current.Headline.AskHN)
+	headlineShowHNColor = theme.ParseColor(current.Headline.ShowHN)
+	headlineTellHNColor = theme.ParseColor(current.Headline.TellHN)
+	headlineThankHNColor = theme.ParseColor(current.Headline.ThankHN)
+	headlineLaunchHNColor = theme.ParseColor(current.Headline.LaunchHN)
+	headlineAudioColor = theme.ParseColor(current.Headline.Audio)
+	headlineVideoColor = theme.ParseColor(current.Headline.Video)
+	headlinePDFColor = theme.ParseColor(current.Headline.PDF)
 
 	commentURLStyle = fg(current.Comment.URL)
 	commentMentionStyle = fg(current.Comment.Mention)
@@ -268,17 +267,16 @@ func MemorialUnderline(s string) string { return memorialUnderlineStyle.Render(s
 func MemorialColor() color.Color        { return memorialColor }
 func FaintItalic(s string) string       { return faintItalicStyle.Render(s) }
 
-func HeadlineAskHN(s string) string    { return headlineAskHNStyle.Render(s) }
-func HeadlineShowHN(s string) string   { return headlineShowHNStyle.Render(s) }
-func HeadlineTellHN(s string) string   { return headlineTellHNStyle.Render(s) }
-func HeadlineThankHN(s string) string  { return headlineThankHNStyle.Render(s) }
-func HeadlineLaunchHN(s string) string { return headlineLaunchHNStyle.Render(s) }
-func HeadlineAudio(s string) string    { return headlineAudioStyle.Render(s) }
-func HeadlineVideo(s string) string    { return headlineVideoStyle.Render(s) }
-func HeadlinePDF(s string) string      { return headlinePDFStyle.Render(s) }
-
-func HeadlineYCLabelColor() color.Color { return headlineYCLabelColor }
-func HeadlineYearColor() color.Color    { return headlineYearColor }
+func HeadlineYCLabelColor() color.Color  { return headlineYCLabelColor }
+func HeadlineYearColor() color.Color     { return headlineYearColor }
+func HeadlineAskHNColor() color.Color    { return headlineAskHNColor }
+func HeadlineShowHNColor() color.Color   { return headlineShowHNColor }
+func HeadlineTellHNColor() color.Color   { return headlineTellHNColor }
+func HeadlineThankHNColor() color.Color  { return headlineThankHNColor }
+func HeadlineLaunchHNColor() color.Color { return headlineLaunchHNColor }
+func HeadlineAudioColor() color.Color    { return headlineAudioColor }
+func HeadlineVideoColor() color.Color    { return headlineVideoColor }
+func HeadlinePDFColor() color.Color      { return headlinePDFColor }
 
 func CommentURL(s, url string) string     { return commentURLStyle.Hyperlink(url).Render(s) }
 func CommentMention(s string) string      { return commentMentionStyle.Render(s) }

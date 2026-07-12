@@ -34,8 +34,7 @@ type Frame struct {
 }
 
 type Model struct {
-	styles     styles
-	itemStyles itemStyles
+	styles styles
 
 	pager  pager
 	width  int
@@ -58,8 +57,7 @@ func New(config *settings.Config, cat *categories.Categories, hist history.Histo
 	p.InactiveDot = s.InactivePaginationDot.String()
 
 	return &Model{
-		styles:     s,
-		itemStyles: newItemStyles(),
+		styles: s,
 		pager: pager{
 			items:     make([][]*hn.Story, categories.Count()),
 			Paginator: p,

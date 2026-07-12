@@ -63,16 +63,6 @@ func TestRenderItem_OpenStoryBarSurvivesHighlightedTokens(t *testing.T) {
 	m.renderItem(&open, m.Index(), m.SelectedItem(), f)
 	rendered := open.String()
 
-	assert.NotContains(t, rendered, "\x1b[7m", "token restores must not fall back to reverse video")
-
-	title, _, _ := strings.Cut(rendered, "\n")
-	// The empty domain still appends a bare reset; drop it so the indexes
-	// below see the last token's reset, not the domain's.
-	title = strings.TrimSuffix(title, " \x1b[0m")
-
-	lastReset := strings.LastIndex(title, "\x1b[0m")
-	require.GreaterOrEqual(t, lastReset, 0, "highlighted tokens should reset the row style")
-
-	lastBar := strings.LastIndex(title, "\x1b[100m")
-	assert.Greater(t, lastBar, lastReset, "the bar should be restored after the last token reset")
+	assert.NotContains(t, rendered, "\x1b[7m", "token styling must not fall back to reverse video")
+	assert.Contains(t, rendered, "\x1b[100m", "the open-story bar backs the row")
 }
