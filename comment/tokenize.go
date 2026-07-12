@@ -6,7 +6,9 @@ import (
 )
 
 var (
-	reMention  = regexp.MustCompile(`((?:^| )\B@[\w.]+)`)
+	// HN usernames are letters, digits, _ and -; a trailing period is
+	// sentence punctuation, not part of the handle.
+	reMention  = regexp.MustCompile(`((?:^| )\B@[\w-]+)`)
 	reVariable = regexp.MustCompile(`(\$+[a-zA-Z_\-]+)`)
 	reYCLabel  = regexp.MustCompile(`\((YC [SWFXP]\d{2})\)`)
 	reURL      = regexp.MustCompile(`https?://([^,"\) \n]+)`)

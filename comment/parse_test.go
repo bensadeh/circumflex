@@ -231,6 +231,25 @@ func TestTokenize_MentionsAndReferences(t *testing.T) {
 	assert.Equal(t, "10", blocks[0].spans[5].text)
 }
 
+func TestTokenize_MentionStopsAtPunctuation(t *testing.T) {
+	t.Parallel()
+
+	t.Run("trailing period stays prose so the mod check holds", func(t *testing.T) {
+		t.Parallel()
+
+		blocks := Parse("thanks @dang.")
+		assert.Equal(t, []spanFormat{spanPlain, spanMention, spanPlain}, spanFormats(blocks[0]))
+		assert.Equal(t, " @dang", blocks[0].spans[1].text)
+	})
+
+	t.Run("hyphenated usernames tokenize whole", func(t *testing.T) {
+		t.Parallel()
+
+		blocks := Parse("ask @some-user about it")
+		assert.Equal(t, " @some-user", blocks[0].spans[1].text)
+	})
+}
+
 func TestTokenize_QuotesOnlyGetLinks(t *testing.T) {
 	t.Parallel()
 
