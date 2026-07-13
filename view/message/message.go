@@ -51,6 +51,27 @@ type AddToFavorites struct {
 	Item *hn.Story
 }
 
+// OpenReaderLink asks the app to open a link followed from inside a
+// reader-mode article; the linked page replaces the article in the pane.
+type OpenReaderLink struct {
+	URL string
+}
+
+func OpenReaderLinkCmd(url string) tea.Cmd {
+	return func() tea.Msg { return OpenReaderLink{URL: url} }
+}
+
+// LinkArticleReady delivers a page fetched through OpenReaderLink. Kept
+// apart from ArticleReady because failure handling differs: the open article
+// stays on screen, nothing rolls back, and no history is marked.
+type LinkArticleReady struct {
+	Parsed  *article.Parsed
+	Title   string
+	URL     string
+	Err     error
+	FetchID uint64
+}
+
 type ArticleReady struct {
 	Parsed         *article.Parsed
 	Title          string
@@ -87,7 +108,8 @@ type ErrorProgressTimeout struct {
 
 // OpenAdjacentStory asks the front page to open the next (+1) or previous
 // (-1) story in the same view the request came from: comment section or
-// reader mode.
+// reader mode. A direction of 0 re-opens the selected story itself — the
+// reader's stateless step back from a followed link.
 type OpenAdjacentStory struct {
 	Direction int
 }

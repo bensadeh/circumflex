@@ -494,6 +494,19 @@ func TestRenderSpans_Underline(t *testing.T) {
 	assert.Contains(t, renderSpans(spans, false), ansi.Underline+"marked"+ansi.UnderlineOff)
 }
 
+func TestRenderSpans_HyperlinkedCodeIsUnderlined(t *testing.T) {
+	t.Parallel()
+
+	spans := []span{{text: "pkg.Func", format: formatCode, href: "https://example.com/docs"}}
+	out := renderSpans(spans, false)
+
+	assert.Contains(t, out, "8;;https://example.com/docs", "the code span should carry an OSC 8 hyperlink")
+	assert.Contains(t, out, "\x1b[3;4;35", "the backtick style must re-add the underline its reset cleared")
+
+	plain := renderSpans([]span{{text: "pkg.Func", format: formatCode}}, false)
+	assert.NotContains(t, plain, ";4;", "code without a link stays un-underlined")
+}
+
 func TestRenderSpans_Hyperlink(t *testing.T) {
 	t.Parallel()
 

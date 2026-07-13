@@ -2,6 +2,8 @@ package article
 
 import (
 	"errors"
+	nurl "net/url"
+	"path"
 	"strings"
 )
 
@@ -24,6 +26,41 @@ func Validate(title, domain string) error {
 
 	if domain == "" {
 		return errors.New("reader mode only supported on submissions with link")
+	}
+
+	return nil
+}
+
+// ValidateURL is Validate for a bare link followed from inside an article:
+// there is no story title to carry [pdf]-style tags, so the scheme, the
+// domain blocklist, and the path's file type stand in for it. The reader's
+// link selector shows failing links muted and inert.
+func ValidateURL(rawURL string) error {
+	u, err := nurl.ParseRequestURI(rawURL)
+	if err != nil || (u.Scheme != "http" && u.Scheme != "https") {
+		return errors.New("not a readable link")
+	}
+
+	if isInvalidDomain(strings.TrimPrefix(u.Hostname(), "www.")) {
+		return errors.New("reader mode not supported for this domain")
+	}
+
+	// A link with a known full-text mirror (arXiv /pdf) is fetched as HTML,
+	// so its own extension doesn't matter.
+	if fullTextURL(u) != "" {
+		return nil
+	}
+
+	// Rejecting on the extension fails fast: without it the whole file
+	// downloads only for extraction to fail on the binary body.
+	switch strings.ToLower(path.Ext(u.Path)) {
+	case ".pdf":
+		return errors.New("reader mode not supported for PDFs")
+
+	case ".zip", ".gz", ".tgz", ".bin", ".exe", ".dmg", ".iso",
+		".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg",
+		".mp3", ".mp4", ".mov", ".webm":
+		return errors.New("reader mode not supported for this file type")
 	}
 
 	return nil

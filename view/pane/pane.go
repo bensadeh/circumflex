@@ -24,7 +24,22 @@ type Scroller struct {
 	plainLines   []string
 	search       searchState
 	rowOverrides []RowOverride
+	linkSpans    []Match
+	linkMuted    bool
 }
+
+// SetLinkSpans installs the spans of the link the reader's URL selector sits
+// on; nil clears them. They paint over any search highlights — the selection
+// is the thing being acted on. muted swaps the selection colors for the
+// open-story bar, marking a link the reader will not open.
+func (s *Scroller) SetLinkSpans(matches []Match, muted bool) {
+	s.linkSpans = matches
+	s.linkMuted = muted
+}
+
+func (s *Scroller) LinkSpans() []Match { return s.linkSpans }
+
+func (s *Scroller) LinkSpansMuted() bool { return s.linkMuted }
 
 // RowOverride substitutes the rendered row at content line Line for display
 // only, leaving the stored content untouched. The comment section uses it to
@@ -68,7 +83,7 @@ func (s *Scroller) pushViewport() {
 // of the view shows content line YOffset+k — the invariant that makes this
 // mapping valid is that pane content never scrolls horizontally.
 func (s *Scroller) DecorateView(view string) string {
-	if view == "" || (len(s.rowOverrides) == 0 && len(s.search.matches) == 0) {
+	if view == "" || (len(s.rowOverrides) == 0 && len(s.search.matches) == 0 && len(s.linkSpans) == 0) {
 		return view
 	}
 
@@ -114,7 +129,28 @@ func (s *Scroller) DecorateView(view string) string {
 		rows[row] = style.OverlaySearchSpans(rows[row], spans)
 	}
 
+	// Painted after the search spans so a selection overlapping a match ends
+	// up in the selection's colors — its SGRs re-assert through the earlier
+	// paint's replayed escapes.
+	overlayLink := style.OverlayLinkSpans
+	if s.linkMuted {
+		overlayLink = style.OverlayMutedLinkSpans
+	}
+
+	for _, m := range s.linkSpans {
+		if row, ok := visibleRow(m.Line); ok {
+			rows[row] = overlayLink(rows[row],
+				[]style.SearchSpan{{StartCell: m.StartCell, EndCell: m.EndCell}})
+		}
+	}
+
 	return strings.Join(rows, "\n")
+}
+
+// Lines is the stored content as styled lines, for views that scan the
+// rendered output itself (the reader's link extraction).
+func (s *Scroller) Lines() []string {
+	return s.lines
 }
 
 // RefreshPadding re-pushes the stored content so the bottom padding matches

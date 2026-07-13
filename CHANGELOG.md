@@ -4,10 +4,11 @@
 
 **New Features**
 
-- Added Search
+- Added Search in Comment Section and article Reader Mode
 
 **Reader Mode**
 
+- Added URL selection mode with the ability to open new links in Reade Mode
 - arXiv links now open the full paper instead of the abstract page, with equations converted to Unicode math
 - Add support for displaying AVIF images
 

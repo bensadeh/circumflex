@@ -2,13 +2,17 @@ package reader
 
 import (
 	"image/color"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/nerdfonts"
+	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/view/message"
 
 	tea "charm.land/bubbletea/v2"
@@ -172,17 +176,15 @@ func TestImageIndicator_BlankWithoutImages(t *testing.T) {
 
 func TestImageStatusLine(t *testing.T) {
 	shown := imageStatusLine(true, false, 80)
-	assert.Contains(t, shown, "▣ ")
-	assert.NotContains(t, shown, "▣  ", "unicode glyphs are single-cell and need no extra room")
 	assert.Contains(t, shown, "images shown")
+	assert.True(t, strings.HasSuffix(shown, " ▣"), "the icon trails at the right edge")
 
 	hidden := imageStatusLine(false, false, 80)
-	assert.Contains(t, hidden, "▢ ")
-	assert.NotContains(t, hidden, "▢  ")
 	assert.Contains(t, hidden, "images hidden")
+	assert.True(t, strings.HasSuffix(hidden, " ▢"))
 
-	assert.Contains(t, imageStatusLine(true, true, 80), nerdfonts.Image+"  ", "wide nerd font glyphs get extra room")
-	assert.Contains(t, imageStatusLine(false, true, 80), nerdfonts.ImageOff+"  ")
+	assert.True(t, strings.HasSuffix(imageStatusLine(true, true, 80), " "+nerdfonts.Image))
+	assert.True(t, strings.HasSuffix(imageStatusLine(false, true, 80), " "+nerdfonts.ImageOff))
 }
 
 func TestReader_BackgroundColorMsgRerendersWithTermBG(t *testing.T) {
@@ -369,6 +371,246 @@ func TestReaderSearch_SurvivesRerender(t *testing.T) {
 
 	assert.True(t, m.SearchActive())
 	assert.Len(t, m.SearchMatches(), 2, "matches are recomputed against the rewrapped text")
+}
+
+func linkedTestReader(t *testing.T) *Model {
+	t.Helper()
+
+	parsed := article.NewParsedFromHTML(
+		`<p><a href="https://one.example.com">first</a> link</p>` +
+			`<p><a href="https://two.example.com">second</a> link</p>` +
+			`<p><a href="https://three.example.com">third</a> link</p>`)
+
+	return NewWithArticle(parsed, "Title", 72, 100, 30, Options{}, nil)
+}
+
+func TestLinkSelector_TabTogglesAndKeysCycle(t *testing.T) {
+	m := linkedTestReader(t)
+	require.Len(t, m.links, 3)
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
+	assert.True(t, m.linkMode)
+	assert.Equal(t, 0, m.currentLink)
+	assert.Equal(t, m.links[0].spans, m.LinkSpans())
+
+	m.Update(tea.KeyPressMsg{Code: 'j', Text: "j"})
+	assert.Equal(t, 1, m.currentLink)
+
+	m.Update(tea.KeyPressMsg{Code: 'n', Text: "n"})
+	assert.Equal(t, 2, m.currentLink, "n moves links, not sections, inside the selector")
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyDown})
+	assert.Equal(t, 0, m.currentLink, "next wraps around")
+
+	m.Update(tea.KeyPressMsg{Code: 'k', Text: "k"})
+	assert.Equal(t, 2, m.currentLink, "prev wraps backwards")
+
+	m.Update(tea.KeyPressMsg{Code: 'N', Text: "N"})
+	assert.Equal(t, 1, m.currentLink)
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyUp})
+	assert.Equal(t, 0, m.currentLink)
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
+	assert.False(t, m.linkMode, "tab toggles back out")
+	assert.Empty(t, m.LinkSpans())
+}
+
+func TestLinkSelector_TabNoopWithoutLinks(t *testing.T) {
+	m := NewWithArticle(parseTestArticle(t), "Title", 72, 100, 30, Options{}, nil)
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
+	assert.False(t, m.linkMode)
+}
+
+// captureBrowserOpens points CLX_BROWSER at a script that logs the URLs it
+// is asked to open. The open runs detached, so assertions poll the log.
+func captureBrowserOpens(t *testing.T) func() string {
+	t.Helper()
+
+	dir := t.TempDir()
+	log := filepath.Join(dir, "opened.log")
+	script := filepath.Join(dir, "browser.sh")
+
+	require.NoError(t, os.WriteFile(script, []byte("#!/bin/sh\necho \"$1\" >> "+log+"\n"), 0o600))
+	require.NoError(t, os.Chmod(script, 0o700)) //nolint:gosec // the browser stub must be executable
+	t.Setenv("CLX_BROWSER", script)
+
+	return func() string {
+		b, _ := os.ReadFile(log)
+
+		return string(b)
+	}
+}
+
+func TestLinkSelector_EnterOpensReaderLinkAndOOpensStory(t *testing.T) {
+	opened := captureBrowserOpens(t)
+
+	parsed := article.NewParsedFromHTML(
+		`<p><a href="https://one.example.com">first</a> and <a href="https://two.example.com">second</a></p>`)
+	m := NewWithArticle(parsed, "Title", 72, 100, 30, Options{URL: "https://story.example.com"}, nil)
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
+	m.Update(tea.KeyPressMsg{Code: 'j', Text: "j"})
+
+	cmd := m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	require.NotNil(t, cmd)
+
+	msg, ok := cmd().(message.OpenReaderLink)
+	require.True(t, ok, "enter asks the app to open the link in reader mode")
+	assert.Equal(t, "https://two.example.com", msg.URL)
+
+	cmd = m.Update(tea.KeyPressMsg{Code: 'o', Text: "o"})
+	require.NotNil(t, cmd)
+	assert.Nil(t, cmd())
+	require.Eventually(t, func() bool { return strings.Contains(opened(), "https://story.example.com") },
+		time.Second, 10*time.Millisecond, "o keeps its story meaning inside the selector")
+}
+
+func TestQuit_FromLinkStepsBackToStory(t *testing.T) {
+	keys := []tea.KeyPressMsg{
+		{Code: 'q', Text: "q"},
+		{Code: tea.KeyEsc},
+		{Code: tea.KeyBackspace},
+	}
+
+	for _, key := range keys {
+		m := NewWithArticle(parseTestArticle(t), "Linked Page", 72, 100, 30, Options{FromLink: true}, nil)
+
+		cmd := m.Update(key)
+		require.NotNil(t, cmd)
+
+		msg, ok := cmd().(message.OpenAdjacentStory)
+		require.True(t, ok, "quit on a followed link re-opens the story, not the front page")
+		assert.Equal(t, 0, msg.Direction)
+	}
+}
+
+func TestQuit_FromLinkExitsSelectorFirst(t *testing.T) {
+	parsed := article.NewParsedFromHTML(`<p><a href="https://example.com/x">a link</a></p>`)
+	m := NewWithArticle(parsed, "Linked Page", 72, 100, 30, Options{FromLink: true}, nil)
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
+	require.True(t, m.linkMode)
+
+	cmd := m.Update(tea.KeyPressMsg{Code: 'q', Text: "q"})
+	assert.Nil(t, cmd)
+	assert.False(t, m.linkMode, "the first q only leaves the selector")
+
+	cmd = m.Update(tea.KeyPressMsg{Code: 'q', Text: "q"})
+	require.NotNil(t, cmd)
+	assert.IsType(t, message.OpenAdjacentStory{}, cmd(), "the second q steps back to the story")
+}
+
+func TestLinkSelector_NonViewableLinkIsInert(t *testing.T) {
+	parsed := article.NewParsedFromHTML(
+		`<p><a href="https://example.com/paper.pdf">the pdf</a> and <a href="https://example.com/page">a page</a></p>`)
+	m := NewWithArticle(parsed, "Title", 72, 100, 30, Options{}, nil)
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
+	require.Equal(t, 0, m.currentLink)
+	assert.True(t, m.LinkSpansMuted(), "the selected pdf takes the muted open-story bar")
+
+	cmd := m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	assert.Nil(t, cmd, "enter does nothing on a link the reader won't open")
+	assert.True(t, m.linkMode)
+
+	m.Update(tea.KeyPressMsg{Code: 'j', Text: "j"})
+	assert.False(t, m.LinkSpansMuted(), "a viewable link selects in the normal colors")
+}
+
+func TestLinkSelector_FooterDimsNonViewableURL(t *testing.T) {
+	parsed := article.NewParsedFromHTML(
+		`<p><a href="https://example.com/paper.pdf">the pdf</a> and <a href="https://example.com/page">a page</a></p>`)
+	m := NewWithArticle(parsed, "Title", 72, 100, 30, Options{}, nil)
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
+	assert.Contains(t, m.footer(), style.Faint("example.com/paper.pdf"), "an inert link's URL dims")
+	assert.Contains(t, xansi.Strip(m.footer()), "↛", "the arrow breaks for a link that won't open")
+
+	m.Update(tea.KeyPressMsg{Code: 'j', Text: "j"})
+	assert.NotContains(t, m.footer(), style.Faint("example.com/page"), "a viewable link's URL keeps full strength")
+	assert.Contains(t, xansi.Strip(m.footer()), "→")
+	assert.Contains(t, xansi.Strip(m.footer()), "example.com/page")
+}
+
+func TestLinkSelector_FooterIconSwapsForNonViewable_NerdFonts(t *testing.T) {
+	parsed := article.NewParsedFromHTML(
+		`<p><a href="https://example.com/paper.pdf">the pdf</a> and <a href="https://example.com/page">a page</a></p>`)
+	m := NewWithArticle(parsed, "Title", 72, 100, 30, Options{NerdFonts: true}, nil)
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
+	assert.Contains(t, m.footer(), nerdfonts.LinkSelectorOff)
+
+	m.Update(tea.KeyPressMsg{Code: 'j', Text: "j"})
+	footer := m.footer()
+	assert.Contains(t, footer, nerdfonts.LinkSelector)
+	assert.NotContains(t, footer, nerdfonts.LinkSelectorOff)
+}
+
+func TestLinkSelector_EscLayersBeforeSearchAndQuit(t *testing.T) {
+	m := linkedTestReader(t)
+	commitSearch(m, "link")
+	require.True(t, m.SearchActive())
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
+	require.True(t, m.linkMode)
+
+	cmd := m.Update(tea.KeyPressMsg{Code: tea.KeyEscape})
+	assert.Nil(t, cmd)
+	assert.False(t, m.linkMode, "the first esc leaves the selector")
+	assert.True(t, m.SearchActive(), "the search survives it")
+	assert.Empty(t, m.LinkSpans(), "the selection highlight clears")
+
+	cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEscape})
+	assert.Nil(t, cmd)
+	assert.False(t, m.SearchActive(), "the second esc clears the search")
+
+	cmd = m.Update(tea.KeyPressMsg{Code: tea.KeyEscape})
+	require.NotNil(t, cmd)
+	assert.IsType(t, message.DetailQuit{}, cmd(), "the third quits the view")
+}
+
+func TestLinkSelector_SlashSwitchesToSearch(t *testing.T) {
+	m := linkedTestReader(t)
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
+	m.Update(tea.KeyPressMsg{Code: '/', Text: "/"})
+
+	assert.False(t, m.linkMode)
+	assert.True(t, m.SearchPrompting())
+}
+
+func TestLinkSelector_FooterShowsURLAndCounter(t *testing.T) {
+	m := linkedTestReader(t)
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
+
+	footer := xansi.Strip(m.footer())
+	assert.Contains(t, footer, "one.example.com")
+	assert.NotContains(t, footer, "https://", "the scheme is stripped from the preview")
+	assert.Contains(t, footer, "1/3")
+}
+
+func TestLinkSelector_SurvivesRerender(t *testing.T) {
+	m := linkedTestReader(t)
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
+	m.Update(tea.KeyPressMsg{Code: 'j', Text: "j"})
+	require.Equal(t, 1, m.currentLink)
+
+	m.Update(tea.WindowSizeMsg{Width: 60, Height: 24})
+
+	assert.True(t, m.linkMode)
+	assert.Equal(t, 1, m.currentLink)
+	assert.Equal(t, m.links[1].spans, m.LinkSpans(), "the highlight tracks the rewrapped spans")
+}
+
+func TestFooter_ReaderModeLabelSitsLeft(t *testing.T) {
+	m := NewWithArticle(parseTestArticle(t), "Title", 72, 100, 30, Options{}, nil)
+
+	footer := xansi.Strip(m.footer())
+	assert.True(t, strings.HasPrefix(footer, "  Reader Mode"), "the label moved to the left slot")
 }
 
 func TestResize_HeightOnlySkipsRerender(t *testing.T) {

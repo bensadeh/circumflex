@@ -24,6 +24,7 @@ const (
 	fetchNone   fetchKind = iota
 	fetchList             // replaces the front page's stories
 	fetchDetail           // loads a story's comments or article
+	fetchLink             // loads a link followed from inside an article; the article stays visible
 )
 
 // rollbackPoint is what a failed or cancelled fetch restores. The caller
@@ -52,6 +53,7 @@ type fetchState struct {
 
 func (f *fetchState) inFlight() bool      { return f.kind != fetchNone }
 func (f *fetchState) detailLoading() bool { return f.kind == fetchDetail }
+func (f *fetchState) linkLoading() bool   { return f.kind == fetchLink }
 
 // begin starts a fetch's lifecycle, invalidating any predecessor.
 func (f *fetchState) begin(timeout time.Duration, kind fetchKind, target screen, rb rollbackPoint) fetchToken {
@@ -121,6 +123,13 @@ func (m *model) startFetch(timeout time.Duration, rb rollbackPoint) (fetchToken,
 // fetch opens, so the loading pane can lay out what that view will draw.
 func (m *model) startDetailFetch(timeout time.Duration, target screen, rb rollbackPoint) (fetchToken, tea.Cmd) {
 	return m.fetch.begin(timeout, fetchDetail, target, rb), m.status.StartSpinner()
+}
+
+// startLinkFetch begins a fetch of a link followed from inside an article.
+// The open reader stays on screen until the page arrives — failure surfaces
+// as a status message — so the rollback point is the selection as it stands.
+func (m *model) startLinkFetch(timeout time.Duration) (fetchToken, tea.Cmd) {
+	return m.fetch.begin(timeout, fetchLink, screenReader, m.detailRollback(m.list.Index())), m.status.StartSpinner()
 }
 
 // listRollback is the restore point for a fetch that replaces the list: the

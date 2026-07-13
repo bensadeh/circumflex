@@ -13,6 +13,11 @@ type keyMap struct {
 	PrevHeader key.Binding
 	HideImages key.Binding
 	ShowImages key.Binding
+
+	LinkMode     key.Binding
+	NextLink     key.Binding
+	PrevLink     key.Binding
+	OpenSelected key.Binding
 }
 
 func defaultKeyMap() keyMap {
@@ -33,6 +38,22 @@ func defaultKeyMap() keyMap {
 		ShowImages: key.NewBinding(
 			key.WithKeys("l"),
 			key.WithHelp("l", "show images"),
+		),
+		LinkMode: key.NewBinding(
+			key.WithKeys("tab"),
+			key.WithHelp("⇥", "link selector"),
+		),
+		NextLink: key.NewBinding(
+			key.WithKeys("j", "down", "n"),
+			key.WithHelp("j/n", "next link"),
+		),
+		PrevLink: key.NewBinding(
+			key.WithKeys("k", "up", "N"),
+			key.WithHelp("k/N", "prev link"),
+		),
+		OpenSelected: key.NewBinding(
+			key.WithKeys("enter"),
+			key.WithHelp("↩", "open link"),
 		),
 	}
 }

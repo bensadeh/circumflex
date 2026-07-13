@@ -74,6 +74,35 @@ func contrastFg(c color.Color) color.Color {
 	return lipgloss.BrightWhite
 }
 
+// linkSelectSGR paints the reader's selected link: black text on blue, the
+// selection block staying in the link family's hue. Fixed rather than
+// theme-derived — links render in the same ANSI blue on every theme.
+var linkSelectSGR = overlaySGR{
+	on:  ansi.ReverseOff + ansi.NormalIntensity + xansi.Style{}.BackgroundColor(lipgloss.Blue).ForegroundColor(lipgloss.Black).String(),
+	off: ansi.DefaultBackground + ansi.DefaultForeground,
+}
+
+// OverlayLinkSpans repaints the given spans of a single already-styled line
+// in the link-selection colors, under the same span rules as
+// OverlaySearchSpans.
+func OverlayLinkSpans(line string, spans []SearchSpan) string {
+	return overlaySpans(line, spans, linkSelectSGR, linkSelectSGR)
+}
+
+// linkMutedSGR marks a selected link the reader will not open — the same
+// muted bar the dual-pane list draws under the open story: bright-black
+// background, plain default-colored text (the link's own color and underline
+// cleared).
+var linkMutedSGR = overlaySGR{
+	on:  ansi.ReverseOff + ansi.NormalIntensity + ansi.UnderlineOff + ansi.DefaultForeground + ansi.BgBrightBlack,
+	off: ansi.DefaultBackground + ansi.DefaultForeground,
+}
+
+// OverlayMutedLinkSpans is OverlayLinkSpans in the muted colors.
+func OverlayMutedLinkSpans(line string, spans []SearchSpan) string {
+	return overlaySpans(line, spans, linkMutedSGR, linkMutedSGR)
+}
+
 // SearchSpan is one search hit on a line: a cell span, painted in the
 // current-match colors when Current is set.
 type SearchSpan struct {

@@ -69,6 +69,12 @@ func (m *model) wideView() string {
 
 func (m *model) detailPaneView() string {
 	switch {
+	// A link fetch keeps the article it was followed from on screen — only a
+	// successful load transitions — so its feedback overlays the footer row
+	// like the narrow layout's, instead of swapping in the loading pane.
+	case m.fetch.linkLoading() && m.detail != nil:
+		return m.overlayDetailStatus(m.detail.View(), m.detailWidth())
+
 	// Every fetch — story, category switch, refresh, startup — spins here, so
 	// loading feedback always appears in the same spot. Checked before the
 	// screen so a J/K fetch spins instead of showing the outgoing story.

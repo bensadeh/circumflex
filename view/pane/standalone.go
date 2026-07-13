@@ -51,6 +51,11 @@ func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case message.DetailQuit:
 		return s, tea.Quit
 
+	// Standalone has no fetch machinery to swap the view in place, so a
+	// followed link falls back to the browser.
+	case message.OpenReaderLink:
+		return s, message.OpenInBrowser(msg.URL)
+
 	case tea.BackgroundColorMsg:
 		s.bgMsg = msg // forwarded below, or replayed if the view is not built yet
 

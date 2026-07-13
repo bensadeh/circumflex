@@ -29,6 +29,7 @@ type Options struct {
 	NerdFonts bool
 	Images    bool
 	TermBG    color.Color // terminal background when already known, for image transparency
+	FromLink  bool        // the page was reached by following a link; quit steps back to the article
 }
 
 type Model struct {
@@ -49,6 +50,10 @@ type Model struct {
 	termBG      color.Color // nil until the terminal reports it
 	buildHeader func(contentWidth int) string
 	blockStarts []int // line index of each article block in the current render
+
+	links       []link
+	linkMode    bool
+	currentLink int
 }
 
 // newFromContent builds a reader over pre-rendered content with no parsed
@@ -116,7 +121,20 @@ func (m *Model) DisableStoryNavigation() {
 func (m *Model) initViewport(content string, width, height int) {
 	m.Viewport = pane.NewViewport(width, height-layout.PaneChromeHeight)
 	m.setContent(content)
+	m.extractArticleLinks()
 	m.rebuildTitleHeader()
+}
+
+// extractArticleLinks rescans the current render for followable links. The
+// scan starts at the first block so the meta header's URL row is never a
+// selectable link.
+func (m *Model) extractArticleLinks() {
+	fromLine := 0
+	if len(m.blockStarts) > 0 {
+		fromLine = m.blockStarts[0]
+	}
+
+	m.links = extractLinks(m.Lines(), fromLine)
 }
 
 func (m *Model) setContent(content string) {
@@ -192,11 +210,23 @@ func (m *Model) rerender() {
 	m.headerLines = r.HeadingStarts
 
 	m.setContent(r.Body)
+	m.extractArticleLinks()
 
 	// A width change rewraps text, so match positions are stale; the scroll
 	// position is kept rather than re-jumped.
 	if query := m.ActiveQuery(); query != "" {
 		m.SetSearchMatches(pane.FindMatches(m.PlainLines(), query))
+	}
+
+	// The selection carries over by position: the link count rarely changes
+	// on a re-render, and clamping covers the cases where it does.
+	if m.linkMode {
+		if len(m.links) == 0 {
+			m.exitLinkMode()
+		} else {
+			m.currentLink = min(m.currentLink, len(m.links)-1)
+			m.installLinkSpans()
+		}
 	}
 
 	maxOffset := max(0, m.ContentLines-m.Viewport.Height())
@@ -256,7 +286,19 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		return nil
 	}
 
+	// The selector consumes its own keys first — esc leaves it before it
+	// clears a search or the view — and lets everything else (paging, image
+	// toggles, J/K) fall through.
+	if m.linkMode {
+		if cmd, handled := m.handleLinkModeKey(msg); handled {
+			return cmd
+		}
+	}
+
 	switch {
+	case key.Matches(msg, m.keymap.LinkMode):
+		m.enterLinkMode()
+
 	case key.Matches(msg, m.keymap.Search):
 		m.StartSearchPrompt()
 
@@ -270,6 +312,13 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		m.PrevMatch()
 
 	case key.Matches(msg, m.keymap.Quit):
+		// A page reached by following a link steps back to the article it
+		// came from — re-fetched rather than restored, so no saved view can
+		// go stale. The front page is one more press away.
+		if m.opts.FromLink {
+			return message.OpenAdjacentStoryCmd(0)
+		}
+
 		return func() tea.Msg { return message.DetailQuit{} }
 
 	case key.Matches(msg, m.keymap.GotoTop):
@@ -324,6 +373,100 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 	return nil
 }
 
+func (m *Model) handleLinkModeKey(msg tea.KeyPressMsg) (tea.Cmd, bool) {
+	switch {
+	case key.Matches(msg, m.keymap.LinkMode):
+		m.exitLinkMode()
+
+	case key.Matches(msg, m.keymap.NextLink):
+		m.moveLink(1)
+
+	case key.Matches(msg, m.keymap.PrevLink):
+		m.moveLink(-1)
+
+	// o falls through to the story bindings below — the selector only claims
+	// enter, and only for links reader mode can render.
+	case key.Matches(msg, m.keymap.OpenSelected):
+		if l := m.links[m.currentLink]; l.viewable {
+			return message.OpenReaderLinkCmd(l.url), true
+		}
+
+		return nil, true
+
+	case key.Matches(msg, m.keymap.Search):
+		m.exitLinkMode()
+		m.StartSearchPrompt()
+
+	case key.Matches(msg, m.keymap.Quit):
+		m.exitLinkMode()
+
+	default:
+		return nil, false
+	}
+
+	return nil, true
+}
+
+// enterLinkMode starts the URL selector on the first link at or below the
+// current scroll position, wrapping to the first overall. An article with no
+// links has nothing to select.
+func (m *Model) enterLinkMode() {
+	if len(m.links) == 0 {
+		return
+	}
+
+	m.linkMode = true
+	m.currentLink = 0
+
+	yOffset := m.Viewport.YOffset()
+
+	for i, l := range m.links {
+		if l.spans[0].Line >= yOffset {
+			m.currentLink = i
+
+			break
+		}
+	}
+
+	m.installLinkSpans()
+	m.scrollToCurrentLink()
+}
+
+func (m *Model) exitLinkMode() {
+	m.linkMode = false
+	m.SetLinkSpans(nil, false)
+}
+
+func (m *Model) moveLink(direction int) {
+	n := len(m.links)
+	m.currentLink = ((m.currentLink+direction)%n + n) % n
+	m.installLinkSpans()
+	m.scrollToCurrentLink()
+}
+
+func (m *Model) installLinkSpans() {
+	l := m.links[m.currentLink]
+	m.SetLinkSpans(l.spans, !l.viewable)
+}
+
+// linkScrollPadding keeps a couple of context lines above a link scrolled
+// into view, mirroring the search jumps.
+const linkScrollPadding = 2
+
+// scrollToCurrentLink scrolls only when the selected link is not already
+// fully visible, so cycling through on-screen links doesn't shift the view.
+func (m *Model) scrollToCurrentLink() {
+	spans := m.links[m.currentLink].spans
+	first, last := spans[0].Line, spans[len(spans)-1].Line
+
+	top := m.Viewport.YOffset()
+	if first >= top && last < top+m.Viewport.Height() {
+		return
+	}
+
+	m.Viewport.SetYOffset(max(0, first-linkScrollPadding))
+}
+
 func (m *Model) View() string {
 	if m.showHelp {
 		contentWidth := layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
@@ -343,34 +486,79 @@ func (m *Model) View() string {
 	return m.titleHeader + "\n" + content + "\n" + pane.FooterSeparator(m.paneWidth) + "\n" + m.footer()
 }
 
-// footer is the line under the separator: the image indicator on the left
-// when the article has images, and the reader-mode label ending at the
-// article column's right edge. A search in play takes over the whole line:
-// its prompt or query on the left, the match counter on the right.
+// footer is the line under the separator: the reader-mode label on the left
+// and the image indicator ending at the article column's right edge. The URL
+// selector or a search in play takes over the whole line: the selected URL
+// or the query on the left, its counter on the right.
 func (m *Model) footer() string {
 	totalWidth := layout.ReaderViewLeftMargin + layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
 
 	var result string
 
-	if search := m.SearchFooterLabel(m.opts.NerdFonts); search != "" {
-		result = pane.FooterSections(totalWidth, "  "+search, m.SearchCountLabel())
-	} else {
-		result = pane.FooterSections(totalWidth, m.imageIndicator(), readerModeLabel(m.opts.NerdFonts))
+	switch {
+	case m.linkMode:
+		result = pane.FooterSections(totalWidth,
+			m.linkSelectorLabel(totalWidth),
+			pane.MatchCountLabel(m.currentLink, len(m.links)))
+
+	case m.SearchFooterLabel(m.opts.NerdFonts) != "":
+		result = pane.FooterSections(totalWidth, "  "+m.SearchFooterLabel(m.opts.NerdFonts), m.SearchCountLabel())
+
+	default:
+		result = pane.FooterSections(totalWidth, m.readerModeLabel(), m.imageIndicator())
 	}
 
 	return xansi.Truncate(result, m.paneWidth, "")
 }
 
-// readerModeLabel marks the article as a reader-mode rendering. The text is
-// faint — it's a reminder, not a headline — while the icon keeps full
-// strength like the footer's other icons. The icon trails the text so it
-// ends at the column's right edge, mirroring the help footer's version tag.
-func readerModeLabel(enableNerdFonts bool) string {
-	if enableNerdFonts {
-		return style.Faint("Reader Mode") + " " + nerdfonts.Document
+// linkSelectorLabel is the selector's footer preview: the selector icon and
+// the selected link's full URL, pre-truncated so the counter keeps the
+// column's right edge however long the URL runs. A link the reader won't
+// open shows the broken-link icon and its URL faint, dimmed like the muted
+// selection bar above it.
+func (m *Model) linkSelectorLabel(totalWidth int) string {
+	l := m.links[m.currentLink]
+
+	icon, sep := style.Faint("→"), " "
+	if !l.viewable {
+		icon = style.Faint("↛")
 	}
 
-	return style.Faint("Reader Mode")
+	if m.opts.NerdFonts {
+		// Nerd font glyphs render wider than one cell, so they get extra room.
+		icon, sep = nerdfonts.LinkSelector, "  "
+		if !l.viewable {
+			icon = nerdfonts.LinkSelectorOff
+		}
+	}
+
+	prefix := "  " + icon + sep
+
+	// The scheme is stripped from the display like the meta block's URL row —
+	// the footer is visibly showing a link already.
+	display := strings.TrimPrefix(strings.TrimPrefix(l.url, "https://"), "http://")
+
+	counterWidth := xansi.StringWidth(pane.MatchCountLabel(m.currentLink, len(m.links)))
+	maxURL := totalWidth - xansi.StringWidth(prefix) - counterWidth - 1
+
+	display = xansi.Truncate(display, max(0, maxURL), "…")
+	if !l.viewable {
+		display = style.Faint(display)
+	}
+
+	return prefix + display
+}
+
+// readerModeLabel marks the article as a reader-mode rendering. The text is
+// faint — it's a reminder, not a headline — while the icon keeps full
+// strength like the footer's other icons.
+func (m *Model) readerModeLabel() string {
+	if m.opts.NerdFonts {
+		// Nerd font glyphs render wider than one cell, so they get extra room.
+		return "  " + nerdfonts.Document + "  " + style.Faint("Reader Mode")
+	}
+
+	return "  " + style.Faint("Reader Mode")
 }
 
 // imageIndicator is the footer counterpart to the comment section's mode
@@ -383,25 +571,22 @@ func (m *Model) imageIndicator() string {
 	return imageStatusLine(m.showImages, m.opts.NerdFonts, m.paneWidth)
 }
 
+// imageStatusLine trails its icon so it ends at the column's right edge,
+// mirroring the help footer's version tag.
 func imageStatusLine(show, enableNerdFonts bool, paneWidth int) string {
 	icon, label := "▣", "images shown"
 	if !show {
 		icon, label = "▢", "images hidden"
 	}
 
-	// Nerd font glyphs render wider than one cell, so they get extra room.
-	sep := " "
-
 	if enableNerdFonts {
 		icon = nerdfonts.Image
 		if !show {
 			icon = nerdfonts.ImageOff
 		}
-
-		sep = "  "
 	}
 
-	return xansi.Truncate("  "+icon+sep+style.Faint(label), paneWidth, "")
+	return xansi.Truncate(style.Faint(label)+" "+icon, paneWidth, "")
 }
 
 func (m *Model) rebuildTitleHeader() {

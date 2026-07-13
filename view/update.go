@@ -1,6 +1,9 @@
 package view
 
 import (
+	"net/url"
+
+	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/favorites"
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/meta"
@@ -103,6 +106,12 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 
 	case message.ArticleReady:
 		return m.handleArticleReady(msg)
+
+	case message.OpenReaderLink:
+		return m, m.handleOpenReaderLink(msg)
+
+	case message.LinkArticleReady:
+		return m.handleLinkArticleReady(msg)
 
 	case message.DetailQuit:
 		m.detail = nil
@@ -268,6 +277,65 @@ func (m *model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*m
 	}
 
 	return m, tea.Batch(cmds...)
+}
+
+// handleOpenReaderLink starts the fetch for a link followed inside an
+// article. Validation failures never leave the article: they surface on the
+// status bar like a failed fetch would. The selector greys out links that
+// fail this check, so this guard is mostly a backstop.
+func (m *model) handleOpenReaderLink(msg message.OpenReaderLink) tea.Cmd {
+	if err := article.ValidateURL(msg.URL); err != nil {
+		return m.status.NewStatusMessageWithDuration(friendlyError(err), statusMessageLong)
+	}
+
+	tok, startSpinnerCmd := m.startLinkFetch(readerModeTimeout)
+
+	setProgressIndeterminate()
+
+	return tea.Batch(startSpinnerCmd, m.fetchLinkArticle(tok, msg.URL))
+}
+
+// handleLinkArticleReady swaps the followed link's page into the detail pane
+// in place of the article it was found in. On error nothing transitions —
+// the open article stays, the failure surfaces on the status bar, and the
+// progress indicator settles when the message expires.
+func (m *model) handleLinkArticleReady(msg message.LinkArticleReady) (*model, tea.Cmd) {
+	if _, ok := m.finishFetch(msg.FetchID, msg.Err); !ok {
+		return m, nil
+	}
+
+	if msg.Err != nil {
+		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
+	}
+
+	title := msg.Title
+	if title == "" {
+		title = urlHost(msg.URL)
+	}
+
+	block := meta.ReaderModeURL(msg.URL)
+
+	m.detail = reader.NewWithArticle(msg.Parsed, title, m.config.ArticleWidth, m.detailWidth(), m.height, reader.Options{
+		URL:       msg.URL,
+		ID:        m.list.SelectedItem().ID,
+		NerdFonts: m.config.EnableNerdFonts,
+		Images:    m.config.EnableImages,
+		TermBG:    m.termBG,
+		FromLink:  true,
+	}, block.Render)
+
+	m.screen = screenReader
+
+	return m, m.detail.Init()
+}
+
+func urlHost(rawURL string) string {
+	u, err := url.Parse(rawURL)
+	if err != nil || u.Hostname() == "" {
+		return rawURL
+	}
+
+	return u.Hostname()
 }
 
 func (m *model) handleArticleReady(msg message.ArticleReady) (*model, tea.Cmd) {

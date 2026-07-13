@@ -156,9 +156,14 @@ func renderSpans(spans []span, insideQuote bool) string {
 			rendered = ansi.Underline + s.text + ansi.UnderlineOff
 
 		case formatCode:
-			if insideQuote {
+			switch {
+			case insideQuote:
 				rendered = s.text
-			} else {
+			case s.href != "":
+				// The leading reset clears the link wrapper's underline along
+				// with everything else, so the backtick style re-adds it.
+				rendered = ansi.Reset + style.CommentBacktickLink(s.text)
+			default:
 				rendered = ansi.Reset + style.CommentBacktick(s.text)
 			}
 

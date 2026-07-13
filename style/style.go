@@ -284,6 +284,13 @@ func CommentGP(s string) string           { return commentGPStyle.Render(s) }
 func CommentNewIndicator(s string) string { return commentNewIndicatorStyle.Render(s) }
 func CommentBacktick(s string) string     { return commentBacktickStyle.Render(s) }
 
+// CommentBacktickLink is the backtick style for inline code that is itself a
+// hyperlink: the code keeps its color and the underline marks the link — the
+// link wrapper's own underline is lost to the reset the backtick style needs.
+func CommentBacktickLink(s string) string {
+	return commentBacktickStyle.Underline(true).Render(s)
+}
+
 func MetaAuthor(s string) string           { return metaAuthorStyle.Render(s) }
 func MetaScore(s string) string            { return metaScoreStyle.Render(s) }
 func MetaNewCommentsFaint(s string) string { return metaNewCommentsFaintStyle.Render(s) }

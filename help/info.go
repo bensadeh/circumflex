@@ -46,6 +46,11 @@ func readerText(leftMargin, contentWidth int, withStoryNav bool) string {
 	nav.addKey("n, N", "Next / prev section")
 	nav.addKey("h, l", "Hide / show images")
 
+	links := keys.addSection("Link Selector")
+	links.addKey("⇥", "Enter / exit selector")
+	links.addKey("j/n, k/N", "Next / prev link")
+	links.addKey("↩", "Open link in reader")
+
 	search := keys.addSection("Search")
 	search.addKey("/", "Search article")
 	search.addKey("n, N", "Next / prev match")

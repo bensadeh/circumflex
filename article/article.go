@@ -17,6 +17,11 @@ import (
 // re-rendering at different widths without re-fetching.
 type Parsed struct {
 	blocks []block
+
+	// Title is the page's own title as readability extracted it; empty for
+	// plain-text pages. Articles opened from a story use the story title
+	// instead — this one names pages reached by following links.
+	Title string
 }
 
 // Parse fetches the article at url and turns it into renderable blocks,
@@ -33,16 +38,20 @@ func Parse(ctx context.Context, url string) (*Parsed, error) {
 		return nil, err
 	}
 
-	var blocks []block
+	var (
+		blocks []block
+		title  string
+	)
 
 	if isPlainText(contentType, body) {
 		blocks = parseTextBlocks(string(body))
 	} else {
-		node, err := extractReadable(body, parsedURL)
+		node, pageTitle, err := extractReadable(body, parsedURL)
 		if err != nil {
 			return nil, err
 		}
 
+		title = pageTitle
 		blocks = parseBlocks(node)
 
 		if usesMathRenderer(body) {
@@ -60,7 +69,7 @@ func Parse(ctx context.Context, url string) (*Parsed, error) {
 
 	fetchImages(ctx, blocks, parsedURL)
 
-	return &Parsed{blocks: blocks}, nil
+	return &Parsed{blocks: blocks, Title: title}, nil
 }
 
 // NewParsedFromHTML skips fetching and readability extraction; for tests.

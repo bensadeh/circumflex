@@ -173,6 +173,25 @@ func (m *model) fetchArticle(tok fetchToken, story *hn.Story) tea.Cmd {
 	}
 }
 
+// fetchLinkArticle loads a page reached by following a link inside an
+// article. Unlike fetchArticle there is no story: no title to validate
+// against, and nothing marked read.
+func (m *model) fetchLinkArticle(tok fetchToken, url string) tea.Cmd {
+	return func() tea.Msg {
+		parsed, err := article.Parse(tok.ctx, url)
+		if err != nil {
+			return message.LinkArticleReady{Err: err, FetchID: tok.id}
+		}
+
+		return message.LinkArticleReady{
+			Parsed:  parsed,
+			Title:   parsed.Title,
+			URL:     url,
+			FetchID: tok.id,
+		}
+	}
+}
+
 // Terminal progress bar via OSC 9;4 (supported by Ghostty, ConEmu and others;
 // silently ignored by terminals that don't recognise the sequence).
 //

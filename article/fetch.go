@@ -92,7 +92,7 @@ func fetchFullText(ctx context.Context, parsedURL *nurl.URL) ([]byte, string, *n
 	return body, contentType, fullTextParsed
 }
 
-func extractReadable(body []byte, parsedURL *nurl.URL) (*html.Node, error) {
+func extractReadable(body []byte, parsedURL *nurl.URL) (*html.Node, string, error) {
 	parser := readability.NewParser()
 
 	// LaTeXML footnote chrome (arXiv HTML papers) is told apart by class;
@@ -102,14 +102,14 @@ func extractReadable(body []byte, parsedURL *nurl.URL) (*html.Node, error) {
 
 	a, err := parser.Parse(bytes.NewReader(body), parsedURL)
 	if err != nil {
-		return nil, fmt.Errorf("could not parse article from %s: %w", parsedURL.Host, err)
+		return nil, "", fmt.Errorf("could not parse article from %s: %w", parsedURL.Host, err)
 	}
 
 	if a.Node == nil {
-		return nil, fmt.Errorf("could not extract readable content from %s", parsedURL.Host)
+		return nil, "", fmt.Errorf("could not extract readable content from %s", parsedURL.Host)
 	}
 
-	return a.Node, nil
+	return a.Node, a.Title(), nil
 }
 
 // isPlainText sniffs the body as well as the header: some servers label HTML

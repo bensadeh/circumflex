@@ -886,3 +886,84 @@ func TestFetchArticle_ValidationFailure_SkipsHistoryWrite(t *testing.T) {
 	require.Error(t, result.Err, "validation should fail for youtube.com")
 	assert.NoError(t, result.HistoryWarning, "history write should be skipped on validation failure")
 }
+
+// openTestReader puts a reader in the detail pane the way handleArticleReady
+// does.
+func openTestReader(t *testing.T, m *model) *model {
+	t.Helper()
+
+	startTestFetch(m, screenReader)
+	m, _ = m.Update(message.ArticleReady{Parsed: testParsedArticle(), Title: "Root", FetchID: m.fetch.id})
+	require.Equal(t, screenReader, m.screen)
+	require.NotNil(t, m.detail)
+
+	return m
+}
+
+func TestLinkArticleReady_ReplacesReader(t *testing.T) {
+	m := openTestReader(t, newTestModelReady(t))
+	root := m.detail
+
+	_, _ = m.startLinkFetch(0)
+	m, _ = m.Update(message.LinkArticleReady{Parsed: testParsedArticle(), Title: "Linked", URL: "https://example.com/linked", FetchID: m.fetch.id})
+
+	assert.Equal(t, screenReader, m.screen)
+	assert.NotSame(t, root, m.detail, "the linked page takes the article's place")
+
+	m, _ = m.Update(message.DetailQuit{})
+	assert.Equal(t, screenList, m.screen, "quit from the linked page returns to the front page")
+}
+
+func TestLinkArticleReady_ErrorStaysOnArticle(t *testing.T) {
+	m := openTestReader(t, newTestModelReady(t))
+	root := m.detail
+
+	_, _ = m.startLinkFetch(0)
+	m, cmd := m.Update(message.LinkArticleReady{Err: errors.New("server returned status 404"), FetchID: m.fetch.id})
+
+	assert.Same(t, root, m.detail, "the open article never transitions on failure")
+	assert.Equal(t, screenReader, m.screen)
+	assert.NotNil(t, cmd, "the failure surfaces as a status message")
+}
+
+func TestOpenReaderLink_InvalidDomainStaysPut(t *testing.T) {
+	m := openTestReader(t, newTestModelReady(t))
+	root := m.detail
+
+	m, cmd := m.Update(message.OpenReaderLink{URL: "https://youtube.com/watch?v=123"})
+
+	assert.False(t, m.fetch.inFlight(), "a blocked domain never starts a fetch")
+	assert.Same(t, root, m.detail)
+	assert.NotNil(t, cmd, "the rejection surfaces as a status message")
+}
+
+func TestOpenReaderLink_StartsLinkFetch(t *testing.T) {
+	m := openTestReader(t, newTestModelReady(t))
+
+	m, cmd := m.Update(message.OpenReaderLink{URL: "https://example.com/page"})
+
+	assert.True(t, m.fetch.linkLoading())
+	assert.NotNil(t, cmd)
+}
+
+// Quit on a linked page steps back to the story article by re-fetching it —
+// direction 0 through the adjacent-story flow, so no saved view exists to go
+// stale.
+func TestOpenAdjacentStory_ZeroReopensSelectedStory(t *testing.T) {
+	m := openTestReader(t, newTestModelReady(t))
+
+	_, _ = m.startLinkFetch(0)
+	m, _ = m.Update(message.LinkArticleReady{Parsed: testParsedArticle(), Title: "Linked", URL: "https://example.com/linked", FetchID: m.fetch.id})
+	linked := m.detail
+
+	m, cmd := m.Update(message.OpenAdjacentStory{Direction: 0})
+
+	assert.True(t, m.fetch.detailLoading(), "the story article re-fetches")
+	assert.Equal(t, 0, m.list.Index(), "the selection stays on the story")
+	assert.Same(t, linked, m.detail, "the linked page stays visible while the article loads")
+	require.NotNil(t, cmd)
+
+	m, _ = m.Update(message.ArticleReady{Parsed: testParsedArticle(), Title: "Root again", FetchID: m.fetch.id})
+	assert.Equal(t, screenReader, m.screen)
+	assert.NotSame(t, linked, m.detail, "the article replaces the linked page")
+}

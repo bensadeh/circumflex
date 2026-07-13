@@ -23,17 +23,19 @@ func (m *model) View() string {
 	}
 
 	if m.detail != nil {
-		return m.overlayDetailStatus(m.detail.View())
+		return m.overlayDetailStatus(m.detail.View(), m.width)
 	}
 
 	return m.browsingView()
 }
 
 // overlayDetailStatus writes fetch and status feedback onto the last row of a
-// full-screen detail view, which reserves that row as footer space. Narrow
-// J/K story navigation stays on the open story while the next one loads, so
-// its spinner and errors must surface here rather than on the front page.
-func (m *model) overlayDetailStatus(view string) string {
+// detail view, which reserves that row as footer space. Narrow J/K story
+// navigation and link fetches at either width stay on the open story while
+// the next page loads, so their spinners and errors must surface here rather
+// than on the front page. width is the pane the view fills: the whole
+// terminal in the narrow layout, the detail pane in the wide one.
+func (m *model) overlayDetailStatus(view string, width int) string {
 	var status string
 
 	switch {
@@ -48,7 +50,7 @@ func (m *model) overlayDetailStatus(view string) string {
 	lines := strings.Split(view, "\n")
 	// Width pads but never truncates, and an error message can be wider than
 	// the screen.
-	lines[len(lines)-1] = xansi.Truncate(m.statusMidStyle.Width(m.width).Render(status), m.width, "")
+	lines[len(lines)-1] = xansi.Truncate(m.statusMidStyle.Width(width).Render(status), width, "")
 
 	return strings.Join(lines, "\n")
 }
@@ -102,9 +104,9 @@ func (m *model) statusAndPaginationView() string {
 
 	switch {
 	case m.fetch.inFlight():
-		// A story fetch in the wide layout keeps the paginator so the left
-		// pane doesn't change; the loading state shows in the detail pane.
-		if m.isWide() && m.detailLoading() {
+		// A story or link fetch in the wide layout keeps the paginator so the
+		// left pane doesn't change; the loading state shows in the detail pane.
+		if m.isWide() && (m.detailLoading() || m.fetch.linkLoading()) {
 			rightContent = paginatorView
 		} else {
 			rightContent = m.list.InactiveDots(m.config.PageMultiplier)

@@ -16,6 +16,8 @@ const (
 	Video               = ""
 	Image               = "󰋩"
 	ImageOff            = "󰠫"
+	LinkSelector        = ""
+	LinkSelectorOff     = "󰌺"
 	YCombinator         = ""
 	LeftSeparator       = ""
 	RightSeparator      = ""
