@@ -48,8 +48,8 @@ func RenderBlocks(blocks []Block, opts RenderOptions) string {
 
 func renderBlock(b *Block, opts RenderOptions) string {
 	switch b.kind {
-	case blockDeleted:
-		return style.Faint("[deleted]")
+	case blockRemoved:
+		return style.Faint(b.text)
 
 	case blockQuote:
 		return renderQuote(b.spans, opts)

@@ -24,7 +24,7 @@ func tokenizeVerbatim(b *Block) {
 		splitText(b, linkifyURLs)
 	case blockQuote:
 		splitText(b, linkifyURLs)
-	case blockCode, blockDeleted:
+	case blockCode, blockRemoved:
 	}
 }
 

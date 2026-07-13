@@ -21,6 +21,15 @@ func TestPrintDeleted(t *testing.T) {
 	assert.Contains(t, result, "\033[2m", "should contain faint ANSI escape")
 }
 
+func TestPrintFlagged(t *testing.T) {
+	t.Parallel()
+
+	result := renderBody("[flagged]", 70, 80, false, nil)
+
+	assert.Contains(t, result, "[flagged]")
+	assert.Contains(t, result, "\033[2m", "should contain faint ANSI escape")
+}
+
 func TestPrintSimpleText(t *testing.T) {
 	t.Parallel()
 

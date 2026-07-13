@@ -11,6 +11,10 @@
 - arXiv links now open the full paper instead of the abstract page, with equations converted to Unicode math
 - Add support for displaying AVIF images
 
+**Comment Section**
+
+- Flagged and deleted comments without replies are no longer shown
+
 **Design**
 
 - Re-stylize the meta block

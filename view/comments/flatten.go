@@ -48,7 +48,7 @@ func flatten(thread *comment.Thread) []flatComment {
 }
 
 func flattenRecursive(c *comment.Comment, depth int, topLevelAuthor string, out *[]flatComment) {
-	if c.Content == "[deleted]" && len(c.Children) == 0 {
+	if comment.Removed(c.Content) && len(c.Children) == 0 {
 		return
 	}
 

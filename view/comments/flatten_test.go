@@ -109,13 +109,14 @@ func TestFlatten_DescendantCount(t *testing.T) {
 	assert.Equal(t, 0, flat[3].DescendantCount) // D leaf
 }
 
-func TestFlatten_SkipsDeletedLeaves(t *testing.T) {
+func TestFlatten_SkipsRemovedLeaves(t *testing.T) {
 	t.Parallel()
 
 	thread := newThread(
 		newComment(1, "alice", "A",
 			newComment(2, "bob", "[deleted]"),
 			newComment(3, "charlie", "C"),
+			newComment(4, "dave", "[flagged]"),
 		),
 	)
 

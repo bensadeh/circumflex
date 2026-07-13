@@ -15,8 +15,8 @@ import (
 // HN's comment grammar is closed: only <p>, <i>, <a href>, <pre><code> and
 // entities reach us (user-typed markup arrives entity-escaped).
 func Parse(commentHTML string) []Block {
-	if commentHTML == "[deleted]" {
-		return []Block{{kind: blockDeleted}}
+	if Removed(commentHTML) {
+		return []Block{{kind: blockRemoved, text: commentHTML}}
 	}
 
 	blocks := parseBlocks(commentHTML)

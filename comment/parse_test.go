@@ -34,10 +34,11 @@ func spanFormats(b Block) []spanFormat {
 	return out
 }
 
-func TestParse_Deleted(t *testing.T) {
+func TestParse_Removed(t *testing.T) {
 	t.Parallel()
 
-	assert.Equal(t, []blockKind{blockDeleted}, kinds(Parse("[deleted]")))
+	assert.Equal(t, []blockKind{blockRemoved}, kinds(Parse("[deleted]")))
+	assert.Equal(t, []blockKind{blockRemoved}, kinds(Parse("[flagged]")))
 }
 
 func TestParse_ParagraphSplitting(t *testing.T) {

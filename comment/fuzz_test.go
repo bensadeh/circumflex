@@ -15,6 +15,7 @@ func FuzzParse(f *testing.F) {
 		"",
 		"<p>",
 		"[deleted]",
+		"[flagged]",
 		"plain text with &amp; entities &#x27;here&#x27;",
 		"&gt; a quote<p>reply<p>&gt;&gt; deeper",
 		"<i>&gt; italic quote with <a href=\"https://x.com/a,b\">https://x.com/a,b</a></i>",
