@@ -486,6 +486,98 @@ func TestQuit_FromLinkStepsBackToStory(t *testing.T) {
 	}
 }
 
+func TestQuit_WalksBackThroughTrail(t *testing.T) {
+	trail := []message.TrailEntry{
+		{URL: "https://story.example.com", Title: "Story", Parsed: parseTestArticle(t), Story: true},
+		{URL: "https://a.example.com", Title: "Page A", Parsed: parseTestArticle(t)},
+	}
+
+	m := NewWithArticle(parseTestArticle(t), "Deep Page", 72, 100, 30, Options{
+		FromLink: true,
+		Trail:    trail,
+	}, nil)
+
+	cmd := m.Update(tea.KeyPressMsg{Code: 'q', Text: "q"})
+	require.NotNil(t, cmd)
+
+	msg, ok := cmd().(message.RestoreReaderPage)
+	require.True(t, ok, "quit restores the previous page from its retained parse")
+	assert.Equal(t, "https://a.example.com", msg.Entry.URL)
+	require.Len(t, msg.Trail, 1, "the step taken back leaves the chain")
+	assert.True(t, msg.Trail[0].Story, "the story article stays at the chain's root")
+}
+
+func TestLinkSelector_ForwardExtendsTrail(t *testing.T) {
+	parsed := article.NewParsedFromHTML(`<p><a href="https://next.example.com">next</a></p>`)
+	m := NewWithArticle(parsed, "Linked Page", 72, 100, 30, Options{
+		URL:      "https://current.example.com",
+		FromLink: true,
+		Trail:    []message.TrailEntry{{URL: "https://story.example.com", Story: true}},
+	}, nil)
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
+
+	cmd := m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	require.NotNil(t, cmd)
+
+	msg, ok := cmd().(message.OpenReaderLink)
+	require.True(t, ok)
+	assert.Equal(t, "https://next.example.com", msg.URL)
+	require.Len(t, msg.Trail, 2, "the page being left joins the chain")
+	assert.Equal(t, "https://current.example.com", msg.Trail[1].URL)
+	assert.Equal(t, "Linked Page", msg.Trail[1].Title)
+	assert.Same(t, parsed, msg.Trail[1].Parsed, "the parse rides along so stepping back needs no network")
+	assert.False(t, msg.Trail[1].Story)
+}
+
+func TestLinkSelector_ForwardFromStoryStartsTrail(t *testing.T) {
+	parsed := article.NewParsedFromHTML(`<p><a href="https://next.example.com">next</a></p>`)
+	m := NewWithArticle(parsed, "Story Title", 72, 100, 30, Options{URL: "https://story.example.com"}, nil)
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
+
+	cmd := m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	require.NotNil(t, cmd)
+
+	msg, ok := cmd().(message.OpenReaderLink)
+	require.True(t, ok)
+	require.Len(t, msg.Trail, 1)
+	assert.True(t, msg.Trail[0].Story, "the story article roots the chain, marked for its story meta")
+	assert.Equal(t, "https://story.example.com", msg.Trail[0].URL)
+}
+
+func TestTitleHeader_DepthBadge(t *testing.T) {
+	root := NewWithArticle(parseTestArticle(t), "Title", 72, 100, 30, Options{}, nil)
+	assert.NotContains(t, xansi.Strip(root.titleHeader), "⧉", "the story article carries no badge")
+
+	deep := NewWithArticle(parseTestArticle(t), "Title", 72, 100, 30, Options{
+		FromLink: true,
+		Trail: []message.TrailEntry{
+			{URL: "https://story.example.com", Story: true},
+			{URL: "https://a.example.com"},
+		},
+	}, nil)
+
+	row := xansi.Strip(strings.SplitN(deep.titleHeader, "\n", 2)[0])
+	require.Contains(t, row, "⧉  2", "depth counts the links followed")
+
+	rightEdge := layout.ReaderViewLeftMargin + layout.ReaderContentWidth(100, 72)
+	assert.Equal(t, rightEdge, xansi.StringWidth(strings.TrimRight(row, " ")), "the badge ends at the article column's right edge")
+}
+
+func TestTitleHeaderWithBadge_TruncatesLongTitle(t *testing.T) {
+	long := strings.Repeat("word ", 40)
+	m := NewWithArticle(parseTestArticle(t), long, 72, 100, 30, Options{FromLink: true}, nil)
+
+	row := xansi.Strip(strings.SplitN(m.titleHeader, "\n", 2)[0])
+	require.Contains(t, row, "⧉  1")
+	assert.Contains(t, row, "…", "the title shortens instead of colliding with the badge")
+
+	badgeStart := strings.Index(row, "⧉")
+	titleEnd := strings.LastIndex(row[:badgeStart], "…")
+	assert.GreaterOrEqual(t, badgeStart-titleEnd, 2, "a gap separates the title from the badge")
+}
+
 func TestQuit_FromLinkExitsSelectorFirst(t *testing.T) {
 	parsed := article.NewParsedFromHTML(`<p><a href="https://example.com/x">a link</a></p>`)
 	m := NewWithArticle(parsed, "Linked Page", 72, 100, 30, Options{FromLink: true}, nil)

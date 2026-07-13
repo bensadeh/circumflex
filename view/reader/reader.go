@@ -1,6 +1,7 @@
 package reader
 
 import (
+	"fmt"
 	"image/color"
 	"slices"
 	"strings"
@@ -28,8 +29,9 @@ type Options struct {
 	ID        int
 	NerdFonts bool
 	Images    bool
-	TermBG    color.Color // terminal background when already known, for image transparency
-	FromLink  bool        // the page was reached by following a link; quit steps back to the article
+	TermBG    color.Color          // terminal background when already known, for image transparency
+	FromLink  bool                 // the page was reached by following a link; quit walks back through Trail
+	Trail     []message.TrailEntry // pages behind this one, oldest first; never mutated after construction
 }
 
 type Model struct {
@@ -312,10 +314,16 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		m.PrevMatch()
 
 	case key.Matches(msg, m.keymap.Quit):
-		// A page reached by following a link steps back to the article it
-		// came from — re-fetched rather than restored, so no saved view can
-		// go stale. The front page is one more press away.
+		// A page reached by following links walks back through them — each
+		// step rebuilt from the parse it already carries, no network — down
+		// to the story article, then the front page.
 		if m.opts.FromLink {
+			if n := len(m.opts.Trail); n > 0 {
+				return message.RestoreReaderPageCmd(m.opts.Trail[n-1], slices.Clone(m.opts.Trail[:n-1]))
+			}
+
+			// A linked page always carries at least the story entry; the
+			// re-fetching step back is the fallback should one not.
 			return message.OpenAdjacentStoryCmd(0)
 		}
 
@@ -388,7 +396,7 @@ func (m *Model) handleLinkModeKey(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 	// enter, and only for links reader mode can render.
 	case key.Matches(msg, m.keymap.OpenSelected):
 		if l := m.links[m.currentLink]; l.viewable {
-			return message.OpenReaderLinkCmd(l.url), true
+			return message.OpenReaderLinkCmd(l.url, m.nextTrail()), true
 		}
 
 		return nil, true
@@ -447,6 +455,21 @@ func (m *Model) moveLink(direction int) {
 func (m *Model) installLinkSpans() {
 	l := m.links[m.currentLink]
 	m.SetLinkSpans(l.spans, !l.viewable)
+}
+
+// nextTrail is the walk-back chain for a page opened from this one: this
+// page's own chain plus itself, parse included so stepping back needs no
+// network. The story article marks its entry so the restore rebuilds it
+// with its story meta rather than a bare URL frame.
+func (m *Model) nextTrail() []message.TrailEntry {
+	self := message.TrailEntry{
+		URL:    m.opts.URL,
+		Title:  m.title,
+		Parsed: m.parsed,
+		Story:  !m.opts.FromLink,
+	}
+
+	return append(slices.Clone(m.opts.Trail), self)
 }
 
 // linkScrollPadding keeps a couple of context lines above a link scrolled
@@ -589,7 +612,23 @@ func imageStatusLine(show, enableNerdFonts bool, paneWidth int) string {
 	return xansi.Truncate(style.Faint(label)+" "+icon, paneWidth, "")
 }
 
+// rebuildTitleHeader renders the title row; a page reached by following
+// links carries the depth badge at the article column's right edge — the
+// number of links behind it, each one a quit-key step — faint where the
+// title is bold.
 func (m *Model) rebuildTitleHeader() {
+	if m.opts.FromLink {
+		// The chain behind a linked page starts at the story article, so its
+		// length is the number of links followed; the max guards the
+		// fallback case of a linked page with no chain at all.
+		rightEdge := layout.ReaderViewLeftMargin + layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
+		badge := style.Faint(fmt.Sprintf("⧉  %d", max(1, len(m.opts.Trail))))
+
+		m.titleHeader = pane.TitleHeaderWithBadge(m.title, badge, m.opts.NerdFonts, layout.ReaderViewLeftMargin, rightEdge, m.paneWidth)
+
+		return
+	}
+
 	m.titleHeader = pane.TitleHeader(m.title, m.opts.NerdFonts, layout.ReaderViewLeftMargin, m.paneWidth)
 }
 

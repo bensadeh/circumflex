@@ -7,6 +7,7 @@ import (
 	"github.com/bensadeh/circumflex/favorites"
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/meta"
+	"github.com/bensadeh/circumflex/timeago"
 	"github.com/bensadeh/circumflex/view/comments"
 	"github.com/bensadeh/circumflex/view/message"
 	"github.com/bensadeh/circumflex/view/pane"
@@ -109,6 +110,9 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 
 	case message.OpenReaderLink:
 		return m, m.handleOpenReaderLink(msg)
+
+	case message.RestoreReaderPage:
+		return m.handleRestoreReaderPage(msg)
 
 	case message.LinkArticleReady:
 		return m.handleLinkArticleReady(msg)
@@ -292,7 +296,40 @@ func (m *model) handleOpenReaderLink(msg message.OpenReaderLink) tea.Cmd {
 
 	setProgressIndeterminate()
 
-	return tea.Batch(startSpinnerCmd, m.fetchLinkArticle(tok, msg.URL))
+	return tea.Batch(startSpinnerCmd, m.fetchLinkArticle(tok, msg.URL, msg.Trail))
+}
+
+// handleRestoreReaderPage steps back to a page whose parse rode along the
+// walk-back chain: no fetch, no spinner — the reader rebuilds synchronously.
+// The story article at the chain's root gets its story meta back, rebuilt
+// from the selection, which still points at it.
+func (m *model) handleRestoreReaderPage(msg message.RestoreReaderPage) (*model, tea.Cmd) {
+	it := m.list.SelectedItem()
+
+	block := meta.ReaderModeURL(msg.Entry.URL)
+	if msg.Entry.Story {
+		block = meta.ReaderMode(meta.Data{
+			URL:       it.URL,
+			Author:    it.Author,
+			TimeAgo:   timeago.RelativeTime(it.Time),
+			Points:    it.Points,
+			NerdFonts: m.config.EnableNerdFonts,
+		})
+	}
+
+	m.detail = reader.NewWithArticle(msg.Entry.Parsed, msg.Entry.Title, m.config.ArticleWidth, m.detailWidth(), m.height, reader.Options{
+		URL:       msg.Entry.URL,
+		ID:        it.ID,
+		NerdFonts: m.config.EnableNerdFonts,
+		Images:    m.config.EnableImages,
+		TermBG:    m.termBG,
+		FromLink:  !msg.Entry.Story,
+		Trail:     msg.Trail,
+	}, block.Render)
+
+	m.screen = screenReader
+
+	return m, m.detail.Init()
 }
 
 // handleLinkArticleReady swaps the followed link's page into the detail pane
@@ -322,6 +359,7 @@ func (m *model) handleLinkArticleReady(msg message.LinkArticleReady) (*model, te
 		Images:    m.config.EnableImages,
 		TermBG:    m.termBG,
 		FromLink:  true,
+		Trail:     msg.Trail,
 	}, block.Render)
 
 	m.screen = screenReader

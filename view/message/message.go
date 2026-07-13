@@ -51,14 +51,39 @@ type AddToFavorites struct {
 	Item *hn.Story
 }
 
-// OpenReaderLink asks the app to open a link followed from inside a
-// reader-mode article; the linked page replaces the article in the pane.
-type OpenReaderLink struct {
-	URL string
+// TrailEntry is one page in the chain behind a followed link: everything
+// needed to restore it without touching the network. Parsed is content, not
+// view state — it cannot go stale the way a saved view could.
+type TrailEntry struct {
+	URL    string
+	Title  string
+	Parsed *article.Parsed
+	Story  bool // the story article at the chain's root, restored with its story meta
 }
 
-func OpenReaderLinkCmd(url string) tea.Cmd {
-	return func() tea.Msg { return OpenReaderLink{URL: url} }
+// OpenReaderLink asks the app to open a link followed from inside a
+// reader-mode article; the linked page replaces the article in the pane.
+// Trail is the chain of pages behind the new one, oldest first — what its
+// quit key walks back through.
+type OpenReaderLink struct {
+	URL   string
+	Trail []TrailEntry
+}
+
+func OpenReaderLinkCmd(url string, trail []TrailEntry) tea.Cmd {
+	return func() tea.Msg { return OpenReaderLink{URL: url, Trail: trail} }
+}
+
+// RestoreReaderPage re-opens a page already fetched and parsed — the quit
+// key stepping back through followed links. No network is involved: the
+// entry carries its parse, and Trail is the chain remaining behind it.
+type RestoreReaderPage struct {
+	Entry TrailEntry
+	Trail []TrailEntry
+}
+
+func RestoreReaderPageCmd(entry TrailEntry, trail []TrailEntry) tea.Cmd {
+	return func() tea.Msg { return RestoreReaderPage{Entry: entry, Trail: trail} }
 }
 
 // LinkArticleReady delivers a page fetched through OpenReaderLink. Kept
@@ -68,6 +93,7 @@ type LinkArticleReady struct {
 	Parsed  *article.Parsed
 	Title   string
 	URL     string
+	Trail   []TrailEntry
 	Err     error
 	FetchID uint64
 }

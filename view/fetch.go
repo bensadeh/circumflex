@@ -175,8 +175,9 @@ func (m *model) fetchArticle(tok fetchToken, story *hn.Story) tea.Cmd {
 
 // fetchLinkArticle loads a page reached by following a link inside an
 // article. Unlike fetchArticle there is no story: no title to validate
-// against, and nothing marked read.
-func (m *model) fetchLinkArticle(tok fetchToken, url string) tea.Cmd {
+// against, and nothing marked read. trail rides along untouched — it becomes
+// the new page's walk-back chain.
+func (m *model) fetchLinkArticle(tok fetchToken, url string, trail []message.TrailEntry) tea.Cmd {
 	return func() tea.Msg {
 		parsed, err := article.Parse(tok.ctx, url)
 		if err != nil {
@@ -187,6 +188,7 @@ func (m *model) fetchLinkArticle(tok fetchToken, url string) tea.Cmd {
 			Parsed:  parsed,
 			Title:   parsed.Title,
 			URL:     url,
+			Trail:   trail,
 			FetchID: tok.id,
 		}
 	}

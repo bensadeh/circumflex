@@ -946,6 +946,59 @@ func TestOpenReaderLink_StartsLinkFetch(t *testing.T) {
 	assert.NotNil(t, cmd)
 }
 
+func TestLinkArticleReady_TrailFeedsDepthBadge(t *testing.T) {
+	m := openTestReader(t, newTestModelReady(t))
+
+	_, _ = m.startLinkFetch(0)
+	m, _ = m.Update(message.LinkArticleReady{
+		Parsed: testParsedArticle(),
+		Title:  "Two Deep",
+		URL:    "https://example.com/b",
+		Trail: []message.TrailEntry{
+			{URL: "https://example.com/story", Story: true},
+			{URL: "https://example.com/a"},
+		},
+		FetchID: m.fetch.id,
+	})
+
+	assert.Contains(t, xansi.Strip(m.detail.View()), "⧉  2", "two links followed, two steps back")
+}
+
+func TestRestoreReaderPage_LinkEntryKeepsChain(t *testing.T) {
+	m := openTestReader(t, newTestModelReady(t))
+
+	m, _ = m.Update(message.RestoreReaderPage{
+		Entry: message.TrailEntry{URL: "https://example.com/a", Title: "Page A", Parsed: testParsedArticle()},
+		Trail: []message.TrailEntry{{URL: "https://example.com/story", Story: true}},
+	})
+
+	require.NotNil(t, m.detail)
+	assert.False(t, m.fetch.inFlight(), "a restore never touches the network")
+	assert.Equal(t, screenReader, m.screen)
+	assert.Contains(t, xansi.Strip(m.detail.View()), "⧉  1", "one step back remains")
+}
+
+func TestRestoreReaderPage_StoryEntryGetsStoryMeta(t *testing.T) {
+	m := openTestReader(t, newTestModelReady(t))
+
+	m, _ = m.Update(message.RestoreReaderPage{
+		Entry: message.TrailEntry{URL: "https://example.com/1", Title: "First item", Parsed: testParsedArticle(), Story: true},
+	})
+
+	require.NotNil(t, m.detail)
+	assert.False(t, m.fetch.inFlight())
+
+	view := xansi.Strip(m.detail.View())
+	assert.Contains(t, view, "by alice", "the story article gets its byline back")
+	assert.NotContains(t, view, "⧉", "the story article carries no badge")
+
+	// Quit from the restored story article goes to the front page.
+	m, cmd := m.Update(message.DetailQuit{})
+	assert.Equal(t, screenList, m.screen)
+	assert.Nil(t, m.detail)
+	assert.Nil(t, cmd)
+}
+
 // Quit on a linked page steps back to the story article by re-fetching it —
 // direction 0 through the adjacent-story flow, so no saved view exists to go
 // stale.

@@ -38,6 +38,31 @@ func titleHeader(title string, highlight headline.HighlightType, enableNerdFonts
 	return row + "\n" + header.Underline(screenWidth)
 }
 
+// TitleHeaderWithBadge is TitleHeader with a pre-styled badge ending at
+// rightEdge — the content column's right edge, not the screen's. The title
+// truncates early enough that the two never collide. A pane too narrow to
+// keep any title next to the badge drops the badge instead.
+func TitleHeaderWithBadge(title, badge string, enableNerdFonts bool, leftMargin, rightEdge, screenWidth int) string {
+	const badgeGap = 2
+
+	badgeWidth := xansi.StringWidth(badge)
+
+	maxTitleWidth := rightEdge - leftMargin - badgeWidth - badgeGap
+	if maxTitleWidth < 1 {
+		return TitleHeader(title, enableNerdFonts, leftMargin, screenWidth)
+	}
+
+	t := headline.Render(title, headline.HeadlineInCommentSection, enableNerdFonts)
+	t = xansi.Truncate(t, maxTitleWidth, "…")
+
+	pad := rightEdge - leftMargin - xansi.StringWidth(t) - badgeWidth
+
+	row := strings.Repeat(" ", leftMargin) + t + strings.Repeat(" ", pad) + badge
+	row = xansi.Truncate(row, screenWidth, "")
+
+	return row + "\n" + header.Underline(screenWidth)
+}
+
 func FooterSeparator(width int) string {
 	s := lipgloss.NewStyle().Underline(true).Width(width)
 	if header.MemorialActive() {
