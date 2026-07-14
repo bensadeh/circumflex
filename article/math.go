@@ -1,6 +1,7 @@
 package article
 
 import (
+	nurl "net/url"
 	"regexp"
 	"strings"
 	"unicode/utf8"
@@ -33,17 +34,70 @@ func mathSpans(n *html.Node, format inlineFormat) []span {
 	return []span{{text: text, format: format}}
 }
 
-// mathFallbackTeX recognizes a MediaWiki math fallback image, whose alt
-// attribute holds the formula's TeX source. It reaches the parser when the
-// page carried no MathML to normalize away the image; the converted TeX
-// stays inline in its sentence, where an image block cannot.
+// mathFallbackTeX recognizes a formula image whose TeX source is
+// recoverable: a MediaWiki math fallback (told apart by the alt's wrapper
+// command, since the page carried no MathML to normalize away the image) or
+// a formula-rendering service. The converted TeX stays inline in its
+// sentence, where an image block cannot.
 func mathFallbackTeX(n *html.Node) string {
 	alt := strings.TrimSpace(ansi.Strip(attr(n, "alt")))
+
 	if strings.HasPrefix(alt, `{\displaystyle `) || strings.HasPrefix(alt, `{\textstyle `) {
 		return alt
 	}
 
-	return ""
+	src := attr(n, "src")
+	if !isFormulaServiceURL(src) {
+		return ""
+	}
+
+	// QuickLaTeX display equations fill alt with "Rendered by
+	// QuickLaTeX.com" instead of the source; those stay images.
+	if alt != "" && !strings.HasPrefix(alt, "Rendered by ") {
+		return alt
+	}
+
+	return texFromImageURL(src)
+}
+
+// Formula-rendering services draw a TeX string into an image, usually
+// repeating the source in the alt attribute: WP-LaTeX's latex.php serves
+// wordpress.com blogs, codecogs and QuickLaTeX back various blog plugins,
+// and mimetex and mathtex are their older self-hosted CGI ancestors.
+var formulaServiceMarkers = []string{
+	"latex.php?", "codecogs.com/", "quicklatex.com/", "mimetex.cgi?", "mathtex.cgi?",
+}
+
+func isFormulaServiceURL(src string) bool {
+	for _, marker := range formulaServiceMarkers {
+		if strings.Contains(src, marker) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// texFromImageURL recovers the TeX a formula service draws from its URL —
+// the latex.php query parameter, or the bare query string of the other
+// renderers — for images whose alt attribute dropped the source. Codecogs
+// URLs encode spaces as "&space;", which must not read as a parameter split.
+func texFromImageURL(src string) string {
+	u, err := nurl.Parse(src)
+	if err != nil || u.RawQuery == "" {
+		return ""
+	}
+
+	if tex := u.Query().Get("latex"); tex != "" {
+		return strings.TrimSpace(ansi.Strip(tex))
+	}
+
+	tex, err := nurl.QueryUnescape(strings.ReplaceAll(u.RawQuery, "&space;", " "))
+	if err != nil {
+		return ""
+	}
+
+	return strings.TrimSpace(ansi.Strip(tex))
 }
 
 func texAnnotation(n *html.Node) string {
@@ -260,6 +314,15 @@ func (s *texScanner) sequence() string {
 			s.pos++
 			out.WriteString(subscript(s.arg()))
 
+		case ' ':
+			s.pos++
+
+			// TeX ignores source whitespace in math mode; it survives here
+			// for word separation, but "x _2" must still bind like "x_2".
+			if s.textMode || !s.nextIsScript() {
+				out.WriteByte(' ')
+			}
+
 		case '~', '&':
 			s.pos++
 
@@ -283,6 +346,16 @@ func (s *texScanner) sequence() string {
 	}
 
 	return out.String()
+}
+
+func (s *texScanner) nextIsScript() bool {
+	for i := s.pos; i < len(s.src); i++ {
+		if s.src[i] != ' ' {
+			return s.src[i] == '^' || s.src[i] == '_'
+		}
+	}
+
+	return false
 }
 
 func (s *texScanner) skipByte(b byte) {
@@ -355,7 +428,7 @@ func (s *texScanner) expand(name string) string {
 
 		return ""
 
-	case "phantom", "vphantom", "hphantom":
+	case "phantom", "vphantom", "hphantom", "dpi":
 		s.arg()
 
 		return ""
@@ -653,6 +726,7 @@ var texSymbols = map[string]string{
 	"forall": "∀", "exists": "∃", "nexists": "∄",
 	"neg": "¬", "lnot": "¬", "land": "∧", "wedge": "∧", "lor": "∨", "vee": "∨",
 	"oplus": "⊕", "ominus": "⊖", "otimes": "⊗", "odot": "⊙",
+	"triangleleft": "◁", "triangleright": "▷", "vartriangleleft": "⊲", "vartriangleright": "⊳",
 	"circ": "∘", "bullet": "•", "star": "⋆", "ast": "*",
 	"sum": "∑", "prod": "∏", "int": "∫", "oint": "∮",
 	"partial": "∂", "nabla": "∇", "infty": "∞",
@@ -688,6 +762,7 @@ var texSymbols = map[string]string{
 	"quad": " ", "qquad": " ", "thinspace": " ", "enspace": " ",
 
 	// style and positioning switches with no plain-text counterpart
+	// (inline is codecogs's rendering directive, not a TeX command)
 	"displaystyle": "", "textstyle": "", "scriptstyle": "", "scriptscriptstyle": "",
-	"limits": "", "nolimits": "",
+	"limits": "", "nolimits": "", "inline": "",
 }

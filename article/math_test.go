@@ -32,6 +32,7 @@ func TestLatexToUnicode(t *testing.T) {
 		{`\mathcal{O}(n \log n)`, "𝒪(𝑛 log 𝑛)"},
 		{`\hat{x} + \vec{v}`, "𝑥̂ + 𝑣⃗"},
 		{`\unknowncmd{arg}`, "unknowncmd𝑎𝑟𝑔"},
+		{`m \triangleright_1 a \cong m \triangleright _2 a`, "𝑚 ▷₁ 𝑎 ≅ 𝑚 ▷₂ 𝑎"},
 	}
 
 	for _, tt := range tests {
