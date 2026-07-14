@@ -1,8 +1,6 @@
 package view
 
 import (
-	"net/url"
-
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/favorites"
 	"github.com/bensadeh/circumflex/header"
@@ -229,7 +227,7 @@ func (m *model) handleStoriesReady(msg message.StoriesReady) (*model, tea.Cmd) {
 		m.rollbackFetch(rb)
 		m.updatePagination()
 
-		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
+		return m, m.status.NewStatusMessageWithDuration(pane.FriendlyError(msg.Err), statusMessageLong)
 	}
 
 	m.list.EndTransition()
@@ -289,14 +287,14 @@ func (m *model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*m
 // fail this check, so this guard is mostly a backstop.
 func (m *model) handleOpenReaderLink(msg message.OpenReaderLink) tea.Cmd {
 	if err := article.ValidateURL(msg.URL); err != nil {
-		return m.status.NewStatusMessageWithDuration(friendlyError(err), statusMessageLong)
+		return m.status.NewStatusMessageWithDuration(pane.FriendlyError(err), statusMessageLong)
 	}
 
 	tok, startSpinnerCmd := m.startLinkFetch(readerModeTimeout)
 
 	setProgressIndeterminate()
 
-	return tea.Batch(startSpinnerCmd, m.fetchLinkArticle(tok, msg.URL, msg.Trail))
+	return tea.Batch(startSpinnerCmd, pane.FetchPage(tok.ctx, tok.id, msg.URL, msg.Trail))
 }
 
 // handleRestoreReaderPage steps back to a page whose parse rode along the
@@ -306,30 +304,31 @@ func (m *model) handleOpenReaderLink(msg message.OpenReaderLink) tea.Cmd {
 func (m *model) handleRestoreReaderPage(msg message.RestoreReaderPage) (*model, tea.Cmd) {
 	it := m.list.SelectedItem()
 
-	block := meta.ReaderModeURL(msg.Entry.URL)
-	if msg.Entry.Story {
-		block = meta.ReaderMode(meta.Data{
-			URL:       it.URL,
-			Author:    it.Author,
-			TimeAgo:   timeago.RelativeTime(it.Time),
-			Points:    it.Points,
-			NerdFonts: m.config.EnableNerdFonts,
-		})
-	}
-
-	m.detail = reader.NewWithArticle(msg.Entry.Parsed, msg.Entry.Title, m.config.ArticleWidth, m.detailWidth(), m.height, reader.Options{
-		URL:       msg.Entry.URL,
-		ID:        it.ID,
+	storyHeader := meta.ReaderMode(meta.Data{
+		URL:       it.URL,
+		Author:    it.Author,
+		TimeAgo:   timeago.RelativeTime(it.Time),
+		Points:    it.Points,
 		NerdFonts: m.config.EnableNerdFonts,
-		Images:    m.config.EnableImages,
-		TermBG:    m.termBG,
-		FromLink:  !msg.Entry.Story,
-		Trail:     msg.Trail,
-	}, block.Render)
+	})
+
+	m.detail = reader.NewPage(msg.Entry, msg.Trail, storyHeader.Render,
+		m.config.ArticleWidth, m.detailWidth(), m.height, m.linkPageOptions(it.ID))
 
 	m.screen = screenReader
 
 	return m, m.detail.Init()
+}
+
+// linkPageOptions carries the app's display knobs into a followed-link page;
+// the page's own identity fields are reader.NewPage's business.
+func (m *model) linkPageOptions(storyID int) reader.Options {
+	return reader.Options{
+		ID:        storyID,
+		NerdFonts: m.config.EnableNerdFonts,
+		Images:    m.config.EnableImages,
+		TermBG:    m.termBG,
+	}
 }
 
 // handleLinkArticleReady swaps the followed link's page into the detail pane
@@ -342,38 +341,17 @@ func (m *model) handleLinkArticleReady(msg message.LinkArticleReady) (*model, te
 	}
 
 	if msg.Err != nil {
-		return m, m.status.NewStatusMessageWithDuration(friendlyError(msg.Err), statusMessageLong)
+		return m, m.status.NewStatusMessageWithDuration(pane.FriendlyError(msg.Err), statusMessageLong)
 	}
 
-	title := msg.Title
-	if title == "" {
-		title = urlHost(msg.URL)
-	}
+	entry := message.TrailEntry{URL: msg.URL, Title: msg.Title, Parsed: msg.Parsed}
 
-	block := meta.ReaderModeURL(msg.URL)
-
-	m.detail = reader.NewWithArticle(msg.Parsed, title, m.config.ArticleWidth, m.detailWidth(), m.height, reader.Options{
-		URL:       msg.URL,
-		ID:        m.list.SelectedItem().ID,
-		NerdFonts: m.config.EnableNerdFonts,
-		Images:    m.config.EnableImages,
-		TermBG:    m.termBG,
-		FromLink:  true,
-		Trail:     msg.Trail,
-	}, block.Render)
+	m.detail = reader.NewPage(entry, msg.Trail, nil,
+		m.config.ArticleWidth, m.detailWidth(), m.height, m.linkPageOptions(m.list.SelectedItem().ID))
 
 	m.screen = screenReader
 
 	return m, m.detail.Init()
-}
-
-func urlHost(rawURL string) string {
-	u, err := url.Parse(rawURL)
-	if err != nil || u.Hostname() == "" {
-		return rawURL
-	}
-
-	return u.Hostname()
 }
 
 func (m *model) handleArticleReady(msg message.ArticleReady) (*model, tea.Cmd) {

@@ -11,5 +11,5 @@ func Run(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 		m.DisableStoryNavigation()
 
 		return m
-	})
+	}, nil)
 }

@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/view/message"
 
 	tea "charm.land/bubbletea/v2"
@@ -109,6 +110,108 @@ func TestStandalone_CapturesBrowserError(t *testing.T) {
 	updated, ok := next.(standalone)
 	require.True(t, ok)
 	assert.Equal(t, err, updated.browserErr)
+}
+
+// pageFactory records the pages it is asked to build.
+type pageFactory struct {
+	entries []message.TrailEntry
+	trails  [][]message.TrailEntry
+	view    *fakeView
+}
+
+func (f *pageFactory) make(entry message.TrailEntry, trail []message.TrailEntry, _, _ int) View {
+	f.entries = append(f.entries, entry)
+	f.trails = append(f.trails, trail)
+
+	return f.view
+}
+
+func TestStandalone_FollowedLinkSwapsPageInPlace(t *testing.T) {
+	factory := &pageFactory{view: &fakeView{}}
+	s := standalone{view: &fakeView{}, makePageView: factory.make}
+
+	next, cmd := s.Update(message.OpenReaderLink{URL: "https://example.com/page"})
+	require.NotNil(t, cmd, "a valid link should start a fetch")
+
+	fetching, ok := next.(standalone)
+	require.True(t, ok)
+
+	parsed := article.NewParsedFromHTML("<p>linked page</p>")
+	trail := []message.TrailEntry{{URL: "https://example.com/", Story: true}}
+
+	next, initCmd := fetching.Update(message.LinkArticleReady{
+		Parsed: parsed, Title: "Linked", URL: "https://example.com/page", Trail: trail, FetchID: fetching.fetchID,
+	})
+
+	swapped, ok := next.(standalone)
+	require.True(t, ok)
+	assert.Same(t, factory.view, swapped.view, "the fetched page replaces the view")
+	assert.Nil(t, initCmd, "the fake view's Init returns no command")
+
+	require.Len(t, factory.entries, 1)
+	assert.Equal(t, "Linked", factory.entries[0].Title)
+	assert.Equal(t, trail, factory.trails[0])
+}
+
+func TestStandalone_StaleAndFailedLinkFetchesKeepThePage(t *testing.T) {
+	original := &fakeView{}
+	factory := &pageFactory{view: &fakeView{}}
+	s := standalone{view: original, makePageView: factory.make, fetchID: 2}
+
+	next, _ := s.Update(message.LinkArticleReady{FetchID: 1, Title: "stale"})
+	updated, ok := next.(standalone)
+	require.True(t, ok)
+	assert.Same(t, original, updated.view, "a superseded fetch's result is dropped")
+
+	err := errors.New("could not fetch URL")
+
+	next, _ = updated.Update(message.LinkArticleReady{FetchID: 2, Err: err})
+	updated, ok = next.(standalone)
+	require.True(t, ok)
+	assert.Same(t, original, updated.view, "a failed fetch leaves the open page")
+	assert.Equal(t, "Could not fetch URL", updated.statusMsg, "the failure shows on the footer row")
+	assert.Empty(t, factory.entries)
+
+	next, _ = updated.Update(statusTimeoutMsg{generation: updated.statusGen})
+	updated, ok = next.(standalone)
+	require.True(t, ok)
+	assert.Empty(t, updated.statusMsg, "the failure message expires")
+}
+
+func TestStandalone_InvalidLinkNeverLeavesThePage(t *testing.T) {
+	factory := &pageFactory{view: &fakeView{}}
+	s := standalone{view: &fakeView{}, makePageView: factory.make}
+
+	next, cmd := s.Update(message.OpenReaderLink{URL: "ftp://example.com/file"})
+	assert.NotNil(t, cmd, "the validation failure schedules its message expiry")
+
+	updated, ok := next.(standalone)
+	require.True(t, ok)
+	assert.NotEmpty(t, updated.statusMsg)
+	assert.Nil(t, updated.cancelFetch, "no fetch starts for an unreadable link")
+}
+
+func TestStandalone_LinkFallsBackToBrowserWithoutFactory(t *testing.T) {
+	s := standalone{view: &fakeView{}}
+
+	_, cmd := s.Update(message.OpenReaderLink{URL: "https://example.com/page"})
+	assert.NotNil(t, cmd)
+}
+
+func TestStandalone_RestoreRebuildsPageFromItsParse(t *testing.T) {
+	factory := &pageFactory{view: &fakeView{}}
+	s := standalone{view: &fakeView{}, makePageView: factory.make}
+
+	entry := message.TrailEntry{URL: "https://example.com/", Story: true, Parsed: article.NewParsedFromHTML("<p>root</p>")}
+
+	next, _ := s.Update(message.RestoreReaderPage{Entry: entry})
+
+	updated, ok := next.(standalone)
+	require.True(t, ok)
+	assert.Same(t, factory.view, updated.view)
+
+	require.Len(t, factory.entries, 1)
+	assert.True(t, factory.entries[0].Story)
 }
 
 func TestSetLinesCountsAndPads(t *testing.T) {

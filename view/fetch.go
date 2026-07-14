@@ -2,15 +2,10 @@ package view
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
-	"net"
 	"os"
-	"strings"
 	"time"
-	"unicode"
-	"unicode/utf8"
 
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/categories"
@@ -20,9 +15,9 @@ import (
 	"github.com/bensadeh/circumflex/hn/memorial"
 	"github.com/bensadeh/circumflex/timeago"
 	"github.com/bensadeh/circumflex/view/message"
+	"github.com/bensadeh/circumflex/view/pane"
 
 	tea "charm.land/bubbletea/v2"
-	"charm.land/lipgloss/v2"
 )
 
 func (m *model) fetchStoriesForFirstCategory(tok fetchToken) tea.Cmd {
@@ -173,27 +168,6 @@ func (m *model) fetchArticle(tok fetchToken, story *hn.Story) tea.Cmd {
 	}
 }
 
-// fetchLinkArticle loads a page reached by following a link inside an
-// article. Unlike fetchArticle there is no story: no title to validate
-// against, and nothing marked read. trail rides along untouched — it becomes
-// the new page's walk-back chain.
-func (m *model) fetchLinkArticle(tok fetchToken, url string, trail []message.TrailEntry) tea.Cmd {
-	return func() tea.Msg {
-		parsed, err := article.Parse(tok.ctx, url)
-		if err != nil {
-			return message.LinkArticleReady{Err: err, FetchID: tok.id}
-		}
-
-		return message.LinkArticleReady{
-			Parsed:  parsed,
-			Title:   parsed.Title,
-			URL:     url,
-			Trail:   trail,
-			FetchID: tok.id,
-		}
-	}
-}
-
 // Terminal progress bar via OSC 9;4 (supported by Ghostty, ConEmu and others;
 // silently ignored by terminals that don't recognise the sequence).
 //
@@ -247,34 +221,6 @@ func syncProgress(err error) {
 	clearProgress()
 }
 
-func isTimeout(err error) bool {
-	var netErr net.Error
-
-	return errors.As(err, &netErr) && netErr.Timeout()
-}
-
-var redText = lipgloss.NewStyle().Foreground(lipgloss.Red)
-
-func friendlyError(err error) string {
-	if isTimeout(err) {
-		return "Timed out — check your connection and try again"
-	}
-
-	errStr := err.Error()
-	if errStr == "" {
-		return "Unknown error"
-	}
-
-	first, size := utf8.DecodeRuneInString(errStr)
-	msg := string(unicode.ToUpper(first)) + errStr[size:]
-
-	if before, after, ok := strings.Cut(msg, "status "); ok {
-		msg = before + "status " + redText.Render(after)
-	}
-
-	return msg
-}
-
 // showDetailError surfaces a failed story load. In the wide layout the error
 // replaces whatever the pane was showing as a view of its own: J/K page on to
 // the neighboring stories in the target view — the one the failed load was
@@ -288,7 +234,7 @@ func (m *model) showDetailError(err error, target screen) tea.Cmd {
 		// The placeholder renders from target, not m.fetch.target: validation
 		// errors arrive without a fetch, and the view outlives the fetch state.
 		metaBlock := func(paneWidth int) string { return m.placeholderMetaBlock(paneWidth, target) }
-		m.detail = newErrorView(friendlyError(err), m.list.SelectedItem().Title, m.config.EnableNerdFonts, metaBlock, m.detailWidth(), m.height)
+		m.detail = newErrorView(pane.FriendlyError(err), m.list.SelectedItem().Title, m.config.EnableNerdFonts, metaBlock, m.detailWidth(), m.height)
 		m.screen = target
 
 		fetchID := m.fetch.id
@@ -298,5 +244,5 @@ func (m *model) showDetailError(err error, target screen) tea.Cmd {
 		})
 	}
 
-	return m.status.NewStatusMessageWithDuration(friendlyError(err), statusMessageLong)
+	return m.status.NewStatusMessageWithDuration(pane.FriendlyError(err), statusMessageLong)
 }

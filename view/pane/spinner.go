@@ -1,4 +1,4 @@
-package view
+package pane
 
 import (
 	"image/color"
@@ -17,7 +17,7 @@ const spinnerFrameDuration = 250 * time.Millisecond
 // never repeats it. Only touched from the Bubble Tea update goroutine.
 var lastSpinnerColor = -1
 
-func newSpinner() spinner.Model {
+func NewSpinner() spinner.Model {
 	sp := spinner.New()
 	sp.Spinner = starSpinner()
 	sp.Style = lipgloss.NewStyle()

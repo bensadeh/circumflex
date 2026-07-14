@@ -64,7 +64,7 @@ func newModel(config *settings.Config, cat *categories.Categories, fav *favorite
 		screen: screenList,
 		width:  width,
 		height: height,
-		status: statusBar{spinner: newSpinner()},
+		status: statusBar{spinner: pane.NewSpinner()},
 
 		history:   hist,
 		config:    config,

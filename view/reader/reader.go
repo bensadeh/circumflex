@@ -3,6 +3,7 @@ package reader
 import (
 	"fmt"
 	"image/color"
+	nurl "net/url"
 	"slices"
 	"strings"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/help"
 	"github.com/bensadeh/circumflex/layout"
+	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/scrollbar"
 	"github.com/bensadeh/circumflex/style"
@@ -673,12 +675,57 @@ func (m *Model) setShowImages(show bool) {
 	m.rerender()
 }
 
-// Run shows the article in a standalone reader.
+// NewPage builds the reader for a page in a followed-link chain — a link
+// just fetched, or a trail entry being walked back to. Both the full app and
+// the standalone subcommands build these pages here, so they cannot drift: a
+// followed page gets the bare-URL frame and its extracted title (falling
+// back to the host), while the story page at the chain's root gets
+// storyHeader, whatever its shell opened it with. opts carries the shell's
+// display knobs; the page's own identity fields are set here.
+func NewPage(entry message.TrailEntry, trail []message.TrailEntry, storyHeader func(contentWidth int) string,
+	maxWidth, width, height int, opts Options,
+) *Model {
+	opts.URL = entry.URL
+	opts.FromLink = !entry.Story
+	opts.Trail = trail
+
+	title, header := entry.Title, storyHeader
+
+	if !entry.Story {
+		header = meta.ReaderModeURL(entry.URL).Render
+
+		if title == "" {
+			title = urlHost(entry.URL)
+		}
+	}
+
+	return NewWithArticle(entry.Parsed, title, maxWidth, width, height, opts, header)
+}
+
+// Run shows the article in a standalone reader. Links followed through the
+// selector open in place and quit walks back through them, as in the full
+// app; the story page at the trail's root keeps the header it opened with.
 func Run(parsed *article.Parsed, title string, maxWidth int, opts Options, buildHeader func(contentWidth int) string) error {
+	makePage := func(entry message.TrailEntry, trail []message.TrailEntry, width, height int) pane.View {
+		m := NewPage(entry, trail, buildHeader, maxWidth, width, height, opts)
+		m.DisableStoryNavigation()
+
+		return m
+	}
+
 	return pane.RunStandalone(func(width, height int) pane.View {
 		m := NewWithArticle(parsed, title, maxWidth, width, height, opts, buildHeader)
 		m.DisableStoryNavigation()
 
 		return m
-	})
+	}, makePage)
+}
+
+func urlHost(rawURL string) string {
+	u, err := nurl.Parse(rawURL)
+	if err != nil || u.Hostname() == "" {
+		return rawURL
+	}
+
+	return u.Hostname()
 }

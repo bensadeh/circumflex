@@ -1,8 +1,6 @@
 package view
 
 import (
-	"strings"
-
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/view/pane"
 
@@ -47,12 +45,7 @@ func (m *model) overlayDetailStatus(view string, width int) string {
 		return view
 	}
 
-	lines := strings.Split(view, "\n")
-	// Width pads but never truncates, and an error message can be wider than
-	// the screen.
-	lines[len(lines)-1] = xansi.Truncate(m.statusMidStyle.Width(width).Render(status), width, "")
-
-	return strings.Join(lines, "\n")
+	return pane.OverlayStatus(view, status, width)
 }
 
 // browsingView is the front page: category header, story list, status bar.

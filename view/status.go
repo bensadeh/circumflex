@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/bensadeh/circumflex/view/message"
+	"github.com/bensadeh/circumflex/view/pane"
 
 	"charm.land/bubbles/v2/spinner"
 	tea "charm.land/bubbletea/v2"
@@ -37,7 +38,7 @@ func (s *statusBar) hideStatusMessage() {
 }
 
 func (s *statusBar) StartSpinner() tea.Cmd {
-	s.spinner = newSpinner()
+	s.spinner = pane.NewSpinner()
 	s.showSpinner = true
 
 	return s.spinner.Tick
