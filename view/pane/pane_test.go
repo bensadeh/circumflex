@@ -2,6 +2,7 @@ package pane
 
 import (
 	"errors"
+	"fmt"
 	"image/color"
 	"testing"
 
@@ -101,6 +102,53 @@ func TestStandalone_CtrlCQuits(t *testing.T) {
 	assert.IsType(t, tea.QuitMsg{}, cmd())
 }
 
+func TestStandalone_CtrlCCancelsInFlightFetchInsteadOfQuitting(t *testing.T) {
+	factory := &pageFactory{view: &fakeView{}}
+	s := standalone{view: &fakeView{}, makePageView: factory.make}
+
+	next, _ := s.Update(message.OpenReaderLink{URL: "https://example.com/page"})
+	fetching, ok := next.(standalone)
+	require.True(t, ok)
+	require.True(t, fetching.fetch.InFlight())
+
+	next, cmd := fetching.Update(tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl})
+	cancelled, ok := next.(standalone)
+	require.True(t, ok)
+
+	assert.False(t, cancelled.fetch.InFlight(), "ctrl+c aborts the fetch")
+	assert.NotEmpty(t, cancelled.status.Message(), "the cancel is announced on the footer")
+
+	if cmd != nil {
+		assert.NotContains(t, fmt.Sprint(cmd()), "QuitMsg", "the program must keep running")
+	}
+}
+
+func TestStandalone_CtrlLForcesRepaint(t *testing.T) {
+	s := standalone{view: &fakeView{}}
+
+	_, cmd := s.Update(tea.KeyPressMsg{Code: 'l', Mod: tea.ModCtrl})
+	require.NotNil(t, cmd)
+	assert.IsType(t, tea.ClearScreen(), cmd())
+}
+
+func TestStandalone_KeysFrozenWhileFetchInFlight(t *testing.T) {
+	fv := &fakeView{}
+	factory := &pageFactory{view: &fakeView{}}
+	s := standalone{view: fv, makePageView: factory.make}
+
+	next, _ := s.Update(message.OpenReaderLink{URL: "https://example.com/page"})
+	fetching, ok := next.(standalone)
+	require.True(t, ok)
+
+	fetching.Update(tea.KeyPressMsg{Code: 'j'})
+	assert.Empty(t, fv.msgs, "keys must not reach the view while the fetch runs")
+
+	next, _ = fetching.Update(tea.KeyPressMsg{Code: tea.KeyEscape})
+	cancelled, ok := next.(standalone)
+	require.True(t, ok)
+	assert.False(t, cancelled.fetch.InFlight(), "esc cancels like the full app")
+}
+
 func TestStandalone_CapturesBrowserError(t *testing.T) {
 	s := standalone{view: &fakeView{}}
 	err := errors.New("no browser")
@@ -140,7 +188,7 @@ func TestStandalone_FollowedLinkSwapsPageInPlace(t *testing.T) {
 	trail := []message.TrailEntry{{URL: "https://example.com/", Story: true}}
 
 	next, initCmd := fetching.Update(message.LinkArticleReady{
-		Parsed: parsed, Title: "Linked", URL: "https://example.com/page", Trail: trail, FetchID: fetching.fetchID,
+		Parsed: parsed, Title: "Linked", URL: "https://example.com/page", Trail: trail, FetchID: fetching.fetch.CurrentID(),
 	})
 
 	swapped, ok := next.(standalone)
@@ -156,7 +204,7 @@ func TestStandalone_FollowedLinkSwapsPageInPlace(t *testing.T) {
 func TestStandalone_StaleAndFailedLinkFetchesKeepThePage(t *testing.T) {
 	original := &fakeView{}
 	factory := &pageFactory{view: &fakeView{}}
-	s := standalone{view: original, makePageView: factory.make, fetchID: 2}
+	s := standalone{view: original, makePageView: factory.make, fetch: FetchGuard{id: 2, active: true}}
 
 	next, _ := s.Update(message.LinkArticleReady{FetchID: 1, Title: "stale"})
 	updated, ok := next.(standalone)
@@ -169,13 +217,13 @@ func TestStandalone_StaleAndFailedLinkFetchesKeepThePage(t *testing.T) {
 	updated, ok = next.(standalone)
 	require.True(t, ok)
 	assert.Same(t, original, updated.view, "a failed fetch leaves the open page")
-	assert.Equal(t, "Could not fetch URL", updated.statusMsg, "the failure shows on the footer row")
+	assert.Equal(t, "Could not fetch URL", updated.status.Message(), "the failure shows on the footer row")
 	assert.Empty(t, factory.entries)
 
-	next, _ = updated.Update(statusTimeoutMsg{generation: updated.statusGen})
+	next, _ = updated.Update(message.StatusMessageTimeout{Generation: updated.status.generation})
 	updated, ok = next.(standalone)
 	require.True(t, ok)
-	assert.Empty(t, updated.statusMsg, "the failure message expires")
+	assert.Empty(t, updated.status.Message(), "the failure message expires")
 }
 
 func TestStandalone_InvalidLinkNeverLeavesThePage(t *testing.T) {
@@ -187,8 +235,8 @@ func TestStandalone_InvalidLinkNeverLeavesThePage(t *testing.T) {
 
 	updated, ok := next.(standalone)
 	require.True(t, ok)
-	assert.NotEmpty(t, updated.statusMsg)
-	assert.Nil(t, updated.cancelFetch, "no fetch starts for an unreadable link")
+	assert.NotEmpty(t, updated.status.Message())
+	assert.False(t, updated.fetch.InFlight(), "no fetch starts for an unreadable link")
 }
 
 func TestStandalone_LinkFallsBackToBrowserWithoutFactory(t *testing.T) {

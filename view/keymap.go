@@ -1,8 +1,10 @@
 package view
 
 import (
-	"charm.land/bubbles/v2/key"
 	"github.com/bensadeh/circumflex/help"
+	"github.com/bensadeh/circumflex/view/pane"
+
+	"charm.land/bubbles/v2/key"
 )
 
 type keyMap struct {
@@ -102,9 +104,7 @@ func defaultKeyMap() keyMap {
 		Confirm: key.NewBinding(
 			key.WithKeys("y"),
 		),
-		Cancel: key.NewBinding(
-			key.WithKeys("esc", "backspace", "ctrl+c"),
-		),
+		Cancel: pane.CancelKeys,
 	}
 }
 

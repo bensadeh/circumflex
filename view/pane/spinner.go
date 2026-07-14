@@ -8,6 +8,7 @@ import (
 	"github.com/bensadeh/circumflex/style"
 
 	"charm.land/bubbles/v2/spinner"
+	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 )
 
@@ -16,6 +17,17 @@ const spinnerFrameDuration = 250 * time.Millisecond
 // lastSpinnerColor tracks which color index was used last so the next spinner
 // never repeats it. Only touched from the Bubble Tea update goroutine.
 var lastSpinnerColor = -1
+
+// UpdateSpinner advances the animation and reschedules the next tick only
+// while active, so a stopped spinner's tick chain dies out.
+func UpdateSpinner(sp spinner.Model, msg spinner.TickMsg, active bool) (spinner.Model, tea.Cmd) {
+	next, cmd := sp.Update(msg)
+	if !active {
+		return next, nil
+	}
+
+	return next, cmd
+}
 
 func NewSpinner() spinner.Model {
 	sp := spinner.New()

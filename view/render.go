@@ -39,8 +39,8 @@ func (m *model) overlayDetailStatus(view string, width int) string {
 	switch {
 	case m.fetch.inFlight():
 		status = m.status.spinnerView()
-	case m.status.message != "":
-		status = m.status.message
+	case m.status.text.Message() != "":
+		status = m.status.text.Message()
 	default:
 		return view
 	}
@@ -87,7 +87,7 @@ func (m *model) statusAndPaginationView() string {
 
 	underline := m.bottomBar(m.listWidth())
 
-	centerContent = m.status.message
+	centerContent = m.status.text.Message()
 
 	// The page dots dim along with the list while the detail pane is open.
 	paginatorView := m.list.PaginatorView()

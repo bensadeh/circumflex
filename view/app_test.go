@@ -71,7 +71,7 @@ func newTestModelReady(t *testing.T) *model {
 	m := newTestModel(t)
 
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
-	m, _ = m.Update(message.StoriesReady{Stories: testItems(), Category: categories.Top, FetchID: m.fetch.id})
+	m, _ = m.Update(message.StoriesReady{Stories: testItems(), Category: categories.Top, FetchID: m.fetch.currentID()})
 
 	return m
 }
@@ -140,10 +140,10 @@ func TestDetailQuit_FromReaderRestoresState(t *testing.T) {
 
 func TestStatusMessageTimeout_ClearsMessage(t *testing.T) {
 	m := newTestModelReady(t)
-	m.status.message = "some status"
+	m.status.text.SetPermanent("some status")
 
 	m, _ = m.Update(message.StatusMessageTimeout{})
-	assert.Empty(t, m.status.message)
+	assert.Empty(t, m.status.text.Message())
 }
 
 func TestAddToFavorites_AddsItem(t *testing.T) {
@@ -172,7 +172,7 @@ func TestStoriesReady_UpdatesState(t *testing.T) {
 	require.True(t, m.fetch.inFlight())
 	require.True(t, m.list.InTransition())
 
-	m, _ = m.Update(message.StoriesReady{Category: categories.Best, Index: 1, Cursor: 0, FetchID: m.fetch.id})
+	m, _ = m.Update(message.StoriesReady{Category: categories.Best, Index: 1, Cursor: 0, FetchID: m.fetch.currentID()})
 
 	assert.False(t, m.fetch.inFlight())
 	assert.False(t, m.status.showSpinner)
@@ -187,7 +187,7 @@ func TestStoriesReady_EmptyResultKeepsCursorAtZero(t *testing.T) {
 	m, _ = m.Update(keyMsg("tab"))
 	require.True(t, m.fetch.inFlight())
 
-	m, _ = m.Update(message.StoriesReady{Category: categories.Best, Index: 1, FetchID: m.fetch.id})
+	m, _ = m.Update(message.StoriesReady{Category: categories.Best, Index: 1, FetchID: m.fetch.currentID()})
 
 	assert.False(t, m.fetch.inFlight())
 	assert.Equal(t, 0, m.list.Cursor())
@@ -230,11 +230,11 @@ func TestOpenAdjacentStory_IgnoredWhileFetchInFlight(t *testing.T) {
 	m, _ = m.Update(message.OpenAdjacentStory{Direction: 1})
 	require.True(t, m.fetch.inFlight())
 	require.Equal(t, 1, m.list.Index())
-	firstFetch := m.fetch.id
+	firstFetch := m.fetch.currentID()
 
 	m, _ = m.Update(message.OpenAdjacentStory{Direction: 1})
 	assert.Equal(t, 1, m.list.Index(), "selection must not move while a fetch is in flight")
-	assert.Equal(t, firstFetch, m.fetch.id, "the in-flight fetch must not be superseded")
+	assert.Equal(t, firstFetch, m.fetch.currentID(), "the in-flight fetch must not be superseded")
 }
 
 func TestQuit(t *testing.T) {
@@ -346,7 +346,7 @@ func TestTabFetchError_RollsBackCategory(t *testing.T) {
 	require.True(t, m.fetch.inFlight())
 	require.Equal(t, 1, m.cat.CurrentIndex())
 
-	m, _ = m.Update(message.StoriesReady{Err: errors.New("boom"), FetchID: m.fetch.id})
+	m, _ = m.Update(message.StoriesReady{Err: errors.New("boom"), FetchID: m.fetch.currentID()})
 
 	assert.False(t, m.fetch.inFlight())
 	assert.Equal(t, 0, m.cat.CurrentIndex(), "failed fetch should restore the category we left")
@@ -412,7 +412,7 @@ func TestCommentTreeDataReady_OpensCommentView(t *testing.T) {
 	startTestFetch(m, screenComments)
 
 	thread := &comment.Thread{Story: hn.Story{ID: 1, Title: "test", CommentsCount: 5}}
-	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.id})
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 	assert.Equal(t, screenComments, m.screen)
 	assert.NotNil(t, m.detail)
 }
@@ -430,7 +430,7 @@ func TestTimeRefreshTick_ReschedulesInEveryState(t *testing.T) {
 	startTestFetch(m, screenComments)
 
 	thread := &comment.Thread{Story: hn.Story{ID: 1, Title: "test", CommentsCount: 5}}
-	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.id})
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 	require.Equal(t, screenComments, m.screen)
 
 	_, cmd := m.Update(message.TimeRefreshTick{})
@@ -463,7 +463,7 @@ func TestNarrowAdjacentStory_StaysOnOpenStory(t *testing.T) {
 	startTestFetch(m, screenComments)
 
 	thread := &comment.Thread{Story: hn.Story{ID: 1, Title: "An unmistakable thread title", CommentsCount: 5}}
-	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.id})
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 	require.Equal(t, screenComments, m.screen)
 
 	m, cmd := m.Update(keyMsg("J"))
@@ -489,7 +489,7 @@ func TestNarrowDetail_StatusMessageShowsOnLastRow(t *testing.T) {
 	startTestFetch(m, screenComments)
 
 	thread := &comment.Thread{Story: hn.Story{ID: 1, Title: "test", CommentsCount: 5}}
-	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.id})
+	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 	require.Equal(t, screenComments, m.screen)
 
 	m.status.NewStatusMessageWithDuration("Story has no article to read", statusMessageShort)
@@ -531,7 +531,7 @@ func TestArticleReady_WithError(t *testing.T) {
 	m := newTestModelReady(t)
 	startTestFetch(m, screenReader)
 
-	_, cmd := m.Update(message.ArticleReady{Err: errors.New("Reader Mode not supported"), FetchID: m.fetch.id})
+	_, cmd := m.Update(message.ArticleReady{Err: errors.New("Reader Mode not supported"), FetchID: m.fetch.currentID()})
 	assert.NotNil(t, cmd, "should return batch cmd with status message and editor finished")
 }
 
@@ -543,7 +543,7 @@ func TestArticleReady_WithParsedArticle(t *testing.T) {
 	m := newTestModelReady(t)
 	startTestFetch(m, screenReader)
 
-	m, _ = m.Update(message.ArticleReady{Parsed: testParsedArticle(), Title: "Test", FetchID: m.fetch.id})
+	m, _ = m.Update(message.ArticleReady{Parsed: testParsedArticle(), Title: "Test", FetchID: m.fetch.currentID()})
 	assert.Equal(t, screenReader, m.screen)
 	assert.NotNil(t, m.detail, "should create reader view")
 }
@@ -553,7 +553,7 @@ func TestAddFavoritesPrompt(t *testing.T) {
 
 	m, _ = m.Update(keyMsg("f"))
 	assert.Equal(t, promptAddFavorite, m.prompt)
-	assert.NotEmpty(t, m.status.message)
+	assert.NotEmpty(t, m.status.text.Message())
 }
 
 func TestAddFavoritesConfirm(t *testing.T) {
@@ -589,7 +589,7 @@ func newFavoritesTestModel(t *testing.T) *model {
 
 	m := newModel(config, cat, fav, 80, 24, &instantMockService{}, history.NewMockHistory())
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
-	m, _ = m.Update(message.StoriesReady{Stories: testItems(), Category: categories.Top, FetchID: m.fetch.id})
+	m, _ = m.Update(message.StoriesReady{Stories: testItems(), Category: categories.Top, FetchID: m.fetch.currentID()})
 
 	return m
 }
@@ -608,7 +608,7 @@ func TestStartup_OnEmptyFavorites(t *testing.T) {
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 	require.True(t, m.fetch.inFlight())
 
-	msg := m.fetchStoriesForFirstCategory(fetchToken{id: m.fetch.id})()
+	msg := m.fetchStoriesForFirstCategory(fetchToken{id: m.fetch.currentID()})()
 	stories, ok := msg.(message.StoriesReady)
 	require.True(t, ok, "the favorites pseudo-fetch should produce StoriesReady")
 	require.NoError(t, stories.Err)
@@ -650,7 +650,7 @@ func TestFavorites_TabToEmptyDoesNotFetch(t *testing.T) {
 
 func TestDisabledInput_IgnoresKeys(t *testing.T) {
 	m := newTestModelReady(t)
-	m.fetch.kind = fetchList
+	m.fetch.begin(0, fetchList, screenList, rollbackPoint{})
 
 	cursorBefore := m.list.Cursor()
 	m, cmd := m.Update(keyMsg("j"))
@@ -791,7 +791,7 @@ func TestCommentTreeDataReady_HistoryWarning(t *testing.T) {
 
 	m, cmd := m.Update(message.CommentTreeDataReady{
 		Thread:         thread,
-		FetchID:        m.fetch.id,
+		FetchID:        m.fetch.currentID(),
 		HistoryWarning: histErr,
 	})
 
@@ -808,7 +808,7 @@ func TestArticleReady_HistoryWarning(t *testing.T) {
 	m, cmd := m.Update(message.ArticleReady{
 		Parsed:         testParsedArticle(),
 		Title:          "Test",
-		FetchID:        m.fetch.id,
+		FetchID:        m.fetch.currentID(),
 		HistoryWarning: histErr,
 	})
 
@@ -823,7 +823,7 @@ func TestArticleReady_NoHistoryWarning(t *testing.T) {
 	m, cmd := m.Update(message.ArticleReady{
 		Parsed:  testParsedArticle(),
 		Title:   "Test",
-		FetchID: m.fetch.id,
+		FetchID: m.fetch.currentID(),
 	})
 
 	assert.Equal(t, screenReader, m.screen)
@@ -893,7 +893,7 @@ func openTestReader(t *testing.T, m *model) *model {
 	t.Helper()
 
 	startTestFetch(m, screenReader)
-	m, _ = m.Update(message.ArticleReady{Parsed: testParsedArticle(), Title: "Root", FetchID: m.fetch.id})
+	m, _ = m.Update(message.ArticleReady{Parsed: testParsedArticle(), Title: "Root", FetchID: m.fetch.currentID()})
 	require.Equal(t, screenReader, m.screen)
 	require.NotNil(t, m.detail)
 
@@ -905,7 +905,7 @@ func TestLinkArticleReady_ReplacesReader(t *testing.T) {
 	root := m.detail
 
 	_, _ = m.startLinkFetch(0)
-	m, _ = m.Update(message.LinkArticleReady{Parsed: testParsedArticle(), Title: "Linked", URL: "https://example.com/linked", FetchID: m.fetch.id})
+	m, _ = m.Update(message.LinkArticleReady{Parsed: testParsedArticle(), Title: "Linked", URL: "https://example.com/linked", FetchID: m.fetch.currentID()})
 
 	assert.Equal(t, screenReader, m.screen)
 	assert.NotSame(t, root, m.detail, "the linked page takes the article's place")
@@ -919,7 +919,7 @@ func TestLinkArticleReady_ErrorStaysOnArticle(t *testing.T) {
 	root := m.detail
 
 	_, _ = m.startLinkFetch(0)
-	m, cmd := m.Update(message.LinkArticleReady{Err: errors.New("server returned status 404"), FetchID: m.fetch.id})
+	m, cmd := m.Update(message.LinkArticleReady{Err: errors.New("server returned status 404"), FetchID: m.fetch.currentID()})
 
 	assert.Same(t, root, m.detail, "the open article never transitions on failure")
 	assert.Equal(t, screenReader, m.screen)
@@ -958,7 +958,7 @@ func TestLinkArticleReady_TrailFeedsDepthBadge(t *testing.T) {
 			{URL: "https://example.com/story", Story: true},
 			{URL: "https://example.com/a"},
 		},
-		FetchID: m.fetch.id,
+		FetchID: m.fetch.currentID(),
 	})
 
 	assert.Contains(t, xansi.Strip(m.detail.View()), "⧉  2", "two links followed, two steps back")
@@ -1006,7 +1006,7 @@ func TestOpenAdjacentStory_ZeroReopensSelectedStory(t *testing.T) {
 	m := openTestReader(t, newTestModelReady(t))
 
 	_, _ = m.startLinkFetch(0)
-	m, _ = m.Update(message.LinkArticleReady{Parsed: testParsedArticle(), Title: "Linked", URL: "https://example.com/linked", FetchID: m.fetch.id})
+	m, _ = m.Update(message.LinkArticleReady{Parsed: testParsedArticle(), Title: "Linked", URL: "https://example.com/linked", FetchID: m.fetch.currentID()})
 	linked := m.detail
 
 	m, cmd := m.Update(message.OpenAdjacentStory{Direction: 0})
@@ -1016,7 +1016,7 @@ func TestOpenAdjacentStory_ZeroReopensSelectedStory(t *testing.T) {
 	assert.Same(t, linked, m.detail, "the linked page stays visible while the article loads")
 	require.NotNil(t, cmd)
 
-	m, _ = m.Update(message.ArticleReady{Parsed: testParsedArticle(), Title: "Root again", FetchID: m.fetch.id})
+	m, _ = m.Update(message.ArticleReady{Parsed: testParsedArticle(), Title: "Root again", FetchID: m.fetch.currentID()})
 	assert.Equal(t, screenReader, m.screen)
 	assert.NotSame(t, linked, m.detail, "the article replaces the linked page")
 }

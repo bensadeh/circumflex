@@ -15,6 +15,7 @@ import (
 	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/view/message"
+	"github.com/bensadeh/circumflex/view/pane"
 
 	tea "charm.land/bubbletea/v2"
 	xansi "github.com/charmbracelet/x/ansi"
@@ -24,7 +25,7 @@ import (
 // The OSC progress sequences the app writes on fetch would flood the test
 // output thousands of times over across the geometry sweep.
 func TestMain(m *testing.M) {
-	progressOut = io.Discard
+	pane.ProgressOut = io.Discard
 
 	os.Exit(m.Run())
 }
@@ -61,13 +62,13 @@ var geometrySurfaces = []geometrySurface{
 	{"browsing", func(m *model) *model { return m }},
 	{"comments", func(m *model) *model {
 		m, _ = m.Update(keyMsg("enter"))
-		m, _ = m.Update(message.CommentTreeDataReady{Thread: geometryThread(), FetchID: m.fetch.id})
+		m, _ = m.Update(message.CommentTreeDataReady{Thread: geometryThread(), FetchID: m.fetch.currentID()})
 
 		return m
 	}},
 	{"reader", func(m *model) *model {
 		m, _ = m.Update(keyMsg("space"))
-		m, _ = m.Update(message.ArticleReady{Parsed: geometryArticle(), Title: "A Story Title Long Enough To Truncate", FetchID: m.fetch.id})
+		m, _ = m.Update(message.ArticleReady{Parsed: geometryArticle(), Title: "A Story Title Long Enough To Truncate", FetchID: m.fetch.currentID()})
 
 		return m
 	}},
@@ -90,7 +91,7 @@ var geometrySurfaces = []geometrySurface{
 		m, _ = m.Update(keyMsg("enter"))
 		m, _ = m.Update(message.CommentTreeDataReady{
 			Err:     errors.New("a load error message long enough to wrap in the narrowest detail pane"),
-			FetchID: m.fetch.id,
+			FetchID: m.fetch.currentID(),
 		})
 
 		return m
@@ -99,18 +100,18 @@ var geometrySurfaces = []geometrySurface{
 	// overlays fetch feedback on its bottom row.
 	{"adjacentloading", func(m *model) *model {
 		m, _ = m.Update(keyMsg("enter"))
-		m, _ = m.Update(message.CommentTreeDataReady{Thread: geometryThread(), FetchID: m.fetch.id})
+		m, _ = m.Update(message.CommentTreeDataReady{Thread: geometryThread(), FetchID: m.fetch.currentID()})
 		m, _ = m.Update(message.OpenAdjacentStory{Direction: 1})
 
 		return m
 	}},
 	{"adjacenterror", func(m *model) *model {
 		m, _ = m.Update(keyMsg("enter"))
-		m, _ = m.Update(message.CommentTreeDataReady{Thread: geometryThread(), FetchID: m.fetch.id})
+		m, _ = m.Update(message.CommentTreeDataReady{Thread: geometryThread(), FetchID: m.fetch.currentID()})
 		m, _ = m.Update(message.OpenAdjacentStory{Direction: 1})
 		m, _ = m.Update(message.CommentTreeDataReady{
 			Err:     errors.New("dial tcp: lookup " + strings.Repeat("a-very-long-hostname.example.com.", 8) + ": no such host"),
-			FetchID: m.fetch.id,
+			FetchID: m.fetch.currentID(),
 		})
 
 		return m
@@ -164,7 +165,7 @@ func newGeometryModel(t *testing.T, width, height, wideMinWidth int) *model {
 	m.config.WideViewMinWidth = wideMinWidth
 
 	m, _ = m.Update(tea.WindowSizeMsg{Width: width, Height: height})
-	m, _ = m.Update(message.StoriesReady{Stories: testItems(), Category: categories.Top, FetchID: m.fetch.id})
+	m, _ = m.Update(message.StoriesReady{Stories: testItems(), Category: categories.Top, FetchID: m.fetch.currentID()})
 
 	return m
 }

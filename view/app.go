@@ -2,7 +2,6 @@ package view
 
 import (
 	"image/color"
-	"time"
 
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/favorites"
@@ -18,8 +17,8 @@ import (
 
 const (
 	statusBarEdgeWidth = 5
-	statusMessageShort = 2 * time.Second
-	statusMessageLong  = 3 * time.Second
+	statusMessageShort = pane.StatusMessageShort
+	statusMessageLong  = pane.StatusMessageLong
 )
 
 type model struct {

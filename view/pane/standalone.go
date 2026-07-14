@@ -1,7 +1,6 @@
 package pane
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"time"
@@ -9,6 +8,7 @@ import (
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/view/message"
 
+	"charm.land/bubbles/v2/key"
 	"charm.land/bubbles/v2/spinner"
 	tea "charm.land/bubbletea/v2"
 )
@@ -26,16 +26,11 @@ type View interface {
 // the chain behind it.
 type MakePageView func(entry message.TrailEntry, trail []message.TrailEntry, width, height int) View
 
-const (
-	linkFetchTimeout      = 15 * time.Second
-	statusMessageDuration = 3 * time.Second
-)
+const linkFetchTimeout = 15 * time.Second
 
-// statusTimeoutMsg expires a transient status message; the generation guards
-// against a stale timer clearing a newer message.
-type statusTimeoutMsg struct {
-	generation int
-}
+// CancelKeys stops an in-flight fetch; the app's keymap shares it so both
+// shells cancel on the same keys.
+var CancelKeys = key.NewBinding(key.WithKeys("esc", "backspace", "ctrl+c"))
 
 // standalone adapts a detail view to a self-contained Bubble Tea program
 // for the comments/article/url subcommands. The view is created on the
@@ -52,17 +47,14 @@ type standalone struct {
 	// existed, replayed once the view is created.
 	bgMsg tea.Msg
 
-	// fetchID tells the latest link fetch's result from a superseded one's;
-	// cancelFetch stops the superseded fetch itself, and doubles as the
-	// fetch-in-flight signal the footer spinner shows on.
-	fetchID     uint64
-	cancelFetch context.CancelFunc
-	spinner     spinner.Model
+	// fetch guards the one link fetch in flight; its in-flight state doubles
+	// as the signal the footer spinner shows on.
+	fetch   FetchGuard
+	spinner spinner.Model
 
-	// statusMsg surfaces a failed link follow on the footer row, as the full
+	// status surfaces a failed link follow on the footer row, as the full
 	// app's status bar does, then expires.
-	statusMsg string
-	statusGen int
+	status TransientStatus
 
 	browserErr error
 }
@@ -75,7 +67,18 @@ func (s standalone) Init() tea.Cmd {
 
 func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if msg, ok := msg.(tea.KeyPressMsg); ok && msg.Mod == tea.ModCtrl && msg.Code == 'c' {
+		if s.fetch.InFlight() {
+			return s.cancelFetch()
+		}
+
 		return s, tea.Quit
+	}
+
+	// Ctrl+L forces a full repaint — the terminal convention for healing
+	// artifacts the cell-diff renderer cannot see, whatever desynced the
+	// terminal from its model.
+	if msg, ok := msg.(tea.KeyPressMsg); ok && msg.Mod == tea.ModCtrl && msg.Code == 'l' {
+		return s, tea.ClearScreen
 	}
 
 	switch msg := msg.(type) {
@@ -92,19 +95,15 @@ func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return s.receiveLinkedPage(msg)
 
 	case spinner.TickMsg:
-		if s.cancelFetch == nil {
-			return s, nil // the fetch is done; the animation stops with it
-		}
-
 		var cmd tea.Cmd
 
-		s.spinner, cmd = s.spinner.Update(msg)
+		s.spinner, cmd = UpdateSpinner(s.spinner, msg, s.fetch.InFlight())
 
 		return s, cmd
 
-	case statusTimeoutMsg:
-		if msg.generation == s.statusGen {
-			s.statusMsg = ""
+	case message.StatusMessageTimeout:
+		if s.status.Expire(msg.Generation) {
+			ClearProgress()
 		}
 
 		return s, nil
@@ -139,9 +138,21 @@ func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if grew {
 			return s, tea.Batch(RepaintAfterGrow(), s.view.Update(msg))
 		}
+
+		return s, s.view.Update(msg)
 	}
 
 	if s.view == nil {
+		return s, nil
+	}
+
+	// While a fetch is in flight only the cancel key acts; other keys would
+	// race the fetch's outcome.
+	if s.fetch.InFlight() {
+		if keyMsg, ok := msg.(tea.KeyPressMsg); ok && key.Matches(keyMsg, CancelKeys) {
+			return s.cancelFetch()
+		}
+
 		return s, nil
 	}
 
@@ -160,51 +171,36 @@ func (s standalone) followLink(msg message.OpenReaderLink) (tea.Model, tea.Cmd) 
 	// The selector greys out links that fail validation, so this guard is
 	// mostly a backstop.
 	if err := article.ValidateURL(msg.URL); err != nil {
-		s.statusMsg = FriendlyError(err)
-		s.statusGen++
-
-		return s, expireStatus(s.statusGen)
+		return s, s.status.Set(FriendlyError(err), StatusMessageLong)
 	}
 
-	if s.cancelFetch != nil {
-		s.cancelFetch()
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), linkFetchTimeout)
-	s.cancelFetch = cancel
-	s.fetchID++
+	tok := s.fetch.Begin(linkFetchTimeout)
 	s.spinner = NewSpinner()
 
-	fetch := FetchPage(ctx, s.fetchID, msg.URL, msg.Trail)
+	SetProgressIndeterminate()
 
-	return s, tea.Batch(s.spinner.Tick, func() tea.Msg {
-		defer cancel()
-
-		return fetch()
-	})
+	return s, tea.Batch(s.spinner.Tick, FetchPage(tok.Ctx, tok.ID, msg.URL, msg.Trail))
 }
 
-func expireStatus(generation int) tea.Cmd {
-	return tea.Tick(statusMessageDuration, func(time.Time) tea.Msg {
-		return statusTimeoutMsg{generation: generation}
-	})
+func (s standalone) cancelFetch() (tea.Model, tea.Cmd) {
+	s.fetch.Abort()
+	ClearProgress()
+
+	return s, s.status.Set(CancelledStatus(), StatusMessageShort)
 }
 
 // receiveLinkedPage swaps the followed link's page in for the article it was
 // found in. On error nothing transitions — the open article stays and the
 // failure surfaces on the footer row, as the full app's status bar does.
 func (s standalone) receiveLinkedPage(msg message.LinkArticleReady) (tea.Model, tea.Cmd) {
-	if msg.FetchID != s.fetchID {
+	if !s.fetch.Finish(msg.FetchID) {
 		return s, nil
 	}
 
-	s.cancelFetch = nil
+	SyncProgress(msg.Err)
 
 	if msg.Err != nil {
-		s.statusMsg = FriendlyError(msg.Err)
-		s.statusGen++
-
-		return s, expireStatus(s.statusGen)
+		return s, s.status.Set(FriendlyError(msg.Err), StatusMessageLong)
 	}
 
 	entry := message.TrailEntry{URL: msg.URL, Title: msg.Title, Parsed: msg.Parsed}
@@ -236,10 +232,10 @@ func (s standalone) View() tea.View {
 	// Fetch and status feedback land on the footer row, exactly as the full
 	// app overlays them on its detail views.
 	switch {
-	case s.cancelFetch != nil:
+	case s.fetch.InFlight():
 		content = OverlayStatus(content, s.spinner.View(), s.width)
-	case s.statusMsg != "":
-		content = OverlayStatus(content, s.statusMsg, s.width)
+	case s.status.Message() != "":
+		content = OverlayStatus(content, s.status.Message(), s.width)
 	}
 
 	v := tea.NewView(content)
@@ -253,7 +249,14 @@ func (s standalone) View() tea.View {
 // makePageView lets links followed inside the view open in place; without
 // one they fall back to the browser.
 func RunStandalone(makeView func(width, height int) View, makePageView MakePageView) error {
-	finalModel, err := tea.NewProgram(standalone{makeView: makeView, makePageView: makePageView}).Run()
+	p := tea.NewProgram(standalone{makeView: makeView, makePageView: makePageView})
+
+	settleProgress := WireProgress(p)
+
+	finalModel, err := p.Run()
+
+	settleProgress()
+
 	if err != nil {
 		return err
 	}

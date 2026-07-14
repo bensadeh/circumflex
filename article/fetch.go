@@ -104,10 +104,7 @@ func extractReadable(body []byte, parsedURL *nurl.URL) (*html.Node, string, erro
 
 	parser := readability.NewParser()
 
-	// LaTeXML footnote chrome (arXiv HTML papers) is told apart by class;
-	// keep those so the parser can fold the popup markup into a readable form.
-	parser.ClassesToPreserve = append(parser.ClassesToPreserve,
-		"ltx_note", "ltx_note_mark", "ltx_note_type", "ltx_note_content", "ltx_tag_note")
+	parser.ClassesToPreserve = append(parser.ClassesToPreserve, latexmlPreservedClasses...)
 
 	a, err := parser.ParseAndMutate(doc, parsedURL)
 	if err != nil {

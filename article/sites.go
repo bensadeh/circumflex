@@ -1,32 +1,10 @@
 package article
 
 import (
-	nurl "net/url"
 	"regexp"
 	"slices"
 	"strings"
 )
-
-var arxivPagePath = regexp.MustCompile(`^/(?:abs|pdf)/(.+?)(?:\.pdf)?/?$`)
-
-// fullTextURL returns a known full-text rendering of the page at u, or "".
-// arXiv abstract and PDF links map onto /html/<id>, an HTML version of the
-// paper generated from its LaTeX source: reading that beats the abstract-only
-// /abs page, and /pdf reader mode cannot parse at all. Papers without a
-// conversion return 404 there, and the fetch falls back to the original URL.
-func fullTextURL(u *nurl.URL) string {
-	host := strings.TrimPrefix(u.Hostname(), "www.")
-	if host != "arxiv.org" && host != "export.arxiv.org" {
-		return ""
-	}
-
-	match := arxivPagePath.FindStringSubmatch(u.EscapedPath())
-	if match == nil {
-		return ""
-	}
-
-	return "https://arxiv.org/html/" + match[1]
-}
 
 // Rules match against unstyled block text, before any rendering. All entries
 // whose domain matches the page's host are merged, so shared fragments and

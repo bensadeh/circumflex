@@ -4,8 +4,9 @@ import (
 	"context"
 	"time"
 
+	"github.com/bensadeh/circumflex/view/pane"
+
 	tea "charm.land/bubbletea/v2"
-	"charm.land/lipgloss/v2"
 )
 
 // fetchToken is a fetch's identity: the context its commands must fetch under
@@ -36,58 +37,41 @@ type rollbackPoint struct {
 	storyIndex    int // -1 for list fetches: the transition mechanics restore the cursor
 }
 
-// fetchState owns the lifecycle of the single fetch the app allows in flight.
+// fetchState owns the lifecycle of the single fetch the app allows in flight:
+// identity, cancellation and the stale-result guard live in the shared
+// pane.FetchGuard; what the app adds is which kind of fetch it is, the view
+// it opens, and what a failure restores.
 type fetchState struct {
-	kind   fetchKind
-	ctx    context.Context //nolint:containedctx // single active fetch, accessed only from the Update goroutine
-	cancel context.CancelFunc
-
-	// id is the current fetch era, bumped by begin and abort. Results and the
-	// error-progress timeout carry the era they were made in, so anything
-	// stamped with an older one is ignored.
-	id uint64
+	guard pane.FetchGuard
+	kind  fetchKind
 
 	target   screen // the view a detail fetch opens; the loading placeholder matches its meta block
 	rollback rollbackPoint
 }
 
-func (f *fetchState) inFlight() bool      { return f.kind != fetchNone }
-func (f *fetchState) detailLoading() bool { return f.kind == fetchDetail }
-func (f *fetchState) linkLoading() bool   { return f.kind == fetchLink }
+func (f *fetchState) inFlight() bool      { return f.guard.InFlight() }
+func (f *fetchState) detailLoading() bool { return f.guard.InFlight() && f.kind == fetchDetail }
+func (f *fetchState) linkLoading() bool   { return f.guard.InFlight() && f.kind == fetchLink }
+func (f *fetchState) currentID() uint64   { return f.guard.CurrentID() }
 
 // begin starts a fetch's lifecycle, invalidating any predecessor.
 func (f *fetchState) begin(timeout time.Duration, kind fetchKind, target screen, rb rollbackPoint) fetchToken {
-	if f.cancel != nil {
-		f.cancel()
-	}
+	tok := f.guard.Begin(timeout)
 
-	f.id++
 	f.kind = kind
 	f.target = target
 	f.rollback = rb
 
-	if timeout > 0 {
-		f.ctx, f.cancel = context.WithTimeout(context.Background(), timeout)
-	} else {
-		f.ctx, f.cancel = context.WithCancel(context.Background())
-	}
-
-	return fetchToken{ctx: f.ctx, id: f.id}
+	return fetchToken{ctx: tok.Ctx, id: tok.ID}
 }
 
 // finish ends the in-flight fetch if id belongs to it; ok=false is a stale
 // result the caller must drop. The returned rollback is the restore point the
 // fetch was started with.
 func (f *fetchState) finish(id uint64) (rollbackPoint, bool) {
-	if f.kind == fetchNone || id != f.id {
+	if !f.guard.Finish(id) {
 		return rollbackPoint{}, false
 	}
-
-	if f.cancel != nil {
-		f.cancel()
-	}
-
-	f.kind = fetchNone
 
 	return f.rollback, true
 }
@@ -96,16 +80,9 @@ func (f *fetchState) finish(id uint64) (rollbackPoint, bool) {
 // fetch managed to deliver before the cancel took hold can never match.
 // ok=false means nothing was in flight and there is no rollback to apply.
 func (f *fetchState) abort() (rollbackPoint, bool) {
-	if f.kind == fetchNone {
+	if !f.guard.Abort() {
 		return rollbackPoint{}, false
 	}
-
-	if f.cancel != nil {
-		f.cancel()
-	}
-
-	f.id++
-	f.kind = fetchNone
 
 	return f.rollback, true
 }
@@ -168,7 +145,7 @@ func (m *model) finishFetch(id uint64, err error) (rollbackPoint, bool) {
 		return rollbackPoint{}, false
 	}
 
-	syncProgress(err)
+	pane.SyncProgress(err)
 	m.status.StopSpinner()
 
 	return rb, true
@@ -182,12 +159,11 @@ func (m *model) handleCancelFetch() tea.Cmd {
 
 	m.rollbackFetch(rb)
 
-	clearProgress()
+	pane.ClearProgress()
 	m.status.StopSpinner()
 	// The screen stays where the fetch started: canceling a J/K story fetch
 	// keeps the open story, canceling a category fetch keeps the front page.
 	m.updatePagination()
 
-	return m.status.NewStatusMessageWithDuration(
-		lipgloss.NewStyle().Faint(true).Render("Cancelled"), statusMessageShort)
+	return m.status.NewStatusMessageWithDuration(pane.CancelledStatus(), statusMessageShort)
 }

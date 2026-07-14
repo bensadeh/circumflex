@@ -8,6 +8,7 @@ import (
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/view/message"
+	"github.com/bensadeh/circumflex/view/pane"
 
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
@@ -183,8 +184,7 @@ func (m *model) handleConfirmRemoveFavorites() tea.Cmd {
 func (m *model) handleCancelPrompt() tea.Cmd {
 	m.prompt = promptNone
 
-	return m.status.NewStatusMessageWithDuration(
-		lipgloss.NewStyle().Faint(true).Render("Cancelled"), statusMessageShort)
+	return m.status.NewStatusMessageWithDuration(pane.CancelledStatus(), statusMessageShort)
 }
 
 func (m *model) handleTabForward() tea.Cmd {
@@ -208,7 +208,7 @@ func (m *model) handleTab(targetIndex int, targetCategory categories.Category, a
 	// The rollback point is the category being left, captured before advance.
 	tok, startSpinnerCmd := m.startFetch(0, m.listRollback())
 
-	setProgressIndeterminate()
+	pane.SetProgressIndeterminate()
 
 	m.list.BeginTransition()
 	advance()
@@ -245,7 +245,7 @@ func (m *model) handleRefresh() tea.Cmd {
 
 	tok, startSpinnerCmd := m.startFetch(0, m.listRollback())
 
-	setProgressIndeterminate()
+	pane.SetProgressIndeterminate()
 
 	return tea.Batch(startSpinnerCmd, m.fetchCategory(tok, currentCategory, currentIndex, 0), fetchMemorialStatus())
 }
@@ -274,7 +274,7 @@ func (m *model) openComments(rollbackStory int) tea.Cmd {
 	tok, startSpinnerCmd := m.startDetailFetch(0, screenComments, m.detailRollback(rollbackStory))
 	// The comment fetch reports percentages, so its indicator starts at 0%
 	// instead of flashing indeterminate first.
-	setProgressPercent(0)
+	pane.SetProgressPercent(0)
 
 	return tea.Batch(startSpinnerCmd, m.fetchComments(tok, selected))
 }
@@ -284,7 +284,7 @@ func (m *model) openReader(rollbackStory int) tea.Cmd {
 
 	tok, startSpinnerCmd := m.startDetailFetch(readerModeTimeout, screenReader, m.detailRollback(rollbackStory))
 
-	setProgressIndeterminate()
+	pane.SetProgressIndeterminate()
 
 	return tea.Batch(startSpinnerCmd, m.fetchArticle(tok, selected))
 }

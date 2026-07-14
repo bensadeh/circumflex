@@ -2,9 +2,6 @@ package view
 
 import (
 	"context"
-	"fmt"
-	"io"
-	"os"
 	"time"
 
 	"github.com/bensadeh/circumflex/article"
@@ -108,7 +105,7 @@ func (m *model) fetchComments(tok fetchToken, story *hn.Story) tea.Cmd {
 				return
 			}
 
-			setProgressPercent(min(fetched*100/total, 100))
+			pane.SetProgressPercent(min(fetched*100/total, 100))
 		}
 
 		tree, err := service.FetchComments(tok.ctx, story.ID, onProgress)
@@ -168,59 +165,6 @@ func (m *model) fetchArticle(tok fetchToken, story *hn.Story) tea.Cmd {
 	}
 }
 
-// Terminal progress bar via OSC 9;4 (supported by Ghostty, ConEmu and others;
-// silently ignored by terminals that don't recognise the sequence).
-//
-// While the program runs, sequences ride progressCh into its message loop and
-// leave through its own output, serialized with frame flushes. Writing to the
-// terminal directly would race them: Bubble Tea flushes frames from its own
-// goroutine, backpressure splits a frame across several writes, and a
-// sequence landing between two chunks corrupts the terminal's parse — the
-// cell-diff renderer then leaves ghost text it believes was repainted.
-// progressOut serves tests and the final clear after the program exits.
-
-var progressOut io.Writer = os.Stderr
-
-// progressCh is wired by Run; nil whenever no program is running.
-var progressCh chan<- string
-
-const progressClearSeq = "\033]9;4;0\a"
-
-func setProgressIndeterminate()  { emitProgress("\033]9;4;3;0\a") }
-func setProgressPercent(pct int) { emitProgress(fmt.Sprintf("\033]9;4;1;%d\a", pct)) }
-func setProgressError()          { emitProgress("\033]9;4;2;100\a") }
-
-func clearProgress() { emitProgress(progressClearSeq) }
-
-func emitProgress(seq string) {
-	if progressCh != nil {
-		// Progress is cosmetic: if the program stopped consuming, drop the
-		// update rather than block.
-		select {
-		case progressCh <- seq:
-		default:
-		}
-
-		return
-	}
-
-	_, _ = fmt.Fprint(progressOut, seq)
-}
-
-// syncProgress settles the indicator for a finished fetch: an error stays
-// visible for the status message lifetime (see showDetailError), success
-// clears it. Called only from the Update loop after the finish guard, so a
-// stale fetch can never write over its successor's indicator.
-func syncProgress(err error) {
-	if err != nil {
-		setProgressError()
-
-		return
-	}
-
-	clearProgress()
-}
-
 // showDetailError surfaces a failed story load. In the wide layout the error
 // replaces whatever the pane was showing as a view of its own: J/K page on to
 // the neighboring stories in the target view — the one the failed load was
@@ -237,7 +181,7 @@ func (m *model) showDetailError(err error, target screen) tea.Cmd {
 		m.detail = newErrorView(pane.FriendlyError(err), m.list.SelectedItem().Title, m.config.EnableNerdFonts, metaBlock, m.detailWidth(), m.height)
 		m.screen = target
 
-		fetchID := m.fetch.id
+		fetchID := m.fetch.currentID()
 
 		return tea.Tick(statusMessageLong, func(time.Time) tea.Msg {
 			return message.ErrorProgressTimeout{FetchID: fetchID}

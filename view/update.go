@@ -54,12 +54,10 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case spinner.TickMsg:
-		newSpinnerModel, cmd := m.status.spinner.Update(msg)
+		var cmd tea.Cmd
 
-		m.status.spinner = newSpinnerModel
-		if m.status.showSpinner {
-			cmds = append(cmds, cmd)
-		}
+		m.status.spinner, cmd = pane.UpdateSpinner(m.status.spinner, msg, m.status.showSpinner)
+		cmds = append(cmds, cmd)
 
 	case message.TimeRefreshTick:
 		cmds = append(cmds, scheduleTimeRefresh())
@@ -74,9 +72,8 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 		m.memorialErr = msg.Err
 
 	case message.StatusMessageTimeout:
-		if msg.Generation == m.status.generation {
-			m.status.hideStatusMessage()
-			clearProgress()
+		if m.status.text.Expire(msg.Generation) {
+			pane.ClearProgress()
 		}
 
 	case message.AddToFavorites:
@@ -126,13 +123,13 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 		m.screen = screenList
 		// Settle the terminal progress indicator in case the view is quit
 		// before its timeout fires.
-		clearProgress()
+		pane.ClearProgress()
 
 		return m, nil
 
 	case message.ErrorProgressTimeout:
-		if msg.FetchID == m.fetch.id {
-			clearProgress()
+		if msg.FetchID == m.fetch.currentID() {
+			pane.ClearProgress()
 		}
 
 	case message.CommentTreeDataReady:
@@ -179,7 +176,7 @@ func (m *model) handleStartup(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
 
 	tok, spinnerCmd := m.startFetch(0, m.listRollback())
 
-	setProgressIndeterminate()
+	pane.SetProgressIndeterminate()
 
 	cmds = append(cmds, spinnerCmd)
 
@@ -292,7 +289,7 @@ func (m *model) handleOpenReaderLink(msg message.OpenReaderLink) tea.Cmd {
 
 	tok, startSpinnerCmd := m.startLinkFetch(readerModeTimeout)
 
-	setProgressIndeterminate()
+	pane.SetProgressIndeterminate()
 
 	return tea.Batch(startSpinnerCmd, pane.FetchPage(tok.ctx, tok.id, msg.URL, msg.Trail))
 }
