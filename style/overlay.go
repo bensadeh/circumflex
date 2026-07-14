@@ -78,7 +78,7 @@ func contrastFg(c color.Color) color.Color {
 // selection block staying in the link family's hue. Fixed rather than
 // theme-derived — links render in the same ANSI blue on every theme.
 var linkSelectSGR = overlaySGR{
-	on:  ansi.ReverseOff + ansi.NormalIntensity + xansi.Style{}.BackgroundColor(lipgloss.Blue).ForegroundColor(lipgloss.Black).String(),
+	on:  ansi.ReverseOff + ansi.NormalIntensity + ansi.UnderlineOff + xansi.Style{}.BackgroundColor(lipgloss.Blue).ForegroundColor(lipgloss.Black).String(),
 	off: ansi.DefaultBackground + ansi.DefaultForeground,
 }
 
