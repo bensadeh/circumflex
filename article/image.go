@@ -147,6 +147,10 @@ func decodeSVG(data []byte) (img image.Image) {
 		}
 	}()
 
+	// Mermaid diagrams mark inline styles "!important"; oksvg's color parser
+	// rejects the suffix and the whole parse fails with it.
+	data = bytes.ReplaceAll(data, []byte("!important"), []byte(""))
+
 	icon, err := oksvg.ReadIconStream(bytes.NewReader(data))
 	if err != nil || icon.ViewBox.W <= 0 || icon.ViewBox.H <= 0 {
 		return nil

@@ -100,6 +100,18 @@ func TestDecodeSVG_BoundsOversizedViewBox(t *testing.T) {
 	assert.Equal(t, maxSVGRasterPx/2, img.Bounds().Dy(), "aspect ratio is preserved")
 }
 
+func TestDecodeSVG_ToleratesImportantInStyles(t *testing.T) {
+	t.Parallel()
+
+	img := decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50">` +
+		`<rect width="100" height="50" style="fill:#ff0000 !important;stroke:#6f9bcb !important"/></svg>`))
+
+	require.NotNil(t, img, "Mermaid-style !important declarations must not fail the parse")
+
+	r, g, b, a := img.At(50, 25).RGBA()
+	assert.Equal(t, []uint32{0xffff, 0x0, 0x0, 0xffff}, []uint32{r, g, b, a}, "the rect fill is painted")
+}
+
 func TestDecodeSVG_RejectsGarbage(t *testing.T) {
 	t.Parallel()
 
