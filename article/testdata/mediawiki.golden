@@ -1,0 +1,14 @@
+In computer science, a tagged union is a data structure used to hold a
+value that could take on several different, but fixed, types.
+
+Mathematically, tagged unions correspond to disjoint unions, usually
+written using +. Given an element of a disjoint union 𝐴+𝐵, it is
+possible to determine whether it came from 𝐴 or from the other type.
+
+■ Description
+
+Like option types, tagged unions can be used to handle errors via a
+monad with the following functions:
+
+fmap: (𝐴→ 𝐵)→ ((𝐴+𝐸)→ (𝐵+𝐸))=𝑓↦ 𝑎↦ {err 𝑒 if 𝑎=err 𝑒; value ( 𝑓 𝑎′ ) if
+𝑎=value 𝑎′

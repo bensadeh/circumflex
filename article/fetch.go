@@ -93,6 +93,15 @@ func fetchFullText(ctx context.Context, parsedURL *nurl.URL) ([]byte, string, *n
 }
 
 func extractReadable(body []byte, parsedURL *nurl.URL) (*html.Node, string, error) {
+	doc, err := html.Parse(bytes.NewReader(body))
+	if err != nil {
+		return nil, "", fmt.Errorf("could not parse page from %s: %w", parsedURL.Host, err)
+	}
+
+	// MediaWiki markup needs normalizing before readability runs, while the
+	// class names that identify it are still present.
+	normalizeMediaWiki(doc)
+
 	parser := readability.NewParser()
 
 	// LaTeXML footnote chrome (arXiv HTML papers) is told apart by class;
@@ -100,7 +109,7 @@ func extractReadable(body []byte, parsedURL *nurl.URL) (*html.Node, string, erro
 	parser.ClassesToPreserve = append(parser.ClassesToPreserve,
 		"ltx_note", "ltx_note_mark", "ltx_note_type", "ltx_note_content", "ltx_tag_note")
 
-	a, err := parser.Parse(bytes.NewReader(body), parsedURL)
+	a, err := parser.ParseAndMutate(doc, parsedURL)
 	if err != nil {
 		return nil, "", fmt.Errorf("could not parse article from %s: %w", parsedURL.Host, err)
 	}

@@ -33,6 +33,19 @@ func mathSpans(n *html.Node, format inlineFormat) []span {
 	return []span{{text: text, format: format}}
 }
 
+// mathFallbackTeX recognizes a MediaWiki math fallback image, whose alt
+// attribute holds the formula's TeX source. It reaches the parser when the
+// page carried no MathML to normalize away the image; the converted TeX
+// stays inline in its sentence, where an image block cannot.
+func mathFallbackTeX(n *html.Node) string {
+	alt := strings.TrimSpace(ansi.Strip(attr(n, "alt")))
+	if strings.HasPrefix(alt, `{\displaystyle `) || strings.HasPrefix(alt, `{\textstyle `) {
+		return alt
+	}
+
+	return ""
+}
+
 func texAnnotation(n *html.Node) string {
 	for c := range n.Descendants() {
 		if c.Type == html.ElementNode && nodeAtom(c) == atom.Annotation &&
@@ -295,7 +308,9 @@ func (s *texScanner) command() string {
 		s.pos++
 
 		switch c {
-		case '\\', ',', ';', ':':
+		case '\\':
+			return "; " // row break in cases, matrices, and alignments
+		case ',', ';', ':':
 			return " "
 		case '!':
 			return ""
@@ -342,6 +357,21 @@ func (s *texScanner) expand(name string) string {
 
 	case "phantom", "vphantom", "hphantom":
 		s.arg()
+
+		return ""
+
+	// Environment delimiters: the piecewise-case brace is kept, since rows
+	// separated by ; read as alternatives; other environments (matrices,
+	// alignments) flatten to their flowed content.
+	case "begin":
+		if s.uprightArg() == "cases" {
+			return "{"
+		}
+
+		return ""
+
+	case "end":
+		s.uprightArg()
 
 		return ""
 	}
@@ -631,7 +661,7 @@ var texSymbols = map[string]string{
 	"implies": "⇒", "iff": "⇔", "mapsto": "↦",
 	"langle": "⟨", "rangle": "⟩", "lfloor": "⌊", "rfloor": "⌋", "lceil": "⌈", "rceil": "⌉",
 	"ldots": "…", "cdots": "⋯", "dots": "…", "vdots": "⋮", "ddots": "⋱",
-	"prime": "′", "perp": "⊥", "parallel": "∥", "mid": "|", "angle": "∠",
+	"prime": "′", "perp": "⊥", "parallel": "∥", "mid": "|", "angle": "∠", "colon": ": ",
 	"ell": "ℓ", "hbar": "ℏ", "Re": "ℜ", "Im": "ℑ", "aleph": "ℵ", "wp": "℘",
 	"surd": "√", "dagger": "†", "ddagger": "‡", "checkmark": "✓",
 

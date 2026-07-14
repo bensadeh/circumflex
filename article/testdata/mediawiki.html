@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head><title>Tagged union - Wikipedia</title></head>
+<body>
+<section data-mw-section-id="0">
+	<p>In computer science, a <b>tagged union</b> is a data structure used to hold a value that
+		could take on several different, but fixed, types.<sup class="mw-ref reference"><a
+			href="#cite_note-1"><span class="mw-reflink-text"><span
+			class="cite-bracket">[</span>1<span class="cite-bracket">]</span></span></a></sup></p>
+	<p>Mathematically, tagged unions correspond to disjoint unions, usually written using +.
+		Given an element of a disjoint union
+		<span class="mwe-math-element mwe-math-element-inline" typeof="mw:Extension/math"><span
+			class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math
+			xmlns="http://www.w3.org/1998/Math/MathML" alttext="{\displaystyle A+B}">
+			<semantics>
+				<mrow class="MJX-TeXAtom-ORD">
+					<mstyle displaystyle="true" scriptlevel="0">
+						<mi>A</mi><mo>+</mo><mi>B</mi>
+					</mstyle>
+				</mrow>
+				<annotation encoding="application/x-tex">{\displaystyle A+B}</annotation>
+			</semantics>
+		</math></span><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4279"
+			class="mwe-math-fallback-image-inline mw-invert skin-invert" aria-hidden="true"
+			style="vertical-align: -0.505ex; width:6.348ex; height:2.343ex;"
+			alt="{\displaystyle A+B}"/></span>, it is possible to determine whether it came
+		from <img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daf"
+			class="mwe-math-fallback-image-inline" alt="{\displaystyle A}"/> or from the
+		other type.</p>
+</section>
+<section data-mw-section-id="1">
+	<div class="mw-heading mw-heading2"><h2 id="Description">Description</h2><span
+		class="mw-editsection"><span class="mw-editsection-bracket">[</span><a
+		href="https://en.wikipedia.org/w/index.php?title=Tagged_union&amp;action=edit&amp;section=1"
+		title="Edit section: Description"><span>edit</span></a><span
+		class="mw-editsection-bracket">]</span></span></div>
+	<p>Like option types, tagged unions can be used to handle errors via a monad with the
+		following functions:</p>
+	<dl><dd><span class="mwe-math-element" typeof="mw:Extension/math"><span
+		class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math
+		xmlns="http://www.w3.org/1998/Math/MathML"
+		alttext="{\displaystyle {\texttt {fmap}}\colon (A\to B)\to \left(\left(A+E\right)\to \left(B+E\right)\right)=f\mapsto a\mapsto {\begin{cases}{\text{err}}\,e&amp;{\text{if}}\ a={\text{err}}\,e\\{\text{value}}\,{\text{(}}\,f\,a'\,{\text{)}}&amp;{\text{if}}\ a={\text{value}}\,a'\end{cases}}}">
+		<semantics><mrow class="MJX-TeXAtom-ORD"><mi>f</mi></mrow><annotation
+			encoding="application/x-tex">{\displaystyle {\texttt {fmap}}\colon (A\to B)\to \left(\left(A+E\right)\to \left(B+E\right)\right)=f\mapsto a\mapsto {\begin{cases}{\text{err}}\,e&amp;{\text{if}}\ a={\text{err}}\,e\\{\text{value}}\,{\text{(}}\,f\,a'\,{\text{)}}&amp;{\text{if}}\ a={\text{value}}\,a'\end{cases}}}</annotation></semantics>
+		</math></span><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d450"
+		class="mwe-math-fallback-image-inline" aria-hidden="true"
+		alt="{\displaystyle {\texttt {fmap}}\colon (A\to B)\to ..."/></span></dd></dl>
+</section>
+<section data-mw-section-id="2">
+	<div class="mw-heading mw-heading2"><h2 id="See_also">See also</h2><span
+		class="mw-editsection"><span class="mw-editsection-bracket">[</span><a
+		href="https://en.wikipedia.org/w/index.php?title=Tagged_union&amp;action=edit&amp;section=2"
+		title="Edit section: See also"><span>edit</span></a><span
+		class="mw-editsection-bracket">]</span></span></div>
+	<ul>
+		<li><a href="https://en.wikipedia.org/wiki/Discriminator" title="Discriminator">Discriminator</a>,
+			the type tag for discriminated unions in CORBA</li>
+		<li><a href="https://en.wikipedia.org/wiki/Variant_type_(COM)" title="Variant type (COM)">Variant
+			type (COM)</a></li>
+	</ul>
+</section>
+<section data-mw-section-id="3">
+	<div class="mw-heading mw-heading2"><h2 id="References">References</h2><span
+		class="mw-editsection"><span class="mw-editsection-bracket">[</span><a
+		href="https://en.wikipedia.org/w/index.php?title=Tagged_union&amp;action=edit&amp;section=3"
+		title="Edit section: References"><span>edit</span></a><span
+		class="mw-editsection-bracket">]</span></span></div>
+	<ol class="mw-references references">
+		<li id="cite_note-1"><span class="mw-cite-backlink"><a href="#cite_ref-1"><span
+			class="mw-linkback-text">↑ </span></a></span><span class="mw-reference-text">
+			<a href="https://arxiv.org/pdf/2111.03354" class="external free">https://arxiv.org/pdf/2111.03354</a>
+			p. 8</span></li>
+	</ol>
+</section>
+</body>
+</html>

@@ -30,6 +30,7 @@ func TestGolden(t *testing.T) {
 	}{
 		{fixture: "article", hostname: "example.com"},
 		{fixture: "wikipedia", hostname: "en.wikipedia.org"},
+		{fixture: "mediawiki", hostname: "en.wikipedia.org"},
 		{fixture: "math", hostname: "blog.example.com"},
 		{fixture: "arxiv", hostname: "arxiv.org"},
 	}
@@ -43,6 +44,8 @@ func TestGolden(t *testing.T) {
 
 			node, err := html.Parse(strings.NewReader(string(src)))
 			require.NoError(t, err)
+
+			normalizeMediaWiki(node)
 
 			blocks := parseBlocks(node)
 

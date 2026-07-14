@@ -141,7 +141,11 @@ func (p *domParser) walk(n *html.Node) {
 		p.parseTable(n)
 
 	case atom.Img:
-		p.appendImage(n)
+		if tex := mathFallbackTeX(n); tex != "" {
+			p.inline = append(p.inline, span{text: latexToUnicode(tex)})
+		} else {
+			p.appendImage(n)
+		}
 
 	case atom.Figure:
 		p.flushInline()
@@ -680,6 +684,10 @@ func inlineSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 		return []span{{text: "\n", format: format}}
 
 	case atom.Img:
+		if tex := mathFallbackTeX(n); tex != "" {
+			return []span{{text: latexToUnicode(tex), format: format}}
+		}
+
 		if images != nil {
 			*images = append(*images, imageBlock(altText(n), imageSrc(n), imageDisplayWidth(n)))
 		}
