@@ -22,9 +22,10 @@ type teaModel struct {
 }
 
 func (t teaModel) Init() tea.Cmd {
-	// The response feeds image transparency in reader mode; terminals that
-	// do not answer simply never deliver the message.
-	return tea.RequestBackgroundColor
+	// The background feeds image transparency in reader mode, the foreground
+	// its URL selector's separator row; terminals that do not answer simply
+	// never deliver the messages.
+	return tea.Batch(tea.RequestBackgroundColor, tea.RequestForegroundColor)
 }
 
 func (t teaModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {

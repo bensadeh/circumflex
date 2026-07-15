@@ -31,6 +31,7 @@ type model struct {
 	width  int
 	height int
 	termBG color.Color // terminal background, reported once at startup; nil if unanswered
+	termFG color.Color // terminal foreground, reported once at startup; nil if unanswered
 
 	list *list.Model
 

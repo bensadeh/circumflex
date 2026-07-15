@@ -43,9 +43,10 @@ type standalone struct {
 	width        int
 	height       int
 
-	// bgMsg holds a background color report that arrived before the view
-	// existed, replayed once the view is created.
+	// bgMsg and fgMsg hold terminal color reports that arrived before the
+	// view existed, replayed once the view is created.
 	bgMsg tea.Msg
+	fgMsg tea.Msg
 
 	// fetch guards the one link fetch in flight; its in-flight state doubles
 	// as the signal the footer spinner shows on.
@@ -60,9 +61,10 @@ type standalone struct {
 }
 
 func (s standalone) Init() tea.Cmd {
-	// The response feeds image transparency in reader mode; terminals that
-	// do not answer simply never deliver the message.
-	return tea.RequestBackgroundColor
+	// The background feeds image transparency in reader mode, the foreground
+	// its URL selector's separator row; terminals that do not answer simply
+	// never deliver the messages.
+	return tea.Batch(tea.RequestBackgroundColor, tea.RequestForegroundColor)
 }
 
 func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -121,16 +123,16 @@ func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.BackgroundColorMsg:
 		s.bgMsg = msg // forwarded below, or replayed if the view is not built yet
 
+	case tea.ForegroundColorMsg:
+		s.fgMsg = msg // forwarded below, or replayed if the view is not built yet
+
 	case tea.WindowSizeMsg:
 		grew := msg.Width > s.width
 		s.width, s.height = msg.Width, msg.Height
 
 		if s.view == nil {
 			s.view = s.makeView(msg.Width, msg.Height)
-
-			if s.bgMsg != nil {
-				s.view.Update(s.bgMsg)
-			}
+			s.replayColorReports(s.view)
 
 			return s, s.view.Init()
 		}
@@ -214,12 +216,19 @@ func (s standalone) receiveLinkedPage(msg message.LinkArticleReady) (tea.Model, 
 
 func (s standalone) buildPage(entry message.TrailEntry, trail []message.TrailEntry) (View, tea.Cmd) {
 	view := s.makePageView(entry, trail, s.width, s.height)
+	s.replayColorReports(view)
 
+	return view, view.Init()
+}
+
+func (s standalone) replayColorReports(view View) {
 	if s.bgMsg != nil {
 		view.Update(s.bgMsg)
 	}
 
-	return view, view.Init()
+	if s.fgMsg != nil {
+		view.Update(s.fgMsg)
+	}
 }
 
 func (s standalone) View() tea.View {

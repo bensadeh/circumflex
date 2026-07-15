@@ -245,6 +245,20 @@ func linkOpenSequence(c color.Color) string {
 
 func CommentModFg() color.Color { return commentModColor }
 
+// Dimmed is SGR faint done in color: fg blended halfway toward bg. For text
+// that must read dim without the faint flag — terminals (Ghostty among them)
+// dim underline and strikethrough decorations along with the glyphs, so a
+// run that pins its underline color has to dim its text through the
+// foreground instead.
+func Dimmed(fg, bg color.Color) color.Color {
+	mid := func(a, b uint32) uint8 { return uint8((a + b) / 2 >> 8) }
+
+	fr, fgn, fb, _ := fg.RGBA()
+	br, bgn, bb, _ := bg.RGBA()
+
+	return color.RGBA{R: mid(fr, br), G: mid(fgn, bgn), B: mid(fb, bb), A: 255}
+}
+
 func Red(s string) string          { return redStyle.Render(s) }
 func Blue(s string) string         { return blueStyle.Render(s) }
 func Green(s string) string        { return greenStyle.Render(s) }

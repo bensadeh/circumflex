@@ -1,6 +1,7 @@
 package pane
 
 import (
+	"image/color"
 	"strings"
 
 	"github.com/bensadeh/circumflex/header"
@@ -64,12 +65,52 @@ func TitleHeaderWithBadge(title, badge string, enableNerdFonts bool, leftMargin,
 }
 
 func FooterSeparator(width int) string {
-	s := lipgloss.NewStyle().Underline(true).Width(width)
+	return footerRule().Width(width).Render(strings.Repeat(" ", width))
+}
+
+// FooterSeparatorWithLabel is FooterSeparator with label written into the
+// rule, ending at rightEdge. The label's glyphs render dim while the
+// underline through them keeps the rule's full strength: the underline color
+// is pinned to the rule's own (SGR 58) and the text dims through an
+// explicitly blended foreground — SGR faint cannot deliver this, terminals
+// dim the underline decoration along with the glyphs no matter the underline
+// color. termFG/termBG are the terminal's reported colors; without them the
+// blend has no inputs and the label falls back to faint, dimming its stretch
+// of the rule with it.
+func FooterSeparatorWithLabel(width, rightEdge int, label string, termFG, termBG color.Color) string {
+	rightEdge = min(rightEdge, width)
+	label = xansi.Truncate(label, max(0, rightEdge), "…")
+
+	ruleFG := termFG
+	if header.MemorialActive() {
+		ruleFG = style.MemorialColor()
+	}
+
+	labelStyle := footerRule()
+
+	switch {
+	case ruleFG != nil && termBG != nil:
+		labelStyle = labelStyle.Foreground(style.Dimmed(ruleFG, termBG)).UnderlineColor(ruleFG)
+	case ruleFG != nil:
+		labelStyle = labelStyle.Faint(true).UnderlineColor(ruleFG)
+	default:
+		labelStyle = labelStyle.Faint(true)
+	}
+
+	lead := rightEdge - xansi.StringWidth(label)
+
+	return footerRule().Render(strings.Repeat(" ", lead)) +
+		labelStyle.Render(label) +
+		footerRule().Render(strings.Repeat(" ", width-rightEdge))
+}
+
+func footerRule() lipgloss.Style {
+	s := lipgloss.NewStyle().Underline(true)
 	if header.MemorialActive() {
 		s = s.Foreground(style.MemorialColor())
 	}
 
-	return s.Render(strings.Repeat(" ", width))
+	return s
 }
 
 // FooterSections spreads footer labels across width: the first sits flush

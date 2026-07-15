@@ -16,6 +16,7 @@ import (
 	"github.com/bensadeh/circumflex/view/message"
 
 	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	xansi "github.com/charmbracelet/x/ansi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -611,19 +612,34 @@ func TestLinkSelector_NonViewableLinkIsInert(t *testing.T) {
 	assert.False(t, m.LinkSpansMuted(), "a viewable link selects in the normal colors")
 }
 
-func TestLinkSelector_FooterDimsNonViewableURL(t *testing.T) {
+func TestLinkSelector_URLRowDimsTextKeepsRule(t *testing.T) {
 	parsed := article.NewParsedFromHTML(
 		`<p><a href="https://example.com/paper.pdf">the pdf</a> and <a href="https://example.com/page">a page</a></p>`)
 	m := NewWithArticle(parsed, "Title", 72, 100, 30, Options{}, nil)
 
 	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
-	assert.Contains(t, m.footer(), style.Faint("example.com/paper.pdf"), "an inert link's URL dims")
+
+	dim := lipgloss.NewStyle().Underline(true).Faint(true).Render("example.com/paper.pdf")
+	assert.Contains(t, m.linkURLRow(), dim,
+		"without a terminal foreground report the URL and its underline dim together")
 	assert.Contains(t, xansi.Strip(m.footer()), "↛", "the arrow breaks for a link that won't open")
 
+	m.Update(tea.ForegroundColorMsg{Color: color.White})
 	m.Update(tea.KeyPressMsg{Code: 'j', Text: "j"})
-	assert.NotContains(t, m.footer(), style.Faint("example.com/page"), "a viewable link's URL keeps full strength")
+
+	pinned := lipgloss.NewStyle().Underline(true).Faint(true).UnderlineColor(color.White).Render("example.com/page")
+	assert.Contains(t, m.linkURLRow(), pinned,
+		"with only a foreground report the underline pins and the text falls back to faint")
 	assert.Contains(t, xansi.Strip(m.footer()), "→")
-	assert.Contains(t, xansi.Strip(m.footer()), "example.com/page")
+
+	m.Update(tea.BackgroundColorMsg{Color: color.Black})
+
+	blended := lipgloss.NewStyle().Underline(true).
+		Foreground(style.Dimmed(color.White, color.Black)).
+		UnderlineColor(color.White).
+		Render("example.com/page")
+	assert.Contains(t, m.linkURLRow(), blended,
+		"with both reports the text dims through a blended color, no faint flag to drag the underline down")
 }
 
 func TestLinkSelector_FooterIconSwapsForNonViewable_NerdFonts(t *testing.T) {
@@ -673,15 +689,23 @@ func TestLinkSelector_SlashSwitchesToSearch(t *testing.T) {
 	assert.True(t, m.SearchPrompting())
 }
 
-func TestLinkSelector_FooterShowsURLAndCounter(t *testing.T) {
+func TestLinkSelector_URLRidesTheSeparator(t *testing.T) {
 	m := linkedTestReader(t)
 
 	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
 
+	row := xansi.Strip(m.linkURLRow())
+	assert.Contains(t, row, "one.example.com")
+	assert.NotContains(t, row, "https://", "the scheme is stripped from the preview")
+
+	rightEdge := layout.ReaderViewLeftMargin + layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
+	assert.Equal(t, rightEdge, xansi.StringWidth(strings.TrimRight(row, " ")),
+		"the URL ends at the article column's right edge")
+
 	footer := xansi.Strip(m.footer())
-	assert.Contains(t, footer, "one.example.com")
-	assert.NotContains(t, footer, "https://", "the scheme is stripped from the preview")
+	assert.Contains(t, footer, "URL Selection Mode")
 	assert.Contains(t, footer, "1/3")
+	assert.NotContains(t, footer, "one.example.com", "the URL moved out of the footer")
 }
 
 func TestLinkSelector_SurvivesRerender(t *testing.T) {

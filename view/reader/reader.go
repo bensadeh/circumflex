@@ -32,6 +32,7 @@ type Options struct {
 	NerdFonts bool
 	Images    bool
 	TermBG    color.Color          // terminal background when already known, for image transparency
+	TermFG    color.Color          // terminal foreground when already known, for the URL selector's separator row
 	FromLink  bool                 // the page was reached by following a link; quit walks back through Trail
 	Trail     []message.TrailEntry // pages behind this one, oldest first; never mutated after construction
 }
@@ -52,6 +53,7 @@ type Model struct {
 	opts        Options
 	showImages  bool
 	termBG      color.Color // nil until the terminal reports it
+	termFG      color.Color // nil until the terminal reports it
 	buildHeader func(contentWidth int) string
 	blockStarts []int // line index of each article block in the current render
 
@@ -87,6 +89,7 @@ func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, h
 		opts:        opts,
 		showImages:  opts.Images,
 		termBG:      opts.TermBG,
+		termFG:      opts.TermFG,
 		buildHeader: buildHeader,
 	}
 
@@ -194,6 +197,13 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		if m.parsed != nil {
 			m.rerender()
 		}
+
+		return nil
+
+	case tea.ForegroundColorMsg:
+		// Feeds the URL selector's separator row; nothing rendered ahead of
+		// time depends on it.
+		m.termFG = msg.Color
 
 		return nil
 	}
@@ -508,13 +518,18 @@ func (m *Model) View() string {
 
 	content := scrollbar.Attach(m.DecorateView(m.Viewport.View()), m.paneWidth, m.ContentLines, m.Viewport.Height(), m.Viewport.YOffset())
 
-	return m.titleHeader + "\n" + content + "\n" + pane.FooterSeparator(m.paneWidth) + "\n" + m.footer()
+	separator := pane.FooterSeparator(m.paneWidth)
+	if m.linkMode {
+		separator = m.linkURLRow()
+	}
+
+	return m.titleHeader + "\n" + content + "\n" + separator + "\n" + m.footer()
 }
 
 // footer is the line under the separator: the reader-mode label on the left
 // and the image indicator ending at the article column's right edge. The URL
-// selector or a search in play takes over the whole line: the selected URL
-// or the query on the left, its counter on the right.
+// selector or a search in play takes over the whole line: the mode label or
+// the query on the left, its counter on the right.
 func (m *Model) footer() string {
 	totalWidth := layout.ReaderViewLeftMargin + layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
 
@@ -523,7 +538,7 @@ func (m *Model) footer() string {
 	switch {
 	case m.linkMode:
 		result = pane.FooterSections(totalWidth,
-			m.linkSelectorLabel(totalWidth),
+			m.linkSelectorLabel(),
 			pane.MatchCountLabel(m.currentLink, len(m.links)))
 
 	case m.SearchFooterLabel(m.opts.NerdFonts) != "":
@@ -536,12 +551,11 @@ func (m *Model) footer() string {
 	return xansi.Truncate(result, m.paneWidth, "")
 }
 
-// linkSelectorLabel is the selector's footer preview: the selector icon and
-// the selected link's full URL, pre-truncated so the counter keeps the
-// column's right edge however long the URL runs. A link the reader won't
-// open shows the broken-link icon and its URL faint, dimmed like the muted
-// selection bar above it.
-func (m *Model) linkSelectorLabel(totalWidth int) string {
+// linkSelectorLabel marks the selector in the reader-mode label's shape: the
+// selector icon and a faint mode label, while the URL itself rides the
+// separator above. A link the reader won't open breaks the arrow, matching
+// its dimmed URL.
+func (m *Model) linkSelectorLabel() string {
 	l := m.links[m.currentLink]
 
 	icon, sep := style.Faint("→"), " "
@@ -557,21 +571,24 @@ func (m *Model) linkSelectorLabel(totalWidth int) string {
 		}
 	}
 
-	prefix := "  " + icon + sep
+	return "  " + icon + sep + style.Faint("URL Selection Mode")
+}
 
+// linkURLRow is the footer separator while the selector is up: the selected
+// link's URL written into the rule, right-aligned against the article
+// column's edge like the counter below it, leaving the footer line to the
+// mode label. The URL renders faint under the rule's full-strength underline;
+// whether the reader can open the link shows in the footer arrow and the
+// selection bar, not here.
+func (m *Model) linkURLRow() string {
 	// The scheme is stripped from the display like the meta block's URL row —
-	// the footer is visibly showing a link already.
-	display := strings.TrimPrefix(strings.TrimPrefix(l.url, "https://"), "http://")
+	// the selector is visibly showing a link already.
+	display := strings.TrimPrefix(strings.TrimPrefix(m.links[m.currentLink].url, "https://"), "http://")
 
-	counterWidth := xansi.StringWidth(pane.MatchCountLabel(m.currentLink, len(m.links)))
-	maxURL := totalWidth - xansi.StringWidth(prefix) - counterWidth - 1
+	contentWidth := layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
+	display = xansi.Truncate(display, contentWidth, "…")
 
-	display = xansi.Truncate(display, max(0, maxURL), "…")
-	if !l.viewable {
-		display = style.Faint(display)
-	}
-
-	return prefix + display
+	return pane.FooterSeparatorWithLabel(m.paneWidth, layout.ReaderViewLeftMargin+contentWidth, display, m.termFG, m.termBG)
 }
 
 // readerModeLabel marks the article as a reader-mode rendering. The text is

@@ -34,10 +34,16 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 		return m, tea.ClearScreen
 	}
 
-	// Handled before the startup gate: the terminal's answer can arrive
+	// Handled before the startup gate: the terminal's answers can arrive
 	// before the first WindowSizeMsg and must not be dropped.
 	if bg, ok := msg.(tea.BackgroundColorMsg); ok {
 		m.termBG = bg.Color
+
+		return m, nil
+	}
+
+	if fg, ok := msg.(tea.ForegroundColorMsg); ok {
+		m.termFG = fg.Color
 
 		return m, nil
 	}
@@ -325,6 +331,7 @@ func (m *model) linkPageOptions(storyID int) reader.Options {
 		NerdFonts: m.config.EnableNerdFonts,
 		Images:    m.config.EnableImages,
 		TermBG:    m.termBG,
+		TermFG:    m.termFG,
 	}
 }
 
@@ -382,6 +389,7 @@ func (m *model) handleArticleReady(msg message.ArticleReady) (*model, tea.Cmd) {
 		NerdFonts: m.config.EnableNerdFonts,
 		Images:    m.config.EnableImages,
 		TermBG:    m.termBG,
+		TermFG:    m.termFG,
 	}, block.Render)
 
 	m.screen = screenReader
