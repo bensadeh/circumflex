@@ -1,7 +1,6 @@
 package comments
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/bensadeh/circumflex/comment"
@@ -68,7 +67,7 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 	}
 
 	rootBlocks := comment.Parse(thread.Content)
-	hdr := buildCommentHeader(sf, rootBlocks, enableNerdFonts, clampedWidth) + "\n"
+	hdr := buildCommentHeader(sf, rootBlocks, newComments, enableNerdFonts, clampedWidth) + "\n"
 
 	rc := renderContext{
 		header:          hdr,
@@ -154,7 +153,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		}
 
 		cw := layout.CommentColumnWidth(msg.Width, m.rc.commentWidth)
-		m.rc.header = buildCommentHeader(m.rc.story, m.rc.rootBlocks, m.rc.enableNerdFonts, cw) + "\n"
+		m.rc.header = buildCommentHeader(m.rc.story, m.rc.rootBlocks, m.rc.newComments, m.rc.enableNerdFonts, cw) + "\n"
 
 		m.rebuildTitleHeader()
 		m.prerendered = prerenderComments(m.rc, m.flat)
@@ -254,7 +253,7 @@ func (m *Model) openCommentsInBrowser() tea.Cmd {
 
 func (m *Model) modeIndicator() string {
 	if search := m.SearchFooterLabel(m.rc.enableNerdFonts); search != "" {
-		// The counter takes over the comment count's slot on the right:
+		// The counter takes over the depth gauge's slot on the right:
 		// position over the full match list once committed, the live total
 		// while the prompt is open.
 		counter := pane.MatchCountLabel(m.searchCurrent, len(m.searchMatches))
@@ -315,43 +314,16 @@ func (m *Model) modeIndicator() string {
 		di = m.depthIndicator()
 	}
 
-	// Three sections across the comment column: the mode label at the left
-	// margin, the depth indicator between, and the counts ending at the
-	// column's right edge — the same edge the meta block and the separator
-	// rule share.
+	// Two sections across the comment column: the mode label at the left
+	// margin and the depth gauge ending at the column's right edge — the
+	// same edge the meta block and the separator rule share. The comment
+	// counts live in the meta block's opening rule, not here.
 	commentWidth := layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
 	totalWidth := layout.CommentSectionLeftMargin + commentWidth
 
-	result := pane.FooterSections(totalWidth,
-		label,
-		di,
-		commentCountLabel(m.rc.story.CommentsCount, m.rc.newComments, m.rc.enableNerdFonts))
+	result := pane.FooterSections(totalWidth, label, di)
 
 	return xansi.Truncate(result, m.rc.paneWidth, "")
-}
-
-// commentCountLabel is the footer's comment tally: total comments and, in
-// parentheses, how many arrived since the last visit. The icon keeps full
-// strength like the footer's other icons; the counts stay faint — they
-// inform, they don't call for attention. In nerd-fonts mode the new-comment
-// count also takes the meta new-comments color — a hue shift within the same
-// faint register, hinting at fresh activity without shouting.
-func commentCountLabel(commentsCount, newComments int, enableNerdFonts bool) string {
-	if enableNerdFonts {
-		label := style.Faint(fmt.Sprintf("%d", commentsCount))
-		if newComments > 0 {
-			label += style.Faint(" (") + style.MetaNewCommentsFaint(fmt.Sprintf("%d", newComments)) + style.Faint(")")
-		}
-
-		return label + " " + nerdfonts.Comment
-	}
-
-	label := fmt.Sprintf("%d comments", commentsCount)
-	if newComments > 0 {
-		label += fmt.Sprintf(" (%d new)", newComments)
-	}
-
-	return style.Faint(label)
 }
 
 // depthIndicator is the footer's expansion gauge: one dot per indent level,
@@ -383,15 +355,17 @@ func (m *Model) rebuildContent() {
 	m.updateViewport()
 }
 
-func buildCommentHeader(s storyFields, rootBlocks []comment.Block, enableNerdFonts bool, width int) string {
+func buildCommentHeader(s storyFields, rootBlocks []comment.Block, newComments int, enableNerdFonts bool, width int) string {
 	block := meta.CommentSection(meta.Data{
-		URL:         s.URL,
-		Domain:      s.Domain,
-		Author:      s.Author,
-		TimeAgo:     s.TimeAgo,
-		Points:      s.Points,
-		RootComment: renderRootComment(rootBlocks, meta.ContentWidth(width), enableNerdFonts),
-		NerdFonts:   enableNerdFonts,
+		URL:           s.URL,
+		Domain:        s.Domain,
+		Author:        s.Author,
+		TimeAgo:       s.TimeAgo,
+		Points:        s.Points,
+		CommentsCount: s.CommentsCount,
+		NewComments:   newComments,
+		RootComment:   renderRootComment(rootBlocks, meta.ContentWidth(width), enableNerdFonts),
+		NerdFonts:     enableNerdFonts,
 	}).Render(width)
 
 	return style.PrefixLines(block, strings.Repeat(" ", layout.CommentSectionLeftMargin))

@@ -159,6 +159,7 @@ func (m *model) fetchArticle(tok fetchToken, story *hn.Story) tea.Cmd {
 			TimeAgo:        timeAgo,
 			ID:             story.ID,
 			Points:         story.Points,
+			CommentsCount:  story.CommentsCount,
 			FetchID:        tok.id,
 			HistoryWarning: histErr,
 		}

@@ -59,6 +59,7 @@ type CommentColors struct {
 type MetaColors struct {
 	Author      string `toml:"author"`
 	Score       string `toml:"score"`
+	Comments    string `toml:"comments"`
 	NewComments string `toml:"new_comments"`
 	URL         string `toml:"url"`
 }
@@ -125,6 +126,7 @@ func Default() *Theme {
 		Meta: MetaColors{
 			Author:      "red",
 			Score:       "yellow",
+			Comments:    "magenta",
 			NewComments: "cyan",
 			URL:         "blue",
 		},

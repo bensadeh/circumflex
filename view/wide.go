@@ -152,12 +152,13 @@ func truncateLines(s string, w int) string {
 func (m *model) placeholderMetaBlock(paneWidth int, target screen) string {
 	it := m.list.SelectedItem()
 	d := meta.Data{
-		URL:       it.URL,
-		Domain:    it.Domain,
-		Author:    it.Author,
-		TimeAgo:   timeago.RelativeTime(it.Time),
-		Points:    it.Points,
-		NerdFonts: m.config.EnableNerdFonts,
+		URL:           it.URL,
+		Domain:        it.Domain,
+		Author:        it.Author,
+		TimeAgo:       timeago.RelativeTime(it.Time),
+		Points:        it.Points,
+		CommentsCount: it.CommentsCount,
+		NerdFonts:     m.config.EnableNerdFonts,
 	}
 
 	if target == screenReader {

@@ -106,6 +106,7 @@ type ArticleReady struct {
 	TimeAgo        string
 	ID             int
 	Points         int
+	CommentsCount  int
 	Err            error
 	FetchID        uint64
 	HistoryWarning error // non-nil if marking as read failed

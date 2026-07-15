@@ -30,19 +30,22 @@ import (
 func TestBlockGeometryContract(t *testing.T) {
 	for _, nerdFonts := range []bool{false, true} {
 		linked := Data{
-			URL:       "https://example.com/story",
-			Domain:    "example.com",
-			Author:    "alice",
-			TimeAgo:   "2 hours ago",
-			Points:    100,
-			NerdFonts: nerdFonts,
+			URL:           "https://example.com/story",
+			Domain:        "example.com",
+			Author:        "alice",
+			TimeAgo:       "2 hours ago",
+			Points:        100,
+			CommentsCount: 33,
+			NewComments:   5,
+			NerdFonts:     nerdFonts,
 		}
 
 		selfPost := Data{
-			Author:    "bob",
-			TimeAgo:   "1 hour ago",
-			Points:    10,
-			NerdFonts: nerdFonts,
+			Author:        "bob",
+			TimeAgo:       "1 hour ago",
+			Points:        10,
+			CommentsCount: 2,
+			NerdFonts:     nerdFonts,
 		}
 
 		for _, width := range []int{20, 21, 60, 61, 80} {
@@ -112,16 +115,19 @@ func TestBlockGeometryContract(t *testing.T) {
 }
 
 // The opening rule doubles as the block's header: the byline sits in it the
-// way a help-panel title does, and the score closes it against the right
-// corner. When the rule can't carry both, the score goes first, then the
-// byline — the frame never gives up its own corners.
-func TestOpeningRuleCarriesBylineAndScore(t *testing.T) {
+// way a help-panel title does, and the stat labels — comment count, then
+// score — close it against the right corner with a rule segment between
+// them. When the rule can't carry everything, the labels shed from the left,
+// the count before the score, then the byline — the frame never gives up its
+// own corners.
+func TestOpeningRuleCarriesBylineAndStats(t *testing.T) {
 	d := Data{
-		URL:     "https://example.com/story",
-		Domain:  "example.com",
-		Author:  "alice",
-		TimeAgo: "2 hours ago",
-		Points:  100,
+		URL:           "https://example.com/story",
+		Domain:        "example.com",
+		Author:        "alice",
+		TimeAgo:       "2 hours ago",
+		Points:        100,
+		CommentsCount: 45,
 	}
 
 	top := func(width int) string {
@@ -131,16 +137,33 @@ func TestOpeningRuleCarriesBylineAndScore(t *testing.T) {
 	wide := top(60)
 	assert.True(t, strings.HasPrefix(wide, "╭── by alice 2 hours ago ─"),
 		"the byline must open the rule: %q", wide)
-	assert.True(t, strings.HasSuffix(wide, "─ 100 points ──╮"),
-		"the score must close the rule right-aligned: %q", wide)
+	assert.True(t, strings.HasSuffix(wide, "─ 45 comments ── 100 points ──╮"),
+		"the comment count and score must close the rule right-aligned: %q", wide)
 
-	mid := top(30)
-	assert.Contains(t, mid, "by alice", "the byline stays when only the score is out of room: %q", mid)
-	assert.NotContains(t, mid, "points", "the score is the first thing to go: %q", mid)
+	mid := top(45)
+	assert.Contains(t, mid, "points", "the score stays when only the count is out of room: %q", mid)
+	assert.NotContains(t, mid, "comments", "the comment count is the first thing to go: %q", mid)
+
+	tight := top(30)
+	assert.Contains(t, tight, "by alice", "the byline stays when the labels are out of room: %q", tight)
+	assert.NotContains(t, tight, "points", "the score goes before the byline: %q", tight)
 
 	narrow := top(20)
 	assert.Equal(t, "╭"+strings.Repeat("─", 17)+"╮", narrow,
 		"a rule too narrow for any text stays plain")
+}
+
+// The new-comments count rides the tally in parentheses; without new
+// comments there is no parenthetical at all.
+func TestCommentTallyCarriesNewComments(t *testing.T) {
+	d := Data{Author: "alice", TimeAgo: "2 hours ago", Points: 100, CommentsCount: 45}
+
+	top := strings.Split(xansi.Strip(CommentSection(d).Render(80)), "\n")[0]
+	assert.Contains(t, top, "─ 45 comments ── ", "no parenthetical without new comments: %q", top)
+
+	d.NewComments = 5
+	top = strings.Split(xansi.Strip(CommentSection(d).Render(80)), "\n")[0]
+	assert.Contains(t, top, "─ 45 comments (5 new) ── ", "new comments join the tally: %q", top)
 }
 
 // The URL is the block's last row before the closing rule. When the

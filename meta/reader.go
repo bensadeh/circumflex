@@ -1,12 +1,13 @@
 package meta
 
 // ReaderMode is the block above a reader-mode article: the byline in the
-// frame's opening rule with the score closing it, and the story link inside
-// the frame. The reader-mode label is the footer's business, not the block's.
+// frame's opening rule with the comment count and score closing it, and the
+// story link inside the frame. The reader-mode label is the footer's
+// business, not the block's.
 func ReaderMode(d Data) Block {
 	return Block{
-		title: byline(d.Author, d.TimeAgo, d.NerdFonts),
-		score: scoreLabel(d.Points, d.NerdFonts),
+		title:  byline(d.Author, d.TimeAgo, d.NerdFonts),
+		labels: statLabels(d),
 		body: func(width int) string {
 			return urlRow(d.URL, d.URL, ContentWidth(width))
 		},

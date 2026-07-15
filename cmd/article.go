@@ -48,11 +48,12 @@ func articleCmd() *cobra.Command {
 			}
 
 			block := meta.ReaderMode(meta.Data{
-				URL:       item.URL,
-				Author:    item.Author,
-				TimeAgo:   timeago.RelativeTime(item.Time),
-				Points:    item.Points,
-				NerdFonts: config.EnableNerdFonts,
+				URL:           item.URL,
+				Author:        item.Author,
+				TimeAgo:       timeago.RelativeTime(item.Time),
+				Points:        item.Points,
+				CommentsCount: item.CommentsCount,
+				NerdFonts:     config.EnableNerdFonts,
 			})
 
 			opts := reader.Options{

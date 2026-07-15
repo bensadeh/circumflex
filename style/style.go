@@ -96,10 +96,11 @@ var (
 	commentNewIndicatorStyle lipgloss.Style
 	commentBacktickStyle     lipgloss.Style
 
-	metaAuthorStyle           lipgloss.Style
-	metaScoreStyle            lipgloss.Style
-	metaNewCommentsFaintStyle lipgloss.Style
-	metaURLStyle              lipgloss.Style // hyperlink applied at call time
+	metaAuthorStyle      lipgloss.Style
+	metaScoreStyle       lipgloss.Style
+	metaCommentsStyle    lipgloss.Style
+	metaNewCommentsStyle lipgloss.Style
+	metaURLStyle         lipgloss.Style // hyperlink applied at call time
 
 	readerH1Style lipgloss.Style
 	readerH2Style lipgloss.Style
@@ -191,7 +192,8 @@ func rebuildThemeStyles() {
 
 	metaAuthorStyle = fg(current.Meta.Author)
 	metaScoreStyle = fg(current.Meta.Score)
-	metaNewCommentsFaintStyle = fg(current.Meta.NewComments).Faint(true)
+	metaCommentsStyle = fg(current.Meta.Comments)
+	metaNewCommentsStyle = fg(current.Meta.NewComments)
 	metaURLStyle = fg(current.Meta.URL)
 
 	readerH1Style = fg(current.Reader.H1)
@@ -305,10 +307,11 @@ func CommentBacktickLink(s string) string {
 	return commentBacktickStyle.Underline(true).Render(s)
 }
 
-func MetaAuthor(s string) string           { return metaAuthorStyle.Render(s) }
-func MetaScore(s string) string            { return metaScoreStyle.Render(s) }
-func MetaNewCommentsFaint(s string) string { return metaNewCommentsFaintStyle.Render(s) }
-func MetaURL(s, url string) string         { return metaURLStyle.Hyperlink(url).Render(s) }
+func MetaAuthor(s string) string      { return metaAuthorStyle.Render(s) }
+func MetaScore(s string) string       { return metaScoreStyle.Render(s) }
+func MetaComments(s string) string    { return metaCommentsStyle.Render(s) }
+func MetaNewComments(s string) string { return metaNewCommentsStyle.Render(s) }
+func MetaURL(s, url string) string    { return metaURLStyle.Hyperlink(url).Render(s) }
 
 func ReaderH1(s string) string      { return readerH1Style.Render(s) }
 func ReaderH2(s string) string      { return readerH2Style.Render(s) }

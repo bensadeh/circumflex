@@ -308,11 +308,12 @@ func (m *model) handleRestoreReaderPage(msg message.RestoreReaderPage) (*model, 
 	it := m.list.SelectedItem()
 
 	storyHeader := meta.ReaderMode(meta.Data{
-		URL:       it.URL,
-		Author:    it.Author,
-		TimeAgo:   timeago.RelativeTime(it.Time),
-		Points:    it.Points,
-		NerdFonts: m.config.EnableNerdFonts,
+		URL:           it.URL,
+		Author:        it.Author,
+		TimeAgo:       timeago.RelativeTime(it.Time),
+		Points:        it.Points,
+		CommentsCount: it.CommentsCount,
+		NerdFonts:     m.config.EnableNerdFonts,
 	})
 
 	m.detail = reader.NewPage(msg.Entry, msg.Trail, storyHeader.Render,
@@ -376,11 +377,12 @@ func (m *model) handleArticleReady(msg message.ArticleReady) (*model, tea.Cmd) {
 	}
 
 	block := meta.ReaderMode(meta.Data{
-		URL:       msg.URL,
-		Author:    msg.Author,
-		TimeAgo:   msg.TimeAgo,
-		Points:    msg.Points,
-		NerdFonts: m.config.EnableNerdFonts,
+		URL:           msg.URL,
+		Author:        msg.Author,
+		TimeAgo:       msg.TimeAgo,
+		Points:        msg.Points,
+		CommentsCount: msg.CommentsCount,
+		NerdFonts:     m.config.EnableNerdFonts,
 	})
 
 	m.detail = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.detailWidth(), m.height, reader.Options{

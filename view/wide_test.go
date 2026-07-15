@@ -42,7 +42,7 @@ func openTestComments(t *testing.T, m *model) {
 	m, _ = m.Update(keyMsg("enter"))
 	require.True(t, m.fetch.inFlight())
 
-	thread := comment.ToThread(&hn.CommentTree{Story: hn.Story{ID: 1, Title: "First item", CommentsCount: 5}})
+	thread := comment.ToThread(&hn.CommentTree{Story: hn.Story{ID: 1, Title: "First item", Author: "alice", CommentsCount: 5}})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 	require.Equal(t, screenComments, m.screen)
 }
@@ -253,7 +253,7 @@ func TestWideView_StoryLoadErrorBecomesView(t *testing.T) {
 	require.True(t, m.fetch.inFlight())
 	assert.Equal(t, 2, m.list.Index())
 
-	thread := comment.ToThread(&hn.CommentTree{Story: hn.Story{ID: 3, Title: "Third item", CommentsCount: 3}})
+	thread := comment.ToThread(&hn.CommentTree{Story: hn.Story{ID: 3, Title: "Third item", Author: "charlie", CommentsCount: 3}})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 	require.Equal(t, screenComments, m.screen)
 	assert.Contains(t, xansi.Strip(m.detailPaneView()), "3 comments")

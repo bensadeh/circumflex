@@ -41,6 +41,7 @@
 [meta]
   author = "red"
   score = "yellow"
+  comments = "magenta"
   new_comments = "cyan"
   url = "blue"
 

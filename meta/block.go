@@ -7,6 +7,7 @@
 package meta
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/bensadeh/circumflex/style"
@@ -17,8 +18,8 @@ import (
 
 // The block's frame is a faint rounded box in the same family as the help
 // screens' panels: the byline sits in the opening rule the way a panel title
-// does, the score closes that rule right-aligned, and the closing rule marks
-// where the meta block ends and the content it heads begins.
+// does, the stat labels close that rule right-aligned, and the closing rule
+// marks where the meta block ends and the content it heads begins.
 const (
 	framePadding = 1
 	frameChrome  = 2*framePadding + 2 // horizontal padding + the side borders
@@ -34,13 +35,15 @@ const rightInset = 1
 // fields it shows; leave the rest zero. Zero-valued strings mean "unknown"
 // and render nothing that depends on them.
 type Data struct {
-	URL         string
-	Domain      string
-	Author      string
-	TimeAgo     string
-	Points      int
-	RootComment string // story self-text, already rendered and wrapped by the caller
-	NerdFonts   bool
+	URL           string
+	Domain        string
+	Author        string
+	TimeAgo       string
+	Points        int
+	CommentsCount int
+	NewComments   int    // comments since the last visit; 0 when unknown
+	RootComment   string // story self-text, already rendered and wrapped by the caller
+	NerdFonts     bool
 }
 
 // Block is one meta block variant bound to its data. Render draws the loaded
@@ -53,9 +56,9 @@ type Data struct {
 // the same margin it gives the column's text — one margin, applied in one
 // place, is what keeps the block flush with the text below it.
 type Block struct {
-	title string // sits in the opening rule like a help-panel title
-	score string // right-aligned in the opening rule
-	body  func(width int) string
+	title  string   // sits in the opening rule like a help-panel title
+	labels []string // right-aligned group closing the opening rule; sheds from the left when narrow
+	body   func(width int) string
 }
 
 // ContentWidth is the width of the text inside a block laid out at width;
@@ -66,7 +69,7 @@ func ContentWidth(width int) int {
 }
 
 func (b Block) Render(width int) string {
-	rows := []string{openingRule(b.title, b.score, frameWidth(width))}
+	rows := []string{openingRule(b.title, b.labels, frameWidth(width))}
 
 	if body := b.body(width); body != "" {
 		for line := range strings.SplitSeq(body, "\n") {
@@ -83,7 +86,7 @@ func (b Block) Skeleton(width int) string {
 	rows := lipgloss.Height(b.Render(width))
 
 	lines := make([]string, rows)
-	lines[0] = openingRule("", "", frameWidth(width))
+	lines[0] = openingRule("", nil, frameWidth(width))
 
 	for i := 1; i < rows-1; i++ {
 		lines[i] = framed("", ContentWidth(width))
@@ -99,27 +102,35 @@ func frameWidth(width int) int {
 }
 
 // openingRule is the frame's top border, doubling as the block's header row:
-// the title sits in the rule the way a help-panel title does, and the score
-// closes the rule against the right corner. When the rule can't carry both,
-// the score goes first, then the title — the frame never gives up its own
-// corners.
-func openingRule(title, score string, frameWidth int) string {
+// the title sits in the rule the way a help-panel title does, and the label
+// group — comment count, then score — closes the rule against the right
+// corner, a short rule segment between the labels. When the rule can't carry
+// everything, the labels shed from the left, the count before the score, and
+// the title outlasts them both — the frame never gives up its own corners.
+func openingRule(title string, labels []string, frameWidth int) string {
 	titleCells := frameLead + lipgloss.Width(title) + 4 // the corners + a space each side of the title
 
 	if title == "" || titleCells > frameWidth {
 		return style.Faint("╭" + rule(frameWidth-2) + "╮")
 	}
 
-	fill := frameWidth - titleCells - lipgloss.Width(score) - frameLead - 2
+	labels = slices.DeleteFunc(slices.Clone(labels), func(l string) bool { return l == "" })
 
-	if score == "" || fill < 1 {
+	for ; len(labels) > 0; labels = labels[1:] {
+		group := strings.Join(labels, style.Faint(" "+rule(frameLead)+" "))
+		fill := frameWidth - titleCells - lipgloss.Width(group) - frameLead - 2
+
+		if fill < 1 {
+			continue
+		}
+
 		return style.Faint("╭"+rule(frameLead)+" ") + title +
-			style.Faint(" "+rule(frameWidth-titleCells)+"╮")
+			style.Faint(" "+rule(fill)+" ") + group +
+			style.Faint(" "+rule(frameLead)+"╮")
 	}
 
 	return style.Faint("╭"+rule(frameLead)+" ") + title +
-		style.Faint(" "+rule(fill)+" ") + score +
-		style.Faint(" "+rule(frameLead)+"╮")
+		style.Faint(" "+rule(frameWidth-titleCells)+"╮")
 }
 
 // closingRule is the frame's bottom border, drawn as the block's last row in
