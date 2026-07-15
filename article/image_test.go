@@ -51,6 +51,60 @@ func TestFetchImages_TinyImageIsDecorativeNotFailed(t *testing.T) {
 	assert.False(t, blocks[1].decorative)
 }
 
+func TestFetchImages_SendsRefererForHotlinkProtection(t *testing.T) {
+	t.Parallel()
+
+	var srv *httptest.Server
+
+	srv = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Referer") != srv.URL+"/article" {
+			http.Error(w, "hotlinking forbidden", http.StatusForbidden)
+
+			return
+		}
+
+		var buf bytes.Buffer
+		if err := png.Encode(&buf, image.NewRGBA(image.Rect(0, 0, 100, 100))); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+
+			return
+		}
+
+		_, _ = w.Write(buf.Bytes())
+	}))
+	defer srv.Close()
+
+	base, err := nurl.Parse(srv.URL + "/article")
+	require.NoError(t, err)
+
+	blocks := []block{{kind: blockImage, imageURL: "photo.png"}}
+
+	fetchImages(context.Background(), blocks, base)
+
+	assert.NotNil(t, blocks[0].img, "same-origin image requests carry the page URL as Referer")
+}
+
+func TestRefererFor(t *testing.T) {
+	t.Parallel()
+
+	page, err := nurl.Parse("https://example.com/story/index.html#top")
+	require.NoError(t, err)
+
+	sameOrigin, err := nurl.Parse("https://example.com/story/photo.webp")
+	require.NoError(t, err)
+	assert.Equal(t, "https://example.com/story/index.html", refererFor(page, sameOrigin),
+		"full page URL without fragment for same-origin")
+
+	crossOrigin, err := nurl.Parse("https://cdn.example.net/photo.webp")
+	require.NoError(t, err)
+	assert.Equal(t, "https://example.com/", refererFor(page, crossOrigin),
+		"bare origin for cross-origin")
+
+	downgrade, err := nurl.Parse("http://example.com/photo.webp")
+	require.NoError(t, err)
+	assert.Empty(t, refererFor(page, downgrade), "no referer on https→http downgrade")
+}
+
 func TestHasImages(t *testing.T) {
 	t.Parallel()
 

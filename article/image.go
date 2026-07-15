@@ -121,7 +121,14 @@ func fetchImage(ctx context.Context, client *resty.Client, base *nurl.URL, rawUR
 		return nil
 	}
 
-	resp, err := client.R().SetContext(ctx).Get(base.ResolveReference(ref).String())
+	target := base.ResolveReference(ref)
+
+	req := client.R().SetContext(ctx)
+	if referer := refererFor(base, target); referer != "" {
+		req.SetHeader("Referer", referer)
+	}
+
+	resp, err := req.Get(target.String())
 	if err != nil || resp.StatusCode() >= 400 {
 		return nil
 	}
@@ -132,6 +139,26 @@ func fetchImage(ctx context.Context, client *resty.Client, base *nurl.URL, rawUR
 	}
 
 	return img
+}
+
+// refererFor mirrors the browser default referrer policy
+// (strict-origin-when-cross-origin): the full page URL same-origin, the bare
+// origin cross-origin, nothing on an https→http downgrade. Hotlink-protected
+// hosts (e.g. fabiensanglard.net) 403 image requests without it.
+func refererFor(page, target *nurl.URL) string {
+	if page.Scheme == "https" && target.Scheme != "https" {
+		return ""
+	}
+
+	if page.Scheme == target.Scheme && page.Host == target.Host {
+		full := *page
+		full.User = nil
+		full.Fragment = ""
+
+		return full.String()
+	}
+
+	return page.Scheme + "://" + page.Host + "/"
 }
 
 // decodeSVG rasterizes an SVG at its viewBox size, so downstream treats it
