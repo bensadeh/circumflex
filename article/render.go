@@ -110,7 +110,7 @@ func renderBlock(b *block, width, codeWidth int, images ImageOptions) string {
 		return renderCode(b.text, width, codeWidth)
 
 	case blockTable:
-		return renderTable(b.rows, codeWidth)
+		return renderTable(b.rows, b.hasHeader, codeWidth)
 
 	case blockImage:
 		return renderImage(b, width, images)
@@ -578,7 +578,7 @@ func imageLabel() string {
 	return ansi.Reset + circles + ansi.Reset + title + ansi.Faint + ansi.Italic
 }
 
-func renderTable(rows [][]string, width int) string {
+func renderTable(rows [][]string, hasHeader bool, width int) string {
 	columns := 0
 	for _, row := range rows {
 		columns = max(columns, len(row))
@@ -608,7 +608,7 @@ func renderTable(rows [][]string, width int) string {
 
 		lines = append(lines, strings.TrimRight(strings.Join(cells, "  "), " "))
 
-		if rowIndex == 0 && len(rows) > 1 {
+		if rowIndex == 0 && hasHeader && len(rows) > 1 {
 			separators := make([]string, columns)
 			for i, columnWidth := range columnWidths {
 				separators[i] = strings.Repeat("-", columnWidth)

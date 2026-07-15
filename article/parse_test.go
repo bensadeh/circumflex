@@ -206,6 +206,31 @@ func TestParseBlocks_Table(t *testing.T) {
 	assert.Equal(t, blockTable, blocks[1].kind)
 	require.Len(t, blocks[1].rows, 2, "empty rows should be skipped")
 	assert.Equal(t, []string{"Name", "Value"}, blocks[1].rows[0])
+	assert.True(t, blocks[1].hasHeader)
+}
+
+func TestParseBlocks_QuirksModeTableInsideParagraph(t *testing.T) {
+	t.Parallel()
+
+	// No doctype puts the parser in quirks mode, where a <table> start tag
+	// does not close an open <p>: the table parses as a child of the
+	// paragraph (e.g. fabiensanglard.net reference lists).
+	blocks := blocksFromHTML(t, `<p>intro
+		<table>
+			<tr><td>[1]</td><td><a href="https://a">First ref</a></td></tr>
+			<tr><td>[2]</td><td><a href="https://b">Second ref</a></td></tr>
+		</table>
+	</p>`)
+
+	require.Len(t, blocks, 2)
+	assert.Equal(t, blockParagraph, blocks[0].kind)
+	assert.Equal(t, "intro", blocks[0].plainText())
+
+	assert.Equal(t, blockTable, blocks[1].kind)
+	require.Len(t, blocks[1].rows, 2)
+	assert.Equal(t, []string{"[1]", "First ref"}, blocks[1].rows[0])
+	assert.Equal(t, []string{"[2]", "Second ref"}, blocks[1].rows[1])
+	assert.False(t, blocks[1].hasHeader, "td-only rows are not a header")
 }
 
 func TestParseBlocks_FigurePrefersFigcaption(t *testing.T) {

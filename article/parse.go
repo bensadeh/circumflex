@@ -100,8 +100,17 @@ func (p *domParser) walk(n *html.Node) {
 	switch nodeAtom(n) {
 	case atom.P:
 		p.flushInline()
-		p.emitParagraph(collectInline(n, formatPlain, &p.images))
-		p.emitImages()
+
+		// Quirks-mode pages (no doctype) keep a <table> nested inside an
+		// open <p> instead of auto-closing it, so a paragraph can hold real
+		// block content; contain it rather than flattening it to text.
+		if hasBlockDescendant(n) {
+			p.walkChildren(n)
+			p.flushInline()
+		} else {
+			p.emitParagraph(collectInline(n, formatPlain, &p.images))
+			p.emitImages()
+		}
 
 	case atom.H1, atom.H2, atom.H3, atom.H4, atom.H5, atom.H6:
 		p.flushInline()
@@ -460,20 +469,29 @@ func hasProseOutsideCaption(n *html.Node) bool {
 func (p *domParser) parseTable(n *html.Node) {
 	var rows [][]string
 
-	var visitRows func(*html.Node)
+	hasHeader := false
 
-	visitRows = func(group *html.Node) {
+	var visitRows func(*html.Node, bool)
+
+	visitRows = func(group *html.Node, inHead bool) {
 		for c := range group.ChildNodes() {
 			if c.Type != html.ElementNode {
 				continue
 			}
 
 			switch nodeAtom(c) {
-			case atom.Thead, atom.Tbody, atom.Tfoot:
-				visitRows(c)
+			case atom.Thead:
+				visitRows(c, true)
+
+			case atom.Tbody, atom.Tfoot:
+				visitRows(c, false)
 
 			case atom.Tr:
 				if row := tableRow(c); len(row) > 0 {
+					if len(rows) == 0 && (inHead || allHeaderCells(c)) {
+						hasHeader = true
+					}
+
 					rows = append(rows, row)
 				}
 
@@ -483,11 +501,31 @@ func (p *domParser) parseTable(n *html.Node) {
 		}
 	}
 
-	visitRows(n)
+	visitRows(n, false)
 
 	if len(rows) > 0 {
-		p.blocks = append(p.blocks, block{kind: blockTable, rows: rows})
+		p.blocks = append(p.blocks, block{kind: blockTable, rows: rows, hasHeader: hasHeader})
 	}
+}
+
+func allHeaderCells(tr *html.Node) bool {
+	cells := 0
+
+	for c := range tr.ChildNodes() {
+		if c.Type != html.ElementNode {
+			continue
+		}
+
+		switch nodeAtom(c) {
+		case atom.Th:
+			cells++
+
+		case atom.Td:
+			return false
+		}
+	}
+
+	return cells > 0
 }
 
 func tableRow(tr *html.Node) []string {

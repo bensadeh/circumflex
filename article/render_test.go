@@ -329,13 +329,28 @@ func TestRenderTable_AlignsColumns(t *testing.T) {
 		{"Longer", "2"},
 	}
 
-	lines := strings.Split(ansi.Strip(renderTable(rows, 80)), "\n")
+	lines := strings.Split(ansi.Strip(renderTable(rows, true, 80)), "\n")
 
 	require.Len(t, lines, 4)
 	assert.Equal(t, "Name    Value", lines[0])
 	assert.Equal(t, "------  -----", lines[1])
 	assert.Equal(t, "Foo     1", lines[2])
 	assert.Equal(t, "Longer  2", lines[3])
+}
+
+func TestRenderTable_NoSeparatorWithoutHeader(t *testing.T) {
+	t.Parallel()
+
+	rows := [][]string{
+		{"[1]", "First ref"},
+		{"[2]", "Second ref"},
+	}
+
+	lines := strings.Split(ansi.Strip(renderTable(rows, false, 80)), "\n")
+
+	require.Len(t, lines, 2)
+	assert.Equal(t, "[1]  First ref", lines[0])
+	assert.Equal(t, "[2]  Second ref", lines[1])
 }
 
 func TestRenderWithHeader_FullWidthLineClearsScrollbar(t *testing.T) {
