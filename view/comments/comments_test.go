@@ -81,16 +81,16 @@ func TestModeIndicator_UnicodeFallback(t *testing.T) {
 	m := newTestModel(t, testThread())
 
 	assert.Contains(t, m.modeIndicator(), "☰ ")
-	assert.NotContains(t, m.modeIndicator(), "☰  ", "unicode glyphs are single-cell and need no extra room")
+	assert.NotContains(t, m.modeIndicator(), "☰  ", "☰ spans two cells and needs a single space to reach the text column")
 
 	m.toggleMode()
-	assert.Contains(t, m.modeIndicator(), "+ ", "collapsed focused comment offers expanding")
+	assert.Contains(t, m.modeIndicator(), "+  ", "collapsed focused comment offers expanding, padded to the ☰ text column")
 
 	m.setCollapsed(false)
-	assert.Contains(t, m.modeIndicator(), "− ", "expanded focused comment offers collapsing")
+	assert.Contains(t, m.modeIndicator(), "−  ", "expanded focused comment offers collapsing, padded to the ☰ text column")
 
 	m.gotoBottom() // E, a leaf
-	assert.Contains(t, m.modeIndicator(), "… ", "a leaf has nothing to toggle")
+	assert.Contains(t, m.modeIndicator(), "…  ", "a leaf has nothing to toggle, padded to the ☰ text column")
 }
 
 func TestOpenInBrowser_ReturnsCmd(t *testing.T) {

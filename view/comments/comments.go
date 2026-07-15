@@ -301,11 +301,11 @@ func (m *Model) modeIndicator() string {
 		}
 	}
 
-	// Nerd font glyphs render wider than one cell, so they get extra room.
-	sep := " "
-	if m.rc.enableNerdFonts {
-		sep = "  "
-	}
+	// Pad the gap after the icon so the mode text starts at a fixed
+	// column when toggling modes: ☰ measures two cells, the navigate
+	// icons and nerd glyphs one (nerd glyphs render wider, spilling
+	// into the gap).
+	sep := strings.Repeat(" ", 3-xansi.StringWidth(icon))
 
 	label := "  " + icon + sep + style.Faint(text)
 
