@@ -13,6 +13,7 @@ const (
 	Ask
 	Show
 	Best
+	Jobs
 	Favorites
 )
 
@@ -23,8 +24,8 @@ const (
 	// MultiPage fetches PerPage * PageMultiplier IDs; used by the large pools
 	// (top, new, best) where paging deep is worthwhile.
 	MultiPage FetchPolicy = iota
-	// SinglePage fetches one page; the Ask and Show pools are only ~150-200 IDs,
-	// so fetching more would exceed the pool and waste requests.
+	// SinglePage fetches one page; the Ask, Show and Jobs pools are only
+	// ~150-200 IDs, so fetching more would exceed the pool and waste requests.
 	SinglePage
 )
 
@@ -43,6 +44,7 @@ var categoryInfo = [...]info{
 	Ask:    {name: "ask", endpoint: "askstories", fetchPolicy: SinglePage},
 	Show:   {name: "show", endpoint: "showstories", fetchPolicy: SinglePage},
 	Best:   {name: "best", endpoint: "beststories", fetchPolicy: MultiPage},
+	Jobs:   {name: "jobs", endpoint: "jobstories", fetchPolicy: SinglePage},
 	// favorites is served locally; it is never fetched, so fetchPolicy is unused.
 	Favorites: {name: "favorites", endpoint: "", fetchPolicy: SinglePage},
 }

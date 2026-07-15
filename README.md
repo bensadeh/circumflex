@@ -111,7 +111,7 @@ default. Pick which ones appear (and in what order) with the `--categories` flag
 clx --categories top,new,best
 ```
 
-Available categories are `top`, `best`, `new`, `ask`, `show` and `favorites`.
+Available categories are `top`, `best`, `new`, `ask`, `show`, `jobs` and `favorites`.
 
 ### Theme
 

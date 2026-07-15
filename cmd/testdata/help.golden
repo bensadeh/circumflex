@@ -12,7 +12,8 @@
   [36m-a[0m, [36m--article-width[0m [33mint[0m   set the article width in reader mode
                             [2m(default [31m80[0m[2m)[0m
       [36m--categories[0m [33mstring[0m   set the categories in the header
-                            (available: top, new, ask, show, best, favorites)
+                            (available: top, new, ask, show, best, jobs,
+                            favorites)
                             [2m(default [31m"top,best,ask,show,favorites"[0m[2m)[0m
   [36m-c[0m, [36m--comment-width[0m [33mint[0m   set the comment width
                             [2m(default [31m70[0m[2m)[0m
