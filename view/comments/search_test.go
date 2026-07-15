@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/view/message"
 
 	tea "charm.land/bubbletea/v2"
@@ -47,6 +48,20 @@ func commitCommentSearch(m *Model, query string) {
 	}
 
 	m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+}
+
+func TestCommentSearch_NerdFontIcons(t *testing.T) {
+	m := New(newThread(newComment(1, "alice", "top level alpha")), 0, 80, 1, true, 120, 200)
+
+	m.Update(tea.KeyPressMsg{Code: '/', Text: "/"})
+	assert.Contains(t, m.modeIndicator(), nerdfonts.Search+"  ", "the prompt shows the shared magnifier")
+
+	for _, r := range "alpha" {
+		m.Update(tea.KeyPressMsg{Code: r, Text: string(r)})
+	}
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	assert.Contains(t, m.modeIndicator(), nerdfonts.CommentSearchCommitted+"  ", "committing swaps in the comments' own done-searching glyph")
 }
 
 func TestCommentSearch_ExpandsAllOnPromptOpen(t *testing.T) {

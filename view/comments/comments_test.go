@@ -63,7 +63,7 @@ func newTestModel(t *testing.T, thread *comment.Thread) *Model {
 func TestModeIndicator_NerdFontIcons(t *testing.T) {
 	m := New(testThread(), 0, 80, 1, true, 120, 200)
 
-	assert.Contains(t, m.modeIndicator(), nerdfonts.Document+"  ", "read mode shows the reader-mode glyph, with extra room after the wide glyph")
+	assert.Contains(t, m.modeIndicator(), nerdfonts.CommentSection+"  ", "read mode shows the comment-section glyph, with extra room after the wide glyph")
 
 	// The thread starts fully collapsed, so the first focused comment
 	// offers expanding.

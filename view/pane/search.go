@@ -167,22 +167,33 @@ func (s *Scroller) JumpToFirstMatchFrom(line int) {
 }
 
 // SearchFooterLabel is the footer text for the search state: the live
-// prompt with a block cursor while typing, the committed query otherwise,
-// empty when no search is in play. Nerd fonts swap the faint / for a
-// magnifier at full strength, like the footer's other icons, with extra
-// room after the wide glyph.
+// prompt with a block cursor while typing, the committed query dimmed
+// otherwise, empty when no search is in play. Nerd fonts swap the faint /
+// for a magnifier at full strength, like the footer's other icons, with
+// extra room after the wide glyph; committing trades the magnifier for a
+// done-searching glyph, SearchCommittedIcon or the shared default.
 func (s *Scroller) SearchFooterLabel(enableNerdFonts bool) string {
 	prompt := style.Faint("/")
-	if enableNerdFonts {
-		prompt = nerdfonts.Search + "  "
-	}
 
 	if s.search.prompting {
+		if enableNerdFonts {
+			prompt = nerdfonts.Search + "  "
+		}
+
 		return prompt + s.search.input + ansi.Reverse + " " + ansi.ReverseOff
 	}
 
 	if s.search.query != "" {
-		return prompt + s.search.query
+		if enableNerdFonts {
+			icon := s.SearchCommittedIcon
+			if icon == "" {
+				icon = nerdfonts.SearchCommitted
+			}
+
+			prompt = icon + "  "
+		}
+
+		return prompt + style.Faint(s.search.query)
 	}
 
 	return ""

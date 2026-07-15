@@ -20,6 +20,10 @@ type Scroller struct {
 	Viewport     viewport.Model
 	ContentLines int // excludes bottom padding
 
+	// SearchCommittedIcon replaces the shared done-searching glyph in the
+	// footer's search label; empty keeps the default.
+	SearchCommittedIcon string
+
 	lines        []string
 	plainLines   []string
 	search       searchState

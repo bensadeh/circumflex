@@ -92,7 +92,7 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 	}
 
 	m := Model{
-		Scroller:      pane.Scroller{Viewport: vp},
+		Scroller:      pane.Scroller{Viewport: vp, SearchCommittedIcon: nerdfonts.CommentSearchCommitted},
 		keymap:        km,
 		mode:          modeRead,
 		flat:          flat,
@@ -277,12 +277,12 @@ func (m *Model) modeIndicator() string {
 
 	switch m.mode {
 	case modeRead:
-		icon, text = "☰", "read"
+		icon, text = "☰", "Comment Section"
 		if m.rc.enableNerdFonts {
-			icon = nerdfonts.Document
+			icon = nerdfonts.CommentSection
 		}
 	case modeNavigate:
-		text = " nav"
+		text = "Navigate"
 
 		// Tree-view convention: + on a collapsed comment (expandable),
 		// − on an expanded one (collapsible), … / draft outline on a leaf.

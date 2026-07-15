@@ -6,6 +6,7 @@ import (
 
 	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/nerdfonts"
+	"github.com/bensadeh/circumflex/style"
 
 	tea "charm.land/bubbletea/v2"
 	"github.com/stretchr/testify/assert"
@@ -259,6 +260,24 @@ func TestSearchFooterLabel_PromptShowsCursor(t *testing.T) {
 
 	nerd := s.SearchFooterLabel(true)
 	assert.True(t, strings.HasPrefix(nerd, nerdfonts.Search+"  "), "nerd fonts swap the / for a magnifier")
+}
+
+func TestSearchFooterLabel_CommittedDimsQuery(t *testing.T) {
+	t.Parallel()
+
+	s := &Scroller{Viewport: NewViewport(80, 10)}
+
+	s.StartSearchPrompt()
+	typeKeys(s, "que")
+	s.HandleSearchPromptKey(tea.KeyPressMsg{Code: tea.KeyEnter})
+
+	label := s.SearchFooterLabel(false)
+	assert.Equal(t, "/que", ansi.Strip(label))
+	assert.Contains(t, label, style.Faint("que"), "the committed query dims")
+
+	nerd := s.SearchFooterLabel(true)
+	assert.True(t, strings.HasPrefix(nerd, nerdfonts.SearchCommitted+"  "), "committing swaps in the done-searching glyph")
+	assert.Contains(t, nerd, style.Faint("que"))
 }
 
 func TestDecorateView_OverridesAndWindow(t *testing.T) {
