@@ -48,25 +48,28 @@ func statLabels(d Data) []string {
 }
 
 // scoreLabel leads with the arrow: a rule segment follows the score, so the
-// label reads icon-then-value like the byline beside it.
+// label reads icon-then-value like the byline beside it. The color sits on
+// the glyph when there is one and on the number only when the word has to
+// carry the meaning alone.
 func scoreLabel(points int, enableNerdFonts bool) string {
 	score := strconv.Itoa(points)
 
 	if enableNerdFonts {
-		return style.MetaScore(fmt.Sprintf("%s %s", nerdfonts.Score, score))
+		return style.MetaScore(nerdfonts.Score) + " " + score
 	}
 
 	return fmt.Sprintf("%s points", style.MetaScore(score))
 }
 
 // commentsLabel is the comment tally: total comments and, in parentheses,
-// how many arrived since the last visit. The count takes the meta comments
-// color the way the score takes its own, the new-comment count the meta
-// new-comments color; the words and parentheses around them stay plain.
+// how many arrived since the last visit. The meta comments color sits on the
+// glyph, or on the number when the word has to carry the meaning alone; the
+// new-comment count takes the meta new-comments color either way, with the
+// parentheses around it plain.
 func commentsLabel(comments, newComments int, enableNerdFonts bool) string {
 	label := style.MetaComments(strconv.Itoa(comments)) + " comments"
 	if enableNerdFonts {
-		label = style.MetaComments(fmt.Sprintf("%s %d", nerdfonts.Comment, comments))
+		label = style.MetaComments(nerdfonts.Comment) + " " + strconv.Itoa(comments)
 	}
 
 	switch {

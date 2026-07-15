@@ -104,7 +104,7 @@ func frameWidth(width int) int {
 // openingRule is the frame's top border, doubling as the block's header row:
 // the title sits in the rule the way a help-panel title does, and the label
 // group — comment count, then score — closes the rule against the right
-// corner, a short rule segment between the labels. When the rule can't carry
+// corner, a single rule cell between the labels. When the rule can't carry
 // everything, the labels shed from the left, the count before the score, and
 // the title outlasts them both — the frame never gives up its own corners.
 func openingRule(title string, labels []string, frameWidth int) string {
@@ -117,7 +117,7 @@ func openingRule(title string, labels []string, frameWidth int) string {
 	labels = slices.DeleteFunc(slices.Clone(labels), func(l string) bool { return l == "" })
 
 	for ; len(labels) > 0; labels = labels[1:] {
-		group := strings.Join(labels, style.Faint(" "+rule(frameLead)+" "))
+		group := strings.Join(labels, style.Faint(" "+rule(1)+" "))
 		fill := frameWidth - titleCells - lipgloss.Width(group) - frameLead - 2
 
 		if fill < 1 {
