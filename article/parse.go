@@ -113,14 +113,7 @@ func (p *domParser) walk(n *html.Node) {
 		}
 
 	case atom.H1, atom.H2, atom.H3, atom.H4, atom.H5, atom.H6:
-		p.flushInline()
-
-		level := int(n.Data[1] - '0')
-		text := strings.TrimSpace(spanText(collectInline(n, formatPlain, nil)))
-
-		if text != "" {
-			p.blocks = append(p.blocks, block{kind: blockHeading, level: level, text: text})
-		}
+		p.emitHeading(n, int(n.Data[1]-'0'))
 
 	case atom.Ul, atom.Ol:
 		p.flushInline()
@@ -175,6 +168,12 @@ func (p *domParser) walk(n *html.Node) {
 		p.flushInline()
 
 	default:
+		if isBareHeading(n) {
+			p.emitHeading(n, 2)
+
+			return
+		}
+
 		// Inline and custom elements (e.g. GitHub's table wrappers) land
 		// here: treat them as containers when they hold block content, else
 		// as inline flow so formatting tags keep their styling.
@@ -208,6 +207,10 @@ func hasBlockDescendant(n *html.Node) bool {
 			continue
 		}
 
+		if isBareHeading(c) {
+			return true
+		}
+
 		switch nodeAtom(c) {
 		case atom.P, atom.Div, atom.Ul, atom.Ol, atom.Table, atom.Pre, atom.Blockquote,
 			atom.H1, atom.H2, atom.H3, atom.H4, atom.H5, atom.H6, atom.Figure, atom.Hr,
@@ -217,6 +220,21 @@ func hasBlockDescendant(n *html.Node) bool {
 	}
 
 	return false
+}
+
+// isBareHeading matches the nonstandard <h> element, XHTML2's heading that
+// never made it into HTML; hand-written pages still use it as a section
+// heading, styled by their own CSS.
+func isBareHeading(n *html.Node) bool {
+	return n.Type == html.ElementNode && n.DataAtom == 0 && n.Data == "h"
+}
+
+func (p *domParser) emitHeading(n *html.Node, level int) {
+	p.flushInline()
+
+	if text := strings.TrimSpace(spanText(collectInline(n, formatPlain, nil))); text != "" {
+		p.blocks = append(p.blocks, block{kind: blockHeading, level: level, text: text})
+	}
 }
 
 func (p *domParser) flushInline() {

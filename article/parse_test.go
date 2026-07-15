@@ -209,6 +209,20 @@ func TestParseBlocks_Table(t *testing.T) {
 	assert.True(t, blocks[1].hasHeader)
 }
 
+func TestParseBlocks_BareHTagIsHeading(t *testing.T) {
+	t.Parallel()
+
+	// Nonstandard <h> (XHTML2's heading) reaches the walker as an unknown
+	// element; it parses as a level-2 heading, e.g. fabiensanglard.net.
+	blocks := blocksFromHTML(t, `<h1>Title</h1><h>Motorola Envoy</h><p>after</p>`)
+
+	require.Len(t, blocks, 3)
+	assert.Equal(t, blockHeading, blocks[1].kind)
+	assert.Equal(t, 2, blocks[1].level)
+	assert.Equal(t, "Motorola Envoy", blocks[1].text)
+	assert.Equal(t, "after", blocks[2].plainText())
+}
+
 func TestParseBlocks_QuirksModeTableInsideParagraph(t *testing.T) {
 	t.Parallel()
 
