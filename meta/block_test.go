@@ -20,10 +20,10 @@ import (
 //  2. Blocks carry no left margin. The hosting view supplies the margin, so
 //     the block can never disagree with the text column it heads about where
 //     the margin ends.
-//  3. Every row spans exactly width-rightInset cells: the frame's opening
-//     rule, its body rows, and its closing rule all reach that edge and no
-//     further. The right edge depends on nothing but the width — a change to
-//     the frame, the inset, or the hosting margins that pushes a row past it
+//  3. Every row spans exactly width cells: the frame's opening rule, its
+//     body rows, and its closing rule all reach that edge and no further —
+//     the same right edge the help panels drawn over the column share. A
+//     change to the frame or the hosting margins that pushes a row past it
 //     fails here.
 //
 // Any block redesign has to keep this sweep green.
@@ -78,13 +78,13 @@ func TestBlockGeometryContract(t *testing.T) {
 				require.Len(t, skeleton, len(rendered),
 					"%s: skeleton height must match render", label)
 
-				edge := width - rightInset
+				edge := width
 
 				opening := "╭" + strings.Repeat("─", edge-2) + "╮"
 				closing := "╰" + strings.Repeat("─", edge-2) + "╯"
 
 				assert.Equal(t, closing, xansi.Strip(rendered[len(rendered)-1]),
-					"%s: the closing rule must be the last row, spanning to the right inset", label)
+					"%s: the closing rule must be the last row, spanning the full width", label)
 				assert.Equal(t, closing, xansi.Strip(skeleton[len(skeleton)-1]),
 					"%s: the skeleton must close with the same rule", label)
 				assert.Equal(t, opening, xansi.Strip(skeleton[0]),
@@ -149,7 +149,7 @@ func TestOpeningRuleCarriesBylineAndStats(t *testing.T) {
 	assert.NotContains(t, tight, "points", "the score goes before the byline: %q", tight)
 
 	narrow := top(20)
-	assert.Equal(t, "╭"+strings.Repeat("─", 17)+"╮", narrow,
+	assert.Equal(t, "╭"+strings.Repeat("─", 18)+"╮", narrow,
 		"a rule too narrow for any text stays plain")
 }
 
@@ -206,7 +206,7 @@ func TestURLTruncatesWithEllipsis(t *testing.T) {
 
 	assert.True(t, strings.HasSuffix(urlRow, "… │"),
 		"truncated URL must end in a single ellipsis against the frame, got %q", urlRow)
-	assert.Equal(t, 30-rightInset, xansi.StringWidth(urlRow), "the URL row must fill the frame exactly")
+	assert.Equal(t, 30, xansi.StringWidth(urlRow), "the URL row must fill the frame exactly")
 }
 
 func TestSkeletonIsEmptyAndDimmed(t *testing.T) {

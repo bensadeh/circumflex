@@ -3,6 +3,7 @@ package help
 import (
 	"strings"
 
+	"github.com/bensadeh/circumflex/frame"
 	"github.com/bensadeh/circumflex/style"
 
 	"charm.land/lipgloss/v2"
@@ -11,8 +12,6 @@ import (
 const (
 	cellGap          = 4
 	keyDescGap       = 2
-	panelPadding     = 1
-	panelChromeWidth = 2*panelPadding + 2 // 2 borders + horizontal padding
 	singleColumnMin  = 60
 	minPanelWidth    = 24
 	sectionSeparator = "\n\n"
@@ -106,7 +105,7 @@ func (k *keyList) maxKeyWidth() int {
 }
 
 func renderPanel(s *section, panelWidth, keyWidth int) string {
-	innerWidth := max(panelWidth-panelChromeWidth, 1)
+	innerWidth := max(frame.ContentWidth(panelWidth), 1)
 
 	grids := make([]string, 0, len(s.groups))
 
@@ -118,64 +117,18 @@ func renderPanel(s *section, panelWidth, keyWidth int) string {
 		grids = append(grids, renderGrid(g, innerWidth, keyWidth))
 	}
 
-	body := strings.Join(grids, "\n")
-
-	return wrapPanel(s.title, body, panelWidth, innerWidth)
-}
-
-func wrapPanel(title, body string, panelWidth, innerWidth int) string {
-	faint := lipgloss.NewStyle().Faint(true)
-	titleStyle := lipgloss.NewStyle().Bold(true).Foreground(style.HeaderTertiary())
-
-	dashCount := max(panelWidth-2, 0)
-
-	var b strings.Builder
-
-	b.WriteString(panelTop(title, panelWidth, faint, titleStyle))
-	b.WriteString("\n")
-
-	for _, line := range bodyLines(body) {
-		pad := max(innerWidth-lipgloss.Width(line), 0)
-
-		b.WriteString(faint.Render("│"))
-		b.WriteString(strings.Repeat(" ", panelPadding))
-		b.WriteString(line + strings.Repeat(" ", pad))
-		b.WriteString(strings.Repeat(" ", panelPadding))
-		b.WriteString(faint.Render("│"))
-		b.WriteString("\n")
+	title := s.title
+	if title != "" {
+		title = lipgloss.NewStyle().Bold(true).Foreground(style.HeaderTertiary()).Render(title)
 	}
 
-	b.WriteString(faint.Render("╰" + strings.Repeat("─", dashCount) + "╯"))
+	rows := []string{frame.OpeningRule(title, nil, panelWidth)}
 
-	return b.String()
-}
-
-func panelTop(title string, panelWidth int, faint, titleStyle lipgloss.Style) string {
-	dashCount := max(panelWidth-2, 0)
-	plainBorder := func() string {
-		return faint.Render("╭" + strings.Repeat("─", dashCount) + "╮")
+	for _, line := range bodyLines(strings.Join(grids, "\n")) {
+		rows = append(rows, frame.Row(line, panelWidth))
 	}
 
-	if title == "" {
-		return plainBorder()
-	}
-
-	const (
-		leadDashes     = 2
-		gapAroundTitle = 2 // one space each side of the title
-		corners        = 2
-	)
-
-	titleWidth := lipgloss.Width(title)
-	if titleWidth+leadDashes+gapAroundTitle+corners > panelWidth {
-		return plainBorder()
-	}
-
-	rightDashes := panelWidth - corners - leadDashes - gapAroundTitle - titleWidth
-
-	return faint.Render("╭"+strings.Repeat("─", leadDashes)+" ") +
-		titleStyle.Render(title) +
-		faint.Render(" "+strings.Repeat("─", rightDashes)+"╮")
+	return frame.Join(append(rows, frame.ClosingRule(panelWidth)), panelWidth)
 }
 
 func bodyLines(body string) []string {

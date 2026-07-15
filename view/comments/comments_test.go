@@ -683,7 +683,7 @@ func TestMetaBlockAlignsWithCommentColumn(t *testing.T) {
 	assert.Equal(t, layout.CommentSectionLeftMargin, linkCol, "the URL row must open at the comment margin")
 	assert.Equal(t, layout.CommentSectionLeftMargin, ruleCol, "the closing rule must open at the comment margin")
 	assert.Equal(t, layout.CommentSectionLeftMargin, authorCol, "top-level authors must start at the comment margin")
-	assert.Equal(t, sepWidth-1, blockEdge, "the block must end one cell inside the separator's right edge")
+	assert.Equal(t, sepWidth, blockEdge, "the block must share the separator's right edge")
 }
 
 // Search match cells are computed on the plain header while focusOverrides
