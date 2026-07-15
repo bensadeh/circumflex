@@ -121,11 +121,11 @@ func extractReadable(body []byte, parsedURL *nurl.URL) (*html.Node, string, erro
 // isPlainText sniffs the body as well as the header: some servers label HTML
 // as text/plain, and rendering markup verbatim would be worse than reflowing.
 func isPlainText(contentType string, body []byte) bool {
-	if !strings.HasPrefix(contentType, "text/plain") {
-		return false
-	}
+	return strings.HasPrefix(contentType, "text/plain") && !looksLikeHTML(body)
+}
 
+func looksLikeHTML(body []byte) bool {
 	head := strings.ToLower(string(body[:min(len(body), 256)]))
 
-	return !strings.Contains(head, "<!doctype html") && !strings.Contains(head, "<html")
+	return strings.Contains(head, "<!doctype html") || strings.Contains(head, "<html")
 }

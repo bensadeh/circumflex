@@ -12,6 +12,7 @@
 - arXiv links now open the full paper instead of the abstract page, with equations converted to Unicode math
 - Add support for displaying AVIF images
 - Fix Mermaid diagrams not rendering
+- Markdown pages are now rendered and fully formatted
 
 **Comment Section**
 

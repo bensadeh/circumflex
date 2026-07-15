@@ -43,9 +43,17 @@ func Parse(ctx context.Context, url string) (*Parsed, error) {
 		title  string
 	)
 
-	if isPlainText(contentType, body) {
+	switch {
+	case isMarkdown(contentType, parsedURL, body):
+		blocks, title, err = parseMarkdownBlocks(body, parsedURL)
+		if err != nil {
+			return nil, err
+		}
+
+	case isPlainText(contentType, body):
 		blocks = parseTextBlocks(string(body))
-	} else {
+
+	default:
 		node, pageTitle, err := extractReadable(body, parsedURL)
 		if err != nil {
 			return nil, err
