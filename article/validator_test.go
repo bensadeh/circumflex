@@ -20,6 +20,20 @@ func TestValidateURL(t *testing.T) {
 	require.Error(t, ValidateURL("not a url"))
 }
 
+func TestValidate_UnsupportedDomain(t *testing.T) {
+	t.Parallel()
+
+	var domainErr *UnsupportedDomainError
+
+	require.ErrorAs(t, Validate("Some Story", "ft.com"), &domainErr)
+	assert.Equal(t, "ft.com", domainErr.Domain)
+	assert.Equal(t, "ft.com does not support articles in reader mode", domainErr.Error())
+
+	require.ErrorAs(t, ValidateURL("https://www.ft.com/content/1b8c9d52"), &domainErr,
+		"www prefix is stripped before the blocklist and the message")
+	assert.Equal(t, "ft.com", domainErr.Domain)
+}
+
 func TestValidateURL_NonParseableExtensions(t *testing.T) {
 	t.Parallel()
 

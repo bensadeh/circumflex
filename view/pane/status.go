@@ -7,6 +7,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/bensadeh/circumflex/article"
+
 	xansi "github.com/charmbracelet/x/ansi"
 
 	"charm.land/lipgloss/v2"
@@ -38,6 +40,13 @@ func isTimeout(err error) bool {
 func FriendlyError(err error) string {
 	if isTimeout(err) {
 		return "Timed out — check your connection and try again"
+	}
+
+	// Returned as-is: the generic first-letter uppercasing below would
+	// mangle the leading domain ("Ft.com").
+	var domainErr *article.UnsupportedDomainError
+	if errors.As(err, &domainErr) {
+		return strings.Replace(domainErr.Error(), domainErr.Domain, redText.Render(domainErr.Domain), 1)
 	}
 
 	errStr := err.Error()

@@ -7,6 +7,15 @@ import (
 	"strings"
 )
 
+// UnsupportedDomainError is typed so the status bar can highlight the domain.
+type UnsupportedDomainError struct {
+	Domain string
+}
+
+func (e *UnsupportedDomainError) Error() string {
+	return e.Domain + " does not support articles in reader mode"
+}
+
 func Validate(title, domain string) error {
 	if strings.Contains(title, "[video]") {
 		return errors.New("reader mode not supported for videos")
@@ -21,7 +30,7 @@ func Validate(title, domain string) error {
 	}
 
 	if isInvalidDomain(domain) {
-		return errors.New("reader mode not supported for this domain")
+		return &UnsupportedDomainError{Domain: domain}
 	}
 
 	if domain == "" {
@@ -41,8 +50,8 @@ func ValidateURL(rawURL string) error {
 		return errors.New("not a readable link")
 	}
 
-	if isInvalidDomain(strings.TrimPrefix(u.Hostname(), "www.")) {
-		return errors.New("reader mode not supported for this domain")
+	if domain := strings.TrimPrefix(u.Hostname(), "www."); isInvalidDomain(domain) {
+		return &UnsupportedDomainError{Domain: domain}
 	}
 
 	// A link with a known full-text mirror (arXiv /pdf) is fetched as HTML,
@@ -72,6 +81,7 @@ func isInvalidDomain(domain string) bool {
 		"chrome.google.com",
 		"drive.google.com",
 		"facebook.com",
+		"ft.com",
 		"lttlabs.com",
 		"marketplace.atlassian.com",
 		"old.reddit.com",

@@ -10,6 +10,8 @@ import (
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/view/message"
 
+	xansi "github.com/charmbracelet/x/ansi"
+
 	tea "charm.land/bubbletea/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -270,6 +272,14 @@ func TestSetLinesCountsAndPads(t *testing.T) {
 	assert.Equal(t, 3, s.ContentLines)
 	assert.Equal(t, 13, s.Viewport.TotalLineCount(),
 		"one viewport height of padding lets jump targets scroll to the top")
+}
+
+// The domain-first message must skip the generic first-letter uppercasing —
+// "Ft.com" — and keep the domain intact under its highlight styling.
+func TestFriendlyError_UnsupportedDomain(t *testing.T) {
+	msg := FriendlyError(&article.UnsupportedDomainError{Domain: "ft.com"})
+
+	assert.Equal(t, "ft.com does not support articles in reader mode", xansi.Strip(msg))
 }
 
 func TestPlainLinesStripsStyling(t *testing.T) {
