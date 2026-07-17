@@ -22,7 +22,7 @@ var (
 	commentWidth       int
 	articleWidth       int
 	indent             int
-	disableHistory     bool
+	noHistory          bool
 	debugMode          bool
 	debugFallible      bool
 	nerdFontFlag       bool
@@ -94,7 +94,7 @@ func Root() *cobra.Command {
 }
 
 func configureFlags(rootCmd *cobra.Command) {
-	rootCmd.PersistentFlags().BoolVarP(&disableHistory, "disable-history", "d", false,
+	rootCmd.PersistentFlags().BoolVarP(&noHistory, "no-history", "d", false,
 		"disable marking stories as read")
 	rootCmd.PersistentFlags().IntVarP(&commentWidth, "comment-width", "c", settings.Default().CommentWidth,
 		"set the comment width")
@@ -104,8 +104,8 @@ func configureFlags(rootCmd *cobra.Command) {
 		"set the comment section indent size")
 	rootCmd.PersistentFlags().BoolVarP(&nerdFontFlag, "nerdfonts", "n", false,
 		"enable or disable Nerd Fonts")
-	rootCmd.PersistentFlags().BoolVar(&enableImages, "reader-mode-images", envImagesEnabled(),
-		"show article images in reader mode\n(opt-in; also set with CLX_READER_MODE_IMAGES=1)")
+	rootCmd.PersistentFlags().BoolVar(&enableImages, "images", false,
+		"show article images in reader mode")
 	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", settings.Default().Categories,
 		"set the categories in the header\n(available: "+strings.Join(categories.AvailableNames(), ", ")+")")
 	rootCmd.PersistentFlags().IntVar(&pageMultiplier, "pages", settings.Default().PageMultiplier,
@@ -153,8 +153,8 @@ func getConfig() (*settings.Config, error) {
 		config.Indent = settings.ClampIndent(indent)
 	}
 
-	if flagChanged("disable-history") {
-		config.DoNotMarkSubmissionsAsRead = disableHistory
+	if flagChanged("no-history") {
+		config.DoNotMarkSubmissionsAsRead = noHistory
 	}
 
 	if flagChanged("categories") {
@@ -172,11 +172,8 @@ func getConfig() (*settings.Config, error) {
 		config.EnableNerdFonts = isGhostty()
 	}
 
-	switch {
-	case flagChanged("reader-mode-images"):
+	if flagChanged("images") {
 		config.EnableImages = enableImages
-	case fileConfig.Images == nil:
-		config.EnableImages = envImagesEnabled()
 	}
 
 	if flagChanged("wide-view") {
@@ -207,15 +204,6 @@ func parseID(arg string) (int, error) {
 
 func isGhostty() bool {
 	return os.Getenv("TERM_PROGRAM") == "ghostty"
-}
-
-// envImagesEnabled reads CLX_READER_MODE_IMAGES as the default for
-// --reader-mode-images, so images can be turned on globally without passing the
-// flag every time.
-func envImagesEnabled() bool {
-	enabled, err := strconv.ParseBool(os.Getenv("CLX_READER_MODE_IMAGES"))
-
-	return err == nil && enabled
 }
 
 func newService() hn.Service {

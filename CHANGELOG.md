@@ -2,6 +2,11 @@
 
 ## 5.0 (Unreleased)
 
+**Breaking Changes**
+
+- Renamed `--disable-history` to `--no-history`
+- Renamed `--reader-mode-images` to `--images`, replacing `CLX_READER_MODE_IMAGES`
+
 **New Features**
 
 - Added Search to Stories, Comment Section and Reader Mode

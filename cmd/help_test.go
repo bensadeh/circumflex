@@ -16,8 +16,6 @@ var update = flag.Bool("update", false, "update golden files")
 // The help output is assembled from pflag data with hand-rolled alignment,
 // coloring, wrapping and default rendering; the golden pins all of it.
 func TestHelp_MatchesGolden(t *testing.T) {
-	t.Setenv("CLX_READER_MODE_IMAGES", "")
-
 	var buf bytes.Buffer
 
 	root := Root()

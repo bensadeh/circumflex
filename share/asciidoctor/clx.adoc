@@ -175,7 +175,7 @@ _n_, _N_::
 Jump to next/previous section.
 
 _h_, _l_::
-Hide/show article images. See *--reader-mode-images*.
+Hide/show article images. See *--images*.
 
 _o_::
 Open link to article in browser.
@@ -209,8 +209,11 @@ Default: "top,best,ask,show,favorites".
 *-c* _n_, *--comment-width*=_n_::
 Set the comment width to _n_ columns.
 
-*-d, --disable-history*::
-Disable marking stories as read.
+*--images*::
+Show article images in Reader Mode as blocks of colored text (Unicode half-blocks) instead of a text placeholder.
+Off by default; enable it per-run with this flag or persistently in _config.toml_.
+Images are scaled to their size on the page, centered, and look best in a terminal with truecolor support.
+JPEG, PNG, GIF, WebP and SVG images are drawn; other formats keep the placeholder.
 
 *--indent*=_n_::
 Set the comment section indent size to _n_ spaces per nesting level.
@@ -221,18 +224,15 @@ Default: 1.
 Enable Nerd Fonts icons as decorators for some elements (requires a Nerd Font-patched font).
 Auto-enabled for Ghostty, which embeds Nerd Fonts.
 
+*-d, --no-history*::
+Disable marking stories as read.
+
 *--pages*=_n_::
 Set the number of pages to fetch per category, between 1 and 5.
 Higher values fetch more stories but increase load time.
 Only applies to top, new and best.
 Ask and show always fetch one page because their story pools are small (~150-200 stories).
 Default: 3.
-
-*--reader-mode-images*::
-Show article images in Reader Mode as blocks of colored text (Unicode half-blocks) instead of a text placeholder.
-Off by default; enable it per-run with this flag or globally with *CLX_READER_MODE_IMAGES*.
-Images are scaled to their size on the page, centered, and look best in a terminal with truecolor support.
-JPEG, PNG, GIF, WebP and SVG images are drawn; other formats keep the placeholder.
 
 *-v, --version*::
 Show the current version of *circumflex*.
@@ -273,7 +273,7 @@ See *FILES*.
 Visited stories are dimmed in the list.
 When returning to a comment section, comments posted since your last visit are highlighted with a new-comment indicator.
 
-Use *clx clear* to reset history, or *--disable-history* to turn tracking off entirely.
+Use *clx clear* to reset history, or *--no-history* to turn tracking off entirely.
 
 == Favorites
 
@@ -293,9 +293,6 @@ Command used to open URLs (article links and comment pages).
 The URL is appended as the final argument.
 For example, `CLX_BROWSER="firefox --new-tab"` opens links in a new Firefox tab.
 When unset, the platform default opener is used (*open* on macOS, *xdg-open* on Linux, *rundll32* on Windows).
-
-*CLX_READER_MODE_IMAGES*::
-Set to *1* (or *true*) to show article images in Reader Mode by default, as if *--reader-mode-images* were passed.
 
 == Files
 

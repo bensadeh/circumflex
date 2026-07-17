@@ -95,7 +95,7 @@ Favorites are stored in `~/.config/circumflex/favorites.json` and pretty-printed
 
 Visited submissions are marked as read, and comments added since your last visit are highlighted.
 
-History is stored in `~/.cache/circumflex/history.json`. Disable tracking with `-d`/`--disable-history`, or clear it
+History is stored in `~/.cache/circumflex/history.json`. Disable tracking with `-d`/`--no-history`, or clear it
 with:
 
 ```console

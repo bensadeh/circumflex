@@ -4,10 +4,10 @@
 .\" Generator: Asciidoctor 2.0.26
 .\"      Date: 2026-07-17
 .\"    Manual: circumflex
-.\"    Source: circumflex 4.6-dev
+.\"    Source: circumflex 5.0-dev
 .\"  Language: English
 .\"
-.TH "CLX" "1" "2026-07-17" "circumflex 4.6\-dev" "circumflex"
+.TH "CLX" "1" "2026-07-17" "circumflex 5.0\-dev" "circumflex"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -269,7 +269,7 @@ Jump to next/previous section.
 .sp
 \fIh\fP, \fIl\fP
 .RS 4
-Hide/show article images. See \fB\-\-reader\-mode\-images\fP.
+Hide/show article images. See \fB\-\-images\fP.
 .RE
 .sp
 \fIo\fP
@@ -319,9 +319,12 @@ Default: "top,best,ask,show,favorites".
 Set the comment width to \fIn\fP columns.
 .RE
 .sp
-\fB\-d, \-\-disable\-history\fP
+\fB\-\-images\fP
 .RS 4
-Disable marking stories as read.
+Show article images in Reader Mode as blocks of colored text (Unicode half\-blocks) instead of a text placeholder.
+Off by default; enable it per\-run with this flag or persistently in \fIconfig.toml\fP.
+Images are scaled to their size on the page, centered, and look best in a terminal with truecolor support.
+JPEG, PNG, GIF, WebP and SVG images are drawn; other formats keep the placeholder.
 .RE
 .sp
 \fB\-\-indent\fP=\fIn\fP
@@ -337,6 +340,11 @@ Enable Nerd Fonts icons as decorators for some elements (requires a Nerd Font\-p
 Auto\-enabled for Ghostty, which embeds Nerd Fonts.
 .RE
 .sp
+\fB\-d, \-\-no\-history\fP
+.RS 4
+Disable marking stories as read.
+.RE
+.sp
 \fB\-\-pages\fP=\fIn\fP
 .RS 4
 Set the number of pages to fetch per category, between 1 and 5.
@@ -344,14 +352,6 @@ Higher values fetch more stories but increase load time.
 Only applies to top, new and best.
 Ask and show always fetch one page because their story pools are small (~150\-200 stories).
 Default: 3.
-.RE
-.sp
-\fB\-\-reader\-mode\-images\fP
-.RS 4
-Show article images in Reader Mode as blocks of colored text (Unicode half\-blocks) instead of a text placeholder.
-Off by default; enable it per\-run with this flag or globally with \fBCLX_READER_MODE_IMAGES\fP.
-Images are scaled to their size on the page, centered, and look best in a terminal with truecolor support.
-JPEG, PNG, GIF, WebP and SVG images are drawn; other formats keep the placeholder.
 .RE
 .sp
 \fB\-v, \-\-version\fP
@@ -409,7 +409,7 @@ See \fBFILES\fP.
 Visited stories are dimmed in the list.
 When returning to a comment section, comments posted since your last visit are highlighted with a new\-comment indicator.
 .sp
-Use \fBclx clear\fP to reset history, or \fB\-\-disable\-history\fP to turn tracking off entirely.
+Use \fBclx clear\fP to reset history, or \fB\-\-no\-history\fP to turn tracking off entirely.
 .SH "FAVORITES"
 .sp
 Press \fIf\fP to add the currently highlighted submission to your list of favorites.
@@ -430,11 +430,6 @@ Command used to open URLs (article links and comment pages).
 The URL is appended as the final argument.
 For example, \f(CRCLX_BROWSER="firefox \-\-new\-tab"\fP opens links in a new Firefox tab.
 When unset, the platform default opener is used (\fBopen\fP on macOS, \fBxdg\-open\fP on Linux, \fBrundll32\fP on Windows).
-.RE
-.sp
-\fBCLX_READER_MODE_IMAGES\fP
-.RS 4
-Set to \fB1\fP (or \fBtrue\fP) to show article images in Reader Mode by default, as if \fB\-\-reader\-mode\-images\fP were passed.
 .RE
 .SH "FILES"
 .sp
