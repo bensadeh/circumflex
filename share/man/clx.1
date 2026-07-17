@@ -2,12 +2,12 @@
 .\"     Title: clx
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.26
-.\"      Date: 2026-07-11
+.\"      Date: 2026-07-17
 .\"    Manual: circumflex
-.\"    Source: circumflex 4.5
+.\"    Source: circumflex 4.6-dev
 .\"  Language: English
 .\"
-.TH "CLX" "1" "2026-07-11" "circumflex 4.5" "circumflex"
+.TH "CLX" "1" "2026-07-17" "circumflex 4.6\-dev" "circumflex"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -298,6 +298,8 @@ Go back.
 .RE
 .SH "OPTIONS"
 .sp
+All options can also be set persistently in \fIconfig.toml\fP (see \fBFILES\fP); flags take precedence over the config file.
+.sp
 \fB\-a\fP \fIn\fP, \fB\-\-article\-width\fP=\fIn\fP
 .RS 4
 Set the article width in Reader Mode to \fIn\fP columns.
@@ -390,6 +392,12 @@ Open a URL directly in Reader Mode.
 Clear the history of visited items.
 .RE
 .sp
+\fBclx default\-config\fP
+.RS 4
+Generate a starter config file in the config directory.
+See \fBFILES\fP.
+.RE
+.sp
 \fBclx default\-theme\fP
 .RS 4
 Generate a starter theme file in the config directory.
@@ -429,6 +437,13 @@ When unset, the platform default opener is used (\fBopen\fP on macOS, \fBxdg\-op
 Set to \fB1\fP (or \fBtrue\fP) to show article images in Reader Mode by default, as if \fB\-\-reader\-mode\-images\fP were passed.
 .RE
 .SH "FILES"
+.sp
+\fI$XDG_CONFIG_HOME/circumflex/config.toml\fP
+.RS 4
+TOML configuration holding persistent defaults for the command\-line options.
+Run \fBclx default\-config\fP to write a starter file listing every key with its default value.
+Flags override values set here.
+.RE
 .sp
 \fI$XDG_CONFIG_HOME/circumflex/theme.toml\fP
 .RS 4

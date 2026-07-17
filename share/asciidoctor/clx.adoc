@@ -194,6 +194,8 @@ Go back.
 
 == Options
 
+All options can also be set persistently in _config.toml_ (see *FILES*); flags take precedence over the config file.
+
 *-a* _n_, *--article-width*=_n_::
 Set the article width in Reader Mode to _n_ columns.
 
@@ -257,6 +259,10 @@ Open a URL directly in Reader Mode.
 *clx clear*::
 Clear the history of visited items.
 
+*clx default-config*::
+Generate a starter config file in the config directory.
+See *FILES*.
+
 *clx default-theme*::
 Generate a starter theme file in the config directory.
 See *FILES*.
@@ -292,6 +298,11 @@ When unset, the platform default opener is used (*open* on macOS, *xdg-open* on 
 Set to *1* (or *true*) to show article images in Reader Mode by default, as if *--reader-mode-images* were passed.
 
 == Files
+
+_$XDG_CONFIG_HOME/circumflex/config.toml_::
+TOML configuration holding persistent defaults for the command-line options.
+Run *clx default-config* to write a starter file listing every key with its default value.
+Flags override values set here.
 
 _$XDG_CONFIG_HOME/circumflex/theme.toml_::
 TOML color theme.

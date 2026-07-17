@@ -26,11 +26,15 @@ var (
 	debugMode          bool
 	debugFallible      bool
 	nerdFontFlag       bool
-	nerdFontChanged    bool
 	enableImages       bool
 	pageMultiplier     int
 	selectedCategories string
 	wideView           string
+
+	// currentCmd is the command being executed, captured so getConfig can
+	// tell explicitly-passed flags (which override config.toml) from ones
+	// still at their default.
+	currentCmd *cobra.Command
 )
 
 func Root() *cobra.Command {
@@ -40,7 +44,7 @@ func Root() *cobra.Command {
 		Version:      version.Version,
 		SilenceUsage: true,
 		PersistentPreRun: func(cmd *cobra.Command, _ []string) {
-			nerdFontChanged = cmd.Flags().Changed("nerdfonts")
+			currentCmd = cmd
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			config, err := getConfig()
@@ -50,7 +54,7 @@ func Root() *cobra.Command {
 
 			style.SetTheme(config.Theme)
 
-			cat, err := categories.New(selectedCategories)
+			cat, err := categories.New(config.Categories)
 			if err != nil {
 				return err
 			}
@@ -71,6 +75,7 @@ func Root() *cobra.Command {
 	rootCmd.AddCommand(articleCmd())
 	rootCmd.AddCommand(urlCmd())
 	rootCmd.AddCommand(defaultThemeCmd())
+	rootCmd.AddCommand(defaultConfigCmd())
 
 	configureFlags(rootCmd)
 
@@ -101,7 +106,7 @@ func configureFlags(rootCmd *cobra.Command) {
 		"enable or disable Nerd Fonts")
 	rootCmd.PersistentFlags().BoolVar(&enableImages, "reader-mode-images", envImagesEnabled(),
 		"show article images in reader mode\n(opt-in; also set with CLX_READER_MODE_IMAGES=1)")
-	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", categories.Default,
+	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", settings.Default().Categories,
 		"set the categories in the header\n(available: "+strings.Join(categories.AvailableNames(), ", ")+")")
 	rootCmd.PersistentFlags().IntVar(&pageMultiplier, "pages", settings.Default().PageMultiplier,
 		"set pages to fetch per category (1-5)")
@@ -120,6 +125,15 @@ func configureFlags(rootCmd *cobra.Command) {
 func getConfig() (*settings.Config, error) {
 	config := settings.Default()
 
+	fileConfig, err := settings.LoadConfig(settings.ConfigPath())
+	if err != nil {
+		return nil, fmt.Errorf("could not load config: %w", err)
+	}
+
+	if err := fileConfig.Apply(config); err != nil {
+		return nil, fmt.Errorf("could not load config: %w", err)
+	}
+
 	t, err := theme.Load(settings.ThemePath())
 	if err != nil {
 		return nil, fmt.Errorf("could not load theme config: %w", err)
@@ -127,22 +141,59 @@ func getConfig() (*settings.Config, error) {
 
 	config.Theme = t
 
-	config.CommentWidth = commentWidth
-	config.ArticleWidth = articleWidth
-	config.Indent = settings.ClampIndent(indent)
-	config.DoNotMarkSubmissionsAsRead = disableHistory
-	config.EnableNerdFonts = resolveNerdFonts(nerdFontFlag, nerdFontChanged)
-	config.EnableImages = enableImages
-	config.DebugMode = debugMode
-	config.DebugFallible = debugFallible
-	config.PageMultiplier = settings.ClampPageMultiplier(pageMultiplier)
-
-	config.WideViewMinWidth, err = settings.ParseWideView(wideView)
-	if err != nil {
-		return nil, err
+	if flagChanged("comment-width") {
+		config.CommentWidth = commentWidth
 	}
 
+	if flagChanged("article-width") {
+		config.ArticleWidth = articleWidth
+	}
+
+	if flagChanged("indent") {
+		config.Indent = settings.ClampIndent(indent)
+	}
+
+	if flagChanged("disable-history") {
+		config.DoNotMarkSubmissionsAsRead = disableHistory
+	}
+
+	if flagChanged("categories") {
+		config.Categories = selectedCategories
+	}
+
+	if flagChanged("pages") {
+		config.PageMultiplier = settings.ClampPageMultiplier(pageMultiplier)
+	}
+
+	switch {
+	case flagChanged("nerdfonts"):
+		config.EnableNerdFonts = nerdFontFlag
+	case fileConfig.NerdFonts == nil:
+		config.EnableNerdFonts = isGhostty()
+	}
+
+	switch {
+	case flagChanged("reader-mode-images"):
+		config.EnableImages = enableImages
+	case fileConfig.Images == nil:
+		config.EnableImages = envImagesEnabled()
+	}
+
+	if flagChanged("wide-view") {
+		config.WideViewMinWidth, err = settings.ParseWideView(wideView)
+		if err != nil {
+			return nil, fmt.Errorf("--wide-view: %w", err)
+		}
+	}
+
+	config.DebugMode = debugMode
+	config.DebugFallible = debugFallible
+
 	return config, nil
+}
+
+func flagChanged(name string) bool {
+	return currentCmd != nil && currentCmd.Flags().Changed(name)
 }
 
 func parseID(arg string) (int, error) {
@@ -152,14 +203,6 @@ func parseID(arg string) (int, error) {
 	}
 
 	return id, nil
-}
-
-func resolveNerdFonts(flag, changed bool) bool {
-	if changed {
-		return flag
-	}
-
-	return isGhostty()
 }
 
 func isGhostty() bool {

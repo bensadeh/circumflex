@@ -1,0 +1,36 @@
+# circumflex configuration
+#
+# Copy this file to your config directory as config.toml, or run
+# `clx default-config` to write it there for you.
+# All keys are optional; omitted keys keep their defaults.
+# Command-line flags override values set here.
+
+# Width of the comment section in columns.
+#comment_width = 70
+
+# Width of articles in Reader Mode in columns.
+#article_width = 80
+
+# Spaces of indentation per comment depth level.
+#indent = 1
+
+# Mark stories as read when opened.
+#history = true
+
+# Use Nerd Fonts icons (requires a Nerd Font-patched font).
+# Defaults to on in Ghostty, off elsewhere.
+#nerdfonts = true
+
+# Show article images in Reader Mode.
+#images = false
+
+# Categories shown in the header, in order.
+# Available: top, new, ask, show, best, jobs, favorites
+#categories = ["top", "best", "ask", "show", "favorites"]
+
+# Pages to fetch per category (1-5).
+#pages = 3
+
+# Show stories in a pane next to the front page: "always", "never",
+# or the minimum terminal width in columns.
+#wide_view = 180

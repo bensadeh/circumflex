@@ -113,6 +113,17 @@ clx --categories top,new,best
 
 Available categories are `top`, `best`, `new`, `ask`, `show`, `jobs` and `favorites`.
 
+### Configuration
+
+Every flag can also be set persistently in `~/.config/circumflex/config.toml`. To customize, write out the default
+config — every key listed, commented out — and edit it:
+
+```console
+clx default-config
+```
+
+Flags take precedence over the config file.
+
 ### Theme
 
 `circumflex` uses your terminal's color scheme by default. To customize, write out the default config and edit it:

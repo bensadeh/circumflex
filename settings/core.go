@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/theme"
 )
 
@@ -34,6 +35,7 @@ type Config struct {
 	EnableImages               bool
 	PageMultiplier             int
 	WideViewMinWidth           int
+	Categories                 string
 	Theme                      *theme.Theme
 }
 
@@ -44,13 +46,14 @@ func Default() *Config {
 		Indent:           defaultIndent,
 		PageMultiplier:   defaultPageMultiplier,
 		WideViewMinWidth: DefaultWideViewMinWidth,
+		Categories:       categories.Default,
 	}
 }
 
-// ParseWideView converts the --wide-view flag value into the minimum
-// terminal width for the split-pane layout: "always" enables it at any
-// width, "never" disables it, and a number enables it from that many
-// columns on.
+// ParseWideView converts a wide-view setting into the minimum terminal
+// width for the split-pane layout: "always" enables it at any width,
+// "never" disables it, and a number enables it from that many columns on.
+// The error carries no flag or config-key context; callers add their own.
 func ParseWideView(value string) (int, error) {
 	switch strings.ToLower(strings.TrimSpace(value)) {
 	case "never":
@@ -61,7 +64,7 @@ func ParseWideView(value string) (int, error) {
 
 	width, err := strconv.Atoi(strings.TrimSpace(value))
 	if err != nil || width < 1 {
-		return 0, fmt.Errorf(`--wide-view must be "always", "never" or a column count, got %q`, value)
+		return 0, fmt.Errorf(`must be "always", "never" or a column count, got %q`, value)
 	}
 
 	return width, nil

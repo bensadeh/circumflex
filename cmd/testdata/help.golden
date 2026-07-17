@@ -5,6 +5,7 @@
   [34marticle[0m [33m[id][0m              read the linked article of a story
   [34mclear[0m                     clear the history of visited IDs
   [34mcomments[0m [33m[id][0m             read the comment section of a story
+  [34mdefault-config[0m            write default config file
   [34mdefault-theme[0m             write default theme config file
   [34murl[0m [33m[url][0m                 open the provided url in reader mode
 

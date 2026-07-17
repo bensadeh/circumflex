@@ -1,12 +1,13 @@
 # Changelog
 
-## 4.6 (Unreleased)
+## 5.0 (Unreleased)
 
 **New Features**
 
 - Added Search to Stories, Comment Section and Reader Mode
 - Added URL selection mode with the ability to follow links
 - Added a `jobs` category
+- Added `config.toml` for persistent settings
 
 **Reader Mode**
 

@@ -9,6 +9,7 @@ import (
 const (
 	favoritesFileNameFull = "favorites.json"
 	themeFileNameFull     = "theme.toml"
+	configFileNameFull    = "config.toml"
 
 	clxDir = "circumflex"
 )
@@ -45,6 +46,10 @@ func CachePath() string {
 
 func ThemePath() string {
 	return filepath.Join(ConfigDir(), themeFileNameFull)
+}
+
+func ConfigPath() string {
+	return filepath.Join(ConfigDir(), configFileNameFull)
 }
 
 func FavoritesPath() string {
