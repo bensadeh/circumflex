@@ -69,7 +69,7 @@ func newTestModel(t *testing.T) *model {
 
 	config := settings.Default()
 	cat, _ := categories.New("top,best,ask,show")
-	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.json"))
+	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.toml"), filepath.Join(t.TempDir(), "favorites.json"))
 	require.NoError(t, err)
 
 	service := &instantMockService{}
@@ -206,7 +206,7 @@ func TestStoriesReady_EmptyResultKeepsCursorAtZero(t *testing.T) {
 }
 
 // favorites.Item is the one story shape that cannot share hn.Story — its
-// JSON tags are the on-disk favorites contract — so its copy pair is pinned
+// TOML tags are the on-disk favorites contract — so its copy pair is pinned
 // by a round trip instead: every hn.Story field, filled with a distinct
 // non-zero value, must survive Story → Item → Story.
 func TestFavorites_ItemRoundTripIsLossless(t *testing.T) {
@@ -596,7 +596,7 @@ func newFavoritesTestModel(t *testing.T) *model {
 	cat, err := categories.New("top,favorites")
 	require.NoError(t, err)
 
-	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.json"))
+	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.toml"), filepath.Join(t.TempDir(), "favorites.json"))
 	require.NoError(t, err)
 
 	m := newModel(config, cat, fav, 80, 24, &instantMockService{}, history.NewMockHistory())
@@ -613,7 +613,7 @@ func TestStartup_OnEmptyFavorites(t *testing.T) {
 	cat, err := categories.New("favorites,top")
 	require.NoError(t, err)
 
-	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.json"))
+	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.toml"), filepath.Join(t.TempDir(), "favorites.json"))
 	require.NoError(t, err)
 
 	m := newModel(config, cat, fav, 80, 24, &instantMockService{}, history.NewMockHistory())
@@ -890,7 +890,7 @@ func TestBrowserOpenFailed_RecordsErrorForExit(t *testing.T) {
 func TestFetchComments_HistoryWriteFailure(t *testing.T) {
 	config := settings.Default()
 	cat, _ := categories.New("top,best,ask,show")
-	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.json"))
+	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.toml"), filepath.Join(t.TempDir(), "favorites.json"))
 	require.NoError(t, err)
 
 	hist := failingHistory{writeErr: errors.New("permission denied")}
@@ -912,7 +912,7 @@ func TestFetchComments_HistoryWriteFailure(t *testing.T) {
 func TestFetchArticle_ValidationFailure_SkipsHistoryWrite(t *testing.T) {
 	config := settings.Default()
 	cat, _ := categories.New("top,best,ask,show")
-	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.json"))
+	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.toml"), filepath.Join(t.TempDir(), "favorites.json"))
 	require.NoError(t, err)
 
 	hist := failingHistory{writeErr: errors.New("should not be reached")}

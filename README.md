@@ -89,7 +89,8 @@ You can also add a submission by `ID` from the command line:
 clx add [id]
 ```
 
-Favorites are stored in `~/.config/circumflex/favorites.json` and pretty-printed to be human-readable and VCS-friendly.
+Favorites are stored in `~/.config/circumflex/favorites.toml`, human-readable and VCS-friendly. A `favorites.json`
+from earlier versions is migrated automatically.
 
 ### History
 

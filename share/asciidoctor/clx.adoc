@@ -280,7 +280,8 @@ Use *clx clear* to reset history, or *--no-history* to turn tracking off entirel
 Press _f_ to add the currently highlighted submission to your list of favorites.
 Remove submissions from the Favorites page with _x_.
 
-The favorites file is pretty-printed JSON, suitable for hand-editing or version control.
+The favorites file is TOML, suitable for hand-editing or version control.
+A _favorites.json_ from versions before 5.0 is migrated automatically and left in place.
 
 == Environment
 
@@ -307,8 +308,9 @@ Run *clx default-theme* to write a starter file pre-populated with every key and
 Values may be named colors (`red`, `bright_blue`, ...), hex strings (`#ff8800`), or ANSI 256 indices (`0`-`255`).
 Unrecognized values render with no styling.
 
-_$XDG_CONFIG_HOME/circumflex/favorites.json_::
+_$XDG_CONFIG_HOME/circumflex/favorites.toml_::
 Saved favorites.
+A _favorites.json_ from versions before 5.0 is migrated here automatically.
 
 _$XDG_CACHE_HOME/circumflex/history.json_::
 IDs of visited stories.

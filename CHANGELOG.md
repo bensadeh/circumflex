@@ -6,6 +6,7 @@
 
 - Renamed `--disable-history` to `--no-history`
 - Renamed `--reader-mode-images` to `--images`, replacing `CLX_READER_MODE_IMAGES`
+- Favorites moved to `favorites.toml` (migrated automatically)
 
 **New Features**
 

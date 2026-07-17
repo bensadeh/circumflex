@@ -28,7 +28,7 @@ func addCmd() *cobra.Command {
 				return err
 			}
 
-			fav, err := favorites.New(settings.FavoritesPath())
+			fav, err := favorites.New(settings.FavoritesPath(), settings.LegacyFavoritesPath())
 			if err != nil {
 				return err
 			}

@@ -415,7 +415,8 @@ Use \fBclx clear\fP to reset history, or \fB\-\-no\-history\fP to turn tracking 
 Press \fIf\fP to add the currently highlighted submission to your list of favorites.
 Remove submissions from the Favorites page with \fIx\fP.
 .sp
-The favorites file is pretty\-printed JSON, suitable for hand\-editing or version control.
+The favorites file is TOML, suitable for hand\-editing or version control.
+A \fIfavorites.json\fP from versions before 5.0 is migrated automatically and left in place.
 .SH "ENVIRONMENT"
 .sp
 \fBXDG_CONFIG_HOME\fP, \fBXDG_CACHE_HOME\fP
@@ -448,9 +449,10 @@ Values may be named colors (\f(CRred\fP, \f(CRbright_blue\fP, .\|.\|.), hex stri
 Unrecognized values render with no styling.
 .RE
 .sp
-\fI$XDG_CONFIG_HOME/circumflex/favorites.json\fP
+\fI$XDG_CONFIG_HOME/circumflex/favorites.toml\fP
 .RS 4
 Saved favorites.
+A \fIfavorites.json\fP from versions before 5.0 is migrated here automatically.
 .RE
 .sp
 \fI$XDG_CACHE_HOME/circumflex/history.json\fP

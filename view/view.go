@@ -57,7 +57,7 @@ func (t teaModel) View() tea.View {
 }
 
 func Run(config *settings.Config, cat *categories.Categories) error {
-	fav, err := favorites.New(settings.FavoritesPath())
+	fav, err := favorites.New(settings.FavoritesPath(), settings.LegacyFavoritesPath())
 	if err != nil {
 		return err
 	}

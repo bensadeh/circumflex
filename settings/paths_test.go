@@ -64,7 +64,8 @@ func TestFavoritesPath_UsesConfigDir(t *testing.T) {
 	xdg := t.TempDir()
 	t.Setenv("XDG_CONFIG_HOME", xdg)
 
-	assert.Equal(t, filepath.Join(xdg, "circumflex", "favorites.json"), FavoritesPath())
+	assert.Equal(t, filepath.Join(xdg, "circumflex", "favorites.toml"), FavoritesPath())
+	assert.Equal(t, filepath.Join(xdg, "circumflex", "favorites.json"), LegacyFavoritesPath())
 }
 
 func TestConfigDir_FallbackOnMacOS(t *testing.T) {

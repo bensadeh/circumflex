@@ -7,9 +7,10 @@ import (
 )
 
 const (
-	favoritesFileNameFull = "favorites.json"
-	themeFileNameFull     = "theme.toml"
-	configFileNameFull    = "config.toml"
+	favoritesFileNameFull       = "favorites.toml"
+	legacyFavoritesFileNameFull = "favorites.json"
+	themeFileNameFull           = "theme.toml"
+	configFileNameFull          = "config.toml"
 
 	clxDir = "circumflex"
 )
@@ -54,6 +55,12 @@ func ConfigPath() string {
 
 func FavoritesPath() string {
 	return filepath.Join(ConfigDir(), favoritesFileNameFull)
+}
+
+// LegacyFavoritesPath is the pre-5.0 JSON favorites file, kept only as a
+// migration source.
+func LegacyFavoritesPath() string {
+	return filepath.Join(ConfigDir(), legacyFavoritesFileNameFull)
 }
 
 // Tilde replaces the user's home directory prefix with ~ for display.

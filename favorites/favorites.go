@@ -1,11 +1,12 @@
 package favorites
 
 import (
-	"encoding/json"
+	"bytes"
 	"fmt"
-	"os"
+	"strings"
 	"sync"
 
+	"github.com/BurntSushi/toml"
 	"github.com/bensadeh/circumflex/fileutil"
 	"github.com/bensadeh/circumflex/hn"
 )
@@ -24,16 +25,21 @@ func ItemFromStory(s *hn.Story) *Item {
 }
 
 // Item holds the fields persisted for a favorited story.
-// JSON tags match the old item.Story PascalCase names for backward compatibility.
 type Item struct {
-	ID            int    `json:"ID"`
-	Title         string `json:"Title"`
-	Points        int    `json:"Points"`
-	Author        string `json:"User"`
-	Time          int64  `json:"Time"`
-	URL           string `json:"URL"`
-	Domain        string `json:"Domain"`
-	CommentsCount int    `json:"CommentsCount"`
+	ID            int    `toml:"id"`
+	Title         string `toml:"title"`
+	Points        int    `toml:"points"`
+	Author        string `toml:"author"`
+	Time          int64  `toml:"time"`
+	URL           string `toml:"url"`
+	Domain        string `toml:"domain"`
+	CommentsCount int    `toml:"comments_count"`
+}
+
+// document is the top-level shape of favorites.toml: one [[favorites]]
+// table per story.
+type document struct {
+	Favorites []*Item `toml:"favorites"`
 }
 
 type Favorites struct {
@@ -42,37 +48,57 @@ type Favorites struct {
 	path  string
 }
 
-func New(path string) (*Favorites, error) {
+// New loads favorites from path. When path does not exist but a pre-5.0
+// favorites.json does, its items are converted and written to path once;
+// the JSON file is left behind untouched.
+func New(path, legacyJSONPath string) (*Favorites, error) {
 	f := &Favorites{path: path}
 
-	if !fileutil.Exists(path) {
+	if fileutil.Exists(path) {
+		items, err := load(path)
+		if err != nil {
+			return f, err
+		}
+
+		f.items = items
+
 		return f, nil
 	}
 
-	favoritesJSON, err := os.ReadFile(path)
-	if err != nil {
-		return f, fmt.Errorf("could not read favorites: %w", err)
-	}
+	if fileutil.Exists(legacyJSONPath) {
+		items, err := loadLegacyJSON(legacyJSONPath)
+		if err != nil {
+			return f, err
+		}
 
-	items, err := unmarshal(favoritesJSON)
-	if err != nil {
-		return f, fmt.Errorf("could not parse favorites (file may be corrupted): %w", err)
-	}
+		f.items = items
 
-	f.items = items
+		if err := f.Write(); err != nil {
+			return f, fmt.Errorf("could not migrate favorites to %s: %w", path, err)
+		}
+	}
 
 	return f, nil
 }
 
-func unmarshal(data []byte) ([]*Item, error) {
-	var items []*Item
+func load(path string) ([]*Item, error) {
+	var doc document
 
-	err := json.Unmarshal(data, &items)
+	md, err := toml.DecodeFile(path, &doc)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not parse favorites (file may be corrupted): %w", err)
 	}
 
-	return items, nil
+	if undecoded := md.Undecoded(); len(undecoded) > 0 {
+		keys := make([]string, len(undecoded))
+		for i, key := range undecoded {
+			keys[i] = key.String()
+		}
+
+		return nil, fmt.Errorf("unknown keys in %s: %s", path, strings.Join(keys, ", "))
+	}
+
+	return doc.Favorites, nil
 }
 
 // Items returns the internal slice. Callers on the same goroutine (Bubble Tea
@@ -99,12 +125,13 @@ func (f *Favorites) Write() error {
 }
 
 func (f *Favorites) writeLocked() error {
-	stream, err := json.MarshalIndent(f.items, "", "    ")
-	if err != nil {
+	var buf bytes.Buffer
+
+	if err := toml.NewEncoder(&buf).Encode(document{Favorites: f.items}); err != nil {
 		return fmt.Errorf("could not serialize favorites: %w", err)
 	}
 
-	if err := fileutil.WriteAtomic(f.path, string(stream)); err != nil {
+	if err := fileutil.WriteAtomic(f.path, buf.String()); err != nil {
 		return fmt.Errorf("could not write favorites: %w", err)
 	}
 
