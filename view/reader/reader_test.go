@@ -177,12 +177,15 @@ func TestImageIndicator_BlankWithoutImages(t *testing.T) {
 
 func TestImageStatusLine(t *testing.T) {
 	shown := imageStatusLine(true, false, 80)
-	assert.Contains(t, shown, "images shown")
+	assert.Contains(t, shown, "Images Shown")
 	assert.True(t, strings.HasSuffix(shown, " ▣"), "the icon trails at the right edge")
 
 	hidden := imageStatusLine(false, false, 80)
-	assert.Contains(t, hidden, "images hidden")
+	assert.Contains(t, hidden, "Images Hidden")
 	assert.True(t, strings.HasSuffix(hidden, " ▢"))
+
+	assert.Equal(t, xansi.StringWidth(shown), xansi.StringWidth(hidden),
+		"both states span the same width so the label start column never shifts")
 
 	assert.True(t, strings.HasSuffix(imageStatusLine(true, true, 80), " "+nerdfonts.Image))
 	assert.True(t, strings.HasSuffix(imageStatusLine(false, true, 80), " "+nerdfonts.ImageOff))

@@ -616,9 +616,9 @@ func (m *Model) imageIndicator() string {
 // imageStatusLine trails its icon so it ends at the column's right edge,
 // mirroring the help footer's version tag.
 func imageStatusLine(show, enableNerdFonts bool, paneWidth int) string {
-	icon, label := "▣", "images shown"
+	icon, label := "▣", "Images Shown"
 	if !show {
-		icon, label = "▢", "images hidden"
+		icon, label = "▢", "Images Hidden"
 	}
 
 	if enableNerdFonts {
@@ -627,6 +627,10 @@ func imageStatusLine(show, enableNerdFonts bool, paneWidth int) string {
 			icon = nerdfonts.ImageOff
 		}
 	}
+
+	// Both states padded to the same width so the label starts at the same
+	// column when toggling, with the icon pinned to the right edge.
+	label += strings.Repeat(" ", len("Images Hidden")-len(label))
 
 	return xansi.Truncate(style.Faint(label)+" "+icon, paneWidth, "")
 }
