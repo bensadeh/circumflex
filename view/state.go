@@ -21,4 +21,5 @@ const (
 	promptNone prompt = iota
 	promptAddFavorite
 	promptRemoveFavorite
+	promptSearch
 )

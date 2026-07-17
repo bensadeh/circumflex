@@ -4,7 +4,7 @@
 
 **New Features**
 
-- Added Search in Comment Section and Reader Mode
+- Added Search to Stories, Comment Section and Reader Mode
 - Added URL selection mode with the ability to follow links
 - Added a `jobs` category
 

@@ -10,6 +10,7 @@ const (
 	CommentMinusOutline    = "󱗠"
 	Search                 = ""
 	SearchCommitted        = ""
+	SearchResults          = "󱩾"
 	CommentSection         = "󰆈"
 	CommentSearchCommitted = "󰨼"
 	GitHub                 = ""

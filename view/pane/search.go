@@ -6,8 +6,6 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/bensadeh/circumflex/ansi"
-	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/style"
 
 	tea "charm.land/bubbletea/v2"
@@ -22,11 +20,10 @@ type Match struct {
 }
 
 type searchState struct {
-	prompting bool
-	input     string
-	query     string
-	matches   []Match
-	current   int
+	prompt  TextPrompt
+	query   string
+	matches []Match
+	current int
 }
 
 // PromptResult reports how the search prompt reacted to a key press.
@@ -43,11 +40,10 @@ const (
 const matchScrollPadding = 2
 
 func (s *Scroller) StartSearchPrompt() {
-	s.search.prompting = true
-	s.search.input = ""
+	s.search.prompt.Start()
 }
 
-func (s *Scroller) SearchPrompting() bool { return s.search.prompting }
+func (s *Scroller) SearchPrompting() bool { return s.search.prompt.Active() }
 
 // SearchActive reports whether a committed query is in effect.
 func (s *Scroller) SearchActive() bool { return s.search.query != "" }
@@ -59,55 +55,24 @@ func (s *Scroller) SearchQuery() string { return s.search.query }
 // matches from it on every prompt key, so hits highlight as the user types,
 // and a canceled prompt falls back to the prior query's matches.
 func (s *Scroller) ActiveQuery() string {
-	if s.search.prompting {
-		return s.search.input
+	if s.search.prompt.Active() {
+		return s.search.prompt.Text()
 	}
 
 	return s.search.query
 }
 
-// HandleSearchPromptKey feeds one key press to the open search prompt.
-// Printable characters append, enter commits the typed query, esc and
-// backspacing past empty cancel. Committing an empty query also cancels,
-// leaving any previous search untouched.
+// HandleSearchPromptKey feeds one key press to the open search prompt; a
+// commit installs the typed text as the query, leaving any previous search
+// untouched on cancel.
 func (s *Scroller) HandleSearchPromptKey(msg tea.KeyPressMsg) PromptResult {
-	switch msg.Code {
-	case tea.KeyEscape:
-		s.search.prompting = false
-		s.search.input = ""
+	result := s.search.prompt.HandleKey(msg)
 
-		return PromptCanceled
-
-	case tea.KeyEnter:
-		s.search.prompting = false
-
-		if s.search.input == "" {
-			return PromptCanceled
-		}
-
-		s.search.query = s.search.input
-		s.search.input = ""
-
-		return PromptCommitted
-
-	case tea.KeyBackspace:
-		if s.search.input == "" {
-			s.search.prompting = false
-
-			return PromptCanceled
-		}
-
-		_, size := utf8.DecodeLastRuneInString(s.search.input)
-		s.search.input = s.search.input[:len(s.search.input)-size]
-
-		return PromptPending
+	if result == PromptCommitted {
+		s.search.query = s.search.prompt.Text()
 	}
 
-	if msg.Text != "" && msg.Mod&^tea.ModShift == 0 {
-		s.search.input += msg.Text
-	}
-
-	return PromptPending
+	return result
 }
 
 // ClearSearch drops the query and matches; highlights disappear on the next
@@ -173,27 +138,12 @@ func (s *Scroller) JumpToFirstMatchFrom(line int) {
 // extra room after the wide glyph; committing trades the magnifier for a
 // done-searching glyph, SearchCommittedIcon or the shared default.
 func (s *Scroller) SearchFooterLabel(enableNerdFonts bool) string {
-	prompt := style.Faint("/")
-
-	if s.search.prompting {
-		if enableNerdFonts {
-			prompt = nerdfonts.Search + "  "
-		}
-
-		return prompt + s.search.input + ansi.Reverse + " " + ansi.ReverseOff
+	if s.search.prompt.Active() {
+		return PromptLabel(s.search.prompt.Text(), enableNerdFonts)
 	}
 
 	if s.search.query != "" {
-		if enableNerdFonts {
-			icon := s.SearchCommittedIcon
-			if icon == "" {
-				icon = nerdfonts.SearchCommitted
-			}
-
-			prompt = icon + "  "
-		}
-
-		return prompt + style.Faint(s.search.query)
+		return CommittedSearchLabel(s.search.query, s.SearchCommittedIcon, enableNerdFonts)
 	}
 
 	return ""
@@ -203,8 +153,8 @@ func (s *Scroller) SearchFooterLabel(enableNerdFonts bool) string {
 // that navigate a larger match set format theirs with MatchCountLabel and
 // MatchTotalLabel.
 func (s *Scroller) SearchCountLabel() string {
-	if s.search.prompting {
-		if s.search.input == "" {
+	if s.search.prompt.Active() {
+		if s.search.prompt.Text() == "" {
 			return ""
 		}
 

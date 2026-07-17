@@ -89,6 +89,25 @@ func (m *model) fetchCategory(tok fetchToken, cat categories.Category, index, cu
 	}
 }
 
+// fetchSearch mirrors fetchCategory for the search tab: the matching stories
+// arrive on the same StoriesReady path, with the cursor reset to the top.
+func (m *model) fetchSearch(tok fetchToken, query string, index int) tea.Cmd {
+	service := m.service
+	req := m.searchFilters.request(query, m.numberOfItemsToFetch(categories.Search))
+
+	return func() tea.Msg {
+		stories, err := service.SearchItems(tok.ctx, req)
+
+		return message.StoriesReady{
+			Stories:  stories,
+			Category: categories.Search,
+			Index:    index,
+			Err:      err,
+			FetchID:  tok.id,
+		}
+	}
+}
+
 func (m *model) fetchComments(tok fetchToken, story *hn.Story) tea.Cmd {
 	isOnFavorites := m.cat.CurrentCategory() == categories.Favorites
 	hist := m.history

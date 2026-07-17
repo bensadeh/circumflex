@@ -2,6 +2,8 @@ package view
 
 import (
 	"github.com/bensadeh/circumflex/header"
+	"github.com/bensadeh/circumflex/help"
+	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/view/pane"
 
 	xansi "github.com/charmbracelet/x/ansi"
@@ -65,6 +67,14 @@ func (m *model) titleView() string {
 		sv = m.status.spinnerView()
 	}
 
+	// Search mode owns the tab row: the filters render where the
+	// (then-inert) tabs would be, the date group right-aligned to the
+	// front-page help panels' edge.
+	if m.cat.Searching() {
+		return header.SearchHeader(m.searchFilters.headerGroups(),
+			help.MainMenuPanelRightEdge(m.listWidth()), m.listWidth(), sv, m.wideDetailOpen())
+	}
+
 	return header.Header(
 		m.cat.ActiveCategories(),
 		m.cat.CurrentIndex(),
@@ -89,6 +99,32 @@ func (m *model) statusAndPaginationView() string {
 
 	centerContent = m.status.text.Message()
 
+	midStyle := m.statusMidStyle
+	leftWidth := statusBarEdgeWidth
+
+	switch {
+	// The open search prompt takes over the message slot, rendered from the
+	// left like the detail views' search footer. The sigil zone hangs into
+	// the left slot — the nerd magnifier is wider than the committed line's
+	// plain /, and outdenting it keeps the typed text on the column it
+	// stays on after committing.
+	case m.prompt == promptSearch:
+		centerContent = pane.PromptLabel(m.searchPrompt.Text(), m.config.EnableNerdFonts)
+		midStyle = midStyle.Align(lipgloss.Left)
+		leftWidth -= pane.PromptSigilWidth(m.config.EnableNerdFonts) - 1
+
+	// Search mode keeps the committed query on the status row where
+	// transient messages otherwise show; the filters live in the header.
+	// The icon stays on the same outdented cell through the commit — the
+	// results glyph replaces the magnifier, the query dims, nothing moves.
+	// The committed zone is icon+gap like the prompt's, so the prompt
+	// sigil width applies to both.
+	case centerContent == "" && m.cat.Searching() && m.searchQuery != "":
+		centerContent = pane.CommittedSearchLabel(m.searchQuery, nerdfonts.SearchResults, m.config.EnableNerdFonts)
+		midStyle = midStyle.Align(lipgloss.Left)
+		leftWidth -= pane.PromptSigilWidth(m.config.EnableNerdFonts) - 1
+	}
+
 	// The page dots dim along with the list while the detail pane is open.
 	paginatorView := m.list.PaginatorView()
 	if m.wideDetailOpen() {
@@ -99,9 +135,11 @@ func (m *model) statusAndPaginationView() string {
 	case m.fetch.inFlight():
 		// A story or link fetch in the wide layout keeps the paginator so the
 		// left pane doesn't change; the loading state shows in the detail pane.
-		if m.isWide() && (m.detailLoading() || m.fetch.linkLoading()) {
+		// A search fetch shows no placeholder — its result is a single page.
+		switch {
+		case m.isWide() && (m.detailLoading() || m.fetch.linkLoading()):
 			rightContent = paginatorView
-		} else {
+		case !m.cat.Searching():
 			rightContent = m.list.InactiveDots(m.config.PageMultiplier)
 		}
 	case m.screen == screenComments:
@@ -114,10 +152,10 @@ func (m *model) statusAndPaginationView() string {
 		rightContent = paginatorView
 	}
 
-	left := m.statusLeftStyle.Render("")
+	left := m.statusLeftStyle.Width(leftWidth).MaxWidth(leftWidth).Render("")
 
-	center := m.statusMidStyle.
-		Width(m.listWidth() - statusBarEdgeWidth - statusBarEdgeWidth).
+	center := midStyle.
+		Width(m.listWidth() - leftWidth - statusBarEdgeWidth).
 		Render(centerContent)
 
 	right := m.statusEndStyle.Render(rightContent)

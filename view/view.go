@@ -35,8 +35,22 @@ func (t teaModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (t teaModel) View() tea.View {
-	v := tea.NewView(t.m.View())
+	frame := t.m.View()
+
+	// An open search prompt marks its cursor cell in the frame; the real
+	// terminal cursor parks there, in the terminal's own color — steady,
+	// not blinking.
+	var cursor *tea.Cursor
+
+	if x, y, cleaned, ok := pane.ExtractPromptCursor(frame); ok {
+		frame = cleaned
+		cursor = tea.NewCursor(x, y)
+		cursor.Blink = false
+	}
+
+	v := tea.NewView(frame)
 	v.AltScreen = true
+	v.Cursor = cursor
 
 	return v
 }

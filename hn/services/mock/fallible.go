@@ -41,6 +41,13 @@ func (f FallibleService) FetchItem(_ context.Context, _ int) (*hn.Story, error) 
 	return nil, randomError()
 }
 
+func (f FallibleService) SearchItems(_ context.Context, _ hn.SearchRequest) ([]*hn.Story, error) {
+	n, _ := rand.Int(rand.Reader, big.NewInt(3))
+	time.Sleep(time.Duration(1+n.Int64()) * time.Second)
+
+	return nil, randomError()
+}
+
 func randomError() error {
 	errors := []error{
 		&timeoutError{},

@@ -16,6 +16,9 @@ type keyMap struct {
 	NextPage       key.Binding
 	NextCategory   key.Binding
 	PrevCategory   key.Binding
+	Search         key.Binding
+	SearchSort     key.Binding
+	SearchAge      key.Binding
 	GoToTop        key.Binding
 	GoToBottom     key.Binding
 	OpenLink       key.Binding
@@ -51,6 +54,18 @@ func defaultKeyMap() keyMap {
 		),
 		PrevCategory: key.NewBinding(
 			key.WithKeys("shift+tab"),
+		),
+		Search: key.NewBinding(
+			key.WithKeys("/"),
+			key.WithHelp("/", "Search Hacker News"),
+		),
+		SearchSort: key.NewBinding(
+			key.WithKeys("s"),
+			key.WithHelp("s", "Sort order"),
+		),
+		SearchAge: key.NewBinding(
+			key.WithKeys("d"),
+			key.WithHelp("d", "Date range"),
 		),
 		OpenLink: key.NewBinding(
 			key.WithKeys("o"),
@@ -137,6 +152,10 @@ func (km keyMap) MainMenuSections() []help.Section {
 		{
 			Title: "List",
 			Items: listItems,
+		},
+		{
+			Title: "Search",
+			Items: fromBindings(km.Search, km.SearchSort, km.SearchAge),
 		},
 		{
 			Title: "App",

@@ -88,11 +88,12 @@ func (f *fetchState) abort() (rollbackPoint, bool) {
 }
 
 // startFetch begins a list fetch: the stories replace the front page, and rb
-// is the selection to restore if the fetch fails or is cancelled. The token
-// is only valid in this Update cycle: build the fetch command now, or a
-// cancel or newer fetch in between would leave the command's results stale.
-func (m *model) startFetch(timeout time.Duration, rb rollbackPoint) (fetchToken, tea.Cmd) {
-	return m.fetch.begin(timeout, fetchList, screenList, rb), m.status.StartSpinner()
+// is the selection to restore if the fetch fails or is cancelled. List
+// fetches carry no timeout — cancellation is the user's. The token is only
+// valid in this Update cycle: build the fetch command now, or a cancel or
+// newer fetch in between would leave the command's results stale.
+func (m *model) startFetch(rb rollbackPoint) (fetchToken, tea.Cmd) {
+	return m.fetch.begin(0, fetchList, screenList, rb), m.status.StartSpinner()
 }
 
 // startDetailFetch begins a fetch of a story's comments or article: the list

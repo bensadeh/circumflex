@@ -256,7 +256,7 @@ func TestSearchFooterLabel_PromptShowsCursor(t *testing.T) {
 
 	label := s.SearchFooterLabel(false)
 	assert.True(t, strings.HasPrefix(ansi.Strip(label), "/que"))
-	assert.Contains(t, label, ansi.Reverse, "the prompt renders a block cursor")
+	assert.Contains(t, label, "▏", "the prompt renders a beam cursor")
 
 	nerd := s.SearchFooterLabel(true)
 	assert.True(t, strings.HasPrefix(nerd, nerdfonts.Search+"  "), "nerd fonts swap the / for a magnifier")

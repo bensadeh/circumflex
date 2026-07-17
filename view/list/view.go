@@ -61,13 +61,24 @@ func (m *Model) detailOpen(f Frame) bool {
 	return f.DetailOpen || f.DetailLoading
 }
 
+// PaginatorView renders the page dots, or nothing when there is only one
+// page — a lone dot indicates nothing (search and the single-page
+// categories: ask, show, jobs, favorites).
 func (m *Model) PaginatorView() string {
+	if m.pager.Paginator.TotalPages <= 1 {
+		return ""
+	}
+
 	return m.pager.Paginator.View()
 }
 
 // DimmedPaginatorView renders every page dot faint, dropping the
 // active-page marker while the list is backgrounded.
 func (m *Model) DimmedPaginatorView() string {
+	if m.pager.Paginator.TotalPages <= 1 {
+		return ""
+	}
+
 	return m.InactiveDots(m.pager.Paginator.TotalPages)
 }
 
@@ -83,8 +94,15 @@ func (m *Model) populatedView(f Frame) string {
 	var b strings.Builder
 
 	if len(allItems) == 0 {
-		if m.cat.CurrentCategory() == categories.Favorites {
+		switch {
+		case m.cat.CurrentCategory() == categories.Favorites:
 			return m.favoritesEmptyMessage()
+
+		// Only a committed query whose fetch has settled gets a message —
+		// search opens straight into its prompt (no idle hint), and while
+		// results are on their way "no results" would be a lie.
+		case categories.IsSearch(m.cat.CurrentCategory()) && f.SearchQuery != "" && !m.InTransition():
+			return m.searchNoResultsMessage(f.SearchQuery)
 		}
 
 		return ""
@@ -122,4 +140,13 @@ func (m *Model) favoritesEmptyMessage() string {
 	margin := strings.Repeat(" ", layout.MainViewLeftMargin)
 
 	return margin + dim.Render("No favorites yet — press ") + key.Render("f") + dim.Render(" on any story to add it")
+}
+
+func (m *Model) searchNoResultsMessage(query string) string {
+	dim := lipgloss.NewStyle().Faint(true)
+
+	// Indent to line up with where front-page item titles begin (past the rank gutter).
+	margin := strings.Repeat(" ", layout.MainViewLeftMargin)
+
+	return margin + dim.Render("No results for “"+query+"”")
 }

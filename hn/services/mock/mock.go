@@ -3,6 +3,8 @@ package mock
 import (
 	"context"
 	"math/rand"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/bensadeh/circumflex/hn"
@@ -18,7 +20,47 @@ func (Service) FetchItems(ctx context.Context, _ int, category string) ([]*hn.St
 		return nil, ctx.Err()
 	}
 
-	items := []*hn.Story{
+	items := stories()
+
+	// Randomize list to make debugging easier
+	if category != "topstories" {
+		rand.Shuffle(len(items), func(i, j int) { items[i], items[j] = items[j], items[i] })
+	}
+
+	return items, nil
+}
+
+func (Service) SearchItems(ctx context.Context, req hn.SearchRequest) ([]*hn.Story, error) {
+	// Simulate network latency without ignoring cancellation.
+	select {
+	case <-time.After(2 * time.Second):
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
+
+	var hits []*hn.Story
+
+	for _, s := range stories() {
+		if !strings.Contains(strings.ToLower(s.Title), strings.ToLower(req.Query)) {
+			continue
+		}
+
+		if req.MaxAge > 0 && s.Time < time.Now().Add(-req.MaxAge).Unix() {
+			continue
+		}
+
+		hits = append(hits, s)
+	}
+
+	if req.SortByDate {
+		sort.Slice(hits, func(i, j int) bool { return hits[i].Time > hits[j].Time })
+	}
+
+	return hits, nil
+}
+
+func stories() []*hn.Story {
+	return []*hn.Story{
 		{
 			Title:         "Lorem ipsum dolor amet et quasi architecto",
 			Points:        31,
@@ -290,13 +332,6 @@ func (Service) FetchItems(ctx context.Context, _ int, category string) ([]*hn.St
 			CommentsCount: 122,
 		},
 	}
-
-	// Randomize list to make debugging easier
-	if category != "topstories" {
-		rand.Shuffle(len(items), func(i, j int) { items[i], items[j] = items[j], items[i] })
-	}
-
-	return items, nil
 }
 
 func (Service) FetchComments(_ context.Context, _ int, _ func(fetched, total int)) (*hn.CommentTree, error) {

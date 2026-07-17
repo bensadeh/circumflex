@@ -37,25 +37,96 @@ func Underline(width int) string {
 // logo colors render faint, matching a list that is dimmed behind an open
 // story in the wide layout.
 func Header(allCategories []categories.Category, selectedSubHeader int, width int, spinnerView string, dim bool) string {
+	return assemble(logo(spinnerView, dim), getCategories(allCategories, selectedSubHeader), width)
+}
+
+// OptionGroup is one search filter rendered as a segmented control: every
+// option visible, the active one colored like a selected tab.
+type OptionGroup struct {
+	Options []string
+	Active  int
+}
+
+// searchGroupMinGap keeps the sort and date groups apart when the pane is
+// too narrow for the right alignment to provide the separation.
+const searchGroupMinGap = 3
+
+// SearchHeader renders the header in search mode: the tab row makes way for
+// the filters, each group styled exactly like the category tabs — cycling a
+// filter moves its highlight instead of swapping a word. The groups separate
+// by alignment rather than glyphs: the last group's right edge sits at
+// rightEdge, the column the front-page help panels end on.
+func SearchHeader(groups []OptionGroup, rightEdge, width int, spinnerView string, dim bool) string {
+	rendered := make([]string, 0, len(groups))
+	for groupIdx, group := range groups {
+		rendered = append(rendered, renderGroup(group, groupIdx))
+	}
+
+	content := strings.Join(rendered, strings.Repeat(" ", searchGroupMinGap))
+
+	if len(rendered) > 1 {
+		title := logo(spinnerView, dim)
+		left := strings.Join(rendered[:len(rendered)-1], strings.Repeat(" ", searchGroupMinGap))
+		right := rendered[len(rendered)-1]
+
+		gap := max(searchGroupMinGap,
+			rightEdge-lipgloss.Width(title)-lipgloss.Width(left)-lipgloss.Width(right))
+
+		content = left + strings.Repeat(" ", gap) + right
+	}
+
+	return assemble(logo(spinnerView, dim), content, width)
+}
+
+func renderGroup(group OptionGroup, groupIdx int) string {
+	separator := lipgloss.NewStyle().Faint(true).Render(" • ")
+
+	var out strings.Builder
+
+	for i, option := range group.Options {
+		if i > 0 {
+			out.WriteString(separator)
+		}
+
+		active := i == group.Active
+		out.WriteString(lipgloss.NewStyle().
+			Foreground(activeOptionColor(groupIdx, active)).
+			Faint(!active).
+			Render(option))
+	}
+
+	return out.String()
+}
+
+// activeOptionColor colors a group's active option from the same palette as
+// the selected category tab, one color per group.
+func activeOptionColor(groupIdx int, active bool) color.Color {
+	if !active {
+		return lipgloss.NoColor{}
+	}
+
+	return getSelectedCategoryColor(groupIdx)
+}
+
+func logo(spinnerView string, dim bool) string {
 	leftPad := strings.Repeat(" ", layout.HeaderLogoLeftPadding)
 	rightPad := strings.Repeat(" ", layout.HeaderLogoRightPadding)
 
-	var title string
-
 	switch {
 	case spinnerView != "":
-		title = spinnerView
+		return spinnerView
 	case memorialActive.Load():
-		title = leftPad + style.Faint("clx") + rightPad
+		return leftPad + style.Faint("clx") + rightPad
 	case dim:
-		title = leftPad + style.LogoFaint("c", "l", "x") + rightPad
+		return leftPad + style.LogoFaint("c", "l", "x") + rightPad
 	default:
-		title = leftPad + style.Logo("c", "l", "x") + rightPad
+		return leftPad + style.Logo("c", "l", "x") + rightPad
 	}
+}
 
-	cats := getCategories(allCategories, selectedSubHeader)
-	filler := getFiller(title, cats, width)
-	row := xansi.Truncate(title+cats+filler, width, "")
+func assemble(title, content string, width int) string {
+	filler := getFiller(title, content, width)
+	row := xansi.Truncate(title+content+filler, width, "")
 
 	return row + "\n" + Underline(width)
 }

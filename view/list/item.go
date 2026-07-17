@@ -92,6 +92,12 @@ func (m *Model) renderItem(w io.Writer, index int, item *hn.Story, f Frame) {
 		desc = xansi.Truncate(desc, textWidth, ellipsis)
 	}
 
+	// Search results highlight the committed query; the highlight rests
+	// while the list is dimmed behind an open story.
+	if f.SearchQuery != "" && categories.IsSearch(m.cat.CurrentCategory()) && !m.dimmed(f) {
+		title = highlightQuery(title, f.SearchQuery, isSelected)
+	}
+
 	title = title + " " + domain
 	desc = descStyle.Render(desc)
 

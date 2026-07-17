@@ -17,6 +17,13 @@ const (
 	panelLeftMargin = layout.CommentSectionLeftMargin
 )
 
+// MainMenuPanelRightEdge is the column where the front-page help panels'
+// right border sits; the search header right-aligns its date group to it so
+// the two screens share an edge.
+func MainMenuPanelRightEdge(screenWidth int) int {
+	return panelLeftMargin + mainMenuContentWidth(screenWidth)
+}
+
 func mainMenuText(screenWidth int, sections []Section) string {
 	keys := new(keyList)
 

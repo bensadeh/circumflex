@@ -18,109 +18,161 @@ import (
 const readerModeTimeout = 15 * time.Second
 
 func (m *model) handleBrowsing(msg tea.Msg) tea.Cmd {
+	keyMsg, ok := msg.(tea.KeyPressMsg)
+	if !ok {
+		m.list.ClampCursor()
+
+		return nil
+	}
+
 	numItems := len(m.list.VisibleItems())
 
-	if msg, ok := msg.(tea.KeyPressMsg); ok {
+	switch {
+	case m.prompt == promptSearch:
+		return m.handleSearchPromptKey(keyMsg)
+
+	case m.prompt == promptAddFavorite && key.Matches(keyMsg, m.keymap.Confirm):
+		return m.handleConfirmAddFavorites()
+
+	case m.prompt == promptRemoveFavorite && key.Matches(keyMsg, m.keymap.Confirm):
+		return m.handleConfirmRemoveFavorites()
+
+	case m.prompt != promptNone:
+		return m.handleCancelPrompt()
+
+	case key.Matches(keyMsg, m.keymap.Help):
+		m.screen = screenHelp
+
+		return nil
+
+	case key.Matches(keyMsg, m.keymap.Quit):
+		if m.cat.Searching() {
+			m.exitSearch()
+
+			return nil
+		}
+
+		return tea.Quit
+
+	case key.Matches(keyMsg, m.keymap.Up):
+		m.list.CursorUp()
+
+		return nil
+
+	case key.Matches(keyMsg, m.keymap.Down):
+		m.list.CursorDown()
+
+		return nil
+
+	case key.Matches(keyMsg, m.keymap.PrevPage):
+		m.list.PrevPage()
+
+		return nil
+
+	case key.Matches(keyMsg, m.keymap.NextPage):
+		m.list.NextPage()
+
+		return nil
+
+	// Tabbing out of search rejoins the cycle at the tab search was entered
+	// from, advancing as usual.
+	case key.Matches(keyMsg, m.keymap.NextCategory):
+		m.cat.ExitSearch()
+
+		return m.handleTabForward()
+
+	case key.Matches(keyMsg, m.keymap.PrevCategory):
+		m.cat.ExitSearch()
+
+		return m.handleTabBackward()
+
+	case key.Matches(keyMsg, m.keymap.GoToTop):
+		m.list.GoToTop()
+
+		return nil
+
+	case key.Matches(keyMsg, m.keymap.GoToBottom):
+		m.list.GoToBottom()
+
+		return nil
+
+	case key.Matches(keyMsg, m.keymap.Back):
+		if m.cat.Searching() {
+			m.exitSearch()
+		}
+
+		return nil
+
+	case key.Matches(keyMsg, m.keymap.Search):
+		if !m.cat.Searching() {
+			m.cat.EnterSearch()
+			m.list.ResetPager()
+		}
+
+		m.prompt = promptSearch
+		m.searchPrompt.Start()
+
+		return nil
+
+	case key.Matches(keyMsg, m.keymap.SearchSort) && categories.IsSearch(m.cat.CurrentCategory()):
+		m.searchFilters.cycleSort()
+
+		return m.rerunSearch()
+
+	case key.Matches(keyMsg, m.keymap.SearchAge) && categories.IsSearch(m.cat.CurrentCategory()):
+		m.searchFilters.cycleAge()
+
+		return m.rerunSearch()
+
+	case key.Matches(keyMsg, m.keymap.Refresh):
+		if categories.IsSearch(m.cat.CurrentCategory()) {
+			return m.rerunSearch()
+		}
+
+		if !categories.IsFavorites(m.cat.CurrentCategory()) {
+			return m.handleRefresh()
+		}
+
+	default:
+		// The remaining keys all act on the highlighted story, so they do
+		// nothing when the list is empty (e.g. the favorites tab with no
+		// items). Guarding once here means any item action added below is
+		// covered automatically.
+		if numItems == 0 {
+			break
+		}
+
 		switch {
-		case m.prompt == promptAddFavorite && key.Matches(msg, m.keymap.Confirm):
-			return m.handleConfirmAddFavorites()
+		case key.Matches(keyMsg, m.keymap.OpenLink):
+			return m.handleOpenLink()
 
-		case m.prompt == promptRemoveFavorite && key.Matches(msg, m.keymap.Confirm):
-			return m.handleConfirmRemoveFavorites()
+		case key.Matches(keyMsg, m.keymap.OpenComments):
+			return m.handleOpenComments()
 
-		case m.prompt != promptNone:
-			return m.handleCancelPrompt()
-
-		case key.Matches(msg, m.keymap.Help):
-			m.screen = screenHelp
+		case key.Matches(keyMsg, m.keymap.AddFavorite):
+			m.status.SetPermanentStatusMessage(addItemConfirmationMessage())
+			m.prompt = promptAddFavorite
 
 			return nil
 
-		case key.Matches(msg, m.keymap.Quit):
-			return tea.Quit
-
-		case key.Matches(msg, m.keymap.Up):
-			m.list.CursorUp()
-
-			return nil
-
-		case key.Matches(msg, m.keymap.Down):
-			m.list.CursorDown()
-
-			return nil
-
-		case key.Matches(msg, m.keymap.PrevPage):
-			m.list.PrevPage()
-
-			return nil
-
-		case key.Matches(msg, m.keymap.NextPage):
-			m.list.NextPage()
-
-			return nil
-
-		case key.Matches(msg, m.keymap.NextCategory):
-			return m.handleTabForward()
-
-		case key.Matches(msg, m.keymap.PrevCategory):
-			return m.handleTabBackward()
-
-		case key.Matches(msg, m.keymap.GoToTop):
-			m.list.GoToTop()
-
-			return nil
-
-		case key.Matches(msg, m.keymap.GoToBottom):
-			m.list.GoToBottom()
-
-			return nil
-
-		case key.Matches(msg, m.keymap.Refresh):
-			if !categories.IsFavorites(m.cat.CurrentCategory()) {
-				return m.handleRefresh()
-			}
-
-		default:
-			// The remaining keys all act on the highlighted story, so they do
-			// nothing when the list is empty (e.g. the favorites tab with no
-			// items). Guarding once here means any item action added below is
-			// covered automatically.
-			if numItems == 0 {
-				break
-			}
-
-			switch {
-			case key.Matches(msg, m.keymap.OpenLink):
-				return m.handleOpenLink()
-
-			case key.Matches(msg, m.keymap.OpenComments):
-				return m.handleOpenComments()
-
-			case key.Matches(msg, m.keymap.AddFavorite):
-				m.status.SetPermanentStatusMessage(addItemConfirmationMessage())
-				m.prompt = promptAddFavorite
+		case key.Matches(keyMsg, m.keymap.RemoveFavorite):
+			if m.cat.CurrentCategory() == categories.Favorites {
+				m.status.SetPermanentStatusMessage(removeItemConfirmationMessage())
+				m.prompt = promptRemoveFavorite
 
 				return nil
-
-			case key.Matches(msg, m.keymap.RemoveFavorite):
-				if m.cat.CurrentCategory() == categories.Favorites {
-					m.status.SetPermanentStatusMessage(removeItemConfirmationMessage())
-					m.prompt = promptRemoveFavorite
-
-					return nil
-				}
-
-			case key.Matches(msg, m.keymap.ToggleRead):
-				if m.cat.CurrentCategory() != categories.Favorites {
-					return m.handleToggleRead()
-				}
-
-			case key.Matches(msg, m.keymap.EnterComments):
-				return m.handleEnterComments()
-
-			case key.Matches(msg, m.keymap.ReaderMode):
-				return m.handleEnterReaderMode()
 			}
+
+		case key.Matches(keyMsg, m.keymap.ToggleRead):
+			if m.cat.CurrentCategory() != categories.Favorites {
+				return m.handleToggleRead()
+			}
+
+		case key.Matches(keyMsg, m.keymap.EnterComments):
+			return m.handleEnterComments()
+
+		case key.Matches(keyMsg, m.keymap.ReaderMode):
+			return m.handleEnterReaderMode()
 		}
 	}
 
@@ -206,7 +258,7 @@ func (m *model) handleTab(targetIndex int, targetCategory categories.Category, a
 	}
 
 	// The rollback point is the category being left, captured before advance.
-	tok, startSpinnerCmd := m.startFetch(0, m.listRollback())
+	tok, startSpinnerCmd := m.startFetch(m.listRollback())
 
 	pane.SetProgressIndeterminate()
 
@@ -231,6 +283,71 @@ func (m *model) handleOpenComments() tea.Cmd {
 	return message.OpenInBrowser(hn.ItemURL(m.list.SelectedItem().ID))
 }
 
+// handleSearchPromptKey feeds one key press to the open search prompt; a
+// committed query starts the search fetch. Cancelling with nothing committed
+// leaves search altogether — the / was a false start — while cancelling over
+// existing results keeps them.
+func (m *model) handleSearchPromptKey(msg tea.KeyPressMsg) tea.Cmd {
+	switch m.searchPrompt.HandleKey(msg) {
+	case pane.PromptCommitted:
+		m.prompt = promptNone
+
+		return m.runSearch(m.searchPrompt.Text())
+
+	case pane.PromptCanceled:
+		m.prompt = promptNone
+
+		if m.searchQuery == "" {
+			m.exitSearch()
+		}
+
+	case pane.PromptPending:
+		// The prompt renders live from the model; nothing to do.
+	}
+
+	return nil
+}
+
+// exitSearch leaves search mode for the tab it was entered from, clearing
+// the query, results and filters — every / starts a fresh search.
+func (m *model) exitSearch() {
+	m.cat.ExitSearch()
+	m.searchQuery = ""
+	m.searchFilters = searchFilters{}
+	m.list.SetItems(categories.Search, nil)
+	m.list.ResetPager()
+}
+
+// runSearch fetches the stories matching query, replacing the search tab's
+// results. Old results stay on screen, dimmed, until the new ones arrive;
+// a failed or cancelled fetch keeps them.
+func (m *model) runSearch(query string) tea.Cmd {
+	m.searchQuery = query
+
+	m.list.BeginTransition()
+	m.list.SetPage(0)
+	m.list.SetCursor(0)
+	m.updatePagination()
+
+	tok, startSpinnerCmd := m.startFetch(m.listRollback())
+
+	pane.SetProgressIndeterminate()
+
+	return tea.Batch(startSpinnerCmd, m.fetchSearch(tok, query, m.cat.CurrentIndex()))
+}
+
+// rerunSearch re-runs the committed query, picking up the current filters —
+// refresh and every filter change route through here. With nothing committed
+// yet there is nothing to re-run; the filter change still shows in the
+// readout.
+func (m *model) rerunSearch() tea.Cmd {
+	if m.searchQuery == "" {
+		return nil
+	}
+
+	return m.runSearch(m.searchQuery)
+}
+
 func (m *model) handleRefresh() tea.Cmd {
 	currentCategory := m.cat.CurrentCategory()
 	currentIndex := m.cat.CurrentIndex()
@@ -243,7 +360,7 @@ func (m *model) handleRefresh() tea.Cmd {
 	m.list.SetPage(currentPage)
 	m.list.SetCursor(0)
 
-	tok, startSpinnerCmd := m.startFetch(0, m.listRollback())
+	tok, startSpinnerCmd := m.startFetch(m.listRollback())
 
 	pane.SetProgressIndeterminate()
 

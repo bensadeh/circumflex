@@ -109,7 +109,7 @@ func (s *Scroller) DecorateView(view string) string {
 	// While the prompt is open the hits are live-updating and none of them
 	// is the current one yet — n/N navigation starts on commit.
 	current := s.search.current
-	if s.search.prompting {
+	if s.search.prompt.Active() {
 		current = -1
 	}
 

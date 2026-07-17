@@ -31,6 +31,7 @@ type Frame struct {
 	DetailOpen    bool // the detail pane is open: comments, article, or help
 	DetailLoading bool // a story's comments or article is being fetched
 	Selection     Selection
+	SearchQuery   string // the committed Hacker News search query, if any
 }
 
 type Model struct {

@@ -14,6 +14,7 @@ const (
 	Show
 	Best
 	Jobs
+	Search
 	Favorites
 )
 
@@ -45,6 +46,11 @@ var categoryInfo = [...]info{
 	Show:   {name: "show", endpoint: "showstories", fetchPolicy: SinglePage},
 	Best:   {name: "best", endpoint: "beststories", fetchPolicy: MultiPage},
 	Jobs:   {name: "jobs", endpoint: "jobstories", fetchPolicy: SinglePage},
+	// search is a mode, not a tab: it is entered with / rather than selected
+	// via --categories, and fetches from Algolia when a query is committed,
+	// so it has no Firebase endpoint. One page: search shows the top results,
+	// not a feed to page through.
+	Search: {name: "search", endpoint: "", fetchPolicy: SinglePage},
 	// favorites is served locally; it is never fetched, so fetchPolicy is unused.
 	Favorites: {name: "favorites", endpoint: "", fetchPolicy: SinglePage},
 }
@@ -85,14 +91,25 @@ func Policy(cat Category) FetchPolicy {
 // saved items on disk rather than fetched over the network.
 func IsFavorites(cat Category) bool { return cat == Favorites }
 
+// IsSearch reports whether cat is the search view, which fetches results when
+// a query is committed rather than on tab-switch.
+func IsSearch(cat Category) bool { return cat == Search }
+
 // Default is the default value for the --categories flag.
 const Default = "top,best,ask,show,favorites"
 
 // AvailableNames returns the names accepted by the --categories flag.
+// Search is entered with / rather than selected as a tab, so it is not one
+// of them.
 func AvailableNames() []string {
-	names := make([]string, len(categoryInfo))
+	names := make([]string, 0, len(categoryInfo))
+
 	for i, inf := range categoryInfo {
-		names[i] = inf.name
+		if IsSearch(Category(i)) {
+			continue
+		}
+
+		names = append(names, inf.name)
 	}
 
 	return names
@@ -100,7 +117,7 @@ func AvailableNames() []string {
 
 func categoryFromName(name string) (Category, bool) {
 	for i, inf := range categoryInfo {
-		if inf.name == name {
+		if inf.name == name && !IsSearch(Category(i)) {
 			return Category(i), true
 		}
 	}
@@ -111,6 +128,12 @@ func categoryFromName(name string) (Category, bool) {
 type Categories struct {
 	list         []Category
 	currentIndex int
+
+	// searching overlays the cycle rather than joining it: while set, the
+	// current category is Search and no tab is current, but the remembered
+	// index stays put so leaving search returns to the tab it was entered
+	// from.
+	searching bool
 }
 
 func New(categoriesCSV string) (*Categories, error) {
@@ -177,11 +200,30 @@ func (c *Categories) ActiveCategories() []Category {
 	return c.list
 }
 
+// EnterSearch moves into search mode; the tab cycle keeps its position for
+// ExitSearch to return to. Callers advancing the cycle (Next, Prev) must
+// exit search first — the cycle functions ignore the mode.
+func (c *Categories) EnterSearch() { c.searching = true }
+
+func (c *Categories) ExitSearch() { c.searching = false }
+
+func (c *Categories) Searching() bool { return c.searching }
+
 func (c *Categories) CurrentCategory() Category {
+	if c.searching {
+		return Search
+	}
+
 	return c.list[c.currentIndex]
 }
 
+// CurrentIndex is -1 while searching: search is not a tab, so no header tab
+// is current and SetIndex(-1) rollbacks are no-ops.
 func (c *Categories) CurrentIndex() int {
+	if c.searching {
+		return -1
+	}
+
 	return c.currentIndex
 }
 

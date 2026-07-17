@@ -48,6 +48,13 @@ type model struct {
 	cat       *categories.Categories
 	keymap    keyMap
 
+	// searchPrompt is the open Hacker News search input (prompt says whether
+	// it is active); searchQuery is the committed query the results show,
+	// re-run by refresh and filter changes.
+	searchPrompt  pane.TextPrompt
+	searchQuery   string
+	searchFilters searchFilters
+
 	helpViewport viewport.Model
 
 	memorialErr error
@@ -102,6 +109,7 @@ func (m *model) listFrame() list.Frame {
 	f := list.Frame{
 		DetailOpen:    m.detail != nil || m.screen == screenHelp,
 		DetailLoading: m.detailLoading(),
+		SearchQuery:   m.searchQuery,
 	}
 
 	switch m.prompt {
@@ -109,7 +117,7 @@ func (m *model) listFrame() list.Frame {
 		f.Selection = list.SelectionAddFavorite
 	case promptRemoveFavorite:
 		f.Selection = list.SelectionRemoveFavorite
-	case promptNone:
+	case promptNone, promptSearch:
 		// Normal selection highlight.
 	}
 

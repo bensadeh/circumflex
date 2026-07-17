@@ -42,6 +42,18 @@ func (instantMockService) FetchItem(_ context.Context, _ int) (*hn.Story, error)
 	return &hn.Story{}, nil
 }
 
+func (instantMockService) SearchItems(_ context.Context, req hn.SearchRequest) ([]*hn.Story, error) {
+	var hits []*hn.Story
+
+	for _, s := range testItems() {
+		if strings.Contains(strings.ToLower(s.Title), strings.ToLower(req.Query)) {
+			hits = append(hits, s)
+		}
+	}
+
+	return hits, nil
+}
+
 func testItems() []*hn.Story {
 	return []*hn.Story{
 		{ID: 1, Title: "First item", Points: 100, Author: "alice", Time: time.Now().Unix(), Domain: "example.com", CommentsCount: 10, URL: "https://example.com/1"},
@@ -742,9 +754,45 @@ func TestViewBrowsing_HasContent(t *testing.T) {
 func TestViewBrowsing_FillsScreenExactly(t *testing.T) {
 	m := newTestModelReady(t)
 
+	// Two pages of stories, so the paginator dots render on the last row —
+	// a single page hides them.
+	var stories []*hn.Story
+	for i := range 20 {
+		stories = append(stories, &hn.Story{ID: i + 1, Title: fmt.Sprintf("story %d", i+1), Author: "a", Time: time.Now().Unix()})
+	}
+
+	m.list.SetItems(categories.Top, stories)
+	m.updatePagination()
+
 	lines := strings.Split(m.View(), "\n")
 	require.Len(t, lines, 24)
 	assert.Contains(t, lines[23], "•", "last row should carry the paginator dots")
+}
+
+// A single page renders no paginator — a lone dot indicates nothing.
+func TestPaginator_HiddenForSinglePage(t *testing.T) {
+	m := newTestModelReady(t)
+
+	assert.Empty(t, m.list.PaginatorView())
+	assert.Empty(t, m.list.DimmedPaginatorView())
+}
+
+// "No results" must wait for the fetch: while a search is in flight the
+// empty pane means "loading", not "nothing matched".
+func TestSearch_NoResultsMessageWaitsForFetch(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, _ = m.Update(keyMsg("/"))
+	for _, r := range "zzz" {
+		m, _ = m.Update(keyMsg(string(r)))
+	}
+
+	m, _ = m.Update(keyMsg("enter"))
+	require.True(t, m.fetch.inFlight())
+	assert.NotContains(t, m.View(), "No results", "the fetch is still running")
+
+	m, _ = m.Update(message.StoriesReady{Category: categories.Search, Index: -1, FetchID: m.fetch.currentID()})
+	assert.Contains(t, m.View(), "No results for “zzz”")
 }
 
 func TestViewHelpScreen(t *testing.T) {

@@ -3,6 +3,7 @@ package hn
 import (
 	"context"
 	"strconv"
+	"time"
 )
 
 // ItemURL returns the Hacker News page for an item (story or comment thread).
@@ -41,8 +42,18 @@ type CommentNode struct {
 	Children []*CommentNode
 }
 
+// SearchRequest is one story search: the query plus the filters mirroring
+// hn.algolia.com's dropdowns — how to rank and how far back.
+type SearchRequest struct {
+	Query        string
+	SortByDate   bool          // false ranks by relevance/popularity
+	MaxAge       time.Duration // 0 means all time
+	ItemsToFetch int
+}
+
 type Service interface {
 	FetchItems(ctx context.Context, itemsToFetch int, category string) ([]*Story, error)
 	FetchItem(ctx context.Context, id int) (*Story, error)
 	FetchComments(ctx context.Context, id int, onProgress func(fetched, total int)) (*CommentTree, error)
+	SearchItems(ctx context.Context, req SearchRequest) ([]*Story, error)
 }

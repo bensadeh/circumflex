@@ -180,7 +180,7 @@ func (m *model) handleStartup(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
 
 	var cmds []tea.Cmd
 
-	tok, spinnerCmd := m.startFetch(0, m.listRollback())
+	tok, spinnerCmd := m.startFetch(m.listRollback())
 
 	pane.SetProgressIndeterminate()
 

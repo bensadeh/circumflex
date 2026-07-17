@@ -215,12 +215,42 @@ func TestIsFavorites(t *testing.T) {
 	assert.False(t, IsFavorites(Ask))
 }
 
+func TestIsSearch(t *testing.T) {
+	assert.True(t, IsSearch(Search))
+	assert.False(t, IsSearch(Top))
+	assert.False(t, IsSearch(Favorites))
+}
+
+// Search is a mode entered with /, not a tab — the flag must not accept it.
+func TestSearch_NotSelectable(t *testing.T) {
+	assert.NotContains(t, AvailableNames(), "search")
+
+	_, err := New("top,search")
+	assert.Error(t, err)
+}
+
+func TestSearchMode(t *testing.T) {
+	c := newTestCategories(t, "top,best,ask")
+	c.SetIndex(1)
+
+	c.EnterSearch()
+	assert.True(t, c.Searching())
+	assert.Equal(t, Search, c.CurrentCategory())
+	assert.Equal(t, -1, c.CurrentIndex(), "no tab is current while searching")
+
+	c.ExitSearch()
+	assert.False(t, c.Searching())
+	assert.Equal(t, Best, c.CurrentCategory(), "leaving search returns to the tab it was entered from")
+	assert.Equal(t, 1, c.CurrentIndex())
+}
+
 func TestCount_MatchesNamedCategories(t *testing.T) {
 	assert.Equal(t, int(Favorites)+1, Count())
 }
 
 // TestCategoryTable_Consistent guards future additions: every category must
-// have a name, and only favorites (served locally) may omit an endpoint.
+// have a name, and only favorites (served locally) and search (query-driven)
+// may omit an endpoint.
 func TestCategoryTable_Consistent(t *testing.T) {
 	for i := range Count() {
 		cat := Category(i)
@@ -228,10 +258,15 @@ func TestCategoryTable_Consistent(t *testing.T) {
 		assert.NotEmptyf(t, Name(cat), "category %d has no name", i)
 		assert.NotEqualf(t, "unknown", Name(cat), "category %d falls through to unknown", i)
 
-		if IsFavorites(cat) {
-			assert.Emptyf(t, Endpoint(cat), "favorites is local and must not have an endpoint")
+		if IsFavorites(cat) || IsSearch(cat) {
+			assert.Emptyf(t, Endpoint(cat), "category %q is not a Firebase feed and must not have an endpoint", Name(cat))
 		} else {
 			assert.NotEmptyf(t, Endpoint(cat), "fetched category %q must have an endpoint", Name(cat))
+		}
+
+		// Search is deliberately not parseable — it is a mode, not a tab.
+		if IsSearch(cat) {
+			continue
 		}
 
 		got, ok := categoryFromName(Name(cat))
