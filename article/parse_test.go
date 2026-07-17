@@ -223,6 +223,36 @@ func TestParseBlocks_BareHTagIsHeading(t *testing.T) {
 	assert.Equal(t, "after", blocks[2].plainText())
 }
 
+func TestParseBlocks_HeadingPermalinkMarkerIsPruned(t *testing.T) {
+	t.Parallel()
+
+	// Self-link markers hidden by site CSS: wrapped (repebble.com), prefix
+	// (rehype-autolink prepend), and suffix (Sphinx headerlink) styles.
+	blocks := blocksFromHTML(t,
+		`<h3 id="a"><a href="#a"><span>#</span>Wrapped Title</a></h3>`+
+			`<h3 id="b"><a href="#b">#</a> Prefixed Title</h3>`+
+			`<h3 id="c">Suffixed Title<a href="#c">¶</a></h3>`)
+
+	require.Len(t, blocks, 3)
+	assert.Equal(t, "Wrapped Title", blocks[0].text)
+	assert.Equal(t, "Prefixed Title", blocks[1].text)
+	assert.Equal(t, "Suffixed Title", blocks[2].text)
+}
+
+func TestParseBlocks_HeadingHashContentIsKept(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t,
+		`<h2 id="x"><a href="#x">#1 in Charts</a></h2>`+
+			`<h2><a href="/page">#</a> External Marker</h2>`)
+
+	require.Len(t, blocks, 2)
+	assert.Equal(t, "#1 in Charts", blocks[0].text,
+		"a # that is part of the title must survive pruning")
+	assert.Equal(t, "# External Marker", blocks[1].text,
+		"only fragment self-links are permalink chrome")
+}
+
 func TestParseBlocks_QuirksModeTableInsideParagraph(t *testing.T) {
 	t.Parallel()
 

@@ -244,9 +244,49 @@ func isBareHeading(n *html.Node) bool {
 func (p *domParser) emitHeading(n *html.Node, level int) {
 	p.flushInline()
 
+	prunePermalinks(n, false)
+
 	if text := strings.TrimSpace(spanText(collectInline(n, formatPlain, nil))); text != "" {
 		p.blocks = append(p.blocks, block{kind: blockHeading, level: level, text: text})
 	}
+}
+
+// Heading permalinks (rehype-autolink-headings, Sphinx, and kin) put a literal
+// marker glyph inside a fragment self-link, hidden until hover by the site's
+// own CSS; without pruning it surfaces in text as "#Title". The marker is
+// either the link's entire text or a marker-only element beside the title
+// inside the link.
+func prunePermalinks(n *html.Node, inAnchor bool) {
+	for c := n.FirstChild; c != nil; {
+		next := c.NextSibling
+
+		marker := c.Type == html.ElementNode &&
+			isPermalinkMarker(spanText(collectInline(c, formatPlain, nil)))
+
+		switch {
+		case marker && (isFragmentAnchor(c) || inAnchor):
+			n.RemoveChild(c)
+
+		default:
+			prunePermalinks(c, inAnchor || isFragmentAnchor(c))
+		}
+
+		c = next
+	}
+}
+
+func isFragmentAnchor(n *html.Node) bool {
+	return n.Type == html.ElementNode && nodeAtom(n) == atom.A &&
+		strings.HasPrefix(attr(n, "href"), "#")
+}
+
+func isPermalinkMarker(s string) bool {
+	switch strings.TrimSpace(s) {
+	case "#", "¶", "§", "⌗", "🔗":
+		return true
+	}
+
+	return false
 }
 
 func (p *domParser) flushInline() {
