@@ -272,7 +272,7 @@ func (p *domParser) appendImage(n *html.Node) {
 }
 
 func imageBlock(caption, src string, dispWidth int) block {
-	b := block{kind: blockImage, imageURL: src, dispWidth: dispWidth, figure: knownFigure(src, caption)}
+	b := block{kind: blockImage, imageURL: src, dispWidth: dispWidth, figure: knownFigure(caption)}
 	if caption != "" {
 		b.spans = []span{{text: caption}}
 	}
@@ -478,7 +478,7 @@ func (p *domParser) parseFigure(n *html.Node) {
 	// reveal, so it must not promise one. With an img, the alt text may
 	// declare the genre even when the figcaption that becomes the displayed
 	// caption does not.
-	b.figure = img == nil || knownFigure(src, caption, altText(img))
+	b.figure = img == nil || knownFigure(caption, altText(img))
 	p.blocks = append(p.blocks, b)
 }
 

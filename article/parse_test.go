@@ -334,7 +334,7 @@ func TestParseBlocks_KnownChartImageBecomesFigure(t *testing.T) {
 	require.Len(t, blocks, 3)
 	assert.True(t, blocks[0].figure, "genre-led alt text")
 	assert.False(t, blocks[1].figure, "photograph stays an image")
-	assert.True(t, blocks[2].figure, "described vector source")
+	assert.False(t, blocks[2].figure, "vector format alone declares nothing")
 }
 
 func TestParseBlocks_FigureGenreInAltNotFigcaption(t *testing.T) {
