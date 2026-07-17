@@ -42,7 +42,9 @@ func fetchImages(ctx context.Context, blocks []block, base *nurl.URL) {
 	var targets []int
 
 	for i := range blocks {
-		if blocks[i].kind == blockImage && blocks[i].imageURL != "" {
+		// Known figures render their description, never art, so fetching
+		// their pixels would be wasted.
+		if blocks[i].kind == blockImage && blocks[i].imageURL != "" && !blocks[i].figure {
 			targets = append(targets, i)
 			if len(targets) == maxImages {
 				break

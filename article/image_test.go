@@ -51,6 +51,31 @@ func TestFetchImages_TinyImageIsDecorativeNotFailed(t *testing.T) {
 	assert.False(t, blocks[1].decorative)
 }
 
+func TestFetchImages_SkipsKnownFigures(t *testing.T) {
+	t.Parallel()
+
+	requested := false
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requested = true
+
+		http.NotFound(w, r)
+	}))
+	defer srv.Close()
+
+	base, err := nurl.Parse(srv.URL)
+	require.NoError(t, err)
+
+	blocks := []block{
+		{kind: blockImage, imageURL: srv.URL + "/chart.png", figure: true},
+	}
+
+	fetchImages(context.Background(), blocks, base)
+
+	assert.False(t, requested, "figures render their description, never art")
+	assert.Nil(t, blocks[0].img)
+}
+
 func TestFetchImages_SendsRefererForHotlinkProtection(t *testing.T) {
 	t.Parallel()
 

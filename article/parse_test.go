@@ -324,6 +324,33 @@ func TestParseBlocks_InlineRoleImageStaysInline(t *testing.T) {
 	assert.Equal(t, "done 🎉 indeed", blocks[0].plainText())
 }
 
+func TestParseBlocks_KnownChartImageBecomesFigure(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<img src="loss.png" alt="Line chart of training loss">
+		<img src="horse.jpg" alt="A horse in a field">
+		<img src="pipeline.svg" alt="The rendering pipeline">`)
+
+	require.Len(t, blocks, 3)
+	assert.True(t, blocks[0].figure, "genre-led alt text")
+	assert.False(t, blocks[1].figure, "photograph stays an image")
+	assert.True(t, blocks[2].figure, "described vector source")
+}
+
+func TestParseBlocks_FigureGenreInAltNotFigcaption(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<figure>
+		<img src="scores.png" alt="Bar chart of scores across models">
+		<figcaption>Scores across models.</figcaption>
+	</figure>`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, blockImage, blocks[0].kind)
+	assert.True(t, blocks[0].figure)
+	assert.Equal(t, "Scores across models.", blocks[0].plainText())
+}
+
 func TestParseBlocks_SVGRoleImageBecomesFigure(t *testing.T) {
 	t.Parallel()
 

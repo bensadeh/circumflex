@@ -14,7 +14,7 @@
 - Add support for displaying AVIF images
 - Fix Mermaid diagrams not rendering
 - Markdown pages are now rendered and fully formatted
-- Charts drawn in HTML or SVG now render as described figures instead of leaking stray text
+- Charts and diagrams now render as described figures
 
 **Comment Section**
 
