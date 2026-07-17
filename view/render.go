@@ -154,16 +154,18 @@ func (m *model) statusAndPaginationView() string {
 
 	left := m.statusLeftStyle.Width(leftWidth).MaxWidth(leftWidth).Render("")
 
+	// The page dots end on the front-page help panels' right border, like
+	// the search header's date group, so the two screens share an edge.
+	rightEdge := min(help.MainMenuPanelRightEdge(m.listWidth()), m.listWidth())
+
 	center := midStyle.
-		Width(m.listWidth() - leftWidth - statusBarEdgeWidth).
+		Width(max(0, rightEdge-leftWidth-xansi.StringWidth(rightContent))).
 		Render(centerContent)
 
-	right := m.statusEndStyle.Render(rightContent)
-
-	// The fixed edge slots overflow panes narrower than their sum; the center
-	// can too when its width comes out non-positive and lipgloss renders the
+	// The edge slots overflow panes narrower than their sum; the center can
+	// too when its content outgrows its width and lipgloss renders the
 	// message at its natural width.
-	row := xansi.Truncate(left+center+right, m.listWidth(), "")
+	row := xansi.Truncate(left+center+rightContent, m.listWidth(), "")
 
 	return underline + "\n" + row
 }

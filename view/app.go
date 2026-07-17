@@ -63,7 +63,6 @@ type model struct {
 	// Cached styles for hot-path rendering.
 	statusLeftStyle lipgloss.Style
 	statusMidStyle  lipgloss.Style
-	statusEndStyle  lipgloss.Style
 }
 
 func newModel(config *settings.Config, cat *categories.Categories, fav *favorites.Favorites, width, height int, service hn.Service, hist history.History) *model {
@@ -82,7 +81,6 @@ func newModel(config *settings.Config, cat *categories.Categories, fav *favorite
 
 		statusLeftStyle: lipgloss.NewStyle().Inline(true).Width(statusBarEdgeWidth).MaxWidth(statusBarEdgeWidth),
 		statusMidStyle:  lipgloss.NewStyle().Inline(true).Align(lipgloss.Center),
-		statusEndStyle:  lipgloss.NewStyle().Inline(true).Width(statusBarEdgeWidth).Align(lipgloss.Center),
 	}
 
 	m.list = list.New(config, cat, hist)
