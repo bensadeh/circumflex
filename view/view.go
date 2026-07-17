@@ -38,13 +38,14 @@ func (t teaModel) View() tea.View {
 	frame := t.m.View()
 
 	// An open search prompt marks its cursor cell in the frame; the real
-	// terminal cursor parks there, in the terminal's own color — steady,
-	// not blinking.
+	// terminal cursor parks there, in the terminal's own color — a steady
+	// vertical bar, not a blinking block.
 	var cursor *tea.Cursor
 
 	if x, y, cleaned, ok := pane.ExtractPromptCursor(frame); ok {
 		frame = cleaned
 		cursor = tea.NewCursor(x, y)
+		cursor.Shape = tea.CursorBar
 		cursor.Blink = false
 	}
 
