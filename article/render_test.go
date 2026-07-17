@@ -279,7 +279,7 @@ func TestRenderImage_CentersScaledDownArt(t *testing.T) {
 
 	lines := strings.Split(ansi.Strip(renderImage(b, width, showImages)), "\n")
 
-	inner := width - len(blockIndent)
+	inner := width - 2*len(blockIndent)
 	artCols := imageCols(0, 32, inner)
 	artPad := len(blockIndent) + (inner-artCols)/2
 	captionPad := len(blockIndent) + (inner-len("a caption"))/2

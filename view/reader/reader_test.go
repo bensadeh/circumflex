@@ -187,8 +187,8 @@ func TestImageStatusLine(t *testing.T) {
 	assert.Equal(t, xansi.StringWidth(shown), xansi.StringWidth(hidden),
 		"both states span the same width so the label start column never shifts")
 
-	assert.True(t, strings.HasSuffix(imageStatusLine(true, true, 80), " "+nerdfonts.Image))
-	assert.True(t, strings.HasSuffix(imageStatusLine(false, true, 80), " "+nerdfonts.ImageOff))
+	assert.True(t, strings.HasSuffix(imageStatusLine(true, true, 80), " "+nerdfonts.Image+" "))
+	assert.True(t, strings.HasSuffix(imageStatusLine(false, true, 80), " "+nerdfonts.ImageOff+" "))
 }
 
 func TestReader_BackgroundColorMsgRerendersWithTermBG(t *testing.T) {

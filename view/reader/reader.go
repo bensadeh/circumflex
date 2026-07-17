@@ -626,6 +626,10 @@ func imageStatusLine(show, enableNerdFonts bool, paneWidth int) string {
 		if !show {
 			icon = nerdfonts.ImageOff
 		}
+
+		// The nerd glyph draws about half a cell wider than its measured
+		// width, so it backs off the right edge by one column.
+		icon += " "
 	}
 
 	// Both states padded to the same width so the label starts at the same

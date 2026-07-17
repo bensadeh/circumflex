@@ -362,7 +362,9 @@ func cachedImagePart(b *block, width int, bg color.Color) string {
 		return b.art
 	}
 
-	inner := width - len(blockIndent)
+	// The art keeps the block indent on both sides, so a full-width image
+	// stops short of the right edge like the left.
+	inner := width - 2*len(blockIndent)
 
 	part := ""
 
