@@ -142,6 +142,14 @@ func TestRenderImage_CaptionedDecorationKeepsLabel(t *testing.T) {
 	assert.Equal(t, "  ●●● Image a caption", ansi.Strip(renderImage(b, 80, showImages)))
 }
 
+func TestRenderImage_FigureLabel(t *testing.T) {
+	t.Parallel()
+
+	b := &block{kind: blockImage, figure: true, spans: []span{{text: "a caption"}}}
+
+	assert.Equal(t, "  ▂▄▆ Figure a caption", ansi.Strip(renderImage(b, 80, showImages)))
+}
+
 func TestRenderImageArt_HalfBlockGrid(t *testing.T) {
 	t.Parallel()
 

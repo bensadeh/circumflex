@@ -282,8 +282,59 @@ func TestParseBlocks_FigureWithOnlyCaptionStaysImageBlock(t *testing.T) {
 
 	require.Len(t, blocks, 1)
 	assert.Equal(t, blockImage, blocks[0].kind)
+	assert.True(t, blocks[0].figure)
 	assert.Empty(t, blocks[0].imageURL)
 	assert.Equal(t, "Benchmark results for the new model", blocks[0].plainText())
+}
+
+func TestParseBlocks_RoleImageBecomesFigure(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<div role="img" aria-label="Bar chart of scores. Alpha leads at 90.">
+		<div><p>Alpha</p><p>90</p></div>
+		<div><p>Beta</p><p>80</p></div>
+	</div>`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, blockImage, blocks[0].kind)
+	assert.True(t, blocks[0].figure)
+	assert.Empty(t, blocks[0].imageURL)
+	assert.Equal(t, "Bar chart of scores. Alpha leads at 90.", blocks[0].plainText())
+}
+
+func TestParseBlocks_RoleImageWithoutLabelKeepsProse(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<div role="img" aria-label="  ">
+		<div><p>Alpha</p></div>
+	</div>`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, blockParagraph, blocks[0].kind)
+	assert.Equal(t, "Alpha", blocks[0].plainText())
+}
+
+func TestParseBlocks_InlineRoleImageStaysInline(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<p>done <span role="img" aria-label="tada">🎉</span> indeed</p>`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, blockParagraph, blocks[0].kind)
+	assert.Equal(t, "done 🎉 indeed", blocks[0].plainText())
+}
+
+func TestParseBlocks_SVGRoleImageBecomesFigure(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<svg role="img" aria-label="A line chart trending upward.">
+		<circle cx="1" cy="1" r="1"></circle>
+	</svg>`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, blockImage, blocks[0].kind)
+	assert.True(t, blocks[0].figure)
+	assert.Equal(t, "A line chart trending upward.", blocks[0].plainText())
 }
 
 func TestParseBlocks_InlineImageBecomesOwnBlock(t *testing.T) {

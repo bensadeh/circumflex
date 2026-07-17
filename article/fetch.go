@@ -99,8 +99,10 @@ func extractReadable(body []byte, parsedURL *nurl.URL) (*html.Node, string, erro
 	}
 
 	// MediaWiki markup needs normalizing before readability runs, while the
-	// class names that identify it are still present.
+	// class names that identify it are still present; ARIA-described graphics
+	// likewise, before readability deletes their text-less subtrees.
 	normalizeMediaWiki(doc)
+	normalizeRoleImages(doc)
 
 	parser := readability.NewParser()
 

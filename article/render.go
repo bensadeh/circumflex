@@ -328,8 +328,13 @@ func renderImage(b *block, width int, images ImageOptions) string {
 		return ""
 	}
 
+	label := imageLabel()
+	if b.figure {
+		label = figureLabel()
+	}
+
 	inner := width - len(blockIndent)
-	text := imageLabel() + caption + ansi.Reset
+	text := label + caption + ansi.Reset
 	wrapped := lipgloss.Wrap(text, inner, "")
 
 	return style.PrefixLines(wrapped, blockIndent)
@@ -569,13 +574,24 @@ func captionLines(caption string, width int) string {
 }
 
 func imageLabel() string {
-	circles := lipgloss.NewStyle().Foreground(style.HeaderC()).Faint(true).Render(imageCircle) +
-		lipgloss.NewStyle().Foreground(style.HeaderL()).Faint(true).Render(imageCircle) +
-		lipgloss.NewStyle().Foreground(style.HeaderX()).Faint(true).Render(imageCircle)
+	return graphicLabel(imageCircle, imageCircle, imageCircle, " Image ")
+}
 
-	title := lipgloss.NewStyle().Foreground(style.ReaderImageColor()).Faint(true).Italic(true).Render(" Image ")
+// figureLabel marks a graphic drawn in markup rather than pixels: an ascending
+// mini bar chart in place of the image circles, since no bitmap exists for the
+// image toggle to reveal.
+func figureLabel() string {
+	return graphicLabel("▂", "▄", "▆", " Figure ")
+}
 
-	return ansi.Reset + circles + ansi.Reset + title + ansi.Faint + ansi.Italic
+func graphicLabel(first, second, third, title string) string {
+	marks := lipgloss.NewStyle().Foreground(style.HeaderC()).Faint(true).Render(first) +
+		lipgloss.NewStyle().Foreground(style.HeaderL()).Faint(true).Render(second) +
+		lipgloss.NewStyle().Foreground(style.HeaderX()).Faint(true).Render(third)
+
+	styledTitle := lipgloss.NewStyle().Foreground(style.ReaderImageColor()).Faint(true).Italic(true).Render(title)
+
+	return ansi.Reset + marks + ansi.Reset + styledTitle + ansi.Faint + ansi.Italic
 }
 
 func renderTable(rows [][]string, hasHeader bool, width int) string {

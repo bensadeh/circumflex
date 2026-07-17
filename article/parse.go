@@ -85,6 +85,18 @@ func (p *domParser) walk(n *html.Node) {
 		return
 	}
 
+	// Before the skip filter: an <svg role="img"> is dropped as markup but
+	// kept as its accessible description.
+	if label := roleImageLabel(n); label != "" {
+		p.flushInline()
+
+		b := imageBlock(label, "", 0)
+		b.figure = true
+		p.blocks = append(p.blocks, b)
+
+		return
+	}
+
 	if skippedElement(nodeAtom(n)) {
 		return
 	}
@@ -459,7 +471,13 @@ func (p *domParser) parseFigure(n *html.Node) {
 		src = imageSrc(img)
 	}
 
-	p.blocks = append(p.blocks, imageBlock(caption, src, imageDisplayWidth(img)))
+	b := imageBlock(caption, src, imageDisplayWidth(img))
+
+	// A captioned figure with no <img> at all — a canvas chart, a JS-rendered
+	// graphic readability deleted — has no bitmap the image toggle could ever
+	// reveal, so it must not promise one.
+	b.figure = img == nil
+	p.blocks = append(p.blocks, b)
 }
 
 func hasProseOutsideCaption(n *html.Node) bool {
