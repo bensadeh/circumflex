@@ -1,13 +1,18 @@
 package pane
 
 import (
+	"strings"
+	"sync"
 	"testing"
+	"time"
 
+	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/graphics"
 
 	uv "github.com/charmbracelet/ultraviolet"
 	"github.com/charmbracelet/x/ansi/kitty"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDetectGraphics(t *testing.T) {
@@ -60,4 +65,43 @@ func TestHandleGraphicsReport(t *testing.T) {
 		"an unchanged cell size changes nothing")
 
 	assert.NotNil(t, QueryCellSize(), "resizes re-ask once a graphics terminal answered")
+}
+
+// The pipeline is package-global (kittyKick), so this runs serial like the
+// other graphics-state tests.
+func TestKittyWorkPipeline(t *testing.T) {
+	t.Setenv("TMUX", "")
+
+	var (
+		mu  sync.Mutex
+		got []string
+	)
+
+	stop := wireGraphics(func(seq string) {
+		mu.Lock()
+		defer mu.Unlock()
+
+		got = append(got, seq)
+	})
+	defer stop()
+
+	EmitKittyWork(nil)
+	EmitKittyWork([]article.KittyWork{{ID: 5, PNG: []byte("png"), Cols: 4, Rows: 2}})
+	EmitKittyWork([]article.KittyWork{{ID: 5, Cols: 6, Rows: 3}})
+
+	require.Eventually(t, func() bool {
+		mu.Lock()
+		defer mu.Unlock()
+
+		return len(got) == 2
+	}, time.Second, time.Millisecond, "empty work is dropped, the rest delivered")
+
+	mu.Lock()
+	defer mu.Unlock()
+
+	assert.Contains(t, got[0], "a=T", "the transmission leaves first")
+	assert.Contains(t, got[0], "c=4,r=2")
+	assert.True(t, strings.Contains(got[1], "a=p") && !strings.Contains(got[1], "a=T"),
+		"a geometry-only batch replaces the placement, no pixels resent")
+	assert.Contains(t, got[1], "c=6,r=3")
 }

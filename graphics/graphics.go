@@ -98,14 +98,18 @@ func ShouldQuery() bool {
 	return true
 }
 
-// QuerySeq is the startup probe: a dummy one-pixel query the terminal
-// answers only if it speaks the Kitty graphics protocol, plus the cell
-// pixel size request. Terminals that recognize neither consume both
-// silently, so no answer simply leaves the feature off.
+// QuerySeq is the startup probe: the cell pixel size request, then a dummy
+// one-pixel query the terminal answers only if it speaks the Kitty graphics
+// protocol. The cell size goes first because terminals answer in input order:
+// its report lands before the answer that turns graphics on, so the enabling
+// repaint sizes image grids from real cell metrics instead of transmitting
+// at the fallback shape and correcting a moment later. Terminals that
+// recognize neither consume both silently, so no answer simply leaves the
+// feature off.
 func QuerySeq() string {
-	return wrap(xansi.KittyGraphics([]byte("AAAA"),
-		"i="+strconv.Itoa(queryID), "s=1", "v=1", "a=q", "t=d", "f=24")) +
-		CellSizeQuerySeq()
+	return CellSizeQuerySeq() +
+		wrap(xansi.KittyGraphics([]byte("AAAA"),
+			"i="+strconv.Itoa(queryID), "s=1", "v=1", "a=q", "t=d", "f=24"))
 }
 
 // IsQueryReply reports whether a graphics response echoes the probe.
@@ -123,21 +127,31 @@ func CellSizeQuerySeq() string {
 // placement: the image will show wherever placeholder cells carrying id
 // appear, scaled to cols x rows cells. The payload is chunked to the
 // protocol's limit; q=2 keeps the terminal from answering.
+//
+// The transmission opens by deleting the id: IDs recycle across sessions and
+// wrap at 255 within one, and the terminal may still hold an image a crashed
+// or killed session never cleaned up. Deleting first means no placement or
+// image from another life can survive alongside the fresh transmission;
+// deleting a nonexistent id is a no-op.
 func TransmitSeq(id int, png []byte, cols, rows int) string {
 	payload := base64.StdEncoding.EncodeToString(png)
 
+	idOpt := "i=" + strconv.Itoa(id)
+	deleteSeq := wrap(xansi.KittyGraphics(nil, "a=d", "d=I", idOpt, "q=2"))
+
 	baseOpts := []string{
-		"a=T", "f=100", "t=d", "q=2", "U=1",
-		"i=" + strconv.Itoa(id),
+		"a=T", "f=100", "t=d", "q=2", "U=1", idOpt,
 		"c=" + strconv.Itoa(cols),
 		"r=" + strconv.Itoa(rows),
 	}
 
 	if len(payload) <= kitty.MaxChunkSize {
-		return wrap(xansi.KittyGraphics([]byte(payload), baseOpts...))
+		return deleteSeq + wrap(xansi.KittyGraphics([]byte(payload), baseOpts...))
 	}
 
 	var sb strings.Builder
+
+	sb.WriteString(deleteSeq)
 
 	for off := 0; off < len(payload); off += kitty.MaxChunkSize {
 		end := min(off+kitty.MaxChunkSize, len(payload))

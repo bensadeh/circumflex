@@ -299,10 +299,12 @@ func RunStandalone(makeView func(width, height int) View, makePageView MakePageV
 	p := tea.NewProgram(standalone{makeView: makeView, makePageView: makePageView})
 
 	settleProgress := WireProgress(p)
+	stopGraphics := WireGraphics(p)
 
 	finalModel, err := p.Run()
 
 	settleProgress()
+	stopGraphics()
 
 	// Transmitted images survive the program in the terminal's memory;
 	// release them now that no frame flush can interleave with the write.

@@ -81,6 +81,8 @@ func TestQuerySeqShape(t *testing.T) {
 	assert.Contains(t, seq, "a=q", "query action, so nothing is stored")
 	assert.Contains(t, seq, "i=31")
 	assert.Contains(t, seq, "\x1b[16t", "cell pixel size rides along")
+	assert.Less(t, strings.Index(seq, "\x1b[16t"), strings.Index(seq, "\x1b_G"),
+		"cell size is asked first, so its report precedes the answer that enables graphics")
 
 	assert.True(t, IsQueryReply(31))
 	assert.False(t, IsQueryReply(7), "stray graphics responses are not the probe echo")
@@ -91,11 +93,12 @@ func TestTransmitSeqSingleChunk(t *testing.T) {
 
 	seq := TransmitSeq(7, []byte("tiny"), 10, 5)
 
-	assert.Equal(t, 1, strings.Count(seq, "\x1b_G"), "small payloads go in one piece")
+	assert.Equal(t, 2, strings.Count(seq, "\x1b_G"), "the id purge, then the payload in one piece")
+	assert.Less(t, strings.Index(seq, "a=d,d=I,i=7"), strings.Index(seq, "a=T"),
+		"the id is purged first: recycled IDs may collide with a dead session's leftovers")
 	assert.Contains(t, seq, "a=T", "transmit-and-put creates the placement in one step")
 	assert.Contains(t, seq, "f=100", "the payload is a PNG")
 	assert.Contains(t, seq, "U=1", "virtual placement: pixels appear only under placeholder cells")
-	assert.Contains(t, seq, "i=7")
 	assert.Contains(t, seq, "c=10,r=5")
 	assert.Contains(t, seq, "q=2", "the terminal must not answer transmissions")
 	assert.NotContains(t, seq, "m=", "no continuation marker on a single chunk")
@@ -107,8 +110,9 @@ func TestTransmitSeqChunks(t *testing.T) {
 	seq := TransmitSeq(7, make([]byte, 9000), 10, 5)
 
 	chunks := strings.Count(seq, "\x1b_G")
-	assert.Equal(t, 3, chunks, "9000 bytes base64 to 12000, split at 4096")
+	assert.Equal(t, 4, chunks, "the id purge, then 9000 bytes base64 to 12000, split at 4096")
 
+	assert.Less(t, strings.Index(seq, "a=d,d=I,i=7"), strings.Index(seq, "a=T"))
 	assert.Equal(t, 1, strings.Count(seq, "a=T"), "options ride the first chunk only")
 	assert.Equal(t, 2, strings.Count(seq, "m=1"), "all but the last chunk continue")
 	assert.Equal(t, 1, strings.Count(seq, "m=0"), "the last chunk closes the stream")

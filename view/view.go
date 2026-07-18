@@ -75,10 +75,12 @@ func Run(config *settings.Config, cat *categories.Categories) error {
 	p := tea.NewProgram(teaModel{m: m})
 
 	settleProgress := pane.WireProgress(p)
+	stopGraphics := pane.WireGraphics(p)
 
 	finalModel, err := p.Run()
 
 	settleProgress()
+	stopGraphics()
 
 	// Transmitted images survive the program in the terminal's memory;
 	// release them now that no frame flush can interleave with the write.
