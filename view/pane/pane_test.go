@@ -276,6 +276,34 @@ func TestSetLinesCountsAndPads(t *testing.T) {
 
 // The domain-first message must skip the generic first-letter uppercasing —
 // "Ft.com" — and keep the domain intact under its highlight styling.
+// A downward key must never move the view up, even from beyond maxOffset —
+// where an n/N jump deliberately parks the view so a late match can sit at
+// the top.
+func TestPagingIsMonotonicFromOvershoot(t *testing.T) {
+	lines := make([]string, 30)
+	for i := range lines {
+		lines[i] = "line"
+	}
+
+	s := Scroller{Viewport: NewViewport(80, 10)}
+	s.SetLines(lines) // maxOffset = 30 - 10 = 20
+
+	s.Viewport.SetYOffset(25) // an n/N jump overshot into the padding
+
+	s.PageDown()
+	assert.Equal(t, 25, s.Viewport.YOffset(), "page down holds instead of bouncing up")
+
+	s.HalfPageDown()
+	assert.Equal(t, 25, s.Viewport.YOffset(), "half page down holds too")
+
+	s.HalfPageUp()
+	assert.Equal(t, 20, s.Viewport.YOffset(), "upward keys still move up")
+
+	s.Viewport.SetYOffset(15)
+	s.PageDown()
+	assert.Equal(t, 20, s.Viewport.YOffset(), "ordinary paging clamps to the content")
+}
+
 func TestFriendlyError_UnsupportedDomain(t *testing.T) {
 	msg := FriendlyError(&article.UnsupportedDomainError{Domain: "ft.com"})
 

@@ -236,14 +236,14 @@ func (s *Scroller) HandleMouseWheel(msg tea.MouseWheelMsg) {
 
 	switch msg.Button {
 	case tea.MouseWheelDown:
-		s.Viewport.SetYOffset(min(s.Viewport.YOffset()+delta, s.maxOffset()))
+		s.scrollDownTo(s.Viewport.YOffset() + delta)
 	case tea.MouseWheelUp:
 		s.Viewport.SetYOffset(max(0, s.Viewport.YOffset()-delta))
 	}
 }
 
 func (s *Scroller) HalfPageDown() {
-	s.Viewport.SetYOffset(min(s.Viewport.YOffset()+s.Viewport.Height()/2, s.maxOffset()))
+	s.scrollDownTo(s.Viewport.YOffset() + s.Viewport.Height()/2)
 }
 
 func (s *Scroller) HalfPageUp() {
@@ -251,11 +251,19 @@ func (s *Scroller) HalfPageUp() {
 }
 
 func (s *Scroller) PageDown() {
-	s.Viewport.SetYOffset(min(s.Viewport.YOffset()+s.Viewport.Height(), s.maxOffset()))
+	s.scrollDownTo(s.Viewport.YOffset() + s.Viewport.Height())
 }
 
 func (s *Scroller) PageUp() {
 	s.Viewport.SetYOffset(max(0, s.Viewport.YOffset()-s.Viewport.Height()))
+}
+
+// scrollDownTo clamps a downward move by ClampScroll's monotonic rule: it
+// stays within the real content, except when the view already sits past
+// maxOffset — an n/N jump parks it there so a match near the end can reach
+// the top — where a downward key holds position instead of bouncing back up.
+func (s *Scroller) scrollDownTo(target int) {
+	s.Viewport.SetYOffset(min(target, max(s.Viewport.YOffset(), s.maxOffset())))
 }
 
 // GotoBottom scrolls the last line of real content to the bottom of the
