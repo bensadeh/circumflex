@@ -75,6 +75,9 @@ func ValidateURL(rawURL string) error {
 	return nil
 }
 
+// isInvalidDomain matches subdomains too, so a markets.ft.com link cannot
+// slip past the ft.com block. Entries are registrable domains, or specific
+// subdomains (chrome.google.com) whose parent domain stays readable.
 func isInvalidDomain(domain string) bool {
 	invalidDomains := [...]string{
 		"bloomberg.com",
@@ -84,7 +87,6 @@ func isInvalidDomain(domain string) bool {
 		"ft.com",
 		"lttlabs.com",
 		"marketplace.atlassian.com",
-		"old.reddit.com",
 		"play.google.com",
 		"reddit.com",
 		"twitter.com",
@@ -95,7 +97,7 @@ func isInvalidDomain(domain string) bool {
 	}
 
 	for _, invalidDomain := range invalidDomains {
-		if domain == invalidDomain {
+		if domainMatches(domain, invalidDomain) {
 			return true
 		}
 	}

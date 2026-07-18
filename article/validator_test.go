@@ -20,6 +20,19 @@ func TestValidateURL(t *testing.T) {
 	require.Error(t, ValidateURL("not a url"))
 }
 
+func TestValidateURL_BlocklistCoversSubdomains(t *testing.T) {
+	t.Parallel()
+
+	require.Error(t, ValidateURL("https://markets.ft.com/data"), "subdomain of a blocked domain")
+	require.Error(t, ValidateURL("https://m.youtube.com/watch?v=1"))
+	require.Error(t, ValidateURL("https://old.reddit.com/r/golang"), "covered by the reddit.com entry")
+
+	require.NoError(t, ValidateURL("https://microsoft.com/en-us"),
+		"suffix matching anchors on the dot: microsoft.com is not ft.com")
+	require.NoError(t, ValidateURL("https://docs.google.com/document/d/1"),
+		"only specific google subdomains are blocked")
+}
+
 func TestValidate_UnsupportedDomain(t *testing.T) {
 	t.Parallel()
 

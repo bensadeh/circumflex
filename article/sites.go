@@ -24,9 +24,15 @@ type siteRules struct {
 	dropInline []*regexp.Regexp
 }
 
+// domainMatches reports whether hostname is domain itself or a subdomain of
+// it. The site rules and the domain blocklist share this one definition.
+func domainMatches(hostname, domain string) bool {
+	return hostname == domain || strings.HasSuffix(hostname, "."+domain)
+}
+
 func (rs siteRules) matches(hostname string) bool {
 	for _, domain := range rs.domains {
-		if hostname == domain || strings.HasSuffix(hostname, "."+domain) {
+		if domainMatches(hostname, domain) {
 			return true
 		}
 	}
