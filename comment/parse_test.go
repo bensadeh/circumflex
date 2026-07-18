@@ -269,6 +269,26 @@ func TestTypography_Symbols(t *testing.T) {
 	assert.Equal(t, []string{"wait… CO₂ rose ½ — twice—fast"}, spanTexts(blocks[0]))
 }
 
+func TestTypography_FractionsNeedBoundaries(t *testing.T) {
+	t.Parallel()
+
+	t.Run("dates and ratios stay put", func(t *testing.T) {
+		t.Parallel()
+
+		blocks := Parse("in 1&#x2F;2022 we shipped, released 1&#x2F;6&#x2F;2021, a 1&#x2F;32 drill bit, odds of 1&#x2F;20")
+		assert.Equal(t, []string{"in 1/2022 we shipped, released 1/6/2021, a 1/32 drill bit, odds of 1/20"},
+			spanTexts(blocks[0]))
+	})
+
+	t.Run("bounded fractions convert", func(t *testing.T) {
+		t.Parallel()
+
+		blocks := Parse("add 1&#x2F;2 cup, a 1&#x2F;5th share, about 1&#x2F;10 done, (1&#x2F;4 mile)")
+		assert.Equal(t, []string{"add ½ cup, a ⅕th share, about ⅒ done, (¼ mile)"},
+			spanTexts(blocks[0]))
+	})
+}
+
 func TestTypography_CO2NeedsWordBoundaries(t *testing.T) {
 	t.Parallel()
 

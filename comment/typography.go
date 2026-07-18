@@ -40,23 +40,55 @@ func replaceSymbols(text string) string {
 	text = strings.ReplaceAll(text, " -- ", " — ")
 	text = reDoubleDash.ReplaceAllString(text, `$1—$2`)
 
-	return fractionReplacer.Replace(text)
+	return replaceFractions(text)
 }
 
-// The narrow ⅒ glyph gets a trailing space to preserve alignment.
-var fractionReplacer = strings.NewReplacer(
-	" 1/2", " ½", "1/2 ", "½ ",
-	" 1/3", " ⅓", "1/3 ", "⅓ ",
-	" 2/3", " ⅔", "2/3 ", "⅔ ",
-	" 1/4", " ¼", "1/4 ", "¼ ",
-	" 3/4", " ¾", "3/4 ", "¾ ",
-	" 1/5", " ⅕", "1/5 ", "⅕ ", "1/5th", "⅕th",
-	" 2/5", " ⅖", "2/5 ", "⅖ ",
-	" 3/5", " ⅗", "3/5 ", "⅗ ",
-	" 4/5", " ⅘", "4/5 ", "⅘ ",
-	" 1/6", " ⅙", "1/6 ", "⅙ ", "1/6th", "⅙th",
-	" 1/10", " ⅒ ", "1/10 ", "⅒ ", "1/10th", "⅒ th",
-)
+// reFraction finds a known fraction opening a word — text start, a space or
+// a bracket before it — with an optional ordinal suffix. The digit that may
+// follow is checked separately: a regexp can't refuse it without consuming
+// the character a neighboring fraction needs as its own boundary.
+var reFraction = regexp.MustCompile(`(?:^|[ (])(1/10|1/2|1/3|2/3|1/4|3/4|1/5|2/5|3/5|4/5|1/6)(?:th)?`)
+
+// The narrow ⅒ glyph gets a trailing space to preserve alignment; the space
+// collapser folds it away when a space already follows.
+var fractionGlyphs = map[string]string{
+	"1/2": "½", "1/3": "⅓", "2/3": "⅔",
+	"1/4": "¼", "3/4": "¾",
+	"1/5": "⅕", "2/5": "⅖", "3/5": "⅗", "4/5": "⅘",
+	"1/6": "⅙", "1/10": "⅒ ",
+}
+
+// replaceFractions converts fractions that end at a boundary: a following
+// digit or slash keeps "1/2022", "1/25" and "1/6/2021" a date or a ratio.
+func replaceFractions(text string) string {
+	matches := reFraction.FindAllStringSubmatchIndex(text, -1)
+	if matches == nil {
+		return text
+	}
+
+	var sb strings.Builder
+
+	last := 0
+
+	for _, m := range matches {
+		end := m[1]
+		if end < len(text) && (text[end] == '/' || (text[end] >= '0' && text[end] <= '9')) {
+			continue
+		}
+
+		frac := text[m[2]:m[3]]
+
+		sb.WriteString(text[last:m[2]]) // up to and including the boundary
+		sb.WriteString(fractionGlyphs[frac])
+		sb.WriteString(text[m[3]:end]) // the ordinal suffix, if any
+
+		last = end
+	}
+
+	sb.WriteString(text[last:])
+
+	return sb.String()
+}
 
 var smileys = []struct{ from, to string }{
 	{`:)`, "😊"},
