@@ -324,12 +324,16 @@ func (m *model) exitSearch() {
 func (m *model) runSearch(query string) tea.Cmd {
 	m.searchQuery = query
 
+	// Captured before the cursor reset below, so a failed search keeps the
+	// old results with the selection where it was.
+	rb := m.listRollback()
+
 	m.list.BeginTransition()
 	m.list.SetPage(0)
 	m.list.SetCursor(0)
 	m.updatePagination()
 
-	tok, startSpinnerCmd := m.startFetch(m.listRollback())
+	tok, startSpinnerCmd := m.startFetch(rb)
 
 	pane.SetProgressIndeterminate()
 
@@ -351,16 +355,19 @@ func (m *model) rerunSearch() tea.Cmd {
 func (m *model) handleRefresh() tea.Cmd {
 	currentCategory := m.cat.CurrentCategory()
 	currentIndex := m.cat.CurrentIndex()
-	currentPage := m.list.Page()
+
+	// Captured before the cursor reset below, so a failed refresh puts the
+	// selection back where it was.
+	rb := m.listRollback()
 
 	m.list.BeginTransition()
 	m.updatePagination()
 
 	// Stay on the same page during the transition; the cursor resets to the top.
-	m.list.SetPage(currentPage)
+	m.list.SetPage(rb.page)
 	m.list.SetCursor(0)
 
-	tok, startSpinnerCmd := m.startFetch(m.listRollback())
+	tok, startSpinnerCmd := m.startFetch(rb)
 
 	pane.SetProgressIndeterminate()
 

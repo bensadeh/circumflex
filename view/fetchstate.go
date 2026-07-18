@@ -30,11 +30,13 @@ const (
 
 // rollbackPoint is what a failed or cancelled fetch restores. The caller
 // captures it when the fetch starts — explicitly, so a caller that moves the
-// selection first (J/K story navigation) passes the story being left, not
-// the one arriving.
+// selection first (J/K story navigation, refresh's cursor reset) passes the
+// position being left, not the one arriving.
 type rollbackPoint struct {
 	categoryIndex int
-	storyIndex    int // -1 for list fetches: the transition mechanics restore the cursor
+	storyIndex    int // -1 for list fetches: page and cursor carry the restore
+	page          int // list fetches: the page to return to
+	cursor        int // list fetches: the cursor to return to
 }
 
 // fetchState owns the lifecycle of the single fetch the app allows in flight:
@@ -111,9 +113,15 @@ func (m *model) startLinkFetch(timeout time.Duration) (fetchToken, tea.Cmd) {
 }
 
 // listRollback is the restore point for a fetch that replaces the list: the
-// category being left. Capture it before advancing to the incoming one.
+// category, page and cursor being left. Capture it before advancing to the
+// incoming category — and before any pre-fetch cursor reset.
 func (m *model) listRollback() rollbackPoint {
-	return rollbackPoint{categoryIndex: m.cat.CurrentIndex(), storyIndex: -1}
+	return rollbackPoint{
+		categoryIndex: m.cat.CurrentIndex(),
+		storyIndex:    -1,
+		page:          m.list.Page(),
+		cursor:        m.list.Cursor(),
+	}
 }
 
 // detailRollback is the restore point for a story fetch: the current category
@@ -123,15 +131,19 @@ func (m *model) detailRollback(storyIndex int) rollbackPoint {
 }
 
 // rollbackFetch recovers from a failed or cancelled fetch: it restores the
-// category selection and unfreezes the list. For a story fetch it also moves
-// the list selection back to the story that is still open, so the reading
-// marker never points at a story the detail view doesn't show. Category
-// fetches keep their cursor: the transition mechanics restore it.
+// category selection and unfreezes the list. For a story fetch it moves the
+// list selection back to the story that is still open, so the reading
+// marker never points at a story the detail view doesn't show. For a list
+// fetch it restores the page and cursor, undoing the reset refresh and
+// search apply before fetching.
 func (m *model) rollbackFetch(rb rollbackPoint) {
 	m.cat.SetIndex(rb.categoryIndex)
 
 	if rb.storyIndex >= 0 {
 		m.list.SetIndex(rb.storyIndex)
+	} else {
+		m.list.SetPage(rb.page)
+		m.list.SetCursorClamped(rb.cursor)
 	}
 
 	m.list.EndTransition()

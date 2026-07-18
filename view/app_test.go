@@ -151,6 +151,26 @@ func TestDetailQuit_FromReaderRestoresState(t *testing.T) {
 	assert.Equal(t, screenList, m.screen)
 }
 
+// A failed refresh must put the selection back where it was: the pre-fetch
+// cursor reset is display staging for the incoming stories, not a move the
+// user made.
+func TestRefreshFailure_RestoresCursor(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, _ = m.Update(keyMsg("j"))
+	m, _ = m.Update(keyMsg("j"))
+	require.Equal(t, 2, m.list.Cursor())
+
+	m, _ = m.Update(keyMsg("r"))
+	require.True(t, m.fetch.inFlight())
+	require.Equal(t, 0, m.list.Cursor(), "the transition shows the cursor at the top")
+
+	m, _ = m.Update(message.StoriesReady{Err: errors.New("boom"), FetchID: m.fetch.currentID()})
+
+	assert.False(t, m.fetch.inFlight())
+	assert.Equal(t, 2, m.list.Cursor(), "the old stories return with the old selection")
+}
+
 // Reader-minted messages arrive a cycle after their keypress, slipping past
 // the in-flight key gate; mid-fetch they must be dropped like the keys
 // themselves would be.
