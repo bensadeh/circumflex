@@ -142,11 +142,11 @@ func getConfig() (*settings.Config, error) {
 	config.Theme = t
 
 	if flagChanged("comment-width") {
-		config.CommentWidth = commentWidth
+		config.CommentWidth = settings.ClampWidth(commentWidth)
 	}
 
 	if flagChanged("article-width") {
-		config.ArticleWidth = articleWidth
+		config.ArticleWidth = settings.ClampWidth(articleWidth)
 	}
 
 	if flagChanged("indent") {

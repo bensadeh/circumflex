@@ -71,13 +71,15 @@ func TestApply_EmptyFileKeepsDefaults(t *testing.T) {
 }
 
 func TestApply_ClampsLikeTheFlags(t *testing.T) {
-	cfg, err := LoadConfig(writeConfigFile(t, "pages = 99\nindent = 0\n"))
+	cfg, err := LoadConfig(writeConfigFile(t, "pages = 99\nindent = 0\ncomment_width = -1\narticle_width = 0\n"))
 	require.NoError(t, err)
 
 	config := Default()
 	require.NoError(t, cfg.Apply(config))
 	assert.Equal(t, 5, config.PageMultiplier)
 	assert.Equal(t, 1, config.Indent)
+	assert.Equal(t, 1, config.CommentWidth)
+	assert.Equal(t, 1, config.ArticleWidth)
 }
 
 func TestApply_WideView(t *testing.T) {

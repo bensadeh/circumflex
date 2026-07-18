@@ -53,11 +53,11 @@ func LoadConfig(path string) (*FileConfig, error) {
 // way the corresponding flags do.
 func (f *FileConfig) Apply(c *Config) error {
 	if f.CommentWidth != nil {
-		c.CommentWidth = *f.CommentWidth
+		c.CommentWidth = ClampWidth(*f.CommentWidth)
 	}
 
 	if f.ArticleWidth != nil {
-		c.ArticleWidth = *f.ArticleWidth
+		c.ArticleWidth = ClampWidth(*f.ArticleWidth)
 	}
 
 	if f.Indent != nil {

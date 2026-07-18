@@ -16,6 +16,7 @@ const (
 	defaultPageMultiplier = 3
 	defaultIndent         = 1
 	minIndent             = 1
+	minWidth              = 1
 	minPageMultiplier     = 1
 	maxPageMultiplier     = 5
 
@@ -76,4 +77,10 @@ func ClampPageMultiplier(n int) int {
 
 func ClampIndent(n int) int {
 	return max(minIndent, n)
+}
+
+// ClampWidth floors the comment- and article-width settings. Only a floor:
+// the terminal's own width caps them from above at render time.
+func ClampWidth(n int) int {
+	return max(minWidth, n)
 }
