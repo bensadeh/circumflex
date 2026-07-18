@@ -39,6 +39,7 @@ func TestParse_Removed(t *testing.T) {
 
 	assert.Equal(t, []blockKind{blockRemoved}, kinds(Parse("[deleted]")))
 	assert.Equal(t, []blockKind{blockRemoved}, kinds(Parse("[flagged]")))
+	assert.Equal(t, []blockKind{blockRemoved}, kinds(Parse("[delayed]")))
 }
 
 func TestParse_ParagraphSplitting(t *testing.T) {

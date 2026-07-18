@@ -117,6 +117,7 @@ func TestFlatten_SkipsRemovedLeaves(t *testing.T) {
 			newComment(2, "bob", "[deleted]"),
 			newComment(3, "charlie", "C"),
 			newComment(4, "dave", "[flagged]"),
+			newComment(5, "erin", "[delayed]"),
 		),
 	)
 

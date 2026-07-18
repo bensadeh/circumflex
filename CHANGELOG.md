@@ -25,7 +25,7 @@
 
 **Comment Section**
 
-- Flagged and deleted comments without replies are no longer shown
+- Flagged, deleted, and delayed comments without replies are no longer shown
 
 **Design**
 

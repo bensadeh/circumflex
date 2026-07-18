@@ -14,11 +14,12 @@ const (
 	blockRemoved
 )
 
-// Removed reports whether a comment body is one of HN's tombstone markers:
-// text replaced by deletion or moderation. Leaf comments with these bodies
-// are dropped from the view; ones with replies stay to anchor the thread.
+// Removed reports whether a comment body is one of HN's placeholder markers:
+// text withheld by deletion, moderation, or the author's delay setting. Leaf
+// comments with these bodies are dropped from the view; ones with replies
+// stay to anchor the thread.
 func Removed(content string) bool {
-	return content == "[deleted]" || content == "[flagged]"
+	return content == "[deleted]" || content == "[flagged]" || content == "[delayed]"
 }
 
 type spanFormat int
