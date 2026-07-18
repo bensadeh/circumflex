@@ -206,6 +206,33 @@ func TestFetchHNItem_StripsANSIFromUserFields(t *testing.T) {
 	assert.Equal(t, "https://example.com/path", result.URL)
 }
 
+func TestFetchHNItem_UnescapesTitleEntities(t *testing.T) {
+	raw := hnItem{
+		ID:    1,
+		Title: "AI Q&amp;A: What&#x27;s new? &#x1b;[31mred",
+		Text:  "a &gt; b",
+	}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(raw)
+	}))
+	defer server.Close()
+
+	s := NewService()
+	s.baseURL = server.URL
+
+	result, err := s.fetchHNItem(context.Background(), 1)
+	require.NoError(t, err)
+
+	// Entities decode, and an entity-encoded escape sequence is stripped
+	// rather than reaching the terminal.
+	assert.Equal(t, "AI Q&A: What's new? red", result.Title)
+
+	// Text keeps its entities: the comment parser decodes them.
+	assert.Equal(t, "a &gt; b", result.Text)
+}
+
 func TestFetchHNItem_NullResponse(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
