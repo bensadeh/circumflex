@@ -190,6 +190,26 @@ func TestToggleCollapseAll_ExpandsThenCollapses(t *testing.T) {
 	}
 }
 
+// Depth-wide rebuilds (the search prompt's expand-all, the level keys) must
+// not hand the focus to whatever slides into the focused slot.
+func TestSetCollapseToDepth_FocusFollowsIdentity(t *testing.T) {
+	m := newTestModel(t, testThread())
+
+	m.toggleMode()
+	m.gotoBottom()
+	require.Equal(t, 5, m.focusedComment().Comment.ID, "focus starts on E")
+
+	m.expandAll()
+	assert.Equal(t, 5, m.focusedComment().Comment.ID, "focus stays on E through the expand")
+
+	// A focus collapsed away passes to its nearest visible predecessor.
+	m.focusedIdx = 2 // C, a depth-2 reply
+	require.Equal(t, 3, m.focusedComment().Comment.ID)
+
+	m.collapseAll()
+	assert.Equal(t, 1, m.focusedComment().Comment.ID, "C's thread root takes the focus")
+}
+
 func TestToggleMode_SwitchesToNavigate(t *testing.T) {
 	m := newTestModel(t, testThread())
 

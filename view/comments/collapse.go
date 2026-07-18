@@ -1,5 +1,7 @@
 package comments
 
+import "slices"
+
 func (m *Model) setCollapsed(collapsed bool) {
 	if len(m.visible) == 0 || m.focusedIdx < 0 {
 		return
@@ -75,6 +77,11 @@ func (m *Model) setCollapseToDepth() {
 	anchorIdx := m.anchorComment()
 	screenPos := m.screenPosition(anchorIdx)
 
+	focusedFlat := -1
+	if m.focusedIdx >= 0 && m.focusedIdx < len(m.visible) {
+		focusedFlat = m.visible[m.focusedIdx]
+	}
+
 	for i := range m.flat {
 		if m.flat[i].DescendantCount == 0 {
 			continue
@@ -84,6 +91,10 @@ func (m *Model) setCollapseToDepth() {
 	}
 
 	m.rebuildContent()
+
+	if focusedFlat >= 0 {
+		m.refocus(focusedFlat)
+	}
 
 	// If the anchor is still visible after the collapse, restore its exact
 	// screen position so the viewport stays stable.
@@ -125,6 +136,24 @@ func (m *Model) setCollapseToDepth() {
 	// No next sibling — position at the end of the ancestor.
 	lm := m.lineMetrics[ancestorIdx]
 	m.Viewport.SetYOffset(lm.StartLine + lm.LineCount)
+}
+
+// refocus points focusedIdx back at flatIdx after a rebuild changed its
+// position in visible. Focus follows identity, not position: expanding a
+// branch above the focused comment must not hand the focus to whatever
+// slid into its slot. A comment collapsed away passes the focus to its
+// nearest visible predecessor — in pre-order, an ancestor or an earlier
+// branch.
+func (m *Model) refocus(flatIdx int) {
+	pos, found := slices.BinarySearch(m.visible, flatIdx)
+	if !found {
+		pos--
+	}
+
+	if pos >= 0 && pos < len(m.visible) && pos != m.focusedIdx {
+		m.focusedIdx = pos
+		m.syncDecorations()
+	}
 }
 
 // syncExpandedDepth derives expandedDepth from the actual collapse state,
