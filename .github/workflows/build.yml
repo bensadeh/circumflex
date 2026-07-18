@@ -28,3 +28,14 @@ jobs:
 
       - name: Test
         run: go test -race -v ./...
+
+      # Regenerate the man page, completions and example files and fail on
+      # any difference, so the committed artifacts cannot drift from their
+      # sources. The two -I patterns skip the date asciidoctor stamps into
+      # the man page; the version is still guarded by its Source line.
+      - name: Check generated files are current
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq asciidoctor
+          bash share/generate_all.sh
+          git diff --exit-code -I'^\.\\"      Date: ' -I'^\.TH "CLX" "1" '

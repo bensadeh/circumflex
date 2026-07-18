@@ -18,6 +18,19 @@ jobs:
         with:
           go-version: stable
 
+      # The version is compiled in from version.go — Homebrew and the other
+      # source-based packagers build the tagged tree directly, so the source
+      # string is the one every channel reports. Refuse to release a tag the
+      # source disagrees with.
+      - name: Check tag matches version.go
+        run: |
+          version=$(go run ./cmd/clx --version | awk '{print $NF}')
+          if [ "$GITHUB_REF_NAME" != "$version" ]; then
+            echo "tag is $GITHUB_REF_NAME but clx --version reports $version" >&2
+            echo "update version.go (and regenerate the man page) before tagging" >&2
+            exit 1
+          fi
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
