@@ -320,7 +320,7 @@ func (m *model) handleOpenReaderLink(msg message.OpenReaderLink) tea.Cmd {
 		return m.status.NewStatusMessageWithDuration(pane.FriendlyError(err), statusMessageLong)
 	}
 
-	tok, startSpinnerCmd := m.startLinkFetch(readerModeTimeout)
+	tok, startSpinnerCmd := m.startLinkFetch(pane.ReaderFetchTimeout)
 
 	pane.SetProgressIndeterminate()
 

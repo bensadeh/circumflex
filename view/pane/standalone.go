@@ -3,7 +3,6 @@ package pane
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/style"
@@ -26,8 +25,6 @@ type View interface {
 // or walking back through the trail. entry carries the page's parse, trail
 // the chain behind it.
 type MakePageView func(entry message.TrailEntry, trail []message.TrailEntry, width, height int) View
-
-const linkFetchTimeout = 15 * time.Second
 
 // CancelKeys stops an in-flight fetch; the app's keymap shares it so both
 // shells cancel on the same keys.
@@ -199,7 +196,7 @@ func (s standalone) followLink(msg message.OpenReaderLink) (tea.Model, tea.Cmd) 
 		return s, s.status.Set(FriendlyError(err), StatusMessageLong)
 	}
 
-	tok := s.fetch.Begin(linkFetchTimeout)
+	tok := s.fetch.Begin(ReaderFetchTimeout)
 	s.spinner = NewSpinner()
 
 	SetProgressIndeterminate()

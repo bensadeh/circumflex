@@ -2,7 +2,6 @@ package view
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/categories"
@@ -14,8 +13,6 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 )
-
-const readerModeTimeout = 15 * time.Second
 
 func (m *model) handleBrowsing(msg tea.Msg) tea.Cmd {
 	keyMsg, ok := msg.(tea.KeyPressMsg)
@@ -406,7 +403,7 @@ func (m *model) openComments(rollbackStory int) tea.Cmd {
 func (m *model) openReader(rollbackStory int) tea.Cmd {
 	selected := m.list.SelectedItem()
 
-	tok, startSpinnerCmd := m.startDetailFetch(readerModeTimeout, screenReader, m.detailRollback(rollbackStory))
+	tok, startSpinnerCmd := m.startDetailFetch(pane.ReaderFetchTimeout, screenReader, m.detailRollback(rollbackStory))
 
 	pane.SetProgressIndeterminate()
 
