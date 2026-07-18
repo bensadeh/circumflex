@@ -135,6 +135,7 @@ func TestIsMod(t *testing.T) {
 
 	assert.True(t, IsMod("dang"))
 	assert.True(t, IsMod("tomhow"))
+	assert.True(t, IsMod("sctb"))
 	assert.False(t, IsMod("other"))
 }
 

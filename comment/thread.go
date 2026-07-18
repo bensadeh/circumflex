@@ -12,7 +12,10 @@ import (
 	"github.com/bensadeh/circumflex/timeago"
 )
 
-var mods = []string{"dang", "tomhow"}
+// mods drives every moderator affordance — the header label, the body tint
+// and the mention color. sctb no longer moderates but stays for rendering
+// the years of threads he does appear in.
+var mods = []string{"dang", "tomhow", "sctb"}
 
 func renderAuthor(author string, lastVisited, timePosted int64, focused bool) string {
 	var styledAuthor string

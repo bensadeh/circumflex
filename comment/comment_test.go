@@ -30,6 +30,24 @@ func TestPrintFlagged(t *testing.T) {
 	assert.Contains(t, result, "\033[2m", "should contain faint ANSI escape")
 }
 
+// Every name on the mods list gets the mod mention color; the list is the
+// single source of truth, not a hardcoded name.
+func TestMentions_ModsShareTheModColor(t *testing.T) {
+	t.Parallel()
+
+	mention := func(name string) string {
+		rendered := renderBody("ask @"+name+" about it", 70, 80, false, nil)
+
+		return strings.ReplaceAll(rendered, "@"+name, "@x")
+	}
+
+	dang := mention("dang")
+
+	assert.Equal(t, dang, mention("tomhow"))
+	assert.Equal(t, dang, mention("sctb"))
+	assert.NotEqual(t, dang, mention("pg"))
+}
+
 func TestPrintSimpleText(t *testing.T) {
 	t.Parallel()
 

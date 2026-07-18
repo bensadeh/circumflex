@@ -181,7 +181,7 @@ func renderSpan(s *span, base baseStyle, nerdFonts bool) string {
 		return style.CommentBacktick(s.text) + base.open
 
 	case spanMention:
-		if strings.TrimPrefix(s.text, " ") == "@dang" {
+		if IsMod(strings.TrimPrefix(strings.TrimPrefix(s.text, " "), "@")) {
 			return style.CommentMod(s.text) + base.open
 		}
 
