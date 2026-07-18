@@ -552,15 +552,15 @@ func (m *Model) footer() string {
 
 	switch {
 	case m.linkMode:
-		result = pane.FooterSections(totalWidth,
+		result = layout.FooterSections(totalWidth,
 			m.linkSelectorLabel(),
 			pane.MatchCountLabel(m.currentLink, len(m.links)))
 
 	case m.SearchFooterLabel(m.opts.NerdFonts) != "":
-		result = pane.FooterSections(totalWidth, "  "+m.SearchFooterLabel(m.opts.NerdFonts), m.SearchCountLabel())
+		result = layout.FooterSections(totalWidth, "  "+m.SearchFooterLabel(m.opts.NerdFonts), m.SearchCountLabel())
 
 	default:
-		result = pane.FooterSections(totalWidth, m.readerModeLabel(), m.imageIndicator())
+		result = layout.FooterSections(totalWidth, m.readerModeLabel(), m.imageIndicator())
 	}
 
 	return xansi.Truncate(result, m.paneWidth, "")

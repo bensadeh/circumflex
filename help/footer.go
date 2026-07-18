@@ -3,10 +3,10 @@ package help
 import (
 	"strings"
 
+	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/version"
-	"github.com/bensadeh/circumflex/view/pane"
 
 	xansi "github.com/charmbracelet/x/ansi"
 )
@@ -28,7 +28,7 @@ func Footer(leftMargin, contentWidth int, enableNerdFonts bool) string {
 		ver = style.Faint(version.Version) + " " + nerdfonts.Tag
 	}
 
-	line := pane.FooterSections(contentWidth, url, ver)
+	line := layout.FooterSections(contentWidth, url, ver)
 
 	return strings.Repeat(" ", leftMargin) + xansi.Truncate(line, contentWidth, "")
 }

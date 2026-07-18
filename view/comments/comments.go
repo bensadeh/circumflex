@@ -267,7 +267,7 @@ func (m *Model) modeIndicator() string {
 
 		commentWidth := layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
 		totalWidth := layout.CommentSectionLeftMargin + commentWidth
-		result := pane.FooterSections(totalWidth, "  "+search, counter)
+		result := layout.FooterSections(totalWidth, "  "+search, counter)
 
 		return xansi.Truncate(result, m.rc.paneWidth, "")
 	}
@@ -321,7 +321,7 @@ func (m *Model) modeIndicator() string {
 	commentWidth := layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
 	totalWidth := layout.CommentSectionLeftMargin + commentWidth
 
-	result := pane.FooterSections(totalWidth, label, di)
+	result := layout.FooterSections(totalWidth, label, di)
 
 	return xansi.Truncate(result, m.rc.paneWidth, "")
 }
