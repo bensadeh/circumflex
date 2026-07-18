@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/graphics"
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/view/message"
 
@@ -62,7 +63,8 @@ func (s standalone) Init() tea.Cmd {
 	// The background feeds image transparency in reader mode, the foreground
 	// its URL selector's separator row; terminals that do not answer simply
 	// never deliver the messages.
-	return tea.Batch(tea.RequestBackgroundColor, tea.RequestForegroundColor, DetectStyledUnderline())
+	return tea.Batch(tea.RequestBackgroundColor, tea.RequestForegroundColor,
+		DetectStyledUnderline(), DetectGraphics())
 }
 
 func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -79,6 +81,17 @@ func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// terminal from its model.
 	if msg, ok := msg.(tea.KeyPressMsg); ok && msg.Mod == tea.ModCtrl && msg.Code == 'l' {
 		return s, tea.ClearScreen
+	}
+
+	// Unlike the full app, the article may already be on screen when the
+	// graphics probe answers; the forward lets it re-render with
+	// high-resolution images.
+	if HandleGraphicsReport(msg) {
+		if s.view != nil {
+			return s, s.view.Update(message.GraphicsChanged{})
+		}
+
+		return s, nil
 	}
 
 	switch msg := msg.(type) {
@@ -143,18 +156,23 @@ func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		grew := msg.Width > s.width
 		s.width, s.height = msg.Width, msg.Height
 
+		// A resize may really be a font-size change; image geometry follows
+		// the cell's pixel shape, so re-ask while a graphics terminal is
+		// attached.
+		cellSizeCmd := QueryCellSize()
+
 		if s.view == nil {
 			s.view = s.makeView(msg.Width, msg.Height)
 			s.replayColorReports(s.view)
 
-			return s, s.view.Init()
+			return s, tea.Batch(cellSizeCmd, s.view.Init())
 		}
 
 		if grew {
-			return s, tea.Batch(RepaintAfterGrow(), s.view.Update(msg))
+			return s, tea.Batch(RepaintAfterGrow(), cellSizeCmd, s.view.Update(msg))
 		}
 
-		return s, s.view.Update(msg)
+		return s, tea.Batch(cellSizeCmd, s.view.Update(msg))
 	}
 
 	if s.view == nil {
@@ -285,6 +303,12 @@ func RunStandalone(makeView func(width, height int) View, makePageView MakePageV
 	finalModel, err := p.Run()
 
 	settleProgress()
+
+	// Transmitted images survive the program in the terminal's memory;
+	// release them now that no frame flush can interleave with the write.
+	if seq := graphics.CleanupSeq(); seq != "" {
+		_, _ = fmt.Fprint(os.Stdout, seq)
+	}
 
 	if err != nil {
 		return err

@@ -9,6 +9,7 @@ import (
 
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/favorites"
+	"github.com/bensadeh/circumflex/graphics"
 	"github.com/bensadeh/circumflex/hn/provider"
 	"github.com/bensadeh/circumflex/settings"
 	"github.com/bensadeh/circumflex/view/pane"
@@ -25,7 +26,8 @@ func (t teaModel) Init() tea.Cmd {
 	// The background feeds image transparency in reader mode, the foreground
 	// its URL selector's separator row; terminals that do not answer simply
 	// never deliver the messages.
-	return tea.Batch(tea.RequestBackgroundColor, tea.RequestForegroundColor, pane.DetectStyledUnderline())
+	return tea.Batch(tea.RequestBackgroundColor, tea.RequestForegroundColor,
+		pane.DetectStyledUnderline(), pane.DetectGraphics())
 }
 
 func (t teaModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -77,6 +79,12 @@ func Run(config *settings.Config, cat *categories.Categories) error {
 	finalModel, err := p.Run()
 
 	settleProgress()
+
+	// Transmitted images survive the program in the terminal's memory;
+	// release them now that no frame flush can interleave with the write.
+	if seq := graphics.CleanupSeq(); seq != "" {
+		_, _ = fmt.Fprint(os.Stdout, seq)
+	}
 
 	if err != nil {
 		return err

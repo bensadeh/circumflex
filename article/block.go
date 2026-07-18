@@ -29,6 +29,7 @@ type block struct {
 	text       string      // blockHeading, blockCode
 	imageURL   string      // blockImage: resolved source URL, empty if none
 	img        image.Image // blockImage: decoded pixels, nil until fetched or on failure
+	kitty      *kittyImage // blockImage: high-res copy and terminal state for Kitty graphics, nil when unavailable
 	decorative bool        // blockImage: fetched fine but sized like a divider or tracking pixel
 	figure     bool        // blockImage: DOM-drawn graphic (role="img") described by its aria-label; no bitmap exists
 	dispWidth  int         // blockImage: intended display width in CSS px from the width attr, 0 if unknown

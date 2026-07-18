@@ -13,6 +13,7 @@ import (
 
 	"charm.land/lipgloss/v2"
 	xansi "github.com/charmbracelet/x/ansi"
+	"github.com/charmbracelet/x/ansi/kitty"
 )
 
 const (
@@ -33,6 +34,14 @@ type ImageOptions struct {
 	// semi-transparent pixels. When nil, pixels below half coverage render
 	// fully transparent instead of blended.
 	TerminalBG color.Color
+	// Kitty renders image blocks as Kitty-graphics placeholder cells
+	// instead of half-block art; the terminal composites the separately
+	// transmitted pixels wherever those cells land.
+	Kitty bool
+	// CellWidth and CellHeight are one terminal cell's pixel dimensions,
+	// which keep a Kitty image's aspect ratio honest in cells. Zero assumes
+	// cells twice as tall as wide, like the half-block art does.
+	CellWidth, CellHeight int
 }
 
 // renderedPart is one block's rendered chunk plus the kind that produced it,
@@ -324,7 +333,7 @@ func styleLines(text string, styleFn func(string) string) string {
 
 func renderImage(b *block, width int, images ImageOptions) string {
 	if images.Show && b.img != nil {
-		if part := cachedImagePart(b, width, images.TerminalBG); part != "" {
+		if part := cachedImagePart(b, width, images); part != "" {
 			return part
 		}
 	}
@@ -350,21 +359,30 @@ func renderImage(b *block, width int, images ImageOptions) string {
 }
 
 // artKey identifies the inputs the rendered art depends on, so a cached part
-// survives image toggling but not a resize or background change.
+// survives image toggling but not a resize, background change or a switch
+// between half-block and Kitty rendering.
 type artKey struct {
 	width   int // never 0 for a real render, so the zero key means "not cached"
 	bg      color.RGBA
 	bgKnown bool
+	kitty   bool
+	cellW   int
+	cellH   int
 }
 
-// cachedImagePart renders an image block's half-block art with its centered
-// caption, memoized on the block: hiding and re-showing images (or scrolling
-// re-renders) reuse it instead of re-sampling every pixel.
-func cachedImagePart(b *block, width int, bg color.Color) string {
+// cachedImagePart renders an image block's art — Kitty placeholder cells
+// when the terminal composites pixels, half-block art otherwise — with its
+// centered caption, memoized on the block: hiding and re-showing images (or
+// scrolling re-renders) reuse it instead of re-sampling every pixel.
+func cachedImagePart(b *block, width int, images ImageOptions) string {
 	key := artKey{width: width}
-	if bg != nil {
-		key.bg, _ = color.RGBAModel.Convert(bg).(color.RGBA)
+	if images.TerminalBG != nil {
+		key.bg, _ = color.RGBAModel.Convert(images.TerminalBG).(color.RGBA)
 		key.bgKnown = true
+	}
+
+	if images.Kitty && b.kitty != nil {
+		key.kitty, key.cellW, key.cellH = true, images.CellWidth, images.CellHeight
 	}
 
 	if b.artFor == key {
@@ -375,9 +393,17 @@ func cachedImagePart(b *block, width int, bg color.Color) string {
 	// stops short of the right edge like the left.
 	inner := width - 2*len(blockIndent)
 
+	var art string
+
+	if key.kitty {
+		art = renderKittyArt(b, inner, key.cellW, key.cellH)
+	} else {
+		art = renderImageArt(b.img, b.dispWidth, inner, images.TerminalBG)
+	}
+
 	part := ""
 
-	if art := renderImageArt(b.img, b.dispWidth, inner, bg); art != "" {
+	if art != "" {
 		art = centerLines(art, inner)
 
 		if caption := spanText(b.spans); caption != "" {
@@ -390,6 +416,70 @@ func cachedImagePart(b *block, width int, bg color.Color) string {
 	b.art, b.artFor = part, key
 
 	return part
+}
+
+// renderKittyArt lays down the cell grid a transmitted image composites
+// onto: rows of placeholder characters whose diacritics address the image's
+// tile grid and whose indexed foreground color names the image. The cells
+// are ordinary styled text — they wrap, scroll and diff like any other line,
+// and rows scrolled off screen simply aren't drawn. Columns after the first
+// omit the diacritics; the terminal infers them from the run.
+func renderKittyArt(b *block, availCols, cellW, cellH int) string {
+	bounds := b.img.Bounds()
+	if availCols < 1 || bounds.Dx() <= 0 || bounds.Dy() <= 0 {
+		return ""
+	}
+
+	cols, rows := kittyGrid(b.dispWidth, bounds.Dx(), bounds.Dy(), availCols, cellW, cellH)
+
+	// Record the geometry this render wants, so PendingKittyWork can hand
+	// the reader the placement delta afterwards.
+	b.kitty.wantCols, b.kitty.wantRows = cols, rows
+
+	fg := "\x1b[38;5;" + strconv.Itoa(b.kitty.id) + "m"
+
+	var sb strings.Builder
+
+	for row := range rows {
+		sb.WriteString(fg)
+		sb.WriteRune(kitty.Placeholder)
+		sb.WriteRune(kitty.Diacritic(row))
+		sb.WriteRune(kitty.Diacritic(0))
+
+		for range cols - 1 {
+			sb.WriteRune(kitty.Placeholder)
+		}
+
+		sb.WriteString(ansi.Reset)
+
+		if row < rows-1 {
+			sb.WriteByte('\n')
+		}
+	}
+
+	return sb.String()
+}
+
+// kittyGrid sizes an image's cell grid: columns from the same on-page-size
+// mapping as the half-block art, rows from the image's aspect ratio scaled
+// by the cell's pixel shape. The terminal stretches the image to fill the
+// grid exactly, so the rows must account for cells being taller than wide —
+// 1:2 when the terminal never reported its cell size.
+func kittyGrid(dispWidth, imgW, imgH, availCols, cellW, cellH int) (cols, rows int) {
+	cols = imageCols(dispWidth, imgW, availCols)
+
+	if cellW <= 0 || cellH <= 0 {
+		cellW, cellH = 1, 2
+	}
+
+	rows = max(1, (cols*cellW*imgH+imgW*cellH/2)/(imgW*cellH))
+
+	if rows > maxImageRows {
+		rows = maxImageRows
+		cols = min(availCols, max(1, rows*cellH*imgW/(imgH*cellW)))
+	}
+
+	return cols, rows
 }
 
 // renderImageArt downsamples img and prints it with the upper half-block ▀:

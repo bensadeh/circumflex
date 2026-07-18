@@ -198,6 +198,56 @@ func TestDecodeSVG_RejectsGarbage(t *testing.T) {
 	assert.Nil(t, decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg"></svg>`)))
 }
 
+func TestFetchImages_RetainsHighResKittyCopy(t *testing.T) {
+	t.Parallel()
+
+	var served []byte
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		size := 100
+		if r.URL.Path == "/huge.png" {
+			size = 2048
+		}
+
+		var buf bytes.Buffer
+		if err := png.Encode(&buf, image.NewRGBA(image.Rect(0, 0, size, size/2))); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+
+			return
+		}
+
+		if r.URL.Path != "/huge.png" {
+			served = buf.Bytes()
+		}
+
+		_, _ = w.Write(buf.Bytes())
+	}))
+	defer srv.Close()
+
+	base, err := nurl.Parse(srv.URL)
+	require.NoError(t, err)
+
+	blocks := []block{
+		{kind: blockImage, imageURL: srv.URL + "/photo.png"},
+		{kind: blockImage, imageURL: srv.URL + "/huge.png"},
+	}
+
+	fetchImages(context.Background(), blocks, base)
+
+	require.NotNil(t, blocks[0].kitty)
+	assert.Equal(t, served, blocks[0].kitty.png, "an in-bounds PNG passes through byte-for-byte")
+	assert.Positive(t, blocks[0].kitty.id)
+
+	require.NotNil(t, blocks[1].kitty)
+
+	reencoded, err := png.Decode(bytes.NewReader(blocks[1].kitty.png))
+	require.NoError(t, err)
+	assert.Equal(t, maxKittyPx, reencoded.Bounds().Dx(), "oversized sources re-encode within the kitty bound")
+	assert.Equal(t, maxKittyPx/2, reencoded.Bounds().Dy(), "aspect ratio is preserved")
+
+	assert.Equal(t, maxRetainedPx, blocks[1].img.Bounds().Dx(), "the half-block fallback keeps its own tighter bound")
+}
+
 func TestBoundImage_DownscalesToFitBox(t *testing.T) {
 	t.Parallel()
 

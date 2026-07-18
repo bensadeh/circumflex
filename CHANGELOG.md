@@ -17,6 +17,7 @@
 
 **Reader Mode**
 
+- Images now render in high resolution on terminals with Kitty graphics support (Ghostty, Kitty, Konsole)
 - arXiv links now open the full paper instead of the abstract page, with equations converted to Unicode math
 - Add support for displaying AVIF images
 - Fix Mermaid diagrams not rendering
@@ -65,8 +66,7 @@ Lastly, the design has been tweaked ever so slightly to make it more consistent 
 
 - Code blocks are now rendered inside an ASCII box
 - The meta block has been simplified
-- The in-memoriam indicator (x has passed away) is now a double line under the header instead
-  of a black bar
+- The in-memoriam indicator (x has passed away) is now a double line under the header instead of a black bar
 
 **Infrastructure**
 
@@ -334,8 +334,7 @@ _05.05.23_
 **Cosmetic**
 
 - Simplified coloring of items to only use terminal colors from 0-16. This will make `circumflex` look better across
-  different
-  color schemes.
+  different color schemes.
 
 ## 2.8.2
 
@@ -462,8 +461,8 @@ _13.08.22_
 
 **Cosmetic**
 
-- Left-aligned help screen to better accomodate for screen resizes (
-  Fixes [#6](https://github.com/bensadeh/circumflex/issues/6))
+- Left-aligned help screen to better accomodate for screen resizes
+  (Fixes [#6](https://github.com/bensadeh/circumflex/issues/6))
 
 **Bugfixes**
 
@@ -552,8 +551,7 @@ _08.01.22_
 
 **Backend**
 
-- Do not re-fetch submissions on terminal screen resize events when screen height
-  remains the same
+- Do not re-fetch submissions on terminal screen resize events when screen height remains the same
 - Add debug mode for offline testing and development
 
 **Cosmetic**
@@ -672,8 +670,7 @@ _2021-09-12_
 
 - Invisible anchors are now longer properly hidden on all terminals
 - The filtering logic now works with zero width spaces
-- Fixed a bug where the root comment headline was one character
-  longer than the comment width
+- Fixed a bug where the root comment headline was one character longer than the comment width
 
 **Cosmetic**
 
@@ -685,8 +682,7 @@ _2021-09-04_
 
 **New features**
 
-- New keybinding: press <kbd>n</kbd>/<kbd>N</kbd> to jump to the next top-level comment
-  or headline
+- New keybinding: press <kbd>n</kbd>/<kbd>N</kbd> to jump to the next top-level comment or headline
     - (No longer required to search for the string `::`)
 - Added an option to set the header to the orange and classic Hacker News header
 
@@ -768,9 +764,8 @@ _2021-07-24_
 
 **Changes**
 
-- Highlight headlines option has been simplified and can now be either
-  enabled or disabled (Removed an option to highlight headlines with the reverse
-  highlighting flag)
+- Highlight headlines option has been simplified and can now be either enabled or disabled (Removed an option to
+  highlight headlines with the reverse highlighting flag)
 
 **Cosmetic**
 
@@ -802,8 +797,8 @@ _2021-07-22_
 - Double single dashes (--) now appear as a single em-dash (—)
 - Triple dots (...) now appear as a single ellipsis (…)
 - Added an option to convert smileys to emojis
-- Removed support for hyperlinks in the terminal since they were somewhat too complex
-  compared to the benefit / convenience they provided
+- Removed support for hyperlinks in the terminal since they were somewhat too complex compared to the benefit /
+  convenience they provided
 - URLs are now highlighted in dimmed blue
 
 ## 1.14
@@ -817,8 +812,7 @@ _2021-07-15_
 
 **Cosmetic**
 
-- Monthly Who is hiring, Freelancer, Who wants to be hired posts are now highlighted
-  in their own color
+- Monthly Who is hiring, Freelancer, Who wants to be hired posts are now highlighted in their own color
 
 **Backend**
 
@@ -983,8 +977,8 @@ _2021-04-27_
 **Bugfixes**
 
 - Fixed a bug where hrefs were not stripped inside quotes
-- Fixed a bug where pressing <kbd>G</kbd> while in Relative Numbering mode would not
-  properly update the left margin on the favorites page
+- Fixed a bug where pressing <kbd>G</kbd> while in Relative Numbering mode would not properly update the left margin on
+  the favorites page
 - Fixed a bug where a refresh wouldn't trigger after returning from the comment section
 
 ## 1.0
@@ -994,8 +988,7 @@ _2021-04-24_
 **Bugfixes**
 
 - Fixed a bug where the first keystroke was lost when entering the comment section
-- Fixed a bug where pressing <kbd>G</kbd> while in Relative Numbering mode would not
-  properly update the left margin
+- Fixed a bug where pressing <kbd>G</kbd> while in Relative Numbering mode would not properly update the left margin
 
 ## 0.17
 

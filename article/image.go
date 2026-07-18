@@ -4,17 +4,18 @@ import (
 	"bytes"
 	"context"
 	"image"
+	"image/png"
 	nurl "net/url"
 	"time"
 
 	// Blank imports register the decoders that image.Decode dispatches to.
 	_ "image/gif"
 	_ "image/jpeg"
-	_ "image/png"
 
 	_ "github.com/gen2brain/avif" // libavif via wazero; Hugo/Cloudflare pipelines emit AVIF
 	_ "golang.org/x/image/webp"   // WordPress and others increasingly serve WebP
 
+	"github.com/bensadeh/circumflex/graphics"
 	"github.com/bensadeh/circumflex/version"
 
 	"github.com/srwiley/oksvg"
@@ -30,8 +31,22 @@ const (
 	imageFetchTimeout = 8 * time.Second
 	minImageDimension = 24   // skip tracking pixels and tiny icons
 	maxRetainedPx     = 512  // decoded images are downscaled to fit this box; see boundImage
+	maxKittyPx        = 1024 // the high-res copy a Kitty-graphics terminal displays; see kittyPNG
 	maxSVGRasterPx    = 2048 // a vector has no intrinsic resolution; bound the temporary raster
 )
+
+// kittyImage is one image block's terminal-side life: the PNG the terminal
+// receives, the ID its placeholder cells dereference, and the placement
+// geometry — what the last render wants against what the terminal holds.
+// want mutates on render and sent when PendingKittyWork hands the delta to
+// the reader; both stay on the update goroutine.
+type kittyImage struct {
+	png                []byte
+	id                 int
+	sent               bool
+	sentCols, sentRows int
+	wantCols, wantRows int
+}
 
 // fetchImages downloads and decodes the image blocks in place, resolving
 // relative sources against base. Failures leave block.img nil, so rendering
@@ -68,7 +83,7 @@ func fetchImages(ctx context.Context, blocks []block, base *nurl.URL) {
 
 	for _, i := range targets {
 		g.Go(func() error {
-			img := fetchImage(ctx, client, base, blocks[i].imageURL)
+			img, raw := fetchImage(ctx, client, base, blocks[i].imageURL)
 			if img == nil {
 				return nil
 			}
@@ -85,6 +100,7 @@ func fetchImages(ctx context.Context, blocks []block, base *nurl.URL) {
 				blocks[i].dispWidth = img.Bounds().Dx()
 			}
 
+			blocks[i].kitty = newKittyImage(img, raw)
 			blocks[i].img = boundImage(img)
 
 			return nil
@@ -117,10 +133,10 @@ func boundImage(img image.Image) image.Image {
 	return dst
 }
 
-func fetchImage(ctx context.Context, client *resty.Client, base *nurl.URL, rawURL string) image.Image {
+func fetchImage(ctx context.Context, client *resty.Client, base *nurl.URL, rawURL string) (image.Image, []byte) {
 	ref, err := nurl.Parse(rawURL)
 	if err != nil {
-		return nil
+		return nil, nil
 	}
 
 	target := base.ResolveReference(ref)
@@ -132,15 +148,62 @@ func fetchImage(ctx context.Context, client *resty.Client, base *nurl.URL, rawUR
 
 	resp, err := req.Get(target.String())
 	if err != nil || resp.StatusCode() >= 400 {
-		return nil
+		return nil, nil
 	}
 
 	img, _, err := image.Decode(bytes.NewReader(resp.Bytes()))
 	if err != nil {
-		return decodeSVG(resp.Bytes())
+		return decodeSVG(resp.Bytes()), resp.Bytes()
 	}
 
-	return img
+	return img, resp.Bytes()
+}
+
+var pngMagic = []byte("\x89PNG\r\n\x1a\n")
+
+// newKittyImage retains the high-resolution copy a Kitty-graphics terminal
+// displays in place of half-block art. The terminal-global image ID is
+// claimed here, at fetch time, so every render and walk-back of this
+// article agrees on it. Retention is unconditional — the standalone article
+// command parses before the terminal is probed, so gating on the probe here
+// would leave it permanently low-res.
+func newKittyImage(img image.Image, raw []byte) *kittyImage {
+	data := kittyPNG(img, raw)
+	if data == nil {
+		return nil
+	}
+
+	return &kittyImage{png: data, id: graphics.AllocID()}
+}
+
+// kittyPNG bounds img to maxKittyPx and encodes it as the PNG the terminal
+// will receive. Sources that already are a PNG within bounds pass through
+// byte-for-byte. The downscale uses Catmull-Rom: this is the copy whose
+// entire point is fidelity, and fetch goroutines have the time.
+func kittyPNG(img image.Image, raw []byte) []byte {
+	bounds := img.Bounds()
+
+	if bytes.HasPrefix(raw, pngMagic) && bounds.Dx() <= maxKittyPx && bounds.Dy() <= maxKittyPx {
+		return raw
+	}
+
+	if bounds.Dx() > maxKittyPx || bounds.Dy() > maxKittyPx {
+		scale := float64(maxKittyPx) / float64(max(bounds.Dx(), bounds.Dy()))
+		dst := image.NewRGBA(image.Rect(0, 0,
+			max(1, int(float64(bounds.Dx())*scale+0.5)),
+			max(1, int(float64(bounds.Dy())*scale+0.5))))
+
+		xdraw.CatmullRom.Scale(dst, dst.Bounds(), img, bounds, xdraw.Src, nil)
+
+		img = dst
+	}
+
+	var buf bytes.Buffer
+	if png.Encode(&buf, img) != nil {
+		return nil
+	}
+
+	return buf.Bytes()
 }
 
 // refererFor mirrors the browser default referrer policy

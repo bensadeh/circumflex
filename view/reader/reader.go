@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/graphics"
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/help"
 	"github.com/bensadeh/circumflex/layout"
@@ -107,7 +108,15 @@ func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, h
 // derivation shared by the initial render and every resize.
 func (m *Model) renderArticle() article.Rendered {
 	contentWidth := layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
-	images := article.ImageOptions{Show: m.showImages, TerminalBG: m.termBG}
+
+	cellW, cellH := graphics.CellSize()
+	images := article.ImageOptions{
+		Show:       m.showImages,
+		TerminalBG: m.termBG,
+		Kitty:      graphics.Enabled(),
+		CellWidth:  cellW,
+		CellHeight: cellH,
+	}
 
 	header := ""
 
@@ -149,7 +158,37 @@ func (m *Model) setContent(content string) {
 }
 
 func (m *Model) Init() tea.Cmd {
-	return nil
+	return m.kittyWorkCmd()
+}
+
+// kittyWorkCmd settles the terminal's image state after a render: PNGs not
+// yet transmitted, placements whose geometry a resize moved. The sequences
+// ride a RawMsg through the program's own output, serialized with frame
+// flushes like the progress indicator — writing directly would tear frames.
+// Base64 and chunking run in the command goroutine, off the update loop.
+func (m *Model) kittyWorkCmd() tea.Cmd {
+	if m.parsed == nil {
+		return nil
+	}
+
+	work := m.parsed.PendingKittyWork()
+	if len(work) == 0 {
+		return nil
+	}
+
+	return func() tea.Msg {
+		var sb strings.Builder
+
+		for _, w := range work {
+			if w.PNG != nil {
+				sb.WriteString(graphics.TransmitSeq(w.ID, w.PNG, w.Cols, w.Rows))
+			} else {
+				sb.WriteString(graphics.PlacementSeq(w.ID, w.Cols, w.Rows))
+			}
+		}
+
+		return tea.RawMsg{Msg: sb.String()}
+	}
 }
 
 func (m *Model) Update(msg tea.Msg) tea.Cmd {
@@ -184,10 +223,10 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		m.rebuildTitleHeader()
 
 		if m.parsed != nil {
-			m.rerender()
-		} else {
-			m.RefreshPadding()
+			return m.rerender()
 		}
+
+		m.RefreshPadding()
 
 		return nil
 
@@ -195,7 +234,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		m.termBG = msg.Color
 
 		if m.parsed != nil {
-			m.rerender()
+			return m.rerender()
 		}
 
 		return nil
@@ -207,7 +246,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		style.SetTerminalForeground(msg.Color)
 
 		if m.parsed != nil {
-			m.rerender()
+			return m.rerender()
 		}
 
 		return nil
@@ -217,7 +256,16 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		// global flag; a page rendered before it arrived repaints so its
 		// inert links pick up the dashed underline.
 		if style.NoteTerminalCapability(msg.Content) && m.parsed != nil {
-			m.rerender()
+			return m.rerender()
+		}
+
+		return nil
+
+	case message.GraphicsChanged:
+		// The graphics probe or a cell-size report resolved after the page
+		// rendered; images re-render for the new mode or geometry.
+		if m.parsed != nil {
+			return m.rerender()
 		}
 
 		return nil
@@ -227,10 +275,12 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 }
 
 // rerender re-renders the article at the current pane width and updates the
-// viewport content. The scroll position is re-anchored to the block it was in
-// rather than kept as a raw line number, so a re-render that changes block
-// heights (toggling images, resizing) does not jump to unrelated content.
-func (m *Model) rerender() {
+// viewport content, returning the command that settles the terminal's image
+// state for the new layout. The scroll position is re-anchored to the block
+// it was in rather than kept as a raw line number, so a re-render that
+// changes block heights (toggling images, resizing) does not jump to
+// unrelated content.
+func (m *Model) rerender() tea.Cmd {
 	yOffset := m.Viewport.YOffset()
 	oldStarts := m.blockStarts
 
@@ -260,6 +310,8 @@ func (m *Model) rerender() {
 
 	maxOffset := max(0, m.ContentLines-m.Viewport.Height())
 	m.Viewport.SetYOffset(min(remapYOffset(yOffset, oldStarts, r.BlockStarts, m.ContentLines), maxOffset))
+
+	return m.kittyWorkCmd()
 }
 
 // remapYOffset translates a scroll offset between two renders of the same
@@ -381,10 +433,10 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		m.jumpToHeader(-1)
 
 	case key.Matches(msg, m.keymap.HideImages):
-		m.setShowImages(false)
+		return m.setShowImages(false)
 
 	case key.Matches(msg, m.keymap.ShowImages):
-		m.setShowImages(true)
+		return m.setShowImages(true)
 
 	case key.Matches(msg, m.keymap.Help):
 		m.showHelp = true
@@ -706,13 +758,14 @@ func (m *Model) jumpToHeader(direction int) {
 
 // setShowImages toggles image display and re-renders in place, keeping the
 // scroll position. Images are always fetched, so this is instant.
-func (m *Model) setShowImages(show bool) {
+func (m *Model) setShowImages(show bool) tea.Cmd {
 	if m.parsed == nil || m.showImages == show {
-		return
+		return nil
 	}
 
 	m.showImages = show
-	m.rerender()
+
+	return m.rerender()
 }
 
 // NewPage builds the reader for a page in a followed-link chain — a link

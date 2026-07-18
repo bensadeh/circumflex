@@ -35,27 +35,8 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 		return m, tea.ClearScreen
 	}
 
-	// Handled before the startup gate: the terminal's answers can arrive
-	// before the first WindowSizeMsg and must not be dropped.
-	if bg, ok := msg.(tea.BackgroundColorMsg); ok {
-		m.termBG = bg.Color
-
-		return m, nil
-	}
-
-	if fg, ok := msg.(tea.ForegroundColorMsg); ok {
-		m.termFG = fg.Color
-		style.SetTerminalForeground(fg.Color)
-
-		return m, nil
-	}
-
-	// The Smulx answer arrives at startup, long before a reader could
-	// render, so recording it is enough — no repaint to trigger.
-	if capability, ok := msg.(tea.CapabilityMsg); ok {
-		style.NoteTerminalCapability(capability.Content)
-
-		return m, nil
+	if cmd, handled := m.handleTerminalReport(msg); handled {
+		return m, cmd
 	}
 
 	if !m.started {
@@ -194,6 +175,44 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
+// handleTerminalReport records the terminal's answers to the startup probes.
+// Handled before the startup gate: they can arrive before the first
+// WindowSizeMsg and must not be dropped.
+func (m *model) handleTerminalReport(msg tea.Msg) (tea.Cmd, bool) {
+	switch msg := msg.(type) {
+	case tea.BackgroundColorMsg:
+		m.termBG = msg.Color
+
+		return nil, true
+
+	case tea.ForegroundColorMsg:
+		m.termFG = msg.Color
+		style.SetTerminalForeground(msg.Color)
+
+		return nil, true
+
+	case tea.CapabilityMsg:
+		// The Smulx answer arrives at startup, long before a reader could
+		// render, so recording it is enough — no repaint to trigger.
+		style.NoteTerminalCapability(msg.Content)
+
+		return nil, true
+	}
+
+	// The graphics probe usually resolves at startup too, but a cell-size
+	// report can land mid-session after a font change — an open reader then
+	// re-renders its images for the new geometry.
+	if pane.HandleGraphicsReport(msg) {
+		if m.detail != nil {
+			return m.detail.Update(message.GraphicsChanged{}), true
+		}
+
+		return nil, true
+	}
+
+	return nil, false
+}
+
 func (m *model) handleStartup(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
 	m.started = true
 	m.setSize(msg.Width, msg.Height)
@@ -224,6 +243,10 @@ func (m *model) handleWindowResize(msg tea.WindowSizeMsg) (*model, tea.Cmd) {
 	if msg.Width > m.width {
 		cmds = append(cmds, pane.RepaintAfterGrow())
 	}
+
+	// A resize may really be a font-size change; image geometry follows the
+	// cell's pixel shape, so re-ask while a graphics terminal is attached.
+	cmds = append(cmds, pane.QueryCellSize())
 
 	m.setSize(msg.Width, msg.Height)
 
