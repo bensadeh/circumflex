@@ -38,6 +38,10 @@ Read the article in Reader Mode.
 _r_::
 Re-fetch submissions for the current category.
 
+_/_::
+Search Hacker News.
+See *Search*.
+
 _Tab_::
 Change category (use Shift + Tab to change in opposite direction).
 
@@ -96,6 +100,10 @@ Go to top/bottom.
 _n_, _N_::
 Jump to next/previous top-level comment.
 
+_/_::
+Search within the comment section.
+While a search is active, _n_/_N_ jump between matches.
+
 _h_, _l_::
 Collapse/expand one level.
 
@@ -132,6 +140,10 @@ Scroll down/up half a page.
 
 _n_, _N_::
 Jump to next/previous top-level comment.
+
+_/_::
+Search within the comment section.
+While a search is active, _n_/_N_ jump between matches.
 
 _h_, _l_::
 Collapse/expand current comment.
@@ -174,8 +186,17 @@ Go to top/bottom.
 _n_, _N_::
 Jump to next/previous section.
 
+_/_::
+Search within the article.
+While a search is active, _n_/_N_ jump between matches.
+
 _h_, _l_::
 Hide/show article images. See *--images*.
+
+_Tab_::
+Open the link selector.
+_j_/_k_ step between the article's links; _Enter_ follows the selected link in Reader Mode, and _q_ or _Esc_ walks back to the page it was opened from.
+Links that cannot be read in Reader Mode are dimmed and inert.
 
 _o_::
 Open link to article in browser.
@@ -192,6 +213,23 @@ Bring up the help screen.
 _q_, _Esc_::
 Go back.
 
+== Search
+
+Press _/_ to search all of Hacker News, powered by Algolia.
+Results open in their own tab in the header.
+
+_s_::
+Toggle sorting between popularity and date.
+
+_d_::
+Cycle the date range.
+
+_r_::
+Re-run the search with the current filters.
+
+_q_, _Esc_::
+Leave search.
+
 == Options
 
 All options can also be set persistently in _config.toml_ (see *FILES*); flags take precedence over the config file.
@@ -201,7 +239,7 @@ Set the article width in Reader Mode to _n_ columns.
 
 *--categories*=_list_::
 Set the categories in the header.
-Available categories: top, best, new, ask, show, favorites.
+Available categories: top, best, new, ask, show, jobs, favorites.
 Separate categories with comma.
 The first category is the view shown on launch; it appears as the *clx* logo in the header rather than as a named tab.
 Default: "top,best,ask,show,favorites".

@@ -2,12 +2,12 @@
 .\"     Title: clx
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.26
-.\"      Date: 2026-07-17
+.\"      Date: 2026-07-18
 .\"    Manual: circumflex
 .\"    Source: circumflex 5.0-dev
 .\"  Language: English
 .\"
-.TH "CLX" "1" "2026-07-17" "circumflex 5.0\-dev" "circumflex"
+.TH "CLX" "1" "2026-07-18" "circumflex 5.0\-dev" "circumflex"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -53,6 +53,12 @@ Read the article in Reader Mode.
 \fIr\fP
 .RS 4
 Re\-fetch submissions for the current category.
+.RE
+.sp
+\fI/\fP
+.RS 4
+Search Hacker News.
+See \fBSearch\fP.
 .RE
 .sp
 \fITab\fP
@@ -143,6 +149,12 @@ Go to top/bottom.
 Jump to next/previous top\-level comment.
 .RE
 .sp
+\fI/\fP
+.RS 4
+Search within the comment section.
+While a search is active, \fIn\fP/\fIN\fP jump between matches.
+.RE
+.sp
 \fIh\fP, \fIl\fP
 .RS 4
 Collapse/expand one level.
@@ -199,6 +211,12 @@ Scroll down/up half a page.
 \fIn\fP, \fIN\fP
 .RS 4
 Jump to next/previous top\-level comment.
+.RE
+.sp
+\fI/\fP
+.RS 4
+Search within the comment section.
+While a search is active, \fIn\fP/\fIN\fP jump between matches.
 .RE
 .sp
 \fIh\fP, \fIl\fP
@@ -267,9 +285,22 @@ Go to top/bottom.
 Jump to next/previous section.
 .RE
 .sp
+\fI/\fP
+.RS 4
+Search within the article.
+While a search is active, \fIn\fP/\fIN\fP jump between matches.
+.RE
+.sp
 \fIh\fP, \fIl\fP
 .RS 4
 Hide/show article images. See \fB\-\-images\fP.
+.RE
+.sp
+\fITab\fP
+.RS 4
+Open the link selector.
+\fIj\fP/\fIk\fP step between the article\(cqs links; \fIEnter\fP follows the selected link in Reader Mode, and \fIq\fP or \fIEsc\fP walks back to the page it was opened from.
+Links that cannot be read in Reader Mode are dimmed and inert.
 .RE
 .sp
 \fIo\fP
@@ -296,6 +327,30 @@ Bring up the help screen.
 .RS 4
 Go back.
 .RE
+.SH "SEARCH"
+.sp
+Press \fI/\fP to search all of Hacker News, powered by Algolia.
+Results open in their own tab in the header.
+.sp
+\fIs\fP
+.RS 4
+Toggle sorting between popularity and date.
+.RE
+.sp
+\fId\fP
+.RS 4
+Cycle the date range.
+.RE
+.sp
+\fIr\fP
+.RS 4
+Re\-run the search with the current filters.
+.RE
+.sp
+\fIq\fP, \fIEsc\fP
+.RS 4
+Leave search.
+.RE
 .SH "OPTIONS"
 .sp
 All options can also be set persistently in \fIconfig.toml\fP (see \fBFILES\fP); flags take precedence over the config file.
@@ -308,7 +363,7 @@ Set the article width in Reader Mode to \fIn\fP columns.
 \fB\-\-categories\fP=\fIlist\fP
 .RS 4
 Set the categories in the header.
-Available categories: top, best, new, ask, show, favorites.
+Available categories: top, best, new, ask, show, jobs, favorites.
 Separate categories with comma.
 The first category is the view shown on launch; it appears as the \fBclx\fP logo in the header rather than as a named tab.
 Default: "top,best,ask,show,favorites".
