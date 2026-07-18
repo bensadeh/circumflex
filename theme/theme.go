@@ -226,9 +226,20 @@ func Load(path string) (*Theme, error) {
 		return t, nil
 	}
 
-	_, err := toml.DecodeFile(path, t)
+	md, err := toml.DecodeFile(path, t)
 	if err != nil {
 		return Default(), err
+	}
+
+	// Reject unknown keys like the config loader does: a typo'd key that
+	// silently does nothing reads as a broken theme.
+	if undecoded := md.Undecoded(); len(undecoded) > 0 {
+		keys := make([]string, len(undecoded))
+		for i, key := range undecoded {
+			keys[i] = key.String()
+		}
+
+		return Default(), fmt.Errorf("unknown keys in %s: %s", path, strings.Join(keys, ", "))
 	}
 
 	if bad := t.invalidColors(); len(bad) > 0 {

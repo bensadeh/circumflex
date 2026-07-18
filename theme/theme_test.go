@@ -96,6 +96,20 @@ cycle = ["red", "magneta"]
 	assert.Contains(t, err.Error(), `indent.cycle = "magneta"`)
 }
 
+func TestLoad_RejectsUnknownKeys(t *testing.T) {
+	t.Parallel()
+
+	path := writeTheme(t, `
+[headline]
+ask_hm = "#ff5500"
+`)
+
+	_, err := Load(path)
+
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "ask_hm")
+}
+
 func TestLoad_DefaultThemeIsValid(t *testing.T) {
 	t.Parallel()
 
