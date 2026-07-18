@@ -99,12 +99,18 @@ func (s *Service) fetchItemsInParallel(ctx context.Context, ids []int) ([]*hn.St
 		g.Go(func() error {
 			raw, err := s.fetchHNItem(ctx, id)
 			if err != nil {
-				// Deleted items are skipped rather than failing the whole page.
+				// Missing items are skipped rather than failing the whole page.
 				if errors.Is(err, errItemNotFound) {
 					return nil
 				}
 
 				return err
+			}
+
+			// Deleted and dead stories are skipped like missing ones; HN's
+			// own front pages hide them without showdead.
+			if raw.Deleted || raw.Dead {
+				return nil
 			}
 
 			items[i] = mapStoryItem(raw)
@@ -124,6 +130,14 @@ func (s *Service) FetchItem(ctx context.Context, id int) (*hn.Story, error) {
 	raw, err := s.fetchHNItem(ctx, id)
 	if err != nil {
 		return nil, err
+	}
+
+	if raw.Deleted {
+		return nil, fmt.Errorf("item %d has been deleted", id)
+	}
+
+	if raw.Dead {
+		return nil, fmt.Errorf("item %d has been flagged", id)
 	}
 
 	return mapStoryItem(raw), nil

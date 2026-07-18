@@ -642,6 +642,66 @@ func TestFetchItems_NullItemSkipped(t *testing.T) {
 	assert.Equal(t, "Third", result[1].Title)
 }
 
+func TestFetchItems_SkipsDeletedAndDead(t *testing.T) {
+	storyIDs := []int{1, 2, 3}
+	items := map[int]hnItem{
+		1: {ID: 1, Title: "First", Score: 10, By: "user1", Time: 1700000000},
+		2: {ID: 2, Deleted: true, Time: 1700000000},
+		3: {ID: 3, Title: "Third", Score: 30, By: "user3", Time: 1700000000, Dead: true},
+	}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		if strings.HasSuffix(r.URL.Path, "topstories.json") {
+			_ = json.NewEncoder(w).Encode(storyIDs)
+
+			return
+		}
+
+		path := strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, "/item/"), ".json")
+		id, _ := strconv.Atoi(path)
+		_ = json.NewEncoder(w).Encode(items[id])
+	}))
+	defer server.Close()
+
+	s := NewService()
+	s.baseURL = server.URL
+
+	result, err := s.FetchItems(context.Background(), 3, "topstories")
+	require.NoError(t, err)
+
+	require.Len(t, result, 1)
+	assert.Equal(t, "First", result[0].Title)
+}
+
+func TestFetchItem_DeletedOrDead(t *testing.T) {
+	items := map[int]hnItem{
+		2: {ID: 2, Deleted: true},
+		3: {ID: 3, Title: "Flagged", Dead: true},
+	}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		path := strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, "/item/"), ".json")
+		id, _ := strconv.Atoi(path)
+		_ = json.NewEncoder(w).Encode(items[id])
+	}))
+	defer server.Close()
+
+	s := NewService()
+	s.baseURL = server.URL
+
+	_, err := s.FetchItem(context.Background(), 2)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "deleted")
+
+	_, err = s.FetchItem(context.Background(), 3)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "flagged")
+}
+
 func TestFetchComments_RetrySuccess(t *testing.T) {
 	now := time.Now()
 
