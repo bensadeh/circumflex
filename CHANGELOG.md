@@ -2,12 +2,6 @@
 
 ## 5.0 (Unreleased)
 
-**Breaking Changes**
-
-- Renamed `--disable-history` to `--no-history`
-- Renamed `--reader-mode-images` to `--images`, replacing `CLX_READER_MODE_IMAGES`
-- Favorites moved to `favorites.toml` (migrated automatically)
-
 **New Features**
 
 - Added Search to Stories, Comment Section and Reader Mode
@@ -33,6 +27,12 @@
 - Re-stylize the meta block
 - Soften comment footer colors
 - Update indent level indicator
+
+**Breaking Changes**
+
+- Renamed `--disable-history` to `--no-history`
+- Renamed `--reader-mode-images` to `--images`, replacing `CLX_READER_MODE_IMAGES`
+- Favorites moved to `favorites.toml` (migrated automatically)
 
 ## 4.5
 
