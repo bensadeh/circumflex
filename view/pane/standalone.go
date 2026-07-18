@@ -105,7 +105,9 @@ func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return s, cmd
 
 	case message.StatusMessageTimeout:
-		if s.status.Expire(msg.Generation) {
+		// Mirrors the app's rule: an in-flight fetch owns the progress
+		// indicator, so only settle it when none is running.
+		if s.status.Expire(msg.Generation) && !s.fetch.InFlight() {
 			ClearProgress()
 		}
 

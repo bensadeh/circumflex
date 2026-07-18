@@ -88,7 +88,10 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 		m.memorialErr = msg.Err
 
 	case message.StatusMessageTimeout:
-		if m.status.text.Expire(msg.Generation) {
+		// The expiring message may be holding the terminal progress indicator
+		// (a failed fetch's error state), so settle it — unless a fetch is in
+		// flight: the indicator is then the fetch's, settled when it finishes.
+		if m.status.text.Expire(msg.Generation) && !m.fetch.inFlight() {
 			pane.ClearProgress()
 		}
 

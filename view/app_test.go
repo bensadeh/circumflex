@@ -19,6 +19,7 @@ import (
 	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/settings"
 	"github.com/bensadeh/circumflex/view/message"
+	"github.com/bensadeh/circumflex/view/pane"
 	"github.com/bensadeh/circumflex/view/reader"
 	xansi "github.com/charmbracelet/x/ansi"
 
@@ -150,12 +151,50 @@ func TestDetailQuit_FromReaderRestoresState(t *testing.T) {
 	assert.Equal(t, screenList, m.screen)
 }
 
-func TestStatusMessageTimeout_ClearsMessage(t *testing.T) {
+func TestStatusMessageTimeout_ClearsExpiredMessage(t *testing.T) {
 	m := newTestModelReady(t)
-	m.status.text.SetPermanent("some status")
 
-	m, _ = m.Update(message.StatusMessageTimeout{})
+	timeout := m.status.NewStatusMessageWithDuration("transient", time.Millisecond)()
+	m, _ = m.Update(timeout)
+
 	assert.Empty(t, m.status.text.Message())
+}
+
+// The favorites-prompt scenario: a transient message's timer is still
+// pending when the prompt's permanent text replaces it. The stale timer
+// must not blank the prompt.
+func TestStatusMessageTimeout_StaleTimerKeepsPermanentMessage(t *testing.T) {
+	m := newTestModelReady(t)
+
+	timeout := m.status.NewStatusMessageWithDuration("Item added", time.Millisecond)()
+	m.status.SetPermanentStatusMessage("add to favorites?")
+
+	m, _ = m.Update(timeout)
+
+	assert.Equal(t, "add to favorites?", m.status.text.Message())
+}
+
+// A message expiring mid-fetch must not clear the fetch's terminal progress
+// indicator; an indeterminate fetch never rewrites it.
+func TestStatusMessageTimeout_MidFetchKeepsProgressIndicator(t *testing.T) {
+	m := newTestModelReady(t)
+
+	timeout := m.status.NewStatusMessageWithDuration("Item added", time.Millisecond)()
+
+	m, _ = m.Update(keyMsg("tab"))
+	require.True(t, m.fetch.inFlight())
+
+	var progress strings.Builder
+
+	prev := pane.ProgressOut
+	pane.ProgressOut = &progress
+
+	t.Cleanup(func() { pane.ProgressOut = prev })
+
+	m, _ = m.Update(timeout)
+
+	assert.Empty(t, m.status.text.Message(), "the message itself still expires")
+	assert.NotContains(t, progress.String(), "\x1b]9;4;0", "the fetch's indicator survives")
 }
 
 func TestAddToFavorites_AddsItem(t *testing.T) {

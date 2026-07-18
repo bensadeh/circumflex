@@ -35,10 +35,13 @@ func (t *TransientStatus) Set(msg string, d time.Duration) tea.Cmd {
 	})
 }
 
-// SetPermanent shows msg with no expiry of its own; a pending timer from an
-// earlier Set still clears it when it fires.
+// SetPermanent shows msg with no expiry: it stays until the next Set,
+// SetPermanent or Clear. The generation bump invalidates pending expiry
+// timers — the message may be modal text like the favorites prompt, which
+// an earlier message's timer must not blank.
 func (t *TransientStatus) SetPermanent(msg string) {
 	t.message = msg
+	t.generation++
 }
 
 // Clear hides the message immediately and invalidates pending expiries.

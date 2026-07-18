@@ -33,7 +33,7 @@ func (s *statusBar) StartSpinner() tea.Cmd {
 
 func (s *statusBar) StopSpinner() {
 	s.showSpinner = false
-	s.text.SetPermanent("")
+	s.text.Clear()
 }
 
 func (s *statusBar) spinnerView() string {
