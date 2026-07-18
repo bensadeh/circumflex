@@ -225,6 +225,36 @@ func truncateURL(display string) string {
 	return string(runes[:maxURLDisplay]) + "…"
 }
 
+// RenderContent renders a comment body behind its depth-colored indent
+// symbol. The symbol's column is carved out of ScreenWidth before rendering —
+// code boxes grow up to the full width they are given, so it must already
+// exclude that column or the wrap below breaks border lines.
+func RenderContent(blocks []Block, depth int, opts RenderOptions) string {
+	coloredIndentSymbol := colorizeIndentSymbol(style.IndentSymbol, depth)
+	padWidth := lipgloss.Width(coloredIndentSymbol)
+
+	opts.ScreenWidth -= padWidth
+
+	formattedComment := RenderBlocks(blocks, opts)
+
+	wrapped := lipgloss.Wrap(formattedComment, opts.ScreenWidth, "")
+
+	return style.PrefixLines(wrapped, coloredIndentSymbol)
+}
+
+// colorizeIndentSymbol colors the ▎ gutter by nesting depth, cycling through
+// the theme's indent palette. Top-level comments have no symbol.
+func colorizeIndentSymbol(indentSymbol string, level int) string {
+	if level == 0 {
+		return ansi.Reset
+	}
+
+	cycle := style.IndentCycle()
+	idx := (level - 1) % len(cycle)
+
+	return ansi.Reset + cycle[idx](indentSymbol)
+}
+
 // referenceStyles is the single inventory of [N] footnote references: the
 // tokenizer derives its literals from it and the renderer its colors, so the
 // two cannot drift apart.

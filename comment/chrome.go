@@ -5,12 +5,13 @@ import (
 	"slices"
 	"strings"
 
-	"charm.land/lipgloss/v2"
-	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/timeago"
 )
+
+// The furniture rendered around comment bodies: headers with their author
+// labels, separators, indent geometry and the collapsed-replies indicator.
 
 // mods drives every moderator affordance — the header label, the body tint
 // and the mention color. sctb no longer moderates but stays for rendering
@@ -99,64 +100,6 @@ func Header(c *Comment, depth int, originalPoster, topLevelAuthor string, lastVi
 	indentation := strings.Repeat(" ", indentSize)
 
 	return indentation + author + authorLabel + style.Faint(timeago.RelativeTime(c.Time)) + "\n"
-}
-
-// RenderContent renders a comment body behind its depth-colored indent
-// symbol. The symbol's column is carved out of ScreenWidth before rendering —
-// code boxes grow up to the full width they are given, so it must already
-// exclude that column or the wrap below breaks border lines.
-func RenderContent(blocks []Block, depth int, opts RenderOptions) string {
-	coloredIndentSymbol := colorizeIndentSymbol(style.IndentSymbol, depth)
-	padWidth := lipgloss.Width(coloredIndentSymbol)
-
-	opts.ScreenWidth -= padWidth
-
-	formattedComment := RenderBlocks(blocks, opts)
-
-	wrapped := lipgloss.Wrap(formattedComment, opts.ScreenWidth, "")
-
-	return style.PrefixLines(wrapped, coloredIndentSymbol)
-}
-
-// colorizeIndentSymbol colors the ▎ gutter by nesting depth, cycling through
-// the theme's indent palette. Top-level comments have no symbol.
-func colorizeIndentSymbol(indentSymbol string, level int) string {
-	if level == 0 {
-		return ansi.Reset
-	}
-
-	cycle := style.IndentCycle()
-	idx := (level - 1) % len(cycle)
-
-	return ansi.Reset + cycle[idx](indentSymbol)
-}
-
-func NewCommentsCount(thread *Thread, lastVisited int64) int {
-	count := 0
-
-	for _, c := range thread.Comments {
-		countNewComments(c, &count, lastVisited)
-	}
-
-	return count
-}
-
-func countNewComments(c *Comment, count *int, lastVisited int64) {
-	if lastVisited < c.Time {
-		*count++
-	}
-
-	for _, reply := range c.Children {
-		countNewComments(reply, count, lastVisited)
-	}
-}
-
-func FirstCommentID(comments []*Comment) int {
-	if len(comments) == 0 {
-		return 0
-	}
-
-	return comments[0].ID
 }
 
 // RepliesIndicator returns a styled, left-aligned replies indicator line when

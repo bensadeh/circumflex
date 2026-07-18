@@ -18,3 +18,31 @@ type Thread struct {
 	Content  string // self-text
 	Comments []*Comment
 }
+
+func NewCommentsCount(thread *Thread, lastVisited int64) int {
+	count := 0
+
+	for _, c := range thread.Comments {
+		countNewComments(c, &count, lastVisited)
+	}
+
+	return count
+}
+
+func countNewComments(c *Comment, count *int, lastVisited int64) {
+	if lastVisited < c.Time {
+		*count++
+	}
+
+	for _, reply := range c.Children {
+		countNewComments(reply, count, lastVisited)
+	}
+}
+
+func FirstCommentID(comments []*Comment) int {
+	if len(comments) == 0 {
+		return 0
+	}
+
+	return comments[0].ID
+}
