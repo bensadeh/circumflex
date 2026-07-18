@@ -57,9 +57,10 @@ func fetchImages(ctx context.Context, blocks []block, base *nurl.URL) {
 	var targets []int
 
 	for i := range blocks {
-		// Known figures render their description, never art, so fetching
-		// their pixels would be wasted.
-		if blocks[i].kind == blockImage && blocks[i].imageURL != "" && !blocks[i].figure {
+		// Figures fetch like any image: whether the terminal composites the
+		// high-res pixels that make them legible isn't known until the
+		// graphics probe answers, well after parse.
+		if blocks[i].kind == blockImage && blocks[i].imageURL != "" {
 			targets = append(targets, i)
 			if len(targets) == maxImages {
 				break

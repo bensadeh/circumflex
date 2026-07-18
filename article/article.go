@@ -90,11 +90,17 @@ func NewParsedFromHTML(src string) *Parsed {
 	return &Parsed{blocks: parseBlocks(node)}
 }
 
-// HasImages reports whether any block holds decoded image pixels, i.e.
-// whether toggling image display changes the render.
-func (p *Parsed) HasImages() bool {
+// HasImages reports whether any block holds decoded image pixels the h/l
+// toggle can reveal. Figures count only when the terminal composites Kitty
+// graphics — below that tier they render their description either way.
+func (p *Parsed) HasImages(kitty bool) bool {
 	for i := range p.blocks {
-		if p.blocks[i].kind == blockImage && p.blocks[i].img != nil {
+		b := &p.blocks[i]
+		if b.kind != blockImage || b.img == nil {
+			continue
+		}
+
+		if !b.figure || (kitty && b.kitty != nil) {
 			return true
 		}
 	}

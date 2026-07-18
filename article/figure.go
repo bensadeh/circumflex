@@ -6,8 +6,9 @@ import (
 )
 
 // knownFigure reports whether an image is known to depict a chart, plot, or
-// diagram — where half-block art degrades to an illegible smear and the
-// description carries the actual content. Only what the page declares counts,
+// diagram — where half-block art degrades to an illegible smear, so only
+// Kitty-resolution pixels render and the description carries the content
+// everywhere below that tier. Only what the page declares counts,
 // so photographs are never demoted: a print-style numbered caption
 // ("Figure 3: …") or a description led by the graphic's genre, the alt-text
 // convention for complex images ("Bar chart of …"). Format is deliberately

@@ -89,6 +89,24 @@ func TestCachedImagePartSwitchesWithMode(t *testing.T) {
 		"switching back re-renders rather than serving the stale mode")
 }
 
+func TestFigureArtOnlyAtKittyTier(t *testing.T) {
+	t.Parallel()
+
+	b := kittyTestBlock()
+	b.figure = true
+	b.spans = []span{{text: "a caption"}}
+
+	kittyPart := renderImage(b, 44, ImageOptions{Show: true, Kitty: true})
+	assert.Contains(t, kittyPart, string(kitty.Placeholder), "high resolution keeps the chart legible")
+
+	halfBlockPart := xansi.Strip(renderImage(b, 44, ImageOptions{Show: true}))
+	assert.Contains(t, halfBlockPart, "▂▄▆ Figure a caption", "half-block art would smear the chart")
+	assert.NotContains(t, halfBlockPart, "▀")
+
+	hiddenPart := xansi.Strip(renderImage(b, 44, ImageOptions{Kitty: true}))
+	assert.Contains(t, hiddenPart, "▂▄▆ Figure a caption")
+}
+
 func TestPendingKittyWork(t *testing.T) {
 	t.Parallel()
 

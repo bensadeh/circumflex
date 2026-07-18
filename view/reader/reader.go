@@ -673,7 +673,7 @@ func (m *Model) readerModeLabel() string {
 // imageIndicator is the footer counterpart to the comment section's mode
 // indicator, present only when the article has images for h/l to toggle.
 func (m *Model) imageIndicator() string {
-	if m.parsed == nil || !m.parsed.HasImages() {
+	if m.parsed == nil || !m.parsed.HasImages(graphics.Enabled()) {
 		return ""
 	}
 

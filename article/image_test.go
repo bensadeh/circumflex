@@ -51,15 +51,18 @@ func TestFetchImages_TinyImageIsDecorativeNotFailed(t *testing.T) {
 	assert.False(t, blocks[1].decorative)
 }
 
-func TestFetchImages_SkipsKnownFigures(t *testing.T) {
+func TestFetchImages_FetchesKnownFigures(t *testing.T) {
 	t.Parallel()
 
-	requested := false
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		var buf bytes.Buffer
+		if err := png.Encode(&buf, image.NewRGBA(image.Rect(0, 0, 100, 100))); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		requested = true
+			return
+		}
 
-		http.NotFound(w, r)
+		_, _ = w.Write(buf.Bytes())
 	}))
 	defer srv.Close()
 
@@ -72,8 +75,8 @@ func TestFetchImages_SkipsKnownFigures(t *testing.T) {
 
 	fetchImages(context.Background(), blocks, base)
 
-	assert.False(t, requested, "figures render their description, never art")
-	assert.Nil(t, blocks[0].img)
+	require.NotNil(t, blocks[0].img, "a Kitty-tier terminal renders the figure's pixels")
+	assert.NotNil(t, blocks[0].kitty)
 }
 
 func TestFetchImages_SendsRefererForHotlinkProtection(t *testing.T) {
@@ -137,12 +140,21 @@ func TestHasImages(t *testing.T) {
 		{kind: blockParagraph},
 		{kind: blockImage, img: image.NewRGBA(image.Rect(0, 0, 100, 100))},
 	}}
-	assert.True(t, decoded.HasImages())
+	assert.True(t, decoded.HasImages(false))
 
 	undecoded := &Parsed{blocks: []block{{kind: blockImage, imageURL: "https://example.com/a.png"}}}
-	assert.False(t, undecoded.HasImages(), "a failed fetch leaves nothing to toggle")
+	assert.False(t, undecoded.HasImages(false), "a failed fetch leaves nothing to toggle")
 
-	assert.False(t, NewParsedFromHTML("<p>text only</p>").HasImages())
+	figure := &Parsed{blocks: []block{{
+		kind:   blockImage,
+		figure: true,
+		img:    image.NewRGBA(image.Rect(0, 0, 100, 100)),
+		kitty:  &kittyImage{png: []byte("png-bytes"), id: 7},
+	}}}
+	assert.True(t, figure.HasImages(true))
+	assert.False(t, figure.HasImages(false), "below the Kitty tier the toggle never reveals a figure")
+
+	assert.False(t, NewParsedFromHTML("<p>text only</p>").HasImages(false))
 }
 
 func TestFetchImages_SVGFallsBackToRasterization(t *testing.T) {

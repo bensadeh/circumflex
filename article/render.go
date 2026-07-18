@@ -332,7 +332,15 @@ func styleLines(text string, styleFn func(string) string) string {
 }
 
 func renderImage(b *block, width int, images ImageOptions) string {
-	if images.Show && b.img != nil {
+	// A figure's content is its text — axis labels, values — which survives
+	// Kitty compositing but not half-block art, so below that tier the
+	// description renders in place of the pixels.
+	art := images.Show && b.img != nil
+	if b.figure && (!images.Kitty || b.kitty == nil) {
+		art = false
+	}
+
+	if art {
 		if part := cachedImagePart(b, width, images); part != "" {
 			return part
 		}
@@ -678,9 +686,9 @@ func imageLabel() string {
 	return graphicLabel(imageCircle, imageCircle, imageCircle, " Image ")
 }
 
-// figureLabel marks a graphic drawn in markup rather than pixels: an ascending
-// mini bar chart in place of the image circles, since no bitmap exists for the
-// image toggle to reveal.
+// figureLabel marks a described graphic — one drawn in markup with no bitmap
+// at all, or a chart whose pixels only a Kitty-tier terminal renders legibly:
+// an ascending mini bar chart in place of the image circles.
 func figureLabel() string {
 	return graphicLabel("▂", "▄", "▆", " Figure ")
 }
