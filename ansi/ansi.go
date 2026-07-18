@@ -10,11 +10,13 @@ const (
 	Faint             = "\033[2m"
 	Italic            = "\033[3m"
 	Underline         = "\033[4m"
+	UnderlineDashed   = "\033[4:5m" // only valid after Underline: terminals without styled underlines ignore it, keeping the plain underline
 	Reverse           = "\033[7m"
 	Strikethrough     = "\033[9m"
 	NormalIntensity   = "\033[22m" // clears both Bold and Faint
 	ItalicOff         = "\033[23m"
 	UnderlineOff      = "\033[24m"
+	UnderlineColorOff = "\033[59m" // back to the default underline color: the text color
 	ReverseOff        = "\033[27m"
 	StrikethroughOff  = "\033[29m"
 	Red               = "\033[31m"

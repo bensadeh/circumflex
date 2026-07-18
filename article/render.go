@@ -132,6 +132,10 @@ func renderSpans(spans []span, insideQuote bool) string {
 	for _, s := range spans {
 		var rendered string
 
+		// Links reader mode can't open in place carry a dashed underline,
+		// matching the muted treatment the URL selector gives them.
+		viewable := s.href != "" && ValidateURL(s.href) == nil
+
 		switch s.format {
 		case formatPlain:
 			rendered = s.text
@@ -159,10 +163,12 @@ func renderSpans(spans []span, insideQuote bool) string {
 			switch {
 			case insideQuote:
 				rendered = s.text
-			case s.href != "":
+			case s.href != "" && viewable:
 				// The leading reset clears the link wrapper's underline along
 				// with everything else, so the backtick style re-adds it.
 				rendered = ansi.Reset + style.CommentBacktickLink(s.text)
+			case s.href != "":
+				rendered = ansi.Reset + style.CommentBacktickLinkInert(s.text)
 			default:
 				rendered = ansi.Reset + style.CommentBacktick(s.text)
 			}
@@ -174,8 +180,11 @@ func renderSpans(spans []span, insideQuote bool) string {
 			rendered = s.text
 		}
 
-		if s.href != "" {
+		switch {
+		case viewable:
 			rendered = style.ReaderLink(rendered, s.href)
+		case s.href != "":
+			rendered = style.ReaderLinkInert(rendered, s.href)
 		}
 
 		sb.WriteString(rendered)

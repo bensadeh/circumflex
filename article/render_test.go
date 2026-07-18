@@ -541,6 +541,47 @@ func TestRenderSpans_Hyperlink(t *testing.T) {
 	assert.Equal(t, "click here", ansi.Strip(out), "hyperlink must not change the visible text")
 }
 
+// The inert-link tests are not parallel: the first depends on the
+// styled-underline and foreground globals still being unset, and the ones
+// after it flip them for the rest of the process.
+func TestRenderSpans_InertLinkPlainUnderlineByDefault(t *testing.T) {
+	spans := []span{{text: "the paper", href: "https://example.com/paper.pdf"}}
+	out := renderSpans(spans, false)
+
+	assert.Contains(t, out, "8;;https://example.com/paper.pdf", "an inert link still carries its OSC 8 hyperlink")
+	assert.Contains(t, out, "\x1b[4;34m"+"the paper",
+		"the text keeps the link color; without affirmed support the underline stays plain")
+	assert.NotContains(t, out, ansi.UnderlineDashed)
+	assert.NotContains(t, out, "\x1b[58", "no underline color until the terminal reports its foreground")
+}
+
+func TestRenderSpans_InertLinkDashedOnAffirmedTerminal(t *testing.T) {
+	style.EnableDashedUnderline()
+	style.SetTerminalForeground(color.White)
+
+	spans := []span{{text: "the paper", href: "https://example.com/paper.pdf"}}
+	out := renderSpans(spans, false)
+
+	assert.Contains(t, out, "\x1b[4;34m"+ansi.UnderlineDashed+"\x1b[58",
+		"blue text, dashed underline, underline color pinned to the terminal foreground")
+	assert.Contains(t, out, "the paper"+ansi.DefaultForeground+ansi.UnderlineColorOff+ansi.UnderlineOff)
+	assert.Equal(t, "the paper", ansi.Strip(out), "the markers must not change the visible text")
+
+	viewable := renderSpans([]span{{text: "the post", href: "https://example.com/post"}}, false)
+	assert.NotContains(t, viewable, ansi.UnderlineDashed, "readable links keep the solid underline")
+	assert.NotContains(t, viewable, "\x1b[58", "readable links underline in their own color")
+}
+
+func TestRenderSpans_InertHyperlinkedCodeGetsDashedUnderline(t *testing.T) {
+	style.EnableDashedUnderline()
+
+	spans := []span{{text: "pkg.Func", format: formatCode, href: "https://example.com/archive.zip"}}
+	out := renderSpans(spans, false)
+
+	assert.Contains(t, out, "\x1b[3;4;35", "the backtick style still re-adds the underline")
+	assert.Contains(t, out, ansi.UnderlineDashed, "the inert code link switches it to dashed")
+}
+
 func TestHighlightMentions(t *testing.T) {
 	t.Parallel()
 

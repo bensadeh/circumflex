@@ -307,6 +307,13 @@ func CommentBacktickLink(s string) string {
 	return commentBacktickStyle.Underline(true).Render(s)
 }
 
+// CommentBacktickLinkInert is CommentBacktickLink with the underline of an
+// inert reader link. The dashed and underline-color markers ride inside the
+// styled run, right after the opening SGR turns the plain underline on.
+func CommentBacktickLinkInert(s string) string {
+	return commentBacktickStyle.Underline(true).Render(inertUnderlineMarker + inertUnderlineColor + s)
+}
+
 func MetaAuthor(s string) string      { return metaAuthorStyle.Render(s) }
 func MetaScore(s string) string       { return metaScoreStyle.Render(s) }
 func MetaComments(s string) string    { return metaCommentsStyle.Render(s) }
@@ -327,6 +334,59 @@ func ReaderImageColor() color.Color { return readerImageColor }
 // link inside an otherwise styled run leaves the surrounding style intact.
 func ReaderLink(s, url string) string {
 	return ansi.Hyperlink(url, readerLinkOpen+s+ansi.DefaultForeground+ansi.UnderlineOff)
+}
+
+// inertUnderlineMarker switches an inert link's underline to dashed. Empty
+// until the terminal affirms styled-underline support: the cell renderer
+// canonicalizes the underline to the bare colon-form sequence, which a
+// terminal without the capability drops — losing the underline entirely
+// rather than falling back to the plain one.
+var inertUnderlineMarker string
+
+// inertUnderlineColor pins an inert link's underline to the terminal's
+// default foreground while the text keeps the link color. Empty until the
+// terminal reports that foreground — an underline defaults to the text
+// color, so without the report it stays in the link color.
+var inertUnderlineColor string
+
+// EnableDashedUnderline records that the terminal draws styled underlines;
+// inert reader links render dashed from here on.
+func EnableDashedUnderline() {
+	inertUnderlineMarker = ansi.UnderlineDashed
+}
+
+// SetTerminalForeground records the terminal's default foreground color;
+// inert reader links underline in it from here on.
+func SetTerminalForeground(c color.Color) {
+	if c == nil {
+		return
+	}
+
+	inertUnderlineColor = xansi.Style{}.UnderlineColor(c).String()
+}
+
+// NoteTerminalCapability records a terminal capability answer. An affirmed
+// Smulx (styled underlines) switches inert reader links to dashed; the
+// report lets a page rendered before the answer know to repaint.
+func NoteTerminalCapability(answer string) bool {
+	if answer != "Smulx" && !strings.HasPrefix(answer, "Smulx=") {
+		return false
+	}
+
+	EnableDashedUnderline()
+
+	return true
+}
+
+// ReaderLinkInert is ReaderLink for a target reader mode can't open in
+// place: the text keeps the link color, but the underline renders dashed —
+// where the terminal supports it — and in the terminal's normal foreground
+// instead of following the text.
+func ReaderLinkInert(s, url string) string {
+	open := readerLinkOpen + inertUnderlineMarker + inertUnderlineColor
+	reset := ansi.DefaultForeground + ansi.UnderlineColorOff + ansi.UnderlineOff
+
+	return ansi.Hyperlink(url, open+s+reset)
 }
 
 func HeaderC() color.Color         { return headerCColor }

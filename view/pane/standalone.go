@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/view/message"
 
 	"charm.land/bubbles/v2/key"
@@ -64,7 +65,7 @@ func (s standalone) Init() tea.Cmd {
 	// The background feeds image transparency in reader mode, the foreground
 	// its URL selector's separator row; terminals that do not answer simply
 	// never deliver the messages.
-	return tea.Batch(tea.RequestBackgroundColor, tea.RequestForegroundColor)
+	return tea.Batch(tea.RequestBackgroundColor, tea.RequestForegroundColor, DetectStyledUnderline())
 }
 
 func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -119,6 +120,17 @@ func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			return s, cmd
 		}
+
+	case tea.CapabilityMsg:
+		// Unlike the full app, the page may already be on screen when the
+		// Smulx answer arrives; the forward lets it repaint with dashed
+		// links. The flag is global, so nothing needs replaying into a
+		// view built later.
+		if style.NoteTerminalCapability(msg.Content) && s.view != nil {
+			return s, s.view.Update(msg)
+		}
+
+		return s, nil
 
 	case tea.BackgroundColorMsg:
 		s.bgMsg = msg // forwarded below, or replayed if the view is not built yet

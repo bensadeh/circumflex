@@ -5,6 +5,7 @@ import (
 	"github.com/bensadeh/circumflex/favorites"
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/meta"
+	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/timeago"
 	"github.com/bensadeh/circumflex/view/comments"
 	"github.com/bensadeh/circumflex/view/message"
@@ -44,6 +45,15 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 
 	if fg, ok := msg.(tea.ForegroundColorMsg); ok {
 		m.termFG = fg.Color
+		style.SetTerminalForeground(fg.Color)
+
+		return m, nil
+	}
+
+	// The Smulx answer arrives at startup, long before a reader could
+	// render, so recording it is enough — no repaint to trigger.
+	if capability, ok := msg.(tea.CapabilityMsg); ok {
+		style.NoteTerminalCapability(capability.Content)
 
 		return m, nil
 	}

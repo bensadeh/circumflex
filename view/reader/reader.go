@@ -201,9 +201,24 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		return nil
 
 	case tea.ForegroundColorMsg:
-		// Feeds the URL selector's separator row; nothing rendered ahead of
-		// time depends on it.
+		// Feeds the URL selector's separator row and pins inert links'
+		// underline color; a page rendered before the report repaints.
 		m.termFG = msg.Color
+		style.SetTerminalForeground(msg.Color)
+
+		if m.parsed != nil {
+			m.rerender()
+		}
+
+		return nil
+
+	case tea.CapabilityMsg:
+		// Standalone mode forwards the Smulx answer after flipping the
+		// global flag; a page rendered before it arrived repaints so its
+		// inert links pick up the dashed underline.
+		if style.NoteTerminalCapability(msg.Content) && m.parsed != nil {
+			m.rerender()
+		}
 
 		return nil
 	}
