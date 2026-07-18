@@ -21,7 +21,13 @@ import (
 
 var ProgressOut io.Writer = os.Stderr
 
-// progressCh is wired by WireProgress; nil whenever no program is running.
+// progressCh is wired by WireProgress before its program starts and never
+// written again: comment-fetch workers read it concurrently, and the
+// pre-start write is what makes those unsynchronized reads safe. After
+// settle it stays in place so a straggling worker's update lands in the
+// orphaned buffer, not on the terminal of an exited program. Nil only when
+// no program was ever wired — tests, which assert on the direct
+// ProgressOut writes instead.
 var progressCh chan<- string
 
 const progressClearSeq = "\033]9;4;0\a"
@@ -61,13 +67,15 @@ func SyncProgress(err error) {
 	ClearProgress()
 }
 
-// WireProgress routes progress sequences into p's message loop for the
-// program's lifetime. The forwarder goroutine exists because Send would
-// deadlock called from Update itself; once the program stops, Send is a
-// no-op. The returned settle stops the forwarder and clears the indicator —
-// call it after Run returns, when a direct write can no longer interleave
-// with a frame; clearing there rather than in the quit paths guarantees the
-// indicator never outlives the program, whatever the exit.
+// WireProgress routes progress sequences into p's message loop. Call it
+// before Run: the pre-start write to progressCh is the happens-before edge
+// that lets fetch goroutines read it without locks. The forwarder goroutine
+// exists because Send would deadlock called from Update itself; once the
+// program stops, Send is a no-op. The returned settle stops the forwarder
+// and clears the indicator — call it after Run returns, when a direct write
+// can no longer interleave with a frame; clearing there rather than in the
+// quit paths guarantees the indicator never outlives the program, whatever
+// the exit.
 func WireProgress(p *tea.Program) (settle func()) {
 	ch := make(chan string, 64)
 	done := make(chan struct{})
@@ -86,8 +94,6 @@ func WireProgress(p *tea.Program) (settle func()) {
 
 	return func() {
 		close(done)
-
-		progressCh = nil
 
 		_, _ = fmt.Fprint(ProgressOut, progressClearSeq)
 	}
