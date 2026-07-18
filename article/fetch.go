@@ -28,7 +28,7 @@ func (discardLogger) Errorf(string, ...any) {}
 func (discardLogger) Warnf(string, ...any)  {}
 func (discardLogger) Debugf(string, ...any) {}
 
-func fetchPage(ctx context.Context, url string, parsedURL *nurl.URL) (body []byte, contentType string, err error) {
+func fetchPage(ctx context.Context, url string, parsedURL *nurl.URL) (body []byte, contentType string, finalURL *nurl.URL, err error) {
 	client := resty.New()
 
 	defer func() { _ = client.Close() }()
@@ -41,22 +41,31 @@ func fetchPage(ctx context.Context, url string, parsedURL *nurl.URL) (body []byt
 	resp, err := client.R().SetContext(ctx).Get(url)
 	if err != nil {
 		if ctx.Err() != nil {
-			return nil, "", ctx.Err()
+			return nil, "", nil, ctx.Err()
 		}
 
-		return nil, "", fmt.Errorf("could not fetch URL: %w", err)
+		return nil, "", nil, fmt.Errorf("could not fetch URL: %w", err)
 	}
 
 	if resp.StatusCode() >= 400 {
-		return nil, "", fmt.Errorf("server returned status %d for %s", resp.StatusCode(), parsedURL.Host)
+		return nil, "", nil, fmt.Errorf("server returned status %d for %s", resp.StatusCode(), parsedURL.Host)
 	}
 
-	return resp.Bytes(), resp.Header().Get("Content-Type"), nil
+	// A redirect can land on another host or path; relative references, site
+	// rules and the image Referer must see where the page actually came from,
+	// not where the chain started.
+	finalURL = parsedURL
+	if r := resp.RawResponse; r != nil && r.Request != nil && r.Request.URL != nil {
+		finalURL = r.Request.URL
+	}
+
+	return resp.Bytes(), resp.Header().Get("Content-Type"), finalURL, nil
 }
 
 // fetchArticle retrieves the page reader mode will parse, preferring a known
 // full-text mirror of the URL when one exists. The returned URL is the one
-// actually fetched, so relative references resolve against the right base.
+// actually fetched — redirects followed — so relative references resolve
+// against the right base.
 func fetchArticle(ctx context.Context, url string, parsedURL *nurl.URL) ([]byte, string, *nurl.URL, error) {
 	if body, contentType, mirror := fetchFullText(ctx, parsedURL); mirror != nil {
 		return body, contentType, mirror, nil
@@ -66,9 +75,7 @@ func fetchArticle(ctx context.Context, url string, parsedURL *nurl.URL) ([]byte,
 		return nil, "", nil, ctx.Err()
 	}
 
-	body, contentType, err := fetchPage(ctx, url, parsedURL)
-
-	return body, contentType, parsedURL, err
+	return fetchPage(ctx, url, parsedURL)
 }
 
 // fetchFullText returns a nil URL when no mirror is known for the page or the
@@ -84,12 +91,12 @@ func fetchFullText(ctx context.Context, parsedURL *nurl.URL) ([]byte, string, *n
 		return nil, "", nil
 	}
 
-	body, contentType, err := fetchPage(ctx, fullText, fullTextParsed)
+	body, contentType, finalURL, err := fetchPage(ctx, fullText, fullTextParsed)
 	if err != nil {
 		return nil, "", nil
 	}
 
-	return body, contentType, fullTextParsed
+	return body, contentType, finalURL
 }
 
 func extractReadable(body []byte, parsedURL *nurl.URL) (*html.Node, string, error) {
