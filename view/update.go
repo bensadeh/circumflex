@@ -132,12 +132,19 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 		return m.handleLinkArticleReady(msg)
 
 	case message.DetailQuit:
+		// The quit can race a fetch the view minted a cycle earlier (a J/K
+		// story, a followed link); it must die with the view, or its result
+		// would reopen a story the user just left.
+		m.abortFetchOnQuit()
+
 		m.detail = nil
 		m.screen = screenList
 
 		return m, nil
 
 	case message.ErrorViewQuit:
+		m.abortFetchOnQuit()
+
 		m.detail = nil
 		m.screen = screenList
 		// Settle the terminal progress indicator in case the view is quit

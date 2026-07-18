@@ -151,6 +151,28 @@ func TestDetailQuit_FromReaderRestoresState(t *testing.T) {
 	assert.Equal(t, screenList, m.screen)
 }
 
+// A quit that races a fetch the detail view minted a cycle earlier must
+// abort it: its result would otherwise reopen a story the user just left.
+func TestDetailQuit_AbortsRacedFetch(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, _ = m.Update(keyMsg("enter"))
+	require.True(t, m.fetch.inFlight())
+
+	staleID := m.fetch.currentID()
+
+	m, _ = m.Update(message.DetailQuit{})
+	assert.False(t, m.fetch.inFlight(), "the quit aborts the fetch")
+
+	// The aborted fetch's late result is stale and dropped.
+	m, _ = m.Update(message.CommentTreeDataReady{
+		FetchID: staleID,
+		Thread:  comment.ToThread(&hn.CommentTree{}),
+	})
+	assert.Nil(t, m.detail, "the story must not reopen over the front page")
+	assert.Equal(t, screenList, m.screen)
+}
+
 func TestStatusMessageTimeout_ClearsExpiredMessage(t *testing.T) {
 	m := newTestModelReady(t)
 

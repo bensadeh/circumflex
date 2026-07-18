@@ -152,6 +152,23 @@ func (m *model) finishFetch(id uint64, err error) (rollbackPoint, bool) {
 	return rb, true
 }
 
+// abortFetchOnQuit kills a fetch racing a detail view's quit — a J/K story
+// fetch or a link follow minted a cycle before the quit landed — so its
+// result cannot reopen a story the user just left. Quitting is not
+// cancelling: no status message.
+func (m *model) abortFetchOnQuit() {
+	rb, ok := m.fetch.abort()
+	if !ok {
+		return
+	}
+
+	m.rollbackFetch(rb)
+
+	pane.ClearProgress()
+	m.status.StopSpinner()
+	m.updatePagination()
+}
+
 func (m *model) handleCancelFetch() tea.Cmd {
 	rb, ok := m.fetch.abort()
 	if !ok {
