@@ -15,9 +15,9 @@ const (
 )
 
 // Removed reports whether a comment body is one of HN's placeholder markers:
-// text withheld by deletion, moderation, or the author's delay setting. Leaf
-// comments with these bodies are dropped from the view; ones with replies
-// stay to anchor the thread.
+// text withheld by deletion, moderation, or the author's delay setting.
+// ToThread prunes removed comments whose subtrees are removed throughout;
+// ones with a surviving reply stay to anchor the thread.
 func Removed(content string) bool {
 	return content == "[deleted]" || content == "[flagged]" || content == "[delayed]"
 }

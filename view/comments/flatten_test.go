@@ -109,17 +109,23 @@ func TestFlatten_DescendantCount(t *testing.T) {
 	assert.Equal(t, 0, flat[3].DescendantCount) // D leaf
 }
 
-func TestFlatten_SkipsRemovedLeaves(t *testing.T) {
+// Pruning of removed comments happens in comment.ToThread; this pins that
+// the view pipeline receives the pruned tree.
+func TestFlatten_RemovedLeavesArePruned(t *testing.T) {
 	t.Parallel()
 
-	thread := newThread(
-		newComment(1, "alice", "A",
-			newComment(2, "bob", "[deleted]"),
-			newComment(3, "charlie", "C"),
-			newComment(4, "dave", "[flagged]"),
-			newComment(5, "erin", "[delayed]"),
+	hnNode := func(id int, author, content string, children ...*hn.CommentNode) *hn.CommentNode {
+		return &hn.CommentNode{ID: id, Author: author, Content: content, Children: children}
+	}
+
+	thread := comment.ToThread(&hn.CommentTree{Comments: []*hn.CommentNode{
+		hnNode(1, "alice", "A",
+			hnNode(2, "bob", "[deleted]"),
+			hnNode(3, "charlie", "C"),
+			hnNode(4, "dave", "[flagged]"),
+			hnNode(5, "erin", "[delayed]"),
 		),
-	)
+	}})
 
 	flat := flatten(thread)
 

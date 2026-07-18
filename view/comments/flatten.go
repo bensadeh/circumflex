@@ -32,6 +32,8 @@ type lineMetrics struct {
 // a flat slice. Each entry retains its depth and descendant count.
 // The resulting order is load-bearing: computeVisible assumes children
 // immediately follow their parent with strictly increasing depth.
+// Removed comments were already pruned by comment.ToThread; every comment
+// in the thread renders.
 func flatten(thread *comment.Thread) []flatComment {
 	var result []flatComment
 
@@ -48,10 +50,6 @@ func flatten(thread *comment.Thread) []flatComment {
 }
 
 func flattenRecursive(c *comment.Comment, depth int, topLevelAuthor string, out *[]flatComment) {
-	if comment.Removed(c.Content) && len(c.Children) == 0 {
-		return
-	}
-
 	copied := *c
 	copied.Children = nil
 
