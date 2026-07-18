@@ -151,6 +151,27 @@ func TestDetailQuit_FromReaderRestoresState(t *testing.T) {
 	assert.Equal(t, screenList, m.screen)
 }
 
+// Reader-minted messages arrive a cycle after their keypress, slipping past
+// the in-flight key gate; mid-fetch they must be dropped like the keys
+// themselves would be.
+func TestReaderMessages_DroppedWhileFetchInFlight(t *testing.T) {
+	m := newTestModelReady(t)
+
+	m, _ = m.Update(keyMsg("enter"))
+	require.True(t, m.fetch.inFlight())
+
+	fetchID := m.fetch.currentID()
+
+	m, cmd := m.Update(message.OpenReaderLink{URL: "https://example.com/post"})
+	assert.Equal(t, fetchID, m.fetch.currentID(), "a raced link follow must not supersede the fetch")
+	assert.Nil(t, cmd)
+
+	m, _ = m.Update(message.RestoreReaderPage{})
+	assert.Nil(t, m.detail, "a raced walk-back must not build a page mid-fetch")
+	assert.Equal(t, screenList, m.screen)
+	assert.True(t, m.fetch.inFlight(), "the running fetch is untouched")
+}
+
 // A quit that races a fetch the detail view minted a cycle earlier must
 // abort it: its result would otherwise reopen a story the user just left.
 func TestDetailQuit_AbortsRacedFetch(t *testing.T) {

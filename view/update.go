@@ -309,6 +309,13 @@ func (m *model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*m
 // status bar like a failed fetch would. The selector greys out links that
 // fail this check, so this guard is mostly a backstop.
 func (m *model) handleOpenReaderLink(msg message.OpenReaderLink) tea.Cmd {
+	// The reader mints this a cycle after its keypress, so a rapid second
+	// press slips past the in-flight key gate and lands here mid-fetch —
+	// dropped, like every other input during a fetch.
+	if m.fetch.inFlight() {
+		return nil
+	}
+
 	if err := article.ValidateURL(msg.URL); err != nil {
 		return m.status.NewStatusMessageWithDuration(pane.FriendlyError(err), statusMessageLong)
 	}
@@ -325,6 +332,13 @@ func (m *model) handleOpenReaderLink(msg message.OpenReaderLink) tea.Cmd {
 // The story article at the chain's root gets its story meta back, rebuilt
 // from the selection, which still points at it.
 func (m *model) handleRestoreReaderPage(msg message.RestoreReaderPage) (*model, tea.Cmd) {
+	// Minted a cycle after the keypress: mid-fetch the selection may already
+	// have moved (a raced J/K), so the header below would name the wrong
+	// story. Dropping is safe — walking back is repeatable.
+	if m.fetch.inFlight() {
+		return m, nil
+	}
+
 	it := m.list.SelectedItem()
 
 	storyHeader := meta.ReaderMode(meta.Data{

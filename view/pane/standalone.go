@@ -114,8 +114,10 @@ func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return s, nil
 
 	case message.RestoreReaderPage:
-		// Walking back needs no fetch: the entry carries its parse.
-		if s.makePageView != nil {
+		// Walking back needs no fetch: the entry carries its parse. Dropped
+		// mid-fetch — minted a cycle after its keypress, it slips past the
+		// in-flight key gate below — mirroring the app shell.
+		if s.makePageView != nil && !s.fetch.InFlight() {
 			var cmd tea.Cmd
 
 			s.view, cmd = s.buildPage(msg.Entry, msg.Trail)
@@ -180,6 +182,13 @@ func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 // (comments) sends the link to the browser instead. The current page stays
 // on screen while the fetch runs; a newer follow supersedes an older one.
 func (s standalone) followLink(msg message.OpenReaderLink) (tea.Model, tea.Cmd) {
+	// Minted a cycle after its keypress, so a rapid second press slips past
+	// the in-flight key gate and lands here mid-fetch. Dropped, like every
+	// other input during a fetch.
+	if s.fetch.InFlight() {
+		return s, nil
+	}
+
 	if s.makePageView == nil {
 		return s, message.OpenInBrowser(msg.URL)
 	}
