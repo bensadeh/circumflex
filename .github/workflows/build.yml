@@ -29,13 +29,24 @@ jobs:
       - name: Test
         run: go test -race -v ./...
 
-      # Regenerate the man page, completions and example files and fail on
-      # any difference, so the committed artifacts cannot drift from their
-      # sources. The two -I patterns skip the date asciidoctor stamps into
-      # the man page; the version is still guarded by its Source line.
+      # Regenerate the Go-generated artifacts (completions, example files)
+      # and fail on any difference, so they cannot drift from their sources.
+      # The man page is excluded: asciidoctor output varies between versions,
+      # so byte-comparing it would tie CI to the maintainer's local install.
       - name: Check generated files are current
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq asciidoctor
-          bash share/generate_all.sh
-          git diff --exit-code -I'^\.\\"      Date: ' -I'^\.TH "CLX" "1" '
+          bash share/completions/generate_completions.sh
+          go run ./cmd/gen-theme-example theme.toml.example
+          go run ./cmd/gen-config-example config.toml.example
+          git diff --exit-code
+
+      # The man page content isn't byte-checked (see above), but its version
+      # stamp must match the source so a version bump can't ship a stale page.
+      - name: Check man page version
+        run: |
+          version=$(go run ./cmd/clx --version | awk '{print $NF}')
+          grep -qF "Source: circumflex $version" share/man/clx.1 || {
+            echo "share/man/clx.1 is stamped with a different version than $version" >&2
+            echo "run share/generate_all.sh and commit the result" >&2
+            exit 1
+          }
