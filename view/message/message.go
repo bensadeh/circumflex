@@ -66,13 +66,16 @@ type AddToFavorites struct {
 }
 
 // TrailEntry is one page in the chain behind a followed link: everything
-// needed to restore it without touching the network. Parsed is content, not
-// view state — it cannot go stale the way a saved view could.
+// needed to restore it without touching the network. Exactly one of Parsed
+// (a reader page) or Thread (a comment section) is set; both are content,
+// not view state — they cannot go stale the way a saved view could.
 type TrailEntry struct {
-	URL    string
-	Title  string
-	Parsed *article.Parsed
-	Story  bool // the story article at the chain's root, restored with its story meta
+	URL         string
+	Title       string
+	Parsed      *article.Parsed
+	Thread      *comment.Thread
+	LastVisited int64 // the thread's last-visit stamp, kept for its new-comment highlights
+	Story       bool  // the story article at the chain's root, restored with its story meta
 }
 
 // OpenReaderLink asks the app to open a link followed from inside a
@@ -88,16 +91,16 @@ func OpenReaderLinkCmd(url string, trail []TrailEntry) tea.Cmd {
 	return func() tea.Msg { return OpenReaderLink{URL: url, Trail: trail} }
 }
 
-// RestoreReaderPage re-opens a page already fetched and parsed — the quit
-// key stepping back through followed links. No network is involved: the
-// entry carries its parse, and Trail is the chain remaining behind it.
-type RestoreReaderPage struct {
+// RestorePage re-opens a page already fetched — the quit key stepping back
+// through followed links. No network is involved: the entry carries its
+// parse or thread, and Trail is the chain remaining behind it.
+type RestorePage struct {
 	Entry TrailEntry
 	Trail []TrailEntry
 }
 
-func RestoreReaderPageCmd(entry TrailEntry, trail []TrailEntry) tea.Cmd {
-	return func() tea.Msg { return RestoreReaderPage{Entry: entry, Trail: trail} }
+func RestorePageCmd(entry TrailEntry, trail []TrailEntry) tea.Cmd {
+	return func() tea.Msg { return RestorePage{Entry: entry, Trail: trail} }
 }
 
 // LinkArticleReady delivers a page fetched through OpenReaderLink. Kept

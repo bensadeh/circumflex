@@ -2,6 +2,7 @@ package view
 
 import (
 	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/favorites"
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/hn"
@@ -107,8 +108,8 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 	case message.OpenReaderLink:
 		return m, m.handleOpenReaderLink(msg)
 
-	case message.RestoreReaderPage:
-		return m.handleRestoreReaderPage(msg)
+	case message.RestorePage:
+		return m.handleRestorePage(msg)
 
 	case message.LinkArticleReady:
 		return m.handleLinkArticleReady(msg)
@@ -322,7 +323,10 @@ func (m *model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*m
 		return m, tea.Batch(cmds...)
 	}
 
-	m.detail = comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, m.detailWidth(), m.height)
+	c := comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, m.detailWidth(), m.height)
+	c.SetTermColors(m.termFG, m.termBG)
+
+	m.detail = c
 	m.screen = screenComments
 
 	cmds = append(cmds, m.detail.Init())
@@ -380,10 +384,7 @@ func (m *model) handleLinkCommentsReady(msg message.LinkCommentsReady) (*model, 
 		return m, m.status.NewStatusMessageWithDuration(pane.FriendlyError(msg.Err), statusMessageLong)
 	}
 
-	c := comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, m.detailWidth(), m.height)
-	c.SetLinkTrail(msg.Trail)
-
-	m.detail = c
+	m.detail = m.newLinkedComments(msg.Thread, msg.LastVisited, msg.Trail)
 	m.screen = screenComments
 
 	initCmd := m.detail.Init()
@@ -395,16 +396,25 @@ func (m *model) handleLinkCommentsReady(msg message.LinkCommentsReady) (*model, 
 	return m, initCmd
 }
 
-// handleRestoreReaderPage steps back to a page whose parse rode along the
-// walk-back chain: no fetch, no spinner — the reader rebuilds synchronously.
+// handleRestorePage steps back to a page whose content rode along the
+// walk-back chain: no fetch, no spinner — the view rebuilds synchronously.
 // The story article at the chain's root gets its story meta back, rebuilt
 // from the selection, which still points at it.
-func (m *model) handleRestoreReaderPage(msg message.RestoreReaderPage) (*model, tea.Cmd) {
+func (m *model) handleRestorePage(msg message.RestorePage) (*model, tea.Cmd) {
 	// Minted a cycle after the keypress: mid-fetch the selection may already
 	// have moved (a raced J/K), so the header below would name the wrong
 	// story. Dropping is safe — walking back is repeatable.
 	if m.fetch.inFlight() {
 		return m, nil
+	}
+
+	// A comment section rode the chain as its thread; scroll and collapse
+	// state start fresh, like a reader page's scroll position does.
+	if msg.Entry.Thread != nil {
+		m.detail = m.newLinkedComments(msg.Entry.Thread, msg.Entry.LastVisited, msg.Trail)
+		m.screen = screenComments
+
+		return m, m.detail.Init()
 	}
 
 	it := m.list.SelectedItem()
@@ -424,6 +434,17 @@ func (m *model) handleRestoreReaderPage(msg message.RestoreReaderPage) (*model, 
 	m.screen = screenReader
 
 	return m, m.detail.Init()
+}
+
+// newLinkedComments builds the comment section for a thread reached through
+// links — followed forward or restored walking back — with the trail behind
+// it attached.
+func (m *model) newLinkedComments(thread *comment.Thread, lastVisited int64, trail []message.TrailEntry) *comments.Model {
+	c := comments.New(thread, lastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, m.detailWidth(), m.height)
+	c.SetTermColors(m.termFG, m.termBG)
+	c.SetLinkTrail(trail)
+
+	return c
 }
 
 // linkPageOptions carries the app's display knobs into a followed-link page;

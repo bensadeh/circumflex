@@ -396,7 +396,7 @@ func TestLinkSelector_TabTogglesAndKeysStep(t *testing.T) {
 	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
 	assert.True(t, m.linkMode)
 	assert.Equal(t, 0, m.currentLink, "entry selects the first link on screen")
-	assert.Equal(t, m.links[0].spans, m.LinkSpans())
+	assert.Equal(t, m.links[0].Spans, m.LinkSpans())
 
 	m.Update(tea.KeyPressMsg{Code: 'j', Text: "j"})
 	assert.Equal(t, 1, m.currentLink)
@@ -488,7 +488,7 @@ func TestLinkSelector_StepEntersVisibleSetAfterScroll(t *testing.T) {
 
 	// Scroll the first link into view by hand; the empty selection then
 	// enters the visible set on the next step.
-	m.Viewport.SetYOffset(m.links[0].spans[0].Line - 2)
+	m.Viewport.SetYOffset(m.links[0].Spans[0].Line - 2)
 	require.True(t, m.linkOnScreen(0))
 
 	m.Update(tea.KeyPressMsg{Code: 'j', Text: "j"})
@@ -581,7 +581,7 @@ func TestQuit_WalksBackThroughTrail(t *testing.T) {
 	cmd := m.Update(tea.KeyPressMsg{Code: 'q', Text: "q"})
 	require.NotNil(t, cmd)
 
-	msg, ok := cmd().(message.RestoreReaderPage)
+	msg, ok := cmd().(message.RestorePage)
 	require.True(t, ok, "quit restores the previous page from its retained parse")
 	assert.Equal(t, "https://a.example.com", msg.Entry.URL)
 	require.Len(t, msg.Trail, 1, "the step taken back leaves the chain")
@@ -799,7 +799,7 @@ func TestLinkSelector_SurvivesRerender(t *testing.T) {
 
 	assert.True(t, m.linkMode)
 	assert.Equal(t, 1, m.currentLink)
-	assert.Equal(t, m.links[1].spans, m.LinkSpans(), "the highlight tracks the rewrapped spans")
+	assert.Equal(t, m.links[1].Spans, m.LinkSpans(), "the highlight tracks the rewrapped spans")
 }
 
 func TestFooter_ReaderModeLabelSitsLeft(t *testing.T) {

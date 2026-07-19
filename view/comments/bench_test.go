@@ -54,7 +54,7 @@ func benchModel(b *testing.B, search bool) *Model {
 		commitCommentSearch(m, "needle")
 	}
 
-	m.toggleMode()
+	m.toggleNavigateMode()
 
 	return m
 }

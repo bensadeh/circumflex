@@ -37,10 +37,63 @@ func (m *Model) handleGlobalKeys(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 // the reader's walk-back.
 func (m *Model) quitCmd() tea.Cmd {
 	if n := len(m.linkTrail); n > 0 {
-		return message.RestoreReaderPageCmd(m.linkTrail[n-1], m.linkTrail[:n-1])
+		return message.RestorePageCmd(m.linkTrail[n-1], m.linkTrail[:n-1])
 	}
 
 	return func() tea.Msg { return message.DetailQuit{} }
+}
+
+// handleLinkModeKey consumes the selector's own keys first — esc leaves it
+// before it can clear a search or quit the view — and lets everything else
+// (paging, o, J/K, z) fall through. The bool reports whether the key was
+// consumed.
+func (m *Model) handleLinkModeKey(msg tea.KeyPressMsg) (tea.Cmd, bool) {
+	switch {
+	case key.Matches(msg, m.keymap.LinkMode):
+		m.exitLinkMode()
+
+	case key.Matches(msg, m.keymap.NextLink):
+		m.moveLink(1)
+
+	case key.Matches(msg, m.keymap.PrevLink):
+		m.moveLink(-1)
+
+	case key.Matches(msg, m.keymap.JumpNextLink):
+		m.jumpLink(1)
+
+	case key.Matches(msg, m.keymap.JumpPrevLink):
+		m.jumpLink(-1)
+
+	// o falls through to the story bindings below — the selector only claims
+	// enter, and only for links a view can open in place.
+	case key.Matches(msg, m.keymap.OpenSelected):
+		if m.currentLink < 0 {
+			return nil, true
+		}
+
+		if l := m.links[m.currentLink]; l.Viewable {
+			return message.OpenReaderLinkCmd(l.URL, m.nextTrail()), true
+		}
+
+		return nil, true
+
+	case key.Matches(msg, m.keymap.NavigateMode):
+		m.exitLinkMode()
+		m.enterNavigateMode()
+
+	case key.Matches(msg, m.keymap.Search):
+		m.exitLinkMode()
+		m.expandAll()
+		m.StartSearchPrompt()
+
+	case key.Matches(msg, m.keymap.Quit):
+		m.exitLinkMode()
+
+	default:
+		return nil, false
+	}
+
+	return nil, true
 }
 
 func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
@@ -58,7 +111,21 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		return nil
 	}
 
+	if m.linkMode {
+		if cmd, handled := m.handleLinkModeKey(msg); handled {
+			return cmd
+		}
+	}
+
 	if m.handleSearchKeys(msg) {
+		return nil
+	}
+
+	// Navigate mode layers like the selector and search: the back keys
+	// leave it before they can quit the view.
+	if m.mode == modeNavigate && key.Matches(msg, m.keymap.Quit) {
+		m.exitNavigateMode()
+
 		return nil
 	}
 
@@ -67,8 +134,11 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 	}
 
 	switch {
-	case key.Matches(msg, m.keymap.ToggleMode):
-		m.toggleMode()
+	case key.Matches(msg, m.keymap.LinkMode):
+		m.enterLinkMode()
+
+	case key.Matches(msg, m.keymap.NavigateMode):
+		m.toggleNavigateMode()
 
 	case key.Matches(msg, m.keymap.GotoTop):
 		m.gotoTop()
@@ -150,33 +220,49 @@ func (m *Model) handleNavigateKeys(msg tea.KeyPressMsg) tea.Cmd {
 	return nil
 }
 
-func (m *Model) toggleMode() {
-	switch m.mode {
-	case modeRead:
-		m.mode = modeNavigate
+func (m *Model) toggleNavigateMode() {
+	if m.mode == modeNavigate {
+		m.exitNavigateMode()
 
-		// Disable viewport j/k so our navigate bindings take over.
-		m.Viewport.KeyMap.Up.SetEnabled(false)
-		m.Viewport.KeyMap.Down.SetEnabled(false)
-
-		if m.focusedIdx < 0 && len(m.visible) > 0 {
-			m.focusedIdx = m.findCommentAtScroll()
-		}
-
-		m.syncDecorations()
-
-	case modeNavigate:
-		m.mode = modeRead
-
-		m.Viewport.KeyMap.Up.SetEnabled(true)
-		m.Viewport.KeyMap.Down.SetEnabled(true)
-
-		m.focusedIdx = -1
-
-		// Sync expandedDepth to the actual collapse state so the depth
-		// indicator matches what's on screen without changing the view.
-		m.syncExpandedDepth()
-
-		m.syncDecorations()
+		return
 	}
+
+	m.enterNavigateMode()
+}
+
+func (m *Model) enterNavigateMode() {
+	if m.mode == modeNavigate {
+		return
+	}
+
+	m.mode = modeNavigate
+
+	// Disable viewport j/k so our navigate bindings take over.
+	m.Viewport.KeyMap.Up.SetEnabled(false)
+	m.Viewport.KeyMap.Down.SetEnabled(false)
+
+	if m.focusedIdx < 0 && len(m.visible) > 0 {
+		m.focusedIdx = m.findCommentAtScroll()
+	}
+
+	m.syncDecorations()
+}
+
+func (m *Model) exitNavigateMode() {
+	if m.mode != modeNavigate {
+		return
+	}
+
+	m.mode = modeRead
+
+	m.Viewport.KeyMap.Up.SetEnabled(true)
+	m.Viewport.KeyMap.Down.SetEnabled(true)
+
+	m.focusedIdx = -1
+
+	// Sync expandedDepth to the actual collapse state so the depth
+	// indicator matches what's on screen without changing the view.
+	m.syncExpandedDepth()
+
+	m.syncDecorations()
 }

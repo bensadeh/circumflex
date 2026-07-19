@@ -246,7 +246,7 @@ func TestCommentSearch_FindsRootSelfText(t *testing.T) {
 
 func TestCommentSearch_NavModeFocusFollowsMatch(t *testing.T) {
 	m := searchModel(t)
-	m.toggleMode()
+	m.toggleNavigateMode()
 
 	commitCommentSearch(m, "needle")
 

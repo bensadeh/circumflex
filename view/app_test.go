@@ -186,7 +186,7 @@ func TestReaderMessages_DroppedWhileFetchInFlight(t *testing.T) {
 	assert.Equal(t, fetchID, m.fetch.currentID(), "a raced link follow must not supersede the fetch")
 	assert.Nil(t, cmd)
 
-	m, _ = m.Update(message.RestoreReaderPage{})
+	m, _ = m.Update(message.RestorePage{})
 	assert.Nil(t, m.detail, "a raced walk-back must not build a page mid-fetch")
 	assert.Equal(t, screenList, m.screen)
 	assert.True(t, m.fetch.inFlight(), "the running fetch is untouched")
@@ -1169,7 +1169,7 @@ func TestLinkCommentsReady_OpensThreadWithTrailAndBadge(t *testing.T) {
 	cmd := m.detail.Update(keyMsg("q"))
 	require.NotNil(t, cmd)
 
-	restore, ok := cmd().(message.RestoreReaderPage)
+	restore, ok := cmd().(message.RestorePage)
 	require.True(t, ok)
 
 	m, _ = m.Update(restore)
@@ -1187,6 +1187,39 @@ func TestLinkCommentsReady_ErrorStaysOnArticle(t *testing.T) {
 	assert.Same(t, root, m.detail, "the open article never transitions on failure")
 	assert.Equal(t, screenReader, m.screen)
 	assert.NotNil(t, cmd, "the failure surfaces as a status message")
+}
+
+func TestRestorePage_ThreadEntryRebuildsCommentSection(t *testing.T) {
+	m := openTestReader(t, newTestModelReady(t))
+
+	thread := &comment.Thread{Story: hn.Story{ID: 9, Title: "The thread behind", CommentsCount: 5}}
+
+	_, _ = m.startLinkFetch(0)
+	m, _ = m.Update(message.LinkArticleReady{
+		Parsed: testParsedArticle(),
+		Title:  "Linked from thread",
+		URL:    "https://example.com/from-thread",
+		Trail: []message.TrailEntry{
+			{URL: hn.ItemURL(9), Title: "The thread behind", Thread: thread},
+		},
+		FetchID: m.fetch.currentID(),
+	})
+	require.Equal(t, screenReader, m.screen)
+
+	// Quit from the article steps back INTO the thread it was found in.
+	cmd := m.detail.Update(keyMsg("q"))
+	require.NotNil(t, cmd)
+
+	restore, ok := cmd().(message.RestorePage)
+	require.True(t, ok)
+	require.NotNil(t, restore.Entry.Thread)
+
+	m, _ = m.Update(restore)
+	assert.Equal(t, screenComments, m.screen)
+
+	view := xansi.Strip(m.detail.View())
+	assert.Contains(t, view, "The thread behind")
+	assert.NotContains(t, view, "›", "an empty remaining trail leaves no badge")
 }
 
 func TestLinkArticleReady_TrailFeedsDepthBadge(t *testing.T) {
@@ -1207,10 +1240,10 @@ func TestLinkArticleReady_TrailFeedsDepthBadge(t *testing.T) {
 	assert.Equal(t, 2, strings.Count(xansi.Strip(m.detail.View()), "›"), "two links followed, two steps back")
 }
 
-func TestRestoreReaderPage_LinkEntryKeepsChain(t *testing.T) {
+func TestRestorePage_LinkEntryKeepsChain(t *testing.T) {
 	m := openTestReader(t, newTestModelReady(t))
 
-	m, _ = m.Update(message.RestoreReaderPage{
+	m, _ = m.Update(message.RestorePage{
 		Entry: message.TrailEntry{URL: "https://example.com/a", Title: "Page A", Parsed: testParsedArticle()},
 		Trail: []message.TrailEntry{{URL: "https://example.com/story", Story: true}},
 	})
@@ -1221,10 +1254,10 @@ func TestRestoreReaderPage_LinkEntryKeepsChain(t *testing.T) {
 	assert.Equal(t, 1, strings.Count(xansi.Strip(m.detail.View()), "›"), "one step back remains")
 }
 
-func TestRestoreReaderPage_StoryEntryGetsStoryMeta(t *testing.T) {
+func TestRestorePage_StoryEntryGetsStoryMeta(t *testing.T) {
 	m := openTestReader(t, newTestModelReady(t))
 
-	m, _ = m.Update(message.RestoreReaderPage{
+	m, _ = m.Update(message.RestorePage{
 		Entry: message.TrailEntry{URL: "https://example.com/1", Title: "First item", Parsed: testParsedArticle(), Story: true},
 	})
 

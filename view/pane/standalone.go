@@ -124,7 +124,7 @@ func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		return s, nil
 
-	case message.RestoreReaderPage:
+	case message.RestorePage:
 		// Walking back needs no fetch: the entry carries its parse. Dropped
 		// mid-fetch — minted a cycle after its keypress, it slips past the
 		// in-flight key gate below — mirroring the app shell.

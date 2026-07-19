@@ -1,11 +1,14 @@
 package comments
 
 import (
+	"image/color"
+	"slices"
 	"strings"
 
 	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/help"
+	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/nerdfonts"
@@ -36,6 +39,14 @@ type Model struct {
 	titleHeader   string
 	showHelp      bool
 	linkTrail     []message.TrailEntry
+	thread        *comment.Thread // retained for the trail entries this view mints
+
+	links       []pane.Link
+	linkMode    bool
+	currentLink int
+
+	termFG color.Color // nil until the terminal reports it
+	termBG color.Color // nil until the terminal reports it
 
 	prerendered []renderedComment
 
@@ -103,6 +114,7 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 		title:         thread.Title,
 		prerendered:   prerenderComments(rc, flat),
 		rc:            rc,
+		thread:        thread,
 	}
 
 	m.rebuildTitleHeader()
@@ -117,10 +129,9 @@ func (m *Model) DisableAppKeys() {
 	m.keymap.DisableAppKeys()
 }
 
-// SetLinkTrail marks this thread as reached by following a link inside an
-// article: trail is the chain of pages behind it, so quit steps back through
-// them instead of closing the detail pane, and the title row carries the
-// depth badge.
+// SetLinkTrail marks this thread as reached by following a link: trail is
+// the chain of pages behind it, so quit steps back through them instead of
+// closing the detail pane, and the title row carries the depth badge.
 func (m *Model) SetLinkTrail(trail []message.TrailEntry) {
 	if len(trail) == 0 {
 		return
@@ -128,6 +139,13 @@ func (m *Model) SetLinkTrail(trail []message.TrailEntry) {
 
 	m.linkTrail = trail
 	m.rebuildTitleHeader()
+}
+
+// SetTermColors hands the view the terminal's reported colors for the link
+// selector's separator-row URL; without them the URL degrades to plain
+// faint, dimming its stretch of the rule.
+func (m *Model) SetTermColors(fg, bg color.Color) {
+	m.termFG, m.termBG = fg, bg
 }
 
 func (m *Model) Init() tea.Cmd {
@@ -144,6 +162,18 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		}
 
 		m.HandleMouseWheel(msg)
+
+		return nil
+
+	case tea.BackgroundColorMsg:
+		// Feeds the link selector's separator row; the standalone shell
+		// replays reports that arrived before the view was built.
+		m.termBG = msg.Color
+
+		return nil
+
+	case tea.ForegroundColorMsg:
+		m.termFG = msg.Color
 
 		return nil
 
@@ -205,7 +235,26 @@ func (m *Model) View() string {
 
 	content := scrollbar.Attach(m.DecorateView(m.Viewport.View()), m.rc.paneWidth, m.ContentLines, m.Viewport.Height(), m.Viewport.YOffset())
 
-	return m.titleHeader + "\n" + content + "\n" + pane.FooterSeparator(m.rc.paneWidth) + "\n" + m.modeIndicator()
+	separator := pane.FooterSeparator(m.rc.paneWidth)
+	if m.linkMode {
+		separator = m.linkURLRow()
+	}
+
+	return m.titleHeader + "\n" + content + "\n" + separator + "\n" + m.modeIndicator()
+}
+
+// linkURLRow is the footer separator while the selector is up: the selected
+// link's URL written into the rule, ending at the comment column's right
+// edge like the counter below it. An empty selection leaves the rule bare.
+func (m *Model) linkURLRow() string {
+	if m.currentLink < 0 {
+		return pane.FooterSeparator(m.rc.paneWidth)
+	}
+
+	commentWidth := layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
+
+	return pane.LinkURLRow(m.rc.paneWidth, layout.CommentSectionLeftMargin, commentWidth,
+		m.links[m.currentLink].URL, m.termFG, m.termBG)
 }
 
 func (m *Model) rebuildTitleHeader() {
@@ -229,7 +278,109 @@ func (m *Model) updateViewport() {
 	lines, metrics := renderFromFlat(m.rc, m.flat, m.visible, m.prerendered)
 	m.lineMetrics = metrics
 	m.SetLines(lines)
+	m.extractCommentLinks()
+
+	// The selection carries over by position; collapsing can shrink the set,
+	// so clamping covers what position alone cannot.
+	if m.linkMode {
+		if len(m.links) == 0 {
+			m.exitLinkMode()
+		} else {
+			m.currentLink = min(m.currentLink, len(m.links)-1)
+			m.installLinkSpans()
+		}
+	}
+
 	m.syncDecorations()
+}
+
+// extractCommentLinks rescans the current render for followable links. The
+// meta header's URL row links the story itself, so its target is filtered
+// out wherever it appears; the self-text's other links stay selectable.
+func (m *Model) extractCommentLinks() {
+	links := pane.ExtractLinks(m.Lines(), 0)
+
+	if storyURL := m.rc.story.URL; storyURL != "" {
+		links = slices.DeleteFunc(links, func(l pane.Link) bool { return l.URL == storyURL })
+	}
+
+	m.links = links
+}
+
+// enterLinkMode starts the URL selector on the first link visible on screen.
+// Entry never moves the viewport: with no link in view the selection stays
+// empty until n/N jumps to one beyond it. Navigate mode ends here — the
+// selector owns the movement keys.
+func (m *Model) enterLinkMode() {
+	if len(m.links) == 0 {
+		return
+	}
+
+	m.exitNavigateMode()
+
+	m.linkMode = true
+	m.currentLink = pane.FirstLinkOnScreen(m.links, m.Viewport.YOffset(), m.Viewport.Height())
+	m.installLinkSpans()
+}
+
+func (m *Model) exitLinkMode() {
+	m.linkMode = false
+	m.SetLinkSpans(nil, false)
+}
+
+// moveLink steps the selection through the links on screen and stops at the
+// edge of the view — it never scrolls; the jump and scroll keys move the
+// viewport instead.
+func (m *Model) moveLink(direction int) {
+	m.currentLink = pane.StepLink(m.links, m.currentLink, direction, m.Viewport.YOffset(), m.Viewport.Height())
+	m.installLinkSpans()
+}
+
+// jumpLink moves to the next link wherever it sits — moveLink's off-screen
+// counterpart — scrolling it into view.
+func (m *Model) jumpLink(direction int) {
+	m.currentLink = pane.JumpToLink(m.links, m.currentLink, direction, m.Viewport.YOffset())
+	m.installLinkSpans()
+	m.scrollToCurrentLink()
+}
+
+// scrollToCurrentLink scrolls only when the selected link is not already
+// fully visible, so stepping through on-screen links doesn't shift the view.
+func (m *Model) scrollToCurrentLink() {
+	spans := m.links[m.currentLink].Spans
+	first, last := spans[0].Line, spans[len(spans)-1].Line
+
+	top := m.Viewport.YOffset()
+	if first >= top && last < top+m.Viewport.Height() {
+		return
+	}
+
+	m.Viewport.SetYOffset(max(0, first-scrollPadding))
+}
+
+func (m *Model) installLinkSpans() {
+	if m.currentLink < 0 {
+		m.SetLinkSpans(nil, false)
+
+		return
+	}
+
+	l := m.links[m.currentLink]
+	m.SetLinkSpans(l.Spans, !l.Viewable)
+}
+
+// nextTrail is the walk-back chain for a page opened from this thread: the
+// chain behind it plus itself, thread included so stepping back needs no
+// network.
+func (m *Model) nextTrail() []message.TrailEntry {
+	self := message.TrailEntry{
+		URL:         hn.ItemURL(m.rc.story.ID),
+		Title:       m.title,
+		Thread:      m.thread,
+		LastVisited: m.rc.lastVisited,
+	}
+
+	return append(slices.Clone(m.linkTrail), self)
 }
 
 // syncDecorations refreshes the display-time decorations: the focused header
@@ -276,6 +427,20 @@ func (m *Model) openCommentsInBrowser() tea.Cmd {
 }
 
 func (m *Model) modeIndicator() string {
+	if m.linkMode {
+		// The counter takes over the depth gauge's slot on the right, like
+		// the search counter does; the URL rides the separator above.
+		commentWidth := layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
+		totalWidth := layout.CommentSectionLeftMargin + commentWidth
+
+		viewable := m.currentLink < 0 || m.links[m.currentLink].Viewable
+		result := layout.FooterSections(totalWidth,
+			pane.LinkSelectorLabel(viewable, m.rc.enableNerdFonts),
+			pane.MatchCountLabel(m.currentLink, len(m.links)))
+
+		return xansi.Truncate(result, m.rc.paneWidth, "")
+	}
+
 	if search := m.SearchFooterLabel(m.rc.enableNerdFonts); search != "" {
 		// The counter takes over the depth gauge's slot on the right:
 		// position over the full match list once committed, the live total

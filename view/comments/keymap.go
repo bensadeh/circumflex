@@ -19,7 +19,7 @@ const (
 type keyMap struct {
 	pane.CommonKeyMap
 
-	ToggleMode   key.Binding
+	NavigateMode key.Binding
 	NextTopLevel key.Binding
 	PrevTopLevel key.Binding
 
@@ -29,14 +29,21 @@ type keyMap struct {
 	Collapse       key.Binding
 	Expand         key.Binding
 	ToggleCollapse key.Binding
+
+	LinkMode     key.Binding
+	NextLink     key.Binding
+	PrevLink     key.Binding
+	JumpNextLink key.Binding
+	JumpPrevLink key.Binding
+	OpenSelected key.Binding
 }
 
 func defaultKeyMap() keyMap {
 	return keyMap{
 		CommonKeyMap: pane.DefaultCommonKeyMap(),
-		ToggleMode: key.NewBinding(
-			key.WithKeys("tab"),
-			key.WithHelp("tab", "toggle read/navigate mode"),
+		NavigateMode: key.NewBinding(
+			key.WithKeys("a"),
+			key.WithHelp("a", "navigate mode"),
 		),
 		NextTopLevel: key.NewBinding(
 			key.WithKeys("n"),
@@ -65,6 +72,30 @@ func defaultKeyMap() keyMap {
 		ToggleCollapse: key.NewBinding(
 			key.WithKeys("enter"),
 			key.WithHelp("enter", "toggle collapse"),
+		),
+		LinkMode: key.NewBinding(
+			key.WithKeys("tab"),
+			key.WithHelp("⇥", "link selector"),
+		),
+		NextLink: key.NewBinding(
+			key.WithKeys("j", "down"),
+			key.WithHelp("j", "next link on screen"),
+		),
+		PrevLink: key.NewBinding(
+			key.WithKeys("k", "up"),
+			key.WithHelp("k", "prev link on screen"),
+		),
+		JumpNextLink: key.NewBinding(
+			key.WithKeys("n"),
+			key.WithHelp("n", "jump to next link"),
+		),
+		JumpPrevLink: key.NewBinding(
+			key.WithKeys("N"),
+			key.WithHelp("N", "jump to prev link"),
+		),
+		OpenSelected: key.NewBinding(
+			key.WithKeys("enter"),
+			key.WithHelp("↩", "open link"),
 		),
 	}
 }

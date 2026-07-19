@@ -57,7 +57,7 @@ type Model struct {
 	buildHeader func(contentWidth int) string
 	blockStarts []int // line index of each article block in the current render
 
-	links       []link
+	links       []pane.Link
 	linkMode    bool
 	currentLink int
 }
@@ -149,7 +149,7 @@ func (m *Model) extractArticleLinks() {
 		fromLine = m.blockStarts[0]
 	}
 
-	m.links = extractLinks(m.Lines(), fromLine)
+	m.links = pane.ExtractLinks(m.Lines(), fromLine)
 }
 
 func (m *Model) setContent(content string) {
@@ -389,7 +389,7 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 		// to the story article, then the front page.
 		if m.opts.FromLink {
 			if n := len(m.opts.Trail); n > 0 {
-				return message.RestoreReaderPageCmd(m.opts.Trail[n-1], slices.Clone(m.opts.Trail[:n-1]))
+				return message.RestorePageCmd(m.opts.Trail[n-1], slices.Clone(m.opts.Trail[:n-1]))
 			}
 
 			// A linked page always carries at least the story entry; the
@@ -478,8 +478,8 @@ func (m *Model) handleLinkModeKey(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 			return nil, true
 		}
 
-		if l := m.links[m.currentLink]; l.viewable {
-			return message.OpenReaderLinkCmd(l.url, m.nextTrail()), true
+		if l := m.links[m.currentLink]; l.Viewable {
+			return message.OpenReaderLinkCmd(l.URL, m.nextTrail()), true
 		}
 
 		return nil, true
@@ -526,83 +526,22 @@ func (m *Model) exitLinkMode() {
 	m.SetLinkSpans(nil, false)
 }
 
-// linkOnScreen reports whether any of link i's spans lies in the viewport's
-// current line window.
 func (m *Model) linkOnScreen(i int) bool {
-	top := m.Viewport.YOffset()
-	bottom := top + m.Viewport.Height()
-
-	for _, s := range m.links[i].spans {
-		if s.Line >= top && s.Line < bottom {
-			return true
-		}
-	}
-
-	return false
+	return pane.LinkOnScreen(m.links[i], m.Viewport.YOffset(), m.Viewport.Height())
 }
 
 // moveLink steps the selection through the links on screen and stops at the
 // edge of the view — it never scrolls; the jump and scroll keys move the
-// viewport instead. From an empty selection the step enters the visible set
-// from the edge it comes from.
+// viewport instead.
 func (m *Model) moveLink(direction int) {
-	from := m.currentLink
-	if from < 0 {
-		if direction > 0 {
-			from = -1
-		} else {
-			from = len(m.links)
-		}
-	}
-
-	for i := from + direction; i >= 0 && i < len(m.links); i += direction {
-		if m.linkOnScreen(i) {
-			m.currentLink = i
-			m.installLinkSpans()
-
-			return
-		}
-	}
+	m.currentLink = pane.StepLink(m.links, m.currentLink, direction, m.Viewport.YOffset(), m.Viewport.Height())
+	m.installLinkSpans()
 }
 
 // jumpLink moves to the next link wherever it sits — moveLink's off-screen
-// counterpart — scrolling it into view and wrapping like the search jumps.
-// From an empty selection it leaves relative to the viewport: forward to the
-// first link past its top, backward to the last one above it.
+// counterpart — scrolling it into view.
 func (m *Model) jumpLink(direction int) {
-	n := len(m.links)
-	yOffset := m.Viewport.YOffset()
-
-	var next int
-
-	switch {
-	case m.currentLink >= 0:
-		next = ((m.currentLink+direction)%n + n) % n
-
-	case direction > 0:
-		next = 0
-
-		for i, l := range m.links {
-			if l.spans[0].Line >= yOffset {
-				next = i
-
-				break
-			}
-		}
-
-	default:
-		next = n - 1
-
-		for i := n - 1; i >= 0; i-- {
-			if m.links[i].spans[0].Line < yOffset {
-				next = i
-
-				break
-			}
-		}
-	}
-
-	m.currentLink = next
+	m.currentLink = pane.JumpToLink(m.links, m.currentLink, direction, m.Viewport.YOffset())
 	m.installLinkSpans()
 	m.scrollToCurrentLink()
 }
@@ -615,7 +554,7 @@ func (m *Model) installLinkSpans() {
 	}
 
 	l := m.links[m.currentLink]
-	m.SetLinkSpans(l.spans, !l.viewable)
+	m.SetLinkSpans(l.Spans, !l.Viewable)
 }
 
 // nextTrail is the walk-back chain for a page opened from this one: this
@@ -640,7 +579,7 @@ const linkScrollPadding = 2
 // scrollToCurrentLink scrolls only when the selected link is not already
 // fully visible, so cycling through on-screen links doesn't shift the view.
 func (m *Model) scrollToCurrentLink() {
-	spans := m.links[m.currentLink].spans
+	spans := m.links[m.currentLink].Spans
 	first, last := spans[0].Line, spans[len(spans)-1].Line
 
 	top := m.Viewport.YOffset()
@@ -700,50 +639,21 @@ func (m *Model) footer() string {
 	return xansi.Truncate(result, m.paneWidth, "")
 }
 
-// linkSelectorLabel marks the selector in the reader-mode label's shape: the
-// selector icon and a faint mode label, while the URL itself rides the
-// separator above. A link the reader won't open breaks the arrow, matching
-// its dimmed URL; an empty selection keeps the plain arrow — nothing is
-// inert, there is just nothing selected yet.
 func (m *Model) linkSelectorLabel() string {
-	viewable := m.currentLink < 0 || m.links[m.currentLink].viewable
+	viewable := m.currentLink < 0 || m.links[m.currentLink].Viewable
 
-	icon, sep := style.Faint("→"), " "
-	if !viewable {
-		icon = style.Faint("↛")
-	}
-
-	if m.opts.NerdFonts {
-		// Nerd font glyphs render wider than one cell, so they get extra room.
-		icon, sep = nerdfonts.LinkSelector, "  "
-		if !viewable {
-			icon = nerdfonts.LinkSelectorOff
-		}
-	}
-
-	return "  " + icon + sep + style.Faint("URL Selection Mode")
+	return pane.LinkSelectorLabel(viewable, m.opts.NerdFonts)
 }
 
-// linkURLRow is the footer separator while the selector is up: the selected
-// link's URL written into the rule, right-aligned against the article
-// column's edge like the counter below it, leaving the footer line to the
-// mode label. The URL renders faint under the rule's full-strength underline;
-// whether the reader can open the link shows in the footer arrow and the
-// selection bar, not here.
+// linkURLRow is the footer separator while the selector is up; an empty
+// selection has no URL to show, so the rule stays bare.
 func (m *Model) linkURLRow() string {
-	// An empty selection has no URL to show; the rule stays bare.
 	if m.currentLink < 0 {
 		return pane.FooterSeparator(m.paneWidth)
 	}
 
-	// The scheme is stripped from the display like the meta block's URL row —
-	// the selector is visibly showing a link already.
-	display := strings.TrimPrefix(strings.TrimPrefix(m.links[m.currentLink].url, "https://"), "http://")
-
-	contentWidth := layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
-	display = xansi.Truncate(display, contentWidth, "…")
-
-	return pane.FooterSeparatorWithLabel(m.paneWidth, layout.ReaderViewLeftMargin+contentWidth, display, m.termFG, m.termBG)
+	return pane.LinkURLRow(m.paneWidth, layout.ReaderViewLeftMargin, layout.ReaderContentWidth(m.paneWidth, m.maxWidth),
+		m.links[m.currentLink].URL, m.termFG, m.termBG)
 }
 
 // readerModeLabel marks the article as a reader-mode rendering. The text is

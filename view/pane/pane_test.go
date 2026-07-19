@@ -254,7 +254,7 @@ func TestStandalone_RestoreRebuildsPageFromItsParse(t *testing.T) {
 
 	entry := message.TrailEntry{URL: "https://example.com/", Story: true, Parsed: article.NewParsedFromHTML("<p>root</p>")}
 
-	next, _ := s.Update(message.RestoreReaderPage{Entry: entry})
+	next, _ := s.Update(message.RestorePage{Entry: entry})
 
 	updated, ok := next.(standalone)
 	require.True(t, ok)

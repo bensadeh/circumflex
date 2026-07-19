@@ -6,6 +6,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"github.com/bensadeh/circumflex/comment"
+	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/view/message"
@@ -43,7 +44,7 @@ func TestLinkTrail_QuitWalksBack(t *testing.T) {
 	cmd := m.handleKeyPress(tea.KeyPressMsg{Code: 'q', Text: "q"})
 	require.NotNil(t, cmd)
 
-	restore, ok := cmd().(message.RestoreReaderPage)
+	restore, ok := cmd().(message.RestorePage)
 	require.True(t, ok, "quit steps back through the trail instead of closing")
 	assert.Equal(t, "https://a.example.com", restore.Entry.URL)
 	require.Len(t, restore.Trail, 1)
@@ -72,6 +73,117 @@ func TestLinkTrail_EmptyTrailKeepsDetailQuit(t *testing.T) {
 
 	_, ok := cmd().(message.DetailQuit)
 	assert.True(t, ok, "a trail never attached leaves quit closing the view")
+}
+
+// linkedCommentsModel is a thread whose story has a URL — so the meta header
+// carries its OSC 8 URL row — and two comments with body links.
+func linkedCommentsModel(t *testing.T) *Model {
+	t.Helper()
+
+	thread := &comment.Thread{
+		Story: hn.Story{ID: 7, Title: "Linky", Author: "op", URL: "https://story.example.com/article"},
+		Comments: []*comment.Comment{
+			newComment(1, "alice", `See <a href="https://one.example.com/post">first</a> here`),
+			newComment(2, "bob", `And <a href="https://news.ycombinator.com/item?id=99">previously</a>`),
+		},
+	}
+
+	return newTestModel(t, thread)
+}
+
+func TestLinkMode_MetaURLRowExcluded(t *testing.T) {
+	m := linkedCommentsModel(t)
+
+	require.Len(t, m.links, 2, "the meta header's story URL is not selectable")
+	assert.Equal(t, "https://one.example.com/post", m.links[0].URL)
+	assert.Equal(t, "https://news.ycombinator.com/item?id=99", m.links[1].URL)
+}
+
+func TestLinkMode_TabEntersAndEnterOpensWithThreadTrail(t *testing.T) {
+	m := linkedCommentsModel(t)
+
+	m.handleKeyPress(tea.KeyPressMsg{Code: tea.KeyTab})
+	require.True(t, m.linkMode)
+	require.Equal(t, 0, m.currentLink, "entry selects the first link on screen")
+
+	cmd := m.handleKeyPress(tea.KeyPressMsg{Code: tea.KeyEnter})
+	require.NotNil(t, cmd)
+
+	open, ok := cmd().(message.OpenReaderLink)
+	require.True(t, ok, "enter asks the app to open the link in place")
+	assert.Equal(t, "https://one.example.com/post", open.URL)
+
+	require.Len(t, open.Trail, 1, "the thread joins the chain behind the new page")
+	entry := open.Trail[0]
+	assert.Same(t, m.thread, entry.Thread, "the thread rides along so stepping back needs no network")
+	assert.Equal(t, "Linky", entry.Title)
+	assert.Equal(t, "https://news.ycombinator.com/item?id=7", entry.URL)
+}
+
+func TestLinkMode_TabNoopWithoutLinks(t *testing.T) {
+	m := newTestModel(t, testThread())
+
+	m.handleKeyPress(tea.KeyPressMsg{Code: tea.KeyTab})
+	assert.False(t, m.linkMode)
+}
+
+func TestLinkMode_QuitLeavesSelectorFirst(t *testing.T) {
+	m := linkedCommentsModel(t)
+
+	m.handleKeyPress(tea.KeyPressMsg{Code: tea.KeyTab})
+	require.True(t, m.linkMode)
+
+	cmd := m.handleKeyPress(tea.KeyPressMsg{Code: 'q', Text: "q"})
+	assert.Nil(t, cmd, "the first q only leaves the selector")
+	assert.False(t, m.linkMode)
+
+	cmd = m.handleKeyPress(tea.KeyPressMsg{Code: 'q', Text: "q"})
+	require.NotNil(t, cmd)
+
+	_, ok := cmd().(message.DetailQuit)
+	assert.True(t, ok, "the second closes the view")
+}
+
+func TestLinkMode_ASwitchesToNavigate(t *testing.T) {
+	m := linkedCommentsModel(t)
+
+	m.handleKeyPress(tea.KeyPressMsg{Code: tea.KeyTab})
+	require.True(t, m.linkMode)
+
+	m.handleKeyPress(tea.KeyPressMsg{Code: 'a', Text: "a"})
+	assert.False(t, m.linkMode)
+	assert.Equal(t, modeNavigate, m.mode)
+}
+
+func TestLinkMode_FooterShowsSelectorAndCounter(t *testing.T) {
+	m := linkedCommentsModel(t)
+
+	m.handleKeyPress(tea.KeyPressMsg{Code: tea.KeyTab})
+
+	footer := xansi.Strip(m.modeIndicator())
+	assert.Contains(t, footer, "URL Selection Mode")
+	assert.Contains(t, footer, "1/2")
+
+	sep := xansi.Strip(m.linkURLRow())
+	assert.Contains(t, sep, "one.example.com/post")
+	assert.NotContains(t, sep, "https://", "the scheme is stripped from the display")
+}
+
+func TestNavigateMode_AEntersBackKeysExit(t *testing.T) {
+	m := newTestModel(t, testThread())
+
+	m.handleKeyPress(tea.KeyPressMsg{Code: 'a', Text: "a"})
+	require.Equal(t, modeNavigate, m.mode)
+
+	cmd := m.handleKeyPress(tea.KeyPressMsg{Code: tea.KeyEsc})
+	assert.Nil(t, cmd, "the first back key only leaves navigate mode")
+	assert.Equal(t, modeRead, m.mode)
+
+	cmd = m.handleKeyPress(tea.KeyPressMsg{Code: 'q', Text: "q"})
+	require.NotNil(t, cmd)
+
+	_, ok := cmd().(message.DetailQuit)
+	assert.True(t, ok, "the second closes the view")
 }
 
 // testThread builds a small but representative tree:
@@ -108,7 +220,7 @@ func TestModeIndicator_NerdFontIcons(t *testing.T) {
 
 	// The thread starts fully collapsed, so the first focused comment
 	// offers expanding.
-	m.toggleMode()
+	m.toggleNavigateMode()
 	assert.Contains(t, m.modeIndicator(), nerdfonts.CommentPlusOutline, "collapsed focused comment offers expanding")
 
 	m.setCollapsed(false)
@@ -124,7 +236,7 @@ func TestModeIndicator_UnicodeFallback(t *testing.T) {
 	assert.Contains(t, m.modeIndicator(), "☰ ")
 	assert.NotContains(t, m.modeIndicator(), "☰  ", "☰ spans two cells and needs a single space to reach the text column")
 
-	m.toggleMode()
+	m.toggleNavigateMode()
 	assert.Contains(t, m.modeIndicator(), "+  ", "collapsed focused comment offers expanding, padded to the ☰ text column")
 
 	m.setCollapsed(false)
@@ -236,7 +348,7 @@ func TestToggleCollapseAll_ExpandsThenCollapses(t *testing.T) {
 func TestSetCollapseToDepth_FocusFollowsIdentity(t *testing.T) {
 	m := newTestModel(t, testThread())
 
-	m.toggleMode()
+	m.toggleNavigateMode()
 	m.gotoBottom()
 	require.Equal(t, 5, m.focusedComment().Comment.ID, "focus starts on E")
 
@@ -254,7 +366,7 @@ func TestSetCollapseToDepth_FocusFollowsIdentity(t *testing.T) {
 func TestToggleMode_SwitchesToNavigate(t *testing.T) {
 	m := newTestModel(t, testThread())
 
-	m.toggleMode()
+	m.toggleNavigateMode()
 	assert.Equal(t, modeNavigate, m.mode)
 	assert.GreaterOrEqual(t, m.focusedIdx, 0, "should set focus on mode switch")
 }
@@ -262,8 +374,8 @@ func TestToggleMode_SwitchesToNavigate(t *testing.T) {
 func TestToggleMode_SwitchesBackToRead(t *testing.T) {
 	m := newTestModel(t, testThread())
 
-	m.toggleMode()
-	m.toggleMode()
+	m.toggleNavigateMode()
+	m.toggleNavigateMode()
 
 	assert.Equal(t, modeRead, m.mode)
 	assert.Equal(t, -1, m.focusedIdx, "focus cleared in read mode")
@@ -271,7 +383,7 @@ func TestToggleMode_SwitchesBackToRead(t *testing.T) {
 
 func TestNavigateComment_MovesForward(t *testing.T) {
 	m := newTestModel(t, testThread())
-	m.toggleMode()
+	m.toggleNavigateMode()
 	require.Equal(t, modeNavigate, m.mode)
 
 	initial := m.focusedIdx
@@ -281,7 +393,7 @@ func TestNavigateComment_MovesForward(t *testing.T) {
 
 func TestNavigateComment_ClampsAtBounds(t *testing.T) {
 	m := newTestModel(t, testThread())
-	m.toggleMode()
+	m.toggleNavigateMode()
 
 	m.focusedIdx = 0
 	m.navigateComment(-1)
@@ -299,7 +411,7 @@ func TestSetCollapsed_CollapsesAndExpands(t *testing.T) {
 		m.expandLevel()
 	}
 
-	m.toggleMode()
+	m.toggleNavigateMode()
 
 	m.focusedIdx = 0
 	flatIdx := m.visible[m.focusedIdx]
@@ -323,7 +435,7 @@ func TestSetCollapsed_NoOpOnLeaf(t *testing.T) {
 		m.expandLevel()
 	}
 
-	m.toggleMode()
+	m.toggleNavigateMode()
 
 	for vi, fi := range m.visible {
 		if m.flat[fi].DescendantCount == 0 {
@@ -346,7 +458,7 @@ func TestToggleCollapse_Toggles(t *testing.T) {
 		m.expandLevel()
 	}
 
-	m.toggleMode()
+	m.toggleNavigateMode()
 
 	m.focusedIdx = 0
 	flatIdx := m.visible[m.focusedIdx]
@@ -362,7 +474,7 @@ func TestToggleCollapse_Toggles(t *testing.T) {
 
 func TestGotoTop_Navigate(t *testing.T) {
 	m := newTestModel(t, testThread())
-	m.toggleMode()
+	m.toggleNavigateMode()
 
 	m.focusedIdx = len(m.visible) - 1
 	m.gotoTop()
@@ -371,7 +483,7 @@ func TestGotoTop_Navigate(t *testing.T) {
 
 func TestGotoBottom_Navigate(t *testing.T) {
 	m := newTestModel(t, testThread())
-	m.toggleMode()
+	m.toggleNavigateMode()
 
 	m.gotoBottom()
 	assert.Equal(t, len(m.visible)-1, m.focusedIdx)
@@ -433,7 +545,7 @@ func TestNavigateMode_PageKeysScrollAndSnapFocus(t *testing.T) {
 		m.expandLevel()
 	}
 
-	m.toggleMode()
+	m.toggleNavigateMode()
 	require.Equal(t, modeNavigate, m.mode)
 
 	top := m.Viewport.YOffset()
@@ -504,7 +616,7 @@ func TestViewportStable_IndividualCollapse(t *testing.T) {
 		m.expandLevel()
 	}
 
-	m.toggleMode()
+	m.toggleNavigateMode()
 	m.Viewport.SetYOffset(m.ContentLines / 3)
 
 	found := false
@@ -679,10 +791,10 @@ func TestSyncExpandedDepth_MatchesCollapseState(t *testing.T) {
 	m.syncExpandedDepth()
 	assert.Equal(t, expected, m.expandedDepth, "sync should match actual state after uniform expand")
 
-	m.toggleMode()
+	m.toggleNavigateMode()
 	m.focusedIdx = 0
 	m.setCollapsed(true)
-	m.toggleMode() // switches back to read, which calls syncExpandedDepth
+	m.toggleNavigateMode() // switches back to read, which calls syncExpandedDepth
 
 	// expandedDepth should reflect the deepest uncollapsed-with-children depth + 1.
 	for i := range m.flat {
@@ -771,7 +883,7 @@ func TestPrerender_FocusedHeaderKeepsPlainText(t *testing.T) {
 
 func TestFocusDecoration_AppliedAtViewTime(t *testing.T) {
 	m := newTestModel(t, testThread())
-	m.toggleMode()
+	m.toggleNavigateMode()
 
 	raw := m.Viewport.View()
 	focused := m.prerendered[m.visible[m.focusedIdx]].headerFocused[0]

@@ -6,7 +6,7 @@
 
 - Added Search to Stories, Comment Section and Reader Mode
 - Syntax-highlight code blocks in Reader Mode and the Comment Section
-- Added URL selection mode with the ability to follow links
+- Added URL selection mode to Reader Mode and the Comment Section, with the ability to follow links in place
 - Added a `jobs` category
 - Added `config.toml` for persistent settings
 
@@ -22,6 +22,8 @@
 
 **Comment Section**
 
+- Navigate mode moved from <kbd>Tab</kbd> to <kbd>a</kbd>, exiting with <kbd>Esc</kbd> like search; <kbd>Tab</kbd> now
+  opens the URL selector in every view
 - Flagged, deleted, and delayed comments without replies are no longer shown
 
 **Design**
