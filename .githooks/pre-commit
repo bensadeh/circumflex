@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+go build ./...
+
+lint_output=$(golangci-lint run ./... 2>&1) || { echo "$lint_output"; exit 1; }
+echo "✅ All linters passed"
+
+test_output=$(go test ./... 2>&1) || { echo "$test_output"; exit 1; }
+echo "✅ All tests passed"
+
+bash share/completions/generate_completions.sh
+go run ./cmd/gen-theme-example theme.toml.example
+go run ./cmd/gen-config-example config.toml.example
+if ! git diff --quiet -- share/completions theme.toml.example config.toml.example; then
+  echo "generated files were stale; they have been regenerated — review and git add them" >&2
+  exit 1
+fi
+echo "✅ Generated files are current"
+
+version=$(go run ./cmd/clx --version | awk '{print $NF}')
+if ! grep -qF "Source: circumflex $version" share/man/clx.1; then
+  echo "share/man/clx.1 is stamped with a different version than $version" >&2
+  echo "run share/generate_all.sh and git add the result" >&2
+  exit 1
+fi
+echo "✅ Man page version matches"
