@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/meta"
@@ -26,6 +27,9 @@ func urlCmd() *cobra.Command {
 			style.SetTheme(config.Theme)
 
 			url := args[0]
+			if !strings.Contains(url, "://") {
+				url = "https://" + url
+			}
 
 			parsed, err := article.Parse(cmd.Context(), url)
 			if err != nil {
