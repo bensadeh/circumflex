@@ -55,6 +55,9 @@ func (v *errorView) Update(msg tea.Msg) tea.Cmd {
 
 		case key.Matches(msg, v.keymap.PrevStory):
 			return message.OpenAdjacentStoryCmd(-1)
+
+		case key.Matches(msg, v.keymap.ToggleWide):
+			return message.ToggleWideLayoutCmd()
 		}
 	}
 

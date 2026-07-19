@@ -81,6 +81,100 @@ func TestWideView_ConfiguredThreshold(t *testing.T) {
 	assert.False(t, m.isWide())
 }
 
+func TestWideView_ToggleOverridesAutoLayout(t *testing.T) {
+	m := newWideTestModel(t)
+	require.True(t, m.isWide())
+
+	m, _ = m.Update(keyMsg("z"))
+	assert.False(t, m.isWide(), "z should force the single-pane layout")
+	assert.NotContains(t, m.View(), "Select a story")
+
+	m, _ = m.Update(keyMsg("z"))
+	assert.True(t, m.isWide(), "a second z should bring the split back")
+	assert.Contains(t, m.View(), "Select a story")
+}
+
+func TestWideView_ToggleOverridesConfiguredNever(t *testing.T) {
+	m := newWideTestModel(t)
+	m.config.WideViewMinWidth, _ = settings.ParseWideView("never")
+	require.False(t, m.isWide())
+
+	m, _ = m.Update(keyMsg("z"))
+	assert.True(t, m.isWide(), "z should override a configured never")
+}
+
+func TestWideView_ToggleBelowFloorExplainsInsteadOfLatching(t *testing.T) {
+	m := newWideTestModel(t)
+	m.setSize(layout.WideViewFloor-1, wideTestHeight)
+
+	m, _ = m.Update(keyMsg("z"))
+	assert.False(t, m.isWide())
+	assert.Nil(t, m.wideOverride, "below the floor the key must not latch an override")
+	assert.Contains(t, m.status.text.Message(), "too narrow")
+}
+
+func TestWideView_ForcedWideSurvivesShrinkBelowFloor(t *testing.T) {
+	m := newWideTestModel(t)
+	m.setSize(120, wideTestHeight)
+	require.False(t, m.isWide(), "120 columns sits under the default threshold")
+
+	m, _ = m.Update(keyMsg("z"))
+	require.True(t, m.isWide())
+
+	m, _ = m.Update(tea.WindowSizeMsg{Width: layout.WideViewFloor - 1, Height: wideTestHeight})
+	assert.False(t, m.isWide(), "the floor still wins over a forced-wide override")
+
+	m, _ = m.Update(tea.WindowSizeMsg{Width: 120, Height: wideTestHeight})
+	assert.True(t, m.isWide(), "the override stays latched across the shrink")
+}
+
+// z inside a detail view mints ToggleWideLayout as a command — the layout is
+// the app's to change — and the view is resized to its new pane.
+func TestWideView_ToggleFromOpenDetailView(t *testing.T) {
+	m := newWideTestModel(t)
+	openTestComments(t, m)
+
+	m, cmd := m.Update(keyMsg("z"))
+	require.NotNil(t, cmd, "z in the comment view should emit its toggle message")
+	m, _ = m.Update(cmd())
+
+	assert.False(t, m.isWide())
+
+	view := m.View()
+	assert.NotContains(t, view, "Second item", "the story list should leave the screen")
+	assert.Contains(t, xansi.Strip(view), "5 comments", "the open story fills the whole terminal")
+
+	m, cmd = m.Update(keyMsg("z"))
+	require.NotNil(t, cmd)
+	m, _ = m.Update(cmd())
+
+	assert.True(t, m.isWide())
+	assert.Contains(t, m.View(), "Second item", "the story list should return beside the story")
+}
+
+func TestWideView_ToggleWorksOnHelpScreen(t *testing.T) {
+	m := newWideTestModel(t)
+
+	m, _ = m.Update(keyMsg("i"))
+	require.Equal(t, screenHelp, m.screen)
+
+	m, _ = m.Update(keyMsg("z"))
+	assert.False(t, m.isWide())
+	assert.Equal(t, screenHelp, m.screen, "help stays open across the layout flip")
+	assert.Contains(t, xansi.Strip(m.View()), "Keyboard Shortcuts")
+	assert.NotContains(t, m.View(), "First item", "the story list should leave the screen")
+}
+
+func TestWideView_SearchPromptSwallowsToggleKey(t *testing.T) {
+	m := newWideTestModel(t)
+
+	m, _ = m.Update(keyMsg("/"))
+	m, _ = m.Update(keyMsg("z"))
+
+	assert.True(t, m.isWide(), "typing z into the search prompt must not flip the layout")
+	assert.Equal(t, "z", m.searchPrompt.Text())
+}
+
 func TestWideView_ShowsPlaceholderWhileBrowsing(t *testing.T) {
 	m := newWideTestModel(t)
 

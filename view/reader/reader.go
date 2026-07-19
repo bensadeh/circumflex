@@ -128,10 +128,10 @@ func (m *Model) renderArticle() article.Rendered {
 	return m.parsed.RenderWithHeader(contentWidth, m.paneWidth, header, images)
 }
 
-// DisableStoryNavigation removes the J/K adjacent-story bindings, for
-// standalone use where there is no story list to move through.
-func (m *Model) DisableStoryNavigation() {
-	m.keymap.DisableStoryNavigation()
+// DisableAppKeys removes the bindings that need the surrounding app, for
+// standalone use where there is no story list and no split layout.
+func (m *Model) DisableAppKeys() {
+	m.keymap.DisableAppKeys()
 }
 
 func (m *Model) initViewport(content string, width, height int) {
@@ -335,6 +335,12 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 			m.showHelp = false
 		}
 
+		// The layout toggle stays live so the z the help screen documents
+		// works right where it is read; the app resizes this view around it.
+		if key.Matches(msg, m.keymap.ToggleWide) {
+			return message.ToggleWideLayoutCmd()
+		}
+
 		return nil
 	}
 
@@ -438,6 +444,9 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 
 	case key.Matches(msg, m.keymap.PrevStory):
 		return message.OpenAdjacentStoryCmd(-1)
+
+	case key.Matches(msg, m.keymap.ToggleWide):
+		return message.ToggleWideLayoutCmd()
 
 	default:
 		return m.Forward(msg)
@@ -786,14 +795,14 @@ func NewPage(entry message.TrailEntry, trail []message.TrailEntry, storyHeader f
 func Run(parsed *article.Parsed, title string, maxWidth int, opts Options, buildHeader func(contentWidth int) string) error {
 	makePage := func(entry message.TrailEntry, trail []message.TrailEntry, width, height int) pane.View {
 		m := NewPage(entry, trail, buildHeader, maxWidth, width, height, opts)
-		m.DisableStoryNavigation()
+		m.DisableAppKeys()
 
 		return m
 	}
 
 	return pane.RunStandalone(func(width, height int) pane.View {
 		m := NewWithArticle(parsed, title, maxWidth, width, height, opts, buildHeader)
-		m.DisableStoryNavigation()
+		m.DisableAppKeys()
 
 		return m
 	}, makePage)

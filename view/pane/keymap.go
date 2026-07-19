@@ -17,6 +17,7 @@ type CommonKeyMap struct {
 	OpenComments key.Binding
 	NextStory    key.Binding
 	PrevStory    key.Binding
+	ToggleWide   key.Binding
 
 	// Search bindings apply while a search is active; n/N then take
 	// precedence over each view's own jump bindings.
@@ -76,6 +77,10 @@ func DefaultCommonKeyMap() CommonKeyMap {
 			key.WithKeys("K"),
 			key.WithHelp("K", "open previous story"),
 		),
+		ToggleWide: key.NewBinding(
+			key.WithKeys("z"),
+			key.WithHelp("z", "toggle wide layout"),
+		),
 		Search: key.NewBinding(
 			key.WithKeys("/"),
 			key.WithHelp("/", "search"),
@@ -98,9 +103,11 @@ func DefaultCommonKeyMap() CommonKeyMap {
 	}
 }
 
-// DisableStoryNavigation removes the J/K adjacent-story bindings, for
-// standalone use where there is no story list to move through.
-func (k *CommonKeyMap) DisableStoryNavigation() {
+// DisableAppKeys removes the bindings that need the surrounding app — the
+// J/K adjacent-story jumps and the z layout toggle — for standalone use
+// where there is no story list and no split layout.
+func (k *CommonKeyMap) DisableAppKeys() {
 	k.NextStory.SetEnabled(false)
 	k.PrevStory.SetEnabled(false)
+	k.ToggleWide.SetEnabled(false)
 }

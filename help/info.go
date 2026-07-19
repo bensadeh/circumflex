@@ -42,7 +42,7 @@ func mainMenuText(screenWidth int, sections []Section) string {
 	return formatKeymaps(keys, panelLeftMargin, mainMenuContentWidth(screenWidth))
 }
 
-func readerText(leftMargin, contentWidth int, withStoryNav bool) string {
+func readerText(leftMargin, contentWidth int, inApp bool) string {
 	keys := new(keyList)
 
 	nav := keys.addSection("Navigation")
@@ -67,18 +67,23 @@ func readerText(leftMargin, contentWidth int, withStoryNav bool) string {
 	app.addKey("o", "Open story in browser")
 	app.addKey("c", "Open comments in browser")
 
-	if withStoryNav {
+	if inApp {
 		app.addKey("J, K", "Open next / prev story")
 	}
 
 	app.addBreak()
+
+	if inApp {
+		app.addKey("z", "Toggle wide layout")
+	}
+
 	app.addKey("i, ?", "Help")
 	app.addKey("q, ⌫", "Back")
 
 	return formatKeymaps(keys, leftMargin, contentWidth)
 }
 
-func commentText(leftMargin, contentWidth int, enableNerdFonts bool, withStoryNav bool) string {
+func commentText(leftMargin, contentWidth int, enableNerdFonts bool, inApp bool) string {
 	keys := new(keyList)
 
 	read := keys.addSection("Read Mode")
@@ -110,11 +115,16 @@ func commentText(leftMargin, contentWidth int, enableNerdFonts bool, withStoryNa
 	app.addKey("o", "Open story in browser")
 	app.addKey("c", "Open comments in browser")
 
-	if withStoryNav {
+	if inApp {
 		app.addKey("J, K", "Open next / prev story")
 	}
 
 	app.addBreak()
+
+	if inApp {
+		app.addKey("z", "Toggle wide layout")
+	}
+
 	app.addKey("i, ?", "Help")
 	app.addKey("q, ⌫", "Back")
 

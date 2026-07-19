@@ -16,6 +16,15 @@ import (
 // to the story list.
 type DetailQuit struct{}
 
+// ToggleWideLayout flips the split layout on or off for the session,
+// overriding the configured rule. The detail views mint it — the layout is
+// the app's to change, not theirs.
+type ToggleWideLayout struct{}
+
+func ToggleWideLayoutCmd() tea.Cmd {
+	return func() tea.Msg { return ToggleWideLayout{} }
+}
+
 // GraphicsChanged tells an open detail view the terminal's graphics state
 // moved — the Kitty probe succeeded, or the cell pixel size changed — so a
 // reader already on screen re-renders its images for it.

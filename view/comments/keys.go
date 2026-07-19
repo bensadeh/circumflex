@@ -25,6 +25,8 @@ func (m *Model) handleGlobalKeys(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 		return message.OpenAdjacentStoryCmd(1), true
 	case key.Matches(msg, m.keymap.PrevStory):
 		return message.OpenAdjacentStoryCmd(-1), true
+	case key.Matches(msg, m.keymap.ToggleWide):
+		return message.ToggleWideLayoutCmd(), true
 	}
 
 	return nil, false
@@ -34,6 +36,12 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 	if m.showHelp {
 		if key.Matches(msg, m.keymap.Quit, m.keymap.Help) {
 			m.showHelp = false
+		}
+
+		// The layout toggle stays live so the z the help screen documents
+		// works right where it is read; the app resizes this view around it.
+		if key.Matches(msg, m.keymap.ToggleWide) {
+			return message.ToggleWideLayoutCmd()
 		}
 
 		return nil

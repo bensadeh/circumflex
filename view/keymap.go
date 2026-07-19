@@ -30,6 +30,7 @@ type keyMap struct {
 	ToggleRead     key.Binding
 	EnterComments  key.Binding
 	ReaderMode     key.Binding
+	ToggleWide     key.Binding
 	Confirm        key.Binding
 	Cancel         key.Binding
 }
@@ -86,6 +87,10 @@ func defaultKeyMap() keyMap {
 		ToggleRead: key.NewBinding(
 			key.WithKeys("u"),
 			key.WithHelp("u", "Toggle read"),
+		),
+		ToggleWide: key.NewBinding(
+			key.WithKeys("z"),
+			key.WithHelp("z", "Toggle wide layout"),
 		),
 		Help: key.NewBinding(
 			key.WithKeys("i", "?"),
@@ -159,7 +164,7 @@ func (km keyMap) MainMenuSections() []help.Section {
 		},
 		{
 			Title: "App",
-			Items: fromBindings(km.Help, km.Quit),
+			Items: fromBindings(km.ToggleWide, km.Help, km.Quit),
 		},
 	}
 }

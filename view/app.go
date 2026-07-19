@@ -30,8 +30,14 @@ type model struct {
 	status statusBar
 	width  int
 	height int
-	termBG color.Color // terminal background, reported once at startup; nil if unanswered
-	termFG color.Color // terminal foreground, reported once at startup; nil if unanswered
+
+	// wideOverride is the z key's session override of the configured
+	// wide-view rule: nil follows the config. The sanity floor still wins —
+	// a forced-wide terminal narrower than WideViewFloor renders single-pane
+	// until it grows back.
+	wideOverride *bool
+	termBG       color.Color // terminal background, reported once at startup; nil if unanswered
+	termFG       color.Color // terminal foreground, reported once at startup; nil if unanswered
 
 	list *list.Model
 

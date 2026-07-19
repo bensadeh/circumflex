@@ -145,6 +145,9 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 	case message.OpenAdjacentStory:
 		return m, m.handleOpenAdjacentStory(msg)
 
+	case message.ToggleWideLayout:
+		return m, m.toggleWideLayout()
+
 	case message.StoriesReady:
 		return m.handleStoriesReady(msg)
 	}

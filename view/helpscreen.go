@@ -18,6 +18,12 @@ func (m *model) updateHelpScreen(msg tea.Msg) tea.Cmd {
 		return nil
 	}
 
+	// The layout toggle stays live so the z the help screen documents works
+	// right where it is read.
+	if msg, ok := msg.(tea.KeyPressMsg); ok && key.Matches(msg, m.keymap.ToggleWide) {
+		return m.toggleWideLayout()
+	}
+
 	var cmd tea.Cmd
 
 	m.helpViewport, cmd = m.helpViewport.Update(msg)

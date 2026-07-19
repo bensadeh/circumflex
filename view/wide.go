@@ -10,12 +10,40 @@ import (
 	"github.com/bensadeh/circumflex/timeago"
 	"github.com/bensadeh/circumflex/view/pane"
 
+	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	xansi "github.com/charmbracelet/x/ansi"
 )
 
 func (m *model) isWide() bool {
+	if m.wideOverride != nil {
+		return *m.wideOverride && m.width >= layout.WideViewFloor
+	}
+
 	return m.width >= max(m.config.WideViewMinWidth, layout.WideViewFloor)
+}
+
+// toggleWideLayout flips the split layout for the rest of the session,
+// overriding the configured rule. Below the sanity floor there is no split
+// to flip to, so the key explains itself instead of latching a no-op.
+func (m *model) toggleWideLayout() tea.Cmd {
+	if m.width < layout.WideViewFloor {
+		return m.status.NewStatusMessageWithDuration("Terminal too narrow for the wide layout", statusMessageShort)
+	}
+
+	wide := !m.isWide()
+	m.wideOverride = &wide
+
+	m.updatePagination()
+	m.resizeHelpViewport()
+
+	// The detail view is sized to its pane, which just changed — the same
+	// resize a terminal-width change delivers.
+	if m.detail != nil {
+		return m.detail.Update(tea.WindowSizeMsg{Width: m.detailWidth(), Height: m.height})
+	}
+
+	return nil
 }
 
 // frame is the terminal geometry for the current render; all pane sizes derive

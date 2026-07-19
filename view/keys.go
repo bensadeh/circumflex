@@ -42,6 +42,9 @@ func (m *model) handleBrowsing(msg tea.Msg) tea.Cmd {
 
 		return nil
 
+	case key.Matches(keyMsg, m.keymap.ToggleWide):
+		return m.toggleWideLayout()
+
 	case key.Matches(keyMsg, m.keymap.Quit):
 		if m.cat.Searching() {
 			m.exitSearch()

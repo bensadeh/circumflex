@@ -109,10 +109,10 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 	return &m
 }
 
-// DisableStoryNavigation removes the J/K adjacent-story bindings, for
-// standalone use where there is no story list to move through.
-func (m *Model) DisableStoryNavigation() {
-	m.keymap.DisableStoryNavigation()
+// DisableAppKeys removes the bindings that need the surrounding app, for
+// standalone use where there is no story list and no split layout.
+func (m *Model) DisableAppKeys() {
+	m.keymap.DisableAppKeys()
 }
 
 func (m *Model) Init() tea.Cmd {
