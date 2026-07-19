@@ -42,6 +42,7 @@ func loadLegacyJSON(path string) ([]*Item, error) {
 			Domain:        l.Domain,
 			CommentsCount: l.CommentsCount,
 		}
+		sanitizeItem(items[i])
 	}
 
 	return items, nil

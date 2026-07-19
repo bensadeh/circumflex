@@ -35,9 +35,13 @@ const (
 	hyperlinkTerminator = "\033\\"
 )
 
-// Hyperlink wraps text in an OSC 8 hyperlink pointing at url.
+// Hyperlink wraps text in an OSC 8 hyperlink pointing at url. url is stripped
+// of control characters at the sink: a raw BEL/ESC/ST in the target would
+// otherwise close the OSC 8 sequence early and inject whatever follows, so
+// the wrapper is safe even if a caller forgets to sanitize its URL. text is
+// left untouched — it legitimately carries the styling SGRs of the link.
 func Hyperlink(url, text string) string {
-	return hyperlinkOpen + url + hyperlinkTerminator + text + hyperlinkOpen + hyperlinkTerminator
+	return hyperlinkOpen + Strip(url) + hyperlinkTerminator + text + hyperlinkOpen + hyperlinkTerminator
 }
 
 var (

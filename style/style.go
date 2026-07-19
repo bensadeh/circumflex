@@ -291,7 +291,7 @@ func HeadlineAudioColor() color.Color    { return headlineAudioColor }
 func HeadlineVideoColor() color.Color    { return headlineVideoColor }
 func HeadlinePDFColor() color.Color      { return headlinePDFColor }
 
-func CommentURL(s, url string) string     { return commentURLStyle.Hyperlink(url).Render(s) }
+func CommentURL(s, url string) string     { return commentURLStyle.Hyperlink(ansi.Strip(url)).Render(s) }
 func CommentMention(s string) string      { return commentMentionStyle.Render(s) }
 func CommentMod(s string) string          { return commentModStyle.Render(s) }
 func CommentVariable(s string) string     { return commentVariableStyle.Render(s) }
@@ -318,7 +318,7 @@ func MetaAuthor(s string) string      { return metaAuthorStyle.Render(s) }
 func MetaScore(s string) string       { return metaScoreStyle.Render(s) }
 func MetaComments(s string) string    { return metaCommentsStyle.Render(s) }
 func MetaNewComments(s string) string { return metaNewCommentsStyle.Render(s) }
-func MetaURL(s, url string) string    { return metaURLStyle.Hyperlink(url).Render(s) }
+func MetaURL(s, url string) string    { return metaURLStyle.Hyperlink(ansi.Strip(url)).Render(s) }
 
 func ReaderH1(s string) string      { return readerH1Style.Render(s) }
 func ReaderH2(s string) string      { return readerH2Style.Render(s) }

@@ -7,6 +7,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/article"
 
 	xansi "github.com/charmbracelet/x/ansi"
@@ -49,7 +50,10 @@ func FriendlyError(err error) string {
 		return strings.Replace(domainErr.Error(), domainErr.Domain, redText.Render(domainErr.Domain), 1)
 	}
 
-	errStr := err.Error()
+	// err.Error() can embed server-controlled text (a redirect target, a URL
+	// echoed back). Go's url layer rejects raw control bytes there today, but
+	// this is the one render path that prints a raw error, so strip defensively.
+	errStr := ansi.Strip(err.Error())
 	if errStr == "" {
 		return "Unknown error"
 	}

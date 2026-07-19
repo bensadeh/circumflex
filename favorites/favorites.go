@@ -7,9 +7,21 @@ import (
 	"sync"
 
 	"github.com/BurntSushi/toml"
+	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/fileutil"
 	"github.com/bensadeh/circumflex/hn"
 )
+
+// sanitizeItem strips terminal escapes from an item's text fields. Items
+// added in-session copy already-sanitized story fields, but a favorites file
+// loaded or migrated from disk is untrusted input — a pre-sanitization 4.x
+// favorites.json, or a hand-edited favorites.toml, can carry raw escapes.
+func sanitizeItem(item *Item) {
+	item.Title = ansi.Strip(item.Title)
+	item.Author = ansi.Strip(item.Author)
+	item.URL = ansi.Strip(item.URL)
+	item.Domain = ansi.Strip(item.Domain)
+}
 
 func ItemFromStory(s *hn.Story) *Item {
 	return &Item{
@@ -96,6 +108,10 @@ func load(path string) ([]*Item, error) {
 		}
 
 		return nil, fmt.Errorf("unknown keys in %s: %s", path, strings.Join(keys, ", "))
+	}
+
+	for _, item := range doc.Favorites {
+		sanitizeItem(item)
 	}
 
 	return doc.Favorites, nil

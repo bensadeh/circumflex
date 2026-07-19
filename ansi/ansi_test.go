@@ -126,3 +126,14 @@ func TestNeutralize(t *testing.T) {
 		})
 	}
 }
+
+func TestHyperlink_StripsControlCharsFromURL(t *testing.T) {
+	// A BEL in the target would close the OSC 8 sequence early and inject
+	// whatever follows; the sink strips it regardless of caller.
+	got := ansi.Hyperlink("https://ok.com/\x07evil", "label")
+
+	want := "\x1b]8;;https://ok.com/evil\x1b\\label\x1b]8;;\x1b\\"
+	if got != want {
+		t.Errorf("Hyperlink() = %q, want %q", got, want)
+	}
+}

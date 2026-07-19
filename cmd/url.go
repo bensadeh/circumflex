@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/style"
@@ -26,7 +27,11 @@ func urlCmd() *cobra.Command {
 
 			style.SetTheme(config.Theme)
 
-			url := args[0]
+			// The URL is a CLI argument, not network content, but it is
+			// echoed into the reader's meta block (both as visible text and
+			// as the OSC 8 target), so strip escapes a pasted "run this"
+			// argument could smuggle in.
+			url := ansi.Strip(args[0])
 			if !strings.Contains(url, "://") {
 				url = "https://" + url
 			}
