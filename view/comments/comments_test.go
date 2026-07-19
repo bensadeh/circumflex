@@ -33,6 +33,47 @@ func TestBackKeysReturnDetailQuit(t *testing.T) {
 	}
 }
 
+func TestLinkTrail_QuitWalksBack(t *testing.T) {
+	m := newTestModel(t, testThread())
+	m.SetLinkTrail([]message.TrailEntry{
+		{URL: "https://story.example.com", Story: true},
+		{URL: "https://a.example.com", Title: "Page A"},
+	})
+
+	cmd := m.handleKeyPress(tea.KeyPressMsg{Code: 'q', Text: "q"})
+	require.NotNil(t, cmd)
+
+	restore, ok := cmd().(message.RestoreReaderPage)
+	require.True(t, ok, "quit steps back through the trail instead of closing")
+	assert.Equal(t, "https://a.example.com", restore.Entry.URL)
+	require.Len(t, restore.Trail, 1)
+	assert.True(t, restore.Trail[0].Story)
+}
+
+func TestLinkTrail_DepthBadgeOnTitleRow(t *testing.T) {
+	m := newTestModel(t, testThread())
+	assert.NotContains(t, xansi.Strip(m.titleHeader), "›", "a thread opened from the front page carries no badge")
+
+	m.SetLinkTrail([]message.TrailEntry{{Story: true}, {}})
+
+	row := xansi.Strip(strings.SplitN(m.titleHeader, "\n", 2)[0])
+	assert.Equal(t, 2, strings.Count(row, "›"), "one chevron per link followed")
+
+	rightEdge := layout.CommentSectionLeftMargin + layout.CommentColumnWidth(120, 80)
+	assert.Equal(t, rightEdge, xansi.StringWidth(strings.TrimRight(row, " ")), "the badge ends at the comment column's right edge")
+}
+
+func TestLinkTrail_EmptyTrailKeepsDetailQuit(t *testing.T) {
+	m := newTestModel(t, testThread())
+	m.SetLinkTrail(nil)
+
+	cmd := m.handleKeyPress(tea.KeyPressMsg{Code: 'q', Text: "q"})
+	require.NotNil(t, cmd)
+
+	_, ok := cmd().(message.DetailQuit)
+	assert.True(t, ok, "a trail never attached leaves quit closing the view")
+}
+
 // testThread builds a small but representative tree:
 //
 //	A (depth 0, has children)

@@ -12,7 +12,7 @@ import (
 func (m *Model) handleGlobalKeys(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 	switch {
 	case key.Matches(msg, m.keymap.Quit):
-		return func() tea.Msg { return message.DetailQuit{} }, true
+		return m.quitCmd(), true
 	case key.Matches(msg, m.keymap.Help):
 		m.showHelp = true
 
@@ -30,6 +30,17 @@ func (m *Model) handleGlobalKeys(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 	}
 
 	return nil, false
+}
+
+// quitCmd closes the view — or, for a thread reached through a link inside
+// an article, steps back to the page behind it, parse in hand, exactly like
+// the reader's walk-back.
+func (m *Model) quitCmd() tea.Cmd {
+	if n := len(m.linkTrail); n > 0 {
+		return message.RestoreReaderPageCmd(m.linkTrail[n-1], m.linkTrail[:n-1])
+	}
+
+	return func() tea.Msg { return message.DetailQuit{} }
 }
 
 func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {

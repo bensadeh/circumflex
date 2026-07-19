@@ -126,6 +126,18 @@ type ArticleReady struct {
 	HistoryWarning error // non-nil if marking as read failed
 }
 
+// LinkCommentsReady delivers a Hacker News discussion followed as a link
+// inside an article — OpenReaderLink's other outcome. Like LinkArticleReady,
+// failure keeps the open page on screen: nothing rolls back.
+type LinkCommentsReady struct {
+	Thread         *comment.Thread
+	LastVisited    int64
+	Trail          []TrailEntry
+	Err            error
+	FetchID        uint64
+	HistoryWarning error
+}
+
 type CommentTreeDataReady struct {
 	Thread         *comment.Thread
 	LastVisited    int64

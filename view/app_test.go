@@ -1096,6 +1096,99 @@ func TestOpenReaderLink_StartsLinkFetch(t *testing.T) {
 	assert.NotNil(t, cmd)
 }
 
+// drainMsgs runs a cmd tree to completion, collecting every message it
+// produces — batches recurse, nil cmds drop out.
+func drainMsgs(cmd tea.Cmd) []tea.Msg {
+	if cmd == nil {
+		return nil
+	}
+
+	msg := cmd()
+
+	if batch, ok := msg.(tea.BatchMsg); ok {
+		var msgs []tea.Msg
+
+		for _, c := range batch {
+			msgs = append(msgs, drainMsgs(c)...)
+		}
+
+		return msgs
+	}
+
+	return []tea.Msg{msg}
+}
+
+func TestOpenReaderLink_HNItemLinkFetchesDiscussion(t *testing.T) {
+	m := openTestReader(t, newTestModelReady(t))
+
+	m, cmd := m.Update(message.OpenReaderLink{
+		URL:   "https://news.ycombinator.com/item?id=1",
+		Trail: []message.TrailEntry{{URL: "https://example.com/story", Story: true}},
+	})
+
+	require.True(t, m.fetch.linkLoading())
+
+	var ready *message.LinkCommentsReady
+
+	for _, produced := range drainMsgs(cmd) {
+		if r, ok := produced.(message.LinkCommentsReady); ok {
+			ready = &r
+		}
+	}
+
+	require.NotNil(t, ready, "an HN item link fetches the discussion, not the page")
+	require.NoError(t, ready.Err)
+	require.NotNil(t, ready.Thread)
+	require.Len(t, ready.Trail, 1)
+
+	m, _ = m.Update(*ready)
+	assert.Equal(t, screenComments, m.screen)
+}
+
+func TestLinkCommentsReady_OpensThreadWithTrailAndBadge(t *testing.T) {
+	m := openTestReader(t, newTestModelReady(t))
+
+	_, _ = m.startLinkFetch(0)
+
+	thread := &comment.Thread{Story: hn.Story{ID: 9, Title: "Linked thread", CommentsCount: 5}}
+	m, _ = m.Update(message.LinkCommentsReady{
+		Thread: thread,
+		Trail: []message.TrailEntry{
+			{URL: "https://example.com/story", Story: true, Parsed: testParsedArticle()},
+		},
+		FetchID: m.fetch.currentID(),
+	})
+
+	require.Equal(t, screenComments, m.screen)
+
+	view := xansi.Strip(m.detail.View())
+	assert.Contains(t, view, "Linked thread")
+	assert.Equal(t, 1, strings.Count(view, "›"), "one link followed, one step back")
+
+	// Quit walks back to the article the link was found in, not the front page.
+	cmd := m.detail.Update(keyMsg("q"))
+	require.NotNil(t, cmd)
+
+	restore, ok := cmd().(message.RestoreReaderPage)
+	require.True(t, ok)
+
+	m, _ = m.Update(restore)
+	assert.Equal(t, screenReader, m.screen)
+	assert.NotContains(t, xansi.Strip(m.detail.View()), "›", "the story article carries no badge")
+}
+
+func TestLinkCommentsReady_ErrorStaysOnArticle(t *testing.T) {
+	m := openTestReader(t, newTestModelReady(t))
+	root := m.detail
+
+	_, _ = m.startLinkFetch(0)
+	m, cmd := m.Update(message.LinkCommentsReady{Err: errors.New("server returned status 503"), FetchID: m.fetch.currentID()})
+
+	assert.Same(t, root, m.detail, "the open article never transitions on failure")
+	assert.Equal(t, screenReader, m.screen)
+	assert.NotNil(t, cmd, "the failure surfaces as a status message")
+}
+
 func TestLinkArticleReady_TrailFeedsDepthBadge(t *testing.T) {
 	m := openTestReader(t, newTestModelReady(t))
 

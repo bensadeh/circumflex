@@ -56,7 +56,7 @@ func readerText(leftMargin, contentWidth int, inApp bool) string {
 	links := keys.addSection("Link Selector")
 	links.addKey("⇥", "Enter / exit selector")
 	links.addKey("j/n, k/N", "Next / prev link")
-	links.addKey("↩", "Open link in reader")
+	links.addKey("↩", "Open link in place")
 
 	search := keys.addSection("Search")
 	search.addKey("/", "Search article")

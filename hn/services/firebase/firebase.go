@@ -149,6 +149,11 @@ func (s *Service) FetchComments(ctx context.Context, id int, onProgress func(fet
 		return nil, fmt.Errorf("fetching story %d: %w", id, err)
 	}
 
+	raw, err = s.resolveThreadRoot(ctx, raw)
+	if err != nil {
+		return nil, err
+	}
+
 	tree := mapCommentTree(raw)
 
 	ctx, cancel := context.WithCancelCause(ctx)
@@ -164,6 +169,33 @@ func (s *Service) FetchComments(ctx context.Context, id int, onProgress func(fet
 	}
 
 	return tree, nil
+}
+
+// maxParentDepth caps the parent walk far above any real thread's nesting,
+// so a cyclic chain from a misbehaving server cannot loop forever.
+const maxParentDepth = 100
+
+// resolveThreadRoot walks a comment's parent chain up to the item rooting
+// the thread, so a link to a single comment opens its whole discussion.
+func (s *Service) resolveThreadRoot(ctx context.Context, raw *hnItem) (*hnItem, error) {
+	for range maxParentDepth {
+		if raw.Type != "comment" {
+			return raw, nil
+		}
+
+		if raw.Parent == 0 {
+			return nil, fmt.Errorf("comment %d has no parent to resolve a thread from", raw.ID)
+		}
+
+		parent, err := s.fetchHNItem(ctx, raw.Parent)
+		if err != nil {
+			return nil, fmt.Errorf("resolving the thread behind comment %d: %w", raw.ID, err)
+		}
+
+		raw = parent
+	}
+
+	return nil, fmt.Errorf("comment %d sits in a parent chain deeper than %d", raw.ID, maxParentDepth)
 }
 
 func (s *Service) fetchCommentNodes(ctx context.Context, cancel context.CancelCauseFunc, sem chan struct{}, kidIDs []int, fetched *atomic.Int64, total int, onProgress func(fetched, total int)) ([]*hn.CommentNode, error) {

@@ -87,6 +87,7 @@ func isInvalidDomain(domain string) bool {
 		"ft.com",
 		"lttlabs.com",
 		"marketplace.atlassian.com",
+		"news.ycombinator.com",
 		"play.google.com",
 		"reddit.com",
 		"twitter.com",

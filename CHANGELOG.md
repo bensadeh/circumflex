@@ -12,6 +12,7 @@
 
 **Reader Mode**
 
+- Links to other Hacker News discussions open in the comment section
 - Images now render in high resolution on terminals with Kitty graphics support (Ghostty, Kitty, Konsole)
 - arXiv links now open the full paper instead of the abstract page, with equations converted to Unicode math
 - Add support for displaying AVIF images

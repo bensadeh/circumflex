@@ -154,6 +154,44 @@ func (m *model) fetchComments(tok fetchToken, story *hn.Story) tea.Cmd {
 	}
 }
 
+// fetchLinkedComments is fetchComments for a Hacker News discussion link
+// followed inside an article: the thread arrives carrying the walk-back
+// trail instead of story-list context. The service resolves a comment link
+// to the story rooting it, so history reads and marks the resolved ID.
+func (m *model) fetchLinkedComments(tok fetchToken, id int, trail []message.TrailEntry) tea.Cmd {
+	hist := m.history
+	service := m.service
+
+	return func() tea.Msg {
+		onProgress := func(fetched, total int) {
+			if total <= 0 || tok.ctx.Err() != nil {
+				return
+			}
+
+			pane.SetProgressPercent(min(fetched*100/total, 100))
+		}
+
+		tree, err := service.FetchComments(tok.ctx, id, onProgress)
+		if err != nil {
+			return message.LinkCommentsReady{
+				Err:     err,
+				FetchID: tok.id,
+			}
+		}
+
+		lastVisited := hist.CommentsLastVisited(tree.ID)
+		histErr := hist.MarkRead(tree.ID, tree.CommentsCount)
+
+		return message.LinkCommentsReady{
+			Thread:         comment.ToThread(tree),
+			LastVisited:    lastVisited,
+			Trail:          trail,
+			FetchID:        tok.id,
+			HistoryWarning: histErr,
+		}
+	}
+}
+
 func (m *model) fetchArticle(tok fetchToken, story *hn.Story) tea.Cmd {
 	hist := m.history
 	timeAgo := timeago.RelativeTime(story.Time)

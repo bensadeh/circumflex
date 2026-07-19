@@ -4,6 +4,7 @@ import (
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/favorites"
 	"github.com/bensadeh/circumflex/header"
+	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/timeago"
@@ -111,6 +112,9 @@ func (m *model) Update(msg tea.Msg) (*model, tea.Cmd) {
 
 	case message.LinkArticleReady:
 		return m.handleLinkArticleReady(msg)
+
+	case message.LinkCommentsReady:
+		return m.handleLinkCommentsReady(msg)
 
 	case message.DetailQuit:
 		// The quit can race a fetch the view minted a cycle earlier (a J/K
@@ -342,6 +346,17 @@ func (m *model) handleOpenReaderLink(msg message.OpenReaderLink) tea.Cmd {
 		return nil
 	}
 
+	// A link to another Hacker News discussion opens the comment section in
+	// place instead of a reader page. Like the comment fetch from the front
+	// page, it reports percentages and carries no timeout.
+	if id, ok := hn.ParseItemURL(msg.URL); ok {
+		tok, startSpinnerCmd := m.startLinkFetch(0)
+
+		pane.SetProgressPercent(0)
+
+		return tea.Batch(startSpinnerCmd, m.fetchLinkedComments(tok, id, msg.Trail))
+	}
+
 	if err := article.ValidateURL(msg.URL); err != nil {
 		return m.status.NewStatusMessageWithDuration(pane.FriendlyError(err), statusMessageLong)
 	}
@@ -351,6 +366,33 @@ func (m *model) handleOpenReaderLink(msg message.OpenReaderLink) tea.Cmd {
 	pane.SetProgressIndeterminate()
 
 	return tea.Batch(startSpinnerCmd, pane.FetchPage(tok.ctx, tok.id, msg.URL, msg.Trail))
+}
+
+// handleLinkCommentsReady swaps the followed discussion into the detail pane
+// in place of the article it was linked from, trail attached so its quit key
+// walks back. On error nothing transitions, mirroring handleLinkArticleReady.
+func (m *model) handleLinkCommentsReady(msg message.LinkCommentsReady) (*model, tea.Cmd) {
+	if _, ok := m.finishFetch(msg.FetchID, msg.Err); !ok {
+		return m, nil
+	}
+
+	if msg.Err != nil {
+		return m, m.status.NewStatusMessageWithDuration(pane.FriendlyError(msg.Err), statusMessageLong)
+	}
+
+	c := comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, m.detailWidth(), m.height)
+	c.SetLinkTrail(msg.Trail)
+
+	m.detail = c
+	m.screen = screenComments
+
+	initCmd := m.detail.Init()
+	if msg.HistoryWarning != nil {
+		return m, tea.Batch(initCmd,
+			m.status.NewStatusMessageWithDuration("Could not save read status", statusMessageShort))
+	}
+
+	return m, initCmd
 }
 
 // handleRestoreReaderPage steps back to a page whose parse rode along the

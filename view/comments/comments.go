@@ -12,6 +12,7 @@ import (
 	"github.com/bensadeh/circumflex/scrollbar"
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/timeago"
+	"github.com/bensadeh/circumflex/view/message"
 	"github.com/bensadeh/circumflex/view/pane"
 
 	tea "charm.land/bubbletea/v2"
@@ -34,6 +35,7 @@ type Model struct {
 	title         string
 	titleHeader   string
 	showHelp      bool
+	linkTrail     []message.TrailEntry
 
 	prerendered []renderedComment
 
@@ -115,6 +117,19 @@ func (m *Model) DisableAppKeys() {
 	m.keymap.DisableAppKeys()
 }
 
+// SetLinkTrail marks this thread as reached by following a link inside an
+// article: trail is the chain of pages behind it, so quit steps back through
+// them instead of closing the detail pane, and the title row carries the
+// depth badge.
+func (m *Model) SetLinkTrail(trail []message.TrailEntry) {
+	if len(trail) == 0 {
+		return
+	}
+
+	m.linkTrail = trail
+	m.rebuildTitleHeader()
+}
+
 func (m *Model) Init() tea.Cmd {
 	return nil
 }
@@ -194,6 +209,15 @@ func (m *Model) View() string {
 }
 
 func (m *Model) rebuildTitleHeader() {
+	if len(m.linkTrail) > 0 {
+		rightEdge := layout.CommentSectionLeftMargin + layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
+		badge := pane.DepthBadge(len(m.linkTrail))
+
+		m.titleHeader = pane.TitleHeaderWithBadge(m.title, badge, m.rc.enableNerdFonts, layout.CommentSectionLeftMargin, rightEdge, m.rc.paneWidth)
+
+		return
+	}
+
 	m.titleHeader = pane.TitleHeader(m.title, m.rc.enableNerdFonts, layout.CommentSectionLeftMargin, m.rc.paneWidth)
 }
 

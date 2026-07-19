@@ -66,10 +66,13 @@ func TestLinkViewable(t *testing.T) {
 	assert.True(t, linkViewable("https://example.com/download?file=x.pdf"), "only the path counts, not the query")
 	assert.True(t, linkViewable("https://arxiv.org/pdf/2401.12345v2.pdf"), "arXiv PDFs read through the HTML mirror")
 
+	assert.True(t, linkViewable("https://news.ycombinator.com/item?id=42"), "HN discussions open in the comment section")
+
 	assert.False(t, linkViewable("https://example.com/REPORT.PDF"), "case-insensitive")
 	assert.False(t, linkViewable("https://example.com/movie.mp4"))
 	assert.False(t, linkViewable("https://github.com/schlae/BeavisUltrasound/blob/main/BeavisUltrasoundPnp.pdf"))
 	assert.False(t, linkViewable("https://youtube.com/watch?v=1"), "blocked domains can't be rendered either")
+	assert.False(t, linkViewable("https://news.ycombinator.com/user?id=dang"), "non-item HN pages have nothing to open")
 }
 
 func TestExtractLinks_NoLinks(t *testing.T) {

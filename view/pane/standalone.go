@@ -6,6 +6,7 @@ import (
 
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/graphics"
+	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/view/message"
 
@@ -202,6 +203,13 @@ func (s standalone) followLink(msg message.OpenReaderLink) (tea.Model, tea.Cmd) 
 	// other input during a fetch.
 	if s.fetch.InFlight() {
 		return s, nil
+	}
+
+	// A Hacker News discussion link has no native view in the standalone
+	// shells — only the full app can build a comment section — so the
+	// browser stands in for it here.
+	if _, ok := hn.ParseItemURL(msg.URL); ok {
+		return s, message.OpenInBrowser(msg.URL)
 	}
 
 	if s.makePageView == nil {

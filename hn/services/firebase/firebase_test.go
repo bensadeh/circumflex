@@ -366,6 +366,58 @@ func TestFetchComments_DeadComment(t *testing.T) {
 	assert.Equal(t, "Good comment", tree.Comments[0].Content)
 }
 
+func TestFetchComments_CommentIDResolvesItsThread(t *testing.T) {
+	now := time.Now()
+
+	items := map[int]hnItem{
+		1: {
+			ID: 1, Type: "story", Title: "Root Story", Score: 100, By: "author",
+			Time: now.Unix(), Descendants: 2, Kids: []int{10},
+		},
+		10: {
+			ID: 10, Type: "comment", Parent: 1, By: "user1",
+			Time: now.Unix(), Text: "First comment", Kids: []int{11},
+		},
+		11: {
+			ID: 11, Type: "comment", Parent: 10, By: "user2",
+			Time: now.Unix(), Text: "Nested reply",
+		},
+	}
+
+	server := newMockServer(items)
+	defer server.Close()
+
+	s := NewService()
+	s.baseURL = server.URL
+
+	// A link to the nested comment opens the whole discussion.
+	tree, err := s.FetchComments(context.Background(), 11, nil)
+	require.NoError(t, err)
+
+	assert.Equal(t, 1, tree.ID)
+	assert.Equal(t, "Root Story", tree.Title)
+
+	require.Len(t, tree.Comments, 1)
+	require.Len(t, tree.Comments[0].Children, 1)
+	assert.Equal(t, "Nested reply", tree.Comments[0].Children[0].Content)
+}
+
+func TestFetchComments_OrphanCommentFails(t *testing.T) {
+	items := map[int]hnItem{
+		20: {ID: 20, Type: "comment", By: "user", Time: time.Now().Unix(), Text: "stray"},
+	}
+
+	server := newMockServer(items)
+	defer server.Close()
+
+	s := NewService()
+	s.baseURL = server.URL
+
+	_, err := s.FetchComments(context.Background(), 20, nil)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "no parent")
+}
+
 func TestFetchItems_WithMockServer(t *testing.T) {
 	storyIDs := []int{1, 2, 3}
 	items := map[int]hnItem{

@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/view/pane"
 
 	xansi "github.com/charmbracelet/x/ansi"
@@ -18,10 +19,16 @@ type link struct {
 	viewable bool
 }
 
-// linkViewable reports whether reader mode could render the target — links
-// it can't (PDFs, media, archives, blocked domains) are selectable but
-// inert, marked by the muted selection bar and a dimmed footer URL.
+// linkViewable reports whether following the link can open a view in place:
+// a page reader mode could render, or a Hacker News discussion the comment
+// section opens. Links that can't (PDFs, media, archives, blocked domains)
+// are selectable but inert, marked by the muted selection bar and a dimmed
+// footer URL.
 func linkViewable(rawURL string) bool {
+	if _, ok := hn.ParseItemURL(rawURL); ok {
+		return true
+	}
+
 	return article.ValidateURL(rawURL) == nil
 }
 

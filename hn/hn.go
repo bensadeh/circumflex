@@ -2,13 +2,36 @@ package hn
 
 import (
 	"context"
+	nurl "net/url"
 	"strconv"
+	"strings"
 	"time"
 )
 
 // ItemURL returns the Hacker News page for an item (story or comment thread).
 func ItemURL(id int) string {
 	return "https://news.ycombinator.com/item?id=" + strconv.Itoa(id)
+}
+
+// ParseItemURL is ItemURL's reverse: the item ID a Hacker News discussion
+// link points at. Only item pages match — other HN pages (user profiles,
+// front pages) carry no thread to open.
+func ParseItemURL(rawURL string) (int, bool) {
+	u, err := nurl.Parse(rawURL)
+	if err != nil || (u.Scheme != "http" && u.Scheme != "https") {
+		return 0, false
+	}
+
+	if strings.TrimPrefix(u.Hostname(), "www.") != "news.ycombinator.com" || u.Path != "/item" {
+		return 0, false
+	}
+
+	id, err := strconv.Atoi(u.Query().Get("id"))
+	if err != nil || id <= 0 {
+		return 0, false
+	}
+
+	return id, true
 }
 
 // Story is a Hacker News story's metadata as returned by
