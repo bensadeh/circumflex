@@ -6,6 +6,7 @@ import (
 	nurl "net/url"
 	"strings"
 
+	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/scrollbar"
 	"github.com/bensadeh/circumflex/style"
@@ -76,6 +77,11 @@ func Parse(ctx context.Context, url string) (*Parsed, error) {
 	}
 
 	fetchImages(ctx, blocks, parsedURL)
+
+	// Block text is stripped as it parses; the title arrives on its own path
+	// out of readability, still carrying whatever the page put in <title>.
+	// Fields also folds newlines: the title heads the view as a single line.
+	title = strings.Join(strings.Fields(ansi.Strip(title)), " ")
 
 	return &Parsed{blocks: blocks, Title: title}, nil
 }

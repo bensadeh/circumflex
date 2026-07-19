@@ -2,6 +2,9 @@ package comment
 
 import (
 	"strings"
+	"unicode"
+
+	"github.com/bensadeh/circumflex/ansi"
 
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
@@ -39,12 +42,15 @@ func Parse(commentHTML string) []Block {
 	return blocks
 }
 
+// parseBlocks walks the fragment with entities already decoded, so escape
+// stripping happens here: the ingestion strip saw the escaped form, which an
+// entity-encoded escape byte (&#27;) survives.
 func parseBlocks(src string) []Block {
 	ctx := &html.Node{Type: html.ElementNode, DataAtom: atom.Body, Data: "body"}
 
 	nodes, err := html.ParseFragment(strings.NewReader(src), ctx)
 	if err != nil {
-		return []Block{{kind: blockParagraph, spans: []span{{text: src}}}}
+		return []Block{{kind: blockParagraph, spans: []span{{text: ansi.Strip(src)}}}}
 	}
 
 	p := &bodyParser{}
@@ -68,7 +74,7 @@ type bodyParser struct {
 func (p *bodyParser) walk(n *html.Node, format spanFormat) {
 	switch n.Type {
 	case html.TextNode:
-		p.appendText(n.Data, format)
+		p.appendText(ansi.Strip(n.Data), format)
 
 		return
 
@@ -134,7 +140,9 @@ func (p *bodyParser) appendText(text string, format spanFormat) {
 func (p *bodyParser) appendAnchor(n *html.Node, format spanFormat) {
 	href := attrVal(n, "href")
 
-	if !hasURLScheme(href) {
+	// A control character in the href could terminate the OSC 8 hyperlink
+	// sequence early and inject terminal escapes.
+	if !hasURLScheme(href) || strings.ContainsFunc(href, unicode.IsControl) {
 		p.appendText(textContent(n), format)
 
 		return
@@ -258,5 +266,5 @@ func textContent(n *html.Node) string {
 	}
 	visit(n)
 
-	return sb.String()
+	return ansi.Strip(sb.String())
 }

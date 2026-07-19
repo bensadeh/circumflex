@@ -486,3 +486,35 @@ func TestNormalize_NewlineJoins(t *testing.T) {
 		assert.Equal(t, []string{"line one\nline two"}, spanTexts(blocks[0]))
 	})
 }
+
+func TestParse_StripsEntityEncodedEscapes(t *testing.T) {
+	t.Parallel()
+
+	t.Run("text", func(t *testing.T) {
+		t.Parallel()
+
+		blocks := Parse("&#27;]0;pwned&#7;safe text")
+
+		require.Equal(t, []blockKind{blockParagraph}, kinds(blocks))
+		assert.Equal(t, []string{"safe text"}, spanTexts(blocks[0]))
+	})
+
+	t.Run("code block", func(t *testing.T) {
+		t.Parallel()
+
+		blocks := Parse("<pre><code>x&#27;[31my</code></pre>")
+
+		require.Equal(t, []blockKind{blockCode}, kinds(blocks))
+		assert.NotContains(t, blocks[0].text, "\x1b")
+	})
+
+	t.Run("href with control characters loses its link", func(t *testing.T) {
+		t.Parallel()
+
+		blocks := Parse(`<a href="https://example.com/&#27;]8;;evil">label</a>`)
+
+		require.Equal(t, []blockKind{blockParagraph}, kinds(blocks))
+		assert.Equal(t, []string{"label"}, spanTexts(blocks[0]))
+		assert.Equal(t, []spanFormat{spanPlain}, spanFormats(blocks[0]))
+	})
+}

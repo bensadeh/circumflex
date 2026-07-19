@@ -2,6 +2,7 @@ package ansi
 
 import (
 	"regexp"
+	"strings"
 )
 
 const (
@@ -48,11 +49,17 @@ var (
 			`\x1B[0-~]`,
 	)
 
-	// C0 controls except \t \n \r, plus DEL.
-	dangerousControls = regexp.MustCompile(`[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]`)
+	// C0 controls except \t \n \r, plus DEL and the C1 range: a bare C1 rune
+	// — an unterminated U+009D string opener, a stray U+009B — is a live
+	// control on terminals that decode C1 from UTF-8.
+	dangerousControls = regexp.MustCompile(`[\x00-\x08\x0B\x0C\x0E-\x1F\x7F\x80-\x9F]`)
 )
 
 func Strip(text string) string {
+	// Invalid UTF-8 is repaired first: removing a C0 byte could otherwise
+	// splice the bytes around it into a C1 control rune ("\xc2\x11\x9b"
+	// would strip to the CSI rune U+009B).
+	text = strings.ToValidUTF8(text, "�")
 	text = escSequences.ReplaceAllString(text, "")
 
 	return dangerousControls.ReplaceAllString(text, "")

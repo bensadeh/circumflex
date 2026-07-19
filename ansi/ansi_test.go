@@ -66,8 +66,20 @@ func TestStrip(t *testing.T) {
 		// two-byte ESC fallback strips ESC] as a pair and leaves the payload.
 		{"unterminated OSC", "\x1B]0;evil title", "0;evil title"},
 
+		// Bare C1 runes with no sequence to anchor them are still controls
+		// on terminals that decode C1 from UTF-8.
+		{"trailing C1 CSI", "a\xC2\x9B", "a"},
+		{"unterminated C1 OSC", "a\xC2\x9D0;evil", "a0;evil"},
+		{"stray C1 NEL and RI", "a\xC2\x85\xC2\x8Db", "ab"},
+
+		// Removing the C0 byte must not splice the invalid bytes around it
+		// into a valid C1 control rune.
+		{"invalid UTF-8 splice to CSI", "\xc2\x11\x9b", "��"},
+		{"invalid UTF-8 splice to NEL", "\xc2\x11\x85", "��"},
+
 		{"plain ASCII", "hello world", "hello world"},
 		{"unicode text", "café résumé naïve", "café résumé naïve"},
+		{"invalid UTF-8 replaced", "ok\xffbytes", "ok�bytes"},
 		{"empty", "", ""},
 	}
 
