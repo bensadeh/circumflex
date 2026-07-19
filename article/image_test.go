@@ -174,40 +174,88 @@ func TestFetchImages_SVGFallsBackToRasterization(t *testing.T) {
 	fetchImages(context.Background(), blocks, base)
 
 	require.NotNil(t, blocks[0].img)
-	assert.Equal(t, 100, blocks[0].img.Bounds().Dx())
-	assert.Equal(t, 50, blocks[0].img.Bounds().Dy())
+	assert.Equal(t, maxRetainedPx, blocks[0].img.Bounds().Dx(), "the retained copy keeps its own bound")
+	assert.Equal(t, maxRetainedPx/2, blocks[0].img.Bounds().Dy())
+	assert.Equal(t, 100, blocks[0].dispWidth, "sizing comes from the viewBox, not the raster")
 
-	r, g, b, a := blocks[0].img.At(50, 25).RGBA()
+	r, g, b, a := blocks[0].img.At(256, 128).RGBA()
 	assert.Equal(t, []uint32{0xffff, 0x0, 0x0, 0xffff}, []uint32{r, g, b, a}, "the rect fill is painted")
 }
 
-func TestDecodeSVG_BoundsOversizedViewBox(t *testing.T) {
+func TestFetchImages_SmallUnitViewBoxLogoJudgedByDeclaredWidth(t *testing.T) {
 	t.Parallel()
 
-	img := decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8192 4096"></svg>`))
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 126.5 20.22">` +
+			`<rect width="126.5" height="20.22" fill="#5865f2"/></svg>`))
+	}))
+	defer srv.Close()
+
+	base, err := nurl.Parse(srv.URL)
+	require.NoError(t, err)
+
+	blocks := []block{
+		{kind: blockImage, imageURL: srv.URL + "/discord.svg", dispWidth: 210},
+		{kind: blockImage, imageURL: srv.URL + "/discord.svg"},
+	}
+
+	fetchImages(context.Background(), blocks, base)
+
+	require.NotNil(t, blocks[0].img, "a logo with a small-unit viewBox is not a tracking pixel")
+	assert.False(t, blocks[0].decorative)
+	assert.Equal(t, 210, blocks[0].dispWidth)
+
+	assert.Nil(t, blocks[1].img)
+	assert.True(t, blocks[1].decorative, "without a declared width the viewBox is the only size signal")
+}
+
+func TestSVGDisplaySize(t *testing.T) {
+	t.Parallel()
+
+	assert.Equal(t, image.Pt(210, 33), svgDisplaySize(image.Pt(127, 20), 210),
+		"declared width scales through the viewBox aspect")
+	assert.Equal(t, image.Pt(127, 20), svgDisplaySize(image.Pt(127, 20), 0),
+		"no declared width falls back to the viewBox")
+}
+
+func TestDecodeSVG_RasterizesAtKittyCeiling(t *testing.T) {
+	t.Parallel()
+
+	img, viewBox := decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8192 4096"></svg>`))
 
 	require.NotNil(t, img)
-	assert.Equal(t, maxSVGRasterPx, img.Bounds().Dx())
-	assert.Equal(t, maxSVGRasterPx/2, img.Bounds().Dy(), "aspect ratio is preserved")
+	assert.Equal(t, maxKittyPx, img.Bounds().Dx(), "oversized viewBoxes rasterize down to the ceiling")
+	assert.Equal(t, maxKittyPx/2, img.Bounds().Dy(), "aspect ratio is preserved")
+	assert.Equal(t, image.Pt(8192, 4096), viewBox)
+
+	img, viewBox = decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 126.5 20.22"></svg>`))
+
+	require.NotNil(t, img)
+	assert.Equal(t, maxKittyPx, img.Bounds().Dx(), "small viewBoxes rasterize up to the ceiling")
+	assert.Equal(t, 164, img.Bounds().Dy())
+	assert.Equal(t, image.Pt(127, 20), viewBox, "the viewBox rounds to the nearest unit")
 }
 
 func TestDecodeSVG_ToleratesImportantInStyles(t *testing.T) {
 	t.Parallel()
 
-	img := decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50">` +
+	img, _ := decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50">` +
 		`<rect width="100" height="50" style="fill:#ff0000 !important;stroke:#6f9bcb !important"/></svg>`))
 
 	require.NotNil(t, img, "Mermaid-style !important declarations must not fail the parse")
 
-	r, g, b, a := img.At(50, 25).RGBA()
+	r, g, b, a := img.At(512, 256).RGBA()
 	assert.Equal(t, []uint32{0xffff, 0x0, 0x0, 0xffff}, []uint32{r, g, b, a}, "the rect fill is painted")
 }
 
 func TestDecodeSVG_RejectsGarbage(t *testing.T) {
 	t.Parallel()
 
-	assert.Nil(t, decodeSVG([]byte("<html><body>404 not found</body></html>")))
-	assert.Nil(t, decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg"></svg>`)))
+	img, _ := decodeSVG([]byte("<html><body>404 not found</body></html>"))
+	assert.Nil(t, img)
+
+	img, _ = decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg"></svg>`))
+	assert.Nil(t, img)
 }
 
 func TestFetchImages_RetainsHighResKittyCopy(t *testing.T) {

@@ -31,8 +31,7 @@ const (
 	imageFetchTimeout = 8 * time.Second
 	minImageDimension = 24   // skip tracking pixels and tiny icons
 	maxRetainedPx     = 512  // decoded images are downscaled to fit this box; see boundImage
-	maxKittyPx        = 1024 // the high-res copy a Kitty-graphics terminal displays; see kittyPNG
-	maxSVGRasterPx    = 2048 // a vector has no intrinsic resolution; bound the temporary raster
+	maxKittyPx        = 1024 // the high-res copy a Kitty-graphics terminal displays; see kittyPNG, decodeSVG
 )
 
 // kittyImage is one image block's terminal-side life: the PNG the terminal
@@ -50,9 +49,9 @@ type kittyImage struct {
 
 // fetchImages downloads and decodes the image blocks in place, resolving
 // relative sources against base. Failures leave block.img nil, so rendering
-// falls back to the text label; images below minImageDimension are marked
-// decorative instead, so rendering can drop them. Only the first maxImages
-// are fetched.
+// falls back to the text label; images displayed below minImageDimension are
+// marked decorative instead, so rendering can drop them. Only the first
+// maxImages are fetched.
 func fetchImages(ctx context.Context, blocks []block, base *nurl.URL) {
 	var targets []int
 
@@ -84,21 +83,29 @@ func fetchImages(ctx context.Context, blocks []block, base *nurl.URL) {
 
 	for _, i := range targets {
 		g.Go(func() error {
-			img, raw := fetchImage(ctx, client, base, blocks[i].imageURL)
+			img, raw, viewBox := fetchImage(ctx, client, base, blocks[i].imageURL)
 			if img == nil {
 				return nil
 			}
 
-			if bounds := img.Bounds(); bounds.Dx() < minImageDimension || bounds.Dy() < minImageDimension {
+			// A raster's bounds are its identity; a vector's raster is drawn
+			// at the Kitty fidelity ceiling regardless of size, so vectors
+			// are judged and sized by their on-page geometry instead.
+			size := img.Bounds().Size()
+			if viewBox != (image.Point{}) {
+				size = svgDisplaySize(viewBox, blocks[i].dispWidth)
+			}
+
+			if size.X < minImageDimension || size.Y < minImageDimension {
 				blocks[i].decorative = true
 
 				return nil
 			}
 
 			// Materialize the intrinsic-width fallback before downscaling
-			// so imageCols still sizes from the original resolution.
+			// so imageCols still sizes from the on-page geometry.
 			if blocks[i].dispWidth <= 0 {
-				blocks[i].dispWidth = img.Bounds().Dx()
+				blocks[i].dispWidth = size.X
 			}
 
 			blocks[i].kitty = newKittyImage(img, raw)
@@ -134,10 +141,13 @@ func boundImage(img image.Image) image.Image {
 	return dst
 }
 
-func fetchImage(ctx context.Context, client *resty.Client, base *nurl.URL, rawURL string) (image.Image, []byte) {
+// fetchImage downloads and decodes one image. A non-zero viewBox identifies
+// the source as a vector, whose decoded bounds are raster fidelity rather
+// than intrinsic size.
+func fetchImage(ctx context.Context, client *resty.Client, base *nurl.URL, rawURL string) (image.Image, []byte, image.Point) {
 	ref, err := nurl.Parse(rawURL)
 	if err != nil {
-		return nil, nil
+		return nil, nil, image.Point{}
 	}
 
 	target := base.ResolveReference(ref)
@@ -149,15 +159,17 @@ func fetchImage(ctx context.Context, client *resty.Client, base *nurl.URL, rawUR
 
 	resp, err := req.Get(target.String())
 	if err != nil || resp.StatusCode() >= 400 {
-		return nil, nil
+		return nil, nil, image.Point{}
 	}
 
 	img, _, err := image.Decode(bytes.NewReader(resp.Bytes()))
 	if err != nil {
-		return decodeSVG(resp.Bytes()), resp.Bytes()
+		svg, viewBox := decodeSVG(resp.Bytes())
+
+		return svg, resp.Bytes(), viewBox
 	}
 
-	return img, resp.Bytes()
+	return img, resp.Bytes(), image.Point{}
 }
 
 var pngMagic = []byte("\x89PNG\r\n\x1a\n")
@@ -227,16 +239,20 @@ func refererFor(page, target *nurl.URL) string {
 	return page.Scheme + "://" + page.Host + "/"
 }
 
-// decodeSVG rasterizes an SVG at its viewBox size, so downstream treats it
-// exactly like a decoded raster image (dispWidth from bounds, boundImage
-// downscale). Text elements are not supported by oksvg and are dropped —
-// invisible at terminal resolution anyway.
-func decodeSVG(data []byte) (img image.Image) {
+// decodeSVG rasterizes an SVG at the Kitty fidelity ceiling — a vector has
+// no intrinsic resolution, so the raster is drawn once at maxKittyPx on the
+// long side and every lower tier downscales from there. The returned viewBox
+// is the only intrinsic geometry the file has; its units are arbitrary
+// (Discord's logo measures 126×20 — millimeters), so sizing keys off it or
+// the declared display width, never off the raster. Text elements are not
+// supported by oksvg and are dropped — invisible at terminal resolution
+// anyway.
+func decodeSVG(data []byte) (img image.Image, viewBox image.Point) {
 	// oksvg panics on some malformed path data; a broken SVG should fall
 	// back to the text label like any other undecodable image.
 	defer func() {
 		if recover() != nil {
-			img = nil
+			img, viewBox = nil, image.Point{}
 		}
 	}()
 
@@ -246,13 +262,10 @@ func decodeSVG(data []byte) (img image.Image) {
 
 	icon, err := oksvg.ReadIconStream(bytes.NewReader(data))
 	if err != nil || icon.ViewBox.W <= 0 || icon.ViewBox.H <= 0 {
-		return nil
+		return nil, image.Point{}
 	}
 
-	scale := 1.0
-	if long := max(icon.ViewBox.W, icon.ViewBox.H); long > maxSVGRasterPx {
-		scale = maxSVGRasterPx / long
-	}
+	scale := maxKittyPx / max(icon.ViewBox.W, icon.ViewBox.H)
 
 	width := max(1, int(icon.ViewBox.W*scale+0.5))
 	height := max(1, int(icon.ViewBox.H*scale+0.5))
@@ -262,5 +275,18 @@ func decodeSVG(data []byte) (img image.Image) {
 	rgba := image.NewRGBA(image.Rect(0, 0, width, height))
 	icon.Draw(rasterx.NewDasher(width, height, rasterx.NewScannerGV(width, height, rgba, rgba.Bounds())), 1.0)
 
-	return rgba
+	return rgba, image.Pt(
+		max(1, int(icon.ViewBox.W+0.5)),
+		max(1, int(icon.ViewBox.H+0.5)))
+}
+
+// svgDisplaySize is the size a vector occupies on the page: the declared
+// width attribute scaled through the viewBox aspect when the page gives one,
+// the bare viewBox otherwise — arbitrary units, but the only signal left.
+func svgDisplaySize(viewBox image.Point, dispWidth int) image.Point {
+	if dispWidth <= 0 {
+		return viewBox
+	}
+
+	return image.Pt(dispWidth, max(1, (dispWidth*viewBox.Y+viewBox.X/2)/viewBox.X))
 }
