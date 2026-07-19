@@ -465,9 +465,19 @@ func (m *Model) handleLinkModeKey(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 	case key.Matches(msg, m.keymap.PrevLink):
 		m.moveLink(-1)
 
+	case key.Matches(msg, m.keymap.JumpNextLink):
+		m.jumpLink(1)
+
+	case key.Matches(msg, m.keymap.JumpPrevLink):
+		m.jumpLink(-1)
+
 	// o falls through to the story bindings below — the selector only claims
 	// enter, and only for links reader mode can render.
 	case key.Matches(msg, m.keymap.OpenSelected):
+		if m.currentLink < 0 {
+			return nil, true
+		}
+
 		if l := m.links[m.currentLink]; l.viewable {
 			return message.OpenReaderLinkCmd(l.url, m.nextTrail()), true
 		}
@@ -488,21 +498,20 @@ func (m *Model) handleLinkModeKey(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 	return nil, true
 }
 
-// enterLinkMode starts the URL selector on the first link at or below the
-// current scroll position, wrapping to the first overall. An article with no
-// links has nothing to select.
+// enterLinkMode starts the URL selector on the first link visible on screen.
+// Entry never moves the viewport: with no link in view the selection stays
+// empty until n/N jumps to one beyond it. An article with no links has
+// nothing to select.
 func (m *Model) enterLinkMode() {
 	if len(m.links) == 0 {
 		return
 	}
 
 	m.linkMode = true
-	m.currentLink = 0
+	m.currentLink = -1
 
-	yOffset := m.Viewport.YOffset()
-
-	for i, l := range m.links {
-		if l.spans[0].Line >= yOffset {
+	for i := range m.links {
+		if m.linkOnScreen(i) {
 			m.currentLink = i
 
 			break
@@ -510,7 +519,6 @@ func (m *Model) enterLinkMode() {
 	}
 
 	m.installLinkSpans()
-	m.scrollToCurrentLink()
 }
 
 func (m *Model) exitLinkMode() {
@@ -518,14 +526,94 @@ func (m *Model) exitLinkMode() {
 	m.SetLinkSpans(nil, false)
 }
 
+// linkOnScreen reports whether any of link i's spans lies in the viewport's
+// current line window.
+func (m *Model) linkOnScreen(i int) bool {
+	top := m.Viewport.YOffset()
+	bottom := top + m.Viewport.Height()
+
+	for _, s := range m.links[i].spans {
+		if s.Line >= top && s.Line < bottom {
+			return true
+		}
+	}
+
+	return false
+}
+
+// moveLink steps the selection through the links on screen and stops at the
+// edge of the view — it never scrolls; the jump and scroll keys move the
+// viewport instead. From an empty selection the step enters the visible set
+// from the edge it comes from.
 func (m *Model) moveLink(direction int) {
+	from := m.currentLink
+	if from < 0 {
+		if direction > 0 {
+			from = -1
+		} else {
+			from = len(m.links)
+		}
+	}
+
+	for i := from + direction; i >= 0 && i < len(m.links); i += direction {
+		if m.linkOnScreen(i) {
+			m.currentLink = i
+			m.installLinkSpans()
+
+			return
+		}
+	}
+}
+
+// jumpLink moves to the next link wherever it sits — moveLink's off-screen
+// counterpart — scrolling it into view and wrapping like the search jumps.
+// From an empty selection it leaves relative to the viewport: forward to the
+// first link past its top, backward to the last one above it.
+func (m *Model) jumpLink(direction int) {
 	n := len(m.links)
-	m.currentLink = ((m.currentLink+direction)%n + n) % n
+	yOffset := m.Viewport.YOffset()
+
+	var next int
+
+	switch {
+	case m.currentLink >= 0:
+		next = ((m.currentLink+direction)%n + n) % n
+
+	case direction > 0:
+		next = 0
+
+		for i, l := range m.links {
+			if l.spans[0].Line >= yOffset {
+				next = i
+
+				break
+			}
+		}
+
+	default:
+		next = n - 1
+
+		for i := n - 1; i >= 0; i-- {
+			if m.links[i].spans[0].Line < yOffset {
+				next = i
+
+				break
+			}
+		}
+	}
+
+	m.currentLink = next
 	m.installLinkSpans()
 	m.scrollToCurrentLink()
 }
 
 func (m *Model) installLinkSpans() {
+	if m.currentLink < 0 {
+		m.SetLinkSpans(nil, false)
+
+		return
+	}
+
 	l := m.links[m.currentLink]
 	m.SetLinkSpans(l.spans, !l.viewable)
 }
@@ -615,19 +703,20 @@ func (m *Model) footer() string {
 // linkSelectorLabel marks the selector in the reader-mode label's shape: the
 // selector icon and a faint mode label, while the URL itself rides the
 // separator above. A link the reader won't open breaks the arrow, matching
-// its dimmed URL.
+// its dimmed URL; an empty selection keeps the plain arrow — nothing is
+// inert, there is just nothing selected yet.
 func (m *Model) linkSelectorLabel() string {
-	l := m.links[m.currentLink]
+	viewable := m.currentLink < 0 || m.links[m.currentLink].viewable
 
 	icon, sep := style.Faint("→"), " "
-	if !l.viewable {
+	if !viewable {
 		icon = style.Faint("↛")
 	}
 
 	if m.opts.NerdFonts {
 		// Nerd font glyphs render wider than one cell, so they get extra room.
 		icon, sep = nerdfonts.LinkSelector, "  "
-		if !l.viewable {
+		if !viewable {
 			icon = nerdfonts.LinkSelectorOff
 		}
 	}
@@ -642,6 +731,11 @@ func (m *Model) linkSelectorLabel() string {
 // whether the reader can open the link shows in the footer arrow and the
 // selection bar, not here.
 func (m *Model) linkURLRow() string {
+	// An empty selection has no URL to show; the rule stays bare.
+	if m.currentLink < 0 {
+		return pane.FooterSeparator(m.paneWidth)
+	}
+
 	// The scheme is stripped from the display like the meta block's URL row —
 	// the selector is visibly showing a link already.
 	display := strings.TrimPrefix(strings.TrimPrefix(m.links[m.currentLink].url, "https://"), "http://")
