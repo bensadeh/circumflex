@@ -1111,7 +1111,7 @@ func TestLinkArticleReady_TrailFeedsDepthBadge(t *testing.T) {
 		FetchID: m.fetch.currentID(),
 	})
 
-	assert.Contains(t, xansi.Strip(m.detail.View()), "⧉  2", "two links followed, two steps back")
+	assert.Equal(t, 2, strings.Count(xansi.Strip(m.detail.View()), "›"), "two links followed, two steps back")
 }
 
 func TestRestoreReaderPage_LinkEntryKeepsChain(t *testing.T) {
@@ -1125,7 +1125,7 @@ func TestRestoreReaderPage_LinkEntryKeepsChain(t *testing.T) {
 	require.NotNil(t, m.detail)
 	assert.False(t, m.fetch.inFlight(), "a restore never touches the network")
 	assert.Equal(t, screenReader, m.screen)
-	assert.Contains(t, xansi.Strip(m.detail.View()), "⧉  1", "one step back remains")
+	assert.Equal(t, 1, strings.Count(xansi.Strip(m.detail.View()), "›"), "one step back remains")
 }
 
 func TestRestoreReaderPage_StoryEntryGetsStoryMeta(t *testing.T) {
@@ -1140,7 +1140,7 @@ func TestRestoreReaderPage_StoryEntryGetsStoryMeta(t *testing.T) {
 
 	view := xansi.Strip(m.detail.View())
 	assert.Contains(t, view, "by alice", "the story article gets its byline back")
-	assert.NotContains(t, view, "⧉", "the story article carries no badge")
+	assert.NotContains(t, view, "›", "the story article carries no badge")
 
 	// Quit from the restored story article goes to the front page.
 	m, cmd := m.Update(message.DetailQuit{})

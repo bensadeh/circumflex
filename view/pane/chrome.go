@@ -64,6 +64,13 @@ func TitleHeaderWithBadge(title, badge string, enableNerdFonts bool, leftMargin,
 	return row + "\n" + header.Underline(screenWidth)
 }
 
+// DepthBadge marks a page reached by following links in place: one faint
+// chevron per link behind it, each one a quit-key step back. The floor keeps
+// a linked page with no chain at all from rendering an empty badge.
+func DepthBadge(depth int) string {
+	return style.Faint(strings.Repeat("›", max(1, depth)))
+}
+
 func FooterSeparator(width int) string {
 	return footerRule().Width(width).Render(strings.Repeat(" ", width))
 }

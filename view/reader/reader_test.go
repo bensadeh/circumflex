@@ -554,7 +554,7 @@ func TestLinkSelector_ForwardFromStoryStartsTrail(t *testing.T) {
 
 func TestTitleHeader_DepthBadge(t *testing.T) {
 	root := NewWithArticle(parseTestArticle(t), "Title", 72, 100, 30, Options{}, nil)
-	assert.NotContains(t, xansi.Strip(root.titleHeader), "⧉", "the story article carries no badge")
+	assert.NotContains(t, xansi.Strip(root.titleHeader), "›", "the story article carries no badge")
 
 	deep := NewWithArticle(parseTestArticle(t), "Title", 72, 100, 30, Options{
 		FromLink: true,
@@ -565,7 +565,7 @@ func TestTitleHeader_DepthBadge(t *testing.T) {
 	}, nil)
 
 	row := xansi.Strip(strings.SplitN(deep.titleHeader, "\n", 2)[0])
-	require.Contains(t, row, "⧉  2", "depth counts the links followed")
+	require.Equal(t, 2, strings.Count(row, "›"), "one chevron per link followed")
 
 	rightEdge := layout.ReaderViewLeftMargin + layout.ReaderContentWidth(100, 72)
 	assert.Equal(t, rightEdge, xansi.StringWidth(strings.TrimRight(row, " ")), "the badge ends at the article column's right edge")
@@ -576,10 +576,10 @@ func TestTitleHeaderWithBadge_TruncatesLongTitle(t *testing.T) {
 	m := NewWithArticle(parseTestArticle(t), long, 72, 100, 30, Options{FromLink: true}, nil)
 
 	row := xansi.Strip(strings.SplitN(m.titleHeader, "\n", 2)[0])
-	require.Contains(t, row, "⧉  1")
+	require.Equal(t, 1, strings.Count(row, "›"))
 	assert.Contains(t, row, "…", "the title shortens instead of colliding with the badge")
 
-	badgeStart := strings.Index(row, "⧉")
+	badgeStart := strings.Index(row, "›")
 	titleEnd := strings.LastIndex(row[:badgeStart], "…")
 	assert.GreaterOrEqual(t, badgeStart-titleEnd, 2, "a gap separates the title from the badge")
 }

@@ -1,7 +1,6 @@
 package reader
 
 import (
-	"fmt"
 	"image/color"
 	nurl "net/url"
 	"slices"
@@ -702,16 +701,15 @@ func imageStatusLine(show, enableNerdFonts bool, paneWidth int) string {
 }
 
 // rebuildTitleHeader renders the title row; a page reached by following
-// links carries the depth badge at the article column's right edge — the
-// number of links behind it, each one a quit-key step — faint where the
+// links carries the depth badge at the article column's right edge — one
+// chevron per link behind it, each one a quit-key step — faint where the
 // title is bold.
 func (m *Model) rebuildTitleHeader() {
 	if m.opts.FromLink {
 		// The chain behind a linked page starts at the story article, so its
-		// length is the number of links followed; the max guards the
-		// fallback case of a linked page with no chain at all.
+		// length is the number of links followed.
 		rightEdge := layout.ReaderViewLeftMargin + layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
-		badge := style.Faint(fmt.Sprintf("⧉  %d", max(1, len(m.opts.Trail))))
+		badge := pane.DepthBadge(len(m.opts.Trail))
 
 		m.titleHeader = pane.TitleHeaderWithBadge(m.title, badge, m.opts.NerdFonts, layout.ReaderViewLeftMargin, rightEdge, m.paneWidth)
 
