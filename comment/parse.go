@@ -92,7 +92,12 @@ func (p *bodyParser) walk(n *html.Node, format spanFormat) {
 
 	case atom.Pre:
 		p.flush()
-		p.blocks = append(p.blocks, Block{kind: blockCode, text: textContent(n)})
+
+		// The language is guessed here, once per comment, not per render:
+		// HN's markup never declares one, and threads re-render on every
+		// resize.
+		text := textContent(n)
+		p.blocks = append(p.blocks, Block{kind: blockCode, text: text, lang: guessLang(text)})
 
 	case atom.I:
 		p.walkChildren(n, spanItalic)

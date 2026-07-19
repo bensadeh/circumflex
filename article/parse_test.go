@@ -715,3 +715,19 @@ func TestNormalizeSpans_DropsEdgeNewlines(t *testing.T) {
 	require.Len(t, spans, 1)
 	assert.Equal(t, "a", spans[0].text)
 }
+
+func TestGuessCodeLangs_SkipsLabeledBlocks(t *testing.T) {
+	t.Parallel()
+
+	blocks := []block{
+		{kind: blockCode, text: "func main() { x := 1 }", lang: "python"},
+		{kind: blockCode, text: "func main() { x := 1 }"},
+		{kind: blockParagraph},
+	}
+
+	guessCodeLangs(blocks)
+
+	assert.Equal(t, "python", blocks[0].lang, "declared languages are never second-guessed")
+	assert.Equal(t, "go", blocks[1].lang)
+	assert.Empty(t, blocks[2].lang)
+}

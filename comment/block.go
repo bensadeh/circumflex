@@ -43,6 +43,13 @@ type Block struct {
 	kind  blockKind
 	spans []span // blockParagraph, blockQuote
 	text  string // blockCode: verbatim, newlines preserved; blockRemoved: the marker
+	lang  string // blockCode: guessed language, empty when unrecognized
+
+	// hlOut caches the renderer-produced chroma output — the one exception
+	// to no-ANSI-before-the-renderer, because tokenizing every block again
+	// on every resize step is measurable jank on large threads.
+	hlOut  string
+	hlDone bool
 }
 
 // span is a run of paragraph text with one semantic role. Tokenizers split

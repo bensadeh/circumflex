@@ -90,7 +90,7 @@ func TestRenderQuote_PrefixesIndentBar(t *testing.T) {
 func TestRenderCode_BoxSpansReadingColumn(t *testing.T) {
 	t.Parallel()
 
-	code := ansi.Strip(renderCode("line one\nline two", 20, 40))
+	code := ansi.Strip(renderCode(&block{kind: blockCode, text: "line one\nline two"}, 20, 40))
 
 	want := strings.Join([]string{
 		"╭──────────────────╮",
@@ -105,7 +105,7 @@ func TestRenderCode_BoxSpansReadingColumn(t *testing.T) {
 func TestRenderCode_BoxGrowsWithLongLines(t *testing.T) {
 	t.Parallel()
 
-	code := ansi.Strip(renderCode("a line past the column", 20, 40))
+	code := ansi.Strip(renderCode(&block{kind: blockCode, text: "a line past the column"}, 20, 40))
 
 	want := strings.Join([]string{
 		"╭────────────────────────╮",
@@ -629,4 +629,13 @@ func solidImage() image.Image {
 	}
 
 	return img
+}
+
+func TestRenderCode_LabelsDetectedLanguage(t *testing.T) {
+	t.Parallel()
+
+	code := ansi.Strip(renderCode(&block{kind: blockCode, text: "for f in *.txt\ndo\n  echo $f\ndone", lang: "bash"}, 20, 40))
+
+	top := strings.Split(code, "\n")[0]
+	assert.True(t, strings.HasSuffix(top, " Bash ─╮"), "the label sits right-aligned in the opening rule, got %q", top)
 }

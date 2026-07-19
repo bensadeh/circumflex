@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/highlight"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/scrollbar"
 	"github.com/bensadeh/circumflex/style"
@@ -71,6 +72,7 @@ func Parse(ctx context.Context, url string) (*Parsed, error) {
 	}
 
 	blocks = applySiteRules(blocks, parsedURL.Hostname())
+	guessCodeLangs(blocks)
 
 	if len(blocks) == 0 {
 		return nil, fmt.Errorf("no readable content found at %s", parsedURL.Hostname())
@@ -84,6 +86,18 @@ func Parse(ctx context.Context, url string) (*Parsed, error) {
 	title = strings.Join(strings.Fields(ansi.Strip(title)), " ")
 
 	return &Parsed{blocks: blocks, Title: title}, nil
+}
+
+// guessCodeLangs fills in the language of unlabeled code blocks from
+// highlight's structural detection; declared languages are never
+// second-guessed.
+func guessCodeLangs(blocks []block) {
+	for i := range blocks {
+		b := &blocks[i]
+		if b.kind == blockCode && b.lang == "" {
+			b.lang = highlight.GuessLang(b.text)
+		}
+	}
 }
 
 // NewParsedFromHTML skips fetching and readability extraction; for tests.

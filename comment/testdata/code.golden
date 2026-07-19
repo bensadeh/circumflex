@@ -1,12 +1,12 @@
 === width=72 screen=80 nerd=false ===
 Intro paragraph before code:
 
-[2m╭──────────────────────────────────────────────────────────────────────╮[m
-[2m│[m [2mfunc main() {[0m                                                        [2m│[m
-[2m│[m [2m    fmt.Println("hi")[0m                                                [2m│[m
-[2m│[m [2m[0m                                                                     [2m│[m
-[2m│[m [2m    return[0m                                                           [2m│[m
-[2m│[m [2m}[0m                                                                    [2m│[m
+[2m╭───────────────────────────────────────────────────────────────── [m[34mGo[m[2m ─╮[m
+[2m│[m [35mfunc[m [34mmain[m() {                                                        [2m│[m
+[2m│[m     fmt.[34mPrintln[m([32m"hi"[m)                                                [2m│[m
+[2m│[m                                                                      [2m│[m
+[2m│[m     [35mreturn[m                                                           [2m│[m
+[2m│[m }                                                                    [2m│[m
 [2m╰──────────────────────────────────────────────────────────────────────╯[m
 
 Text right after the code block lands in its own paragraph.
@@ -20,12 +20,12 @@ Closing paragraph.
 === width=72 screen=80 nerd=true ===
 Intro paragraph before code:
 
-[2m╭──────────────────────────────────────────────────────────────────────╮[m
-[2m│[m [2mfunc main() {[0m                                                        [2m│[m
-[2m│[m [2m    fmt.Println("hi")[0m                                                [2m│[m
-[2m│[m [2m[0m                                                                     [2m│[m
-[2m│[m [2m    return[0m                                                           [2m│[m
-[2m│[m [2m}[0m                                                                    [2m│[m
+[2m╭───────────────────────────────────────────────────────────────── [m[34mGo[m[2m ─╮[m
+[2m│[m [35mfunc[m [34mmain[m() {                                                        [2m│[m
+[2m│[m     fmt.[34mPrintln[m([32m"hi"[m)                                                [2m│[m
+[2m│[m                                                                      [2m│[m
+[2m│[m     [35mreturn[m                                                           [2m│[m
+[2m│[m }                                                                    [2m│[m
 [2m╰──────────────────────────────────────────────────────────────────────╯[m
 
 Text right after the code block lands in its own paragraph.
@@ -39,12 +39,12 @@ Closing paragraph.
 === width=40 screen=44 nerd=false ===
 Intro paragraph before code:
 
-[2m╭──────────────────────────────────────╮[m
-[2m│[m [2mfunc main() {[0m                        [2m│[m
-[2m│[m [2m    fmt.Println("hi")[0m                [2m│[m
-[2m│[m [2m[0m                                     [2m│[m
-[2m│[m [2m    return[0m                           [2m│[m
-[2m│[m [2m}[0m                                    [2m│[m
+[2m╭───────────────────────────────── [m[34mGo[m[2m ─╮[m
+[2m│[m [35mfunc[m [34mmain[m() {                        [2m│[m
+[2m│[m     fmt.[34mPrintln[m([32m"hi"[m)                [2m│[m
+[2m│[m                                      [2m│[m
+[2m│[m     [35mreturn[m                           [2m│[m
+[2m│[m }                                    [2m│[m
 [2m╰──────────────────────────────────────╯[m
 
 Text right after the code block lands in
@@ -61,12 +61,12 @@ Closing paragraph.
 === width=40 screen=44 nerd=true ===
 Intro paragraph before code:
 
-[2m╭──────────────────────────────────────╮[m
-[2m│[m [2mfunc main() {[0m                        [2m│[m
-[2m│[m [2m    fmt.Println("hi")[0m                [2m│[m
-[2m│[m [2m[0m                                     [2m│[m
-[2m│[m [2m    return[0m                           [2m│[m
-[2m│[m [2m}[0m                                    [2m│[m
+[2m╭───────────────────────────────── [m[34mGo[m[2m ─╮[m
+[2m│[m [35mfunc[m [34mmain[m() {                        [2m│[m
+[2m│[m     fmt.[34mPrintln[m([32m"hi"[m)                [2m│[m
+[2m│[m                                      [2m│[m
+[2m│[m     [35mreturn[m                           [2m│[m
+[2m│[m }                                    [2m│[m
 [2m╰──────────────────────────────────────╯[m
 
 Text right after the code block lands in

@@ -6,6 +6,7 @@ import (
 
 	"charm.land/lipgloss/v2"
 	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/highlight"
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/style"
 )
@@ -55,7 +56,7 @@ func renderBlock(b *Block, opts RenderOptions) string {
 		return renderQuote(b.spans, opts)
 
 	case blockCode:
-		return renderCode(b.text, opts.CommentWidth, opts.ScreenWidth)
+		return renderCode(b, opts.CommentWidth, opts.ScreenWidth)
 
 	case blockParagraph:
 		return renderParagraph(b.spans, opts)
@@ -148,11 +149,27 @@ func dedent(text string) string {
 	return strings.Join(lines, "\n")
 }
 
+// guessLang names a code block's language from its dedented text — the same
+// form renderCode displays, so shebang detection sees column zero.
+func guessLang(text string) string {
+	return highlight.GuessLang(dedent(strings.Trim(text, "\n")))
+}
+
 // The box spans at least commentWidth and grows with long code lines up to
 // screenWidth (the space left of the scrollbar).
-func renderCode(text string, commentWidth, screenWidth int) string {
-	content := dedent(strings.Trim(text, "\n"))
+func renderCode(b *Block, commentWidth, screenWidth int) string {
+	// Tokenizing is width-independent and costs real time on big blocks, so
+	// it runs once per block, not once per resize step.
+	if !b.hlDone {
+		b.hlOut = highlight.Code(dedent(strings.Trim(b.text, "\n")), b.lang)
+		b.hlDone = true
+	}
 
+	if b.hlOut != "" {
+		return highlight.Boxed(b.hlOut, b.lang, screenWidth, commentWidth)
+	}
+
+	content := dedent(strings.Trim(b.text, "\n"))
 	wrapped := lipgloss.Wrap(content, screenWidth-style.RoundedBoxChrome, "")
 	lines := strings.Split(wrapped, "\n")
 
@@ -160,7 +177,7 @@ func renderCode(text string, commentWidth, screenWidth int) string {
 		lines[i] = ansi.Faint + line + ansi.Reset
 	}
 
-	return style.RoundedBox(strings.Join(lines, "\n"), commentWidth)
+	return style.RoundedBox(strings.Join(lines, "\n"), commentWidth, "")
 }
 
 // renderSpan is the single place a span role becomes bytes. Every styled

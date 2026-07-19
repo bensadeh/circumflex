@@ -467,8 +467,10 @@ func TestLinkSelector_EnterOpensReaderLinkAndOOpensStory(t *testing.T) {
 	cmd = m.Update(tea.KeyPressMsg{Code: 'o', Text: "o"})
 	require.NotNil(t, cmd)
 	assert.Nil(t, cmd())
+	// Generous deadline: the browser stub is a real subprocess, and spawning
+	// it under full-suite load can take well over a second.
 	require.Eventually(t, func() bool { return strings.Contains(opened(), "https://story.example.com") },
-		time.Second, 10*time.Millisecond, "o keeps its story meaning inside the selector")
+		5*time.Second, 10*time.Millisecond, "o keeps its story meaning inside the selector")
 }
 
 func TestQuit_FromLinkStepsBackToStory(t *testing.T) {

@@ -38,8 +38,9 @@ const RoundedBoxChrome = 4
 
 // RoundedBox frames pre-wrapped content in a faint rounded border with one
 // cell of horizontal padding. The frame spans at least width cells and grows
-// with the content's widest line.
-func RoundedBox(content string, width int) string {
+// with the content's widest line. A non-empty label becomes a right-aligned
+// title in the opening rule, dropped when the box is too narrow to hold it.
+func RoundedBox(content string, width int, label string) string {
 	lines := strings.Split(content, "\n")
 
 	inner := max(0, width-RoundedBoxChrome)
@@ -49,7 +50,11 @@ func RoundedBox(content string, width int) string {
 
 	var b strings.Builder
 
-	b.WriteString(Faint("╭" + strings.Repeat("─", inner+2) + "╮"))
+	if w := lipgloss.Width(label); label != "" && w <= inner-2 {
+		b.WriteString(Faint("╭"+strings.Repeat("─", inner-w-1)+" ") + label + Faint(" ─╮"))
+	} else {
+		b.WriteString(Faint("╭" + strings.Repeat("─", inner+2) + "╮"))
+	}
 
 	for _, line := range lines {
 		pad := strings.Repeat(" ", inner-lipgloss.Width(line))
@@ -108,6 +113,13 @@ var (
 	readerH4Style lipgloss.Style
 	readerH5Style lipgloss.Style
 	readerH6Style lipgloss.Style
+
+	codeKeywordStyle  lipgloss.Style
+	codeStringStyle   lipgloss.Style
+	codeLiteralStyle  lipgloss.Style
+	codeTypeStyle     lipgloss.Style
+	codeFunctionStyle lipgloss.Style
+	codeEscapeStyle   lipgloss.Style
 
 	readerLinkOpen string // SGR sequence opening a reader link: underline plus the theme color
 
@@ -202,6 +214,13 @@ func rebuildThemeStyles() {
 	readerH4Style = fg(current.Reader.H4)
 	readerH5Style = fg(current.Reader.H5)
 	readerH6Style = fg(current.Reader.H6)
+
+	codeKeywordStyle = fg(current.Code.Keyword)
+	codeStringStyle = fg(current.Code.String)
+	codeLiteralStyle = fg(current.Code.Literal)
+	codeTypeStyle = fg(current.Code.Type)
+	codeFunctionStyle = fg(current.Code.Function)
+	codeEscapeStyle = fg(current.Code.Escape)
 	readerImageColor = theme.ParseColor(current.Reader.Image)
 	readerLinkOpen = linkOpenSequence(theme.ParseColor(current.Reader.Link))
 
@@ -279,6 +298,15 @@ func Faint(s string) string             { return faintStyle.Render(s) }
 func MemorialUnderline(s string) string { return memorialUnderlineStyle.Render(s) }
 func MemorialColor() color.Color        { return memorialColor }
 func FaintItalic(s string) string       { return faintItalicStyle.Render(s) }
+
+func CodeKeyword(s string) string  { return codeKeywordStyle.Render(s) }
+func CodeString(s string) string   { return codeStringStyle.Render(s) }
+func CodeLiteral(s string) string  { return codeLiteralStyle.Render(s) }
+func CodeType(s string) string     { return codeTypeStyle.Render(s) }
+func CodeFunction(s string) string { return codeFunctionStyle.Render(s) }
+func CodeEscape(s string) string   { return codeEscapeStyle.Render(s) }
+func CodeDeleted(s string) string  { return codeEscapeStyle.Render(s) }
+func CodeComment(s string) string  { return faintItalicStyle.Render(s) }
 
 func HeadlineYCLabelColor() color.Color  { return headlineYCLabelColor }
 func HeadlineYearColor() color.Color     { return headlineYearColor }

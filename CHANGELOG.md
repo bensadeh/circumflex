@@ -5,6 +5,7 @@
 **New Features**
 
 - Added Search to Stories, Comment Section and Reader Mode
+- Syntax-highlight code blocks in Reader Mode and the Comment Section
 - Added URL selection mode with the ability to follow links
 - Added a `jobs` category
 - Added `config.toml` for persistent settings

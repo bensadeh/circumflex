@@ -10,7 +10,7 @@ https://example.com/feed.xml work too.¹
    ▎them thoroughly. And they had brick for stone, and slime had they
    ▎for morter.
 
-╭──────────────────────────────────────────────────────────────────────╮
+╭───────────────────────────────────────────────────────────────── Go ─╮
 │ func main() {                                                        │
 │         fmt.Println("hello")                                         │
 │ }                                                                    │

@@ -21,12 +21,15 @@ const (
 
 type block struct {
 	kind       blockKind
-	level      int         // blockHeading: 1-6
-	spans      []span      // blockParagraph, blockQuote, blockImage (caption)
-	items      []listItem  // blockList
-	rows       [][]string  // blockTable
-	hasHeader  bool        // blockTable: first row came from thead or all-th cells
-	text       string      // blockHeading, blockCode
+	level      int        // blockHeading: 1-6
+	spans      []span     // blockParagraph, blockQuote, blockImage (caption)
+	items      []listItem // blockList
+	rows       [][]string // blockTable
+	hasHeader  bool       // blockTable: first row came from thead or all-th cells
+	text       string     // blockHeading, blockCode
+	lang       string     // blockCode: page-declared language, empty when unlabeled
+	hlOut      string     // blockCode: chroma render memoized by renderCode — width-independent
+	hlDone     bool
 	imageURL   string      // blockImage: resolved source URL, empty if none
 	img        image.Image // blockImage: decoded pixels, nil until fetched or on failure
 	kitty      *kittyImage // blockImage: high-res copy and terminal state for Kitty graphics, nil when unavailable

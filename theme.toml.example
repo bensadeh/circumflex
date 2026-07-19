@@ -55,6 +55,14 @@
   image = "red"
   link = "blue"
 
+[code]
+  keyword = "magenta"
+  string = "green"
+  literal = "cyan"
+  type = "yellow"
+  function = "blue"
+  escape = "red"
+
 [header]
   c = "magenta"
   l = "yellow"

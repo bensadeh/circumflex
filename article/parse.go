@@ -140,7 +140,7 @@ func (p *domParser) walk(n *html.Node) {
 		p.flushInline()
 
 		if text := strings.Trim(preText(n), "\n"); strings.TrimSpace(text) != "" {
-			p.blocks = append(p.blocks, block{kind: blockCode, text: text})
+			p.blocks = append(p.blocks, block{kind: blockCode, text: text, lang: codeLang(n)})
 		}
 
 	case atom.Blockquote:

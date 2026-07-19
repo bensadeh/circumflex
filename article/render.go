@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/highlight"
 	"github.com/bensadeh/circumflex/style"
 
 	"charm.land/lipgloss/v2"
@@ -116,7 +117,7 @@ func renderBlock(b *block, width, codeWidth int, images ImageOptions) string {
 		return renderQuote(b.spans, width)
 
 	case blockCode:
-		return renderCode(b.text, width, codeWidth)
+		return renderCode(b, width, codeWidth)
 
 	case blockTable:
 		return renderTable(b.rows, b.hasHeader, codeWidth)
@@ -314,10 +315,21 @@ func renderQuote(spans []span, width int) string {
 // The box spans at least the reading column and grows with long code lines
 // up to codeWidth; its border and padding equal the old blockIndent, so the
 // code text keeps its column.
-func renderCode(text string, width, codeWidth int) string {
-	wrapped := lipgloss.Wrap(text, codeWidth-style.RoundedBoxChrome, "")
+func renderCode(b *block, width, codeWidth int) string {
+	// Tokenizing is width-independent and costs real time on big blocks, so
+	// it runs once per block, not once per resize step.
+	if !b.hlDone {
+		b.hlOut = highlight.Code(b.text, b.lang)
+		b.hlDone = true
+	}
 
-	return style.RoundedBox(styleLines(wrapped, style.Faint), width)
+	if b.hlOut != "" {
+		return highlight.Boxed(b.hlOut, b.lang, codeWidth, width)
+	}
+
+	wrapped := lipgloss.Wrap(b.text, codeWidth-style.RoundedBoxChrome, "")
+
+	return style.RoundedBox(styleLines(wrapped, style.Faint), width, "")
 }
 
 // Styling line by line, because lipgloss pads multi-line strings to a uniform

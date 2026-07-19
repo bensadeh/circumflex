@@ -21,6 +21,7 @@ type Theme struct {
 	Comment  CommentColors  `toml:"comment"`
 	Meta     MetaColors     `toml:"meta"`
 	Reader   ReaderColors   `toml:"reader"`
+	Code     CodeColors     `toml:"code"`
 	Header   HeaderColors   `toml:"header"`
 	Indent   IndentColors   `toml:"indent"`
 	Search   SearchColors   `toml:"search"`
@@ -73,6 +74,19 @@ type ReaderColors struct {
 	H6    string `toml:"h6"`
 	Image string `toml:"image"`
 	Link  string `toml:"link"`
+}
+
+// CodeColors styles syntax-highlighted code blocks as six stable groups.
+// Which language tokens fall into which group is internal and may shift
+// between releases; the group names never do. Escape also colors diff
+// deletions — the whole red family rides one group.
+type CodeColors struct {
+	Keyword  string `toml:"keyword"`
+	String   string `toml:"string"`
+	Literal  string `toml:"literal"`
+	Type     string `toml:"type"`
+	Function string `toml:"function"`
+	Escape   string `toml:"escape"`
 }
 
 type HeaderColors struct {
@@ -139,6 +153,14 @@ func Default() *Theme {
 			H6:    "white",
 			Image: "red",
 			Link:  "blue",
+		},
+		Code: CodeColors{
+			Keyword:  "magenta",
+			String:   "green",
+			Literal:  "cyan",
+			Type:     "yellow",
+			Function: "blue",
+			Escape:   "red",
 		},
 		Header: HeaderColors{
 			C: "magenta",

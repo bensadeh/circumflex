@@ -518,3 +518,17 @@ func TestParse_NeutralizesEntityEncodedEscapes(t *testing.T) {
 		assert.Equal(t, []spanFormat{spanPlain}, spanFormats(blocks[0]))
 	})
 }
+
+func TestParse_CodeBlockGuessesLanguage(t *testing.T) {
+	t.Parallel()
+
+	blocks := Parse("<pre><code>  for f in *.txt\n  do\n    echo $f\n  done</code></pre>")
+
+	require.Equal(t, []blockKind{blockCode}, kinds(blocks))
+	assert.Equal(t, "bash", blocks[0].lang, "guessed from dedented text; HN markup never declares one")
+
+	blocks = Parse("<pre><code>  just some preformatted prose\n  that is not code at all</code></pre>")
+
+	require.Equal(t, []blockKind{blockCode}, kinds(blocks))
+	assert.Empty(t, blocks[0].lang, "non-code blocks stay unhighlighted")
+}

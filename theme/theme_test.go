@@ -78,6 +78,21 @@ cycle = ["red", "blue"]
 	assert.Equal(t, Default().App.Primary, loaded.App.Primary, "unset keys keep their defaults")
 }
 
+func TestLoad_CodeGroupOverrides(t *testing.T) {
+	t.Parallel()
+
+	path := writeTheme(t, `
+[code]
+keyword = "bright_red"
+`)
+
+	loaded, err := Load(path)
+
+	require.NoError(t, err)
+	assert.Equal(t, "bright_red", loaded.Code.Keyword)
+	assert.Equal(t, "green", loaded.Code.String, "the other groups keep their defaults")
+}
+
 func TestLoad_ReportsUnrecognizedColors(t *testing.T) {
 	t.Parallel()
 

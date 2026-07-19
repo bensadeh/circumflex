@@ -917,17 +917,17 @@ Claude Code since this needs a separate daemon server, but not very bad.
 
 1. Install another copy of codex in a special dir on the Linux machine:
 
-[2m╭──────────────────────────────────────────────────────────────────────╮[m
-[2m│[m [2m$ curl -fsSL https://chatgpt.com/codex/install.sh | sh[0m               [2m│[m
+[2m╭────────────────────────────────────────────────────────────── [m[32mShell[m[2m ─╮[m
+[2m│[m [35m$[m curl -fsSL https://chatgpt.com/codex/install.sh | sh               [2m│[m
 [2m╰──────────────────────────────────────────────────────────────────────╯[m
 
 2. Run codex remote-control from that special dir to start and pair the
 daemon:
 
-[2m╭──────────────────────────────────────────────────────────────────────╮[m
-[2m│[m [2m$ ~/.codex/packages/standalone/current/codex remote-control start[0m    [2m│[m
-[2m│[m [2m[0m                                                                     [2m│[m
-[2m│[m [2m$ ~/.codex/packages/standalone/current/codex remote-control pair[0m     [2m│[m
+[2m╭────────────────────────────────────────────────────────────── [m[32mShell[m[2m ─╮[m
+[2m│[m [35m$[m ~/.codex/packages/standalone/current/codex remote-control start    [2m│[m
+[2m│[m                                                                      [2m│[m
+[2m│[m [35m$[m ~/.codex/packages/standalone/current/codex remote-control pair     [2m│[m
 [2m╰──────────────────────────────────────────────────────────────────────╯[m
 
 3. On the phone, open ChatGPT app, Choose Remote, then pair it with the
