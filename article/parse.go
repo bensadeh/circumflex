@@ -739,7 +739,7 @@ func preText(n *html.Node) string {
 	visit = func(c *html.Node) {
 		switch {
 		case c.Type == html.TextNode:
-			sb.WriteString(ansi.Strip(c.Data))
+			sb.WriteString(ansi.Neutralize(c.Data))
 
 		case c.Type == html.ElementNode && nodeAtom(c) == atom.Br:
 			sb.WriteByte('\n')
@@ -775,7 +775,7 @@ func collectInline(n *html.Node, format inlineFormat, images *[]block) []span {
 func inlineSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 	switch n.Type {
 	case html.TextNode:
-		text := collapseWhitespace(ansi.Strip(n.Data))
+		text := collapseWhitespace(ansi.Neutralize(n.Data))
 		if format != formatCode {
 			text = strings.ReplaceAll(text, "...", "…")
 		}

@@ -202,8 +202,11 @@ func TestFetchHNItem_StripsANSIFromUserFields(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "user", result.By)
 	assert.Equal(t, "title bold end", result.Title)
-	assert.Equal(t, "body  with bel", result.Text)
 	assert.Equal(t, "https://example.com/path", result.URL)
+
+	// Text passes through raw: the comment parser owns its sanitation, and
+	// neutralizes escapes there so demonstrated codes stay visible.
+	assert.Equal(t, "body \x07 with bel", result.Text)
 }
 
 func TestFetchHNItem_UnescapesTitleEntities(t *testing.T) {

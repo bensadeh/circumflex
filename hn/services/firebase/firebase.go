@@ -274,16 +274,15 @@ func (s *Service) fetchHNItem(ctx context.Context, id int) (*hnItem, error) {
 		return nil, fmt.Errorf("unexpected response from %s: %w", url, err)
 	}
 
-	// The API serves titles HTML-escaped ("Q&amp;A"); text stays escaped
-	// because the comment parser owns entity decoding there. Unescape before
-	// stripping: entities can encode the very control bytes the strip is
-	// here to remove, so the order defends against terminal injection via
-	// user-submitted fields.
+	// The API serves titles HTML-escaped ("Q&amp;A"); text stays escaped —
+	// and untouched — because the comment parser owns entity decoding and
+	// escape neutralization there. Unescape before stripping: entities can
+	// encode the very control bytes the strip is here to remove, so the
+	// order defends against terminal injection via user-submitted fields.
 	item.Title = html.UnescapeString(item.Title)
 
 	item.By = ansi.Strip(item.By)
 	item.Title = ansi.Strip(item.Title)
-	item.Text = ansi.Strip(item.Text)
 	item.URL = ansi.Strip(item.URL)
 
 	return &item, nil

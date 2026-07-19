@@ -487,7 +487,7 @@ func TestNormalize_NewlineJoins(t *testing.T) {
 	})
 }
 
-func TestParse_StripsEntityEncodedEscapes(t *testing.T) {
+func TestParse_NeutralizesEntityEncodedEscapes(t *testing.T) {
 	t.Parallel()
 
 	t.Run("text", func(t *testing.T) {
@@ -496,7 +496,7 @@ func TestParse_StripsEntityEncodedEscapes(t *testing.T) {
 		blocks := Parse("&#27;]0;pwned&#7;safe text")
 
 		require.Equal(t, []blockKind{blockParagraph}, kinds(blocks))
-		assert.Equal(t, []string{"safe text"}, spanTexts(blocks[0]))
+		assert.Equal(t, []string{"␛]0;pwned␇safe text"}, spanTexts(blocks[0]))
 	})
 
 	t.Run("code block", func(t *testing.T) {
@@ -505,7 +505,7 @@ func TestParse_StripsEntityEncodedEscapes(t *testing.T) {
 		blocks := Parse("<pre><code>x&#27;[31my</code></pre>")
 
 		require.Equal(t, []blockKind{blockCode}, kinds(blocks))
-		assert.NotContains(t, blocks[0].text, "\x1b")
+		assert.Equal(t, "x␛[31my", blocks[0].text)
 	})
 
 	t.Run("href with control characters loses its link", func(t *testing.T) {

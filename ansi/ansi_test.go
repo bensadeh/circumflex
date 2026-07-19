@@ -92,3 +92,37 @@ func TestStrip(t *testing.T) {
 		})
 	}
 }
+
+func TestNeutralize(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  string
+	}{
+		{"SGR sequence", "\x1B[31mred\x1B[0m", "␛[31mred␛[0m"},
+		{"OSC window title", "\x1B]0;title\x07after", "␛]0;title␇after"},
+		{"C0 pictures", "a\x00\x08b", "a␀␈b"},
+		{"DEL", "a\x7Fb", "a␡b"},
+
+		// A C1 rune renders as its 7-bit ␛-pair equivalent, so an 8-bit
+		// dump reads like a 7-bit one.
+		{"8-bit CSI", "\xC2\x9B31m", "␛[31m"},
+		{"8-bit OSC", "\xC2\x9D0;t", "␛]0;t"},
+
+		{"kept whitespace", "a\tb\nc\rd", "a\tb\nc\rd"},
+		{"notation untouched", `\x1b[31m and ESC[0m`, `\x1b[31m and ESC[0m`},
+		{"invalid UTF-8 replaced", "ok\xffbytes", "ok�bytes"},
+		{"invalid UTF-8 around C0", "\xc2\x11\x9b", "�␑�"},
+		{"plain text", "hello world", "hello world"},
+		{"empty", "", ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ansi.Neutralize(tt.input)
+			if got != tt.want {
+				t.Errorf("Neutralize(%q) = %q, want %q", tt.input, got, tt.want)
+			}
+		})
+	}
+}

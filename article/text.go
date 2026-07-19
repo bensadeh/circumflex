@@ -10,7 +10,7 @@ import (
 // per blank-line-separated chunk. Line structure is preserved: documents like
 // release notes and RFCs are already hand-wrapped and indented.
 func parseTextBlocks(text string) []block {
-	text = ansi.Strip(text)
+	text = ansi.Neutralize(text)
 	text = strings.ReplaceAll(text, "\r\n", "\n")
 	text = strings.ReplaceAll(text, "\t", strings.Repeat(" ", 8))
 

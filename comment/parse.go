@@ -43,14 +43,15 @@ func Parse(commentHTML string) []Block {
 }
 
 // parseBlocks walks the fragment with entities already decoded, so escape
-// stripping happens here: the ingestion strip saw the escaped form, which an
-// entity-encoded escape byte (&#27;) survives.
+// sanitation happens here — an entity-encoded escape byte (&#27;) only
+// exists after decoding. Neutralize rather than Strip: a comment quoting
+// escape sequences shows them as ␛-pictures instead of losing them.
 func parseBlocks(src string) []Block {
 	ctx := &html.Node{Type: html.ElementNode, DataAtom: atom.Body, Data: "body"}
 
 	nodes, err := html.ParseFragment(strings.NewReader(src), ctx)
 	if err != nil {
-		return []Block{{kind: blockParagraph, spans: []span{{text: ansi.Strip(src)}}}}
+		return []Block{{kind: blockParagraph, spans: []span{{text: ansi.Neutralize(src)}}}}
 	}
 
 	p := &bodyParser{}
@@ -74,7 +75,7 @@ type bodyParser struct {
 func (p *bodyParser) walk(n *html.Node, format spanFormat) {
 	switch n.Type {
 	case html.TextNode:
-		p.appendText(ansi.Strip(n.Data), format)
+		p.appendText(ansi.Neutralize(n.Data), format)
 
 		return
 
@@ -266,5 +267,5 @@ func textContent(n *html.Node) string {
 	}
 	visit(n)
 
-	return ansi.Strip(sb.String())
+	return ansi.Neutralize(sb.String())
 }

@@ -57,3 +57,14 @@ func TestIsPlainText(t *testing.T) {
 	assert.False(t, isPlainText("text/plain", []byte("<!DOCTYPE html><p>mislabeled</p>")),
 		"mislabeled HTML should go through readability")
 }
+
+// A plain-text page can be a captured terminal session; its escape sequences
+// display as inert ␛-pictures instead of vanishing or reaching the terminal.
+func TestParseTextBlocks_NeutralizesEscapes(t *testing.T) {
+	t.Parallel()
+
+	blocks := parseTextBlocks("$ ls --color\n\x1b[31mred file\x1b[0m")
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, "$ ls --color\n␛[31mred file␛[0m", blocks[0].text)
+}
