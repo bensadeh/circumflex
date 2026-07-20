@@ -91,6 +91,13 @@ func OpenReaderLinkCmd(url string, trail []TrailEntry) tea.Cmd {
 	return func() tea.Msg { return OpenReaderLink{URL: url, Trail: trail} }
 }
 
+// LinkFetchStatus tells the open detail view whether a followed link's fetch
+// is in flight, so its URL selector repaints the selection in the in-flight
+// colors — and back, when the fetch ends without a page.
+type LinkFetchStatus struct {
+	InFlight bool
+}
+
 // RestorePage re-opens a page already fetched — the quit key stepping back
 // through followed links. No network is involved: the entry carries its
 // parse or thread, and Trail is the chain remaining behind it.

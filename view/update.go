@@ -357,6 +357,7 @@ func (m *model) handleOpenReaderLink(msg message.OpenReaderLink) tea.Cmd {
 		tok, startSpinnerCmd := m.startLinkFetch(0)
 
 		pane.SetProgressPercent(0)
+		m.notifyLinkFetch(true)
 
 		return tea.Batch(startSpinnerCmd, m.fetchLinkedComments(tok, id, msg.Trail))
 	}
@@ -368,8 +369,18 @@ func (m *model) handleOpenReaderLink(msg message.OpenReaderLink) tea.Cmd {
 	tok, startSpinnerCmd := m.startLinkFetch(pane.ReaderFetchTimeout)
 
 	pane.SetProgressIndeterminate()
+	m.notifyLinkFetch(true)
 
 	return tea.Batch(startSpinnerCmd, pane.FetchPage(tok.ctx, tok.id, msg.URL, msg.Trail))
+}
+
+// notifyLinkFetch tells the open detail view a followed link's fetch started
+// or ended without a page (failure, cancel), so its URL selector repaints the
+// selection; success replaces the view instead.
+func (m *model) notifyLinkFetch(inFlight bool) {
+	if m.detail != nil {
+		m.detail.Update(message.LinkFetchStatus{InFlight: inFlight})
+	}
 }
 
 // handleLinkCommentsReady swaps the followed discussion into the detail pane
@@ -381,6 +392,8 @@ func (m *model) handleLinkCommentsReady(msg message.LinkCommentsReady) (*model, 
 	}
 
 	if msg.Err != nil {
+		m.notifyLinkFetch(false)
+
 		return m, m.status.NewStatusMessageWithDuration(pane.FriendlyError(msg.Err), statusMessageLong)
 	}
 
@@ -469,6 +482,8 @@ func (m *model) handleLinkArticleReady(msg message.LinkArticleReady) (*model, te
 	}
 
 	if msg.Err != nil {
+		m.notifyLinkFetch(false)
+
 		return m, m.status.NewStatusMessageWithDuration(pane.FriendlyError(msg.Err), statusMessageLong)
 	}
 

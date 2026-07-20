@@ -224,6 +224,7 @@ func (s standalone) followLink(msg message.OpenReaderLink) (tea.Model, tea.Cmd) 
 
 	tok := s.fetch.Begin(ReaderFetchTimeout)
 	s.spinner = NewSpinner()
+	s.view.Update(message.LinkFetchStatus{InFlight: true})
 
 	SetProgressIndeterminate()
 
@@ -233,6 +234,7 @@ func (s standalone) followLink(msg message.OpenReaderLink) (tea.Model, tea.Cmd) 
 func (s standalone) cancelFetch() (tea.Model, tea.Cmd) {
 	s.fetch.Abort()
 	ClearProgress()
+	s.view.Update(message.LinkFetchStatus{InFlight: false})
 
 	return s, s.status.Set(CancelledStatus(), StatusMessageShort)
 }
@@ -248,6 +250,8 @@ func (s standalone) receiveLinkedPage(msg message.LinkArticleReady) (tea.Model, 
 	SyncProgress(msg.Err)
 
 	if msg.Err != nil {
+		s.view.Update(message.LinkFetchStatus{InFlight: false})
+
 		return s, s.status.Set(FriendlyError(msg.Err), StatusMessageLong)
 	}
 

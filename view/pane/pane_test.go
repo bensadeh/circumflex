@@ -141,14 +141,18 @@ func TestStandalone_KeysFrozenWhileFetchInFlight(t *testing.T) {
 	next, _ := s.Update(message.OpenReaderLink{URL: "https://example.com/page"})
 	fetching, ok := next.(standalone)
 	require.True(t, ok)
+	require.Equal(t, []tea.Msg{message.LinkFetchStatus{InFlight: true}}, fv.msgs,
+		"the fetch start repaints the view's link selection")
 
 	fetching.Update(tea.KeyPressMsg{Code: 'j'})
-	assert.Empty(t, fv.msgs, "keys must not reach the view while the fetch runs")
+	assert.Len(t, fv.msgs, 1, "keys must not reach the view while the fetch runs")
 
 	next, _ = fetching.Update(tea.KeyPressMsg{Code: tea.KeyEscape})
 	cancelled, ok := next.(standalone)
 	require.True(t, ok)
 	assert.False(t, cancelled.fetch.InFlight(), "esc cancels like the full app")
+	assert.Equal(t, message.LinkFetchStatus{InFlight: false}, fv.msgs[len(fv.msgs)-1],
+		"the cancel repaints the selection back")
 }
 
 func TestStandalone_CapturesBrowserError(t *testing.T) {

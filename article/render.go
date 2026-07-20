@@ -143,7 +143,7 @@ func renderSpans(spans []span, insideQuote bool) string {
 		var rendered string
 
 		// Links reader mode can't open in place carry a dashed underline,
-		// matching the muted treatment the URL selector gives them.
+		// matching the inert marking the URL selector gives them.
 		viewable := s.href != "" && ValidateURL(s.href) == nil
 
 		switch s.format {

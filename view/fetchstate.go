@@ -182,9 +182,17 @@ func (m *model) abortFetchOnQuit() {
 }
 
 func (m *model) handleCancelFetch() tea.Cmd {
+	wasLink := m.fetch.linkLoading()
+
 	rb, ok := m.fetch.abort()
 	if !ok {
 		return nil
+	}
+
+	// A cancelled link fetch keeps the page it was followed from; its
+	// selector repaints the selection back from the in-flight colors.
+	if wasLink {
+		m.notifyLinkFetch(false)
 	}
 
 	m.rollbackFetch(rb)

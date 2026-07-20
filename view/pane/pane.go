@@ -29,21 +29,32 @@ type Scroller struct {
 	search       searchState
 	rowOverrides []RowOverride
 	linkSpans    []Match
-	linkMuted    bool
+	linkInert    bool
+	linkFetching bool
 }
 
 // SetLinkSpans installs the spans of the link the reader's URL selector sits
 // on; nil clears them. They paint over any search highlights — the selection
-// is the thing being acted on. muted swaps the selection colors for the
-// open-story bar, marking a link the reader will not open.
-func (s *Scroller) SetLinkSpans(matches []Match, muted bool) {
+// is the thing being acted on. inert swaps the selection colors for the red
+// bar, marking a link the view will not open.
+func (s *Scroller) SetLinkSpans(matches []Match, inert bool) {
 	s.linkSpans = matches
-	s.linkMuted = muted
+	s.linkInert = inert
+}
+
+// SetLinkFetching repaints the selection in the muted in-flight colors while
+// the followed link's fetch runs. The shell that owns the fetch toggles it:
+// on at fetch start, off when the fetch ends without a page (failure,
+// cancel) — success replaces the view, taking the state with it.
+func (s *Scroller) SetLinkFetching(active bool) {
+	s.linkFetching = active
 }
 
 func (s *Scroller) LinkSpans() []Match { return s.linkSpans }
 
-func (s *Scroller) LinkSpansMuted() bool { return s.linkMuted }
+func (s *Scroller) LinkSpansInert() bool { return s.linkInert }
+
+func (s *Scroller) LinkFetching() bool { return s.linkFetching }
 
 // RowOverride substitutes the rendered row at content line Line for display
 // only, leaving the stored content untouched. The comment section uses it to
@@ -137,8 +148,12 @@ func (s *Scroller) DecorateView(view string) string {
 	// up in the selection's colors — its SGRs re-assert through the earlier
 	// paint's replayed escapes.
 	overlayLink := style.OverlayLinkSpans
-	if s.linkMuted {
-		overlayLink = style.OverlayMutedLinkSpans
+
+	switch {
+	case s.linkFetching:
+		overlayLink = style.OverlayFetchingLinkSpans
+	case s.linkInert:
+		overlayLink = style.OverlayInertLinkSpans
 	}
 
 	for _, m := range s.linkSpans {

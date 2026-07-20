@@ -664,14 +664,28 @@ func TestLinkSelector_NonViewableLinkIsInert(t *testing.T) {
 
 	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
 	require.Equal(t, 0, m.currentLink)
-	assert.True(t, m.LinkSpansMuted(), "the selected pdf takes the muted open-story bar")
+	assert.True(t, m.LinkSpansInert(), "the selected pdf takes the red inert bar")
 
 	cmd := m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
 	assert.Nil(t, cmd, "enter does nothing on a link the reader won't open")
 	assert.True(t, m.linkMode)
 
 	m.Update(tea.KeyPressMsg{Code: 'j', Text: "j"})
-	assert.False(t, m.LinkSpansMuted(), "a viewable link selects in the normal colors")
+	assert.False(t, m.LinkSpansInert(), "a viewable link selects in the normal colors")
+}
+
+func TestLinkSelector_FetchRepaintsSelection(t *testing.T) {
+	parsed := article.NewParsedFromHTML(`<p><a href="https://example.com/page">a page</a></p>`)
+	m := NewWithArticle(parsed, "Title", 72, 100, 30, Options{}, nil)
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
+	require.False(t, m.LinkFetching())
+
+	m.Update(message.LinkFetchStatus{InFlight: true})
+	assert.True(t, m.LinkFetching(), "the fetch start swaps the selection to the in-flight colors")
+
+	m.Update(message.LinkFetchStatus{InFlight: false})
+	assert.False(t, m.LinkFetching(), "a fetch that ends without a page swaps them back")
 }
 
 func TestLinkSelector_URLRowDimsTextKeepsRule(t *testing.T) {

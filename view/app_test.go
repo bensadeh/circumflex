@@ -1068,12 +1068,18 @@ func TestLinkArticleReady_ErrorStaysOnArticle(t *testing.T) {
 	m := openTestReader(t, newTestModelReady(t))
 	root := m.detail
 
-	_, _ = m.startLinkFetch(0)
+	m, _ = m.Update(message.OpenReaderLink{URL: "https://example.com/page"})
+
+	r, ok := m.detail.(*reader.Model)
+	require.True(t, ok)
+	require.True(t, r.LinkFetching(), "the fetch start paints the selection in the in-flight colors")
+
 	m, cmd := m.Update(message.LinkArticleReady{Err: errors.New("server returned status 404"), FetchID: m.fetch.currentID()})
 
 	assert.Same(t, root, m.detail, "the open article never transitions on failure")
 	assert.Equal(t, screenReader, m.screen)
 	assert.NotNil(t, cmd, "the failure surfaces as a status message")
+	assert.False(t, r.LinkFetching(), "the failure paints the selection back")
 }
 
 func TestOpenReaderLink_InvalidDomainStaysPut(t *testing.T) {

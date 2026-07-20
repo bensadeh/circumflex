@@ -177,6 +177,11 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 
 		return nil
 
+	case message.LinkFetchStatus:
+		m.SetLinkFetching(msg.InFlight)
+
+		return nil
+
 	case tea.WindowSizeMsg:
 		anchorIdx := m.anchorComment()
 		screenPos := m.screenPosition(anchorIdx)

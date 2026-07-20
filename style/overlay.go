@@ -89,18 +89,30 @@ func OverlayLinkSpans(line string, spans []SearchSpan) string {
 	return overlaySpans(line, spans, linkSelectSGR, linkSelectSGR)
 }
 
-// linkMutedSGR marks a selected link the reader will not open — the same
-// muted bar the dual-pane list draws under the open story: bright-black
+// linkInertSGR marks a selected link the view will not open: the selection
+// block in red, black text on top like the blue bar.
+var linkInertSGR = overlaySGR{
+	on:  ansi.ReverseOff + ansi.NormalIntensity + ansi.UnderlineOff + xansi.Style{}.BackgroundColor(lipgloss.Red).ForegroundColor(lipgloss.Black).String(),
+	off: ansi.DefaultBackground + ansi.DefaultForeground,
+}
+
+// OverlayInertLinkSpans is OverlayLinkSpans in the inert colors.
+func OverlayInertLinkSpans(line string, spans []SearchSpan) string {
+	return overlaySpans(line, spans, linkInertSGR, linkInertSGR)
+}
+
+// linkFetchingSGR marks the selected link while its page is fetching — the
+// same muted bar the dual-pane list draws under the open story: bright-black
 // background, plain default-colored text (the link's own color and underline
 // cleared).
-var linkMutedSGR = overlaySGR{
+var linkFetchingSGR = overlaySGR{
 	on:  ansi.ReverseOff + ansi.NormalIntensity + ansi.UnderlineOff + ansi.DefaultForeground + ansi.BgBrightBlack,
 	off: ansi.DefaultBackground + ansi.DefaultForeground,
 }
 
-// OverlayMutedLinkSpans is OverlayLinkSpans in the muted colors.
-func OverlayMutedLinkSpans(line string, spans []SearchSpan) string {
-	return overlaySpans(line, spans, linkMutedSGR, linkMutedSGR)
+// OverlayFetchingLinkSpans is OverlayLinkSpans in the in-flight colors.
+func OverlayFetchingLinkSpans(line string, spans []SearchSpan) string {
+	return overlaySpans(line, spans, linkFetchingSGR, linkFetchingSGR)
 }
 
 // SearchSpan is one search hit on a line: a cell span, painted in the
