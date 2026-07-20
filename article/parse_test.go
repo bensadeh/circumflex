@@ -438,10 +438,23 @@ func TestParseBlocks_SrcsetPrefersRightSizedVariant(t *testing.T) {
 func TestParseBlocks_SrcsetWithoutUsableWidthsFallsBackToSrc(t *testing.T) {
 	t.Parallel()
 
-	blocks := blocksFromHTML(t, `<img src="full.jpeg" srcset="a-300.jpeg 300w, a-2x.jpeg 2x" alt="a">`)
+	blocks := blocksFromHTML(t, `<img src="full.jpeg" srcset="a-2x.jpeg 2x" alt="a">`)
 
 	require.Len(t, blocks, 1)
-	assert.Equal(t, "full.jpeg", blocks[0].imageURL, "no candidate covers the fetch target, so the eager src wins")
+	assert.Equal(t, "full.jpeg", blocks[0].imageURL, "no candidate advertises a width, so the eager src wins")
+}
+
+func TestParseBlocks_SrcsetBelowTargetBeatsPlaceholderSrc(t *testing.T) {
+	t.Parallel()
+
+	// VG lazy-loads: src holds a 40px preview of the same image, and the real
+	// candidates top out below the fetch target. The largest one must win —
+	// falling back to src here fetches the preview and upscales it to mush.
+	blocks := blocksFromHTML(t, `<img src="img?w=40"
+		srcset="img?w=40 40w, img?w=580 580w, img?w=1080 1080w" alt="a">`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, "img?w=1080", blocks[0].imageURL, "largest width-annotated candidate wins over the eager src")
 }
 
 func TestParseBlocks_SrcsetWithCommasInURL(t *testing.T) {

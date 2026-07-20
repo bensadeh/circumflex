@@ -342,10 +342,10 @@ func imageDisplayWidth(n *html.Node) int {
 	return 0
 }
 
-// imageSrc picks the most promising source for an img: a right-sized srcset
-// variant when the set advertises widths, then the eager attributes, then the
-// largest srcset candidate. Lazy-loaded images often hold a placeholder in
-// src and the real URL in a data-* attr.
+// imageSrc picks the most promising source for an img: the srcset when it
+// advertises widths, then the eager attributes, then the largest srcset
+// candidate. Lazy-loaded images often hold a placeholder in src and the real
+// URL in a data-* attr.
 func imageSrc(n *html.Node) string {
 	if v := rightSizedFromSrcset(attr(n, "srcset")); v != "" {
 		return v
@@ -407,16 +407,19 @@ func splitSrcset(srcset string) []srcsetCandidate {
 	}
 }
 
-// rightSizedFromSrcset returns the smallest width-annotated candidate that
-// still covers fetchTargetPx: anything larger is downloaded only to be thrown
-// away by the per-tier bounds (a full-size WordPress original runs ~5x the
-// bytes of its right-sized variant), while anything smaller the most
-// demanding tier would upscale into mush. Returns "" when no candidate is
-// both usable and large enough, leaving the eager-attribute chain to decide.
+// rightSizedFromSrcset picks from a width-annotated srcset: the smallest
+// candidate that still covers fetchTargetPx — anything larger is downloaded
+// only to be thrown away by the per-tier bounds (a full-size WordPress
+// original runs ~5x the bytes of its right-sized variant) — or the largest
+// one when none does. A set advertising widths never defers to src: browsers
+// treat src as a last-resort fallback there, so lazy-loading sites park a
+// tiny preview in it (VG's is 40px wide) that must not beat a real
+// candidate. Returns "" only when no candidate is both width-annotated and
+// fetchable, leaving the eager-attribute chain to decide.
 func rightSizedFromSrcset(srcset string) string {
-	var best string
+	var covering, largest string
 
-	bestWidth := 0
+	coveringWidth, largestWidth := 0, 0
 	target := fetchTargetPx()
 
 	for _, candidate := range splitSrcset(srcset) {
@@ -425,16 +428,24 @@ func rightSizedFromSrcset(srcset string) string {
 		}
 
 		width, err := strconv.Atoi(strings.TrimSuffix(strings.Fields(candidate.descriptor)[0], "w"))
-		if err != nil || width < target {
+		if err != nil || width <= 0 {
 			continue
 		}
 
-		if bestWidth == 0 || width < bestWidth {
-			best, bestWidth = candidate.url, width
+		if width > largestWidth {
+			largest, largestWidth = candidate.url, width
+		}
+
+		if width >= target && (coveringWidth == 0 || width < coveringWidth) {
+			covering, coveringWidth = candidate.url, width
 		}
 	}
 
-	return best
+	if covering != "" {
+		return covering
+	}
+
+	return largest
 }
 
 // data: URIs, inline SVG, and lazy-load placeholders are skipped so imageSrc
