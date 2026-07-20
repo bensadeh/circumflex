@@ -3,9 +3,12 @@ package article
 import (
 	"bytes"
 	"context"
+	"encoding/xml"
 	"image"
 	"image/png"
 	nurl "net/url"
+	"strconv"
+	"strings"
 	"time"
 
 	// Blank imports register the decoders that image.Decode dispatches to.
@@ -29,7 +32,8 @@ const (
 	maxImages         = 256 // safety valve against pathological pages, not a working limit
 	imageConcurrency  = 8
 	imageFetchTimeout = 8 * time.Second
-	minImageDimension = 24 // skip tracking pixels and tiny icons
+	minImageWidth     = 24 // skip tracking pixels and vertical rules
+	minImageHeight    = 32 // also short strips: badges (28px in the tallest shields style), dividers
 )
 
 // tier is one fidelity level an image is kept at. Every fetched image derives
@@ -81,7 +85,7 @@ type kittyImage struct {
 
 // fetchImages downloads and decodes the image blocks in place, resolving
 // relative sources against base. Failures leave block.img nil, so rendering
-// falls back to the text label; images displayed below minImageDimension are
+// falls back to the text label; images displayed below the size floors are
 // marked decorative instead, so rendering can drop them. Only the first
 // maxImages are fetched.
 func fetchImages(ctx context.Context, blocks []block, base *nurl.URL) {
@@ -116,21 +120,28 @@ func fetchImages(ctx context.Context, blocks []block, base *nurl.URL) {
 	for _, i := range targets {
 		g.Go(func() error {
 			img, raw, viewBox := fetchImage(ctx, client, base, blocks[i].imageURL)
-			if img == nil {
-				return nil
-			}
 
 			// A raster's bounds are its identity; a vector's raster is drawn
 			// at the Kitty fidelity ceiling regardless of size, so vectors
-			// are judged and sized by their on-page geometry instead.
-			size := img.Bounds().Size()
+			// are judged and sized by their on-page geometry instead — which
+			// survives even when rasterization fails, so a badge oksvg cannot
+			// draw is still recognized as one rather than kept as a label.
+			var size image.Point
+			if img != nil {
+				size = img.Bounds().Size()
+			}
+
 			if viewBox != (image.Point{}) {
 				size = svgDisplaySize(viewBox, blocks[i].dispWidth)
 			}
 
-			if size.X < minImageDimension || size.Y < minImageDimension {
+			if size != (image.Point{}) && (size.X < minImageWidth || size.Y < minImageHeight) {
 				blocks[i].decorative = true
 
+				return nil
+			}
+
+			if img == nil {
 				return nil
 			}
 
@@ -176,7 +187,8 @@ func boundImage(img image.Image) image.Image {
 
 // fetchImage downloads and decodes one image. A non-zero viewBox identifies
 // the source as a vector, whose decoded bounds are raster fidelity rather
-// than intrinsic size.
+// than intrinsic size; it can arrive without an image when the vector
+// declares its geometry but oksvg cannot draw it.
 func fetchImage(ctx context.Context, client *resty.Client, base *nurl.URL, rawURL string) (image.Image, []byte, image.Point) {
 	ref, err := nurl.Parse(rawURL)
 	if err != nil {
@@ -280,13 +292,15 @@ func refererFor(page, target *nurl.URL) string {
 // (Discord's logo measures 126×20 — millimeters), so sizing keys off it or
 // the declared display width, never off the raster. Text elements are not
 // supported by oksvg and are dropped — invisible at terminal resolution
-// anyway.
+// anyway. A vector oksvg cannot draw at all (shields badges carry rgba()
+// fills its color parser rejects) still returns its declared geometry, so
+// the caller can judge its on-page footprint without pixels.
 func decodeSVG(data []byte) (img image.Image, viewBox image.Point) {
 	// oksvg panics on some malformed path data; a broken SVG should fall
 	// back to the text label like any other undecodable image.
 	defer func() {
 		if recover() != nil {
-			img, viewBox = nil, image.Point{}
+			img, viewBox = nil, svgDeclaredBox(data)
 		}
 	}()
 
@@ -296,7 +310,7 @@ func decodeSVG(data []byte) (img image.Image, viewBox image.Point) {
 
 	icon, err := oksvg.ReadIconStream(bytes.NewReader(data))
 	if err != nil || icon.ViewBox.W <= 0 || icon.ViewBox.H <= 0 {
-		return nil, image.Point{}
+		return nil, svgDeclaredBox(data)
 	}
 
 	scale := float64(tierMaxPx[tierKitty]) / max(icon.ViewBox.W, icon.ViewBox.H)
@@ -312,6 +326,68 @@ func decodeSVG(data []byte) (img image.Image, viewBox image.Point) {
 	return rgba, image.Pt(
 		max(1, int(icon.ViewBox.W+0.5)),
 		max(1, int(icon.ViewBox.H+0.5)))
+}
+
+// svgDeclaredBox reads the root <svg> element's own geometry — the viewBox,
+// or the width/height attributes when there is none — without rasterizing
+// anything. Matches which signal oksvg would have used, so a vector judged
+// this way lands where a drawable copy of it would.
+func svgDeclaredBox(data []byte) image.Point {
+	dec := xml.NewDecoder(bytes.NewReader(data))
+	dec.Strict = false
+
+	for {
+		tok, err := dec.Token()
+		if err != nil {
+			return image.Point{}
+		}
+
+		start, ok := tok.(xml.StartElement)
+		if !ok {
+			continue
+		}
+
+		if start.Name.Local != "svg" {
+			return image.Point{}
+		}
+
+		var width, height float64
+
+		for _, a := range start.Attr {
+			switch a.Name.Local {
+			case "viewBox":
+				if f := strings.Fields(a.Value); len(f) == 4 {
+					w, errW := strconv.ParseFloat(f[2], 64)
+					h, errH := strconv.ParseFloat(f[3], 64)
+
+					if errW == nil && errH == nil && w > 0 && h > 0 {
+						return image.Pt(int(w+0.5), int(h+0.5))
+					}
+				}
+			case "width":
+				width = pixelLength(a.Value)
+			case "height":
+				height = pixelLength(a.Value)
+			}
+		}
+
+		if width > 0 && height > 0 {
+			return image.Pt(int(width+0.5), int(height+0.5))
+		}
+
+		return image.Point{}
+	}
+}
+
+// pixelLength parses a bare or px-suffixed SVG length; percentages and other
+// units carry no pixel meaning here and yield 0.
+func pixelLength(v string) float64 {
+	f, err := strconv.ParseFloat(strings.TrimSuffix(strings.TrimSpace(v), "px"), 64)
+	if err != nil || f <= 0 {
+		return 0
+	}
+
+	return f
 }
 
 // svgDisplaySize is the size a vector occupies on the page: the declared

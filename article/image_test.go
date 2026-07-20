@@ -18,13 +18,17 @@ func TestFetchImages_TinyImageIsDecorativeNotFailed(t *testing.T) {
 	t.Parallel()
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		size := 100
-		if r.URL.Path == "/divider.png" {
-			size = 10
+		w2, h := 100, 100
+
+		switch r.URL.Path {
+		case "/divider.png":
+			w2, h = 10, 10
+		case "/badge.png":
+			w2, h = 129, 28
 		}
 
 		var buf bytes.Buffer
-		if err := png.Encode(&buf, image.NewRGBA(image.Rect(0, 0, size, size))); err != nil {
+		if err := png.Encode(&buf, image.NewRGBA(image.Rect(0, 0, w2, h))); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 
 			return
@@ -40,15 +44,19 @@ func TestFetchImages_TinyImageIsDecorativeNotFailed(t *testing.T) {
 	blocks := []block{
 		{kind: blockImage, imageURL: srv.URL + "/divider.png"},
 		{kind: blockImage, imageURL: srv.URL + "/photo.png"},
+		{kind: blockImage, imageURL: srv.URL + "/badge.png"},
 	}
 
 	fetchImages(context.Background(), blocks, base)
 
 	assert.Nil(t, blocks[0].img)
-	assert.True(t, blocks[0].decorative, "below minImageDimension marks the block decorative")
+	assert.True(t, blocks[0].decorative, "below the size floors marks the block decorative")
 
 	assert.NotNil(t, blocks[1].img)
 	assert.False(t, blocks[1].decorative)
+
+	assert.Nil(t, blocks[2].img)
+	assert.True(t, blocks[2].decorative, "a repo badge is a short strip, not an image")
 }
 
 func TestFetchImages_FetchesKnownFigures(t *testing.T) {
@@ -207,6 +215,57 @@ func TestFetchImages_SmallUnitViewBoxLogoJudgedByDeclaredWidth(t *testing.T) {
 
 	assert.Nil(t, blocks[1].img)
 	assert.True(t, blocks[1].decorative, "without a declared width the viewBox is the only size signal")
+}
+
+func TestFetchImages_UndrawableSVGJudgedByDeclaredGeometry(t *testing.T) {
+	t.Parallel()
+
+	// rgba() fills defeat oksvg's color parser — shields badges use them on
+	// their click-target rects — so both fixtures fail to rasterize and only
+	// the declared geometry is left to judge them by.
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/badge.svg" {
+			_, _ = w.Write([]byte(`<svg xmlns="http://www.w3.org/2000/svg" width="129" height="28">` +
+				`<rect width="129" height="28" fill="rgba(0,0,0,0)"/></svg>`))
+
+			return
+		}
+
+		_, _ = w.Write([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 829">` +
+			`<rect width="800" height="829" fill="rgba(0,0,0,0)"/></svg>`))
+	}))
+	defer srv.Close()
+
+	base, err := nurl.Parse(srv.URL)
+	require.NoError(t, err)
+
+	blocks := []block{
+		{kind: blockImage, imageURL: srv.URL + "/badge.svg"},
+		{kind: blockImage, imageURL: srv.URL + "/sponsors.svg"},
+	}
+
+	fetchImages(context.Background(), blocks, base)
+
+	assert.Nil(t, blocks[0].img)
+	assert.True(t, blocks[0].decorative, "a badge stays a badge when rasterization fails")
+
+	assert.Nil(t, blocks[1].img)
+	assert.False(t, blocks[1].decorative, "a large undrawable vector keeps its honest label")
+}
+
+func TestSVGDeclaredBox(t *testing.T) {
+	t.Parallel()
+
+	assert.Equal(t, image.Pt(800, 829),
+		svgDeclaredBox([]byte(`<?xml version="1.0"?><svg viewBox="0 0 800 829" width="640">x</svg>`)),
+		"viewBox wins over width/height, matching oksvg")
+	assert.Equal(t, image.Pt(129, 28),
+		svgDeclaredBox([]byte(`<svg width="128.5px" height="28">x</svg>`)),
+		"width/height fill in when there is no viewBox")
+	assert.Equal(t, image.Point{},
+		svgDeclaredBox([]byte(`<svg width="100%" height="28">x</svg>`)),
+		"non-pixel lengths carry no geometry")
+	assert.Equal(t, image.Point{}, svgDeclaredBox([]byte("\xff\xd8not xml")))
 }
 
 func TestSVGDisplaySize(t *testing.T) {
