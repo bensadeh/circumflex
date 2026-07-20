@@ -29,33 +29,16 @@ func link(url string, lines ...int) Link {
 	return l
 }
 
-func TestStepLink_StopsAtVisibleEdge(t *testing.T) {
+func TestMoveLink_WrapsAndLeavesViewport(t *testing.T) {
 	links := []Link{link("a", 2), link("b", 10), link("c", 40)}
 
-	assert.Equal(t, 1, StepLink(links, 0, 1, 0, 20), "steps to the next link on screen")
-	assert.Equal(t, 1, StepLink(links, 1, 1, 0, 20), "the off-screen link is not reachable by stepping")
-	assert.Equal(t, 0, StepLink(links, 1, -1, 0, 20))
-	assert.Equal(t, 0, StepLink(links, 0, -1, 0, 20), "stops at the first link on screen")
-}
+	assert.Equal(t, 2, MoveLink(links, 1, 1, 0))
+	assert.Equal(t, 0, MoveLink(links, 2, 1, 0), "wraps forward")
+	assert.Equal(t, 2, MoveLink(links, 0, -1, 0), "wraps backward")
 
-func TestStepLink_EmptySelectionEntersFromEdge(t *testing.T) {
-	links := []Link{link("a", 2), link("b", 10), link("c", 40)}
-
-	assert.Equal(t, 0, StepLink(links, -1, 1, 0, 20), "forward enters at the top of the visible set")
-	assert.Equal(t, 1, StepLink(links, -1, -1, 0, 20), "backward enters at the bottom of the visible set")
-	assert.Equal(t, -1, StepLink(links, -1, 1, 60, 20), "nothing visible, nothing to land on")
-}
-
-func TestJumpToLink_WrapsAndLeavesViewport(t *testing.T) {
-	links := []Link{link("a", 2), link("b", 10), link("c", 40)}
-
-	assert.Equal(t, 2, JumpToLink(links, 1, 1, 0))
-	assert.Equal(t, 0, JumpToLink(links, 2, 1, 0), "wraps forward")
-	assert.Equal(t, 2, JumpToLink(links, 0, -1, 0), "wraps backward")
-
-	assert.Equal(t, 2, JumpToLink(links, -1, 1, 20), "empty selection jumps to the first link past the viewport top")
-	assert.Equal(t, 1, JumpToLink(links, -1, -1, 20), "and backward to the last link above it")
-	assert.Equal(t, 0, JumpToLink(links, -1, 1, 60), "no link past the top wraps to the first")
+	assert.Equal(t, 2, MoveLink(links, -1, 1, 20), "empty selection moves to the first link past the viewport top")
+	assert.Equal(t, 1, MoveLink(links, -1, -1, 20), "and backward to the last link above it")
+	assert.Equal(t, 0, MoveLink(links, -1, 1, 60), "no link past the top wraps to the first")
 }
 
 func TestFirstLinkOnScreen(t *testing.T) {

@@ -58,12 +58,6 @@ func (m *Model) handleLinkModeKey(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 	case key.Matches(msg, m.keymap.PrevLink):
 		m.moveLink(-1)
 
-	case key.Matches(msg, m.keymap.JumpNextLink):
-		m.jumpLink(1)
-
-	case key.Matches(msg, m.keymap.JumpPrevLink):
-		m.jumpLink(-1)
-
 	// o falls through to the story bindings below — the selector only claims
 	// enter, and only for links a view can open in place.
 	case key.Matches(msg, m.keymap.OpenSelected):

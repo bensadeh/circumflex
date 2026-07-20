@@ -328,18 +328,10 @@ func (m *Model) exitLinkMode() {
 	m.SetLinkSpans(nil, false)
 }
 
-// moveLink steps the selection through the links on screen and stops at the
-// edge of the view — it never scrolls; the jump and scroll keys move the
-// viewport instead.
+// moveLink selects the next link wherever it sits, scrolling only when the
+// target is off screen.
 func (m *Model) moveLink(direction int) {
-	m.currentLink = pane.StepLink(m.links, m.currentLink, direction, m.Viewport.YOffset(), m.Viewport.Height())
-	m.installLinkSpans()
-}
-
-// jumpLink moves to the next link wherever it sits — moveLink's off-screen
-// counterpart — scrolling it into view.
-func (m *Model) jumpLink(direction int) {
-	m.currentLink = pane.JumpToLink(m.links, m.currentLink, direction, m.Viewport.YOffset())
+	m.currentLink = pane.MoveLink(m.links, m.currentLink, direction, m.Viewport.YOffset())
 	m.installLinkSpans()
 	m.scrollToCurrentLink()
 }

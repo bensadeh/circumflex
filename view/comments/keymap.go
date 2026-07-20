@@ -33,8 +33,6 @@ type keyMap struct {
 	LinkMode     key.Binding
 	NextLink     key.Binding
 	PrevLink     key.Binding
-	JumpNextLink key.Binding
-	JumpPrevLink key.Binding
 	OpenSelected key.Binding
 }
 
@@ -78,20 +76,12 @@ func defaultKeyMap() keyMap {
 			key.WithHelp("⇥", "link selector"),
 		),
 		NextLink: key.NewBinding(
-			key.WithKeys("j", "down"),
-			key.WithHelp("j", "next link on screen"),
+			key.WithKeys("j", "down", "n"),
+			key.WithHelp("j/n", "next link"),
 		),
 		PrevLink: key.NewBinding(
-			key.WithKeys("k", "up"),
-			key.WithHelp("k", "prev link on screen"),
-		),
-		JumpNextLink: key.NewBinding(
-			key.WithKeys("n"),
-			key.WithHelp("n", "jump to next link"),
-		),
-		JumpPrevLink: key.NewBinding(
-			key.WithKeys("N"),
-			key.WithHelp("N", "jump to prev link"),
+			key.WithKeys("k", "up", "N"),
+			key.WithHelp("k/N", "prev link"),
 		),
 		OpenSelected: key.NewBinding(
 			key.WithKeys("enter"),

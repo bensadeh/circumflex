@@ -179,34 +179,10 @@ func FirstLinkOnScreen(links []Link, top, height int) int {
 	return -1
 }
 
-// StepLink is the on-screen selection step: it stops at the edge of the view
-// — never scrolling — and returns current unchanged when there is nothing to
-// land on. From an empty selection (-1) the step enters the visible set from
-// the edge it comes from.
-func StepLink(links []Link, current, direction, top, height int) int {
-	from := current
-	if from < 0 {
-		if direction > 0 {
-			from = -1
-		} else {
-			from = len(links)
-		}
-	}
-
-	for i := from + direction; i >= 0 && i < len(links); i += direction {
-		if LinkOnScreen(links[i], top, height) {
-			return i
-		}
-	}
-
-	return current
-}
-
-// JumpToLink is StepLink's off-screen counterpart: the next link wherever it
-// sits, wrapping like a search jump. From an empty selection it leaves
-// relative to the viewport: forward to the first link past its top, backward
-// to the last one above it.
-func JumpToLink(links []Link, current, direction, top int) int {
+// MoveLink selects the next link wherever it sits, wrapping like a search
+// jump. From an empty selection (-1) it leaves relative to the viewport:
+// forward to the first link past its top, backward to the last one above it.
+func MoveLink(links []Link, current, direction, top int) int {
 	n := len(links)
 
 	switch {

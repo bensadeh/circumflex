@@ -389,7 +389,7 @@ func linkedTestReader(t *testing.T) *Model {
 	return NewWithArticle(parsed, "Title", 72, 100, 30, Options{}, nil)
 }
 
-func TestLinkSelector_TabTogglesAndKeysStep(t *testing.T) {
+func TestLinkSelector_TabTogglesAndKeysCycle(t *testing.T) {
 	m := linkedTestReader(t)
 	require.Len(t, m.links, 3)
 
@@ -402,22 +402,19 @@ func TestLinkSelector_TabTogglesAndKeysStep(t *testing.T) {
 	assert.Equal(t, 1, m.currentLink)
 
 	m.Update(tea.KeyPressMsg{Code: 'n', Text: "n"})
-	assert.Equal(t, 2, m.currentLink, "n moves links, not sections, inside the selector")
+	assert.Equal(t, 2, m.currentLink, "n moves links, not sections, inside the selector — j and n are the same move")
 
 	m.Update(tea.KeyPressMsg{Code: tea.KeyDown})
-	assert.Equal(t, 2, m.currentLink, "j stops at the last link on screen")
-
-	m.Update(tea.KeyPressMsg{Code: 'n', Text: "n"})
-	assert.Equal(t, 0, m.currentLink, "the jump wraps around like a search jump")
+	assert.Equal(t, 0, m.currentLink, "next wraps around")
 
 	m.Update(tea.KeyPressMsg{Code: 'k', Text: "k"})
-	assert.Equal(t, 0, m.currentLink, "k stops at the first link on screen")
+	assert.Equal(t, 2, m.currentLink, "prev wraps backwards")
 
 	m.Update(tea.KeyPressMsg{Code: 'N', Text: "N"})
-	assert.Equal(t, 2, m.currentLink, "the backward jump wraps too")
+	assert.Equal(t, 1, m.currentLink)
 
 	m.Update(tea.KeyPressMsg{Code: tea.KeyUp})
-	assert.Equal(t, 1, m.currentLink)
+	assert.Equal(t, 0, m.currentLink)
 
 	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
 	assert.False(t, m.linkMode, "tab toggles back out")
@@ -460,39 +457,24 @@ func TestLinkSelector_EntryNeverScrolls(t *testing.T) {
 	assert.Equal(t, 0, m.Viewport.YOffset(), "entry stays put with no link in view")
 	assert.Equal(t, -1, m.currentLink, "nothing on screen, nothing selected")
 	assert.Empty(t, m.LinkSpans())
-
-	m.Update(tea.KeyPressMsg{Code: 'j', Text: "j"})
-	assert.Equal(t, -1, m.currentLink, "the on-screen step has nothing to land on")
-	assert.Equal(t, 0, m.Viewport.YOffset())
 }
 
-func TestLinkSelector_JumpReachesOffscreenLinks(t *testing.T) {
-	m := deepLinkTestReader(t)
-
-	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
-	m.Update(tea.KeyPressMsg{Code: 'n', Text: "n"})
-
-	assert.Equal(t, 0, m.currentLink, "the jump finds the first link past the viewport")
-	assert.True(t, m.linkOnScreen(0), "and scrolls it into view")
-
-	m.Update(tea.KeyPressMsg{Code: 'n', Text: "n"})
-	assert.Equal(t, 1, m.currentLink)
-	assert.True(t, m.linkOnScreen(1))
-}
-
-func TestLinkSelector_StepEntersVisibleSetAfterScroll(t *testing.T) {
+func TestLinkSelector_MoveReachesOffscreenLinks(t *testing.T) {
 	m := deepLinkTestReader(t)
 
 	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
 	require.Equal(t, -1, m.currentLink)
 
-	// Scroll the first link into view by hand; the empty selection then
-	// enters the visible set on the next step.
-	m.Viewport.SetYOffset(m.links[0].Spans[0].Line - 2)
-	require.True(t, m.linkOnScreen(0))
+	m.Update(tea.KeyPressMsg{Code: 'j', Text: "j"})
+	assert.Equal(t, 0, m.currentLink, "the first move finds the first link past the viewport")
+	assert.True(t, m.linkOnScreen(0), "and scrolls it into view")
+
+	m.Update(tea.KeyPressMsg{Code: 'n', Text: "n"})
+	assert.Equal(t, 1, m.currentLink, "n is the same move")
+	assert.True(t, m.linkOnScreen(1))
 
 	m.Update(tea.KeyPressMsg{Code: 'j', Text: "j"})
-	assert.Equal(t, 0, m.currentLink)
+	assert.Equal(t, 0, m.currentLink, "and it wraps at the end")
 }
 
 func TestLinkSelector_TabNoopWithoutLinks(t *testing.T) {
