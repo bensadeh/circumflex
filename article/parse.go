@@ -219,16 +219,23 @@ func hasBlockDescendant(n *html.Node) bool {
 			continue
 		}
 
-		if isBareHeading(c) {
+		if isBareHeading(c) || isBlockAtom(nodeAtom(c)) {
 			return true
 		}
+	}
 
-		switch nodeAtom(c) {
-		case atom.P, atom.Div, atom.Ul, atom.Ol, atom.Table, atom.Pre, atom.Blockquote,
-			atom.H1, atom.H2, atom.H3, atom.H4, atom.H5, atom.H6, atom.Figure, atom.Hr,
-			atom.Section, atom.Article:
-			return true
-		}
+	return false
+}
+
+// isBlockAtom lists the elements that establish their own block context; when
+// one lands in inline flow it pads itself with a space on each side so words
+// in adjacent nodes don't fuse. normalizeSpans collapses any doubling.
+func isBlockAtom(a atom.Atom) bool {
+	switch a {
+	case atom.P, atom.Div, atom.Li, atom.Ul, atom.Ol, atom.Table, atom.Pre,
+		atom.Blockquote, atom.H1, atom.H2, atom.H3, atom.H4, atom.H5, atom.H6,
+		atom.Figure, atom.Hr, atom.Section, atom.Article:
+		return true
 	}
 
 	return false
@@ -661,7 +668,6 @@ func parseListItems(list *html.Node, depth int, images *[]block) []listItem {
 				continue
 			}
 
-			spans = append(spans, span{text: " "})
 			spans = append(spans, inlineSpans(c, formatPlain, images)...)
 		}
 
@@ -794,6 +800,13 @@ func inlineSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 		return noteSpans(n, format, images)
 	}
 
+	if isBlockAtom(nodeAtom(n)) {
+		spans := []span{{text: " ", format: format}}
+		spans = append(spans, collectInline(n, format, images)...)
+
+		return append(spans, span{text: " ", format: format})
+	}
+
 	switch nodeAtom(n) {
 	case atom.Script, atom.Style, atom.Noscript, atom.Template, atom.Svg:
 		return nil
@@ -854,12 +867,6 @@ func inlineSpans(n *html.Node, format inlineFormat, images *[]block) []span {
 
 	case atom.Math:
 		return mathSpans(n, format)
-
-	case atom.P, atom.Div, atom.Li:
-		spans := []span{{text: " ", format: format}}
-		spans = append(spans, collectInline(n, format, images)...)
-
-		return append(spans, span{text: " ", format: format})
 
 	default:
 		return collectInline(n, format, images)

@@ -154,6 +154,26 @@ func TestParseBlocks_NestedList(t *testing.T) {
 	assert.Equal(t, "nested", spanText(blocks[0].items[2].spans))
 }
 
+func TestParseBlocks_ListItemInlineFlowKeepsSourceSpacing(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<ul><li><strong>Linux only</strong>. Tested on Arch, reported to work elsewhere.</li></ul>`)
+
+	require.Len(t, blocks, 1)
+	require.Len(t, blocks[0].items, 1)
+	assert.Equal(t, "Linux only. Tested on Arch, reported to work elsewhere.", spanText(blocks[0].items[0].spans))
+}
+
+func TestParseBlocks_ListItemBlockChildrenStaySeparated(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<ol><li><p>Enable lingering:</p><pre>sudo loginctl</pre><p>This allows streaming.</p></li></ol>`)
+
+	require.Len(t, blocks, 1)
+	require.Len(t, blocks[0].items, 1)
+	assert.Equal(t, "Enable lingering: sudo loginctl This allows streaming.", spanText(blocks[0].items[0].spans))
+}
+
 func TestParseBlocks_OrderedListNumbering(t *testing.T) {
 	t.Parallel()
 
