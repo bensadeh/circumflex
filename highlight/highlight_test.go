@@ -164,12 +164,17 @@ func TestCode_ShellFlags(t *testing.T) {
 	assert.Contains(t, out, style.CodeFunction("-fsSL"))
 	assert.Contains(t, out, style.CodeFunction("--retry"))
 	assert.Contains(t, out, style.CodeFunction("--output"))
-	assert.Contains(t, out, style.CodeEscape(`\`), "the continuation backslash reads as an escape")
+	assert.Contains(t, out, style.CodeLiteral(`\`), "the continuation backslash is shell machinery, not an escape")
 	assert.NotContains(t, out, style.CodeFunction("-c"), "url dashes are not flags")
 
 	out = Code("head -1 notes-2026-07.txt", "bash")
 	assert.Contains(t, out, style.CodeFunction("-1"), "numeric flags count")
 	assert.NotContains(t, out, style.CodeFunction("-2026"), "date dashes are not flags")
+
+	out = Code(`git checkout -- main.go
+echo \$HOME`, "bash")
+	assert.Contains(t, out, style.CodeFunction("--"), "the end-of-options separator is option syntax")
+	assert.Contains(t, out, style.CodeEscape(`\$`), "only the line continuation goes cyan, escapes keep red")
 }
 
 func TestCode_ConsoleContinuationsStayCommands(t *testing.T) {

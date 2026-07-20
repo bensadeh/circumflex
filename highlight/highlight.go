@@ -93,6 +93,14 @@ func Code(text, lang string) string {
 
 	if name == "Bash" || name == "Bash Session" {
 		tokens = splitShellFlags(tokens)
+
+		// The \ line continuation is shell machinery, cyan like builtins
+		// and $vars — not an escape hatch; in-string escapes keep red.
+		for i, token := range tokens {
+			if token.Type == chroma.LiteralStringEscape && token.Value == "\\\n" {
+				tokens[i].Type = chroma.NameBuiltin
+			}
+		}
 	}
 
 	var retypeTOML func(*chroma.Token)
@@ -253,8 +261,9 @@ func relexContinuations(tokens []chroma.Token) []chroma.Token {
 }
 
 // shellFlag matches -v and --verbose words at word start, so the dashes in
-// URLs, dates and file names stay plain.
-var shellFlag = regexp.MustCompile(`(?:^|\s)(--?[A-Za-z0-9][A-Za-z0-9_-]*)`)
+// URLs, dates and file names stay plain. The bare -- end-of-options
+// separator counts too; a bare - (stdin placeholder) does not.
+var shellFlag = regexp.MustCompile(`(?:^|\s)(--?[A-Za-z0-9][A-Za-z0-9_-]*|--)`)
 
 // splitShellFlags carves flag words out of shell Text tokens — the lexer
 // leaves command arguments undifferentiated, but flags name parameters, so
