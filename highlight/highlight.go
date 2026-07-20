@@ -89,10 +89,6 @@ func Code(text, lang string) string {
 		retypeTOML = tomlRetyper()
 	}
 
-	// INI's lexer types [section] headers as Keyword and nothing else;
-	// NameClass keeps them the same hue as TOML's table headers.
-	iniSections := name == "INI"
-
 	// Java and Kotlin capitalize acronym classes (URL, UUID, IO); their
 	// true constants always carry an underscore.
 	capsNeedUnderscore := name == "Java" || name == "Kotlin"
@@ -102,10 +98,6 @@ func Code(text, lang string) string {
 	for token := range tokens {
 		if retypeTOML != nil {
 			retypeTOML(&token)
-		}
-
-		if iniSections && token.Type == chroma.Keyword {
-			token.Type = chroma.NameClass
 		}
 
 		if token.Type == chroma.Name {
@@ -183,8 +175,8 @@ var tokenStyles = map[chroma.TokenType]func(string) string{
 	chroma.NameEntity:            style.CodeEscape,
 	chroma.NameException:         style.CodeEscape,
 
-	chroma.NameTag:              style.CodeKeyword, // html tags, json/yaml keys
-	chroma.NameAttribute:        style.CodeKeyword, // html attributes, ini/properties keys
+	chroma.NameTag:              style.CodeKeyword,  // html tags, json/yaml keys, toml headers
+	chroma.NameAttribute:        style.CodeFunction, // html attributes, ini/properties/toml keys
 	chroma.NameBuiltin:          style.CodeLiteral,
 	chroma.NameConstant:         style.CodeLiteral,
 	chroma.NameVariable:         style.CodeLiteral,
@@ -216,10 +208,10 @@ func tomlRetyper() func(*chroma.Token) {
 			inHeader = false
 
 		case token.Type == chroma.NameOther && inHeader:
-			token.Type = chroma.NameClass
+			token.Type = chroma.NameTag
 
 		case token.Type == chroma.NameOther:
-			token.Type = chroma.NameTag
+			token.Type = chroma.NameAttribute
 		}
 
 		switch {
