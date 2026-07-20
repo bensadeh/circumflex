@@ -157,6 +157,33 @@ func TestCode_SingleGreekCapitalStaysPlain(t *testing.T) {
 		"a single rune is not ALL_CAPS whatever its byte length")
 }
 
+func TestCode_ShellFlags(t *testing.T) {
+	t.Parallel()
+
+	out := Code("curl -fsSL --retry 3 \\\n  --output f.tar.gz https://a.io/b-c", "bash")
+	assert.Contains(t, out, style.CodeFunction("-fsSL"))
+	assert.Contains(t, out, style.CodeFunction("--retry"))
+	assert.Contains(t, out, style.CodeFunction("--output"))
+	assert.Contains(t, out, style.CodeEscape(`\`), "the continuation backslash reads as an escape")
+	assert.NotContains(t, out, style.CodeFunction("-c"), "url dashes are not flags")
+
+	out = Code("head -1 notes-2026-07.txt", "bash")
+	assert.Contains(t, out, style.CodeFunction("-1"), "numeric flags count")
+	assert.NotContains(t, out, style.CodeFunction("-2026"), "date dashes are not flags")
+}
+
+func TestCode_ConsoleContinuationsStayCommands(t *testing.T) {
+	t.Parallel()
+
+	out := Code("$ make build --jobs 4 \\\n    --keep-going \\\n    --silent\nok\n", "console")
+
+	assert.Contains(t, out, style.CodeFunction("--jobs"))
+	assert.Contains(t, out, style.CodeFunction("--keep-going"),
+		"continuation lines re-lex as command, not output")
+	assert.Contains(t, out, style.CodeFunction("--silent"), "chained continuations too")
+	assert.NotContains(t, out, style.CodeFunction("ok"), "program output stays plain")
+}
+
 func TestCode_ConfigKeys(t *testing.T) {
 	t.Parallel()
 

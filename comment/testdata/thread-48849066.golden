@@ -918,7 +918,7 @@ Claude Code since this needs a separate daemon server, but not very bad.
 1. Install another copy of codex in a special dir on the Linux machine:
 
 [2m╭────────────────────────────────────────────────────────────── [m[32mShell[m[2m ─╮[m
-[2m│[m [35m$[m curl -fsSL https://chatgpt.com/codex/install.sh | sh               [2m│[m
+[2m│[m [35m$[m curl [34m-fsSL[m https://chatgpt.com/codex/install.sh | sh               [2m│[m
 [2m╰──────────────────────────────────────────────────────────────────────╯[m
 
 2. Run codex remote-control from that special dir to start and pair the

@@ -2,6 +2,7 @@ package highlight
 
 import (
 	"regexp"
+	"slices"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -75,14 +76,24 @@ func Code(text, lang string) string {
 		return ""
 	}
 
-	tokens, err := chroma.Coalesce(lexer).Tokenise(nil, text)
+	iterated, err := chroma.Coalesce(lexer).Tokenise(nil, text)
 	if err != nil {
 		return ""
 	}
 
+	tokens := slices.Collect(iterated)
+
 	name := lexer.Config().Name
 	_, capTypes := capitalizedTypeLangs[name]
 	_, capsConsts := allCapsConstLangs[name]
+
+	if name == "Bash Session" {
+		tokens = relexContinuations(tokens)
+	}
+
+	if name == "Bash" || name == "Bash Session" {
+		tokens = splitShellFlags(tokens)
+	}
 
 	var retypeTOML func(*chroma.Token)
 	if name == "TOML" {
@@ -95,7 +106,7 @@ func Code(text, lang string) string {
 
 	var sb strings.Builder
 
-	for token := range tokens {
+	for _, token := range tokens {
 		if retypeTOML != nil {
 			retypeTOML(&token)
 		}
@@ -176,7 +187,7 @@ var tokenStyles = map[chroma.TokenType]func(string) string{
 	chroma.NameException:         style.CodeEscape,
 
 	chroma.NameTag:              style.CodeKeyword,  // html tags, json/yaml keys, toml headers
-	chroma.NameAttribute:        style.CodeFunction, // html attributes, ini/properties/toml keys
+	chroma.NameAttribute:        style.CodeFunction, // html attributes, ini/properties/toml keys, shell flags
 	chroma.NameBuiltin:          style.CodeLiteral,
 	chroma.NameConstant:         style.CodeLiteral,
 	chroma.NameVariable:         style.CodeLiteral,
@@ -189,6 +200,93 @@ var tokenStyles = map[chroma.TokenType]func(string) string{
 	chroma.GenericDeleted:    style.CodeDeleted,
 	chroma.GenericHeading:    style.Faint,
 	chroma.GenericSubheading: style.Faint,
+}
+
+// relexContinuations repairs the console lexer's handling of \-continued
+// commands: it flips to output state at the first newline, so the later
+// lines of the command lex as plain GenericOutput. Those lines re-lex with
+// the bash lexer to keep their flags, strings and escapes colored.
+func relexContinuations(tokens []chroma.Token) []chroma.Token {
+	bash := lexers.Get("bash")
+	if bash == nil {
+		return tokens
+	}
+
+	out := make([]chroma.Token, 0, len(tokens))
+
+	for i, token := range tokens {
+		continued := i > 0 && tokens[i-1].Type == chroma.LiteralStringEscape &&
+			strings.HasSuffix(tokens[i-1].Value, "\\\n")
+		if token.Type != chroma.GenericOutput || !continued {
+			out = append(out, token)
+
+			continue
+		}
+
+		lines := strings.SplitAfter(token.Value, "\n")
+
+		cut := 0
+		for cut < len(lines) {
+			line := strings.TrimSuffix(lines[cut], "\n")
+			cut++
+
+			if !strings.HasSuffix(line, `\`) {
+				break
+			}
+		}
+
+		command, err := chroma.Coalesce(bash).Tokenise(nil, strings.Join(lines[:cut], ""))
+		if err != nil {
+			out = append(out, token)
+
+			continue
+		}
+
+		out = slices.AppendSeq(out, command)
+
+		if rest := strings.Join(lines[cut:], ""); rest != "" {
+			out = append(out, chroma.Token{Type: chroma.GenericOutput, Value: rest})
+		}
+	}
+
+	return out
+}
+
+// shellFlag matches -v and --verbose words at word start, so the dashes in
+// URLs, dates and file names stay plain.
+var shellFlag = regexp.MustCompile(`(?:^|\s)(--?[A-Za-z0-9][A-Za-z0-9_-]*)`)
+
+// splitShellFlags carves flag words out of shell Text tokens — the lexer
+// leaves command arguments undifferentiated, but flags name parameters, so
+// they take the key hue via NameAttribute.
+func splitShellFlags(tokens []chroma.Token) []chroma.Token {
+	out := make([]chroma.Token, 0, len(tokens))
+
+	for _, token := range tokens {
+		if token.Type != chroma.Text {
+			out = append(out, token)
+
+			continue
+		}
+
+		pos := 0
+
+		for _, m := range shellFlag.FindAllStringSubmatchIndex(token.Value, -1) {
+			start, end := m[2], m[3]
+			if start > pos {
+				out = append(out, chroma.Token{Type: chroma.Text, Value: token.Value[pos:start]})
+			}
+
+			out = append(out, chroma.Token{Type: chroma.NameAttribute, Value: token.Value[start:end]})
+			pos = end
+		}
+
+		if pos < len(token.Value) {
+			out = append(out, chroma.Token{Type: chroma.Text, Value: token.Value[pos:]})
+		}
+	}
+
+	return out
 }
 
 // tomlRetyper returns a stateful retyper for TOML's undifferentiated
