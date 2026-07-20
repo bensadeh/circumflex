@@ -120,6 +120,35 @@ func TestCode_RustBuiltinTypesAreTypes(t *testing.T) {
 		"primitives read as builtin vocabulary, distinct from named types")
 }
 
+func TestCode_JSFunctionsAndKeys(t *testing.T) {
+	t.Parallel()
+
+	out := Code("export function performSomeAction(data) {\n  return { type: SOME_ACTION };\n}", "javascript")
+
+	assert.Contains(t, out, style.CodeFunction("performSomeAction"),
+		"a name before ( is a function definition, though chroma leaves it NameOther")
+	assert.Contains(t, out, style.CodeKeyword("type"),
+		"an object key takes the same hue as a json key")
+	assert.NotContains(t, out, style.CodeKeyword("SOME_ACTION"),
+		"a value is not a key")
+
+	out = Code("dispatch({ scatter: values[0] });", "javascript")
+	assert.Contains(t, out, style.CodeFunction("dispatch"), "a name before ( is a call")
+	assert.Contains(t, out, style.CodeKeyword("scatter"))
+}
+
+func TestCode_KeyRuleIgnoresNonMembers(t *testing.T) {
+	t.Parallel()
+
+	// A ternary branch is preceded by ? and a typed parameter sits inside
+	// ( ), so neither is a { } member — the bracket stack must reject both.
+	out := Code("const x = flag ? alpha : beta;", "javascript")
+	assert.NotContains(t, out, style.CodeKeyword("alpha"), "a ternary branch is not a key")
+
+	out = Code("function f(alpha: number, beta: string) {}", "typescript")
+	assert.NotContains(t, out, style.CodeKeyword("alpha"), "a typed parameter is not a key")
+}
+
 func TestCode_RustLifetimesAndSigils(t *testing.T) {
 	t.Parallel()
 

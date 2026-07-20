@@ -112,6 +112,8 @@ func Code(text, lang string) string {
 	// true constants always carry an underscore.
 	capsNeedUnderscore := name == "Java" || name == "Kotlin"
 
+	enrichCoarseNames(tokens)
+
 	var sb strings.Builder
 
 	for _, token := range tokens {
@@ -361,6 +363,82 @@ func tokenStyle(t chroma.TokenType) func(string) string {
 	fn, _ := chroma.Lookup(tokenStyles, t)
 
 	return fn
+}
+
+// enrichCoarseNames fills in roles that coarse lexers (JavaScript,
+// TypeScript, Go) leave as undifferentiated NameOther — the token chroma
+// emits when it declines to classify a name. It reads only syntactic
+// adjacency, never guesses, and touches NameOther alone: a lexer that
+// tagged a name Name/NameFunction/NameBuiltin already decided, so Rust and
+// friends pass through unchanged.
+//
+//   - a name immediately before ( is a call or definition -> NameFunction
+//   - a name in { } member position before : is a key -> NameTag, the same
+//     hue json and yaml keys already take
+//
+// The bracket stack is what keeps the key rule honest: it fires only with
+// an open { on top and a preceding { or , , so a ternary branch (preceded
+// by ?) or a typed parameter (inside ( ) never qualifies.
+func enrichCoarseNames(tokens []chroma.Token) {
+	sig := make([]int, 0, len(tokens))
+
+	for i, t := range tokens {
+		if t.Type == chroma.Text || t.Type == chroma.TextWhitespace ||
+			t.Type.InCategory(chroma.Comment) {
+			continue
+		}
+
+		sig = append(sig, i)
+	}
+
+	var stack []byte
+
+	for j, idx := range sig {
+		tok := tokens[idx]
+
+		if tok.Type == chroma.NameOther {
+			var next chroma.Token
+			if j+1 < len(sig) {
+				next = tokens[sig[j+1]]
+			}
+
+			switch {
+			case strings.HasPrefix(next.Value, "("):
+				tokens[idx].Type = chroma.NameFunction
+
+			case next.Value == ":" && topIs(stack, '{') && j > 0 &&
+				endsWithMemberSep(tokens[sig[j-1]].Value):
+				tokens[idx].Type = chroma.NameTag
+			}
+		}
+
+		if tok.Type == chroma.Punctuation {
+			for _, c := range tok.Value {
+				switch c {
+				case '{', '(', '[':
+					stack = append(stack, byte(c))
+				case '}', ')', ']':
+					if n := len(stack); n > 0 {
+						stack = stack[:n-1]
+					}
+				}
+			}
+		}
+	}
+}
+
+func topIs(stack []byte, b byte) bool {
+	return len(stack) > 0 && stack[len(stack)-1] == b
+}
+
+func endsWithMemberSep(s string) bool {
+	if s == "" {
+		return false
+	}
+
+	c := s[len(s)-1]
+
+	return c == '{' || c == ','
 }
 
 // isRefSigil reports an operator built only from & and *, the sigils of
