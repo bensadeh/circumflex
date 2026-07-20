@@ -119,15 +119,37 @@ func Code(text, lang string) string {
 			retypeTOML(&token)
 		}
 
-		if token.Type == chroma.Name {
+		// NameBuiltin joins Name here so Rust's std types (String, Vec,
+		// Option, Box) take the type hue like a primitive str does, instead
+		// of the builtin/literal one — chroma pre-tags them where a
+		// user-defined type would arrive as a plain Name. Java and Kotlin
+		// emit no NameBuiltin, so this is Rust in practice; its variant
+		// constructors (Some, Ok) ride along as capitalized names.
+		if token.Type == chroma.Name || token.Type == chroma.NameBuiltin {
 			switch {
-			case capsConsts && isAllCaps(token.Value) &&
+			case token.Type == chroma.Name && capsConsts && isAllCaps(token.Value) &&
 				(!capsNeedUnderscore || strings.Contains(token.Value, "_")):
 				token.Type = chroma.NameConstant
 
 			case capTypes && startsUpper(token.Value):
 				token.Type = chroma.NameClass
 			}
+		}
+
+		// Rust lifetimes give them the type hue like the types they bound,
+		// not the attribute/function or builtin one. Named lifetimes ('a)
+		// arrive as NameAttribute; 'static arrives as NameBuiltin. A leading
+		// apostrophe is theirs alone — char literals lex as a string.
+		if strings.HasPrefix(token.Value, "'") &&
+			(token.Type == chroma.NameAttribute || token.Type == chroma.NameBuiltin) {
+			token.Type = chroma.NameClass
+		}
+
+		// The reference & before a lifetime is the one sigil chroma tags
+		// KeywordPseudo rather than Operator; fold it back so every & and *
+		// takes the operator color with the rest.
+		if token.Type == chroma.KeywordPseudo && isRefSigil(token.Value) {
+			token.Type = chroma.Operator
 		}
 
 		sb.WriteString(styleToken(token))
@@ -176,18 +198,23 @@ var tokenStyles = map[chroma.TokenType]func(string) string{
 	chroma.CommentPreprocFile: style.CodeString,
 
 	chroma.OperatorWord: style.CodeKeyword, // is, not, and
+	chroma.KeywordType:  style.CodeKeyword, // primitives (str, i32, int) are builtin vocabulary
 
-	chroma.KeywordType: style.CodeType,
-	chroma.NameClass:   style.CodeType,
+	// Type hue is left for named types — user structs and the capitalized
+	// std types promoted into NameClass; a primitive reads as a keyword.
+	chroma.NameClass: style.CodeType,
 
 	chroma.NameFunction:      style.CodeFunction,
 	chroma.NameFunctionMagic: style.CodeFunction, // println!, vec!
 	chroma.NameDecorator:     style.CodeFunction,
 
-	// Red marks escape hatches and sharp edges: escapes and interpolation
-	// stand apart inside the string color, regexes out of plain strings,
-	// entities as html's escape mechanism, exception names on error paths.
-	// Lexer Error tokens deliberately stay plain, red would read as broken.
+	// Red marks escape hatches and sharp edges: operators including the &
+	// and * sigils, escapes and interpolation standing apart inside the
+	// string color, regexes out of plain strings, entities as html's escape
+	// mechanism, exception names on error paths. Word operators (is, not,
+	// and) keep the keyword color; punctuation stays plain. Lexer Error
+	// tokens deliberately stay plain, red would read as broken.
+	chroma.Operator:              style.CodeEscape,
 	chroma.LiteralStringEscape:   style.CodeEscape,
 	chroma.LiteralStringInterpol: style.CodeEscape,
 	chroma.LiteralStringRegex:    style.CodeEscape,
@@ -334,6 +361,23 @@ func tokenStyle(t chroma.TokenType) func(string) string {
 	fn, _ := chroma.Lookup(tokenStyles, t)
 
 	return fn
+}
+
+// isRefSigil reports an operator built only from & and *, the sigils of
+// Rust's borrows, raw pointers and dereferences (&, *, &*, &&). Mixed
+// operators like *= and arithmetic never qualify.
+func isRefSigil(s string) bool {
+	if s == "" {
+		return false
+	}
+
+	for _, r := range s {
+		if r != '&' && r != '*' {
+			return false
+		}
+	}
+
+	return true
 }
 
 func startsUpper(s string) bool {

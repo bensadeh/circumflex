@@ -63,7 +63,7 @@ func TestCode_TypesFunctionsEscapes(t *testing.T) {
 
 	out := Code("#include <stdio.h>\nint main(void) {\n    printf(\"hi\\n\");\n}", "c")
 
-	assert.Contains(t, out, style.CodeType("int"))
+	assert.Contains(t, out, style.CodeKeyword("int"), "primitives read as builtin vocabulary, not named types")
 	assert.Contains(t, out, style.CodeFunction("printf"))
 	assert.Contains(t, out, style.CodeEscape(`\n`))
 
@@ -105,6 +105,31 @@ func TestCode_RustCapitalizedTypes(t *testing.T) {
 		"Rust's convention makes capitalized names types; the lexer leaves them plain")
 	assert.Contains(t, out, style.CodeType("ChaChaRng"))
 	assert.NotContains(t, out, style.CodeType("osrng"), "lowercase names stay plain")
+}
+
+func TestCode_RustBuiltinTypesAreTypes(t *testing.T) {
+	t.Parallel()
+
+	out := Code("fn wrap(n: i32, s: String) -> Option<Vec<String>> {\n    Some(vec![s])\n}", "rust")
+
+	assert.Contains(t, out, style.CodeType("String"),
+		"std types take the type hue, not the builtin/literal one")
+	assert.Contains(t, out, style.CodeType("Option"))
+	assert.Contains(t, out, style.CodeType("Vec"))
+	assert.Contains(t, out, style.CodeKeyword("i32"),
+		"primitives read as builtin vocabulary, distinct from named types")
+}
+
+func TestCode_RustLifetimesAndSigils(t *testing.T) {
+	t.Parallel()
+
+	out := Code("fn get<'a>(s: &'a str) -> &'static str {\n    let r = &*s;\n    r\n}", "rust")
+
+	assert.Contains(t, out, style.CodeType("'a"), "named lifetimes take the type hue")
+	assert.Contains(t, out, style.CodeType("'static"),
+		"'static too, though the lexer tags it a builtin, not an attribute")
+	assert.Contains(t, out, style.CodeEscape("&*"),
+		"borrow, raw-pointer and deref sigils take the operator color")
 }
 
 func TestCode_ConventionRefinements(t *testing.T) {
