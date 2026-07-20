@@ -413,7 +413,33 @@ func isRust(text string, lines []string) bool {
 		containsAny(text, []string{"println!", "#[derive", ".unwrap()", "?;", "vec!"}),
 		anyLinePrefix(lines, "let "),
 		rustMatchArm(text, lines),
+		rustLifetime(text),
 	)
+}
+
+// rustLifetime reports a lifetime annotation in generic or reference
+// position (<'a>, &'a). It anchors on < or & immediately before the
+// apostrophe, so a bare char literal never counts, and a trailing
+// apostrophe means the quote closed a char literal instead — keeping C's
+// c<'a' comparison and &'x' char-address out.
+func rustLifetime(text string) bool {
+	for i := 0; i+1 < len(text); i++ {
+		if (text[i] != '<' && text[i] != '&') || text[i+1] != '\'' {
+			continue
+		}
+
+		j := i + 2
+		for j < len(text) && (isASCIILetter(text[j]) || text[j] == '_' ||
+			(text[j] >= '0' && text[j] <= '9')) {
+			j++
+		}
+
+		if j > i+2 && (j >= len(text) || text[j] != '\'') {
+			return true
+		}
+	}
+
+	return false
 }
 
 // unspacedPathSep reports Rust's Type::path form. Haskell's type-signature

@@ -80,6 +80,16 @@ func TestGuessLang(t *testing.T) {
 			"rust",
 		},
 		{
+			"rust lifetimes and raw pointer",
+			"fn get_str<'a>(s: *const String) -> &'a str {\n    unsafe { &*s }\n}",
+			"rust",
+		},
+		{
+			"c char comparison is not a lifetime",
+			"#include <stdio.h>\n\nint classify(char c) {\n    if (c<'a' || c>'z') return 0;\n    return 1;\n}",
+			"c",
+		},
+		{
 			"c",
 			"#include <stdio.h>\n\nint main(void) {\n    printf(\"%d\\n\", 1);\n    return 0;\n}",
 			"c",
