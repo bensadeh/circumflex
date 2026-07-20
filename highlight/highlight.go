@@ -84,6 +84,15 @@ func Code(text, lang string) string {
 	_, capTypes := capitalizedTypeLangs[name]
 	_, capsConsts := allCapsConstLangs[name]
 
+	var retypeTOML func(*chroma.Token)
+	if name == "TOML" {
+		retypeTOML = tomlRetyper()
+	}
+
+	// INI's lexer types [section] headers as Keyword and nothing else;
+	// NameClass keeps them the same hue as TOML's table headers.
+	iniSections := name == "INI"
+
 	// Java and Kotlin capitalize acronym classes (URL, UUID, IO); their
 	// true constants always carry an underscore.
 	capsNeedUnderscore := name == "Java" || name == "Kotlin"
@@ -91,6 +100,14 @@ func Code(text, lang string) string {
 	var sb strings.Builder
 
 	for token := range tokens {
+		if retypeTOML != nil {
+			retypeTOML(&token)
+		}
+
+		if iniSections && token.Type == chroma.Keyword {
+			token.Type = chroma.NameClass
+		}
+
 		if token.Type == chroma.Name {
 			switch {
 			case capsConsts && isAllCaps(token.Value) &&
@@ -166,7 +183,8 @@ var tokenStyles = map[chroma.TokenType]func(string) string{
 	chroma.NameEntity:            style.CodeEscape,
 	chroma.NameException:         style.CodeEscape,
 
-	chroma.NameTag:              style.CodeKeyword, // html tags, json keys
+	chroma.NameTag:              style.CodeKeyword, // html tags, json/yaml keys
+	chroma.NameAttribute:        style.CodeKeyword, // html attributes, ini/properties keys
 	chroma.NameBuiltin:          style.CodeLiteral,
 	chroma.NameConstant:         style.CodeLiteral,
 	chroma.NameVariable:         style.CodeLiteral,
@@ -179,6 +197,38 @@ var tokenStyles = map[chroma.TokenType]func(string) string{
 	chroma.GenericDeleted:    style.CodeDeleted,
 	chroma.GenericHeading:    style.Faint,
 	chroma.GenericSubheading: style.Faint,
+}
+
+// tomlRetyper returns a stateful retyper for TOML's undifferentiated
+// NameOther tokens: a word inside line-leading [ ] brackets names a table,
+// any other bare word is a key — valid TOML never bares a word in value
+// position. The lexer's flat grammar leaves all of them as NameOther, and
+// other lexers use NameOther for plain identifiers, hence the scoping.
+func tomlRetyper() func(*chroma.Token) {
+	lineStart, inHeader := true, false
+
+	return func(token *chroma.Token) {
+		switch {
+		case token.Type == chroma.Punctuation && lineStart && strings.HasPrefix(token.Value, "["):
+			inHeader = true
+
+		case token.Type == chroma.Punctuation && inHeader && strings.Contains(token.Value, "]"):
+			inHeader = false
+
+		case token.Type == chroma.NameOther && inHeader:
+			token.Type = chroma.NameClass
+
+		case token.Type == chroma.NameOther:
+			token.Type = chroma.NameTag
+		}
+
+		switch {
+		case token.Type == chroma.Text && strings.Contains(token.Value, "\n"):
+			lineStart, inHeader = true, false
+		case token.Type != chroma.Text:
+			lineStart = false
+		}
+	}
 }
 
 func tokenStyle(t chroma.TokenType) func(string) string {

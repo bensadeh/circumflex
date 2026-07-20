@@ -157,6 +157,30 @@ func TestCode_SingleGreekCapitalStaysPlain(t *testing.T) {
 		"a single rune is not ALL_CAPS whatever its byte length")
 }
 
+func TestCode_ConfigKeys(t *testing.T) {
+	t.Parallel()
+
+	out := Code("[[application_scanner]]\ntype = \"steam\"\nresolve_icons = true", "toml")
+	assert.Contains(t, out, style.CodeType("application_scanner"), "table headers stand apart from keys")
+	assert.Contains(t, out, style.CodeKeyword("type"))
+	assert.Contains(t, out, style.CodeKeyword("resolve_icons"))
+	assert.Contains(t, out, style.CodeString(`"steam"`))
+	assert.NotContains(t, out, style.CodeType("[["), "brackets stay plain like all punctuation")
+
+	out = Code("[servers.alpha]\nip = \"10.0.0.1\"\ndirs = [\n  \"a\",\n]\nnext = 1", "toml")
+	assert.Contains(t, out, style.CodeType("servers"), "every dotted-header segment is a header")
+	assert.Contains(t, out, style.CodeType("alpha"))
+	assert.Contains(t, out, style.CodeKeyword("ip"))
+	assert.Contains(t, out, style.CodeKeyword("next"), "a line-leading array close is not a header open")
+
+	out = Code("[server]\nport = 8080", "ini")
+	assert.Contains(t, out, style.CodeType("[server]"), "ini sections match toml headers")
+	assert.Contains(t, out, style.CodeKeyword("port"))
+
+	out = Code(`<a href="x">t</a>`, "html")
+	assert.Contains(t, out, style.CodeKeyword("href"), "attributes are keys too")
+}
+
 func TestCode_JSXTags(t *testing.T) {
 	t.Parallel()
 
