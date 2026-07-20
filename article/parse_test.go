@@ -409,10 +409,10 @@ func TestParseBlocks_InlineImageBecomesOwnBlock(t *testing.T) {
 func TestParseBlocks_SrcsetPrefersRightSizedVariant(t *testing.T) {
 	t.Parallel()
 
-	blocks := blocksFromHTML(t, `<img src="full.jpeg" srcset="a-300.jpeg 300w, a-1024.jpeg 1024w, a-768.jpeg 768w" alt="a">`)
+	blocks := blocksFromHTML(t, `<img src="full.jpeg" srcset="a-300.jpeg 300w, a-4000.jpeg 4000w, a-2048.jpeg 2048w" alt="a">`)
 
 	require.Len(t, blocks, 1)
-	assert.Equal(t, "a-768.jpeg", blocks[0].imageURL, "smallest candidate covering maxRetainedPx wins over full-size src")
+	assert.Equal(t, "a-2048.jpeg", blocks[0].imageURL, "smallest candidate covering the fetch target wins over full-size src")
 }
 
 func TestParseBlocks_SrcsetWithoutUsableWidthsFallsBackToSrc(t *testing.T) {
@@ -421,7 +421,7 @@ func TestParseBlocks_SrcsetWithoutUsableWidthsFallsBackToSrc(t *testing.T) {
 	blocks := blocksFromHTML(t, `<img src="full.jpeg" srcset="a-300.jpeg 300w, a-2x.jpeg 2x" alt="a">`)
 
 	require.Len(t, blocks, 1)
-	assert.Equal(t, "full.jpeg", blocks[0].imageURL, "no candidate covers maxRetainedPx, so the eager src wins")
+	assert.Equal(t, "full.jpeg", blocks[0].imageURL, "no candidate covers the fetch target, so the eager src wins")
 }
 
 func TestParseBlocks_SrcsetWithCommasInURL(t *testing.T) {
@@ -430,13 +430,13 @@ func TestParseBlocks_SrcsetWithCommasInURL(t *testing.T) {
 	// Substack's CDN encodes transforms as comma-separated path segments; a
 	// naive split on "," shreds the URL into fragments and the picked
 	// "candidate" fails to parse, losing every image on the page.
-	blocks := blocksFromHTML(t, `<img src="full.png" srcset="`+
+	blocks := blocksFromHTML(t, `<img srcset="`+
 		`https://cdn.example.com/fetch/$s_!x!,w_424,c_limit,f_auto/img.png 424w, `+
 		`https://cdn.example.com/fetch/$s_!x!,w_848,c_limit,f_auto/img.png 848w, `+
 		`https://cdn.example.com/fetch/$s_!x!,w_1456,c_limit,f_auto/img.png 1456w" alt="a">`)
 
 	require.Len(t, blocks, 1)
-	assert.Equal(t, "https://cdn.example.com/fetch/$s_!x!,w_848,c_limit,f_auto/img.png", blocks[0].imageURL)
+	assert.Equal(t, "https://cdn.example.com/fetch/$s_!x!,w_1456,c_limit,f_auto/img.png", blocks[0].imageURL)
 }
 
 func TestParseBlocks_SrcsetWithCommasInURLDensityOnly(t *testing.T) {

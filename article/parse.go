@@ -401,14 +401,16 @@ func splitSrcset(srcset string) []srcsetCandidate {
 }
 
 // rightSizedFromSrcset returns the smallest width-annotated candidate that
-// still covers maxRetainedPx: anything larger is downloaded only to be thrown
-// away by boundImage, and a full-size WordPress original runs ~5x the bytes
-// of its 768w variant. Returns "" when no candidate is both usable and large
-// enough, leaving the eager-attribute chain to decide.
+// still covers fetchTargetPx: anything larger is downloaded only to be thrown
+// away by the per-tier bounds (a full-size WordPress original runs ~5x the
+// bytes of its right-sized variant), while anything smaller the most
+// demanding tier would upscale into mush. Returns "" when no candidate is
+// both usable and large enough, leaving the eager-attribute chain to decide.
 func rightSizedFromSrcset(srcset string) string {
 	var best string
 
 	bestWidth := 0
+	target := fetchTargetPx()
 
 	for _, candidate := range splitSrcset(srcset) {
 		if candidate.descriptor == "" || !isFetchableImageURL(candidate.url) {
@@ -416,7 +418,7 @@ func rightSizedFromSrcset(srcset string) string {
 		}
 
 		width, err := strconv.Atoi(strings.TrimSuffix(strings.Fields(candidate.descriptor)[0], "w"))
-		if err != nil || width < maxRetainedPx {
+		if err != nil || width < target {
 			continue
 		}
 

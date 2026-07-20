@@ -174,8 +174,8 @@ func TestFetchImages_SVGFallsBackToRasterization(t *testing.T) {
 	fetchImages(context.Background(), blocks, base)
 
 	require.NotNil(t, blocks[0].img)
-	assert.Equal(t, maxRetainedPx, blocks[0].img.Bounds().Dx(), "the retained copy keeps its own bound")
-	assert.Equal(t, maxRetainedPx/2, blocks[0].img.Bounds().Dy())
+	assert.Equal(t, tierMaxPx[tierHalfBlock], blocks[0].img.Bounds().Dx(), "the retained copy keeps its own bound")
+	assert.Equal(t, tierMaxPx[tierHalfBlock]/2, blocks[0].img.Bounds().Dy())
 	assert.Equal(t, 100, blocks[0].dispWidth, "sizing comes from the viewBox, not the raster")
 
 	r, g, b, a := blocks[0].img.At(256, 128).RGBA()
@@ -224,15 +224,15 @@ func TestDecodeSVG_RasterizesAtKittyCeiling(t *testing.T) {
 	img, viewBox := decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8192 4096"></svg>`))
 
 	require.NotNil(t, img)
-	assert.Equal(t, maxKittyPx, img.Bounds().Dx(), "oversized viewBoxes rasterize down to the ceiling")
-	assert.Equal(t, maxKittyPx/2, img.Bounds().Dy(), "aspect ratio is preserved")
+	assert.Equal(t, tierMaxPx[tierKitty], img.Bounds().Dx(), "oversized viewBoxes rasterize down to the ceiling")
+	assert.Equal(t, tierMaxPx[tierKitty]/2, img.Bounds().Dy(), "aspect ratio is preserved")
 	assert.Equal(t, image.Pt(8192, 4096), viewBox)
 
 	img, viewBox = decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 126.5 20.22"></svg>`))
 
 	require.NotNil(t, img)
-	assert.Equal(t, maxKittyPx, img.Bounds().Dx(), "small viewBoxes rasterize up to the ceiling")
-	assert.Equal(t, 164, img.Bounds().Dy())
+	assert.Equal(t, tierMaxPx[tierKitty], img.Bounds().Dx(), "small viewBoxes rasterize up to the ceiling")
+	assert.Equal(t, 327, img.Bounds().Dy())
 	assert.Equal(t, image.Pt(127, 20), viewBox, "the viewBox rounds to the nearest unit")
 }
 
@@ -266,7 +266,7 @@ func TestFetchImages_RetainsHighResKittyCopy(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		size := 100
 		if r.URL.Path == "/huge.png" {
-			size = 2048
+			size = tierMaxPx[tierKitty] * 2
 		}
 
 		var buf bytes.Buffer
@@ -302,10 +302,10 @@ func TestFetchImages_RetainsHighResKittyCopy(t *testing.T) {
 
 	reencoded, err := png.Decode(bytes.NewReader(blocks[1].kitty.png))
 	require.NoError(t, err)
-	assert.Equal(t, maxKittyPx, reencoded.Bounds().Dx(), "oversized sources re-encode within the kitty bound")
-	assert.Equal(t, maxKittyPx/2, reencoded.Bounds().Dy(), "aspect ratio is preserved")
+	assert.Equal(t, tierMaxPx[tierKitty], reencoded.Bounds().Dx(), "oversized sources re-encode within the kitty bound")
+	assert.Equal(t, tierMaxPx[tierKitty]/2, reencoded.Bounds().Dy(), "aspect ratio is preserved")
 
-	assert.Equal(t, maxRetainedPx, blocks[1].img.Bounds().Dx(), "the half-block fallback keeps its own tighter bound")
+	assert.Equal(t, tierMaxPx[tierHalfBlock], blocks[1].img.Bounds().Dx(), "the half-block fallback keeps its own tighter bound")
 }
 
 func TestBoundImage_DownscalesToFitBox(t *testing.T) {
@@ -313,7 +313,7 @@ func TestBoundImage_DownscalesToFitBox(t *testing.T) {
 
 	bounded := boundImage(image.NewRGBA(image.Rect(0, 0, 2560, 1440)))
 
-	assert.Equal(t, maxRetainedPx, bounded.Bounds().Dx())
+	assert.Equal(t, tierMaxPx[tierHalfBlock], bounded.Bounds().Dx())
 	assert.Equal(t, 288, bounded.Bounds().Dy(), "aspect ratio is preserved")
 }
 
@@ -323,7 +323,7 @@ func TestBoundImage_TallImageBoundsHeight(t *testing.T) {
 	bounded := boundImage(image.NewRGBA(image.Rect(0, 0, 400, 2000)))
 
 	assert.Equal(t, 102, bounded.Bounds().Dx())
-	assert.Equal(t, maxRetainedPx, bounded.Bounds().Dy())
+	assert.Equal(t, tierMaxPx[tierHalfBlock], bounded.Bounds().Dy())
 }
 
 func TestBoundImage_KeepsSmallImagesUntouched(t *testing.T) {

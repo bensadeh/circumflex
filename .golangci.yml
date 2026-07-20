@@ -45,9 +45,14 @@ linters:
 
   settings:
     exhaustive:
+      # Maps too, not just switches: enum-keyed lookup tables (e.g. the image
+      # tier budgets) must cover every member.
+      check:
+        - switch
+        - map
       # External enum-like types with hundreds of constants (HTML tags, node
       # types) — listing every case is impossible; internal enums stay checked.
-      ignore-enum-types: "html\\.NodeType|atom\\.Atom"
+      ignore-enum-types: "html\\.NodeType|atom\\.Atom|chroma/v\\d+\\.TokenType"
 
     gocognit:
       min-complexity: 32  # ConvertToMarkdownBlocks is a parser — inherently complex
