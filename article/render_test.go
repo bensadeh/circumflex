@@ -134,12 +134,13 @@ func TestRenderImage_UncaptionedDecorationDisappears(t *testing.T) {
 	assert.Empty(t, renderImage(b, 80, hideImages))
 }
 
-func TestRenderImage_CaptionedDecorationKeepsLabel(t *testing.T) {
+func TestRenderImage_CaptionedDecorationDisappears(t *testing.T) {
 	t.Parallel()
 
-	b := &block{kind: blockImage, decorative: true, spans: []span{{text: "a caption"}}}
+	b := &block{kind: blockImage, decorative: true, spans: []span{{text: "CI"}}}
 
-	assert.Equal(t, "  ●●● Image a caption", ansi.Strip(renderImage(b, 80, showImages)))
+	assert.Empty(t, renderImage(b, 80, showImages))
+	assert.Empty(t, renderImage(b, 80, hideImages))
 }
 
 func TestRenderImage_FigureLabel(t *testing.T) {

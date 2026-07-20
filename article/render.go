@@ -358,13 +358,14 @@ func renderImage(b *block, width int, images ImageOptions) string {
 		}
 	}
 
-	caption := spanText(b.spans)
-
-	// A bare label for an image that was deliberately skipped as decoration
-	// (divider strips, tracking pixels) tells the reader nothing.
-	if b.decorative && caption == "" {
+	// An image skipped as decoration (badges, divider strips, tracking
+	// pixels) stays dropped even when captioned: a badge's alt text is
+	// chrome, not content.
+	if b.decorative {
 		return ""
 	}
+
+	caption := spanText(b.spans)
 
 	label := imageLabel()
 	if b.figure {
