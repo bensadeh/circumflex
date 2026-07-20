@@ -9,11 +9,12 @@ type KittyWork struct {
 	Cols, Rows int
 }
 
-// PendingKittyWork returns the images the last render laid placeholder
-// cells for whose terminal state no longer matches, and marks them clean —
-// the caller owes the terminal exactly these sequences. Images the Kitty
-// path never rendered (images hidden, terminal without graphics) want
-// nothing and never appear.
+// PendingKittyWork returns the images whose terminal state no longer matches
+// the geometry the last render recorded, and marks them clean — the caller
+// owes the terminal exactly these sequences. Hidden images record geometry
+// too: their pixels travel while they are hidden, so the first show
+// composites instantly. Images the Kitty path never sized (terminal without
+// graphics) want nothing and never appear.
 func (p *Parsed) PendingKittyWork() []KittyWork {
 	var work []KittyWork
 

@@ -134,7 +134,36 @@ func TestPendingKittyWork(t *testing.T) {
 	assert.Nil(t, work[0].PNG, "the terminal already holds the pixels")
 	assert.Equal(t, 20, work[0].Cols)
 
-	// Hiding images lays down no placeholders and owes nothing.
+	// A hidden render records geometry too, so the terminal's placement
+	// tracks the layout while images are off and showing again owes nothing.
 	renderBlocks(p.blocks, 44, 44, ImageOptions{Kitty: true})
-	assert.Empty(t, p.PendingKittyWork())
+
+	work = p.PendingKittyWork()
+	require.Len(t, work, 1)
+	assert.Nil(t, work[0].PNG)
+	assert.Equal(t, 40, work[0].Cols)
+
+	renderBlocks(p.blocks, 44, 44, ImageOptions{Show: true, Kitty: true})
+	assert.Empty(t, p.PendingKittyWork(), "showing at the settled width owes nothing")
+}
+
+func TestHiddenRenderTransmitsAheadOfFirstShow(t *testing.T) {
+	t.Parallel()
+
+	b := kittyTestBlock()
+	p := &Parsed{blocks: []block{*b}}
+
+	// The page opens with images hidden: no placeholder cells, but the
+	// pixels travel now, while nothing on screen is waiting for them.
+	renderBlocks(p.blocks, 44, 44, ImageOptions{Kitty: true})
+
+	work := p.PendingKittyWork()
+	require.Len(t, work, 1)
+	assert.Equal(t, []byte("png-bytes"), work[0].PNG)
+	assert.Equal(t, 40, work[0].Cols)
+	assert.Equal(t, 10, work[0].Rows)
+
+	renderBlocks(p.blocks, 44, 44, ImageOptions{Show: true, Kitty: true})
+	assert.Empty(t, p.PendingKittyWork(),
+		"the first show composites against pixels the terminal already holds")
 }

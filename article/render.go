@@ -356,6 +356,11 @@ func renderImage(b *block, width int, images ImageOptions) string {
 		if part := cachedImagePart(b, width, images); part != "" {
 			return part
 		}
+	} else if images.Kitty && b.kitty != nil && b.img != nil {
+		// A hidden image still records the grid a show at this width would
+		// lay down, so its pixels reach the terminal while it is hidden and
+		// the first show composites as instantly as every later one.
+		recordKittyGrid(b, width-2*len(blockIndent), images.CellWidth, images.CellHeight)
 	}
 
 	// An image skipped as decoration (badges, divider strips, tracking
@@ -446,16 +451,10 @@ func cachedImagePart(b *block, width int, images ImageOptions) string {
 // and rows scrolled off screen simply aren't drawn. Columns after the first
 // omit the diacritics; the terminal infers them from the run.
 func renderKittyArt(b *block, availCols, cellW, cellH int) string {
-	bounds := b.img.Bounds()
-	if availCols < 1 || bounds.Dx() <= 0 || bounds.Dy() <= 0 {
+	cols, rows, ok := recordKittyGrid(b, availCols, cellW, cellH)
+	if !ok {
 		return ""
 	}
-
-	cols, rows := kittyGrid(b.dispWidth, bounds.Dx(), bounds.Dy(), availCols, cellW, cellH)
-
-	// Record the geometry this render wants, so PendingKittyWork can hand
-	// the reader the placement delta afterwards.
-	b.kitty.wantCols, b.kitty.wantRows = cols, rows
 
 	fg := "\x1b[38;5;" + strconv.Itoa(b.kitty.id) + "m"
 
@@ -479,6 +478,23 @@ func renderKittyArt(b *block, availCols, cellW, cellH int) string {
 	}
 
 	return sb.String()
+}
+
+// recordKittyGrid sizes b's cell grid and records it as the geometry this
+// render wants, so PendingKittyWork can settle the terminal against it —
+// whether the grid was laid down as placeholder cells or belongs to a hidden
+// image whose pixels travel ahead of its first show. Degenerate geometry
+// records nothing.
+func recordKittyGrid(b *block, availCols, cellW, cellH int) (cols, rows int, ok bool) {
+	bounds := b.img.Bounds()
+	if availCols < 1 || bounds.Dx() <= 0 || bounds.Dy() <= 0 {
+		return 0, 0, false
+	}
+
+	cols, rows = kittyGrid(b.dispWidth, bounds.Dx(), bounds.Dy(), availCols, cellW, cellH)
+	b.kitty.wantCols, b.kitty.wantRows = cols, rows
+
+	return cols, rows, true
 }
 
 // kittyGrid sizes an image's cell grid: columns from the same on-page-size

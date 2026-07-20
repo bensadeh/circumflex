@@ -740,7 +740,8 @@ func (m *Model) jumpToHeader(direction int) {
 }
 
 // setShowImages toggles image display and re-renders in place, keeping the
-// scroll position. Images are always fetched, so this is instant.
+// scroll position. Images are fetched at parse and their pixels transmitted
+// while still hidden, so this is instant.
 func (m *Model) setShowImages(show bool) {
 	if m.parsed == nil || m.showImages == show {
 		return
