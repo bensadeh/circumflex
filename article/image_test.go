@@ -394,26 +394,28 @@ func TestDecodeSVG_ConcurrentTextSVGs(t *testing.T) {
 func TestFetchImages_RetainsHighResKittyCopy(t *testing.T) {
 	t.Parallel()
 
-	var served []byte
+	// Encode both payloads once, up front, rather than per request: this fetch
+	// rides fetchImages' 8s wall-clock timeout, and re-encoding a 4096px source
+	// inside the handler starves that budget when the parallel canvas SVG
+	// rasterization tests are pinning the runner's cores.
+	encode := func(size int) []byte {
+		var buf bytes.Buffer
+		require.NoError(t, png.Encode(&buf, image.NewRGBA(image.Rect(0, 0, size, size/2))))
+
+		return buf.Bytes()
+	}
+
+	served := encode(100)
+	huge := encode(tierMaxPx[tierKitty] * 2)
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		size := 100
 		if r.URL.Path == "/huge.png" {
-			size = tierMaxPx[tierKitty] * 2
-		}
-
-		var buf bytes.Buffer
-		if err := png.Encode(&buf, image.NewRGBA(image.Rect(0, 0, size, size/2))); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			_, _ = w.Write(huge)
 
 			return
 		}
 
-		if r.URL.Path != "/huge.png" {
-			served = buf.Bytes()
-		}
-
-		_, _ = w.Write(buf.Bytes())
+		_, _ = w.Write(served)
 	}))
 	defer srv.Close()
 
