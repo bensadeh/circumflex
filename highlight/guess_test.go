@@ -74,6 +74,20 @@ func TestGuessLang(t *testing.T) {
 			"javascript",
 		},
 		{
+			"annotated def with for-in loop",
+			"def pack_number(digits: list[int], base: int) -> int:\n    number = 0\n\n" +
+				"    for digit in digits:\n      assert digit < base\n\n" +
+				"      number = number * base\n      number = number + digit\n\n    return number",
+			"python",
+		},
+		{
+			"annotated def with nested range loops",
+			"def unpack_trits(packed: bytes) -> list[int]:\n    trits: list[int] = []\n\n" +
+				"    for byte in packed:\n        b = byte\n        for i in range(5):\n" +
+				"            b = b * 3\n            trit = b >> 8\n            b = b & 0xFF\n\n    return trits",
+			"python",
+		},
+		{
 			"rust",
 			"fn main() {\n    let nums: Vec<i32> = (1..10).filter(|n| n % 2 == 0).collect();\n" +
 				"    println!(\"{:?}\", nums);\n}",

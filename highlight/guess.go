@@ -483,6 +483,7 @@ func isPython(text string, lines []string) bool {
 	return atLeastTwo(
 		pythonDef(lines),
 		pythonImport(lines),
+		pythonForIn(lines),
 		containsAny(text, []string{"self.", "__init__", "__name__"}),
 		containsAny(text, []string{"elif ", " is None", "f\""}),
 		strings.Contains(text, "print("),
@@ -539,6 +540,22 @@ func pythonImport(lines []string) bool {
 
 		module = strings.TrimSuffix(module, ",")
 		if module != "" && module == strings.ToLower(module) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// pythonForIn recognizes a colon-terminated for-in header — Python's
+// for x in y: form. Shell's for-in never closes with a colon (shellForIn
+// requires its absence) and JavaScript and C parenthesize the header, so the
+// bare header plus the trailing colon is a signal independent of the def line.
+func pythonForIn(lines []string) bool {
+	for _, l := range lines {
+		t := strings.TrimSpace(l)
+		if strings.HasPrefix(t, "for ") && !strings.HasPrefix(t, "for (") &&
+			strings.Contains(t, " in ") && strings.HasSuffix(t, ":") {
 			return true
 		}
 	}
