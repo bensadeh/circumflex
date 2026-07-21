@@ -36,6 +36,26 @@ func PrefixLines(s, prefix string) string {
 // their available width minus this before boxing.
 const RoundedBoxChrome = 4
 
+// WrapWithin word-wraps s so that no line exceeds width. lipgloss.Wrap alone
+// does not guarantee this: when a word fills the line to the limit and the next
+// token is a lone run of breakpoint characters (a spaced " -- " em dash), it
+// keeps that run on the line instead of wrapping it, overshooting width by the
+// run's length. RoundedBox sizes itself to its widest content line, so an
+// overshoot there grows the box past its column and the surrounding wrap then
+// shatters the border — hence the hard cap, which re-breaks only the rare
+// overshooting line and leaves the common case untouched.
+func WrapWithin(s string, width int) string {
+	wrapped := lipgloss.Wrap(s, width, "")
+
+	for line := range strings.SplitSeq(wrapped, "\n") {
+		if lipgloss.Width(line) > width {
+			return xansi.Hardwrap(wrapped, width, false)
+		}
+	}
+
+	return wrapped
+}
+
 // RoundedBox frames pre-wrapped content in a faint rounded border with one
 // cell of horizontal padding. The frame spans at least width cells and grows
 // with the content's widest line. A non-empty label becomes a right-aligned

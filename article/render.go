@@ -327,7 +327,7 @@ func renderCode(b *block, width, codeWidth int) string {
 		return highlight.Boxed(b.hlOut, b.lang, codeWidth, width)
 	}
 
-	wrapped := lipgloss.Wrap(b.text, codeWidth-style.RoundedBoxChrome, "")
+	wrapped := style.WrapWithin(b.text, codeWidth-style.RoundedBoxChrome)
 
 	return style.RoundedBox(styleLines(wrapped, style.Faint), width, "")
 }

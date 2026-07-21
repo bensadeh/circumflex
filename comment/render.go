@@ -170,7 +170,7 @@ func renderCode(b *Block, commentWidth, screenWidth int) string {
 	}
 
 	content := dedent(strings.Trim(b.text, "\n"))
-	wrapped := lipgloss.Wrap(content, screenWidth-style.RoundedBoxChrome, "")
+	wrapped := style.WrapWithin(content, screenWidth-style.RoundedBoxChrome)
 	lines := strings.Split(wrapped, "\n")
 
 	for i, line := range lines {

@@ -23,6 +23,38 @@ func TestForegroundCode(t *testing.T) {
 	assert.Empty(t, ForegroundCode(lipgloss.NoColor{}))
 }
 
+func TestWrapWithin_CapsBreakpointOvershoot(t *testing.T) {
+	t.Parallel()
+
+	// lipgloss.Wrap glues a trailing " -- " run onto a full line, overshooting
+	// the width; WrapWithin must never leave a line wider than the target.
+	const text = "- With increasing inference as % of total compute, if labs create efficient models -- which they can"
+
+	for width := 10; width <= 120; width++ {
+		wrapped := WrapWithin(text, width)
+		for line := range strings.SplitSeq(wrapped, "\n") {
+			assert.LessOrEqualf(t, lipgloss.Width(line), width,
+				"width=%d left an over-wide line %q", width, line)
+		}
+	}
+}
+
+func TestWrapWithin_BoxStaysWithinColumn(t *testing.T) {
+	t.Parallel()
+
+	// A code box built from WrapWithin content must never grow past the column
+	// it was given, even when the content contains a boundary-straddling " -- ".
+	const text = "efficient models -- which they can create highly optimized models amortized over"
+
+	for width := 12; width <= 90; width++ {
+		box := ansi.Strip(RoundedBox(WrapWithin(text, width-RoundedBoxChrome), width, ""))
+		for line := range strings.SplitSeq(box, "\n") {
+			assert.LessOrEqualf(t, lipgloss.Width(line), width,
+				"width=%d box line overflowed: %q", width, line)
+		}
+	}
+}
+
 func TestRoundedBox_Label(t *testing.T) {
 	t.Parallel()
 
