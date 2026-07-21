@@ -220,19 +220,18 @@ func TestFetchImages_SmallUnitViewBoxLogoJudgedByDeclaredWidth(t *testing.T) {
 func TestFetchImages_UndrawableSVGJudgedByDeclaredGeometry(t *testing.T) {
 	t.Parallel()
 
-	// rgba() fills defeat oksvg's color parser — shields badges use them on
-	// their click-target rects — so both fixtures fail to rasterize and only
-	// the declared geometry is left to judge them by.
+	// Malformed path data panics canvas's parser, so both fixtures fail to
+	// rasterize and only the declared geometry is left to judge them by.
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/badge.svg" {
 			_, _ = w.Write([]byte(`<svg xmlns="http://www.w3.org/2000/svg" width="129" height="28">` +
-				`<rect width="129" height="28" fill="rgba(0,0,0,0)"/></svg>`))
+				`<path d="M zz garbage"/></svg>`))
 
 			return
 		}
 
 		_, _ = w.Write([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 829">` +
-			`<rect width="800" height="829" fill="rgba(0,0,0,0)"/></svg>`))
+			`<path d="M zz garbage"/></svg>`))
 	}))
 	defer srv.Close()
 
@@ -258,7 +257,7 @@ func TestSVGDeclaredBox(t *testing.T) {
 
 	assert.Equal(t, image.Pt(800, 829),
 		svgDeclaredBox([]byte(`<?xml version="1.0"?><svg viewBox="0 0 800 829" width="640">x</svg>`)),
-		"viewBox wins over width/height, matching oksvg")
+		"viewBox wins over width/height when both are present")
 	assert.Equal(t, image.Pt(129, 28),
 		svgDeclaredBox([]byte(`<svg width="128.5px" height="28">x</svg>`)),
 		"width/height fill in when there is no viewBox")

@@ -21,8 +21,8 @@ import (
 	"github.com/bensadeh/circumflex/graphics"
 	"github.com/bensadeh/circumflex/version"
 
-	"github.com/srwiley/oksvg"
-	"github.com/srwiley/rasterx"
+	"github.com/tdewolff/canvas"
+	"github.com/tdewolff/canvas/renderers/rasterizer"
 	xdraw "golang.org/x/image/draw"
 	"golang.org/x/sync/errgroup"
 	"resty.dev/v3"
@@ -124,7 +124,7 @@ func fetchImages(ctx context.Context, blocks []block, base *nurl.URL) {
 			// A raster's bounds are its identity; a vector's raster is drawn
 			// at the Kitty fidelity ceiling regardless of size, so vectors
 			// are judged and sized by their on-page geometry instead — which
-			// survives even when rasterization fails, so a badge oksvg cannot
+			// survives even when rasterization fails, so a badge canvas cannot
 			// draw is still recognized as one rather than kept as a label.
 			var size image.Point
 			if img != nil {
@@ -188,7 +188,7 @@ func boundImage(img image.Image) image.Image {
 // fetchImage downloads and decodes one image. A non-zero viewBox identifies
 // the source as a vector, whose decoded bounds are raster fidelity rather
 // than intrinsic size; it can arrive without an image when the vector
-// declares its geometry but oksvg cannot draw it.
+// declares its geometry but canvas cannot draw it.
 func fetchImage(ctx context.Context, client *resty.Client, base *nurl.URL, rawURL string) (image.Image, []byte, image.Point) {
 	ref, err := nurl.Parse(rawURL)
 	if err != nil {
@@ -287,50 +287,46 @@ func refererFor(page, target *nurl.URL) string {
 
 // decodeSVG rasterizes an SVG at the Kitty fidelity ceiling — a vector has
 // no intrinsic resolution, so the raster is drawn once at the Kitty tier's
-// budget on the long side and every lower tier downscales from there. The returned viewBox
-// is the only intrinsic geometry the file has; its units are arbitrary
-// (Discord's logo measures 126×20 — millimeters), so sizing keys off it or
-// the declared display width, never off the raster. Text elements are not
-// supported by oksvg and are dropped — invisible at terminal resolution
-// anyway. A vector oksvg cannot draw at all (shields badges carry rgba()
-// fills its color parser rejects) still returns its declared geometry, so
-// the caller can judge its on-page footprint without pixels.
+// budget on the long side and every lower tier downscales from there. canvas
+// renders text and markers, so diagram labels and arrowheads survive the trip
+// to pixels. The returned viewBox is the only intrinsic geometry the file has;
+// its units are arbitrary (Discord's logo measures 126×20 — millimeters), so
+// sizing keys off it or the declared display width, never off the raster
+// (canvas restates the geometry in its own millimetre space). A vector canvas
+// cannot draw at all — malformed path data panics its parser — still returns
+// its declared geometry, so the caller can judge its on-page footprint without
+// pixels.
 func decodeSVG(data []byte) (img image.Image, viewBox image.Point) {
-	// oksvg panics on some malformed path data; a broken SVG should fall
-	// back to the text label like any other undecodable image.
+	// The declared box is the fallback for every path that yields no raster,
+	// so read it up front — a panic mid-parse skips the rest but keeps it.
+	viewBox = svgDeclaredBox(data)
+
+	// canvas panics on some malformed path data; a broken SVG should fall back
+	// to the declared geometry like any other undecodable image.
 	defer func() {
 		if recover() != nil {
-			img, viewBox = nil, svgDeclaredBox(data)
+			img = nil
 		}
 	}()
 
-	// Mermaid diagrams mark inline styles "!important"; oksvg's color parser
-	// rejects the suffix and the whole parse fails with it.
+	// Mermaid diagrams mark inline styles "!important"; canvas keeps the
+	// declaration but drops the value it qualifies, painting the shape its
+	// default black — stripping the suffix restores the intended fill.
 	data = bytes.ReplaceAll(data, []byte("!important"), []byte(""))
 
-	icon, err := oksvg.ReadIconStream(bytes.NewReader(data))
-	if err != nil || icon.ViewBox.W <= 0 || icon.ViewBox.H <= 0 {
-		return nil, svgDeclaredBox(data)
+	c, err := canvas.ParseSVG(bytes.NewReader(data))
+	if err != nil || c.W <= 0 || c.H <= 0 {
+		return nil, viewBox
 	}
 
-	scale := float64(tierMaxPx[tierKitty]) / max(icon.ViewBox.W, icon.ViewBox.H)
+	resolution := canvas.Resolution(float64(tierMaxPx[tierKitty]) / max(c.W, c.H))
 
-	width := max(1, int(icon.ViewBox.W*scale+0.5))
-	height := max(1, int(icon.ViewBox.H*scale+0.5))
-
-	icon.SetTarget(0, 0, float64(width), float64(height))
-
-	rgba := image.NewRGBA(image.Rect(0, 0, width, height))
-	icon.Draw(rasterx.NewDasher(width, height, rasterx.NewScannerGV(width, height, rgba, rgba.Bounds())), 1.0)
-
-	return rgba, image.Pt(
-		max(1, int(icon.ViewBox.W+0.5)),
-		max(1, int(icon.ViewBox.H+0.5)))
+	return rasterizer.Draw(c, resolution, canvas.DefaultColorSpace), viewBox
 }
 
 // svgDeclaredBox reads the root <svg> element's own geometry — the viewBox,
 // or the width/height attributes when there is none — without rasterizing
-// anything. Matches which signal oksvg would have used, so a vector judged
+// anything. Matches the viewBox canvas rasterizes against, so a vector judged
 // this way lands where a drawable copy of it would.
 func svgDeclaredBox(data []byte) image.Point {
 	dec := xml.NewDecoder(bytes.NewReader(data))
