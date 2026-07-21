@@ -664,7 +664,7 @@ func TestLinkSelector_NonViewableLinkIsInert(t *testing.T) {
 
 	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
 	require.Equal(t, 0, m.currentLink)
-	assert.True(t, m.LinkSpansInert(), "the selected pdf takes the red inert bar")
+	assert.True(t, m.LinkSpansInert(), "the selected pdf takes the plain-reverse inert styling")
 
 	cmd := m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
 	assert.Nil(t, cmd, "enter does nothing on a link the reader won't open")

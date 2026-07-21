@@ -89,11 +89,13 @@ func OverlayLinkSpans(line string, spans []SearchSpan) string {
 	return overlaySpans(line, spans, linkSelectSGR, linkSelectSGR)
 }
 
-// linkInertSGR marks a selected link the view will not open: the selection
-// block in red, black text on top like the blue bar.
+// linkInertSGR marks a selected link the view will not open: plain reverse
+// video. The link's own blue fg and underline are cleared first, otherwise
+// reverse just swaps the blue into the background — a default-color block is
+// what reads as a muted, non-actionable selection.
 var linkInertSGR = overlaySGR{
-	on:  ansi.ReverseOff + ansi.NormalIntensity + ansi.UnderlineOff + xansi.Style{}.BackgroundColor(lipgloss.Red).ForegroundColor(lipgloss.Black).String(),
-	off: ansi.DefaultBackground + ansi.DefaultForeground,
+	on:  ansi.NormalIntensity + ansi.UnderlineOff + ansi.DefaultForeground + ansi.DefaultBackground + ansi.Reverse,
+	off: ansi.ReverseOff,
 }
 
 // OverlayInertLinkSpans is OverlayLinkSpans in the inert colors.
