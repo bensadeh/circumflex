@@ -23,6 +23,11 @@ func TestHonorsDeclared(t *testing.T) {
 		{"http status line", "HTTP/1.1 200 OK\nContent-Type: text/html", "http", true},
 		{"http leading blank line", "\n\nGET /index.html HTTP/1.0", "http", true},
 
+		{"http request trailing space", "GET /api HTTP/1.1 \nHost: x", "http", false},
+		{"http request crlf line ending", "GET /api HTTP/1.1\r\nHost: x", "http", true},
+		{"http request leading indent", "  GET /api HTTP/1.1\nHost: x", "http", true},
+		{"http status trailing space", "HTTP/1.1 200 OK \nDate: now", "http", true},
+
 		{"http prose", "Current task statement:", "http", false},
 		{"http shortcode", "[embed]https://example.com[/embed]", "http", false},
 		{"http bullet list", "- Check required and valid params\n- Dispatch each request", "http", false},

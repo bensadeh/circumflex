@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	nurl "net/url"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -314,6 +315,80 @@ func TestDecodeSVG_RejectsGarbage(t *testing.T) {
 
 	img, _ = decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg"></svg>`))
 	assert.Nil(t, img)
+}
+
+// A missing font panics canvas mid-parse; the shapes must still render rather
+// than the whole figure collapsing to its label (the pre-canvas oksvg output).
+func TestDecodeSVG_MissingFontRendersShapes(t *testing.T) {
+	t.Parallel()
+
+	img, viewBox := decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50">` +
+		`<rect width="100" height="50" fill="#00ff00"/>` +
+		`<text x="50" y="25" font-family="NoSuchFontFamilyXYZ">label</text></svg>`))
+
+	require.NotNil(t, img, "an unloadable font must not lose the shapes")
+	assert.Equal(t, image.Pt(100, 50), viewBox)
+
+	r, g, b, _ := img.At(img.Bounds().Dx()/2, img.Bounds().Dy()/2).RGBA()
+	assert.Equal(t, []uint32{0x0, 0xffff, 0x0}, []uint32{r, g, b}, "the rect fill survives the text-strip retry")
+}
+
+// canvas flags an unknown unit (em/ex/rem) as an error but keeps a drawable
+// canvas; decodeSVG must render it rather than treat the error as total failure.
+func TestDecodeSVG_NonFatalErrorKeepsShapes(t *testing.T) {
+	t.Parallel()
+
+	img, _ := decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50">` +
+		`<rect width="100" height="50" fill="#ff0000"/>` +
+		`<text x="50" y="25" font-size="1.2em">hi</text></svg>`))
+
+	require.NotNil(t, img, "a non-fatal parse error must not drop the drawable shapes")
+
+	r, g, b, _ := img.At(img.Bounds().Dx()/2, img.Bounds().Dy()/2).RGBA()
+	assert.Equal(t, []uint32{0xffff, 0x0, 0x0}, []uint32{r, g, b})
+}
+
+// A vector with no declared box has no on-page size, so it stays a label even
+// though canvas could rasterize it — sizing off the raster would blow it up.
+func TestDecodeSVG_NoDeclaredGeometryDropped(t *testing.T) {
+	t.Parallel()
+
+	img, viewBox := decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg">` +
+		`<rect width="10" height="10" fill="#f00"/></svg>`))
+	assert.Nil(t, img, "no viewBox and no declared size means no on-page geometry")
+	assert.Equal(t, image.Point{}, viewBox)
+
+	img, _ = decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg" width="30mm" height="10mm">` +
+		`<rect width="30" height="10" fill="#f00"/></svg>`))
+	assert.Nil(t, img, "non-pixel physical units carry no on-page geometry")
+}
+
+func TestStripSVGText(t *testing.T) {
+	t.Parallel()
+
+	assert.Nil(t, stripSVGText([]byte(`<svg><rect/></svg>`)), "no text to strip")
+
+	stripped := stripSVGText([]byte(`<svg><rect x="1"/><text x="2">a</text><text y="3">b</text></svg>`))
+	assert.Equal(t, `<svg><rect x="1"/></svg>`, string(stripped), "every text element goes, shapes stay")
+}
+
+// The mutex in drawSVG keeps concurrent text-SVG rasterization off canvas's
+// unsynchronized global font state; this exercises that path for `go test -race`.
+func TestDecodeSVG_ConcurrentTextSVGs(t *testing.T) {
+	t.Parallel()
+
+	svg := []byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50">` +
+		`<rect width="100" height="50" fill="#123456"/><text x="50" y="25">x</text></svg>`)
+
+	var wg sync.WaitGroup
+	for range 16 {
+		wg.Go(func() {
+			img, _ := decodeSVG(svg)
+			assert.NotNil(t, img)
+		})
+	}
+
+	wg.Wait()
 }
 
 func TestFetchImages_RetainsHighResKittyCopy(t *testing.T) {

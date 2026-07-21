@@ -7,8 +7,10 @@ import (
 	"image"
 	"image/png"
 	nurl "net/url"
+	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	// Blank imports register the decoders that image.Decode dispatches to.
@@ -285,6 +287,11 @@ func refererFor(page, target *nurl.URL) string {
 	return page.Scheme + "://" + page.Host + "/"
 }
 
+// svgMu serializes SVG rasterization: canvas mutates process-global font state
+// while laying out text and is not documented as concurrency-safe, whereas
+// images fetch on up to imageConcurrency goroutines.
+var svgMu sync.Mutex
+
 // decodeSVG rasterizes an SVG at the Kitty fidelity ceiling — a vector has
 // no intrinsic resolution, so the raster is drawn once at the Kitty tier's
 // budget on the long side and every lower tier downscales from there. canvas
@@ -292,17 +299,44 @@ func refererFor(page, target *nurl.URL) string {
 // to pixels. The returned viewBox is the only intrinsic geometry the file has;
 // its units are arbitrary (Discord's logo measures 126×20 — millimeters), so
 // sizing keys off it or the declared display width, never off the raster
-// (canvas restates the geometry in its own millimetre space). A vector canvas
-// cannot draw at all — malformed path data panics its parser — still returns
-// its declared geometry, so the caller can judge its on-page footprint without
-// pixels.
+// (canvas restates the geometry in its own millimetre space). An SVG that
+// declares no box canvas could still rasterize is dropped to its label: there
+// is no on-page size to render against, and sizing off the ~2048px raster would
+// blow a small icon up to the full column.
 func decodeSVG(data []byte) (img image.Image, viewBox image.Point) {
-	// The declared box is the fallback for every path that yields no raster,
-	// so read it up front — a panic mid-parse skips the rest but keeps it.
 	viewBox = svgDeclaredBox(data)
+	if viewBox == (image.Point{}) {
+		return nil, image.Point{}
+	}
 
-	// canvas panics on some malformed path data; a broken SVG should fall back
-	// to the declared geometry like any other undecodable image.
+	return rasterizeSVG(data), viewBox
+}
+
+// rasterizeSVG draws the SVG, retrying without its text if the first attempt
+// yields nothing. canvas panics when a <text> element names a font the host
+// cannot load (getFontFace → LoadSystemFont), so on a box missing the declared
+// or default family the retry renders the shapes alone — oksvg's text-less
+// output — rather than losing the whole figure to its label.
+func rasterizeSVG(data []byte) image.Image {
+	if img := drawSVG(data); img != nil {
+		return img
+	}
+
+	if stripped := stripSVGText(data); stripped != nil {
+		return drawSVG(stripped)
+	}
+
+	return nil
+}
+
+// drawSVG parses and rasterizes the SVG, returning nil on any failure. canvas
+// keeps drawing past the first construct it flags (an unknown unit, a bad
+// color) and hands back a usable canvas alongside the error, so the error is
+// non-fatal — only an empty canvas or a panic (malformed path, missing font)
+// leaves no image.
+func drawSVG(data []byte) (img image.Image) {
+	// canvas panics on malformed path data and unloadable fonts; a broken SVG
+	// should fall back like any other undecodable image.
 	defer func() {
 		if recover() != nil {
 			img = nil
@@ -314,14 +348,30 @@ func decodeSVG(data []byte) (img image.Image, viewBox image.Point) {
 	// default black — stripping the suffix restores the intended fill.
 	data = bytes.ReplaceAll(data, []byte("!important"), []byte(""))
 
-	c, err := canvas.ParseSVG(bytes.NewReader(data))
-	if err != nil || c.W <= 0 || c.H <= 0 {
-		return nil, viewBox
+	svgMu.Lock()
+	defer svgMu.Unlock()
+
+	c, _ := canvas.ParseSVG(bytes.NewReader(data))
+	if c == nil || c.W <= 0 || c.H <= 0 {
+		return nil
 	}
 
 	resolution := canvas.Resolution(float64(tierMaxPx[tierKitty]) / max(c.W, c.H))
 
-	return rasterizer.Draw(c, resolution, canvas.DefaultColorSpace), viewBox
+	return rasterizer.Draw(c, resolution, canvas.DefaultColorSpace)
+}
+
+var svgTextElem = regexp.MustCompile(`(?is)<text\b[^>]*>.*?</text>|<text\b[^>]*/>`)
+
+// stripSVGText removes <text> elements so an SVG whose text canvas cannot lay
+// out still rasterizes its shapes. It returns nil when there is nothing to
+// strip, so the caller skips a redundant second parse.
+func stripSVGText(data []byte) []byte {
+	if !bytes.Contains(data, []byte("<text")) {
+		return nil
+	}
+
+	return svgTextElem.ReplaceAll(data, nil)
 }
 
 // svgDeclaredBox reads the root <svg> element's own geometry — the viewBox,

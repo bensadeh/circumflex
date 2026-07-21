@@ -10,17 +10,14 @@ import "strings"
 // only when the block opens with an HTTP start-line; the guesser (or the plain
 // fallback) takes over otherwise.
 func HonorsDeclared(text, lang string) bool {
-	if resolvesToHTTP(lang) {
+	// http is the only trap. lang arrives normalized and lowercased and "http"
+	// is the lexer's sole alias, so a direct compare stands in for a per-block
+	// lexer lookup.
+	if strings.EqualFold(lang, "http") {
 		return looksLikeHTTP(text)
 	}
 
 	return true
-}
-
-func resolvesToHTTP(lang string) bool {
-	lexer := resolve(lang)
-
-	return lexer != nil && lexer.Config().Name == "HTTP"
 }
 
 var httpMethods = map[string]struct{}{
@@ -38,8 +35,8 @@ func looksLikeHTTP(text string) bool {
 	var line string
 
 	for l := range strings.SplitSeq(text, "\n") {
-		if t := strings.TrimSpace(l); t != "" {
-			line = t
+		if strings.TrimSpace(l) != "" {
+			line = l
 
 			break
 		}
@@ -51,9 +48,15 @@ func looksLikeHTTP(text string) bool {
 	}
 
 	if _, ok := httpMethods[fields[0]]; ok {
-		return len(fields) == 3 && isHTTPVersion(fields[2])
+		// chroma's request-line rule ends (HTTP/ver)(\r?\n|\Z), so any content
+		// after the version — a stray trailing space in a copy-pasted request —
+		// leaves the whole block as error tokens. A carriage return before the
+		// newline is the one thing allowed to follow.
+		return len(fields) == 3 && isHTTPVersion(fields[2]) &&
+			strings.HasSuffix(strings.TrimRight(line, "\r"), fields[2])
 	}
 
+	// A status line permits a trailing reason phrase, so only the prefix counts.
 	return isHTTPVersion(fields[0]) && isStatusCode(fields[1])
 }
 
