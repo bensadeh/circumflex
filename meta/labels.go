@@ -82,6 +82,24 @@ func commentsLabel(comments, newComments int, enableNerdFonts bool) string {
 	}
 }
 
+// idLabel is the story's item id, the group closing the bottom rule against
+// its right corner. The color sits on the glyph when there is one and on the
+// number when the word "ID" has to carry the meaning alone, the same way the
+// score and comment labels above it color the icon or the value. Reads
+// "ID 12345" either way. A story with no id (id is zero) has no label and
+// leaves the closing rule plain.
+func idLabel(id int, enableNerdFonts bool) string {
+	if id <= 0 {
+		return ""
+	}
+
+	if enableNerdFonts {
+		return style.MetaID(nerdfonts.ID) + " " + strconv.Itoa(id)
+	}
+
+	return "ID " + style.MetaID(strconv.Itoa(id))
+}
+
 func authorLabel(author string, enableNerdFonts bool) string {
 	if enableNerdFonts {
 		return style.MetaAuthor(fmt.Sprintf("%s %s", nerdfonts.Author, author))

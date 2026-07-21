@@ -128,7 +128,7 @@ func renderPanel(s *section, panelWidth, keyWidth int) string {
 		rows = append(rows, frame.Row(line, panelWidth))
 	}
 
-	return frame.Join(append(rows, frame.ClosingRule(panelWidth)), panelWidth)
+	return frame.Join(append(rows, frame.ClosingRule(nil, panelWidth)), panelWidth)
 }
 
 func bodyLines(body string) []string {

@@ -63,6 +63,7 @@ type MetaColors struct {
 	Comments    string `toml:"comments"`
 	NewComments string `toml:"new_comments"`
 	URL         string `toml:"url"`
+	ID          string `toml:"id"`
 }
 
 type ReaderColors struct {
@@ -143,6 +144,7 @@ func Default() *Theme {
 			Comments:    "magenta",
 			NewComments: "cyan",
 			URL:         "blue",
+			ID:          "green",
 		},
 		Reader: ReaderColors{
 			H1:    "blue",

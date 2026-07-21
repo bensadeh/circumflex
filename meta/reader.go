@@ -6,8 +6,9 @@ package meta
 // business, not the block's.
 func ReaderMode(d Data) Block {
 	return Block{
-		title:  byline(d.Author, d.TimeAgo, d.NerdFonts),
-		labels: statLabels(d),
+		title:         byline(d.Author, d.TimeAgo, d.NerdFonts),
+		labels:        statLabels(d),
+		closingLabels: []string{idLabel(d.ID, d.NerdFonts)},
 		body: func(width int) string {
 			return urlRow(d.URL, d.URL, ContentWidth(width))
 		},

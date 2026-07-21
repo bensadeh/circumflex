@@ -51,6 +51,7 @@ func articleCmd() *cobra.Command {
 				URL:           item.URL,
 				Author:        item.Author,
 				TimeAgo:       timeago.RelativeTime(item.Time),
+				ID:            item.ID,
 				Points:        item.Points,
 				CommentsCount: item.CommentsCount,
 				NerdFonts:     config.EnableNerdFonts,

@@ -547,6 +547,7 @@ func buildCommentHeader(s storyFields, rootBlocks []comment.Block, newComments i
 		Domain:        s.Domain,
 		Author:        s.Author,
 		TimeAgo:       s.TimeAgo,
+		ID:            s.ID,
 		Points:        s.Points,
 		CommentsCount: s.CommentsCount,
 		NewComments:   newComments,

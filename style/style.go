@@ -126,6 +126,7 @@ var (
 	metaCommentsStyle    lipgloss.Style
 	metaNewCommentsStyle lipgloss.Style
 	metaURLStyle         lipgloss.Style // hyperlink applied at call time
+	metaIDStyle          lipgloss.Style
 
 	readerH1Style lipgloss.Style
 	readerH2Style lipgloss.Style
@@ -227,6 +228,7 @@ func rebuildThemeStyles() {
 	metaCommentsStyle = fg(current.Meta.Comments)
 	metaNewCommentsStyle = fg(current.Meta.NewComments)
 	metaURLStyle = fg(current.Meta.URL)
+	metaIDStyle = fg(current.Meta.ID)
 
 	readerH1Style = fg(current.Reader.H1)
 	readerH2Style = fg(current.Reader.H2)
@@ -367,6 +369,7 @@ func MetaScore(s string) string       { return metaScoreStyle.Render(s) }
 func MetaComments(s string) string    { return metaCommentsStyle.Render(s) }
 func MetaNewComments(s string) string { return metaNewCommentsStyle.Render(s) }
 func MetaURL(s, url string) string    { return metaURLStyle.Hyperlink(ansi.Strip(url)).Render(s) }
+func MetaID(s string) string          { return metaIDStyle.Render(s) }
 
 func ReaderH1(s string) string      { return readerH1Style.Render(s) }
 func ReaderH2(s string) string      { return readerH2Style.Render(s) }

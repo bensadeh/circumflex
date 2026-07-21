@@ -15,6 +15,7 @@ const (
 	CommentSearchCommitted = "󰨼"
 	GitHub                 = ""
 	Tag                    = ""
+	ID                     = ""
 	Document               = ""
 	Audio                  = ""
 	Video                  = ""

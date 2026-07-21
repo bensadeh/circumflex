@@ -44,6 +44,7 @@
   comments = "magenta"
   new_comments = "cyan"
   url = "blue"
+  id = "green"
 
 [reader]
   h1 = "blue"

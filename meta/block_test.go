@@ -153,6 +153,37 @@ func TestOpeningRuleCarriesBylineAndStats(t *testing.T) {
 		"a rule too narrow for any text stays plain")
 }
 
+// The story id closes the bottom rule against its right corner, the way the
+// stats close the top. A story with no id leaves the closing rule plain, and
+// the rule spans the full width either way.
+func TestClosingRuleCarriesID(t *testing.T) {
+	bottom := func(d Data, width int) string {
+		rows := strings.Split(CommentSection(d).Render(width), "\n")
+
+		return rows[len(rows)-1]
+	}
+
+	for _, width := range []int{40, 60, 80} {
+		withID := bottom(Data{Author: "alice", TimeAgo: "2 hours ago", Points: 1, ID: 12345}, width)
+		assert.Contains(t, xansi.Strip(withID), "ID 12345",
+			"the story id must close the bottom rule: %q", withID)
+		assert.True(t, strings.HasSuffix(xansi.Strip(withID), "12345 ──╯"),
+			"the id must sit against the bottom-right corner: %q", withID)
+		assert.Equal(t, width, xansi.StringWidth(withID),
+			"the closing rule must reach the frame's edge exactly: %q", withID)
+
+		plain := bottom(Data{Author: "alice", TimeAgo: "2 hours ago", Points: 1}, width)
+		assert.Equal(t, "╰"+strings.Repeat("─", width-2)+"╯", xansi.Strip(plain),
+			"a story with no id leaves the closing rule plain: %q", plain)
+	}
+
+	// Too narrow for the id: the rule sheds it and stays plain rather than
+	// giving up a corner.
+	narrow := bottom(Data{Author: "alice", ID: 12345}, 8)
+	assert.Equal(t, "╰"+strings.Repeat("─", 6)+"╯", xansi.Strip(narrow),
+		"a rule too narrow for the id stays plain: %q", narrow)
+}
+
 // The new-comments count rides the tally in parentheses; without new
 // comments there is no parenthetical at all.
 func TestCommentTallyCarriesNewComments(t *testing.T) {

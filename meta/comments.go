@@ -7,8 +7,9 @@ package meta
 // rule above the link keeps it from reading as the text's closing paragraph.
 func CommentSection(d Data) Block {
 	return Block{
-		title:  byline(d.Author, d.TimeAgo, d.NerdFonts),
-		labels: statLabels(d),
+		title:         byline(d.Author, d.TimeAgo, d.NerdFonts),
+		labels:        statLabels(d),
+		closingLabels: []string{idLabel(d.ID, d.NerdFonts)},
 		body: func(width int) string {
 			contentWidth := ContentWidth(width)
 			url := urlRow(d.URL, d.Domain, contentWidth)

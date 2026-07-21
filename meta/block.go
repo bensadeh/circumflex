@@ -24,6 +24,7 @@ type Data struct {
 	Domain        string
 	Author        string
 	TimeAgo       string
+	ID            int
 	Points        int
 	CommentsCount int
 	NewComments   int    // comments since the last visit; 0 when unknown
@@ -41,9 +42,10 @@ type Data struct {
 // the same margin it gives the column's text — one margin, applied in one
 // place, is what keeps the block flush with the text below it.
 type Block struct {
-	title  string   // sits in the frame's opening rule like a help-panel title
-	labels []string // right-aligned group closing the opening rule; sheds from the left when narrow
-	body   func(width int) string
+	title         string   // sits in the frame's opening rule like a help-panel title
+	labels        []string // right-aligned group closing the opening rule; sheds from the left when narrow
+	closingLabels []string // right-aligned group closing the bottom rule (the story id); empty leaves it plain
+	body          func(width int) string
 }
 
 // ContentWidth is the width of the text inside a block laid out at width;
@@ -62,7 +64,7 @@ func (b Block) Render(width int) string {
 		}
 	}
 
-	return frame.Join(append(rows, frame.ClosingRule(width)), width)
+	return frame.Join(append(rows, frame.ClosingRule(b.closingLabels, width)), width)
 }
 
 func (b Block) Skeleton(width int) string {
@@ -77,7 +79,7 @@ func (b Block) Skeleton(width int) string {
 		lines[i] = frame.Row("", width)
 	}
 
-	lines[rows-1] = frame.ClosingRule(width)
+	lines[rows-1] = frame.ClosingRule(nil, width)
 
 	return frame.Join(lines, width)
 }
