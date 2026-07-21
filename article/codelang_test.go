@@ -32,6 +32,13 @@ func TestParseBlocks_CodeLanguage(t *testing.T) {
 		{"text means unlabeled", `<pre><code class="language-text">x</code></pre>`, ""},
 		{"i18n wrapper is not a language", `<pre class="lang-en"><code>x</code></pre>`, ""},
 		{"extension-fallback junk rejected", `<pre class="lang-es"><code>x</code></pre>`, ""},
+
+		// highlight.js authors stamp language-http on arbitrary blocks; the
+		// declaration is honored only when the content opens like HTTP.
+		{"http request line honored", `<pre><code class="language-http">POST /wp-json/batch/v1 HTTP/1.1</code></pre>`, "http"},
+		{"http status line honored", `<pre><code class="language-http hljs">HTTP/1.1 200 OK</code></pre>`, "http"},
+		{"http prose mislabel dropped", `<pre><code class="language-http">Current task statement:</code></pre>`, ""},
+		{"http shortcode mislabel dropped", `<pre><code class="language-http">[embed]https://example.com[/embed]</code></pre>`, ""},
 	}
 
 	for _, tt := range tests {

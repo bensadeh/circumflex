@@ -7,6 +7,7 @@ import (
 	"unicode"
 
 	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/highlight"
 
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
@@ -140,7 +141,12 @@ func (p *domParser) walk(n *html.Node) {
 		p.flushInline()
 
 		if text := strings.Trim(preText(n), "\n"); strings.TrimSpace(text) != "" {
-			p.blocks = append(p.blocks, block{kind: blockCode, text: text, lang: codeLang(n)})
+			lang := codeLang(n)
+			if lang != "" && !highlight.HonorsDeclared(text, lang) {
+				lang = ""
+			}
+
+			p.blocks = append(p.blocks, block{kind: blockCode, text: text, lang: lang})
 		}
 
 	case atom.Blockquote:
