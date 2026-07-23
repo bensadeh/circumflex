@@ -80,6 +80,7 @@ func ValidateURL(rawURL string) error {
 // subdomains (chrome.google.com) whose parent domain stays readable.
 func isInvalidDomain(domain string) bool {
 	invalidDomains := [...]string{
+		"axios.com",
 		"bloomberg.com",
 		"chrome.google.com",
 		"drive.google.com",

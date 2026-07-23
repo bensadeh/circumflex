@@ -144,28 +144,6 @@ var allSiteRules = []siteRules{
 		dropBlockContaining: []string{"Photograph:"},
 	},
 	{
-		domains: []string{"axios.com"},
-		dropBlockContaining: []string{
-			"Sign up for our daily briefing",
-			"Catch up on the day's biggest business stories",
-			"Stay on top of the latest market trends",
-			"Sports news worthy of your time",
-			"Tech news worthy of your time",
-			"Get the inside stories",
-			"Axios on your phone",
-			"Catch up on coronavirus stories and special reports",
-			"Want a daily digest of the top ",
-			"Get a daily digest of the most important stories ",
-			"Download for free.",
-			"Sign up for free.",
-			"Make your busy days simpler with Axios AM/PM",
-			"Subscribe to Axios Closer",
-			"Get breaking news",
-			"Sign up for Axios",
-			"Stay up-to-date on the most important and interesting",
-		},
-	},
-	{
 		domains: []string{"9to5mac.com"},
 		dropBlockContaining: []string{
 			"We use income earning auto affiliate links.",
