@@ -6,8 +6,8 @@ import (
 
 	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/graphics"
 	"github.com/bensadeh/circumflex/meta"
-	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/view/reader"
 
 	"github.com/spf13/cobra"
@@ -25,7 +25,7 @@ func urlCmd() *cobra.Command {
 				return err
 			}
 
-			style.SetTheme(config.Theme)
+			applyGlobals(config)
 
 			// The URL is a CLI argument, not network content, but it is
 			// echoed into the reader's meta block (both as visible text and
@@ -36,15 +36,15 @@ func urlCmd() *cobra.Command {
 				url = "https://" + url
 			}
 
-			// Parsing runs before the program, so the graphics probe has not
-			// been sent yet: images are fetched unconditionally and shown if
-			// the terminal turns out to support them.
-			parsed, err := article.Parse(cmd.Context(), url, true)
+			// Parsing runs before the program, so the graphics probe has
+			// not been sent yet — only an explicit --graphics never settles
+			// the question this early.
+			parsed, err := article.Parse(cmd.Context(), url, graphics.PossiblyEnabled())
 			if err != nil {
 				return fmt.Errorf("could not read article: %w", err)
 			}
 
-			opts := reader.Options{URL: url, NerdFonts: config.EnableNerdFonts, Images: config.EnableImages}
+			opts := reader.Options{URL: url, NerdFonts: config.EnableNerdFonts, ShowImagesOnOpen: config.ShowImagesOnOpen}
 
 			title := parsed.Title
 			if title == "" {

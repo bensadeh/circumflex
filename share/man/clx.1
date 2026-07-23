@@ -293,7 +293,7 @@ While a search is active, \fIn\fP/\fIN\fP jump between matches.
 .sp
 \fIh\fP, \fIl\fP
 .RS 4
-Hide/show article images. See \fB\-\-images\fP.
+Hide/show article images. See \fB\-\-graphics\fP and \fB\-\-show\-images\-on\-open\fP.
 .RE
 .sp
 \fITab\fP
@@ -374,13 +374,17 @@ Default: "top,best,ask,show,favorites".
 Set the comment width to \fIn\fP columns.
 .RE
 .sp
-\fB\-\-images\fP
+\fB\-\-graphics\fP=\fImode\fP
 .RS 4
-Show article images in Reader Mode instead of a text placeholder.
-Off by default; enable it per\-run with this flag or persistently in \fIconfig.toml\fP.
-Drawing images requires a terminal that supports the Kitty graphics protocol, such as Ghostty, Kitty or Konsole; everywhere else the placeholder is shown and this setting has no effect.
+Set whether article images can be drawn at all.
+Drawing them requires a terminal that supports the Kitty graphics protocol, such as Ghostty, Kitty or Konsole.
+\fIauto\fP (the default) asks the terminal and believes the answer; where none comes back, images are shown as a text placeholder and are not even downloaded.
+\fIalways\fP assumes support without asking — for terminals that can draw images but whose answer never arrives, such as \fBtmux\fP without \f(CRallow\-passthrough on\fP, or ones \fBclx\fP declines to probe because the question itself misbehaves there.
+On a terminal that genuinely cannot draw images, forcing it on will print stray escape sequences.
+\fInever\fP refuses images outright: nothing is drawn, nothing is downloaded, and no escape sequence is sent.
 Images are scaled to their size on the page and centered.
 JPEG, PNG, GIF, WebP, AVIF and SVG images are drawn; other formats keep the placeholder.
+Whether they are shown as soon as an article opens is set separately; see \fB\-\-show\-images\-on\-open\fP.
 .RE
 .sp
 \fB\-\-indent\fP=\fIn\fP
@@ -408,6 +412,13 @@ Higher values fetch more stories but increase load time.
 Only applies to top, new and best.
 Ask and show always fetch one page because their story pools are small (~150\-200 stories).
 Default: 3.
+.RE
+.sp
+\fB\-\-show\-images\-on\-open\fP
+.RS 4
+Show images as soon as an article opens, rather than waiting for \fIl\fP.
+Off by default, so articles open as text and images are revealed on demand.
+Has no effect where images cannot be drawn.
 .RE
 .sp
 \fB\-v, \-\-version\fP

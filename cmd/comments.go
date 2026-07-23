@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/bensadeh/circumflex/comment"
-	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/view/comments"
 
 	"github.com/spf13/cobra"
@@ -27,7 +26,7 @@ func commentsCmd() *cobra.Command {
 				return err
 			}
 
-			style.SetTheme(config.Theme)
+			applyGlobals(config)
 
 			service := newService()
 

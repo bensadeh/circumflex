@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/bensadeh/circumflex/graphics"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -33,7 +35,8 @@ article_width = 90
 indent = 2
 history = false
 nerdfonts = true
-images = true
+graphics = "always"
+show_images_on_open = true
 categories = ["top", "new"]
 pages = 2
 wide_view = "always"
@@ -50,7 +53,8 @@ wide_view = "always"
 	assert.Equal(t, 2, config.Indent)
 	assert.True(t, config.DoNotMarkSubmissionsAsRead)
 	assert.True(t, config.EnableNerdFonts)
-	assert.True(t, config.EnableImages)
+	assert.True(t, config.ShowImagesOnOpen)
+	assert.Equal(t, graphics.ModeAlways, config.Graphics)
 	assert.Equal(t, "top,new", config.Categories)
 	assert.Equal(t, 2, config.PageMultiplier)
 	assert.Equal(t, 0, config.WideViewMinWidth)
@@ -150,7 +154,8 @@ func TestDefaultConfig_TemplateMatchesSchema(t *testing.T) {
 	assert.NotNil(t, cfg.Indent)
 	assert.NotNil(t, cfg.History)
 	assert.NotNil(t, cfg.NerdFonts)
-	assert.NotNil(t, cfg.Images)
+	assert.NotNil(t, cfg.Graphics)
+	assert.NotNil(t, cfg.ShowImagesOnOpen)
 	assert.NotEmpty(t, cfg.Categories)
 	assert.NotNil(t, cfg.Pages)
 	assert.NotNil(t, cfg.WideView)

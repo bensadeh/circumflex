@@ -25,6 +25,7 @@ const queryID = 31
 
 var (
 	enabled atomic.Bool
+	mode    atomic.Int32 // Mode
 
 	// The terminal cell's pixel dimensions, for sizing an image's cell
 	// grid to its aspect ratio; zero until the terminal reports them.
@@ -35,14 +36,60 @@ var (
 	allocated = map[int]struct{}{}
 )
 
+// Mode is how support is decided: by asking the terminal, or by the user
+// overriding the answer. Detection is one-sided — a terminal without support
+// replies with silence rather than a refusal — so "no answer yet" and "cannot
+// do it" are the same reading, and some terminals never get asked at all.
+// The overrides are the way out of both.
+type Mode int
+
+const (
+	ModeAuto   Mode = iota // the terminal's answer decides
+	ModeAlways             // support assumed, whatever the terminal says
+	ModeNever              // support refused; no sequence is ever sent
+)
+
+// SetMode records the user's override. ModeAlways enables support outright,
+// since the probe is what would otherwise grant it and the whole point of the
+// override is terminals whose answer never arrives: tmux without
+// allow-passthrough swallows it, and ShouldQuery declines to ask WezTerm and
+// Terminal.app in the first place.
+func SetMode(m Mode) {
+	mode.Store(int32(m))
+
+	if m == ModeAlways {
+		enabled.Store(true)
+	}
+}
+
 // Enable records that the terminal answered the Kitty graphics probe. It
 // reports whether this was news, so the caller knows a repaint is due.
 func Enable() bool {
+	if current() == ModeNever {
+		return false
+	}
+
 	return !enabled.Swap(true)
 }
 
 func Enabled() bool {
+	if current() == ModeNever {
+		return false
+	}
+
 	return enabled.Load()
+}
+
+// PossiblyEnabled reports whether images may still turn out to be drawable.
+// It is all a caller outside a started program has to go on — the probe has
+// not been sent, let alone answered, so only an explicit refusal is
+// conclusive there.
+func PossiblyEnabled() bool {
+	return current() != ModeNever
+}
+
+func current() Mode {
+	return Mode(mode.Load())
 }
 
 // SetCellSize records the terminal cell's pixel dimensions and reports
@@ -81,11 +128,30 @@ func AllocID() int {
 	return nextID
 }
 
-// ShouldQuery reports whether the capability probe is safe and worthwhile.
+// ShouldQuery reports whether anything should be asked of the terminal at
+// startup. Under ModeAlways the answer is still yes: support is no longer in
+// question, but the cell size is, and QuerySeq drops the probe accordingly.
+func ShouldQuery() bool {
+	switch current() {
+	case ModeNever:
+		return false
+
+	case ModeAlways:
+		return true
+
+	case ModeAuto:
+		return probeWorthwhile()
+	}
+
+	return false
+}
+
+// probeWorthwhile reports whether the capability probe is safe to send.
 // Apple's Terminal.app prints APC sequences to the screen instead of
 // consuming them; WezTerm answers the probe but does not draw Unicode
-// placeholders; GNU screen swallows the passthrough entirely.
-func ShouldQuery() bool {
+// placeholders; GNU screen swallows the passthrough entirely. Each is a
+// heuristic on the environment, which is why ModeAlways exists to overrule it.
+func probeWorthwhile() bool {
 	termProgram := os.Getenv("TERM_PROGRAM")
 	if strings.Contains(termProgram, "Apple") || termProgram == "WezTerm" {
 		return false
@@ -107,6 +173,14 @@ func ShouldQuery() bool {
 // recognize neither consume both silently, so no answer simply leaves the
 // feature off.
 func QuerySeq() string {
+	// Forced on, so there is nothing to ask: sending the probe anyway would
+	// put an APC sequence in front of the terminals the override exists for,
+	// which is exactly what Terminal.app prints as garbage. The cell size
+	// query is ordinary XTWINOPS and safe everywhere.
+	if current() == ModeAlways {
+		return CellSizeQuerySeq()
+	}
+
 	return CellSizeQuerySeq() +
 		wrap(xansi.KittyGraphics([]byte("AAAA"),
 			"i="+strconv.Itoa(queryID), "s=1", "v=1", "a=q", "t=d", "f=24"))

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/bensadeh/circumflex/categories"
+	"github.com/bensadeh/circumflex/graphics"
 	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/hn/provider"
 	"github.com/bensadeh/circumflex/settings"
@@ -26,7 +27,8 @@ var (
 	debugMode          bool
 	debugFallible      bool
 	nerdFontFlag       bool
-	enableImages       bool
+	graphicsMode       string
+	showImagesOnOpen   bool
 	pageMultiplier     int
 	selectedCategories string
 	wideView           string
@@ -52,7 +54,7 @@ func Root() *cobra.Command {
 				return err
 			}
 
-			style.SetTheme(config.Theme)
+			applyGlobals(config)
 
 			cat, err := categories.New(config.Categories)
 			if err != nil {
@@ -104,8 +106,10 @@ func configureFlags(rootCmd *cobra.Command) {
 		"set the comment section indent size")
 	rootCmd.PersistentFlags().BoolVarP(&nerdFontFlag, "nerdfonts", "n", false,
 		"enable or disable Nerd Fonts")
-	rootCmd.PersistentFlags().BoolVar(&enableImages, "images", false,
-		"show article images in reader mode\n(requires a terminal with Kitty graphics support)")
+	rootCmd.PersistentFlags().StringVar(&graphicsMode, "graphics", "auto",
+		"whether article images can be drawn: \"auto\", \"always\" or \"never\"\n(drawing requires a terminal with Kitty graphics support)")
+	rootCmd.PersistentFlags().BoolVar(&showImagesOnOpen, "show-images-on-open", false,
+		"show images as soon as an article opens, rather than on the l key")
 	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", settings.Default().Categories,
 		"set the categories in the header\n(available: "+strings.Join(categories.AvailableNames(), ", ")+")")
 	rootCmd.PersistentFlags().IntVar(&pageMultiplier, "pages", settings.Default().PageMultiplier,
@@ -172,8 +176,15 @@ func getConfig() (*settings.Config, error) {
 		config.EnableNerdFonts = isGhostty()
 	}
 
-	if flagChanged("images") {
-		config.EnableImages = enableImages
+	if flagChanged("show-images-on-open") {
+		config.ShowImagesOnOpen = showImagesOnOpen
+	}
+
+	if flagChanged("graphics") {
+		config.Graphics, err = settings.ParseGraphics(graphicsMode)
+		if err != nil {
+			return nil, fmt.Errorf("--graphics: %w", err)
+		}
 	}
 
 	if flagChanged("wide-view") {
@@ -187,6 +198,14 @@ func getConfig() (*settings.Config, error) {
 	config.DebugFallible = debugFallible
 
 	return config, nil
+}
+
+// applyGlobals installs the settings that live in package state rather than
+// travelling with the config: the theme every style helper reads, and the
+// graphics mode detection consults. Every command runs it before its view.
+func applyGlobals(config *settings.Config) {
+	style.SetTheme(config.Theme)
+	graphics.SetMode(config.Graphics)
 }
 
 func flagChanged(name string) bool {

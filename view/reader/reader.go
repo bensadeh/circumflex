@@ -27,14 +27,14 @@ import (
 // browser-opening keys target. What the header above the article shows is
 // not the reader's concern: callers inject that via buildHeader.
 type Options struct {
-	URL       string
-	ID        int
-	NerdFonts bool
-	Images    bool
-	TermBG    color.Color          // terminal background when already known, for image transparency
-	TermFG    color.Color          // terminal foreground when already known, for the URL selector's separator row
-	FromLink  bool                 // the page was reached by following a link; quit walks back through Trail
-	Trail     []message.TrailEntry // pages behind this one, oldest first; never mutated after construction
+	URL              string
+	ID               int
+	NerdFonts        bool
+	ShowImagesOnOpen bool                 // initial state of the h/l toggle
+	TermBG           color.Color          // terminal background when already known, for the URL selector's separator row
+	TermFG           color.Color          // terminal foreground when already known, for the URL selector's separator row
+	FromLink         bool                 // the page was reached by following a link; quit walks back through Trail
+	Trail            []message.TrailEntry // pages behind this one, oldest first; never mutated after construction
 }
 
 type Model struct {
@@ -87,7 +87,7 @@ func NewWithArticle(parsed *article.Parsed, title string, maxWidth int, width, h
 		parsed:      parsed,
 		maxWidth:    maxWidth,
 		opts:        opts,
-		showImages:  opts.Images,
+		showImages:  opts.ShowImagesOnOpen,
 		termBG:      opts.TermBG,
 		termFG:      opts.TermFG,
 		buildHeader: buildHeader,
@@ -216,11 +216,10 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 		return nil
 
 	case tea.BackgroundColorMsg:
+		// Feeds the URL selector's separator row, which View builds fresh
+		// every frame — nothing in the article body reads it, so there is
+		// nothing to re-render.
 		m.termBG = msg.Color
-
-		if m.parsed != nil {
-			m.rerender()
-		}
 
 		return nil
 

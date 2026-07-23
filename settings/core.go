@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/bensadeh/circumflex/categories"
+	"github.com/bensadeh/circumflex/graphics"
 	"github.com/bensadeh/circumflex/theme"
 )
 
@@ -33,7 +34,8 @@ type Config struct {
 	DebugMode                  bool
 	DebugFallible              bool
 	EnableNerdFonts            bool
-	EnableImages               bool
+	ShowImagesOnOpen           bool
+	Graphics                   graphics.Mode
 	PageMultiplier             int
 	WideViewMinWidth           int
 	Categories                 string
@@ -69,6 +71,22 @@ func ParseWideView(value string) (int, error) {
 	}
 
 	return width, nil
+}
+
+// ParseGraphics converts a graphics setting into a detection mode: "auto"
+// lets the terminal's answer decide, "always" and "never" overrule it. The
+// error carries no flag or config-key context; callers add their own.
+func ParseGraphics(value string) (graphics.Mode, error) {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "auto":
+		return graphics.ModeAuto, nil
+	case "always":
+		return graphics.ModeAlways, nil
+	case "never":
+		return graphics.ModeNever, nil
+	}
+
+	return graphics.ModeAuto, fmt.Errorf(`must be "auto", "always" or "never", got %q`, value)
 }
 
 func ClampPageMultiplier(n int) int {

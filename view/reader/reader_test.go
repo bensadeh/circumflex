@@ -158,7 +158,7 @@ func TestJumpToHeader(t *testing.T) {
 
 func TestReader_HideShowImagesToggle(t *testing.T) {
 	parsed := parseTestArticle(t)
-	m := NewWithArticle(parsed, "Article", 72, 120, 40, Options{Images: true}, nil)
+	m := NewWithArticle(parsed, "Article", 72, 120, 40, Options{ShowImagesOnOpen: true}, nil)
 
 	require.True(t, m.showImages, "starts shown when the flag enabled it")
 
@@ -171,7 +171,7 @@ func TestReader_HideShowImagesToggle(t *testing.T) {
 
 func TestImageIndicator_BlankWithoutImages(t *testing.T) {
 	parsed := parseTestArticle(t)
-	m := NewWithArticle(parsed, "Article", 72, 120, 40, Options{Images: true}, nil)
+	m := NewWithArticle(parsed, "Article", 72, 120, 40, Options{ShowImagesOnOpen: true}, nil)
 
 	assert.Empty(t, m.imageIndicator(), "articles without images get no status line")
 }
@@ -194,7 +194,7 @@ func TestImageStatusLine(t *testing.T) {
 
 func TestReader_BackgroundColorMsgRerendersWithTermBG(t *testing.T) {
 	parsed := parseTestArticle(t)
-	m := NewWithArticle(parsed, "Article", 72, 120, 40, Options{Images: true}, nil)
+	m := NewWithArticle(parsed, "Article", 72, 120, 40, Options{ShowImagesOnOpen: true}, nil)
 
 	require.Nil(t, m.termBG)
 

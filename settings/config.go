@@ -14,15 +14,16 @@ import (
 // a nil WideView) mean the key was absent from the file, which lets callers
 // distinguish "not set" from an explicit value.
 type FileConfig struct {
-	CommentWidth *int     `toml:"comment_width"`
-	ArticleWidth *int     `toml:"article_width"`
-	Indent       *int     `toml:"indent"`
-	History      *bool    `toml:"history"`
-	NerdFonts    *bool    `toml:"nerdfonts"`
-	Images       *bool    `toml:"images"`
-	Categories   []string `toml:"categories"`
-	Pages        *int     `toml:"pages"`
-	WideView     any      `toml:"wide_view"`
+	CommentWidth     *int     `toml:"comment_width"`
+	ArticleWidth     *int     `toml:"article_width"`
+	Indent           *int     `toml:"indent"`
+	History          *bool    `toml:"history"`
+	NerdFonts        *bool    `toml:"nerdfonts"`
+	Graphics         *string  `toml:"graphics"`
+	ShowImagesOnOpen *bool    `toml:"show_images_on_open"`
+	Categories       []string `toml:"categories"`
+	Pages            *int     `toml:"pages"`
+	WideView         any      `toml:"wide_view"`
 }
 
 func LoadConfig(path string) (*FileConfig, error) {
@@ -72,8 +73,17 @@ func (f *FileConfig) Apply(c *Config) error {
 		c.EnableNerdFonts = *f.NerdFonts
 	}
 
-	if f.Images != nil {
-		c.EnableImages = *f.Images
+	if f.ShowImagesOnOpen != nil {
+		c.ShowImagesOnOpen = *f.ShowImagesOnOpen
+	}
+
+	if f.Graphics != nil {
+		mode, err := ParseGraphics(*f.Graphics)
+		if err != nil {
+			return fmt.Errorf("graphics: %w", err)
+		}
+
+		c.Graphics = mode
 	}
 
 	if len(f.Categories) > 0 {
@@ -154,9 +164,15 @@ func defaultConfigBody() string {
 # Defaults to on in Ghostty, off elsewhere.
 #nerdfonts = true
 
-# Show article images in Reader Mode.
-# Requires a terminal with Kitty graphics support (Ghostty, Kitty, Konsole).
-#images = false
+# Whether article images can be drawn at all: "auto" asks the terminal,
+# "always" and "never" overrule the answer. Drawing needs Kitty graphics
+# support (Ghostty, Kitty, Konsole); under "never" images are not even
+# downloaded.
+#graphics = "auto"
+
+# Show images as soon as an article opens, rather than on the l key.
+# Has no effect where images cannot be drawn.
+#show_images_on_open = false
 
 # Categories shown in the header, in order.
 # Available: %s

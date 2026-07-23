@@ -1,34 +1,39 @@
 [35mcircumflex[m is a command line tool for browsing Hacker News in your terminal
 
 [1mCommands:[0m
-  [34madd[0m [33m[id][0m                 add item to list of favorites
-  [34marticle[0m [33m[id][0m             read the linked article of a story
-  [34mclear[0m                    clear the history of visited IDs
-  [34mcomments[0m [33m[id][0m            read the comment section of a story
-  [34mdefault-config[0m           write default config file
-  [34mdefault-theme[0m            write default theme config file
-  [34murl[0m [33m[url][0m                open the provided url in reader mode
+  [34madd[0m [33m[id][0m                   add item to list of favorites
+  [34marticle[0m [33m[id][0m               read the linked article of a story
+  [34mclear[0m                      clear the history of visited IDs
+  [34mcomments[0m [33m[id][0m              read the comment section of a story
+  [34mdefault-config[0m             write default config file
+  [34mdefault-theme[0m              write default theme config file
+  [34murl[0m [33m[url][0m                  open the provided url in reader mode
 
 [1mFlags:[0m
-  [36m-a[0m, [36m--article-width[0m [33mint[0m  set the article width in reader mode
-                           [2m(default [31m80[0m[2m)[0m
-      [36m--categories[0m [33mstring[0m  set the categories in the header
-                           (available: top, new, ask, show, best, jobs,
-                           favorites)
-                           [2m(default [31m"top,best,ask,show,favorites"[0m[2m)[0m
-  [36m-c[0m, [36m--comment-width[0m [33mint[0m  set the comment width
-                           [2m(default [31m70[0m[2m)[0m
-  [36m-h[0m, [36m--help[0m               show help
-      [36m--images[0m             show article images in reader mode
-                           (requires a terminal with Kitty graphics support)
-      [36m--indent[0m [33mint[0m         set the comment section indent size
-                           [2m(default [31m1[0m[2m)[0m
-  [36m-n[0m, [36m--nerdfonts[0m          enable or disable Nerd Fonts
-  [36m-d[0m, [36m--no-history[0m         disable marking stories as read
-      [36m--pages[0m [33mint[0m          set pages to fetch per category (1-5)
-                           [2m(default [31m3[0m[2m)[0m
-  [36m-v[0m, [36m--version[0m            show version
-  [36m-w[0m, [36m--wide-view[0m [33mstring[0m   show stories in a pane next to the front page:
-                           "always", "never"
-                           or the minimum terminal width in columns
-                           [2m(default [31m"180"[0m[2m)[0m
+  [36m-a[0m, [36m--article-width[0m [33mint[0m    set the article width in reader mode
+                             [2m(default [31m80[0m[2m)[0m
+      [36m--categories[0m [33mstring[0m    set the categories in the header
+                             (available: top, new, ask, show, best, jobs,
+                             favorites)
+                             [2m(default [31m"top,best,ask,show,favorites"[0m[2m)[0m
+  [36m-c[0m, [36m--comment-width[0m [33mint[0m    set the comment width
+                             [2m(default [31m70[0m[2m)[0m
+      [36m--graphics[0m [33mstring[0m      whether article images can be drawn: "auto",
+                             "always" or "never"
+                             (drawing requires a terminal with Kitty graphics
+                             support)
+                             [2m(default [31m"auto"[0m[2m)[0m
+  [36m-h[0m, [36m--help[0m                 show help
+      [36m--indent[0m [33mint[0m           set the comment section indent size
+                             [2m(default [31m1[0m[2m)[0m
+  [36m-n[0m, [36m--nerdfonts[0m            enable or disable Nerd Fonts
+  [36m-d[0m, [36m--no-history[0m           disable marking stories as read
+      [36m--pages[0m [33mint[0m            set pages to fetch per category (1-5)
+                             [2m(default [31m3[0m[2m)[0m
+      [36m--show-images-on-open[0m  show images as soon as an article opens, rather
+                             than on the l key
+  [36m-v[0m, [36m--version[0m              show version
+  [36m-w[0m, [36m--wide-view[0m [33mstring[0m     show stories in a pane next to the front page:
+                             "always", "never"
+                             or the minimum terminal width in columns
+                             [2m(default [31m"180"[0m[2m)[0m

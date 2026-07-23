@@ -21,9 +21,15 @@
 # Defaults to on in Ghostty, off elsewhere.
 #nerdfonts = true
 
-# Show article images in Reader Mode.
-# Requires a terminal with Kitty graphics support (Ghostty, Kitty, Konsole).
-#images = false
+# Whether article images can be drawn at all: "auto" asks the terminal,
+# "always" and "never" overrule the answer. Drawing needs Kitty graphics
+# support (Ghostty, Kitty, Konsole); under "never" images are not even
+# downloaded.
+#graphics = "auto"
+
+# Show images as soon as an article opens, rather than on the l key.
+# Has no effect where images cannot be drawn.
+#show_images_on_open = false
 
 # Categories shown in the header, in order.
 # Available: top, new, ask, show, best, jobs, favorites

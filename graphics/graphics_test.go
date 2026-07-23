@@ -142,3 +142,48 @@ func TestPlacementSeq(t *testing.T) {
 	assert.Contains(t, seq, "c=20,r=8")
 	assert.NotContains(t, seq, "f=100", "no pixel data travels on a resize")
 }
+
+// The overrides read through the same process-global state, so these run
+// after the lifecycle above has already enabled it: what they pin is the
+// override winning over the terminal's own answer, in both directions.
+func TestModeNeverRefusesEverything(t *testing.T) {
+	t.Cleanup(func() { SetMode(ModeAuto) })
+
+	SetMode(ModeNever)
+
+	assert.False(t, Enabled(), "a refusal overrules the terminal's own answer")
+	assert.False(t, Enable(), "and a late probe reply cannot undo it")
+	assert.False(t, ShouldQuery(), "nothing is asked of the terminal")
+	assert.False(t, PossiblyEnabled(), "the one case a caller can settle before the probe")
+	assert.Empty(t, CleanupSeq(), "no APC was sent, so none needs undoing")
+}
+
+func TestModeAlwaysAssumesSupport(t *testing.T) {
+	t.Setenv("TERM_PROGRAM", "Apple_Terminal")
+	t.Cleanup(func() { SetMode(ModeAuto) })
+
+	SetMode(ModeAlways)
+
+	assert.True(t, Enabled(), "support is granted without asking")
+	assert.True(t, PossiblyEnabled())
+	assert.True(t, ShouldQuery(), "the cell size is still worth asking for")
+	assert.Equal(t, CellSizeQuerySeq(), QuerySeq(),
+		"but not the probe: the terminals this override exists for are the ones that mangle it")
+}
+
+func TestShouldQueryUnderAutoJudgesTheTerminal(t *testing.T) {
+	t.Setenv("TERM", "xterm-256color")
+	t.Cleanup(func() { SetMode(ModeAuto) })
+
+	SetMode(ModeAuto)
+
+	t.Setenv("TERM_PROGRAM", "WezTerm")
+	assert.False(t, ShouldQuery(), "WezTerm answers the probe but draws no placeholders")
+
+	t.Setenv("TERM_PROGRAM", "Apple_Terminal")
+	assert.False(t, ShouldQuery(), "Terminal.app prints the probe to the screen")
+
+	t.Setenv("TERM_PROGRAM", "ghostty")
+	assert.True(t, ShouldQuery())
+	assert.True(t, PossiblyEnabled(), "silence is not a refusal")
+}

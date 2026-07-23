@@ -465,11 +465,11 @@ func (m *model) newLinkedComments(thread *comment.Thread, lastVisited int64, tra
 // the page's own identity fields are reader.NewPage's business.
 func (m *model) linkPageOptions(storyID int) reader.Options {
 	return reader.Options{
-		ID:        storyID,
-		NerdFonts: m.config.EnableNerdFonts,
-		Images:    m.config.EnableImages,
-		TermBG:    m.termBG,
-		TermFG:    m.termFG,
+		ID:               storyID,
+		NerdFonts:        m.config.EnableNerdFonts,
+		ShowImagesOnOpen: m.config.ShowImagesOnOpen,
+		TermBG:           m.termBG,
+		TermFG:           m.termFG,
 	}
 }
 
@@ -526,12 +526,12 @@ func (m *model) handleArticleReady(msg message.ArticleReady) (*model, tea.Cmd) {
 	})
 
 	m.detail = reader.NewWithArticle(msg.Parsed, msg.Title, m.config.ArticleWidth, m.detailWidth(), m.height, reader.Options{
-		URL:       msg.URL,
-		ID:        msg.ID,
-		NerdFonts: m.config.EnableNerdFonts,
-		Images:    m.config.EnableImages,
-		TermBG:    m.termBG,
-		TermFG:    m.termFG,
+		URL:              msg.URL,
+		ID:               msg.ID,
+		NerdFonts:        m.config.EnableNerdFonts,
+		ShowImagesOnOpen: m.config.ShowImagesOnOpen,
+		TermBG:           m.termBG,
+		TermFG:           m.termFG,
 	}, block.Render)
 
 	m.screen = screenReader

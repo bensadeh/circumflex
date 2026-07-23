@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/graphics"
 	"github.com/bensadeh/circumflex/meta"
-	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/timeago"
 	"github.com/bensadeh/circumflex/view/reader"
 
@@ -29,7 +29,7 @@ func articleCmd() *cobra.Command {
 				return err
 			}
 
-			style.SetTheme(config.Theme)
+			applyGlobals(config)
 
 			service := newService()
 
@@ -42,10 +42,10 @@ func articleCmd() *cobra.Command {
 				return fmt.Errorf("no link associated with ID %d", id)
 			}
 
-			// Parsing runs before the program, so the graphics probe has not
-			// been sent yet: images are fetched unconditionally and shown if
-			// the terminal turns out to support them.
-			parsed, err := article.Parse(cmd.Context(), item.URL, true)
+			// Parsing runs before the program, so the graphics probe has
+			// not been sent yet — only an explicit --graphics never settles
+			// the question this early.
+			parsed, err := article.Parse(cmd.Context(), item.URL, graphics.PossiblyEnabled())
 			if err != nil {
 				return fmt.Errorf("could not read article: %w", err)
 			}
@@ -61,10 +61,10 @@ func articleCmd() *cobra.Command {
 			})
 
 			opts := reader.Options{
-				URL:       item.URL,
-				ID:        item.ID,
-				NerdFonts: config.EnableNerdFonts,
-				Images:    config.EnableImages,
+				URL:              item.URL,
+				ID:               item.ID,
+				NerdFonts:        config.EnableNerdFonts,
+				ShowImagesOnOpen: config.ShowImagesOnOpen,
 			}
 
 			return reader.Run(parsed, item.Title, config.ArticleWidth, opts, block.Render)
