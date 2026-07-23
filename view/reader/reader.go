@@ -792,7 +792,7 @@ func Run(parsed *article.Parsed, title string, maxWidth int, opts Options, build
 		return m
 	}
 
-	return pane.RunStandalone(func(width, height int) pane.View {
+	return pane.RunStandalone(title, func(width, height int) pane.View {
 		m := NewWithArticle(parsed, title, maxWidth, width, height, opts, buildHeader)
 		m.DisableAppKeys()
 

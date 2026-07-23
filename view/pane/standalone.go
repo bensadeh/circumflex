@@ -43,6 +43,12 @@ type standalone struct {
 	width        int
 	height       int
 
+	// title names the terminal window for as long as the program runs. It is
+	// the page the subcommand was invoked on and stays put through followed
+	// links, as the full app keeps the open story's title while the reader
+	// walks a trail.
+	title string
+
 	// bgMsg and fgMsg hold terminal color reports that arrived before the
 	// view existed, replayed once the view is created.
 	bgMsg tea.Msg
@@ -299,17 +305,19 @@ func (s standalone) View() tea.View {
 
 	v := tea.NewView(content)
 	v.AltScreen = true
+	v.WindowTitle = s.title
 
 	return v
 }
 
-// RunStandalone runs a detail view as its own program; makeView receives
-// the terminal dimensions from the first WindowSizeMsg. A non-nil
-// makePageView lets links followed inside the view open in place; without
-// one they fall back to the browser.
-func RunStandalone(makeView func(width, height int) View, makePageView MakePageView) error {
-	p := tea.NewProgram(standalone{makeView: makeView, makePageView: makePageView})
+// RunStandalone runs a detail view as its own program under the window title
+// title; makeView receives the terminal dimensions from the first
+// WindowSizeMsg. A non-nil makePageView lets links followed inside the view
+// open in place; without one they fall back to the browser.
+func RunStandalone(title string, makeView func(width, height int) View, makePageView MakePageView) error {
+	p := tea.NewProgram(standalone{title: WindowTitle(title), makeView: makeView, makePageView: makePageView})
 
+	restoreTitle := SaveWindowTitle()
 	settleProgress := WireProgress(p)
 	stopGraphics := WireGraphics(p)
 
@@ -317,6 +325,7 @@ func RunStandalone(makeView func(width, height int) View, makePageView MakePageV
 
 	settleProgress()
 	stopGraphics()
+	restoreTitle()
 
 	// Transmitted images survive the program in the terminal's memory;
 	// release them now that no frame flush can interleave with the write.

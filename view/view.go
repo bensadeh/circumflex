@@ -54,6 +54,7 @@ func (t teaModel) View() tea.View {
 	v := tea.NewView(frame)
 	v.AltScreen = true
 	v.Cursor = cursor
+	v.WindowTitle = t.m.windowTitle()
 
 	return v
 }
@@ -74,6 +75,7 @@ func Run(config *settings.Config, cat *categories.Categories) error {
 
 	p := tea.NewProgram(teaModel{m: m})
 
+	restoreTitle := pane.SaveWindowTitle()
 	settleProgress := pane.WireProgress(p)
 	stopGraphics := pane.WireGraphics(p)
 
@@ -81,6 +83,7 @@ func Run(config *settings.Config, cat *categories.Categories) error {
 
 	settleProgress()
 	stopGraphics()
+	restoreTitle()
 
 	// Transmitted images survive the program in the terminal's memory;
 	// release them now that no frame flush can interleave with the write.

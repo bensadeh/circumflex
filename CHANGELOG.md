@@ -9,6 +9,7 @@
 - Added URL selection mode to Reader Mode and the Comment Section, with the ability to follow links in place
 - Added a `jobs` category
 - Added `config.toml` for persistent settings
+- Terminal title now follows the content displayed
 
 **Reader Mode**
 
