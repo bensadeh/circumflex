@@ -87,21 +87,7 @@ func Code(text, lang string) string {
 	_, capTypes := capitalizedTypeLangs[name]
 	_, capsConsts := allCapsConstLangs[name]
 
-	if name == "Bash Session" {
-		tokens = relexContinuations(tokens)
-	}
-
-	if name == "Bash" || name == "Bash Session" {
-		tokens = splitShellFlags(tokens)
-
-		// The \ line continuation is shell machinery, cyan like builtins
-		// and $vars — not an escape hatch; in-string escapes keep red.
-		for i, token := range tokens {
-			if token.Type == chroma.LiteralStringEscape && token.Value == "\\\n" {
-				tokens[i].Type = chroma.NameBuiltin
-			}
-		}
-	}
+	tokens = retypeByLanguage(tokens, name)
 
 	var retypeTOML func(*chroma.Token)
 	if name == "TOML" {
@@ -159,6 +145,34 @@ func Code(text, lang string) string {
 
 	// Lexers append a trailing newline the source never had.
 	return strings.TrimRight(sb.String(), "\n")
+}
+
+// retypeByLanguage runs the passes that only make sense for one language,
+// before the shared rules that follow apply to every token stream alike.
+func retypeByLanguage(tokens []chroma.Token, name string) []chroma.Token {
+	if _, ok := lispLexers[name]; ok {
+		retypeLisp(tokens)
+
+		return tokens
+	}
+
+	if name == "Bash Session" {
+		tokens = relexContinuations(tokens)
+	}
+
+	if name == "Bash" || name == "Bash Session" {
+		tokens = splitShellFlags(tokens)
+
+		// The \ line continuation is shell machinery, cyan like builtins
+		// and $vars — not an escape hatch; in-string escapes keep red.
+		for i, token := range tokens {
+			if token.Type == chroma.LiteralStringEscape && token.Value == "\\\n" {
+				tokens[i].Type = chroma.NameBuiltin
+			}
+		}
+	}
+
+	return tokens
 }
 
 // styleToken styles each line of a token separately: the rounded box splices
