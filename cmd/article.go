@@ -42,7 +42,10 @@ func articleCmd() *cobra.Command {
 				return fmt.Errorf("no link associated with ID %d", id)
 			}
 
-			parsed, err := article.Parse(cmd.Context(), item.URL)
+			// Parsing runs before the program, so the graphics probe has not
+			// been sent yet: images are fetched unconditionally and shown if
+			// the terminal turns out to support them.
+			parsed, err := article.Parse(cmd.Context(), item.URL, true)
 			if err != nil {
 				return fmt.Errorf("could not read article: %w", err)
 			}

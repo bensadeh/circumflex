@@ -7,6 +7,7 @@ import (
 	"github.com/bensadeh/circumflex/article"
 	"github.com/bensadeh/circumflex/categories"
 	"github.com/bensadeh/circumflex/comment"
+	"github.com/bensadeh/circumflex/graphics"
 	"github.com/bensadeh/circumflex/history"
 	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/hn/memorial"
@@ -201,7 +202,7 @@ func (m *model) fetchArticle(tok fetchToken, story *hn.Story) tea.Cmd {
 			return message.ArticleReady{Err: err, FetchID: tok.id}
 		}
 
-		parsed, err := article.Parse(tok.ctx, story.URL)
+		parsed, err := article.Parse(tok.ctx, story.URL, graphics.Enabled())
 		if err != nil {
 			return message.ArticleReady{Err: err, FetchID: tok.id}
 		}

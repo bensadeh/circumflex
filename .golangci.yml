@@ -45,8 +45,8 @@ linters:
 
   settings:
     exhaustive:
-      # Maps too, not just switches: enum-keyed lookup tables (e.g. the image
-      # tier budgets) must cover every member.
+      # Maps too, not just switches: enum-keyed lookup tables must cover every
+      # member.
       check:
         - switch
         - map

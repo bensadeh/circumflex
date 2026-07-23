@@ -27,10 +27,19 @@ type Parsed struct {
 	Title string
 }
 
-// Parse fetches the article at url and turns it into renderable blocks,
-// downloading and decoding its images so reader mode can display them. Whether
-// the images are actually shown is decided later, at render time.
-func Parse(ctx context.Context, url string) (*Parsed, error) {
+// Parse fetches the article at url and turns it into renderable blocks. The
+// page's images are downloaded and decoded only when images is true: nothing
+// below a Kitty-graphics terminal can draw them, and there the whole
+// fetch-decode-rasterize-encode pass would be discarded for a text label.
+// Whether a drawable image is actually shown is still decided later, at render
+// time, by the h/l toggle.
+//
+// Callers inside a started program pass graphics.Enabled(). The standalone
+// commands cannot: they parse before the program exists, and a terminal
+// without graphics support answers the probe with silence rather than a no —
+// so "not supported" and "has not answered yet" are the same reading. They
+// pass true and keep fetching unconditionally.
+func Parse(ctx context.Context, url string, images bool) (*Parsed, error) {
 	parsedURL, err := nurl.ParseRequestURI(url)
 	if err != nil {
 		return nil, fmt.Errorf("invalid URL: %w", err)
@@ -79,7 +88,9 @@ func Parse(ctx context.Context, url string) (*Parsed, error) {
 		return nil, fmt.Errorf("no readable content found at %s", parsedURL.Hostname())
 	}
 
-	fetchImages(ctx, blocks, parsedURL)
+	if images {
+		fetchImages(ctx, blocks, parsedURL)
+	}
 
 	// Block text is stripped as it parses; the title arrives on its own path
 	// out of readability, still carrying whatever the page put in <title>.

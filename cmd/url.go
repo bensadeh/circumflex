@@ -36,7 +36,10 @@ func urlCmd() *cobra.Command {
 				url = "https://" + url
 			}
 
-			parsed, err := article.Parse(cmd.Context(), url)
+			// Parsing runs before the program, so the graphics probe has not
+			// been sent yet: images are fetched unconditionally and shown if
+			// the terminal turns out to support them.
+			parsed, err := article.Parse(cmd.Context(), url, true)
 			if err != nil {
 				return fmt.Errorf("could not read article: %w", err)
 			}
