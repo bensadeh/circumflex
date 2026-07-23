@@ -105,7 +105,7 @@ func configureFlags(rootCmd *cobra.Command) {
 	rootCmd.PersistentFlags().BoolVarP(&nerdFontFlag, "nerdfonts", "n", false,
 		"enable or disable Nerd Fonts")
 	rootCmd.PersistentFlags().BoolVar(&enableImages, "images", false,
-		"show article images in reader mode")
+		"show article images in reader mode\n(requires a terminal with Kitty graphics support)")
 	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", settings.Default().Categories,
 		"set the categories in the header\n(available: "+strings.Join(categories.AvailableNames(), ", ")+")")
 	rootCmd.PersistentFlags().IntVar(&pageMultiplier, "pages", settings.Default().PageMultiplier,

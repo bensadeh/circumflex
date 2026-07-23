@@ -31,12 +31,12 @@ type block struct {
 	hlOut      string     // blockCode: chroma render memoized by renderCode — width-independent
 	hlDone     bool
 	imageURL   string      // blockImage: resolved source URL, empty if none
-	img        image.Image // blockImage: decoded pixels, nil until fetched or on failure
-	kitty      *kittyImage // blockImage: high-res copy and terminal state for Kitty graphics, nil when unavailable
+	imgSize    image.Point // blockImage: decoded raster's dimensions, zero until fetched or on failure
+	kitty      *kittyImage // blockImage: the copy and terminal state for Kitty graphics, nil when unavailable
 	decorative bool        // blockImage: fetched fine but sized like a divider or tracking pixel
-	figure     bool        // blockImage: known chart or diagram — art only at Kitty resolution, described label otherwise
+	figure     bool        // blockImage: known chart or diagram — labeled as one where its pixels do not render
 	dispWidth  int         // blockImage: intended display width in CSS px from the width attr, 0 if unknown
-	art        string      // blockImage: rendered half-block art memoized for artFor; see cachedImagePart
+	art        string      // blockImage: rendered placeholder cells memoized for artFor; see cachedImagePart
 	artFor     artKey
 }
 

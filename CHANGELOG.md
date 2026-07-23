@@ -37,6 +37,7 @@
 
 - Renamed `--disable-history` to `--no-history`
 - Renamed `--reader-mode-images` to `--images`, replacing `CLX_READER_MODE_IMAGES`
+- Images require a terminal with Kitty graphics support
 - Favorites moved to `favorites.toml` (migrated automatically)
 
 ## 4.5

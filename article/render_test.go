@@ -10,13 +10,15 @@ import (
 	"github.com/bensadeh/circumflex/scrollbar"
 	"github.com/bensadeh/circumflex/style"
 
+	xansi "github.com/charmbracelet/x/ansi"
+	"github.com/charmbracelet/x/ansi/kitty"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 var (
-	showImages = ImageOptions{Show: true}
-	hideImages = ImageOptions{}
+	showImages = ImageOptions{Show: true, Kitty: true}
+	hideImages = ImageOptions{Kitty: true}
 )
 
 func TestRenderList_GlyphsByDepth(t *testing.T) {
@@ -151,122 +153,15 @@ func TestRenderImage_FigureLabel(t *testing.T) {
 	assert.Equal(t, "  ▂▄▆ Figure a caption", ansi.Strip(renderImage(b, 80, showImages)))
 }
 
-func TestRenderImageArt_HalfBlockGrid(t *testing.T) {
-	t.Parallel()
-
-	// 8x8 image: top half red, bottom half blue.
-	img := image.NewRGBA(image.Rect(0, 0, 8, 8))
-
-	for y := range 8 {
-		for x := range 8 {
-			if y < 4 {
-				img.Set(x, y, color.RGBA{255, 0, 0, 255})
-			} else {
-				img.Set(x, y, color.RGBA{0, 0, 255, 255})
-			}
-		}
-	}
-
-	art := renderImageArt(img, 0, 4, nil)
-	lines := strings.Split(art, "\n")
-
-	// Square image at 4 cols -> 4 pixel rows -> 2 text rows.
-	require.Len(t, lines, 2)
-
-	for _, line := range lines {
-		assert.Equal(t, 4, strings.Count(line, "▀"), "each row is cols wide")
-	}
-
-	// The top text row spans the red band: red foreground over red background.
-	assert.Contains(t, lines[0], "\x1b[38;2;255;0;0;48;2;255;0;0m")
-	// The bottom text row spans the blue band.
-	assert.Contains(t, lines[1], "\x1b[38;2;0;0;255;48;2;0;0;255m")
-}
-
-func TestRenderImageArt_TransparentPixelsKeepTerminalBackground(t *testing.T) {
-	t.Parallel()
-
-	// 8x8 image: the top quarter transparent, the rest red — a logo cut-out.
-	img := image.NewNRGBA(image.Rect(0, 0, 8, 8))
-
-	for y := 2; y < 8; y++ {
-		for x := range 8 {
-			img.Set(x, y, color.NRGBA{255, 0, 0, 255})
-		}
-	}
-
-	art := renderImageArt(img, 0, 4, nil)
-	lines := strings.Split(art, "\n")
-	require.Len(t, lines, 2)
-
-	// The first row pairs a transparent top pixel with an opaque bottom one:
-	// a lower half-block on the default background, never a painted ▀.
-	assert.Equal(t, 4, strings.Count(lines[0], "▄"))
-	assert.Contains(t, lines[0], "\x1b[49;38;2;255;0;0m▄")
-	assert.NotContains(t, lines[0], "▀")
-	assert.NotContains(t, lines[0], "48;2;", "no background color painted over the transparent half")
-
-	// The fully opaque second row keeps the two-pixel ▀ cells.
-	assert.Equal(t, 4, strings.Count(lines[1], "▀"))
-	assert.Contains(t, lines[1], "\x1b[38;2;255;0;0;48;2;255;0;0m")
-}
-
-func TestRenderImageArt_FullyTransparentRowRendersBlank(t *testing.T) {
-	t.Parallel()
-
-	// 8x8 image: top half transparent, bottom half green.
-	img := image.NewNRGBA(image.Rect(0, 0, 8, 8))
-
-	for y := 4; y < 8; y++ {
-		for x := range 8 {
-			img.Set(x, y, color.NRGBA{0, 255, 0, 255})
-		}
-	}
-
-	art := renderImageArt(img, 0, 4, nil)
-	lines := strings.Split(art, "\n")
-	require.Len(t, lines, 2)
-
-	assert.Equal(t, 4, strings.Count(lines[0], " "), "the transparent band is spaces")
-	assert.NotContains(t, lines[0], "38;2;", "no color painted in the transparent band")
-	assert.Equal(t, 4, strings.Count(lines[1], "▀"))
-	assert.Contains(t, lines[1], "\x1b[38;2;0;255;0;48;2;0;255;0m")
-}
-
-func TestRenderImageArt_CompositesOnKnownBackground(t *testing.T) {
-	t.Parallel()
-
-	// 8x8 image: top half fully transparent, bottom half half-alpha red.
-	img := image.NewNRGBA(image.Rect(0, 0, 8, 8))
-
-	for y := 4; y < 8; y++ {
-		for x := range 8 {
-			img.Set(x, y, color.NRGBA{255, 0, 0, 128})
-		}
-	}
-
-	art := renderImageArt(img, 0, 4, color.White)
-	lines := strings.Split(art, "\n")
-	require.Len(t, lines, 2)
-
-	// Fully transparent pixels stay unpainted even with a known background,
-	// so translucent terminals keep showing through.
-	assert.Equal(t, 4, strings.Count(lines[0], " "))
-	assert.NotContains(t, lines[0], "38;2;")
-
-	// Half-alpha red over white blends to pink instead of clamping to a
-	// hard opaque red or dropping the pixel.
-	assert.Contains(t, lines[1], "\x1b[38;2;255;127;127;48;2;255;127;127m▀")
-}
-
 func TestRenderImage_UsesArtWhenDecoded(t *testing.T) {
 	t.Parallel()
 
-	b := &block{kind: blockImage, img: solidImage(), spans: []span{{text: "a caption"}}}
+	b := pixelBlock()
+	b.spans = []span{{text: "a caption"}}
 
 	rendered := renderImage(b, 80, showImages)
 
-	assert.Contains(t, rendered, "▀", "renders half-blocks, not the label")
+	assert.Contains(t, rendered, string(kitty.Placeholder), "renders placeholder cells, not the label")
 	assert.NotContains(t, rendered, imageCircle, "the ●●● label is replaced by the image")
 	assert.Contains(t, ansi.Strip(rendered), "a caption", "caption stays under the image")
 }
@@ -276,7 +171,8 @@ func TestRenderImage_CentersScaledDownArt(t *testing.T) {
 
 	const width = 80
 
-	b := &block{kind: blockImage, img: solidImage(), spans: []span{{text: "a caption"}}}
+	b := pixelBlock()
+	b.spans = []span{{text: "a caption"}}
 
 	lines := strings.Split(ansi.Strip(renderImage(b, width, showImages)), "\n")
 
@@ -288,7 +184,8 @@ func TestRenderImage_CentersScaledDownArt(t *testing.T) {
 	require.Greater(t, len(lines), 1)
 
 	for _, line := range lines[:len(lines)-1] {
-		assert.Equal(t, strings.Repeat(" ", artPad)+strings.Repeat("▀", artCols), line)
+		assert.Equal(t, strings.Repeat(" ", artPad), line[:artPad], "art hangs centered in the column")
+		assert.Equal(t, artPad+artCols, xansi.StringWidth(line), "placeholder cells measure like ordinary text")
 	}
 
 	assert.Equal(t, strings.Repeat(" ", captionPad)+"a caption", lines[len(lines)-1])
@@ -297,12 +194,13 @@ func TestRenderImage_CentersScaledDownArt(t *testing.T) {
 func TestRenderImage_FallsBackToLabelWhenHidden(t *testing.T) {
 	t.Parallel()
 
-	b := &block{kind: blockImage, img: solidImage(), spans: []span{{text: "a caption"}}}
+	b := pixelBlock()
+	b.spans = []span{{text: "a caption"}}
 
 	rendered := ansi.Strip(renderImage(b, 80, hideImages))
 
 	assert.Equal(t, "  ●●● Image a caption", rendered, "a decoded image still shows the label when images are hidden")
-	assert.NotContains(t, rendered, "▀")
+	assert.NotContains(t, rendered, string(kitty.Placeholder))
 }
 
 func TestImageCols_ScalesToDisplaySize(t *testing.T) {
@@ -386,7 +284,7 @@ func TestRenderBlocks_ImageToggleKeepsBlockCount(t *testing.T) {
 
 	blocks := []block{
 		{kind: blockParagraph, spans: []span{{text: "before"}}},
-		{kind: blockImage, img: solidImage()},
+		*pixelBlock(),
 		{kind: blockParagraph, spans: []span{{text: "after"}}},
 	}
 
@@ -397,8 +295,8 @@ func TestRenderBlocks_ImageToggleKeepsBlockCount(t *testing.T) {
 	// both renders producing the same block sequence.
 	require.Len(t, hidden, len(shown))
 
-	assert.Contains(t, renderBlocks(blocks, 80, 80, showImages), "▀")
-	assert.NotContains(t, renderBlocks(blocks, 80, 80, hideImages), "▀")
+	assert.Contains(t, renderBlocks(blocks, 80, 80, showImages), string(kitty.Placeholder))
+	assert.NotContains(t, renderBlocks(blocks, 80, 80, hideImages), string(kitty.Placeholder))
 }
 
 func TestRenderWithHeader_ReturnsBlockStarts(t *testing.T) {
@@ -619,17 +517,15 @@ func TestRenderParagraph_HyperlinkSurvivesWrapping(t *testing.T) {
 	}
 }
 
-// solidImage returns a 32×32 image filled with one opaque color.
-func solidImage() image.Image {
-	img := image.NewRGBA(image.Rect(0, 0, 32, 32))
-
-	for y := range 32 {
-		for x := range 32 {
-			img.Set(x, y, color.RGBA{128, 64, 32, 255})
-		}
+// pixelBlock returns an image block a graphics-capable terminal can draw: a
+// 32×32 thumbnail, small enough on the page to scale down within the column.
+func pixelBlock() *block {
+	return &block{
+		kind:      blockImage,
+		imgSize:   image.Pt(32, 32),
+		dispWidth: 32,
+		kitty:     &kittyImage{png: []byte("png-bytes"), id: 3},
 	}
-
-	return img
 }
 
 func TestRenderCode_LabelsDetectedLanguage(t *testing.T) {

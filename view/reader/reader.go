@@ -111,7 +111,6 @@ func (m *Model) renderArticle() article.Rendered {
 	cellW, cellH := graphics.CellSize()
 	images := article.ImageOptions{
 		Show:       m.showImages,
-		TerminalBG: m.termBG,
 		Kitty:      graphics.Enabled(),
 		CellWidth:  cellW,
 		CellHeight: cellH,

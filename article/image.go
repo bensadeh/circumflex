@@ -38,39 +38,13 @@ const (
 	minImageHeight    = 32 // also short strips: badges (28px in the tallest shields style), dividers
 )
 
-// tier is one fidelity level an image is kept at. Every fetched image derives
-// one copy per tier, each bounded by its own budget in tierMaxPx.
-type tier int
-
-const (
-	tierHalfBlock tier = iota // truecolor ▀ art, sampled at cell resolution; see boundImage
-	tierKitty                 // the copy a Kitty-graphics terminal composites; see kittyPNG, decodeSVG
-)
-
-// tierMaxPx is each tier's bounding box (long side) in pixels. A budget is
-// reachable only through the tier it serves, and the exhaustive linter
-// demands an entry per tier, so a new tier cannot ship without declaring one.
-var tierMaxPx = map[tier]int{
-	tierHalfBlock: 512, // rendering samples far below this; see boundImage
-	// The terminal stretches the copy across the placement's device pixels —
-	// a full content column on a retina display runs ~1500–2000 of them, and
-	// any shortfall is upscaled into blur. 2048 keeps the copy on the
-	// downscale side of that; kittyPNG never inflates smaller sources.
-	tierKitty: 2048,
-}
-
-// fetchTargetPx is the resolution a downloaded source must cover: one fetch
-// feeds every tier's copy, so the most demanding tier sets the target.
-// Derived from tierMaxPx rather than restated beside it, so a raised or
-// added budget moves it automatically.
-func fetchTargetPx() int {
-	target := 0
-	for _, budget := range tierMaxPx {
-		target = max(target, budget)
-	}
-
-	return target
-}
+// maxImagePx bounds an image's long side in pixels: the copy a Kitty-graphics
+// terminal composites, and so equally the resolution a downloaded source must
+// cover. The terminal stretches the copy across the placement's device pixels
+// — a full content column on a retina display runs ~1500–2000 of them, and any
+// shortfall is upscaled into blur. 2048 keeps the copy on the downscale side of
+// that; kittyPNG never inflates smaller sources.
+const maxImagePx = 2048
 
 // kittyImage is one image block's terminal-side life: the PNG the terminal
 // receives, the ID its placeholder cells dereference, and the placement
@@ -86,7 +60,7 @@ type kittyImage struct {
 }
 
 // fetchImages downloads and decodes the image blocks in place, resolving
-// relative sources against base. Failures leave block.img nil, so rendering
+// relative sources against base. Failures leave block.kitty nil, so rendering
 // falls back to the text label; images displayed below the size floors are
 // marked decorative instead, so rendering can drop them. Only the first
 // maxImages are fetched.
@@ -147,44 +121,23 @@ func fetchImages(ctx context.Context, blocks []block, base *nurl.URL) {
 				return nil
 			}
 
-			// Materialize the intrinsic-width fallback before downscaling
-			// so imageCols still sizes from the on-page geometry.
+			// Materialize the intrinsic-width fallback so imageCols still
+			// sizes from the on-page geometry.
 			if blocks[i].dispWidth <= 0 {
 				blocks[i].dispWidth = size.X
 			}
 
+			// Only the PNG outlives the fetch: the terminal holds the pixels,
+			// and rendering needs the raster's dimensions alone to keep the
+			// cell grid's aspect ratio honest.
 			blocks[i].kitty = newKittyImage(img, raw)
-			blocks[i].img = boundImage(img)
+			blocks[i].imgSize = img.Bounds().Size()
 
 			return nil
 		})
 	}
 
 	_ = g.Wait()
-}
-
-// boundImage downscales img to the half-block tier's budget. Rendering
-// samples at most the content column's width in cells and maxImageRows*2
-// pixel rows — far below this box — so nothing visible is lost, while a
-// full-size photo would otherwise hold tens of megabytes of pixels for a
-// handful of glyphs.
-func boundImage(img image.Image) image.Image {
-	bounds := img.Bounds()
-	budget := tierMaxPx[tierHalfBlock]
-
-	width, height := bounds.Dx(), bounds.Dy()
-	if width <= budget && height <= budget {
-		return img
-	}
-
-	scale := float64(budget) / float64(max(width, height))
-	dst := image.NewRGBA(image.Rect(0, 0,
-		max(1, int(float64(width)*scale+0.5)),
-		max(1, int(float64(height)*scale+0.5))))
-
-	xdraw.ApproxBiLinear.Scale(dst, dst.Bounds(), img, bounds, xdraw.Src, nil)
-
-	return dst
 }
 
 // fetchImage downloads and decodes one image. A non-zero viewBox identifies
@@ -221,12 +174,11 @@ func fetchImage(ctx context.Context, client *resty.Client, base *nurl.URL, rawUR
 
 var pngMagic = []byte("\x89PNG\r\n\x1a\n")
 
-// newKittyImage retains the high-resolution copy a Kitty-graphics terminal
-// displays in place of half-block art. The terminal-global image ID is
-// claimed here, at fetch time, so every render and walk-back of this
-// article agrees on it. Retention is unconditional — the standalone article
-// command parses before the terminal is probed, so gating on the probe here
-// would leave it permanently low-res.
+// newKittyImage retains the copy a Kitty-graphics terminal composites. The
+// terminal-global image ID is claimed here, at fetch time, so every render
+// and walk-back of this article agrees on it. Retention is unconditional —
+// the standalone article command parses before the terminal is probed, so
+// gating on the probe here would leave it permanently label-only.
 func newKittyImage(img image.Image, raw []byte) *kittyImage {
 	data := kittyPNG(img, raw)
 	if data == nil {
@@ -236,13 +188,13 @@ func newKittyImage(img image.Image, raw []byte) *kittyImage {
 	return &kittyImage{png: data, id: graphics.AllocID()}
 }
 
-// kittyPNG bounds img to the Kitty tier's budget and encodes it as the PNG
-// the terminal will receive. Sources that already are a PNG within bounds
-// pass through byte-for-byte. The downscale uses Catmull-Rom: this is the
-// copy whose entire point is fidelity, and fetch goroutines have the time.
+// kittyPNG bounds img to maxImagePx and encodes it as the PNG the terminal
+// will receive. Sources that already are a PNG within bounds pass through
+// byte-for-byte. The downscale uses Catmull-Rom: this is the copy whose
+// entire point is fidelity, and fetch goroutines have the time.
 func kittyPNG(img image.Image, raw []byte) []byte {
 	bounds := img.Bounds()
-	budget := tierMaxPx[tierKitty]
+	budget := maxImagePx
 
 	if bytes.HasPrefix(raw, pngMagic) && bounds.Dx() <= budget && bounds.Dy() <= budget {
 		return raw
@@ -292,11 +244,11 @@ func refererFor(page, target *nurl.URL) string {
 // images fetch on up to imageConcurrency goroutines.
 var svgMu sync.Mutex
 
-// decodeSVG rasterizes an SVG at the Kitty fidelity ceiling — a vector has
-// no intrinsic resolution, so the raster is drawn once at the Kitty tier's
-// budget on the long side and every lower tier downscales from there. canvas
-// renders text and markers, so diagram labels and arrowheads survive the trip
-// to pixels. The returned viewBox is the only intrinsic geometry the file has;
+// decodeSVG rasterizes an SVG at the fidelity ceiling — a vector has no
+// intrinsic resolution, so the raster is drawn at maxImagePx on the long side
+// regardless of the size the page gives it. canvas renders text and markers,
+// so diagram labels and arrowheads survive the trip to pixels. The returned
+// viewBox is the only intrinsic geometry the file has;
 // its units are arbitrary (Discord's logo measures 126×20 — millimeters), so
 // sizing keys off it or the declared display width, never off the raster
 // (canvas restates the geometry in its own millimetre space). An SVG that
@@ -366,7 +318,7 @@ func drawSVG(data []byte) (img image.Image) {
 		return nil
 	}
 
-	resolution := canvas.Resolution(float64(tierMaxPx[tierKitty]) / max(c.W, c.H))
+	resolution := canvas.Resolution(float64(maxImagePx) / max(c.W, c.H))
 
 	return rasterizer.Draw(c, resolution, canvas.DefaultColorSpace)
 }

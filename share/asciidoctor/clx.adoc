@@ -248,10 +248,11 @@ Default: "top,best,ask,show,favorites".
 Set the comment width to _n_ columns.
 
 *--images*::
-Show article images in Reader Mode as blocks of colored text (Unicode half-blocks) instead of a text placeholder.
+Show article images in Reader Mode instead of a text placeholder.
 Off by default; enable it per-run with this flag or persistently in _config.toml_.
-Images are scaled to their size on the page, centered, and look best in a terminal with truecolor support.
-JPEG, PNG, GIF, WebP and SVG images are drawn; other formats keep the placeholder.
+Drawing images requires a terminal that supports the Kitty graphics protocol, such as Ghostty, Kitty or Konsole; everywhere else the placeholder is shown and this setting has no effect.
+Images are scaled to their size on the page and centered.
+JPEG, PNG, GIF, WebP, AVIF and SVG images are drawn; other formats keep the placeholder.
 
 *--indent*=_n_::
 Set the comment section indent size to _n_ spaces per nesting level.

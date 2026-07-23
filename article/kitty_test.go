@@ -15,7 +15,7 @@ func TestKittyGrid(t *testing.T) {
 	t.Parallel()
 
 	// A full-width square image on default 1:2 cells: half as many rows as
-	// columns, like the half-block art.
+	// columns.
 	cols, rows := kittyGrid(640, 800, 800, 70, 0, 0)
 	assert.Equal(t, 70, cols)
 	assert.Equal(t, 35, rows)
@@ -33,17 +33,9 @@ func TestKittyGrid(t *testing.T) {
 }
 
 func kittyTestBlock() *block {
-	img := image.NewRGBA(image.Rect(0, 0, 800, 400))
-
-	// Opaque pixels, so the half-block fallback paints cells rather than
-	// transparent blanks.
-	for i := 3; i < len(img.Pix); i += 4 {
-		img.Pix[i] = 0xff
-	}
-
 	return &block{
 		kind:      blockImage,
-		img:       img,
+		imgSize:   image.Pt(800, 400),
 		kitty:     &kittyImage{png: []byte("png-bytes"), id: 42},
 		dispWidth: 640,
 	}
@@ -73,38 +65,41 @@ func TestRenderKittyArt(t *testing.T) {
 	assert.Equal(t, 10, b.kitty.wantRows)
 }
 
-func TestCachedImagePartSwitchesWithMode(t *testing.T) {
+func TestCachedImagePartTracksCellSize(t *testing.T) {
 	t.Parallel()
 
 	b := kittyTestBlock()
 
-	kittyPart := cachedImagePart(b, 44, ImageOptions{Show: true, Kitty: true})
-	assert.Contains(t, kittyPart, string(kitty.Placeholder))
+	wide := cachedImagePart(b, 44, ImageOptions{Show: true, Kitty: true})
+	assert.Contains(t, wide, string(kitty.Placeholder))
 
-	blockPart := cachedImagePart(b, 44, ImageOptions{Show: true})
-	assert.NotContains(t, blockPart, string(kitty.Placeholder), "half-block art for terminals without graphics")
-	assert.Contains(t, blockPart, "▀")
+	square := cachedImagePart(b, 44, ImageOptions{Show: true, Kitty: true, CellWidth: 10, CellHeight: 10})
+	assert.NotEqual(t, wide, square, "a font-size change re-renders rather than serving the stale grid")
 
-	assert.Equal(t, kittyPart, cachedImagePart(b, 44, ImageOptions{Show: true, Kitty: true}),
-		"switching back re-renders rather than serving the stale mode")
+	assert.Equal(t, wide, cachedImagePart(b, 44, ImageOptions{Show: true, Kitty: true}),
+		"the original geometry re-renders too")
 }
 
-func TestFigureArtOnlyAtKittyTier(t *testing.T) {
+func TestImageRendersAsLabelWithoutGraphicsSupport(t *testing.T) {
 	t.Parallel()
 
 	b := kittyTestBlock()
-	b.figure = true
 	b.spans = []span{{text: "a caption"}}
 
-	kittyPart := renderImage(b, 44, ImageOptions{Show: true, Kitty: true})
-	assert.Contains(t, kittyPart, string(kitty.Placeholder), "high resolution keeps the chart legible")
+	shown := renderImage(b, 44, ImageOptions{Show: true, Kitty: true})
+	assert.Contains(t, shown, string(kitty.Placeholder), "the terminal composites the pixels")
 
-	halfBlockPart := xansi.Strip(renderImage(b, 44, ImageOptions{Show: true}))
-	assert.Contains(t, halfBlockPart, "▂▄▆ Figure a caption", "half-block art would smear the chart")
-	assert.NotContains(t, halfBlockPart, "▀")
+	unsupported := xansi.Strip(renderImage(b, 44, ImageOptions{Show: true}))
+	assert.Contains(t, unsupported, "●●● Image a caption",
+		"a terminal that cannot draw the image describes it instead")
+	assert.NotContains(t, unsupported, string(kitty.Placeholder))
 
-	hiddenPart := xansi.Strip(renderImage(b, 44, ImageOptions{Kitty: true}))
-	assert.Contains(t, hiddenPart, "▂▄▆ Figure a caption")
+	b.figure = true
+	figure := xansi.Strip(renderImage(b, 44, ImageOptions{Show: true}))
+	assert.Contains(t, figure, "▂▄▆ Figure a caption", "a known chart says so")
+
+	hidden := xansi.Strip(renderImage(b, 44, ImageOptions{Kitty: true}))
+	assert.Contains(t, hidden, "▂▄▆ Figure a caption")
 }
 
 func TestPendingKittyWork(t *testing.T) {

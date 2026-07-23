@@ -155,6 +155,7 @@ func defaultConfigBody() string {
 #nerdfonts = true
 
 # Show article images in Reader Mode.
+# Requires a terminal with Kitty graphics support (Ghostty, Kitty, Konsole).
 #images = false
 
 # Categories shown in the header, in order.

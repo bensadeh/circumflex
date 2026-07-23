@@ -3,6 +3,7 @@ package article
 import (
 	"context"
 	"fmt"
+	"image"
 	nurl "net/url"
 	"strings"
 
@@ -110,17 +111,17 @@ func NewParsedFromHTML(src string) *Parsed {
 	return &Parsed{blocks: parseBlocks(node)}
 }
 
-// HasImages reports whether any block holds decoded image pixels the h/l
-// toggle can reveal. Figures count only when the terminal composites Kitty
-// graphics — below that tier they render their description either way.
+// HasImages reports whether any block holds pixels the h/l toggle can reveal.
+// Only a terminal speaking the Kitty graphics protocol can draw them, so
+// without it there is nothing to toggle and every image stays a label.
 func (p *Parsed) HasImages(kitty bool) bool {
+	if !kitty {
+		return false
+	}
+
 	for i := range p.blocks {
 		b := &p.blocks[i]
-		if b.kind != blockImage || b.img == nil {
-			continue
-		}
-
-		if !b.figure || (kitty && b.kitty != nil) {
+		if b.kind == blockImage && b.kitty != nil && b.imgSize != (image.Point{}) {
 			return true
 		}
 	}

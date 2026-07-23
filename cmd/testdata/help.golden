@@ -20,6 +20,7 @@
                            [2m(default [31m70[0m[2m)[0m
   [36m-h[0m, [36m--help[0m               show help
       [36m--images[0m             show article images in reader mode
+                           (requires a terminal with Kitty graphics support)
       [36m--indent[0m [33mint[0m         set the comment section indent size
                            [2m(default [31m1[0m[2m)[0m
   [36m-n[0m, [36m--nerdfonts[0m          enable or disable Nerd Fonts

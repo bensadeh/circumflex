@@ -50,13 +50,13 @@ func TestFetchImages_TinyImageIsDecorativeNotFailed(t *testing.T) {
 
 	fetchImages(context.Background(), blocks, base)
 
-	assert.Nil(t, blocks[0].img)
+	assert.Zero(t, blocks[0].imgSize)
 	assert.True(t, blocks[0].decorative, "below the size floors marks the block decorative")
 
-	assert.NotNil(t, blocks[1].img)
+	assert.NotZero(t, blocks[1].imgSize)
 	assert.False(t, blocks[1].decorative)
 
-	assert.Nil(t, blocks[2].img)
+	assert.Zero(t, blocks[2].imgSize)
 	assert.True(t, blocks[2].decorative, "a repo badge is a short strip, not an image")
 }
 
@@ -84,7 +84,7 @@ func TestFetchImages_FetchesKnownFigures(t *testing.T) {
 
 	fetchImages(context.Background(), blocks, base)
 
-	require.NotNil(t, blocks[0].img, "a Kitty-tier terminal renders the figure's pixels")
+	require.NotZero(t, blocks[0].imgSize, "a terminal with graphics support renders the figure's pixels")
 	assert.NotNil(t, blocks[0].kitty)
 }
 
@@ -118,7 +118,7 @@ func TestFetchImages_SendsRefererForHotlinkProtection(t *testing.T) {
 
 	fetchImages(context.Background(), blocks, base)
 
-	assert.NotNil(t, blocks[0].img, "same-origin image requests carry the page URL as Referer")
+	assert.NotZero(t, blocks[0].imgSize, "same-origin image requests carry the page URL as Referer")
 }
 
 func TestRefererFor(t *testing.T) {
@@ -147,23 +147,19 @@ func TestHasImages(t *testing.T) {
 
 	decoded := &Parsed{blocks: []block{
 		{kind: blockParagraph},
-		{kind: blockImage, img: image.NewRGBA(image.Rect(0, 0, 100, 100))},
+		{
+			kind:    blockImage,
+			imgSize: image.Pt(100, 100),
+			kitty:   &kittyImage{png: []byte("png-bytes"), id: 7},
+		},
 	}}
-	assert.True(t, decoded.HasImages(false))
+	assert.True(t, decoded.HasImages(true))
+	assert.False(t, decoded.HasImages(false), "without graphics support there is nothing to toggle")
 
 	undecoded := &Parsed{blocks: []block{{kind: blockImage, imageURL: "https://example.com/a.png"}}}
-	assert.False(t, undecoded.HasImages(false), "a failed fetch leaves nothing to toggle")
+	assert.False(t, undecoded.HasImages(true), "a failed fetch leaves nothing to toggle")
 
-	figure := &Parsed{blocks: []block{{
-		kind:   blockImage,
-		figure: true,
-		img:    image.NewRGBA(image.Rect(0, 0, 100, 100)),
-		kitty:  &kittyImage{png: []byte("png-bytes"), id: 7},
-	}}}
-	assert.True(t, figure.HasImages(true))
-	assert.False(t, figure.HasImages(false), "below the Kitty tier the toggle never reveals a figure")
-
-	assert.False(t, NewParsedFromHTML("<p>text only</p>").HasImages(false))
+	assert.False(t, NewParsedFromHTML("<p>text only</p>").HasImages(true))
 }
 
 func TestFetchImages_SVGFallsBackToRasterization(t *testing.T) {
@@ -182,12 +178,14 @@ func TestFetchImages_SVGFallsBackToRasterization(t *testing.T) {
 
 	fetchImages(context.Background(), blocks, base)
 
-	require.NotNil(t, blocks[0].img)
-	assert.Equal(t, tierMaxPx[tierHalfBlock], blocks[0].img.Bounds().Dx(), "the retained copy keeps its own bound")
-	assert.Equal(t, tierMaxPx[tierHalfBlock]/2, blocks[0].img.Bounds().Dy())
+	require.NotNil(t, blocks[0].kitty)
+	assert.Equal(t, image.Pt(maxImagePx, maxImagePx/2), blocks[0].imgSize, "the raster is drawn at the ceiling")
 	assert.Equal(t, 100, blocks[0].dispWidth, "sizing comes from the viewBox, not the raster")
 
-	r, g, b, a := blocks[0].img.At(256, 128).RGBA()
+	rasterized, err := png.Decode(bytes.NewReader(blocks[0].kitty.png))
+	require.NoError(t, err)
+
+	r, g, b, a := rasterized.At(1024, 512).RGBA()
 	assert.Equal(t, []uint32{0xffff, 0x0, 0x0, 0xffff}, []uint32{r, g, b, a}, "the rect fill is painted")
 }
 
@@ -210,11 +208,11 @@ func TestFetchImages_SmallUnitViewBoxLogoJudgedByDeclaredWidth(t *testing.T) {
 
 	fetchImages(context.Background(), blocks, base)
 
-	require.NotNil(t, blocks[0].img, "a logo with a small-unit viewBox is not a tracking pixel")
+	require.NotZero(t, blocks[0].imgSize, "a logo with a small-unit viewBox is not a tracking pixel")
 	assert.False(t, blocks[0].decorative)
 	assert.Equal(t, 210, blocks[0].dispWidth)
 
-	assert.Nil(t, blocks[1].img)
+	assert.Zero(t, blocks[1].imgSize)
 	assert.True(t, blocks[1].decorative, "without a declared width the viewBox is the only size signal")
 }
 
@@ -246,10 +244,10 @@ func TestFetchImages_UndrawableSVGJudgedByDeclaredGeometry(t *testing.T) {
 
 	fetchImages(context.Background(), blocks, base)
 
-	assert.Nil(t, blocks[0].img)
+	assert.Zero(t, blocks[0].imgSize)
 	assert.True(t, blocks[0].decorative, "a badge stays a badge when rasterization fails")
 
-	assert.Nil(t, blocks[1].img)
+	assert.Zero(t, blocks[1].imgSize)
 	assert.False(t, blocks[1].decorative, "a large undrawable vector keeps its honest label")
 }
 
@@ -283,14 +281,14 @@ func TestDecodeSVG_RasterizesAtKittyCeiling(t *testing.T) {
 	img, viewBox := decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8192 4096"></svg>`))
 
 	require.NotNil(t, img)
-	assert.Equal(t, tierMaxPx[tierKitty], img.Bounds().Dx(), "oversized viewBoxes rasterize down to the ceiling")
-	assert.Equal(t, tierMaxPx[tierKitty]/2, img.Bounds().Dy(), "aspect ratio is preserved")
+	assert.Equal(t, maxImagePx, img.Bounds().Dx(), "oversized viewBoxes rasterize down to the ceiling")
+	assert.Equal(t, maxImagePx/2, img.Bounds().Dy(), "aspect ratio is preserved")
 	assert.Equal(t, image.Pt(8192, 4096), viewBox)
 
 	img, viewBox = decodeSVG([]byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 126.5 20.22"></svg>`))
 
 	require.NotNil(t, img)
-	assert.Equal(t, tierMaxPx[tierKitty], img.Bounds().Dx(), "small viewBoxes rasterize up to the ceiling")
+	assert.Equal(t, maxImagePx, img.Bounds().Dx(), "small viewBoxes rasterize up to the ceiling")
 	assert.Equal(t, 327, img.Bounds().Dy())
 	assert.Equal(t, image.Pt(127, 20), viewBox, "the viewBox rounds to the nearest unit")
 }
@@ -406,7 +404,7 @@ func TestFetchImages_RetainsHighResKittyCopy(t *testing.T) {
 	}
 
 	served := encode(100)
-	huge := encode(tierMaxPx[tierKitty] * 2)
+	huge := encode(maxImagePx * 2)
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/huge.png" {
@@ -437,34 +435,9 @@ func TestFetchImages_RetainsHighResKittyCopy(t *testing.T) {
 
 	reencoded, err := png.Decode(bytes.NewReader(blocks[1].kitty.png))
 	require.NoError(t, err)
-	assert.Equal(t, tierMaxPx[tierKitty], reencoded.Bounds().Dx(), "oversized sources re-encode within the kitty bound")
-	assert.Equal(t, tierMaxPx[tierKitty]/2, reencoded.Bounds().Dy(), "aspect ratio is preserved")
+	assert.Equal(t, maxImagePx, reencoded.Bounds().Dx(), "oversized sources re-encode within the bound")
+	assert.Equal(t, maxImagePx/2, reencoded.Bounds().Dy(), "aspect ratio is preserved")
 
-	assert.Equal(t, tierMaxPx[tierHalfBlock], blocks[1].img.Bounds().Dx(), "the half-block fallback keeps its own tighter bound")
-}
-
-func TestBoundImage_DownscalesToFitBox(t *testing.T) {
-	t.Parallel()
-
-	bounded := boundImage(image.NewRGBA(image.Rect(0, 0, 2560, 1440)))
-
-	assert.Equal(t, tierMaxPx[tierHalfBlock], bounded.Bounds().Dx())
-	assert.Equal(t, 288, bounded.Bounds().Dy(), "aspect ratio is preserved")
-}
-
-func TestBoundImage_TallImageBoundsHeight(t *testing.T) {
-	t.Parallel()
-
-	bounded := boundImage(image.NewRGBA(image.Rect(0, 0, 400, 2000)))
-
-	assert.Equal(t, 102, bounded.Bounds().Dx())
-	assert.Equal(t, tierMaxPx[tierHalfBlock], bounded.Bounds().Dy())
-}
-
-func TestBoundImage_KeepsSmallImagesUntouched(t *testing.T) {
-	t.Parallel()
-
-	src := image.NewRGBA(image.Rect(0, 0, 100, 400))
-
-	assert.Same(t, src, boundImage(src))
+	assert.Equal(t, image.Pt(maxImagePx*2, maxImagePx), blocks[1].imgSize,
+		"the retained size is the source's, which the aspect ratio derives from")
 }

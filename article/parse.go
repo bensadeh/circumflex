@@ -414,10 +414,10 @@ func splitSrcset(srcset string) []srcsetCandidate {
 }
 
 // rightSizedFromSrcset picks from a width-annotated srcset: the smallest
-// candidate that still covers fetchTargetPx — anything larger is downloaded
-// only to be thrown away by the per-tier bounds (a full-size WordPress
-// original runs ~5x the bytes of its right-sized variant) — or the largest
-// one when none does. A set advertising widths never defers to src: browsers
+// candidate that still covers maxImagePx — anything larger is downloaded only
+// to be thrown away by the bound (a full-size WordPress original runs ~5x the
+// bytes of its right-sized variant) — or the largest one when none does. A set
+// advertising widths never defers to src: browsers
 // treat src as a last-resort fallback there, so lazy-loading sites park a
 // tiny preview in it (VG's is 40px wide) that must not beat a real
 // candidate. Returns "" only when no candidate is both width-annotated and
@@ -426,7 +426,6 @@ func rightSizedFromSrcset(srcset string) string {
 	var covering, largest string
 
 	coveringWidth, largestWidth := 0, 0
-	target := fetchTargetPx()
 
 	for _, candidate := range splitSrcset(srcset) {
 		if candidate.descriptor == "" || !isFetchableImageURL(candidate.url) {
@@ -442,7 +441,7 @@ func rightSizedFromSrcset(srcset string) string {
 			largest, largestWidth = candidate.url, width
 		}
 
-		if width >= target && (coveringWidth == 0 || width < coveringWidth) {
+		if width >= maxImagePx && (coveringWidth == 0 || width < coveringWidth) {
 			covering, coveringWidth = candidate.url, width
 		}
 	}

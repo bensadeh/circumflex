@@ -3,7 +3,6 @@ package article
 import (
 	"fmt"
 	"image"
-	"image/color"
 	"regexp"
 	"strconv"
 	"strings"
@@ -21,27 +20,22 @@ const (
 	sectionMarker     = "■"
 	imageCircle       = "●"
 	blockIndent       = "  "
-	maxImageRows      = 40     // cap rendered image height so a tall image can still scroll past
-	minImageCols      = 8      // floor so a scaled-down thumbnail stays visible
-	referenceColumnPx = 640    // display width in CSS px that maps to the full content column
-	minAlpha          = 0x8000 // without a known terminal background, below half coverage renders transparent
+	maxImageRows      = 40  // cap rendered image height so a tall image can still scroll past
+	minImageCols      = 8   // floor so a scaled-down thumbnail stays visible
+	referenceColumnPx = 640 // display width in CSS px that maps to the full content column
 )
 
 // ImageOptions controls how image blocks render.
 type ImageOptions struct {
-	// Show renders decoded images as half-block art instead of a text label.
+	// Show renders image blocks as pixels instead of a text label.
 	Show bool
-	// TerminalBG is the terminal's background color, used to composite
-	// semi-transparent pixels. When nil, pixels below half coverage render
-	// fully transparent instead of blended.
-	TerminalBG color.Color
-	// Kitty renders image blocks as Kitty-graphics placeholder cells
-	// instead of half-block art; the terminal composites the separately
-	// transmitted pixels wherever those cells land.
+	// Kitty reports that the terminal speaks the Kitty graphics protocol.
+	// Without it there is no way to draw an image, so every image block
+	// renders as its label regardless of Show.
 	Kitty bool
 	// CellWidth and CellHeight are one terminal cell's pixel dimensions,
-	// which keep a Kitty image's aspect ratio honest in cells. Zero assumes
-	// cells twice as tall as wide, like the half-block art does.
+	// which keep an image's aspect ratio honest in cells. Zero assumes cells
+	// twice as tall as wide.
 	CellWidth, CellHeight int
 }
 
@@ -344,23 +338,17 @@ func styleLines(text string, styleFn func(string) string) string {
 }
 
 func renderImage(b *block, width int, images ImageOptions) string {
-	// A figure's content is its text — axis labels, values — which survives
-	// Kitty compositing but not half-block art, so below that tier the
-	// description renders in place of the pixels.
-	art := images.Show && b.img != nil
-	if b.figure && (!images.Kitty || b.kitty == nil) {
-		art = false
-	}
-
-	if art {
-		if part := cachedImagePart(b, width, images); part != "" {
-			return part
+	if images.Kitty && b.kitty != nil && b.imgSize != (image.Point{}) {
+		if images.Show {
+			if part := cachedImagePart(b, width, images); part != "" {
+				return part
+			}
+		} else {
+			// A hidden image still records the grid a show at this width would
+			// lay down, so its pixels reach the terminal while it is hidden and
+			// the first show composites as instantly as every later one.
+			recordKittyGrid(b, width-2*len(blockIndent), images.CellWidth, images.CellHeight)
 		}
-	} else if images.Kitty && b.kitty != nil && b.img != nil {
-		// A hidden image still records the grid a show at this width would
-		// lay down, so its pixels reach the terminal while it is hidden and
-		// the first show composites as instantly as every later one.
-		recordKittyGrid(b, width-2*len(blockIndent), images.CellWidth, images.CellHeight)
 	}
 
 	// An image skipped as decoration (badges, divider strips, tracking
@@ -385,32 +373,18 @@ func renderImage(b *block, width int, images ImageOptions) string {
 }
 
 // artKey identifies the inputs the rendered art depends on, so a cached part
-// survives image toggling but not a resize, background change or a switch
-// between half-block and Kitty rendering.
+// survives image toggling but not a resize or a font-size change.
 type artKey struct {
-	width   int // never 0 for a real render, so the zero key means "not cached"
-	bg      color.RGBA
-	bgKnown bool
-	kitty   bool
-	cellW   int
-	cellH   int
+	width int // never 0 for a real render, so the zero key means "not cached"
+	cellW int
+	cellH int
 }
 
-// cachedImagePart renders an image block's art — Kitty placeholder cells
-// when the terminal composites pixels, half-block art otherwise — with its
+// cachedImagePart renders an image block's placeholder cells with its
 // centered caption, memoized on the block: hiding and re-showing images (or
-// scrolling re-renders) reuse it instead of re-sampling every pixel.
+// scrolling re-renders) reuse it instead of re-deriving the grid.
 func cachedImagePart(b *block, width int, images ImageOptions) string {
-	key := artKey{width: width}
-	if images.TerminalBG != nil {
-		key.bg, _ = color.RGBAModel.Convert(images.TerminalBG).(color.RGBA)
-		key.bgKnown = true
-	}
-
-	if images.Kitty && b.kitty != nil {
-		key.kitty, key.cellW, key.cellH = true, images.CellWidth, images.CellHeight
-	}
-
+	key := artKey{width: width, cellW: images.CellWidth, cellH: images.CellHeight}
 	if b.artFor == key {
 		return b.art
 	}
@@ -419,14 +393,7 @@ func cachedImagePart(b *block, width int, images ImageOptions) string {
 	// stops short of the right edge like the left.
 	inner := width - 2*len(blockIndent)
 
-	var art string
-
-	if key.kitty {
-		art = renderKittyArt(b, inner, key.cellW, key.cellH)
-	} else {
-		art = renderImageArt(b.img, b.dispWidth, inner, images.TerminalBG)
-	}
-
+	art := renderKittyArt(b, inner, key.cellW, key.cellH)
 	part := ""
 
 	if art != "" {
@@ -486,22 +453,21 @@ func renderKittyArt(b *block, availCols, cellW, cellH int) string {
 // image whose pixels travel ahead of its first show. Degenerate geometry
 // records nothing.
 func recordKittyGrid(b *block, availCols, cellW, cellH int) (cols, rows int, ok bool) {
-	bounds := b.img.Bounds()
-	if availCols < 1 || bounds.Dx() <= 0 || bounds.Dy() <= 0 {
+	if availCols < 1 || b.imgSize.X <= 0 || b.imgSize.Y <= 0 {
 		return 0, 0, false
 	}
 
-	cols, rows = kittyGrid(b.dispWidth, bounds.Dx(), bounds.Dy(), availCols, cellW, cellH)
+	cols, rows = kittyGrid(b.dispWidth, b.imgSize.X, b.imgSize.Y, availCols, cellW, cellH)
 	b.kitty.wantCols, b.kitty.wantRows = cols, rows
 
 	return cols, rows, true
 }
 
-// kittyGrid sizes an image's cell grid: columns from the same on-page-size
-// mapping as the half-block art, rows from the image's aspect ratio scaled
-// by the cell's pixel shape. The terminal stretches the image to fill the
-// grid exactly, so the rows must account for cells being taller than wide —
-// 1:2 when the terminal never reported its cell size.
+// kittyGrid sizes an image's cell grid: columns from its on-page size, rows
+// from the image's aspect ratio scaled by the cell's pixel shape. The terminal
+// stretches the image to fill the grid exactly, so the rows must account for
+// cells being taller than wide — 1:2 when the terminal never reported its cell
+// size.
 func kittyGrid(dispWidth, imgW, imgH, availCols, cellW, cellH int) (cols, rows int) {
 	cols = imageCols(dispWidth, imgW, availCols)
 
@@ -519,98 +485,6 @@ func kittyGrid(dispWidth, imgW, imgH, availCols, cellW, cellH int) (cols, rows i
 	return cols, rows
 }
 
-// renderImageArt downsamples img and prints it with the upper half-block ▀:
-// the glyph's foreground color is the top pixel and the cell's background color
-// is the pixel below it, so one text row shows two pixel rows. The width tracks
-// how large the image appears on the page (dispWidth, or its intrinsic size
-// when unknown) relative to a reference column, so a thumbnail stays a
-// thumbnail rather than filling availCols.
-func renderImageArt(img image.Image, dispWidth, availCols int, bg color.Color) string {
-	bounds := img.Bounds()
-	if availCols < 1 || bounds.Dx() <= 0 || bounds.Dy() <= 0 {
-		return ""
-	}
-
-	gridW := imageCols(dispWidth, bounds.Dx(), availCols)
-
-	gridH := max(2, gridW*bounds.Dy()/bounds.Dx())
-
-	if maxH := maxImageRows * 2; gridH > maxH {
-		gridH = maxH
-		gridW = max(1, gridH*bounds.Dx()/bounds.Dy())
-	}
-
-	if gridH%2 == 1 {
-		gridH++
-	}
-
-	var sb strings.Builder
-
-	rows := gridH / 2
-
-	for row := range rows {
-		for col := range gridW {
-			top := samplePixel(img, bounds, col, 2*row, gridW, gridH, bg)
-			bottom := samplePixel(img, bounds, col, 2*row+1, gridW, gridH, bg)
-			writeCell(&sb, top, bottom)
-		}
-
-		sb.WriteString(ansi.Reset)
-
-		if row < rows-1 {
-			sb.WriteByte('\n')
-		}
-	}
-
-	return sb.String()
-}
-
-// rgb8 holds the decimal strings for 0-255: a screenful of art writes
-// hundreds of thousands of cells, too hot for fmt.
-var rgb8 = func() (s [256]string) {
-	for i := range s {
-		s[i] = strconv.Itoa(i)
-	}
-
-	return s
-}()
-
-// writeCell prints one terminal cell covering two pixels. Transparent pixels
-// keep the terminal's own background (a logo cut-out shows the terminal, not a
-// guessed page color), so a half-covered cell uses the half-block that leaves
-// the transparent side unpainted.
-func writeCell(sb *strings.Builder, top, bottom pixel) {
-	switch {
-	case top.opaque && bottom.opaque:
-		sb.WriteString("\x1b[38;2;")
-		writeRGB(sb, top)
-		sb.WriteString(";48;2;")
-		writeRGB(sb, bottom)
-		sb.WriteString("m▀")
-
-	case top.opaque:
-		sb.WriteString("\x1b[49;38;2;")
-		writeRGB(sb, top)
-		sb.WriteString("m▀")
-
-	case bottom.opaque:
-		sb.WriteString("\x1b[49;38;2;")
-		writeRGB(sb, bottom)
-		sb.WriteString("m▄")
-
-	default:
-		sb.WriteString("\x1b[49m ")
-	}
-}
-
-func writeRGB(sb *strings.Builder, p pixel) {
-	sb.WriteString(rgb8[p.r])
-	sb.WriteByte(';')
-	sb.WriteString(rgb8[p.g])
-	sb.WriteByte(';')
-	sb.WriteString(rgb8[p.b])
-}
-
 // imageCols maps an image's on-page size to a terminal column count: its
 // display width in CSS px (falling back to the intrinsic width) as a fraction
 // of referenceColumnPx, floored so it stays visible and capped at availCols.
@@ -623,70 +497,6 @@ func imageCols(dispWidth, intrinsicWidth, availCols int) int {
 	cols := availCols * px / referenceColumnPx
 
 	return min(availCols, max(minImageCols, cols))
-}
-
-type pixel struct {
-	r, g, b uint8
-	opaque  bool
-}
-
-// samplePixel nearest-neighbour samples the source pixel for grid cell
-// (gx, gy). Fully transparent pixels stay unpainted so the terminal shows
-// through. Semi-transparent ones composite onto the terminal's background
-// when it is known; without it, pixels below half coverage count as
-// transparent and the rest are un-premultiplied so a semi-transparent edge
-// keeps its own hue instead of darkening toward black.
-func samplePixel(img image.Image, bounds image.Rectangle, gx, gy, gridW, gridH int, bg color.Color) pixel {
-	sx := bounds.Min.X + gx*bounds.Dx()/gridW
-	sy := bounds.Min.Y + gy*bounds.Dy()/gridH
-
-	var r, g, b, a uint32
-
-	// boundImage returns *image.RGBA, so most samples take the fast path
-	// instead of boxing a color.Color per pixel.
-	if rgba, ok := img.(*image.RGBA); ok {
-		c := rgba.RGBAAt(sx, sy)
-		r, g, b, a = uint32(c.R)*0x101, uint32(c.G)*0x101, uint32(c.B)*0x101, uint32(c.A)*0x101
-	} else {
-		r, g, b, a = img.At(sx, sy).RGBA()
-	}
-
-	switch {
-	case a == 0xffff:
-		return pixel{r: uint8(r >> 8), g: uint8(g >> 8), b: uint8(b >> 8), opaque: true}
-
-	case bg != nil:
-		if a == 0 {
-			return pixel{}
-		}
-
-		return compositePixel(r, g, b, a, bg)
-
-	case a < minAlpha:
-		return pixel{}
-
-	default:
-		return pixel{
-			r:      uint8(r * 0xffff / a >> 8),
-			g:      uint8(g * 0xffff / a >> 8),
-			b:      uint8(b * 0xffff / a >> 8),
-			opaque: true,
-		}
-	}
-}
-
-// compositePixel blends a premultiplied pixel onto the terminal background —
-// the same math a browser uses to draw the image over the page.
-func compositePixel(r, g, b, a uint32, bg color.Color) pixel {
-	bgR, bgG, bgB, _ := bg.RGBA()
-	inv := 0xffff - a
-
-	return pixel{
-		r:      uint8((r + inv*bgR/0xffff) >> 8),
-		g:      uint8((g + inv*bgG/0xffff) >> 8),
-		b:      uint8((b + inv*bgB/0xffff) >> 8),
-		opaque: true,
-	}
 }
 
 // centerLines pads each line to sit centered within width, so a scaled-down
@@ -716,8 +526,8 @@ func imageLabel() string {
 }
 
 // figureLabel marks a described graphic — one drawn in markup with no bitmap
-// at all, or a chart whose pixels only a Kitty-tier terminal renders legibly:
-// an ascending mini bar chart in place of the image circles.
+// at all, or a chart standing in for pixels this terminal cannot draw: an
+// ascending mini bar chart in place of the image circles.
 func figureLabel() string {
 	return graphicLabel("▂", "▄", "▆", " Figure ")
 }

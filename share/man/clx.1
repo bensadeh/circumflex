@@ -2,12 +2,12 @@
 .\"     Title: clx
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.26
-.\"      Date: 2026-07-18
+.\"      Date: 2026-07-23
 .\"    Manual: circumflex
 .\"    Source: circumflex 5.0-dev
 .\"  Language: English
 .\"
-.TH "CLX" "1" "2026-07-18" "circumflex 5.0\-dev" "circumflex"
+.TH "CLX" "1" "2026-07-23" "circumflex 5.0\-dev" "circumflex"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -376,10 +376,11 @@ Set the comment width to \fIn\fP columns.
 .sp
 \fB\-\-images\fP
 .RS 4
-Show article images in Reader Mode as blocks of colored text (Unicode half\-blocks) instead of a text placeholder.
+Show article images in Reader Mode instead of a text placeholder.
 Off by default; enable it per\-run with this flag or persistently in \fIconfig.toml\fP.
-Images are scaled to their size on the page, centered, and look best in a terminal with truecolor support.
-JPEG, PNG, GIF, WebP and SVG images are drawn; other formats keep the placeholder.
+Drawing images requires a terminal that supports the Kitty graphics protocol, such as Ghostty, Kitty or Konsole; everywhere else the placeholder is shown and this setting has no effect.
+Images are scaled to their size on the page and centered.
+JPEG, PNG, GIF, WebP, AVIF and SVG images are drawn; other formats keep the placeholder.
 .RE
 .sp
 \fB\-\-indent\fP=\fIn\fP
