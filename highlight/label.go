@@ -19,6 +19,7 @@ var brandColors = map[string]lipgloss.Style{
 	"TypeScript": lipgloss.NewStyle().Foreground(lipgloss.BrightBlue),
 	"C":          lipgloss.NewStyle().Foreground(lipgloss.BrightBlue),
 	"C++":        lipgloss.NewStyle().Foreground(lipgloss.BrightMagenta),
+	"C#":         lipgloss.NewStyle().Foreground(lipgloss.Magenta),
 	"Bash":       lipgloss.NewStyle().Foreground(lipgloss.Green),
 	"Shell":      lipgloss.NewStyle().Foreground(lipgloss.Green),
 	"Ruby":       lipgloss.NewStyle().Foreground(lipgloss.BrightRed),

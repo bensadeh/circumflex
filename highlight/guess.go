@@ -57,6 +57,7 @@ var detectors = []struct {
 	{"go", isGo},
 	{"rust", isRust},
 	{"python", isPython},
+	{"csharp", isCSharp},
 	{"jsx", isJSX},
 	{"javascript", isJavaScript},
 }
@@ -495,6 +496,108 @@ func isPython(text string, lines []string) bool {
 		containsAny(text, []string{"elif ", " is None", "f\""}),
 		strings.Contains(text, "print("),
 	)
+}
+
+// isCSharp keys on markers the rest of the C family doesn't write: a using
+// directive (C++ says using namespace or aliases with =, Java says import),
+// $"" interpolation, and bracketed attributes where Rust writes #[] and Java
+// writes @. Access modifiers are shared with Java, so they corroborate but
+// never carry a block alone.
+func isCSharp(text string, lines []string) bool {
+	// A terminated var statement and a LINQ operator are each conventions the
+	// languages that could otherwise claim the block break: Go declares vars
+	// without the semicolon, and Java and JavaScript name methods in
+	// camelCase. Neither half is trusted alone — Java also writes var.
+	if csharpVar(lines) && linqCall(text) {
+		return true
+	}
+
+	return atLeastTwo(
+		csharpUsing(lines),
+		csharpInterpolation(text),
+		csharpAttribute(lines),
+		anyLinePrefix(lines, "namespace "),
+		containsAny(text, []string{"Console.Write", "nameof(", "async Task", "string[] args", "IEnumerable<"}),
+		anyLinePrefix(lines, "public ", "private ", "protected ", "internal "),
+	)
+}
+
+// csharpUsing accepts the directive form only: C++'s using either names a
+// namespace, qualifies with ::, or assigns an alias, and all three shapes are
+// lowercase or carry an =.
+func csharpUsing(lines []string) bool {
+	for _, l := range lines {
+		t := strings.TrimSpace(l)
+
+		rest, ok := strings.CutPrefix(t, "using ")
+		if !ok || !strings.HasSuffix(t, ";") ||
+			strings.Contains(t, "=") || strings.Contains(t, "::") {
+			continue
+		}
+
+		rest = strings.TrimPrefix(rest, "static ")
+		if rest != "" && rest[0] >= 'A' && rest[0] <= 'Z' {
+			return true
+		}
+	}
+
+	return false
+}
+
+// csharpInterpolation finds an interpolated string opener. A "$" literal
+// holds the same two bytes in the opposite order of nesting, so a preceding
+// quote or backslash disqualifies the match.
+func csharpInterpolation(text string) bool {
+	for i := 0; i+1 < len(text); i++ {
+		if text[i] != '$' || text[i+1] != '"' {
+			continue
+		}
+
+		if i == 0 || (text[i-1] != '"' && text[i-1] != '\\') {
+			return true
+		}
+	}
+
+	return false
+}
+
+// csharpAttribute matches an attribute on its own line: Rust brackets its
+// derives behind #, Java writes @Override, and a markdown link closes on ).
+func csharpAttribute(lines []string) bool {
+	for _, l := range lines {
+		t := strings.TrimSpace(l)
+		if len(t) < 3 || t[0] != '[' || !strings.HasSuffix(t, "]") {
+			continue
+		}
+
+		if t[1] >= 'A' && t[1] <= 'Z' {
+			return true
+		}
+	}
+
+	return false
+}
+
+func csharpVar(lines []string) bool {
+	for _, l := range lines {
+		t := strings.TrimSpace(l)
+		if strings.HasPrefix(t, "var ") && strings.HasSuffix(t, ";") {
+			return true
+		}
+	}
+
+	return false
+}
+
+// linqCall names the standard query operators, kept a closed set: an open
+// PascalCase-call rule would swallow Go's fmt.Println and every Windows API
+// binding written in another language.
+func linqCall(text string) bool {
+	return containsAny(text, []string{
+		".Where(", ".Select(", ".SelectMany(", ".OrderBy(", ".OrderByDescending(",
+		".ThenBy(", ".GroupBy(", ".FirstOrDefault(", ".SingleOrDefault(",
+		".ToList(", ".ToArray(", ".ToDictionary(", ".Aggregate(", ".Distinct(",
+	})
 }
 
 func isJavaScript(text string, lines []string) bool {

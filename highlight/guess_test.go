@@ -369,6 +369,65 @@ func TestGuessLang(t *testing.T) {
 			"",
 		},
 		{
+			"csharp attributes and interpolation",
+			"using Unity.Pipeline.Commands;\nusing UnityEngine;\n\n" +
+				"public static class MyPipelineCommands\n{\n" +
+				"    [CliCommand(\"greet\", \"Log a greeting and return its length\")]\n" +
+				"    public static int Greet(\n" +
+				"        [CliArg(\"name\", \"Who to greet\", Required = true)] string name)\n    {\n" +
+				"        Debug.Log($\"Hello, {name}!\");\n        return name.Length;\n    }\n}",
+			"csharp",
+		},
+		{
+			"csharp linq is not javascript",
+			"var users = people.Where(p => p.Age > 18).Select(p => p.Name);\nvar count = users.Count();",
+			"csharp",
+		},
+		{
+			"csharp console app",
+			"using System;\n\nnamespace Hello\n{\n    class Program\n    {\n" +
+				"        static void Main(string[] args) => Console.WriteLine(\"hi\");\n    }\n}",
+			"csharp",
+		},
+		{
+			"java class is not csharp",
+			"public class Greeter {\n    public static void main(String[] args) {\n" +
+				"        System.out.println(\"hi\");\n    }\n}",
+			"",
+		},
+		{
+			"java var declaration is not csharp",
+			"public void load() {\n    var records = new ArrayList<String>();\n" +
+				"    records.add(reader.readLine());\n}",
+			"",
+		},
+		{
+			"cpp namespace without include is not csharp",
+			"namespace detail {\n\nint helper(int x) {\n    return x * 2;\n}\n\n}",
+			"",
+		},
+		{
+			"cpp using namespace is not csharp",
+			"using namespace std;\n\nint main() {\n    cout << \"hi\";\n}",
+			"",
+		},
+		{
+			"toml table is not a csharp attribute",
+			"[Server]\nhost = \"localhost\"\nport = 8080",
+			"",
+		},
+		{
+			"markdown link line is not a csharp attribute",
+			"[Read the docs](https://example.com/docs)\n[File an issue](https://example.com/issues)",
+			"",
+		},
+		{
+			"typescript namespace is not csharp",
+			"namespace Validation {\n    export interface StringValidator {\n" +
+				"        isAcceptable(s: string): boolean;\n    }\n}",
+			"",
+		},
+		{
 			"nix flake",
 			"{\n  inputs.nixpkgs.url = \"github:NixOS/nixpkgs/nixos-unstable\";\n\n" +
 				"  outputs = { self, nixpkgs }: {\n" +
