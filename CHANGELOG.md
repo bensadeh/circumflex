@@ -17,6 +17,7 @@
 - arXiv links now open the full paper instead of the abstract page, with equations converted to Unicode math
 - Add support for displaying AVIF images
 - Fix Mermaid diagrams not rendering
+- Fix missing labels and titles in Matplotlib charts and other SVGs
 - Markdown pages are now rendered and fully formatted
 - Charts and diagrams now render as described figures
 

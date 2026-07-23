@@ -312,12 +312,22 @@ func decodeSVG(data []byte) (img image.Image, viewBox image.Point) {
 	return rasterizeSVG(data), viewBox
 }
 
-// rasterizeSVG draws the SVG, retrying without its text if the first attempt
-// yields nothing. canvas panics when a <text> element names a font the host
-// cannot load (getFontFace → LoadSystemFont), so on a box missing the declared
-// or default family the retry renders the shapes alone — oksvg's text-less
-// output — rather than losing the whole figure to its label.
+// rasterizeSVG draws the SVG, working down from the copy that renders most to
+// the copy that renders at all. The instanced copy goes first because canvas
+// draws no part of <use> (see expandSVGUse); it is a rewrite of the source, so
+// a copy that will not draw costs only the attempt, and the original still
+// gets the passes it would have had. The last of those drops the text: canvas
+// panics when a <text> element names a font the host cannot load (getFontFace
+// → LoadSystemFont), so on a box missing the declared or default family the
+// retry renders the shapes alone — oksvg's text-less output — rather than
+// losing the whole figure to its label.
 func rasterizeSVG(data []byte) image.Image {
+	if instanced := expandSVGUse(data); instanced != nil {
+		if img := drawSVG(instanced); img != nil {
+			return img
+		}
+	}
+
 	if img := drawSVG(data); img != nil {
 		return img
 	}
