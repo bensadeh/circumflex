@@ -82,12 +82,12 @@ func commentsLabel(comments, newComments int, enableNerdFonts bool) string {
 	}
 }
 
-// idLabel is the story's item id, the group closing the bottom rule against
-// its right corner. The color sits on the glyph when there is one and on the
-// number when the word "ID" has to carry the meaning alone, the same way the
-// score and comment labels above it color the icon or the value. Reads
-// "ID 12345" either way. A story with no id (id is zero) has no label and
-// leaves the closing rule plain.
+// idLabel is the story's item id, the group opening the bottom rule from its
+// left corner, under the byline. The color sits on the glyph when there is
+// one and on the number when the word "ID" has to carry the meaning alone,
+// the same way the score and comment labels above it color the icon or the
+// value. Reads "ID 12345" either way. A story with no id (id is zero) has no
+// label and leaves the closing rule plain.
 func idLabel(id int, enableNerdFonts bool) string {
 	if id <= 0 {
 		return ""

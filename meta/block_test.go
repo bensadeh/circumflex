@@ -153,9 +153,9 @@ func TestOpeningRuleCarriesBylineAndStats(t *testing.T) {
 		"a rule too narrow for any text stays plain")
 }
 
-// The story id closes the bottom rule against its right corner, the way the
-// stats close the top. A story with no id leaves the closing rule plain, and
-// the rule spans the full width either way.
+// The story id opens the bottom rule from its left corner, under the byline
+// heading the top. A story with no id leaves the closing rule plain, and the
+// rule spans the full width either way.
 func TestClosingRuleCarriesID(t *testing.T) {
 	bottom := func(d Data, width int) string {
 		rows := strings.Split(CommentSection(d).Render(width), "\n")
@@ -167,8 +167,8 @@ func TestClosingRuleCarriesID(t *testing.T) {
 		withID := bottom(Data{Author: "alice", TimeAgo: "2 hours ago", Points: 1, ID: 12345}, width)
 		assert.Contains(t, xansi.Strip(withID), "ID 12345",
 			"the story id must close the bottom rule: %q", withID)
-		assert.True(t, strings.HasSuffix(xansi.Strip(withID), "12345 ──╯"),
-			"the id must sit against the bottom-right corner: %q", withID)
+		assert.True(t, strings.HasPrefix(xansi.Strip(withID), "╰── ID 12345 "),
+			"the id must sit against the bottom-left corner: %q", withID)
 		assert.Equal(t, width, xansi.StringWidth(withID),
 			"the closing rule must reach the frame's edge exactly: %q", withID)
 

@@ -44,7 +44,7 @@ type Data struct {
 type Block struct {
 	title         string   // sits in the frame's opening rule like a help-panel title
 	labels        []string // right-aligned group closing the opening rule; sheds from the left when narrow
-	closingLabels []string // right-aligned group closing the bottom rule (the story id); empty leaves it plain
+	closingLabels []string // left-aligned group opening the bottom rule (the story id); empty leaves it plain
 	body          func(width int) string
 }
 

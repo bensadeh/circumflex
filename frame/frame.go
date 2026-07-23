@@ -59,15 +59,15 @@ func OpeningRule(title string, labels []string, width int) string {
 		style.Faint(" "+rule(width-titleCells)+"╮")
 }
 
-// ClosingRule is the frame's bottom border. A label group closes it against
-// the bottom-right corner the way the opening rule's labels close the top: a
-// single rule cell between labels, shedding from the left when the rule can't
-// carry them, and falling back to a plain border when nothing fits — the
-// frame never gives up its own corners.
+// ClosingRule is the frame's bottom border. A label group opens it from the
+// bottom-left corner, sitting under the title the opening rule leads with: a
+// single rule cell between labels, shedding from the right when the rule
+// can't carry them, and falling back to a plain border when nothing fits —
+// the frame never gives up its own corners.
 func ClosingRule(labels []string, width int) string {
 	labels = slices.DeleteFunc(slices.Clone(labels), func(l string) bool { return l == "" })
 
-	for ; len(labels) > 0; labels = labels[1:] {
+	for ; len(labels) > 0; labels = labels[:len(labels)-1] {
 		group := strings.Join(labels, style.Faint(" "+rule(1)+" "))
 		fill := width - lipgloss.Width(group) - lead - 4 // the corners + a space each side of the group
 
@@ -75,7 +75,7 @@ func ClosingRule(labels []string, width int) string {
 			continue
 		}
 
-		return style.Faint("╰"+rule(fill)+" ") + group + style.Faint(" "+rule(lead)+"╯")
+		return style.Faint("╰"+rule(lead)+" ") + group + style.Faint(" "+rule(fill)+"╯")
 	}
 
 	return style.Faint("╰" + rule(width-2) + "╯")
