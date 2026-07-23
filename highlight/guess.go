@@ -21,6 +21,12 @@ func GuessLang(text string) string {
 
 	lines := strings.Split(text, "\n")
 
+	// Lisp sits outside the table: the table pairs a predicate with one fixed
+	// language, and a confirmed s-expression block still has to name its dialect.
+	if isLisp(text, lines) {
+		return lispDialect(text)
+	}
+
 	for _, d := range detectors {
 		if d.match(text, lines) {
 			return d.lang
@@ -36,6 +42,7 @@ var detectors = []struct {
 }{
 	{"diff", isDiff},
 	{"json", isJSON},
+	{"nix", isNix},
 	{"console", isShellSession},
 	{"jsx", isComponentJSX},
 	{"html", isHTML},

@@ -311,6 +311,88 @@ func TestGuessLang(t *testing.T) {
 			"std::sort(items.begin(), items.end(),\n    [](const Item& a, const Item& b) -> bool { return a.id < b.id; });",
 			"",
 		},
+		{
+			"elisp use-package",
+			"(use-package eglot\n  :ensure nil\n  :hook ((scala-ts-mode . eglot-ensure)\n" +
+				"         (before-save . eglot-format-buffer)))",
+			"elisp",
+		},
+		{
+			"elisp fragment opening on a keyword",
+			":bind ((\"C-c i e\" . eglot)\n       (\"C-c i r\" . eglot-rename))\n:init\n" +
+				"(setq eglot-autoshutdown t)",
+			"elisp",
+		},
+		{
+			"elisp advice with unbalanced excerpt",
+			"(defun my/eglot-uri-fix (orig-fn uri &rest args)\n" +
+				"  (if (string-prefix-p \"jar:///\" uri)\n" +
+				"      (apply orig-fn (replace-regexp-in-string \"^jar:///\" \"jar:file:///\" uri) args)\n" +
+				"    (apply orig-fn uri args)))\n\n(advice-add 'eglot--uri-to-path :around #'my/eglot-uri-fix)",
+			"elisp",
+		},
+		{
+			"clojure",
+			"(ns app.core\n  (:require [clojure.string :as str]))\n\n(defn greet [name]\n" +
+				"  (println (str \"Hello, \" name)))",
+			"clojure",
+		},
+		{
+			"scheme",
+			"(define (factorial n)\n  (if (= n 0)\n      1\n      (* n (factorial (- n 1)))))",
+			"scheme",
+		},
+		{
+			"common lisp",
+			"(defpackage :myapp\n  (:use :cl))\n\n(in-package :myapp)\n\n(defun main ()\n" +
+				"  (format t \"hello~%\"))",
+			"common-lisp",
+		},
+		{
+			"lisp without dialect evidence stays generic",
+			"(mapcar (lambda (x) (* x x))\n        (list 1 2 3 4))",
+			"lisp",
+		},
+		{
+			"lettered list is not lisp",
+			"(a) open the config file\n(b) add the hook\n(c) restart the editor",
+			"",
+		},
+		{
+			"citations are not lisp",
+			"(Smith 2019)\n(Jones and Ng 2020)\n(Chen 2021)",
+			"",
+		},
+		{
+			"parenthesized arithmetic is not lisp",
+			"(x + y) * (a - b)\n(p - q) / (r + s)",
+			"",
+		},
+		{
+			"nix flake",
+			"{\n  inputs.nixpkgs.url = \"github:NixOS/nixpkgs/nixos-unstable\";\n\n" +
+				"  outputs = { self, nixpkgs }: {\n" +
+				"    devShells.default = nixpkgs.legacyPackages.x86_64-linux.mkShell {\n" +
+				"      buildInputs = with nixpkgs.legacyPackages.x86_64-linux; [ go gopls ];\n" +
+				"    };\n  };\n}",
+			"nix",
+		},
+		{
+			"nix let-in derivation",
+			"let\n  pkgs = import <nixpkgs> { inherit system; };\nin\n" +
+				"pkgs.mkShell {\n  buildInputs = [ pkgs.go ];\n}",
+			"nix",
+		},
+		{
+			"gradle assignment is not nix",
+			"plugins {\n    id 'java'\n}\n\nsourceCompatibility = 1.8\ntargetCompatibility = 1.8",
+			"",
+		},
+		{
+			"java field block is not nix",
+			"{\n    private int retries = 3;\n    private String host = \"localhost\";\n}",
+			"",
+		},
 	}
 
 	for _, tt := range tests {

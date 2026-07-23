@@ -54,6 +54,14 @@ func Label(lang string) string {
 	case name == "react":
 		name = "JSX"
 
+	case name == "EmacsLisp":
+		name = "Emacs Lisp"
+
+	// The generic alias claims the family and nothing more, so a guess with no
+	// dialect evidence borrows the Common Lisp lexer without borrowing its name.
+	case name == "Common Lisp" && strings.EqualFold(lang, "lisp"):
+		name = "Lisp"
+
 	case name == "markdown":
 		name = "Markdown"
 
