@@ -118,7 +118,7 @@ Quit to prompt.
 .RE
 .SH "COMMENT SECTION"
 .sp
-The comment section has two interaction modes, toggled with \fITab\fP.
+The comment section has two interaction modes: read mode and navigate mode.
 .SS "Read Mode"
 .sp
 The default mode.
@@ -180,9 +180,16 @@ Open the comment section of the next/previous story on the front page.
 Toggle collapse all.
 .RE
 .sp
-\fITab\fP
+\fIa\fP
 .RS 4
 Switch to navigate mode.
+.RE
+.sp
+\fITab\fP
+.RS 4
+Open the link selector.
+\fIj\fP/\fIk\fP step between the links in the comment section; \fIEnter\fP opens the selected link in Reader Mode, and \fIq\fP or \fIEsc\fP walks back.
+Links to other Hacker News discussions open as comment sections; links that cannot be read in Reader Mode are dimmed and inert.
 .RE
 .sp
 \fIi\fP, \fI?\fP
@@ -246,7 +253,7 @@ Toggle collapse for current comment.
 .sp
 \fITab\fP
 .RS 4
-Switch to read mode.
+Open the link selector.
 .RE
 .sp
 \fIi\fP, \fI?\fP
@@ -254,9 +261,9 @@ Switch to read mode.
 Bring up the help screen.
 .RE
 .sp
-\fIq\fP, \fIEsc\fP
+\fIa\fP, \fIq\fP, \fIEsc\fP
 .RS 4
-Go back.
+Switch to read mode.
 .RE
 .SH "READER MODE"
 .sp

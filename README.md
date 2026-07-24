@@ -60,7 +60,8 @@ In `read mode`, you can scroll using the usual vim bindings. You can also jump b
 n</kbd>/<kbd>N</kbd>), and you can expand and collapse threads by quote level (<kbd>h</kbd>/<kbd>l</kbd>) or all at once
 (<kbd>Enter</kbd>).
 
-In `navigate mode`, you can individually select comments and collapse specific threads.
+Press <kbd>a</kbd> to enter `navigate mode`, where you can individually select comments and collapse specific threads.
+Press <kbd>Esc</kbd> to return to `read mode`.
 
 <p align="center">
   <img src="screenshots/comment-section-1.png" width="49%" alt="comment section"/>
@@ -80,14 +81,20 @@ headers using <kbd>n</kbd>/<kbd>N</kbd>, and you can scroll using the usual vim 
   <img src="screenshots/reader-mode-2.png" width="49%" alt="reader mode"/>
 </p>
 
+### Link selector
+
+Press <kbd>Tab</kbd> to select links in the comment section or in Reader Mode. Move between links with
+<kbd>j</kbd>/<kbd>k</kbd> and open the selected one with <kbd>Enter</kbd>.
+
+Links open in place: articles in Reader Mode, links to other Hacker News discussions in the comment section. Press
+<kbd>q</kbd> to go back to where you were.
+
 ### Wide view
 
-On wide terminals, the comment section and Reader Mode open in a pane next to the front page instead of replacing it.
-The split kicks in at 180 columns; tune the threshold (or force it with `always`/`never`) using
-`-w`/`--wide-view`:
+On wide terminals (180 characters, `circumflex` opens in dual pane mode. Override it with
 
 ```console
-clx --wide-view always
+clx --wide-view never
 ```
 
 ### Search
@@ -118,7 +125,7 @@ Visited submissions are marked as read, and comments added since your last visit
 History is stored in `history.json` in the cache directory. Disable tracking with `-d`/`--no-history`, or clear it with:
 
 ```console
-clx clear
+clx clear-history
 ```
 
 ### Categories
@@ -132,28 +139,15 @@ clx --categories top,new,best
 
 Available categories are `top`, `best`, `new`, `ask`, `show`, `jobs` and `favorites`.
 
-### Configuration
+### Theme and Configuration
 
-Every flag can be set persistently in `config.toml`. To customize, write out the default config:
+`circumflex` uses your terminal's color scheme by default. If you want to customize the colors or set any flags
+persistently, use the following commands to write out the default config to the config directory:
 
 ```console
 clx default-config
-```
-
-Flags take precedence over the config file.
-
-The config directory is `~/.config/circumflex` on Linux and `~/Library/Application Support/circumflex` on macOS; the
-cache directory is `~/.cache/circumflex` and `~/Library/Caches/circumflex`.
-
-### Theme
-
-`circumflex` uses your terminal's color scheme by default. To customize, write out the default config and edit it:
-
-```console
 clx default-theme
 ```
-
-The theme lives in `theme.toml` in the config directory. 
 
 ## Keymaps
 

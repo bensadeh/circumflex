@@ -78,7 +78,7 @@ Quit to prompt.
 
 == Comment Section
 
-The comment section has two interaction modes, toggled with _Tab_.
+The comment section has two interaction modes: read mode and navigate mode.
 
 === Read Mode
 
@@ -119,8 +119,13 @@ Open the comment section of the next/previous story on the front page.
 _Enter_::
 Toggle collapse all.
 
-_Tab_::
+_a_::
 Switch to navigate mode.
+
+_Tab_::
+Open the link selector.
+_j_/_k_ step between the links in the comment section; _Enter_ opens the selected link in Reader Mode, and _q_ or _Esc_ walks back.
+Links to other Hacker News discussions open as comment sections; links that cannot be read in Reader Mode are dimmed and inert.
 
 _i_, _?_::
 Bring up the help screen.
@@ -161,13 +166,13 @@ _Enter_::
 Toggle collapse for current comment.
 
 _Tab_::
-Switch to read mode.
+Open the link selector.
 
 _i_, _?_::
 Bring up the help screen.
 
-_q_, _Esc_::
-Go back.
+_a_, _q_, _Esc_::
+Switch to read mode.
 
 == Reader Mode
 
