@@ -13,7 +13,7 @@
   <img src="screenshots/main-view.png" alt="Main view"/>
 </p>
 
-### Main features
+### Main Features
 
 - 🛋 **Everything in one place** — read both the comment section and articles in Reader Mode
 - 🌈 **Syntax highlighting** — syntax-aware formatting for comments and headlines
@@ -68,7 +68,7 @@ In `navigate mode`, you can individually select comments and collapse specific t
 </p>
 
 
-`circumflex` is read-only and does not support logging in, voting or commenting.
+`circumflex` is read-only and does not support logging in, voting, or commenting.
 
 ### Reader Mode
 
