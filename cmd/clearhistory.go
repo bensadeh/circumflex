@@ -8,9 +8,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func clearCmd() *cobra.Command {
+func clearHistoryCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:                   "clear",
+		Use:                   "clear-history",
+		Aliases:               []string{"clear"},
 		Short:                 "clear the history of visited IDs",
 		Args:                  cobra.NoArgs,
 		DisableFlagsInUseLine: true,

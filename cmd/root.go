@@ -72,7 +72,7 @@ func Root() *cobra.Command {
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 
 	rootCmd.AddCommand(addCmd())
-	rootCmd.AddCommand(clearCmd())
+	rootCmd.AddCommand(clearHistoryCmd())
 	rootCmd.AddCommand(commentsCmd())
 	rootCmd.AddCommand(articleCmd())
 	rootCmd.AddCommand(urlCmd())

@@ -37,6 +37,7 @@
 **Breaking Changes**
 
 - Renamed `--disable-history` to `--no-history`
+- Renamed `clx clear` to `clx clear-history`
 - Renamed `--reader-mode-images` to `--show-images-on-open`, replacing `CLX_READER_MODE_IMAGES`
 - Images require a terminal with Kitty graphics support; override the detection with `--graphics always|never`
 - Favorites moved to `favorites.toml` (migrated automatically)

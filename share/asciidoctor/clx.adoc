@@ -304,7 +304,7 @@ Go directly to the comment section for a given item _ID_ without first going thr
 *clx url* [_URL_]::
 Open a URL directly in Reader Mode.
 
-*clx clear*::
+*clx clear-history*::
 Clear the history of visited items.
 
 *clx default-config*::
@@ -321,7 +321,7 @@ See *FILES*.
 Visited stories are dimmed in the list.
 When returning to a comment section, comments posted since your last visit are highlighted with a new-comment indicator.
 
-Use *clx clear* to reset history, or *--no-history* to turn tracking off entirely.
+Use *clx clear-history* to reset history, or *--no-history* to turn tracking off entirely.
 
 == Favorites
 
