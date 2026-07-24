@@ -816,13 +816,21 @@ func TestSpinnerAnimation_FrameAdvances(t *testing.T) {
 	assert.NotNil(t, startCmd)
 
 	initialView := m.status.spinner.View()
-	tickMsg := startCmd()
 
-	m, cmd := m.Update(tickMsg)
-	afterFirstTick := m.status.spinner.View()
-
-	assert.NotEqual(t, initialView, afterFirstTick, "spinner frame should change after tick")
+	m, cmd := m.Update(startCmd())
 	assert.NotNil(t, cmd, "should return next tick cmd")
+
+	// Glyphs linger for several ticks to shape the breathing rhythm, so
+	// advance until the first dwell window ends.
+	for range 10 {
+		if m.status.spinner.View() != initialView {
+			break
+		}
+
+		m, _ = m.Update(m.status.spinner.Tick())
+	}
+
+	assert.NotEqual(t, initialView, m.status.spinner.View(), "spinner glyph should change once its dwell ends")
 }
 
 func TestSpinnerTick_WhenInactive(t *testing.T) {

@@ -2,6 +2,7 @@ package pane
 
 import (
 	"image/color"
+	"math"
 	"math/rand/v2"
 	"sync"
 	"time"
@@ -13,7 +14,10 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-const spinnerFrameDuration = 250 * time.Millisecond
+const (
+	spinnerTickDuration = 80 * time.Millisecond
+	spinnerCyclePeriod  = 2 * time.Second
+)
 
 // lastSpinnerColor tracks which color index was used last so the next spinner
 // never repeats it. Mutex-guarded: spinners are minted at model construction
@@ -50,16 +54,28 @@ func starSpinner() spinner.Spinner {
 	// ✽ U+273D, ✳ U+2733) render double-width from a fallback font on some
 	// terminals, so the glyph wobbled horizontally whenever the animation
 	// crossed width classes.
-	chars := []string{"∙", "✻", "❋", "✶", "✻", "✢", "✻", "✶", "❋", "✻"}
-	frames := make([]string, len(chars))
+	//
+	// Glyphs ordered by visual weight: the animation climbs the ladder and
+	// descends again once per cycle.
+	glyphs := []string{"∙", "✢", "✶", "✻", "❋"}
 
-	for i, ch := range chars {
-		frames[i] = "   " + s.Render(ch) + "   "
+	// The bubbles spinner shows every frame for the same interval, so the
+	// breathing rhythm is pre-sampled: each tick maps its position in the
+	// cycle through a raised cosine to a rung on the ladder. The wave
+	// flattens at its extremes, so the dot and the full bloom hold for
+	// ~0.4s each while the transitional shapes flick past.
+	ticksPerCycle := int(spinnerCyclePeriod / spinnerTickDuration)
+	frames := make([]string, ticksPerCycle)
+
+	for tick := range ticksPerCycle {
+		phase := 2 * math.Pi * float64(tick) / float64(ticksPerCycle)
+		rung := (1 - math.Cos(phase)) / 2 * float64(len(glyphs)-1)
+		frames[tick] = "   " + s.Render(glyphs[int(math.Round(rung))]) + "   "
 	}
 
 	return spinner.Spinner{
 		Frames: frames,
-		FPS:    spinnerFrameDuration,
+		FPS:    spinnerTickDuration,
 	}
 }
 
