@@ -167,6 +167,12 @@ func TestReader_HideShowImagesToggle(t *testing.T) {
 
 	m.Update(tea.KeyPressMsg{Code: 'l', Text: "l"})
 	assert.True(t, m.showImages, "l shows images")
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	assert.False(t, m.showImages, "enter toggles images off")
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
+	assert.True(t, m.showImages, "enter toggles images back on")
 }
 
 func TestImageIndicator_BlankWithoutImages(t *testing.T) {

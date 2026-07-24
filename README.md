@@ -76,6 +76,8 @@ Press <kbd>Esc</kbd> to return to `read mode`.
 Press <kbd>Space</kbd> to read the linked article in Reader Mode. Just like in the comment section, you can jump between
 headers using <kbd>n</kbd>/<kbd>N</kbd>, and you can scroll using the usual vim bindings.
 
+In terminals with Kitty graphics support, press <kbd>Enter</kbd> to show the article's images.
+
 <p align="center">
   <img src="screenshots/reader-mode-1.png" width="49%" alt="reader mode"/>
   <img src="screenshots/reader-mode-2.png" width="49%" alt="reader mode"/>
@@ -91,7 +93,8 @@ Links open in place: articles in Reader Mode, links to other Hacker News discuss
 
 ### Wide view
 
-On wide terminals (180 characters, `circumflex` opens in dual pane mode. Override it with
+On wide terminals (180 characters), `circumflex` opens in dual pane mode. Toggle it for the session with <kbd>z</kbd>,
+or turn it off entirely with:
 
 ```console
 clx --wide-view never
@@ -165,6 +168,7 @@ Main view keybindings — press <kbd>i</kbd> in any view for the full list, incl
 | <kbd>f</kbd>     | Add to favorites         |
 | <kbd>x</kbd>     | Remove from favorites    |
 | <kbd>u</kbd>     | Toggle read              |
+| <kbd>z</kbd>     | Toggle wide view         |
 | <kbd>q</kbd>     | Quit                     |
 
 ## Usage

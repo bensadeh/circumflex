@@ -61,6 +61,10 @@ Remove currently highlighted submission from favorites.
 _u_::
 Toggle read/unread for the currently highlighted submission.
 
+_z_::
+Toggle the wide (split-pane) layout for the session.
+See *--wide-view*.
+
 _j_, _k_::
 Move down/up one item.
 
@@ -127,6 +131,9 @@ Open the link selector.
 _j_/_k_ step between the links in the comment section; _Enter_ opens the selected link in Reader Mode, and _q_ or _Esc_ walks back.
 Links to other Hacker News discussions open as comment sections; links that cannot be read in Reader Mode are dimmed and inert.
 
+_z_::
+Toggle the wide (split-pane) layout for the session.
+
 _i_, _?_::
 Bring up the help screen.
 
@@ -142,6 +149,12 @@ Next/previous comment.
 
 _d_, _u_::
 Scroll down/up half a page.
+
+_Space_/_f_, _b_::
+Page down/up.
+
+_g_, _G_::
+Go to top/bottom.
 
 _n_, _N_::
 Jump to next/previous top-level comment.
@@ -167,6 +180,9 @@ Toggle collapse for current comment.
 
 _Tab_::
 Open the link selector.
+
+_z_::
+Toggle the wide (split-pane) layout for the session.
 
 _i_, _?_::
 Bring up the help screen.
@@ -195,8 +211,11 @@ _/_::
 Search within the article.
 While a search is active, _n_/_N_ jump between matches.
 
+_Enter_::
+Toggle article images. See *--graphics* and *--show-images-on-open*.
+
 _h_, _l_::
-Hide/show article images. See *--graphics* and *--show-images-on-open*.
+Hide/show article images.
 
 _Tab_::
 Open the link selector.
@@ -212,6 +231,9 @@ Open comment section in browser.
 _J_, _K_::
 Open the next/previous story on the front page in Reader Mode.
 
+_z_::
+Toggle the wide (split-pane) layout for the session.
+
 _i_, _?_::
 Bring up the help screen.
 
@@ -221,7 +243,7 @@ Go back.
 == Search
 
 Press _/_ to search all of Hacker News, powered by Algolia.
-Results open in their own tab in the header.
+While searching, the sort and date filters replace the category tabs in the header.
 
 _s_::
 Toggle sorting between popularity and date.
@@ -231,6 +253,9 @@ Cycle the date range.
 
 _r_::
 Re-run the search with the current filters.
+
+_Tab_::
+Leave search and rejoin the category cycle.
 
 _q_, _Esc_::
 Leave search.
@@ -279,11 +304,11 @@ Disable marking stories as read.
 Set the number of pages to fetch per category, between 1 and 5.
 Higher values fetch more stories but increase load time.
 Only applies to top, new and best.
-Ask and show always fetch one page because their story pools are small (~150-200 stories).
+Ask, show and jobs always fetch one page because their story pools are small (~150-200 stories).
 Default: 3.
 
 *--show-images-on-open*::
-Show images as soon as an article opens, rather than waiting for _l_.
+Show images as soon as an article opens, rather than waiting for _Enter_.
 Off by default, so articles open as text and images are revealed on demand.
 Has no effect where images cannot be drawn.
 
@@ -293,6 +318,7 @@ Show the current version of *circumflex*.
 *-w* _value_, *--wide-view*=_value_::
 Show the comment section and Reader Mode in a pane next to the front page instead of replacing it.
 Set to _always_, _never_, or the minimum terminal width in columns at which the split kicks in.
+Press _z_ to toggle the split for the current session.
 Default: 180.
 
 == Commands

@@ -92,6 +92,12 @@ Remove currently highlighted submission from favorites.
 Toggle read/unread for the currently highlighted submission.
 .RE
 .sp
+\fIz\fP
+.RS 4
+Toggle the wide (split\-pane) layout for the session.
+See \fB\-\-wide\-view\fP.
+.RE
+.sp
 \fIj\fP, \fIk\fP
 .RS 4
 Move down/up one item.
@@ -192,6 +198,11 @@ Open the link selector.
 Links to other Hacker News discussions open as comment sections; links that cannot be read in Reader Mode are dimmed and inert.
 .RE
 .sp
+\fIz\fP
+.RS 4
+Toggle the wide (split\-pane) layout for the session.
+.RE
+.sp
 \fIi\fP, \fI?\fP
 .RS 4
 Bring up the help screen.
@@ -213,6 +224,16 @@ Next/previous comment.
 \fId\fP, \fIu\fP
 .RS 4
 Scroll down/up half a page.
+.RE
+.sp
+\fISpace\fP/\fIf\fP, \fIb\fP
+.RS 4
+Page down/up.
+.RE
+.sp
+\fIg\fP, \fIG\fP
+.RS 4
+Go to top/bottom.
 .RE
 .sp
 \fIn\fP, \fIN\fP
@@ -254,6 +275,11 @@ Toggle collapse for current comment.
 \fITab\fP
 .RS 4
 Open the link selector.
+.RE
+.sp
+\fIz\fP
+.RS 4
+Toggle the wide (split\-pane) layout for the session.
 .RE
 .sp
 \fIi\fP, \fI?\fP
@@ -298,9 +324,14 @@ Search within the article.
 While a search is active, \fIn\fP/\fIN\fP jump between matches.
 .RE
 .sp
+\fIEnter\fP
+.RS 4
+Toggle article images. See \fB\-\-graphics\fP and \fB\-\-show\-images\-on\-open\fP.
+.RE
+.sp
 \fIh\fP, \fIl\fP
 .RS 4
-Hide/show article images. See \fB\-\-graphics\fP and \fB\-\-show\-images\-on\-open\fP.
+Hide/show article images.
 .RE
 .sp
 \fITab\fP
@@ -325,6 +356,11 @@ Open comment section in browser.
 Open the next/previous story on the front page in Reader Mode.
 .RE
 .sp
+\fIz\fP
+.RS 4
+Toggle the wide (split\-pane) layout for the session.
+.RE
+.sp
 \fIi\fP, \fI?\fP
 .RS 4
 Bring up the help screen.
@@ -337,7 +373,7 @@ Go back.
 .SH "SEARCH"
 .sp
 Press \fI/\fP to search all of Hacker News, powered by Algolia.
-Results open in their own tab in the header.
+While searching, the sort and date filters replace the category tabs in the header.
 .sp
 \fIs\fP
 .RS 4
@@ -352,6 +388,11 @@ Cycle the date range.
 \fIr\fP
 .RS 4
 Re\-run the search with the current filters.
+.RE
+.sp
+\fITab\fP
+.RS 4
+Leave search and rejoin the category cycle.
 .RE
 .sp
 \fIq\fP, \fIEsc\fP
@@ -417,13 +458,13 @@ Disable marking stories as read.
 Set the number of pages to fetch per category, between 1 and 5.
 Higher values fetch more stories but increase load time.
 Only applies to top, new and best.
-Ask and show always fetch one page because their story pools are small (~150\-200 stories).
+Ask, show and jobs always fetch one page because their story pools are small (~150\-200 stories).
 Default: 3.
 .RE
 .sp
 \fB\-\-show\-images\-on\-open\fP
 .RS 4
-Show images as soon as an article opens, rather than waiting for \fIl\fP.
+Show images as soon as an article opens, rather than waiting for \fIEnter\fP.
 Off by default, so articles open as text and images are revealed on demand.
 Has no effect where images cannot be drawn.
 .RE
@@ -437,6 +478,7 @@ Show the current version of \fBcircumflex\fP.
 .RS 4
 Show the comment section and Reader Mode in a pane next to the front page instead of replacing it.
 Set to \fIalways\fP, \fInever\fP, or the minimum terminal width in columns at which the split kicks in.
+Press \fIz\fP to toggle the split for the current session.
 Default: 180.
 .RE
 .SH "COMMANDS"

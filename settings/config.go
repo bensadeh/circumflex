@@ -170,7 +170,7 @@ func defaultConfigBody() string {
 # downloaded.
 #graphics = "auto"
 
-# Show images as soon as an article opens, rather than on the l key.
+# Show images as soon as an article opens, rather than on the enter key.
 # Has no effect where images cannot be drawn.
 #show_images_on_open = false
 

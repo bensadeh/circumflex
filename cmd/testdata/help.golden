@@ -31,7 +31,7 @@
       [36m--pages[0m [33mint[0m            set pages to fetch per category (1-5)
                              [2m(default [31m3[0m[2m)[0m
       [36m--show-images-on-open[0m  show images as soon as an article opens, rather
-                             than on the l key
+                             than on the enter key
   [36m-v[0m, [36m--version[0m              show version
   [36m-w[0m, [36m--wide-view[0m [33mstring[0m     show stories in a pane next to the front page:
                              "always", "never"

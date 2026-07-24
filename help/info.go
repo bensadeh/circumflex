@@ -52,6 +52,8 @@ func readerText(leftMargin, contentWidth int, inApp bool) string {
 	nav.addKey("g, G", "Top / bottom")
 	nav.addKey("n, N", "Next / prev section")
 	nav.addKey("h, l", "Hide / show images")
+	nav.addBreak()
+	nav.addKey("↩", "Toggle images")
 
 	links := keys.addSection("Link Selector")
 	links.addKey("⇥", "Enter / exit selector")

@@ -432,6 +432,9 @@ func (m *Model) handleKeyPress(msg tea.KeyPressMsg) tea.Cmd {
 	case key.Matches(msg, m.keymap.ShowImages):
 		m.setShowImages(true)
 
+	case key.Matches(msg, m.keymap.ToggleImages):
+		m.setShowImages(!m.showImages)
+
 	case key.Matches(msg, m.keymap.Help):
 		m.showHelp = true
 

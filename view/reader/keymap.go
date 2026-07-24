@@ -9,10 +9,11 @@ import (
 type keyMap struct {
 	pane.CommonKeyMap
 
-	NextHeader key.Binding
-	PrevHeader key.Binding
-	HideImages key.Binding
-	ShowImages key.Binding
+	NextHeader   key.Binding
+	PrevHeader   key.Binding
+	HideImages   key.Binding
+	ShowImages   key.Binding
+	ToggleImages key.Binding
 
 	LinkMode     key.Binding
 	NextLink     key.Binding
@@ -38,6 +39,10 @@ func defaultKeyMap() keyMap {
 		ShowImages: key.NewBinding(
 			key.WithKeys("l"),
 			key.WithHelp("l", "show images"),
+		),
+		ToggleImages: key.NewBinding(
+			key.WithKeys("enter"),
+			key.WithHelp("↩", "toggle images"),
 		),
 		LinkMode: key.NewBinding(
 			key.WithKeys("tab"),

@@ -109,7 +109,7 @@ func configureFlags(rootCmd *cobra.Command) {
 	rootCmd.PersistentFlags().StringVar(&graphicsMode, "graphics", "auto",
 		"whether article images can be drawn: \"auto\", \"always\" or \"never\"\n(drawing requires a terminal with Kitty graphics support)")
 	rootCmd.PersistentFlags().BoolVar(&showImagesOnOpen, "show-images-on-open", false,
-		"show images as soon as an article opens, rather than on the l key")
+		"show images as soon as an article opens, rather than on the enter key")
 	rootCmd.PersistentFlags().StringVar(&selectedCategories, "categories", settings.Default().Categories,
 		"set the categories in the header\n(available: "+strings.Join(categories.AvailableNames(), ", ")+")")
 	rootCmd.PersistentFlags().IntVar(&pageMultiplier, "pages", settings.Default().PageMultiplier,
