@@ -658,6 +658,18 @@ func TestGuessLang(t *testing.T) {
 			"yaml",
 		},
 		{
+			"rust async join",
+			"futures.join!(\n    task::sleep(Duration::from_secs(1)),\n" +
+				"    task::sleep(Duration::from_secs(2)),\n).await;",
+			"rust",
+		},
+		{
+			"java latch await is not rust",
+			"CountDownLatch latch = new CountDownLatch(2);\n" +
+				"workers.forEach(Runnable::run);\nlatch.await();",
+			"",
+		},
+		{
 			"arc def stays generic lisp",
 			"(= gravity* 1.8 timebase* 120)\n\n(def frontpage-rank (s (o scorefn realscore))\n" +
 				"  (when (live s)\n    (* (scorefn s) (expt (/ (item-age s) 60) gravity*))))",

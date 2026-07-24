@@ -807,11 +807,38 @@ func isRust(text string, lines []string) bool {
 		anyLinePrefix(lines, "fn ", "pub fn "),
 		containsAny(text, []string{"let mut ", "&mut ", "&str"}),
 		unspacedPathSep(text),
-		containsAny(text, []string{"println!", "#[derive", ".unwrap()", "?;", "vec!"}),
+		containsAny(text, []string{
+			"println!", "#[derive", ".unwrap()", "?;", "vec!",
+			"panic!(", "format!(", "assert!(", "join!(", "write!(", "dbg!(",
+		}),
 		anyLinePrefix(lines, "let "),
 		rustMatchArm(text, lines),
 		rustLifetime(text),
+		rustPostfixAwait(text),
 	)
+}
+
+// rustPostfixAwait reports .await in postfix position — .await; .await? or
+// closing an expression. Java and Scala await as a method call
+// (latch.await()) and awaitTermination continues the identifier, so a
+// following paren or identifier character disqualifies the occurrence.
+func rustPostfixAwait(text string) bool {
+	for i := 0; ; {
+		j := strings.Index(text[i:], ".await")
+		if j < 0 {
+			return false
+		}
+
+		i += j + len(".await")
+
+		if i >= len(text) {
+			return true
+		}
+
+		if c := text[i]; c != '(' && !isASCIILetter(c) && c != '_' && (c < '0' || c > '9') {
+			return true
+		}
+	}
 }
 
 // rustLifetime reports a lifetime annotation in generic or reference
