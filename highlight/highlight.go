@@ -68,6 +68,18 @@ func resolve(lang string) chroma.Lexer {
 // extraction can reject page noise before it suppresses the guesser.
 func Resolves(lang string) bool { return resolve(lang) != nil }
 
+// Canonical reduces a name or alias to the lexer's own name, or "" when it
+// names none — a page's "js" and a guess of "javascript" are one identity and
+// only compare as equal through here.
+func Canonical(lang string) string {
+	lexer := resolve(lang)
+	if lexer == nil {
+		return ""
+	}
+
+	return lexer.Config().Name
+}
+
 // Code renders source through chroma when lang names a lexer, or returns ""
 // so the caller falls back to its unhighlighted treatment.
 func Code(text, lang string) string {

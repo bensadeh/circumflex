@@ -108,8 +108,48 @@ func guessCodeLangs(blocks []block) {
 		b := &blocks[i]
 		if b.kind == blockCode && b.lang == "" {
 			b.lang = highlight.GuessLang(b.text)
+			b.guessed = true
 		}
 	}
+}
+
+// CodeBlock reports how one code block's language resolved.
+type CodeBlock struct {
+	// Declared is the language the page itself named, empty when unlabeled.
+	Declared string
+
+	// Guessed is what GuessLang makes of the same text, filled in whether or
+	// not the page declared anything — a page that declares its language is
+	// free ground truth to score the guesser against.
+	Guessed string
+
+	Text string
+}
+
+// CodeBlocks reports every code block in the article, for the guess-report
+// tool.
+func (p *Parsed) CodeBlocks() []CodeBlock {
+	var out []CodeBlock
+
+	for i := range p.blocks {
+		b := &p.blocks[i]
+		if b.kind != blockCode {
+			continue
+		}
+
+		declared := b.lang
+		if b.guessed {
+			declared = ""
+		}
+
+		out = append(out, CodeBlock{
+			Declared: declared,
+			Guessed:  highlight.GuessLang(b.text),
+			Text:     b.text,
+		})
+	}
+
+	return out
 }
 
 // NewParsedFromHTML skips fetching and readability extraction; for tests.

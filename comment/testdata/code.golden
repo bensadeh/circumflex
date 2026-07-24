@@ -11,9 +11,9 @@ Intro paragraph before code:
 
 Text right after the code block lands in its own paragraph.
 
-[2m╭────────────────────────────────────────────────────────────────────────────╮[m
-[2m│[m [2mcurl -sS https://example.com/really/long/path/that/keeps/going/and/going |[0m [2m│[m
-[2m│[m [2mjq -r .items[].name[0m                                                        [2m│[m
+[2m╭───────────────────────────────────────────────────────────────────── [m[32mBash[m[2m ─╮[m
+[2m│[m curl [34m-sS[m https://example.com/really/long/path/that/keeps/going/and/going | [2m│[m
+[2m│[m jq [34m-r[m .items[31m[][m.name                                                        [2m│[m
 [2m╰────────────────────────────────────────────────────────────────────────────╯[m
 
 Closing paragraph.
@@ -30,9 +30,9 @@ Intro paragraph before code:
 
 Text right after the code block lands in its own paragraph.
 
-[2m╭────────────────────────────────────────────────────────────────────────────╮[m
-[2m│[m [2mcurl -sS https://example.com/really/long/path/that/keeps/going/and/going |[0m [2m│[m
-[2m│[m [2mjq -r .items[].name[0m                                                        [2m│[m
+[2m╭───────────────────────────────────────────────────────────────────── [m[32mBash[m[2m ─╮[m
+[2m│[m curl [34m-sS[m https://example.com/really/long/path/that/keeps/going/and/going | [2m│[m
+[2m│[m jq [34m-r[m .items[31m[][m.name                                                        [2m│[m
 [2m╰────────────────────────────────────────────────────────────────────────────╯[m
 
 Closing paragraph.
@@ -50,11 +50,11 @@ Intro paragraph before code:
 Text right after the code block lands in
 its own paragraph.
 
-[2m╭──────────────────────────────────────────╮[m
-[2m│[m [2mcurl -sS[0m                                 [2m│[m
-[2m│[m [2mhttps://example.com/really/long/path/tha[0m [2m│[m
-[2m│[m [2mt/keeps/going/and/going | jq -r[0m          [2m│[m
-[2m│[m [2m.items[].name[0m                            [2m│[m
+[2m╭─────────────────────────────────── [m[32mBash[m[2m ─╮[m
+[2m│[m curl [34m-sS[m                                 [2m│[m
+[2m│[m https://example.com/really/long/path/tha [2m│[m
+[2m│[m t/keeps/going/and/going | jq [34m-r[m          [2m│[m
+[2m│[m .items[31m[][m.name                            [2m│[m
 [2m╰──────────────────────────────────────────╯[m
 
 Closing paragraph.
@@ -72,11 +72,11 @@ Intro paragraph before code:
 Text right after the code block lands in
 its own paragraph.
 
-[2m╭──────────────────────────────────────────╮[m
-[2m│[m [2mcurl -sS[0m                                 [2m│[m
-[2m│[m [2mhttps://example.com/really/long/path/tha[0m [2m│[m
-[2m│[m [2mt/keeps/going/and/going | jq -r[0m          [2m│[m
-[2m│[m [2m.items[].name[0m                            [2m│[m
+[2m╭─────────────────────────────────── [m[32mBash[m[2m ─╮[m
+[2m│[m curl [34m-sS[m                                 [2m│[m
+[2m│[m https://example.com/really/long/path/tha [2m│[m
+[2m│[m t/keeps/going/and/going | jq [34m-r[m          [2m│[m
+[2m│[m .items[31m[][m.name                            [2m│[m
 [2m╰──────────────────────────────────────────╯[m
 
 Closing paragraph.

@@ -162,8 +162,10 @@ func lispDialect(text string) string {
 	}
 }
 
+// (def is deliberately absent: Arc and other lisps define with it too, and
+// a block showing nothing more Clojure than that stays generic.
 var clojureMarkers = []string{
-	"(defn ", "(defn-", "(ns ", "(def ", "(fn [", "(let [", "(loop [",
+	"(defn ", "(defn-", "(ns ", "(fn [", "(let [", "(loop [",
 	"(doseq [", "(for [", "(:require", "(defproject", "->>", "#(", "(defrecord ",
 }
 

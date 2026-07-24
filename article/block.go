@@ -28,6 +28,7 @@ type block struct {
 	hasHeader  bool       // blockTable: first row came from thead or all-th cells
 	text       string     // blockHeading, blockCode
 	lang       string     // blockCode: page-declared language, empty when unlabeled
+	guessed    bool       // blockCode: lang came from the guesser, not the page
 	hlOut      string     // blockCode: chroma render memoized by renderCode — width-independent
 	hlDone     bool
 	imageURL   string      // blockImage: resolved source URL, empty if none

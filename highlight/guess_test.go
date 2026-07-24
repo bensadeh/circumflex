@@ -184,7 +184,7 @@ func TestGuessLang(t *testing.T) {
 		{
 			"one-liner command",
 			"npm install left-pad",
-			"",
+			"bash",
 		},
 		{
 			"haskell type signature is not rust",
@@ -224,7 +224,7 @@ func TestGuessLang(t *testing.T) {
 		{
 			"makefile is not bash",
 			"CC = gcc\nall: main.o\n        $(CC) -o app main.o 2>&1",
-			"",
+			"make",
 		},
 		{
 			"js template with dollar string",
@@ -393,7 +393,7 @@ func TestGuessLang(t *testing.T) {
 			"java class is not csharp",
 			"public class Greeter {\n    public static void main(String[] args) {\n" +
 				"        System.out.println(\"hi\");\n    }\n}",
-			"",
+			"java",
 		},
 		{
 			"java var declaration is not csharp",
@@ -425,7 +425,7 @@ func TestGuessLang(t *testing.T) {
 			"typescript namespace is not csharp",
 			"namespace Validation {\n    export interface StringValidator {\n" +
 				"        isAcceptable(s: string): boolean;\n    }\n}",
-			"",
+			"typescript",
 		},
 		{
 			"nix flake",
@@ -451,6 +451,217 @@ func TestGuessLang(t *testing.T) {
 			"java field block is not nix",
 			"{\n    private int retries = 3;\n    private String host = \"localhost\";\n}",
 			"",
+		},
+		{
+			"typescript annotated function",
+			"export default async function (args: any, ctx: any) {\n" +
+				"  const runLimit = args?.runLimit ?? 25;\n  return await ctx.run(runLimit);\n}",
+			"typescript",
+		},
+		{
+			"typescript interface block",
+			"interface Item {\n  id: ItemId\n  parentId: ItemId | null\n}\n\n" +
+				"interface Cursor {\n  position: ItemId\n  direction: 'up' | 'down'\n}",
+			"typescript",
+		},
+		{
+			"ocaml spaced annotations are not typescript",
+			"type waiter = { resolver : string Eio.Promise.u; }\n\n" +
+				"type request = {\n  procedure : string;\n  arg : string;\n}",
+			"ocaml",
+		},
+		{
+			"ocaml match is not javascript",
+			"let print_recursive list =\n  let rec loop i list =\n    match list with\n" +
+				"    | [] -> ()\n    | x :: xs ->\n      traceln \"%d => %s\" i x;\n      loop (i + 1) xs",
+			"ocaml",
+		},
+		{
+			"cpp constexpr without std",
+			"#include \"tgaimage.h\"\n\nconstexpr TGAColor white = {255, 255, 255, 255};",
+			"cpp",
+		},
+		{
+			"shell heredoc writing another language",
+			"cat << EOF > /tmp/dummy.swift\nimport Cocoa\nlet app = NSApplication.shared\n" +
+				"window.makeKeyAndOrderFront(nil)\nEOF\nswiftc /tmp/dummy.swift",
+			"bash",
+		},
+		{
+			"install commands",
+			"git clone https://github.com/ssloy/tinyrenderer.git &&\ncd tinyrenderer &&\n" +
+				"cmake -Bbuild &&\ncmake --build build -j",
+			"bash",
+		},
+		{
+			"unknown program with flags",
+			"# Node A — seed\npullrun-runtime daemon --sync-addr 0.0.0.0:9500\n\n" +
+				"# Node B\npullrun pull alpine:3.18\n" +
+				"pullrun run alpine:3.18 --cmd \"echo\" --cmd \"hi\" --attach -t",
+			"bash",
+		},
+		{
+			"command prose is not bash",
+			"npm is a package manager for JavaScript",
+			"",
+		},
+		{
+			"compiler diagnostics are not bash",
+			"./user.go:6:2: moved to heap: u\n./user.go:7:9: &u escapes to heap",
+			"",
+		},
+		{
+			"zsh percent prompt session",
+			"% sudo touch /Applications/Signal.app/Contents/MacOS/Signal\n" +
+				"touch: /Applications/Signal.app/Contents/MacOS/Signal: Operation not permitted",
+			"console",
+		},
+		{
+			"latex comment is not a zsh session",
+			"% we now define the main theorem\n% see below for details",
+			"",
+		},
+		{
+			"python bare assignments with import",
+			"import gigatoken as gt\n\ntokenizer = gt.Tokenizer(\"Qwen/Qwen3-8B\")\n" +
+				"tokens = tokenizer.encode_files(file_source)",
+			"python",
+		},
+		{
+			"python conditional snippet",
+			"if confidence < 0.85:\n    answer = ask_a_bigger_model(prompt)",
+			"python",
+		},
+		{
+			"headerless diff hunk",
+			"# fastlane/lib/actions/zip.rb\n-      @include = params[:include]\n" +
+				"+      @include = params[:include] || []\n+      @exclude = params[:exclude] || []",
+			"diff",
+		},
+		{
+			"markdown bullets are not a diff",
+			"- first point\n- second point\n- third point",
+			"",
+		},
+		{
+			"sql leading comment",
+			"-- new tables\nCREATE TABLE resource (\n  slug         TEXT PRIMARY KEY,\n" +
+				"  destination  TEXT NOT NULL\n);\n\n-- new query shapes\n-- SELECT ... FROM ...",
+			"sql",
+		},
+		{
+			"toml sections",
+			"font-family = \"SF Mono\"\nfont-size = 14.0\n\n[jump]\ninactivity-ms = 500\n\n" +
+				"[theme.default]\nfg = \"#000000\"",
+			"toml",
+		},
+		{
+			"gitconfig bare values are not toml",
+			"[core]\n\tautocrlf = input\n\teditor = vim\n[user]\n\tname = Ada Lovelace",
+			"",
+		},
+		{
+			"c without an include line",
+			"int limeCounter = 0;\n\nlimeCounter += 5;\n\nprintf(\"I have %d limes\\n\", limeCounter);",
+			"c",
+		},
+		{
+			"java printf is java, not c",
+			"public class Greeter {\n    int count = 0;\n    void log() { System.out.printf(\"%d\", count); }\n}",
+			"java",
+		},
+		{
+			"ruby method with block",
+			"def totals(items)\n  items.each do |item|\n    puts item.price\n  end\nend", //nolint:dupword
+			"ruby",
+		},
+		{
+			"elixir def is not ruby",
+			"defmodule Cart do\n  def totals(items) do\n    Enum.each(items, fn item -> IO.puts item.price end)\n  end\nend", //nolint:dupword
+			"",
+		},
+		{
+			"kotlin fun and val",
+			"fun greet(name: String) {\n    val message = \"Hello, $name\"\n    println(message)\n}",
+			"kotlin",
+		},
+		{
+			"swift guard let with framework import",
+			"import Foundation\n\nfunc load(path: String) -> Data? {\n" +
+				"    guard let url = URL(string: path) else { return nil }\n    return try? Data(contentsOf: url)\n}",
+			"swift",
+		},
+		{
+			"css rules",
+			"@media (max-width: 600px) {\n  .sidebar {\n    display: none;\n  }\n}\n\n" +
+				".card {\n  padding: 1rem;\n  border-radius: 8px;\n}",
+			"css",
+		},
+		{
+			"scss nesting is not css",
+			"$accent: #ff6600;\n\n.card {\n  padding: 1rem;\n  &:hover {\n    color: $accent;\n  }\n}",
+			"",
+		},
+		{
+			"makefile with phony",
+			".PHONY: build\nbuild:\n\tgo build -o app ./cmd\n\nclean:\n\trm -f app",
+			"make",
+		},
+		{
+			"c goto label is not a makefile",
+			"cleanup:\n\tfree(buffer);\n\treturn err;",
+			"",
+		},
+		{
+			"github actions yaml",
+			"name: ci\non: push\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n" +
+				"      - uses: actions/checkout@v4\n      - run: go test ./...",
+			"yaml",
+		},
+		{
+			"compiler log is not yaml",
+			"error: expected expression before 'int'\nnote: previous declaration was here\n" +
+				"warning: unused variable 'x'",
+			"",
+		},
+		{
+			"frontmatter document with fences",
+			"---\nformat: typebulb/v1\nname: \"Example\"\n---\n\n**code.tsx**\n\n" +
+				"```tsx\nconst x: number = 1;\n```",
+			"markdown",
+		},
+		{
+			"java imports and main",
+			"import java.util.List;\n\npublic class App {\n" +
+				"    public static void main(String[] args) {\n        System.out.println(\"hi\");\n    }\n}",
+			"java",
+		},
+		{
+			"workflow with embedded shell is yaml",
+			"name: Spec Drift\non:\n  push:\n    branches: [main]\njobs:\n  drift:\n" +
+				"    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n" +
+				"      - name: Install\n        run: |\n          VERSION=v0.2.1\n" +
+				"          curl -L \"https://example.com/${VERSION}.tar.gz\" | tar xz\n" +
+				"          sudo mv spectra /usr/local/bin/spectra",
+			"yaml",
+		},
+		{
+			"hcl heredoc assignment is not bash",
+			"request \"create-policy\" {\n    operation = \"create\"\n    data = {\n" +
+				"        policy = <<EOP\npath \"sys/*\" {\n  capabilities = [\"sudo\"]\n}\nEOP\n    }\n}",
+			"",
+		},
+		{
+			"flat config pairs are yaml",
+			"root_url: \"https://service_url\"\nprod: true\napi_port: 8050\ngrpc_port: 5000\n" +
+				"redis_addr: redis:6379\nredis_db: 0",
+			"yaml",
+		},
+		{
+			"arc def stays generic lisp",
+			"(= gravity* 1.8 timebase* 120)\n\n(def frontpage-rank (s (o scorefn realscore))\n" +
+				"  (when (live s)\n    (* (scorefn s) (expt (/ (item-age s) 60) gravity*))))",
+			"lisp",
 		},
 	}
 
