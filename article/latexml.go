@@ -3,6 +3,7 @@ package article
 import (
 	nurl "net/url"
 	"regexp"
+	"slices"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -33,6 +34,29 @@ func fullTextURL(u *nurl.URL) string {
 	}
 
 	return "https://arxiv.org/html/" + match[1]
+}
+
+// normalizeLatexmlTables drops the ltx_guessed_headers marker LaTeXML puts on
+// tables whose header rows it inferred: readability's unlikely-candidate
+// regex reads the "header" substring as page chrome and deletes the whole
+// table before scoring ever runs. The marker is converter metadata with no
+// reader meaning. Only this token is scrubbed — ltx_page_header and friends
+// really are chrome, and stay deletable.
+func normalizeLatexmlTables(doc *html.Node) {
+	for n := range doc.Descendants() {
+		if n.Type != html.ElementNode || !hasClass(n, "ltx_guessed_headers") {
+			continue
+		}
+
+		for i, a := range n.Attr {
+			if a.Key == "class" {
+				classes := slices.DeleteFunc(strings.Fields(a.Val), func(c string) bool {
+					return c == "ltx_guessed_headers"
+				})
+				n.Attr[i].Val = strings.Join(classes, " ")
+			}
+		}
+	}
 }
 
 // latexmlPreservedClasses names the footnote chrome readability must not
