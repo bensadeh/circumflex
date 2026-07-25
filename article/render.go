@@ -513,11 +513,14 @@ func centerLines(text string, width int) string {
 	})
 }
 
+// captionLines styles a shown image's caption exactly as the hidden label
+// styles its trailing caption text — faint italic in the default foreground —
+// so toggling images never recolors the caption.
 func captionLines(caption string, width int) string {
 	wrapped := lipgloss.Wrap(caption, width, "")
 
 	return styleLines(wrapped, func(line string) string {
-		return lipgloss.NewStyle().Foreground(style.ReaderImageColor()).Faint(true).Italic(true).Render(line)
+		return lipgloss.NewStyle().Faint(true).Italic(true).Render(line)
 	})
 }
 
