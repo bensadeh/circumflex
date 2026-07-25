@@ -337,6 +337,91 @@ func TestParseBlocks_FigureWithOnlyCaptionStaysImageBlock(t *testing.T) {
 	assert.Equal(t, "Benchmark results for the new model", blocks[0].plainText())
 }
 
+func TestParseBlocks_NestedSubFiguresKeepTheirOwnCaptions(t *testing.T) {
+	t.Parallel()
+
+	// LaTeXML renders side-by-side figures as sub-figures in a flex row; each
+	// is a numbered figure of its own and must not fold into its neighbor.
+	blocks := blocksFromHTML(t, `<figure class="ltx_figure">
+		<div class="ltx_flex_figure">
+			<div class="ltx_flex_cell">
+				<figure class="ltx_figure ltx_figure_panel">
+					<img src="x3.png" width="830" alt="Refer to caption">
+					<figcaption>Figure 3: Human operation-time comparison.</figcaption>
+				</figure>
+			</div>
+			<div class="ltx_flex_cell">
+				<figure class="ltx_figure ltx_figure_panel">
+					<img src="x4.png" width="830" alt="Refer to caption">
+					<figcaption>Figure 4: Task domain distribution.</figcaption>
+				</figure>
+			</div>
+		</div>
+	</figure>`)
+
+	require.Len(t, blocks, 2)
+	assert.Equal(t, "x3.png", blocks[0].imageURL)
+	assert.Equal(t, "Figure 3: Human operation-time comparison.", blocks[0].plainText())
+	assert.Equal(t, "x4.png", blocks[1].imageURL)
+	assert.Equal(t, "Figure 4: Task domain distribution.", blocks[1].plainText())
+	assert.True(t, blocks[0].figure)
+	assert.True(t, blocks[1].figure)
+}
+
+func TestParseBlocks_PanelImagesShareTheClosingCaption(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<figure class="ltx_figure">
+		<div class="ltx_flex_figure">
+			<div class="ltx_flex_cell"><img src="x6.png" width="402" alt="Refer to caption"></div>
+			<div class="ltx_flex_cell"><img src="x7.png" width="402" alt="Refer to caption"></div>
+		</div>
+		<figcaption>Figure 6: Two complementary views.</figcaption>
+	</figure>`)
+
+	require.Len(t, blocks, 2)
+	assert.Equal(t, "x6.png", blocks[0].imageURL)
+	assert.Empty(t, blocks[0].plainText(), "the shared caption is not repeated under every panel")
+	assert.Equal(t, "x7.png", blocks[1].imageURL)
+	assert.Equal(t, "Figure 6: Two complementary views.", blocks[1].plainText())
+	assert.True(t, blocks[0].figure, "the group's caption designates every panel")
+	assert.True(t, blocks[1].figure)
+}
+
+func TestParseBlocks_SubFiguresUnderAGroupCaption(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<figure>
+		<figure><img src="a.png"><figcaption>(a) Before.</figcaption></figure>
+		<figure><img src="b.png"><figcaption>(b) After.</figcaption></figure>
+		<figcaption>Figure 5: The system before and after.</figcaption>
+	</figure>`)
+
+	require.Len(t, blocks, 3)
+	assert.Equal(t, "a.png", blocks[0].imageURL)
+	assert.Equal(t, "(a) Before.", blocks[0].plainText())
+	assert.Equal(t, "b.png", blocks[1].imageURL)
+	assert.Equal(t, "(b) After.", blocks[1].plainText())
+
+	assert.Empty(t, blocks[2].imageURL, "the group caption closes the figure without promising pixels")
+	assert.Equal(t, "Figure 5: The system before and after.", blocks[2].plainText())
+	assert.True(t, blocks[2].figure)
+}
+
+func TestParseBlocks_PlaceholderAndRealImageStayOneBlock(t *testing.T) {
+	t.Parallel()
+
+	// BBC and others emit a grey placeholder img alongside the lazy-loaded
+	// real one; the pair is one image, not a two-panel figure.
+	blocks := blocksFromHTML(t, `<figure>
+		<img src="grey-placeholder.png">
+		<img data-src="real.jpg" alt="A photo">
+	</figure>`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, "real.jpg", blocks[0].imageURL)
+}
+
 func TestParseBlocks_RoleImageBecomesFigure(t *testing.T) {
 	t.Parallel()
 

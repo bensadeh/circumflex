@@ -490,32 +490,55 @@ func bestFromSrcset(srcset string) string {
 }
 
 func (p *domParser) parseFigure(n *html.Node) {
-	var img, figcaption *html.Node
+	var (
+		imgs       []*html.Node
+		figcaption *html.Node
+		subs       int
+	)
 
-	for c := range n.Descendants() {
-		if c.Type != html.ElementNode {
-			continue
-		}
+	// A nested <figure> is a figure in its own right: LaTeXML lays
+	// side-by-side panels out as sub-figures — each may carry its own number
+	// and caption — inside a flex-row wrapper figure. Those parse on their
+	// own; the scan collects only this figure's content.
+	var scan func(*html.Node)
 
-		switch nodeAtom(c) {
-		case atom.Img:
-			// Prefer an img with a real source: BBC and others emit a grey
-			// placeholder img alongside the lazy-loaded real one.
-			if img == nil || (imageSrc(img) == "" && imageSrc(c) != "") {
-				img = c
+	scan = func(c *html.Node) {
+		for child := range c.ChildNodes() {
+			if child.Type != html.ElementNode {
+				continue
 			}
 
-		case atom.Figcaption:
-			if figcaption == nil {
-				figcaption = c
+			switch nodeAtom(child) {
+			case atom.Figure:
+				subs++
+
+				p.parseFigure(child)
+
+			case atom.Img:
+				imgs = append(imgs, child)
+
+			case atom.Figcaption:
+				if figcaption == nil {
+					figcaption = child
+				}
+
+			default:
+				scan(child)
 			}
 		}
 	}
 
+	scan(n)
+
+	if len(imgs) == 0 && subs > 0 && figcaption == nil {
+		return
+	}
+
 	// A figure with no img but visible text beyond its caption is prose in
 	// figure markup — a testimonial blockquote, a captioned code listing —
-	// and collapsing it to a caption label would drop that content.
-	if img == nil && (figcaption == nil || hasProseOutsideCaption(n)) {
+	// and collapsing it to a caption label would drop that content. With
+	// sub-figures the walk cannot run: it would parse them a second time.
+	if len(imgs) == 0 && subs == 0 && (figcaption == nil || hasProseOutsideCaption(n)) {
 		p.walkChildren(n)
 		p.flushInline()
 
@@ -527,24 +550,70 @@ func (p *domParser) parseFigure(n *html.Node) {
 		caption = strings.TrimSpace(spanText(normalizeSpans(collectInline(figcaption, formatPlain, nil))))
 	}
 
-	if caption == "" && img != nil {
-		caption = altText(img)
+	panels := panelImages(imgs)
+
+	// No panel has a source to fetch: a canvas chart, a JS-rendered graphic
+	// readability deleted, a lazy-load placeholder that never resolved. The
+	// block must not promise a bitmap the image toggle could never reveal —
+	// without any <img> at all it is designated a figure outright.
+	if len(panels) == 0 {
+		var img *html.Node
+		if len(imgs) > 0 {
+			img = imgs[0]
+		}
+
+		if caption == "" && img != nil {
+			caption = altText(img)
+		}
+
+		b := imageBlock(caption, "", imageDisplayWidth(img))
+		b.figure = img == nil || knownFigure(caption, altText(img))
+		p.blocks = append(p.blocks, b)
+
+		return
 	}
 
-	src := ""
-	if img != nil {
-		src = imageSrc(img)
+	// Each panel becomes a block — a multi-panel figure would otherwise drop
+	// all but its first image. The shared caption closes the group from
+	// below, as on the page; alt text captions panels only when there is no
+	// figcaption to do it. The alt may declare the genre even when the
+	// displayed caption does not.
+	for i, img := range panels {
+		panelCaption := ""
+
+		switch {
+		case figcaption == nil:
+			panelCaption = altText(img)
+		case i == len(panels)-1:
+			panelCaption = caption
+		}
+
+		b := imageBlock(panelCaption, imageSrc(img), imageDisplayWidth(img))
+		b.figure = knownFigure(caption, altText(img))
+		p.blocks = append(p.blocks, b)
+	}
+}
+
+// panelImages returns the figure's distinct fetchable images in document
+// order: lazy-load patterns pair a placeholder img with the real one, so
+// sourceless imgs and repeated sources drop.
+func panelImages(imgs []*html.Node) []*html.Node {
+	var panels []*html.Node
+
+	seen := map[string]bool{}
+
+	for _, img := range imgs {
+		src := imageSrc(img)
+		if src == "" || seen[src] {
+			continue
+		}
+
+		seen[src] = true
+
+		panels = append(panels, img)
 	}
 
-	b := imageBlock(caption, src, imageDisplayWidth(img))
-
-	// A captioned figure with no <img> at all — a canvas chart, a JS-rendered
-	// graphic readability deleted — has no bitmap the image toggle could ever
-	// reveal, so it must not promise one. With an img, the alt text may
-	// declare the genre even when the figcaption that becomes the displayed
-	// caption does not.
-	b.figure = img == nil || knownFigure(caption, altText(img))
-	p.blocks = append(p.blocks, b)
+	return panels
 }
 
 func hasProseOutsideCaption(n *html.Node) bool {
