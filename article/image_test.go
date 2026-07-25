@@ -441,3 +441,49 @@ func TestFetchImages_RetainsHighResKittyCopy(t *testing.T) {
 	assert.Equal(t, image.Pt(maxImagePx*2, maxImagePx), blocks[1].imgSize,
 		"the retained size is the source's, which the aspect ratio derives from")
 }
+
+func TestShrinkToBudget(t *testing.T) {
+	t.Parallel()
+
+	encode := func(w, h int) []byte {
+		var buf bytes.Buffer
+		require.NoError(t, png.Encode(&buf, image.NewRGBA(image.Rect(0, 0, w, h))))
+
+		return buf.Bytes()
+	}
+
+	small := encode(40, 40)
+
+	blocks := []block{
+		{kind: blockImage, kitty: &kittyImage{png: encode(200, 100)}, imgSize: image.Pt(200, 100)},
+		{kind: blockImage, kitty: &kittyImage{png: small}, imgSize: image.Pt(40, 40)},
+		{kind: blockImage},
+	}
+
+	// 200×100 and 40×40 decode to 86,400 bytes together. The largest shared
+	// ceiling fitting 30,000 is 108: the big image shrinks to 108×54 (23,328),
+	// the small one stays whole (6,400).
+	shrinkToBudget(blocks, 30_000)
+
+	assert.Equal(t, image.Pt(108, 54), pngSize(blocks[0].kitty.png, image.Point{}),
+		"the oversized image shrinks to the shared ceiling")
+	assert.Equal(t, image.Pt(200, 100), blocks[0].imgSize,
+		"imgSize keeps carrying the source's aspect ratio")
+	assert.Equal(t, small, blocks[1].kitty.png,
+		"an image under the ceiling keeps every pixel")
+}
+
+func TestShrinkToBudget_UnderBudgetUntouched(t *testing.T) {
+	t.Parallel()
+
+	var buf bytes.Buffer
+	require.NoError(t, png.Encode(&buf, image.NewRGBA(image.Rect(0, 0, 200, 100))))
+
+	blocks := []block{
+		{kind: blockImage, kitty: &kittyImage{png: buf.Bytes()}, imgSize: image.Pt(200, 100)},
+	}
+
+	shrinkToBudget(blocks, maxArticleDecodedBytes)
+
+	assert.Equal(t, buf.Bytes(), blocks[0].kitty.png, "a fitting article passes through byte-for-byte")
+}

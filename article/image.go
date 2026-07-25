@@ -46,6 +46,16 @@ const (
 // that; kittyPNG never inflates smaller sources.
 const maxImagePx = 2048
 
+// maxArticleDecodedBytes bounds what an article's images decode to in the
+// terminal's Kitty-graphics storage together. kitty and Ghostty quota that
+// storage at 320MB and evict oldest-first when it overflows; transmission
+// follows document order, so the evicted images are the top-of-page figures
+// the reader is most likely viewing (an arXiv paper with 47 full-HD appendix
+// screenshots decodes to ~390MB). The margin below the quota is deliberate:
+// storage is shared with everything else the session has transmitted and is
+// never freed mid-session.
+const maxArticleDecodedBytes = 256 * 1000 * 1000
+
 // kittyImage is one image block's terminal-side life: the PNG the terminal
 // receives, the ID its placeholder cells dereference, and the placement
 // geometry — what the last render wants against what the terminal holds.
@@ -138,6 +148,112 @@ func fetchImages(ctx context.Context, blocks []block, base *nurl.URL) {
 	}
 
 	_ = g.Wait()
+
+	shrinkToBudget(blocks, maxArticleDecodedBytes)
+}
+
+// shrinkToBudget resizes an article's images to fit budget bytes of decoded
+// pixels together. The long-side ceiling that fits is shared: images above it
+// shrink to it, images below keep every pixel — small body figures already sit
+// at or under their display size, while oversized screenshots carry the slack.
+func shrinkToBudget(blocks []block, budget int) {
+	var (
+		targets []int
+		sizes   []image.Point
+	)
+
+	total := 0
+
+	for i := range blocks {
+		k := blocks[i].kitty
+		if k == nil {
+			continue
+		}
+
+		size := pngSize(k.png, blocks[i].imgSize)
+		targets = append(targets, i)
+		sizes = append(sizes, size)
+		total += 4 * size.X * size.Y
+	}
+
+	if total <= budget {
+		return
+	}
+
+	ceiling := sharedCeiling(sizes, budget)
+
+	g := new(errgroup.Group)
+	g.SetLimit(imageConcurrency)
+
+	for n, i := range targets {
+		if scaledSize(sizes[n], ceiling) == sizes[n] {
+			continue
+		}
+
+		g.Go(func() error {
+			shrinkKitty(&blocks[i], ceiling)
+
+			return nil
+		})
+	}
+
+	_ = g.Wait()
+}
+
+// pngSize reads the terminal copy's dimensions from its header; the block's
+// imgSize records the source raster, which a kittyPNG downscale may have
+// tightened.
+func pngSize(data []byte, fallback image.Point) image.Point {
+	cfg, err := png.DecodeConfig(bytes.NewReader(data))
+	if err != nil {
+		return fallback
+	}
+
+	return image.Pt(cfg.Width, cfg.Height)
+}
+
+// sharedCeiling finds the largest long-side ceiling that fits the images into
+// budget together.
+func sharedCeiling(sizes []image.Point, budget int) int {
+	lo, hi := 1, maxImagePx
+
+	for lo < hi {
+		mid := (lo + hi + 1) / 2
+
+		total := 0
+
+		for _, size := range sizes {
+			s := scaledSize(size, mid)
+			total += 4 * s.X * s.Y
+		}
+
+		if total <= budget {
+			lo = mid
+		} else {
+			hi = mid - 1
+		}
+	}
+
+	return lo
+}
+
+// shrinkKitty re-derives the block's terminal copy at a tighter ceiling from
+// the PNG in hand — the source bytes are gone by now, and a second small
+// downscale of an already-bounded copy costs no visible fidelity. imgSize
+// stays the source's: it exists to carry the aspect ratio, which shrinking
+// preserves.
+func shrinkKitty(b *block, ceiling int) {
+	img, err := png.Decode(bytes.NewReader(b.kitty.png))
+	if err != nil {
+		return
+	}
+
+	var buf bytes.Buffer
+	if png.Encode(&buf, downscaleTo(img, ceiling)) != nil {
+		return
+	}
+
+	b.kitty.png = buf.Bytes()
 }
 
 // fetchImage downloads and decodes one image. A non-zero viewBox identifies
@@ -194,29 +310,47 @@ func newKittyImage(img image.Image, raw []byte) *kittyImage {
 // entire point is fidelity, and fetch goroutines have the time.
 func kittyPNG(img image.Image, raw []byte) []byte {
 	bounds := img.Bounds()
-	budget := maxImagePx
 
-	if bytes.HasPrefix(raw, pngMagic) && bounds.Dx() <= budget && bounds.Dy() <= budget {
+	if bytes.HasPrefix(raw, pngMagic) && bounds.Dx() <= maxImagePx && bounds.Dy() <= maxImagePx {
 		return raw
 	}
 
-	if bounds.Dx() > budget || bounds.Dy() > budget {
-		scale := float64(budget) / float64(max(bounds.Dx(), bounds.Dy()))
-		dst := image.NewRGBA(image.Rect(0, 0,
-			max(1, int(float64(bounds.Dx())*scale+0.5)),
-			max(1, int(float64(bounds.Dy())*scale+0.5))))
-
-		xdraw.CatmullRom.Scale(dst, dst.Bounds(), img, bounds, xdraw.Src, nil)
-
-		img = dst
-	}
-
 	var buf bytes.Buffer
-	if png.Encode(&buf, img) != nil {
+	if png.Encode(&buf, downscaleTo(img, maxImagePx)) != nil {
 		return nil
 	}
 
 	return buf.Bytes()
+}
+
+// downscaleTo bounds img to ceiling on its long side with Catmull-Rom,
+// keeping the aspect; within bounds it passes through untouched.
+func downscaleTo(img image.Image, ceiling int) image.Image {
+	bounds := img.Bounds()
+
+	target := scaledSize(bounds.Size(), ceiling)
+	if target == bounds.Size() {
+		return img
+	}
+
+	dst := image.NewRGBA(image.Rect(0, 0, target.X, target.Y))
+	xdraw.CatmullRom.Scale(dst, dst.Bounds(), img, bounds, xdraw.Src, nil)
+
+	return dst
+}
+
+// scaledSize is size bounded to ceiling on its long side, aspect kept.
+func scaledSize(size image.Point, ceiling int) image.Point {
+	long := max(size.X, size.Y)
+	if long <= ceiling {
+		return size
+	}
+
+	scale := float64(ceiling) / float64(long)
+
+	return image.Pt(
+		max(1, int(float64(size.X)*scale+0.5)),
+		max(1, int(float64(size.Y)*scale+0.5)))
 }
 
 // refererFor mirrors the browser default referrer policy
