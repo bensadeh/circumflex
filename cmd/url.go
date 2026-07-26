@@ -31,7 +31,7 @@ func urlCmd() *cobra.Command {
 			// echoed into the reader's meta block (both as visible text and
 			// as the OSC 8 target), so strip escapes a pasted "run this"
 			// argument could smuggle in.
-			url := ansi.Strip(args[0])
+			url := ansi.Field(args[0])
 			if !strings.Contains(url, "://") {
 				url = "https://" + url
 			}

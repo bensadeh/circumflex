@@ -53,7 +53,7 @@ func FriendlyError(err error) string {
 	// err.Error() can embed server-controlled text (a redirect target, a URL
 	// echoed back). Go's url layer rejects raw control bytes there today, but
 	// this is the one render path that prints a raw error, so strip defensively.
-	errStr := ansi.Strip(err.Error())
+	errStr := ansi.Field(err.Error())
 	if errStr == "" {
 		return "Unknown error"
 	}

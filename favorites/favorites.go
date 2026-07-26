@@ -17,10 +17,10 @@ import (
 // loaded or migrated from disk is untrusted input — a pre-sanitization 4.x
 // favorites.json, or a hand-edited favorites.toml, can carry raw escapes.
 func sanitizeItem(item *Item) {
-	item.Title = ansi.Strip(item.Title)
-	item.Author = ansi.Strip(item.Author)
-	item.URL = ansi.Strip(item.URL)
-	item.Domain = ansi.Strip(item.Domain)
+	item.Title = ansi.Field(item.Title)
+	item.Author = ansi.Field(item.Author)
+	item.URL = ansi.Field(item.URL)
+	item.Domain = ansi.Field(item.Domain)
 }
 
 func ItemFromStory(s *hn.Story) *Item {

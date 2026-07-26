@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 
 	"github.com/bensadeh/circumflex/ansi"
 )
@@ -42,10 +41,9 @@ func SaveWindowTitle() (restore func()) {
 
 // WindowTitle prepares text for use as a window title. OSC 2 ends at the
 // first BEL or ST, so a control character in a story title would close the
-// sequence early and let whatever follows land on the terminal as commands;
-// a newline in the payload would spill the rest onto the screen. Titles are
-// already stripped at ingest — this is the sink saying so itself, as
-// ansi.Hyperlink does for its target.
+// sequence early and let whatever follows land on the terminal as commands.
+// Titles are already stripped at ingest — this is the sink saying so itself,
+// as ansi.Hyperlink does for its target.
 func WindowTitle(text string) string {
-	return strings.Join(strings.Fields(ansi.Strip(text)), " ")
+	return ansi.Field(text)
 }

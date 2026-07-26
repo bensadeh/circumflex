@@ -54,7 +54,22 @@ func TestStrip(t *testing.T) {
 
 		{"tab preserved", "a\tb", "a\tb"},
 		{"newline preserved", "a\nb", "a\nb"},
-		{"CR preserved", "a\rb", "a\rb"},
+
+		// Tab and newline are layout; a carriage return is a control like any
+		// other, drawing back over the line it shares.
+		{"CR removed", "a\rb", "ab"},
+
+		// Bidi overrides are a field concern; content keeps its directional runs.
+		{"bidi override kept", "a\u202Eb", "a\u202Eb"},
+
+		// A payload the terminator search once missed for holding non-ASCII,
+		// leaving the whole sequence behind as visible text.
+		{"OSC with unicode payload", "\x1B]0;café\x07safe", "safe"},
+		{"OSC 8 with unicode target", "\x1B]8;;https://é.com\x1B\\link", "link"},
+
+		// Deleting the inner sequence splices its neighbours into a live one,
+		// which the repeated pass removes rather than leave as debris.
+		{"spliced sequence", "\x1B\x1B[0m[31mhi", "hi"},
 
 		// Regression for #201: pre-decode stripping used to corrupt `\\func`
 		// (JSON for `\func`) by treating the inner `\f` as a short escape.
@@ -109,7 +124,10 @@ func TestNeutralize(t *testing.T) {
 		{"8-bit CSI", "\xC2\x9B31m", "␛[31m"},
 		{"8-bit OSC", "\xC2\x9D0;t", "␛]0;t"},
 
-		{"kept whitespace", "a\tb\nc\rd", "a\tb\nc\rd"},
+		{"kept whitespace", "a\tb\nc", "a\tb\nc"},
+
+		// A carriage return would draw back over the line it shares.
+		{"CR pictured", "harmless\rEnter password:", "harmless␍Enter password:"},
 		{"notation untouched", `\x1b[31m and ESC[0m`, `\x1b[31m and ESC[0m`},
 		{"invalid UTF-8 replaced", "ok\xffbytes", "ok�bytes"},
 		{"invalid UTF-8 around C0", "\xc2\x11\x9b", "�␑�"},
@@ -122,6 +140,42 @@ func TestNeutralize(t *testing.T) {
 			got := ansi.Neutralize(tt.input)
 			if got != tt.want {
 				t.Errorf("Neutralize(%q) = %q, want %q", tt.input, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestField(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  string
+	}{
+		{"escapes removed", "\x1B[31mred\x1B[0m", "red"},
+
+		// A field is one row of a fixed layout: a newline would forge a row of
+		// its own and a carriage return would draw over the row already there.
+		{"newline folded", "safe title\n  fake story row", "safe title fake story row"},
+		{"CR folded", "safe title\rfake story row", "safe title fake story row"},
+		{"tab folded", "a\tb", "a b"},
+		{"edges trimmed", "  padded  ", "padded"},
+		{"runs collapsed", "a   b", "a b"},
+
+		// Without this the URL reads as example.com/exe.png on screen while
+		// the link opens example.com/gnp.exe.
+		{"bidi override removed", "example.com/\u202Egnp.exe", "example.com/gnp.exe"},
+		{"bidi isolate removed", "\u2066example.com\u2069", "example.com"},
+
+		{"plain text untouched", "Ask HN: what are you working on?", "Ask HN: what are you working on?"},
+		{"unicode text untouched", "café résumé naïve", "café résumé naïve"},
+		{"empty", "", ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ansi.Field(tt.input)
+			if got != tt.want {
+				t.Errorf("Field(%q) = %q, want %q", tt.input, got, tt.want)
 			}
 		})
 	}

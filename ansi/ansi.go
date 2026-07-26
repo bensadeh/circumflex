@@ -35,35 +35,46 @@ const (
 	hyperlinkTerminator = "\033\\"
 )
 
-// Hyperlink wraps text in an OSC 8 hyperlink pointing at url. url is stripped
-// of control characters at the sink: a raw BEL/ESC/ST in the target would
-// otherwise close the OSC 8 sequence early and inject whatever follows, so
-// the wrapper is safe even if a caller forgets to sanitize its URL. text is
-// left untouched — it legitimately carries the styling SGRs of the link.
+// Hyperlink wraps text in an OSC 8 hyperlink pointing at url. url is
+// sanitized at the sink: a raw BEL/ESC/ST in the target would otherwise close
+// the OSC 8 sequence early and inject whatever follows, so the wrapper is
+// safe even if a caller forgets. text is left untouched — it legitimately
+// carries the styling SGRs of the link.
 func Hyperlink(url, text string) string {
-	return hyperlinkOpen + Strip(url) + hyperlinkTerminator + text + hyperlinkOpen + hyperlinkTerminator
+	return hyperlinkOpen + Field(url) + hyperlinkTerminator + text + hyperlinkOpen + hyperlinkTerminator
 }
 
 var (
 	escSequences = regexp.MustCompile(
 		`(?:\x1B\[|\x9B)[0-?]*[ -/]*[@-~]|` +
-			`(?:\x1B[\]P_^X]|[\x9D\x90\x9F\x9E\x98])[\x00-\x7E]*?(?:\x1B\\|\x07|\x9C)|` +
+			`(?:\x1B[\]P_^X]|[\x9D\x90\x9F\x9E\x98])[^\x1B\x07\x9C]*(?:\x1B\\|\x07|\x9C)|` +
 			`(?:\x1B[NO]|[\x8E\x8F]).?|` +
 			`\x1B[\x20-\x2F]+[\x30-\x7E]|` +
 			`\x1B[0-~]`,
 	)
 
-	// C0 controls except \t \n \r, plus DEL and the C1 range: a bare C1 rune
-	// — an unterminated U+009D string opener, a stray U+009B — is a live
-	// control on terminals that decode C1 from UTF-8.
-	dangerousControls = regexp.MustCompile(`[\x00-\x08\x0B\x0C\x0E-\x1F\x7F\x80-\x9F]`)
+	// Everything below space but tab and newline, plus DEL and the C1 range:
+	// a bare C1 rune — an unterminated U+009D string opener, a stray U+009B —
+	// is a live control on terminals that decode C1 from UTF-8. Tab and
+	// newline are the only two the layout is built from; a carriage return
+	// draws back over the line it shares, so it goes with the rest.
+	dangerousControls = regexp.MustCompile(`[\x00-\x08\x0B-\x1F\x7F\x80-\x9F]`)
+
+	// Bidi overrides reorder the glyphs around them, so a URL ending in
+	// U+202E displays as its own reverse: the domain read off the screen is
+	// not the domain that opens. Fields carry no directional runs worth
+	// preserving, so they lose the whole set.
+	bidiOverrides = regexp.MustCompile(`[\x{202A}-\x{202E}\x{2066}-\x{2069}]`)
 )
 
 // Neutralize makes control characters visible instead of removing them: ESC
 // becomes ␛, other C0 controls and DEL their control pictures, and a C1 rune
 // its 7-bit ␛-pair equivalent. Content paths use it so an article
 // demonstrating escape sequences shows ␛[31m where Strip would delete the
-// sequence outright; \t \n \r pass through, as in Strip.
+// sequence outright. Only tab and newline pass through, the two controls the
+// layout itself is built from; a carriage return would move the cursor back
+// over text already drawn, so it shows as ␍ like any other control. Callers
+// holding CRLF text normalize their line endings first.
 func Neutralize(text string) string {
 	var sb strings.Builder
 
@@ -71,7 +82,7 @@ func Neutralize(text string) string {
 
 	for _, r := range text {
 		switch {
-		case r == '\t' || r == '\n' || r == '\r':
+		case r == '\t' || r == '\n':
 			sb.WriteRune(r)
 
 		case r < 0x20:
@@ -92,12 +103,42 @@ func Neutralize(text string) string {
 	return sb.String()
 }
 
+// Strip removes escape sequences and the controls a terminal acts on rather
+// than draws, leaving text the terminal can only print. Tab and newline
+// survive as layout; callers that must not carry even those use Field.
 func Strip(text string) string {
 	// Invalid UTF-8 is repaired first: removing a C0 byte could otherwise
 	// splice the bytes around it into a C1 control rune ("\xc2\x11\x9b"
 	// would strip to the CSI rune U+009B).
 	text = strings.ToValidUTF8(text, "�")
-	text = escSequences.ReplaceAllString(text, "")
+
+	// Deleting one sequence can splice its neighbours into another, so the
+	// pass repeats until the text settles. The control sweep below would
+	// defuse whatever survived regardless — repeating only spares the reader
+	// the debris that would be left in its place.
+	for {
+		stripped := escSequences.ReplaceAllString(text, "")
+		if stripped == text {
+			break
+		}
+
+		text = stripped
+	}
 
 	return dangerousControls.ReplaceAllString(text, "")
+}
+
+// Field prepares untrusted text for a chrome field — a story title, an
+// author, a URL — each drawn into one row of a fixed layout. Beyond Strip it
+// folds the text onto a single line, since a newline there forges a row of
+// its own and a carriage return draws over the row already there, and it
+// drops the bidi overrides that would otherwise let a URL display reversed.
+func Field(text string) string {
+	// Whatever a carriage return meant in the source, here it stood between
+	// two words: it becomes the gap it was hiding rather than let Strip
+	// delete it and close the words up.
+	text = strings.ReplaceAll(text, "\r", " ")
+	text = bidiOverrides.ReplaceAllString(Strip(text), "")
+
+	return strings.Join(strings.Fields(text), " ")
 }

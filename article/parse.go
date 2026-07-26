@@ -1152,10 +1152,17 @@ func attr(n *html.Node, key string) string {
 	return ""
 }
 
-// altText reads an img alt attribute. Attribute values are stripped of control
-// sequences like text nodes are, since the source is equally untrusted.
+// captionAttr reads an attribute a graphic describes itself with — alt on an
+// image, aria-label on a drawn one — as the caption it becomes. Attribute
+// values are stripped of control sequences like text nodes are, since the
+// source is equally untrusted, and every caption reaches the screen through
+// here so none can be sanitized differently from the rest.
+func captionAttr(n *html.Node, key string) string {
+	return strings.TrimSpace(collapseWhitespace(ansi.Strip(attr(n, key))))
+}
+
 func altText(n *html.Node) string {
-	return strings.TrimSpace(collapseWhitespace(ansi.Strip(attr(n, "alt"))))
+	return captionAttr(n, "alt")
 }
 
 // Heading levels are remapped to a contiguous 1..n range so that articles

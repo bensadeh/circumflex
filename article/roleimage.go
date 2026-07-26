@@ -1,8 +1,6 @@
 package article
 
 import (
-	"strings"
-
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 )
@@ -16,7 +14,7 @@ func roleImageLabel(n *html.Node) string {
 		return ""
 	}
 
-	return strings.TrimSpace(attr(n, "aria-label"))
+	return captionAttr(n, "aria-label")
 }
 
 // graphicShaped separates drawn graphics — an svg, a wrapper holding one, or a
@@ -46,7 +44,7 @@ func normalizeRoleImages(root *html.Node) {
 	}
 
 	for _, n := range graphics {
-		label := strings.TrimSpace(attr(n, "aria-label"))
+		label := roleImageLabel(n)
 
 		if nodeAtom(n) != atom.Svg {
 			n.AppendChild(labelParagraph(label))

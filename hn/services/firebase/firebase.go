@@ -313,9 +313,9 @@ func (s *Service) fetchHNItem(ctx context.Context, id int) (*hnItem, error) {
 	// order defends against terminal injection via user-submitted fields.
 	item.Title = html.UnescapeString(item.Title)
 
-	item.By = ansi.Strip(item.By)
-	item.Title = ansi.Strip(item.Title)
-	item.URL = ansi.Strip(item.URL)
+	item.By = ansi.Field(item.By)
+	item.Title = ansi.Field(item.Title)
+	item.URL = ansi.Field(item.URL)
 
 	return &item, nil
 }

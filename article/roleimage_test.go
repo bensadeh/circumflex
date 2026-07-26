@@ -42,6 +42,22 @@ func TestNormalizeRoleImages_ReplacesBareSVG(t *testing.T) {
 	assert.Contains(t, out, `<div role="img" aria-label="A chart trending upward."><p>A chart trending upward.</p></div>`)
 }
 
+// The label is an attribute of an attacker-controlled page that renders as a
+// caption, so it is sanitized like the alt text it stands in for.
+func TestRoleImageLabel_Sanitized(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<div role="img" aria-label="chart \x1b[31mred\x1b]0;pwn\x07"><svg></svg></div>`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, `chart \x1b[31mred\x1b]0;pwn\x07`, blocks[0].plainText())
+
+	raw := blocksFromHTML(t, "<div role=\"img\" aria-label=\"chart \x1b[31mred\x1b]0;pwn\x07\"><svg></svg></div>")
+
+	require.Len(t, raw, 1)
+	assert.Equal(t, "chart red", raw[0].plainText())
+}
+
 func TestNormalizeRoleImages_LeavesEmojiSpansAlone(t *testing.T) {
 	t.Parallel()
 

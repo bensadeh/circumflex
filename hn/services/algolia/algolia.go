@@ -122,13 +122,13 @@ func mapHit(hit *searchHit) *hn.Story {
 	}
 
 	// Defend against terminal injection via user-submitted fields.
-	url := ansi.Strip(hit.URL)
+	url := ansi.Field(hit.URL)
 
 	return &hn.Story{
 		ID:            id,
-		Title:         ansi.Strip(hit.Title),
+		Title:         ansi.Field(hit.Title),
 		Points:        hit.Points,
-		Author:        ansi.Strip(hit.Author),
+		Author:        ansi.Field(hit.Author),
 		Time:          hit.CreatedAtI,
 		URL:           url,
 		Domain:        domain.FromURL(url),

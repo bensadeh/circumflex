@@ -93,9 +93,9 @@ func Parse(ctx context.Context, url string, images bool) (*Parsed, error) {
 	}
 
 	// Block text is stripped as it parses; the title arrives on its own path
-	// out of readability, still carrying whatever the page put in <title>.
-	// Fields also folds newlines: the title heads the view as a single line.
-	title = strings.Join(strings.Fields(ansi.Strip(title)), " ")
+	// out of readability, still carrying whatever the page put in <title>,
+	// and heads the view as a single line.
+	title = ansi.Field(title)
 
 	return &Parsed{blocks: blocks, Title: title}, nil
 }
