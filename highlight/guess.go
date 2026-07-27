@@ -792,14 +792,63 @@ func shellExport(lines []string) bool {
 	return false
 }
 
+// isGo takes a nominal type declaration or a method receiver as decisive —
+// godoc renders declarations without bodies, so those blocks never earn two
+// body signals. No other language spells `type Name struct {` (Rust and C say
+// `struct Name`, TypeScript's interface drops the type keyword and its alias
+// form carries an =), and only Go opens a line `func (`.
 func isGo(text string, lines []string) bool {
+	if goTypeDecl(lines) || anyLinePrefix(lines, "func (") {
+		return true
+	}
+
 	return atLeastTwo(
 		strings.Contains(text, " := "),
 		anyLinePrefix(lines, "func "),
 		anyLinePrefix(lines, "package "),
 		containsAny(text, []string{"fmt.", "err != nil"}),
-		anyLineIs(lines, "import ("),
+		anyLinePrefix(lines, "import ("),
+		goSliceType(text),
 	)
+}
+
+func goTypeDecl(lines []string) bool {
+	for _, l := range lines {
+		rest, ok := strings.CutPrefix(strings.TrimSpace(l), "type ")
+		if !ok {
+			continue
+		}
+
+		name, kind, ok := strings.Cut(rest, " ")
+		if !ok || name == "" || !isASCIILetter(name[0]) ||
+			strings.TrimLeft(name, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_") != "" {
+			continue
+		}
+
+		for _, kw := range []string{"struct", "interface"} {
+			if after, ok := strings.CutPrefix(kind, kw); ok &&
+				strings.HasPrefix(strings.TrimPrefix(after, " "), "{") {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+// goSliceType reports Go's empty-bracket type prefix — []string, []*ast.File,
+// [][]byte. Every other language keeps content inside the brackets or nothing
+// type-shaped after them: Java and C# declare Type[] name, C initializes
+// arr[] = {…}, JavaScript chains [].map(, C++ lambdas open [](.
+func goSliceType(text string) bool {
+	for i := 0; i+2 < len(text); i++ {
+		if text[i] == '[' && text[i+1] == ']' &&
+			(isASCIILetter(text[i+2]) || text[i+2] == '*' || text[i+2] == '[') {
+			return true
+		}
+	}
+
+	return false
 }
 
 func isRust(text string, lines []string) bool {

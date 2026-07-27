@@ -62,6 +62,41 @@ func TestGuessLang(t *testing.T) {
 			"go",
 		},
 		{
+			"go var with arrow in comment is not javascript",
+			"var Analyzer = &analysis.Analyzer{\n        Name:      \"printf\",\n" +
+				"        FactTypes: []analysis.Fact{new(isWrapper)},\n        ...\n}\n\n" +
+				"type isWrapper struct{} // => *types.Func f “is a printf wrapper”",
+			"go",
+		},
+		{
+			"godoc type declaration",
+			"type Diagnostic struct {\n        Pos      token.Pos\n" +
+				"        Category string // optional\n        Message  string\n}",
+			"go",
+		},
+		{
+			"godoc interface declaration",
+			"type Fact interface {\n        AFact() \n}",
+			"go",
+		},
+		{
+			"godoc bare signature",
+			"func Validate(analyzers []*Analyzer) error",
+			"go",
+		},
+		{
+			"godoc method receiver",
+			"func (pass *Pass) ReportRangef(rng Range, format string, args ...any)",
+			"go",
+		},
+		{
+			"go import one-liner",
+			"import ( \"unusedresult\"; \"nilness\"; \"printf\" )\n\n" +
+				"var analyses = []*analysis.Analyzer{\n        unusedresult.Analyzer,\n" +
+				"        nilness.Analyzer,\n        printf.Analyzer,\n}",
+			"go",
+		},
+		{
 			"python",
 			"def fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n" +
 				"        a, b = b, a + b\n    return a\n\nprint(fib(10))",
