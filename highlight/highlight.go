@@ -112,6 +112,10 @@ func Code(text, lang string) string {
 
 	enrichCoarseNames(tokens)
 
+	if name == "Go" {
+		enrichGoTypes(tokens)
+	}
+
 	var sb strings.Builder
 
 	for _, token := range tokens {
@@ -406,16 +410,7 @@ func tokenStyle(t chroma.TokenType) func(string) string {
 // an open { on top and a preceding { or , , so a ternary branch (preceded
 // by ?) or a typed parameter (inside ( ) never qualifies.
 func enrichCoarseNames(tokens []chroma.Token) {
-	sig := make([]int, 0, len(tokens))
-
-	for i, t := range tokens {
-		if t.Type == chroma.Text || t.Type == chroma.TextWhitespace ||
-			t.Type.InCategory(chroma.Comment) {
-			continue
-		}
-
-		sig = append(sig, i)
-	}
+	sig := significantIndices(tokens)
 
 	var stack []byte
 
@@ -451,6 +446,21 @@ func enrichCoarseNames(tokens []chroma.Token) {
 			}
 		}
 	}
+}
+
+func significantIndices(tokens []chroma.Token) []int {
+	sig := make([]int, 0, len(tokens))
+
+	for i, t := range tokens {
+		if t.Type == chroma.Text || t.Type == chroma.TextWhitespace ||
+			t.Type.InCategory(chroma.Comment) {
+			continue
+		}
+
+		sig = append(sig, i)
+	}
+
+	return sig
 }
 
 func topIs(stack []byte, b byte) bool {
