@@ -26,6 +26,7 @@ func FuzzParseBlocks(f *testing.F) {
 		"<svg role=\"img\" aria-label=\"\x1b]8;;https://evil.com\x07plot\"></svg>",
 		"<table><tr><th>a\x1b[7m</th><td>b</td></tr></table>",
 		"<pre><code class=\"language-go\x1b[31m\">x := 1\n\ty\n</code></pre>",
+		"<pre><span class=\"comment\" id=\"x.Related\">// c</span><a href=\"https://x.com/\x1b]8;;\">t</a></pre>",
 		"<a href=\"https://x.com/\x07evil\">link</a><a href=\"javascript:x\">no</a>",
 		"<h1>heading\rrewrite</h1><blockquote>quoted</blockquote>",
 		"<ul><li>one \x1b(0 two</li><li>three</li></ul>",
@@ -47,6 +48,7 @@ func FuzzParseBlocks(f *testing.F) {
 		normalizeMediaWiki(doc)
 		normalizeRoleImages(doc)
 		preserveCodeLang(doc)
+		preservePreContent(doc)
 		normalizeLatexmlTables(doc)
 
 		blocks := parseBlocks(doc)

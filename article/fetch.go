@@ -109,10 +109,12 @@ func extractReadable(body []byte, parsedURL *nurl.URL) (*html.Node, string, erro
 	// class names that identify it are still present; ARIA-described graphics
 	// likewise, before readability deletes their text-less subtrees; code
 	// languages likewise, before the classes declaring them are stripped;
+	// pre internals likewise, before their spans and links read as chrome;
 	// LaTeXML tables likewise, before a class marker reads as page chrome.
 	normalizeMediaWiki(doc)
 	normalizeRoleImages(doc)
 	preserveCodeLang(doc)
+	preservePreContent(doc)
 	normalizeLatexmlTables(doc)
 
 	parser := readability.NewParser()
