@@ -518,7 +518,7 @@ func (m *Model) modeIndicator() string {
 // legend for the gutter markers. At zero expansion the all-dim gauge still
 // shows how deep the thread goes.
 func (m *Model) depthIndicator() string {
-	cycle := style.IndentCycleFaint()
+	cycle := style.IndentCycle()
 
 	var b strings.Builder
 
@@ -529,7 +529,7 @@ func (m *Model) depthIndicator() string {
 		case len(cycle) > 0:
 			b.WriteString(cycle[(level-1)%len(cycle)]("•"))
 		default:
-			b.WriteString(style.Faint("•"))
+			b.WriteString("•")
 		}
 	}
 
