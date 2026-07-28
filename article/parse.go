@@ -639,6 +639,10 @@ func hasProseOutsideCaption(n *html.Node) bool {
 }
 
 func (p *domParser) parseTable(n *html.Node) {
+	if p.parseInfobox(n) {
+		return
+	}
+
 	var rows [][]string
 
 	hasHeader := false
@@ -710,9 +714,7 @@ func tableRow(tr *html.Node) []string {
 			continue
 		}
 
-		// Rows render as single lines, so hard breaks inside a cell flatten
-		// back to spaces.
-		cell := strings.Join(strings.Fields(spanText(normalizeSpans(collectInline(c, formatPlain, nil)))), " ")
+		cell := cellText(c)
 		if cell != "" {
 			empty = false
 		}
@@ -725,6 +727,12 @@ func tableRow(tr *html.Node) []string {
 	}
 
 	return row
+}
+
+// Rows render as single lines, so hard breaks inside a cell flatten back to
+// spaces.
+func cellText(c *html.Node) string {
+	return strings.Join(strings.Fields(spanText(normalizeSpans(collectInline(c, formatPlain, nil)))), " ")
 }
 
 func parseListItems(list *html.Node, depth int, images *[]block) []listItem {
@@ -807,7 +815,7 @@ func parseQuote(n *html.Node) []span {
 				line = line[:len(line)-1]
 			}
 
-		case blockTable, blockImage, blockDivider:
+		case blockTable, blockInfobox, blockImage, blockDivider:
 			continue
 
 		default:

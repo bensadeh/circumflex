@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/bensadeh/circumflex/ansi"
+	"github.com/bensadeh/circumflex/frame"
 	"github.com/bensadeh/circumflex/highlight"
 	"github.com/bensadeh/circumflex/style"
 
@@ -115,6 +116,9 @@ func renderBlock(b *block, width, codeWidth int, images ImageOptions) string {
 
 	case blockTable:
 		return renderTable(b.rows, b.hasHeader, codeWidth)
+
+	case blockInfobox:
+		return renderInfobox(b, width)
 
 	case blockImage:
 		return renderImage(b, width, images)
@@ -545,6 +549,12 @@ func graphicLabel(first, second, third, title string) string {
 	return ansi.Reset + marks + ansi.Reset + styledTitle + ansi.Faint + ansi.Italic
 }
 
+// A table's columns keep their natural width while the whole fits the pane.
+// When it doesn't, the widest column gives up cells and its content wraps,
+// rather than every long row losing its tail — down to a floor where columns
+// stop shrinking and the trailing truncation catches what remains.
+const minTableColumn = 8
+
 func renderTable(rows [][]string, hasHeader bool, width int) string {
 	columns := 0
 	for _, row := range rows {
@@ -559,10 +569,13 @@ func renderTable(rows [][]string, hasHeader bool, width int) string {
 		}
 	}
 
+	shrinkColumns(columnWidths, width-2*(columns-1))
+
 	var lines []string
 
 	for rowIndex, row := range rows {
-		cells := make([]string, columns)
+		cells := make([][]string, columns)
+		height := 1
 
 		for i := range cells {
 			cell := ""
@@ -570,10 +583,24 @@ func renderTable(rows [][]string, hasHeader bool, width int) string {
 				cell = row[i]
 			}
 
-			cells[i] = cell + strings.Repeat(" ", columnWidths[i]-lipgloss.Width(cell))
+			cells[i] = strings.Split(lipgloss.Wrap(cell, columnWidths[i], ""), "\n")
+			height = max(height, len(cells[i]))
 		}
 
-		lines = append(lines, strings.TrimRight(strings.Join(cells, "  "), " "))
+		for line := range height {
+			parts := make([]string, columns)
+
+			for i, cell := range cells {
+				part := ""
+				if line < len(cell) {
+					part = cell[line]
+				}
+
+				parts[i] = part + strings.Repeat(" ", max(0, columnWidths[i]-lipgloss.Width(part)))
+			}
+
+			lines = append(lines, strings.TrimRight(strings.Join(parts, "  "), " "))
+		}
 
 		if rowIndex == 0 && hasHeader && len(rows) > 1 {
 			separators := make([]string, columns)
@@ -590,6 +617,65 @@ func renderTable(rows [][]string, hasHeader bool, width int) string {
 	}
 
 	return strings.Join(lines, "\n")
+}
+
+func shrinkColumns(columnWidths []int, available int) {
+	for {
+		total, widest := 0, 0
+
+		for i, columnWidth := range columnWidths {
+			total += columnWidth
+			if columnWidths[widest] < columnWidth {
+				widest = i
+			}
+		}
+
+		if total <= available || columnWidths[widest] <= minTableColumn {
+			return
+		}
+
+		columnWidths[widest] = max(minTableColumn, columnWidths[widest]-(total-available))
+	}
+}
+
+// The infobox renders in the frame family the meta bar and help panels
+// share: the wiki's caption as the panel title, a label column sized to the
+// longest label, and values wrapped in the remaining width under a hanging
+// indent.
+func renderInfobox(b *block, width int) string {
+	inner := frame.ContentWidth(width)
+
+	const labelGap = 2
+
+	labelWidth := 0
+	for _, row := range b.rows {
+		labelWidth = max(labelWidth, lipgloss.Width(row[0]))
+	}
+
+	labelWidth = min(labelWidth, max(1, (inner-labelGap)/2))
+	valueWidth := max(1, inner-labelWidth-labelGap)
+
+	title := ""
+	if b.text != "" {
+		title = lipgloss.NewStyle().Bold(true).Foreground(style.HeaderTertiary()).Render(b.text)
+	}
+
+	rows := []string{frame.OpeningRule(title, nil, width)}
+	indent := strings.Repeat(" ", labelWidth+labelGap)
+
+	for _, row := range b.rows {
+		label := xansi.Truncate(row[0], labelWidth, "…")
+		pad := strings.Repeat(" ", labelWidth-lipgloss.Width(label)+labelGap)
+		values := strings.Split(lipgloss.Wrap(row[1], valueWidth, ""), "\n")
+
+		rows = append(rows, frame.Row(style.Faint(label)+pad+values[0], width))
+
+		for _, value := range values[1:] {
+			rows = append(rows, frame.Row(indent+value, width))
+		}
+	}
+
+	return frame.Join(append(rows, frame.ClosingRule(nil, width)), width)
 }
 
 func renderDivider(width int) string {

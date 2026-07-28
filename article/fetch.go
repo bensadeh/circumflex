@@ -123,6 +123,7 @@ func extractReadable(body []byte, parsedURL *nurl.URL) (*html.Node, string, erro
 	parser := readability.NewParser()
 
 	parser.ClassesToPreserve = append(parser.ClassesToPreserve, latexmlPreservedClasses...)
+	parser.ClassesToPreserve = append(parser.ClassesToPreserve, infoboxPreservedClasses...)
 
 	a, err := parser.ParseAndMutate(doc, parsedURL)
 	if err != nil {

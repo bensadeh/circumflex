@@ -10,6 +10,7 @@ import (
 	"github.com/bensadeh/circumflex/scrollbar"
 	"github.com/bensadeh/circumflex/style"
 
+	"charm.land/lipgloss/v2"
 	xansi "github.com/charmbracelet/x/ansi"
 	"github.com/charmbracelet/x/ansi/kitty"
 	"github.com/stretchr/testify/assert"
@@ -337,9 +338,33 @@ func TestRenderBlock_TableExtendsToCodeWidth(t *testing.T) {
 	narrow := ansi.Strip(renderBlock(&b, 20, 20, showImages))
 	wide := ansi.Strip(renderBlock(&b, 20, 80, showImages))
 
-	assert.Contains(t, narrow, "…", "at a narrow code width the table truncates")
-	assert.NotContains(t, wide, "…", "with screen room the table uses the full code width")
-	assert.Contains(t, wide, "officecli-mac-arm64-very-long-name")
+	for line := range strings.SplitSeq(narrow, "\n") {
+		assert.LessOrEqual(t, lipgloss.Width(line), 20, "at a narrow code width the table wraps within the pane")
+	}
+
+	assert.NotContains(t, narrow, "…", "wrapped columns keep their content instead of truncating")
+	assert.Contains(t, wide, "officecli-mac-arm64-very-long-name", "with screen room the table uses the full code width")
+}
+
+// A long cell wraps within its shrunken column while the narrow columns keep
+// their natural width, so no row loses its tail.
+func TestRenderTable_WrapsWidestColumn(t *testing.T) {
+	t.Parallel()
+
+	rendered := ansi.Strip(renderTable([][]string{
+		{"Intensity", "Location"},
+		{"6-", "Kumamoto, Tamana, Uki, Nishihara, Ōzu, Kikuchi, Uto"},
+	}, true, 40))
+
+	lines := strings.Split(rendered, "\n")
+
+	for _, line := range lines {
+		assert.LessOrEqual(t, lipgloss.Width(line), 40)
+	}
+
+	assert.NotContains(t, rendered, "…")
+	assert.Contains(t, rendered, "Uto", "the wrapped cell keeps its tail")
+	assert.Greater(t, len(lines), 3, "the long row spans several lines")
 }
 
 func TestRenderDivider_FitsWidth(t *testing.T) {

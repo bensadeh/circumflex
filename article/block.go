@@ -17,6 +17,7 @@ const (
 	blockImage
 	blockDivider
 	blockVerbatim
+	blockInfobox
 )
 
 type block struct {
@@ -24,9 +25,9 @@ type block struct {
 	level      int        // blockHeading: 1-6
 	spans      []span     // blockParagraph, blockQuote, blockImage (caption)
 	items      []listItem // blockList
-	rows       [][]string // blockTable
+	rows       [][]string // blockTable; blockInfobox: label/value pairs
 	hasHeader  bool       // blockTable: first row came from thead or all-th cells
-	text       string     // blockHeading, blockCode
+	text       string     // blockHeading, blockCode; blockInfobox: panel title
 	lang       string     // blockCode: page-declared language, empty when unlabeled
 	guessed    bool       // blockCode: lang came from the guesser, not the page
 	hlOut      string     // blockCode: chroma render memoized by renderCode — width-independent
@@ -89,8 +90,12 @@ func (b *block) plainText() string {
 
 		return strings.Join(lines, "\n")
 
-	case blockTable:
-		var lines []string
+	case blockTable, blockInfobox:
+		lines := make([]string, 0, len(b.rows)+1)
+		if b.text != "" {
+			lines = append(lines, b.text)
+		}
+
 		for _, row := range b.rows {
 			lines = append(lines, strings.Join(row, " "))
 		}

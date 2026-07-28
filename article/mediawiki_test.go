@@ -37,38 +37,6 @@ func TestNormalizeMediaWiki_HeadingWrapper(t *testing.T) {
 	assert.Equal(t, "content", blocks[1].plainText())
 }
 
-func TestNormalizeMediaWiki_Infobox(t *testing.T) {
-	t.Parallel()
-
-	blocks := normalizedBlocks(t, `
-		<table class="infobox vevent">
-			<caption class="infobox-title summary">2016 Kumamoto earthquakes</caption>
-			<tbody>
-				<tr><td class="infobox-image">A destroyed house in Kumamoto</td></tr>
-				<tr><th class="infobox-label">Magnitude</th><td class="infobox-data">7.0</td></tr>
-				<tr><th class="infobox-label">Casualties</th><td class="infobox-data">277 dead</td></tr>
-			</tbody>
-		</table>
-		<p>The 2016 Kumamoto earthquakes were a series of earthquakes.</p>`)
-
-	require.Len(t, blocks, 1)
-	assert.Equal(t, "The 2016 Kumamoto earthquakes were a series of earthquakes.", blocks[0].plainText())
-}
-
-// The class name alone is not the MediaWiki template: a page using "infobox"
-// for its own markup keeps its table.
-func TestNormalizeMediaWiki_InfoboxClassWithoutParts(t *testing.T) {
-	t.Parallel()
-
-	blocks := normalizedBlocks(t, `
-		<table class="infobox">
-			<tbody><tr><td>Speed</td><td>fast</td></tr></tbody>
-		</table>`)
-
-	require.Len(t, blocks, 1)
-	assert.Equal(t, blockTable, blocks[0].kind)
-}
-
 func TestNormalizeMediaWiki_MathWrapper(t *testing.T) {
 	t.Parallel()
 

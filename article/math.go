@@ -180,7 +180,7 @@ func convertMath(blocks []block) {
 				convertMathSpans(b.items[j].spans)
 			}
 
-		case blockTable:
+		case blockTable, blockInfobox:
 			for _, row := range b.rows {
 				for k := range row {
 					row[k] = convertMathText(row[k])
