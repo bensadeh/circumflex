@@ -1,13 +1,13 @@
 ■ Math Rendering
 
-The sign flip cancels: (-𝑔ₓ)ᶜ mod 𝑁 = (𝑁 - 𝑔ₓ)ᶜ mod 𝑁 = (-1)ᶜ · 𝑔ₓᶜ mod
-𝑁.
+The sign flip cancels: (-𝑔 ₓ)ᶜ mod 𝑁 = (𝑁 - 𝑔 ₓ)ᶜ mod 𝑁 = (-1)ᶜ · 𝑔 ₓᶜ
+mod 𝑁.
 
-Inline math like 𝑥² + 𝑦² = 𝑧², magnitudes like ≈ 9.2 × 10¹⁸, the group
-(ℤ/𝑛ℤ)* and δ · ⌊15/8⌋ all convert, as do keys such as pkₐ = 𝑔^(skₐ) -
-pkᵥ.
+Inline math like 𝑥 ² + 𝑦 ² = 𝑧 ², magnitudes like ≈ 9.2 × 10¹⁸, the
+group (ℤ/𝑛 ℤ)* and δ · ⌊15/8⌋ all convert, as do keys such as pkₐ =
+𝑔^(skₐ) - pkᵥ.
 
-Fractions (𝑎+𝑏)/2, roots √2, congruences 𝑎 ≡ 𝑏 (mod 𝑁), sets {1, 3, 5}
+Fractions (𝑎 +𝑏)/2, roots √2, congruences 𝑎 ≡ 𝑏 (mod 𝑁), sets {1, 3, 5}
 and escaped delimiters 𝑎 ≤ 𝑏 work too.
 
 The price was $99 and is now $79, while $5-$10 covers lunch.

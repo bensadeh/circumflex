@@ -49,7 +49,7 @@ func TestNormalizeMediaWiki_MathWrapper(t *testing.T) {
 			class="mwe-math-fallback-image-inline" alt="{\displaystyle A+B}"/></span> is tagged</p>`)
 
 	require.Len(t, blocks, 1)
-	assert.Equal(t, "the union 𝐴+𝐵 is tagged", blocks[0].plainText())
+	assert.Equal(t, "the union 𝐴 +𝐵 is tagged", blocks[0].plainText())
 }
 
 // A math wrapper without MathML keeps its fallback image, which renders as
@@ -97,7 +97,7 @@ func TestMathFallbackTeX_CodecogsAlt(t *testing.T) {
 		<p>the value <img src="https://latex.codecogs.com/svg.latex?x%5E2" alt="x^2"/> grows</p>`)
 
 	require.Len(t, blocks, 1)
-	assert.Equal(t, "the value 𝑥² grows", blocks[0].plainText())
+	assert.Equal(t, "the value 𝑥 ² grows", blocks[0].plainText())
 }
 
 // Hand-pasted codecogs embeds often carry no alt attribute; the TeX is

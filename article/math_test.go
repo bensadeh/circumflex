@@ -14,24 +14,24 @@ func TestLatexToUnicode(t *testing.T) {
 		in   string
 		want string
 	}{
-		{`(-g_x)^c \bmod N = (-1)^c \cdot g_x^c \bmod N.`, "(-𝑔ₓ)ᶜ mod 𝑁 = (-1)ᶜ · 𝑔ₓᶜ mod 𝑁."},
-		{`(\mathbb{Z}/n\mathbb{Z})^*`, "(ℤ/𝑛ℤ)*"},
+		{`(-g_x)^c \bmod N = (-1)^c \cdot g_x^c \bmod N.`, "(-𝑔 ₓ)ᶜ mod 𝑁 = (-1)ᶜ · 𝑔 ₓᶜ mod 𝑁."},
+		{`(\mathbb{Z}/n\mathbb{Z})^*`, "(ℤ/𝑛 ℤ)*"},
 		{`\approx 9.2 \times 10^{18}`, "≈ 9.2 × 10¹⁸"},
 		{`\delta \cdot \lfloor 15/8 \rfloor`, "δ · ⌊15/8⌋"},
 		{`(-1)^{\text{even}} = 1`, "(-1)ᵉᵛᵉⁿ = 1"},
 		{`(-1)^{c} = (-1)^c`, "(-1)ᶜ = (-1)ᶜ"},
 		{`\mathsf{pk}_a = g^{\mathsf{sk}_a} - \mathsf{pk}_v`, "pkₐ = 𝑔^(skₐ) - pkᵥ"},
-		{`\log_g(-g_x) = \log_h(h_x)`, "log_𝑔(-𝑔ₓ) = logₕ(ℎₓ)"},
-		{`\frac{a+b}{2}`, "(𝑎+𝑏)/2"},
+		{`\log_g(-g_x) = \log_h(h_x)`, "log_𝑔 (-𝑔 ₓ) = logₕ(ℎ ₓ)"},
+		{`\frac{a+b}{2}`, "(𝑎 +𝑏)/2"},
 		{`\frac{15}{8}`, "15/8"},
 		{`\sqrt{2}`, "√2"},
-		{`\sqrt{a+b}`, "√(𝑎+𝑏)"},
+		{`\sqrt{a+b}`, "√(𝑎 +𝑏)"},
 		{`a \equiv b \pmod{N}`, "𝑎 ≡ 𝑏 (mod 𝑁)"},
 		{`\{1, 3, 5\}`, "{1, 3, 5}"},
 		{`2^{53}`, "2⁵³"},
 		{`\mathcal{O}(n \log n)`, "𝒪(𝑛 log 𝑛)"},
 		{`\hat{x} + \vec{v}`, "𝑥̂ + 𝑣⃗"},
-		{`\unknowncmd{arg}`, "unknowncmd𝑎𝑟𝑔"},
+		{`\unknowncmd{arg}`, "unknowncmd𝑎 𝑟 𝑔"},
 		{`m \triangleright_1 a \cong m \triangleright _2 a`, "𝑚 ▷₁ 𝑎 ≅ 𝑚 ▷₂ 𝑎"},
 	}
 
@@ -52,7 +52,7 @@ func TestConvertMathText_InlineGuards(t *testing.T) {
 		in   string
 		want string
 	}{
-		{"latex syntax converts", "solve $x^2 = 4$ now", "solve 𝑥² = 4 now"},
+		{"latex syntax converts", "solve $x^2 = 4$ now", "solve 𝑥 ² = 4 now"},
 		{"single symbols convert", "when $c$ is even", "when 𝑐 is even"},
 		{"bare numbers convert", "a delta of $120$ here", "a delta of 120 here"},
 		{"threshold notation", "$t$-of-$n$ sharing", "𝑡-of-𝑛 sharing"},
@@ -79,7 +79,7 @@ func TestConvertMath_SkipsCodeSpans(t *testing.T) {
 	convertMath(blocks)
 
 	require.Len(t, blocks, 1)
-	assert.Equal(t, "run echo $$HOME$$ to get 𝑥²", blocks[0].plainText(),
+	assert.Equal(t, "run echo $$HOME$$ to get 𝑥 ²", blocks[0].plainText(),
 		"dollar signs in inline code must survive untouched")
 }
 

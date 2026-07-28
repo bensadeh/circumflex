@@ -4,6 +4,7 @@ import (
 	nurl "net/url"
 	"regexp"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 
 	"github.com/bensadeh/circumflex/ansi"
@@ -273,7 +274,42 @@ func latexToUnicode(src string) string {
 		s.pos++ // stray closing brace
 	}
 
-	return bracketSpaces.Replace(strings.Join(strings.Fields(out.String()), " "))
+	return spaceMathItalics(bracketSpaces.Replace(strings.Join(strings.Fields(out.String()), " ")))
+}
+
+// The mathematical italic letters lean far enough right that terminal fonts
+// draw them into the neighboring cell, where they collide with whatever
+// follows — a subscript, an operator, another letter. A space after each
+// italic letter keeps the next glyph clear. Combining accents must stay
+// attached to their base, closing punctuation reads as prose rather than as
+// a crowded symbol, and ′, * and the ^/_ marker notation bind tight.
+func spaceMathItalics(text string) string {
+	var sb strings.Builder
+
+	runes := []rune(text)
+
+	for i, r := range runes {
+		sb.WriteRune(r)
+
+		if isMathItalic(r) && i+1 < len(runes) && crowdsMathItalic(runes[i+1]) {
+			sb.WriteByte(' ')
+		}
+	}
+
+	return sb.String()
+}
+
+func isMathItalic(r rune) bool {
+	return r >= 0x1D434 && r <= 0x1D467 || r == 'ℎ'
+}
+
+func crowdsMathItalic(r rune) bool {
+	switch r {
+	case ' ', ',', '.', ';', '!', '?', ')', ']', '}', '⟩', '⌋', '⌉', '′', '*', '^', '_':
+		return false
+	}
+
+	return !unicode.Is(unicode.Mn, r)
 }
 
 var bracketSpaces = strings.NewReplacer(
