@@ -112,8 +112,12 @@ func Code(text, lang string) string {
 
 	enrichCoarseNames(tokens)
 
+	// Types before fields: the adjacency rule reads the field name as its
+	// still-untyped NameOther anchor.
 	if name == "Go" {
 		enrichGoTypes(tokens)
+		tagGoStructFields(tokens)
+		retagGoLiteralKeys(tokens)
 	}
 
 	var sb strings.Builder

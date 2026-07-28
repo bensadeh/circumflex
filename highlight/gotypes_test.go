@@ -46,6 +46,53 @@ func TestCode_GoSignatureTypes(t *testing.T) {
 	assert.NotContains(t, out, style.CodeType("rng"))
 }
 
+func TestCode_GoStructFieldNames(t *testing.T) {
+	t.Parallel()
+
+	out := Code("type RelatedInformation struct {\n    Pos     token.Pos\n    End     token.Pos // optional\n    Message string\n}", "go")
+
+	assert.Contains(t, out, style.CodeLiteral("Pos"), "field names take the variable hue")
+	assert.Contains(t, out, style.CodeLiteral("End"))
+	assert.Contains(t, out, style.CodeLiteral("Message"))
+	assert.Contains(t, out, style.CodeType("Pos"), "the field's type keeps the type hue")
+
+	out = Code("type Point struct {\n    X, Y int\n}", "go")
+
+	assert.Contains(t, out, style.CodeLiteral("X"))
+	assert.Contains(t, out, style.CodeLiteral("Y"))
+}
+
+func TestCode_GoLiteralKeysMatchFields(t *testing.T) {
+	t.Parallel()
+
+	out := Code("a := &analysis.Analyzer{\n    Name: \"unusedresult\",\n    Run:  run,\n}", "go")
+
+	assert.Contains(t, out, style.CodeLiteral("Name"),
+		"a literal's key names the same field its declaration does")
+	assert.Contains(t, out, style.CodeLiteral("Run"))
+	assert.NotContains(t, out, style.CodeKeyword("Name"))
+}
+
+func TestCode_GoEmbeddedFieldsAreTypes(t *testing.T) {
+	t.Parallel()
+
+	out := Code("type W struct {\n    token.Pos\n    Reader\n    closer\n}", "go")
+
+	assert.Contains(t, out, style.CodeType("Pos"), "embedded qualified type")
+	assert.Contains(t, out, style.CodeType("Reader"), "a lone name on a field line is an embedded type")
+	assert.NotContains(t, out, style.CodeLiteral("Reader"))
+	assert.NotContains(t, out, style.CodeType("closer"), "lowercase embeds stay plain")
+}
+
+func TestCode_GoNestedStructFields(t *testing.T) {
+	t.Parallel()
+
+	out := Code("type Outer struct {\n    Meta struct {\n        Count int\n    }\n}", "go")
+
+	assert.Contains(t, out, style.CodeLiteral("Meta"))
+	assert.Contains(t, out, style.CodeLiteral("Count"))
+}
+
 // The positions this pass deliberately leaves alone: expressions that share a
 // shape with types. A spaced * is arithmetic, a * behind an operator is a
 // deref, and calls, literals and lone identifiers carry no declaration

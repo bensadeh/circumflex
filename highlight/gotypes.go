@@ -80,6 +80,107 @@ func walkTypeExpr(tokens []chroma.Token, sig []int, j, prev int) int {
 	return j
 }
 
+// tagGoStructFields colors the field names of struct bodies with the data
+// hue variables and constants take — a field is a member variable, not a
+// callable, so the function hue would misread. The grammar makes this safe
+// where general name-tagging isn't: between a struct keyword's brace and its
+// close, Go allows only field declarations and embedded types, so a
+// line-leading name is a field unless the line holds nothing else or the
+// name is glued to a qualifier dot or type argument — those shapes are
+// embedded types, which promote like any type. The bracket stack keeps other
+// braces (interface bodies, func-type parameter lists) out of field state.
+func tagGoStructFields(tokens []chroma.Token) {
+	sig := significantIndices(tokens)
+
+	var structBody []bool
+
+	fieldStart := false
+
+	for j := 0; j < len(sig); j++ {
+		idx := sig[j]
+		tok := &tokens[idx]
+
+		if j > 0 && topIsStruct(structBody) && lineBreakBetween(tokens, sig[j-1], idx) {
+			fieldStart = true
+		}
+
+		if tok.Type == chroma.Punctuation {
+			for i, c := range tok.Value {
+				switch c {
+				case '{', '(', '[':
+					opensStruct := c == '{' && i == 0 && j > 0 &&
+						isKeywordValue(tokens[sig[j-1]], "struct")
+					structBody = append(structBody, opensStruct)
+
+					fieldStart = opensStruct
+
+				case '}', ')', ']':
+					if len(structBody) > 0 {
+						structBody = structBody[:len(structBody)-1]
+					}
+
+					fieldStart = false
+				}
+			}
+
+			continue
+		}
+
+		if !fieldStart || tok.Type != chroma.NameOther {
+			fieldStart = false
+
+			continue
+		}
+
+		fieldStart = false
+
+		embedded := (j+1 < len(sig) && sig[j+1] == idx+1 &&
+			(tokens[sig[j+1]].Value == "." || strings.HasPrefix(tokens[sig[j+1]].Value, "["))) ||
+			j+1 >= len(sig) || lineBreakBetween(tokens, idx, sig[j+1]) ||
+			strings.HasPrefix(tokens[sig[j+1]].Value, "}")
+		if embedded {
+			j = walkTypeExpr(tokens, sig, j, -1) - 1
+
+			continue
+		}
+
+		tok.Type = chroma.NameVariable
+
+		for j+2 < len(sig) && tokens[sig[j+1]].Value == "," &&
+			tokens[sig[j+2]].Type == chroma.NameOther &&
+			!lineBreakBetween(tokens, sig[j], sig[j+2]) {
+			tokens[sig[j+2]].Type = chroma.NameVariable
+			j += 2
+		}
+	}
+}
+
+// retagGoLiteralKeys moves composite-literal keys from the json-key hue the
+// cross-language member rule assigns to the field hue: Name: in a literal
+// names the same field its declaration does. Go's lexer emits no NameTag of
+// its own, so every one in the stream is such a key.
+func retagGoLiteralKeys(tokens []chroma.Token) {
+	for i := range tokens {
+		if tokens[i].Type == chroma.NameTag {
+			tokens[i].Type = chroma.NameVariable
+		}
+	}
+}
+
+func topIsStruct(stack []bool) bool {
+	return len(stack) > 0 && stack[len(stack)-1]
+}
+
+func lineBreakBetween(tokens []chroma.Token, a, b int) bool {
+	for _, t := range tokens[a+1 : b] {
+		if strings.Contains(t.Value, "\n") {
+			return true
+		}
+	}
+
+	return false
+}
+
 func startsTypeExpr(t chroma.Token) bool {
 	return t.Type == chroma.NameOther ||
 		(t.Type == chroma.Operator && (t.Value == "*" || t.Value == "...")) ||
