@@ -1,6 +1,8 @@
 package article
 
 import (
+	"strings"
+
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 )
@@ -20,8 +22,16 @@ import (
 // Readability drops hidden nodes, so only the image reaches the parser and
 // every formula renders as an image block torn out of its sentence. Keeping
 // just the MathML child lets it render as inline TeX text.
+//
+// Infoboxes (<table class="infobox">) are a sidebar in the browser but
+// linearize ahead of the lede as a wall of label/value rows too wide for the
+// pane, prefixed by stray image captions and a duplicate of the page title.
+// The wiki style guide requires the prose to state the infobox's facts, so
+// the table drops whole. Only tables carrying the template's paired classes
+// (infobox-label, infobox-data, …) qualify — a bare class="infobox" on some
+// unrelated site keeps its content.
 func normalizeMediaWiki(root *html.Node) {
-	var mathWrappers, editLinks, headingWrappers []*html.Node
+	var mathWrappers, editLinks, headingWrappers, infoboxes []*html.Node
 
 	for n := range root.Descendants() {
 		if n.Type != html.ElementNode {
@@ -37,6 +47,9 @@ func normalizeMediaWiki(root *html.Node) {
 
 		case hasClass(n, "mw-heading"):
 			headingWrappers = append(headingWrappers, n)
+
+		case nodeAtom(n) == atom.Table && hasClass(n, "infobox") && hasInfoboxParts(n):
+			infoboxes = append(infoboxes, n)
 		}
 	}
 
@@ -57,6 +70,28 @@ func normalizeMediaWiki(root *html.Node) {
 	for _, wrapper := range headingWrappers {
 		unwrap(wrapper)
 	}
+
+	for _, box := range infoboxes {
+		if box.Parent != nil {
+			box.Parent.RemoveChild(box)
+		}
+	}
+}
+
+func hasInfoboxParts(n *html.Node) bool {
+	for c := range n.Descendants() {
+		if c.Type != html.ElementNode {
+			continue
+		}
+
+		for class := range strings.FieldsSeq(attr(c, "class")) {
+			if strings.HasPrefix(class, "infobox-") {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 func descendantElement(n *html.Node, a atom.Atom) *html.Node {
