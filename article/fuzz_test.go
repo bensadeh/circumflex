@@ -50,6 +50,7 @@ func FuzzParseBlocks(f *testing.F) {
 		preserveCodeLang(doc)
 		preservePreContent(doc)
 		normalizeLatexmlTables(doc)
+		dropLatexmlRawPictures(doc)
 
 		blocks := parseBlocks(doc)
 		convertMath(blocks)

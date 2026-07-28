@@ -110,12 +110,15 @@ func extractReadable(body []byte, parsedURL *nurl.URL) (*html.Node, string, erro
 	// likewise, before readability deletes their text-less subtrees; code
 	// languages likewise, before the classes declaring them are stripped;
 	// pre internals likewise, before their spans and links read as chrome;
-	// LaTeXML tables likewise, before a class marker reads as page chrome.
+	// LaTeXML tables likewise, before a class marker reads as page chrome;
+	// unconverted LaTeXML pictures likewise, before their class is stripped
+	// and the raw source inside reads as prose.
 	normalizeMediaWiki(doc)
 	normalizeRoleImages(doc)
 	preserveCodeLang(doc)
 	preservePreContent(doc)
 	normalizeLatexmlTables(doc)
+	dropLatexmlRawPictures(doc)
 
 	parser := readability.NewParser()
 

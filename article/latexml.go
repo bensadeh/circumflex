@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
 
 // LaTeXML is the LaTeX-to-HTML converter behind arXiv's paper renderings;
@@ -57,6 +58,40 @@ func normalizeLatexmlTables(doc *html.Node) {
 			}
 		}
 	}
+}
+
+// dropLatexmlRawPictures empties ltx_picture elements holding a picture
+// LaTeXML could not convert: the raw LaTeX source — \begin{overpic} and its
+// \put commands — is left as the span's text, and the graphic it references
+// is never copied into the paper's asset tree, so there is no image to
+// recover. Emptied, the enclosing figure collapses to its caption and takes
+// the Figure designation instead of rendering pages of markup. A converted
+// picture keeps its img (or svg) child and carries no raw source, and is
+// left alone.
+func dropLatexmlRawPictures(doc *html.Node) {
+	var raw []*html.Node
+
+	for n := range doc.Descendants() {
+		if n.Type == html.ElementNode && hasClass(n, "ltx_picture") && isRawLatexPicture(n) {
+			raw = append(raw, n)
+		}
+	}
+
+	for _, n := range raw {
+		for n.FirstChild != nil {
+			n.RemoveChild(n.FirstChild)
+		}
+	}
+}
+
+func isRawLatexPicture(n *html.Node) bool {
+	for c := range n.Descendants() {
+		if c.Type == html.ElementNode && (nodeAtom(c) == atom.Img || nodeAtom(c) == atom.Svg) {
+			return false
+		}
+	}
+
+	return strings.HasPrefix(strings.TrimSpace(nodeText(n)), `\begin{`)
 }
 
 // latexmlPreservedClasses names the footnote chrome readability must not
