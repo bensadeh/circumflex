@@ -14,11 +14,13 @@ import (
 
 // Link is one followable URL in a rendered document: the OSC 8 target and
 // the cell spans its anchor text occupies — one span per rendered line for
-// links the wrap split.
+// links the wrap split. Thread marks a Hacker News discussion link, whose
+// selection paints in thread yellow rather than link blue.
 type Link struct {
 	URL      string
 	Spans    []Match
 	Viewable bool
+	Thread   bool
 }
 
 // LinkViewable reports whether following the link can open a view in place:
@@ -76,7 +78,9 @@ func scanLine(line string, lineIdx int, links *[]Link) {
 			}
 		}
 
-		*links = append(*links, Link{URL: url, Spans: []Match{m}, Viewable: LinkViewable(url)})
+		_, thread := hn.ParseItemURL(url)
+
+		*links = append(*links, Link{URL: url, Spans: []Match{m}, Viewable: LinkViewable(url), Thread: thread})
 	}
 
 	for {

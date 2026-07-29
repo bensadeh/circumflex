@@ -7,6 +7,7 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/highlight"
+	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/style"
 )
@@ -192,6 +193,12 @@ func renderSpan(s *span, base baseStyle, nerdFonts bool) string {
 		return ansi.Italic + s.text + ansi.Reset + base.open
 
 	case spanLink:
+		// A Hacker News discussion link opens its thread in place, marked
+		// thread yellow like the depth badge's chevron.
+		if _, ok := hn.ParseItemURL(s.href); ok {
+			return style.CommentURLThread(truncateURL(stripScheme(s.text)), s.href) + base.open
+		}
+
 		return style.CommentURL(truncateURL(stripScheme(s.text)), s.href) + base.open
 
 	case spanCodeInline:

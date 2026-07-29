@@ -89,6 +89,18 @@ func OverlayLinkSpans(line string, spans []SearchSpan) string {
 	return overlaySpans(line, spans, linkSelectSGR, linkSelectSGR)
 }
 
+// linkThreadSelectSGR paints a selected Hacker News discussion link: black
+// text on thread yellow, the block staying in the hue the link renders in.
+var linkThreadSelectSGR = overlaySGR{
+	on:  ansi.ReverseOff + ansi.NormalIntensity + ansi.UnderlineOff + xansi.Style{}.BackgroundColor(lipgloss.Yellow).ForegroundColor(lipgloss.Black).String(),
+	off: ansi.DefaultBackground + ansi.DefaultForeground,
+}
+
+// OverlayThreadLinkSpans is OverlayLinkSpans in the thread colors.
+func OverlayThreadLinkSpans(line string, spans []SearchSpan) string {
+	return overlaySpans(line, spans, linkThreadSelectSGR, linkThreadSelectSGR)
+}
+
 // linkInertSGR marks a selected link the view will not open: plain reverse
 // video. The link's own blue fg and underline are cleared first, otherwise
 // reverse just swaps the blue into the background — a default-color block is

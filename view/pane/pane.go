@@ -30,16 +30,19 @@ type Scroller struct {
 	rowOverrides []RowOverride
 	linkSpans    []Match
 	linkInert    bool
+	linkThread   bool
 	linkFetching bool
 }
 
 // SetLinkSpans installs the spans of the link the reader's URL selector sits
 // on; nil clears them. They paint over any search highlights — the selection
 // is the thing being acted on. inert swaps the selection colors for the red
-// bar, marking a link the view will not open.
-func (s *Scroller) SetLinkSpans(matches []Match, inert bool) {
+// bar, marking a link the view will not open; thread swaps them for the
+// yellow bar of a Hacker News discussion link.
+func (s *Scroller) SetLinkSpans(matches []Match, inert, thread bool) {
 	s.linkSpans = matches
 	s.linkInert = inert
+	s.linkThread = thread
 }
 
 // SetLinkFetching repaints the selection in the muted in-flight colors while
@@ -53,6 +56,8 @@ func (s *Scroller) SetLinkFetching(active bool) {
 func (s *Scroller) LinkSpans() []Match { return s.linkSpans }
 
 func (s *Scroller) LinkSpansInert() bool { return s.linkInert }
+
+func (s *Scroller) LinkSpansThread() bool { return s.linkThread }
 
 func (s *Scroller) LinkFetching() bool { return s.linkFetching }
 
@@ -154,6 +159,8 @@ func (s *Scroller) DecorateView(view string) string {
 		overlayLink = style.OverlayFetchingLinkSpans
 	case s.linkInert:
 		overlayLink = style.OverlayInertLinkSpans
+	case s.linkThread:
+		overlayLink = style.OverlayThreadLinkSpans
 	}
 
 	for _, m := range s.linkSpans {

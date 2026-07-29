@@ -10,6 +10,7 @@ import (
 	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/frame"
 	"github.com/bensadeh/circumflex/highlight"
+	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/style"
 
 	"charm.land/lipgloss/v2"
@@ -140,9 +141,11 @@ func renderSpans(spans []span, insideQuote bool) string {
 	for _, s := range spans {
 		var rendered string
 
-		// Links reader mode can't open in place carry a dashed underline,
-		// matching the inert marking the URL selector gives them.
-		viewable := s.href != "" && ValidateURL(s.href) == nil
+		// A Hacker News discussion link opens its comment section in place,
+		// marked thread yellow; links reader mode can't open carry a dashed
+		// underline, matching the inert marking the URL selector gives them.
+		_, thread := hn.ParseItemURL(s.href)
+		viewable := thread || (s.href != "" && ValidateURL(s.href) == nil)
 
 		switch s.format {
 		case formatPlain:
@@ -189,6 +192,8 @@ func renderSpans(spans []span, insideQuote bool) string {
 		}
 
 		switch {
+		case thread:
+			rendered = style.ReaderLinkThread(rendered, s.href)
 		case viewable:
 			rendered = style.ReaderLink(rendered, s.href)
 		case s.href != "":

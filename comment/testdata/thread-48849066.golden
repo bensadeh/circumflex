@@ -184,7 +184,7 @@ weeks, and not even being able to download your chat history (despite
 the feature being available (I assume they vibe coded it and it does not
 work!). My story below;
 
-]8;;https://news.ycombinator.com/item?id=48597861[34mnews.ycombinator.com/item?id=48597861[m]8;;
+]8;;https://news.ycombinator.com/item?id=48597861[33mnews.ycombinator.com/item?id=48597861[m]8;;
 === 48850027 Cider9986 ===
 Even less drama with open models like GLM.
 === 48852804 tomComb ===
@@ -1748,7 +1748,7 @@ frontier model" anti-competitive filter[[31m1[m] (even though it's just a tiny
 300M parameter model, [3mfour[0m orders of magnitude smaller than the
 frontier).
 
-[[31m1[m]: ]8;;https://news.ycombinator.com/item?id=48464732[34mnews.ycombinator.com/item?id=48464732[m]8;;
+[[31m1[m]: ]8;;https://news.ycombinator.com/item?id=48464732[33mnews.ycombinator.com/item?id=48464732[m]8;;
 
 Fortunately once you know how it works (i.e. dumb keyword classifier)
 it's easy-ish to get around: just rename the keys so that it doesn't
@@ -6623,7 +6623,7 @@ relentlessly because that's what their reward functions emphasized. That
 pushes up their scores in some benchmarks but does not translate to
 actual intelligence and capability.
 
-[[31m1[m]]8;;https://news.ycombinator.com/item?id=48849454[34mnews.ycombinator.com/item?id=48849454[m]8;;
+[[31m1[m]]8;;https://news.ycombinator.com/item?id=48849454[33mnews.ycombinator.com/item?id=48849454[m]8;;
 === 48866361 pimeys ===
 For me the weirdest is Luna. It costs the same as GLM to solve a task
 with it, but it just calls the same failing tool over and over again

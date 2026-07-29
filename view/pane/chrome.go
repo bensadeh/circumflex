@@ -67,9 +67,9 @@ func TitleHeaderWithBadge(title, badge string, enableNerdFonts bool, leftMargin,
 
 // DepthBadge marks a page reached by following links in place: one chevron
 // per page behind it, each one a quit-key step back, colored by what that
-// step lands on — green for a comment section, yellow for an article. The
-// faint fallback keeps a linked page with no chain at all from rendering an
-// empty badge.
+// step lands on — yellow for a comment section, matching thread links in
+// running text, green for an article. The faint fallback keeps a linked page
+// with no chain at all from rendering an empty badge.
 func DepthBadge(trail []message.TrailEntry) string {
 	if len(trail) == 0 {
 		return style.Faint("›")
@@ -79,9 +79,9 @@ func DepthBadge(trail []message.TrailEntry) string {
 
 	for _, entry := range trail {
 		if entry.Thread != nil {
-			b.WriteString(style.Green("›"))
-		} else {
 			b.WriteString(style.Yellow("›"))
+		} else {
+			b.WriteString(style.Green("›"))
 		}
 	}
 

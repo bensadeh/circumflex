@@ -1,6 +1,12 @@
 # Changelog
 
-## 5.0 (Unreleased)
+## 5.1 (Unreleased)
+
+**Design**
+
+- Links to other Hacker News discussions are now yellow 
+
+## 5.0
 
 Another large release. The headliners are search, kitty image protocol and syntax highlighting in code snippets. It also
 brings a few breaking changes in order to mainly improve the naming of some of the flags and fields.

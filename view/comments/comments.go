@@ -336,7 +336,7 @@ func (m *Model) enterLinkMode() {
 
 func (m *Model) exitLinkMode() {
 	m.linkMode = false
-	m.SetLinkSpans(nil, false)
+	m.SetLinkSpans(nil, false, false)
 }
 
 // moveLink selects the next link wherever it sits, scrolling only when the
@@ -363,13 +363,13 @@ func (m *Model) scrollToCurrentLink() {
 
 func (m *Model) installLinkSpans() {
 	if m.currentLink < 0 {
-		m.SetLinkSpans(nil, false)
+		m.SetLinkSpans(nil, false, false)
 
 		return
 	}
 
 	l := m.links[m.currentLink]
-	m.SetLinkSpans(l.Spans, !l.Viewable)
+	m.SetLinkSpans(l.Spans, !l.Viewable, l.Thread)
 }
 
 // nextTrail is the walk-back chain for a page opened from this thread: the

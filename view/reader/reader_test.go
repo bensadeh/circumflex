@@ -645,8 +645,8 @@ func TestTitleHeader_DepthBadgeColorsStepsByKind(t *testing.T) {
 	}, nil)
 
 	row := strings.SplitN(m.titleHeader, "\n", 2)[0]
-	assert.Contains(t, row, style.Yellow("›"), "the step back onto an article is yellow")
-	assert.Contains(t, row, style.Green("›"), "the step back onto a comment section is green")
+	assert.Contains(t, row, style.Green("›"), "the step back onto an article is green")
+	assert.Contains(t, row, style.Yellow("›"), "the step back onto a comment section is yellow")
 }
 
 func TestTitleHeaderWithBadge_TruncatesLongTitle(t *testing.T) {
@@ -693,6 +693,20 @@ func TestLinkSelector_NonViewableLinkIsInert(t *testing.T) {
 
 	m.Update(tea.KeyPressMsg{Code: 'j', Text: "j"})
 	assert.False(t, m.LinkSpansInert(), "a viewable link selects in the normal colors")
+}
+
+func TestLinkSelector_ThreadLinkSelectsInThreadColors(t *testing.T) {
+	parsed := article.NewParsedFromHTML(
+		`<p><a href="https://news.ycombinator.com/item?id=42">the thread</a> and <a href="https://example.com/page">a page</a></p>`)
+	m := NewWithArticle(parsed, "Title", 72, 100, 30, Options{}, nil)
+
+	m.Update(tea.KeyPressMsg{Code: tea.KeyTab})
+	require.Equal(t, 0, m.currentLink)
+	assert.True(t, m.LinkSpansThread(), "the selected discussion link takes the yellow thread bar")
+	assert.False(t, m.LinkSpansInert(), "the HN domain blocklist must not mark it inert")
+
+	m.Update(tea.KeyPressMsg{Code: 'j', Text: "j"})
+	assert.False(t, m.LinkSpansThread(), "an ordinary link selects in the link-blue colors")
 }
 
 func TestLinkSelector_FetchRepaintsSelection(t *testing.T) {

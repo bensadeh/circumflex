@@ -465,6 +465,18 @@ func TestRenderSpans_Hyperlink(t *testing.T) {
 	assert.Equal(t, "click here", ansi.Strip(out), "hyperlink must not change the visible text")
 }
 
+func TestRenderSpans_ThreadLinkYellow(t *testing.T) {
+	t.Parallel()
+
+	spans := []span{{text: "this discussion", href: "https://news.ycombinator.com/item?id=44098369"}}
+	out := renderSpans(spans, false)
+
+	assert.Contains(t, out, "8;;https://news.ycombinator.com/item?id=44098369", "a thread link still carries its OSC 8 hyperlink")
+	assert.Contains(t, out, "\x1b[4;33m", "a discussion link is underlined thread yellow, not the theme link color")
+	assert.NotContains(t, out, ansi.UnderlineDashed, "the HN domain blocklist must not mark the openable thread link inert")
+	assert.Equal(t, "this discussion", ansi.Strip(out), "the hyperlink must not change the visible text")
+}
+
 // The inert-link tests are not parallel: the first depends on the
 // styled-underline and foreground globals still being unset, and the ones
 // after it flip them for the rest of the process.

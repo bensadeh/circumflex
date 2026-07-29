@@ -73,8 +73,8 @@ func TestLinkTrail_DepthBadgeColorsStepsByKind(t *testing.T) {
 	})
 
 	row := strings.SplitN(m.titleHeader, "\n", 2)[0]
-	assert.Contains(t, row, style.Yellow("›"), "the step back onto an article is yellow")
-	assert.Contains(t, row, style.Green("›"), "the step back onto a comment section is green")
+	assert.Contains(t, row, style.Green("›"), "the step back onto an article is green")
+	assert.Contains(t, row, style.Yellow("›"), "the step back onto a comment section is yellow")
 }
 
 func TestLinkTrail_EmptyTrailKeepsDetailQuit(t *testing.T) {

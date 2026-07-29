@@ -341,7 +341,14 @@ func HeadlineAudioColor() color.Color    { return headlineAudioColor }
 func HeadlineVideoColor() color.Color    { return headlineVideoColor }
 func HeadlinePDFColor() color.Color      { return headlinePDFColor }
 
-func CommentURL(s, url string) string     { return commentURLStyle.Hyperlink(ansi.Field(url)).Render(s) }
+func CommentURL(s, url string) string { return commentURLStyle.Hyperlink(ansi.Field(url)).Render(s) }
+
+// CommentURLThread is CommentURL for a Hacker News discussion link: thread
+// yellow instead of the theme's URL color, matching the depth badge's
+// thread chevron.
+func CommentURLThread(s, url string) string {
+	return yellowStyle.Hyperlink(ansi.Field(url)).Render(s)
+}
 func CommentMention(s string) string      { return commentMentionStyle.Render(s) }
 func CommentMod(s string) string          { return commentModStyle.Render(s) }
 func CommentVariable(s string) string     { return commentVariableStyle.Render(s) }
@@ -385,6 +392,17 @@ func ReaderImageColor() color.Color { return readerImageColor }
 // link inside an otherwise styled run leaves the surrounding style intact.
 func ReaderLink(s, url string) string {
 	return ansi.Hyperlink(url, readerLinkOpen+s+ansi.DefaultForeground+ansi.UnderlineOff)
+}
+
+// threadLinkOpen colors a Hacker News discussion link ANSI yellow rather
+// than the theme's link color, in lockstep with the depth badge's yellow
+// thread chevron — following one opens a comment section in place, not an
+// article.
+var threadLinkOpen = linkOpenSequence(lipgloss.Yellow)
+
+// ReaderLinkThread is ReaderLink for a Hacker News discussion link.
+func ReaderLinkThread(s, url string) string {
+	return ansi.Hyperlink(url, threadLinkOpen+s+ansi.DefaultForeground+ansi.UnderlineOff)
 }
 
 // inertUnderlineMarker switches an inert link's underline to dashed. Empty
