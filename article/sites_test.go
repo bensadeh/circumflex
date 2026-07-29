@@ -42,6 +42,25 @@ func TestApplySiteRules_DropBlocks(t *testing.T) {
 	assert.Equal(t, "actual content", out[0].plainText())
 }
 
+// dropBlockContaining reads a block's plain text, which for an image is its
+// caption — the BBC newsletter rule relies on that to catch the promo banner.
+func TestApplySiteRules_DropBlocksByImageCaption(t *testing.T) {
+	t.Parallel()
+
+	blocks := []block{
+		paragraph("actual content"),
+		{kind: blockImage, imageURL: "https://example.com/promo.png", spans: []span{
+			{text: "A green promotional banner. The text says: “Tech Decoded: tech news in your inbox.”"},
+		}},
+		paragraph("Sign up for our Tech Decoded newsletter to follow the top stories."),
+	}
+
+	out := applySiteRules(blocks, "www.bbc.co.uk")
+
+	require.Len(t, out, 1)
+	assert.Equal(t, "actual content", out[0].plainText())
+}
+
 func TestApplySiteRules_DropInline(t *testing.T) {
 	t.Parallel()
 

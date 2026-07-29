@@ -159,7 +159,10 @@ func extractReadable(body []byte, base *nurl.URL) (*html.Node, string, error) {
 	// pre internals likewise, before their spans and links read as chrome;
 	// LaTeXML tables likewise, before a class marker reads as page chrome;
 	// unconverted LaTeXML pictures likewise, before their class is stripped
-	// and the raw source inside reads as prose.
+	// and the raw source inside reads as prose; BBC's data-block sections
+	// likewise, before their wrapper chains make readability score each
+	// section alone and keep only the first.
+	normalizeDataBlocks(doc)
 	normalizeMediaWiki(doc)
 	normalizeRoleImages(doc)
 	preserveCodeLang(doc)

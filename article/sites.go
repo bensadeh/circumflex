@@ -103,12 +103,13 @@ var allSiteRules = []siteRules{
 		},
 	},
 	{
-		domains: []string{"bbc.com", "bbc.co.uk"},
+		domains:       []string{"bbc.com", "bbc.co.uk"},
+		stopAtHeading: []string{"Related topics"},
 		stopAtBlockEquals: []string{
 			"--",
 			"You may also be interested in:",
 		},
-		dropBlockContaining: []string{"(Image credit: "},
+		dropBlockContaining: []string{"(Image credit: ", "Tech Decoded"},
 	},
 	{
 		domains:             []string{"tomshardware.com"},
