@@ -2,6 +2,9 @@
 
 ## 5.0 (Unreleased)
 
+Another large release. The headliners are search, kitty image protocol and syntax highlighting in code snippets. It also
+brings a few breaking changes in order to mainly improve the naming of some of the flags and fields.
+
 **New Features**
 
 - Added Search to Stories, Comment Section and Reader Mode
@@ -41,6 +44,8 @@
 - Renamed `--reader-mode-images` to `--show-images-on-open`, replacing `CLX_READER_MODE_IMAGES`
 - Images require a terminal with Kitty graphics support; override the detection with `--graphics always|never`
 - Favorites moved to `favorites.toml` (migrated automatically)
+
+Hope you enjoy using `circumflex`.
 
 ## 4.5
 
