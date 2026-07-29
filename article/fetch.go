@@ -99,10 +99,57 @@ func fetchFullText(ctx context.Context, parsedURL *nurl.URL) ([]byte, string, *n
 	return body, contentType, finalURL
 }
 
-func extractReadable(body []byte, parsedURL *nurl.URL) (*html.Node, string, error) {
+// documentBaseURL returns the URL the page's relative references resolve
+// against: the first <base href> when the document declares one — browsers
+// honor it, so such pages write asset paths against it rather than against
+// their own location — and pageURL otherwise. Site rules and the image
+// Referer are about where the page is, not how it resolves, and keep using
+// the page URL.
+func documentBaseURL(body []byte, pageURL *nurl.URL) *nurl.URL {
+	z := html.NewTokenizer(bytes.NewReader(body))
+
+	for {
+		tokenType := z.Next()
+		if tokenType == html.ErrorToken {
+			return pageURL
+		}
+
+		if tokenType != html.StartTagToken && tokenType != html.SelfClosingTagToken {
+			continue
+		}
+
+		name, hasAttr := z.TagName()
+		if !bytes.Equal(name, []byte("base")) {
+			continue
+		}
+
+		for hasAttr {
+			var key, val []byte
+
+			key, val, hasAttr = z.TagAttr()
+
+			if string(key) != "href" {
+				continue
+			}
+
+			ref, err := nurl.Parse(strings.TrimSpace(string(val)))
+			if err != nil {
+				return pageURL
+			}
+
+			if base := pageURL.ResolveReference(ref); base.Scheme == "http" || base.Scheme == "https" {
+				return base
+			}
+
+			return pageURL
+		}
+	}
+}
+
+func extractReadable(body []byte, base *nurl.URL) (*html.Node, string, error) {
 	doc, err := html.Parse(bytes.NewReader(body))
 	if err != nil {
-		return nil, "", fmt.Errorf("could not parse page from %s: %w", parsedURL.Host, err)
+		return nil, "", fmt.Errorf("could not parse page from %s: %w", base.Host, err)
 	}
 
 	// MediaWiki markup needs normalizing before readability runs, while the
@@ -125,13 +172,13 @@ func extractReadable(body []byte, parsedURL *nurl.URL) (*html.Node, string, erro
 	parser.ClassesToPreserve = append(parser.ClassesToPreserve, latexmlPreservedClasses...)
 	parser.ClassesToPreserve = append(parser.ClassesToPreserve, infoboxPreservedClasses...)
 
-	a, err := parser.ParseAndMutate(doc, parsedURL)
+	a, err := parser.ParseAndMutate(doc, base)
 	if err != nil {
-		return nil, "", fmt.Errorf("could not parse article from %s: %w", parsedURL.Host, err)
+		return nil, "", fmt.Errorf("could not parse article from %s: %w", base.Host, err)
 	}
 
 	if a.Node == nil {
-		return nil, "", fmt.Errorf("could not extract readable content from %s", parsedURL.Host)
+		return nil, "", fmt.Errorf("could not extract readable content from %s", base.Host)
 	}
 
 	return a.Node, a.Title(), nil

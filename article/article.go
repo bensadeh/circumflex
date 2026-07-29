@@ -55,6 +55,8 @@ func Parse(ctx context.Context, url string, images bool) (*Parsed, error) {
 		title  string
 	)
 
+	base := parsedURL
+
 	switch {
 	case isMarkdown(contentType, parsedURL, body):
 		blocks, title, err = parseMarkdownBlocks(body, parsedURL)
@@ -66,7 +68,9 @@ func Parse(ctx context.Context, url string, images bool) (*Parsed, error) {
 		blocks = parseTextBlocks(string(body))
 
 	default:
-		node, pageTitle, err := extractReadable(body, parsedURL)
+		base = documentBaseURL(body, parsedURL)
+
+		node, pageTitle, err := extractReadable(body, base)
 		if err != nil {
 			return nil, err
 		}
@@ -89,7 +93,7 @@ func Parse(ctx context.Context, url string, images bool) (*Parsed, error) {
 	}
 
 	if images {
-		fetchImages(ctx, blocks, parsedURL)
+		fetchImages(ctx, blocks, parsedURL, base)
 	}
 
 	// Block text is stripped as it parses; the title arrives on its own path

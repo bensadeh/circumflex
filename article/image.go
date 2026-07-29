@@ -70,11 +70,12 @@ type kittyImage struct {
 }
 
 // fetchImages downloads and decodes the image blocks in place, resolving
-// relative sources against base. Failures leave block.kitty nil, so rendering
-// falls back to the text label; images displayed below the size floors are
-// marked decorative instead, so rendering can drop them. Only the first
-// maxImages are fetched.
-func fetchImages(ctx context.Context, blocks []block, base *nurl.URL) {
+// relative sources against base while the Referer names page — the two differ
+// when the document declares a <base href>. Failures leave block.kitty nil, so
+// rendering falls back to the text label; images displayed below the size
+// floors are marked decorative instead, so rendering can drop them. Only the
+// first maxImages are fetched.
+func fetchImages(ctx context.Context, blocks []block, page, base *nurl.URL) {
 	var targets []int
 
 	for i := range blocks {
@@ -105,7 +106,7 @@ func fetchImages(ctx context.Context, blocks []block, base *nurl.URL) {
 
 	for _, i := range targets {
 		g.Go(func() error {
-			img, raw, viewBox := fetchImage(ctx, client, base, blocks[i].imageURL)
+			img, raw, viewBox := fetchImage(ctx, client, page, base, blocks[i].imageURL)
 
 			// A raster's bounds are its identity; a vector's raster is drawn
 			// at the Kitty fidelity ceiling regardless of size, so vectors
@@ -260,7 +261,7 @@ func shrinkKitty(b *block, ceiling int) {
 // the source as a vector, whose decoded bounds are raster fidelity rather
 // than intrinsic size; it can arrive without an image when the vector
 // declares its geometry but canvas cannot draw it.
-func fetchImage(ctx context.Context, client *resty.Client, base *nurl.URL, rawURL string) (image.Image, []byte, image.Point) {
+func fetchImage(ctx context.Context, client *resty.Client, page, base *nurl.URL, rawURL string) (image.Image, []byte, image.Point) {
 	ref, err := nurl.Parse(rawURL)
 	if err != nil {
 		return nil, nil, image.Point{}
@@ -269,7 +270,7 @@ func fetchImage(ctx context.Context, client *resty.Client, base *nurl.URL, rawUR
 	target := base.ResolveReference(ref)
 
 	req := client.R().SetContext(ctx)
-	if referer := refererFor(base, target); referer != "" {
+	if referer := refererFor(page, target); referer != "" {
 		req.SetHeader("Referer", referer)
 	}
 

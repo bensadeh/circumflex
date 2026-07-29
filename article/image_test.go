@@ -48,7 +48,7 @@ func TestFetchImages_TinyImageIsDecorativeNotFailed(t *testing.T) {
 		{kind: blockImage, imageURL: srv.URL + "/badge.png"},
 	}
 
-	fetchImages(context.Background(), blocks, base)
+	fetchImages(context.Background(), blocks, base, base)
 
 	assert.Zero(t, blocks[0].imgSize)
 	assert.True(t, blocks[0].decorative, "below the size floors marks the block decorative")
@@ -82,7 +82,7 @@ func TestFetchImages_FetchesKnownFigures(t *testing.T) {
 		{kind: blockImage, imageURL: srv.URL + "/chart.png", figure: true},
 	}
 
-	fetchImages(context.Background(), blocks, base)
+	fetchImages(context.Background(), blocks, base, base)
 
 	require.NotZero(t, blocks[0].imgSize, "a terminal with graphics support renders the figure's pixels")
 	assert.NotNil(t, blocks[0].kitty)
@@ -116,7 +116,7 @@ func TestFetchImages_SendsRefererForHotlinkProtection(t *testing.T) {
 
 	blocks := []block{{kind: blockImage, imageURL: "photo.png"}}
 
-	fetchImages(context.Background(), blocks, base)
+	fetchImages(context.Background(), blocks, base, base)
 
 	assert.NotZero(t, blocks[0].imgSize, "same-origin image requests carry the page URL as Referer")
 }
@@ -176,7 +176,7 @@ func TestFetchImages_SVGFallsBackToRasterization(t *testing.T) {
 
 	blocks := []block{{kind: blockImage, imageURL: srv.URL + "/plot.svg"}}
 
-	fetchImages(context.Background(), blocks, base)
+	fetchImages(context.Background(), blocks, base, base)
 
 	require.NotNil(t, blocks[0].kitty)
 	assert.Equal(t, image.Pt(maxImagePx, maxImagePx/2), blocks[0].imgSize, "the raster is drawn at the ceiling")
@@ -206,7 +206,7 @@ func TestFetchImages_SmallUnitViewBoxLogoJudgedByDeclaredWidth(t *testing.T) {
 		{kind: blockImage, imageURL: srv.URL + "/discord.svg"},
 	}
 
-	fetchImages(context.Background(), blocks, base)
+	fetchImages(context.Background(), blocks, base, base)
 
 	require.NotZero(t, blocks[0].imgSize, "a logo with a small-unit viewBox is not a tracking pixel")
 	assert.False(t, blocks[0].decorative)
@@ -242,7 +242,7 @@ func TestFetchImages_UndrawableSVGJudgedByDeclaredGeometry(t *testing.T) {
 		{kind: blockImage, imageURL: srv.URL + "/sponsors.svg"},
 	}
 
-	fetchImages(context.Background(), blocks, base)
+	fetchImages(context.Background(), blocks, base, base)
 
 	assert.Zero(t, blocks[0].imgSize)
 	assert.True(t, blocks[0].decorative, "a badge stays a badge when rasterization fails")
@@ -425,7 +425,7 @@ func TestFetchImages_RetainsHighResKittyCopy(t *testing.T) {
 		{kind: blockImage, imageURL: srv.URL + "/huge.png"},
 	}
 
-	fetchImages(context.Background(), blocks, base)
+	fetchImages(context.Background(), blocks, base, base)
 
 	require.NotNil(t, blocks[0].kitty)
 	assert.Equal(t, served, blocks[0].kitty.png, "an in-bounds PNG passes through byte-for-byte")
