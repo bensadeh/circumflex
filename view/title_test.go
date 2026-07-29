@@ -44,6 +44,42 @@ func TestWindowTitle_LoadingStory(t *testing.T) {
 	assert.Equal(t, "First item", m.windowTitle())
 }
 
+// A followed link swaps a new page into the detail pane; the window names
+// the page on screen, not the selected story behind the trail.
+func TestWindowTitle_FollowedLinkNamesThePage(t *testing.T) {
+	m := openTestReader(t, newTestModelReady(t))
+
+	_, _ = m.startLinkFetch(0)
+	m, _ = m.Update(message.LinkArticleReady{
+		Parsed:  testParsedArticle(),
+		Title:   "Linked Page",
+		URL:     "https://example.com/linked",
+		Trail:   []message.TrailEntry{{URL: "https://example.com/1", Story: true}},
+		FetchID: m.fetch.currentID(),
+	})
+
+	assert.Equal(t, "Linked Page", m.windowTitle())
+
+	// Walking back renames the window to the page restored.
+	m, _ = m.Update(message.RestorePage{
+		Entry: message.TrailEntry{URL: "https://example.com/1", Title: "First item", Parsed: testParsedArticle(), Story: true},
+	})
+	assert.Equal(t, "First item", m.windowTitle())
+}
+
+func TestWindowTitle_LinkedThreadNamesTheThread(t *testing.T) {
+	m := openTestReader(t, newTestModelReady(t))
+
+	_, _ = m.startLinkFetch(0)
+	m, _ = m.Update(message.LinkCommentsReady{
+		Thread:  &comment.Thread{Story: hn.Story{ID: 9, Title: "Linked thread", CommentsCount: 5}},
+		Trail:   []message.TrailEntry{{URL: "https://example.com/1", Story: true}},
+		FetchID: m.fetch.currentID(),
+	})
+
+	assert.Equal(t, "Linked thread", m.windowTitle())
+}
+
 func TestWindowTitle_SearchQuery(t *testing.T) {
 	m := newTestModelReady(t)
 

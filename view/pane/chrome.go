@@ -7,6 +7,7 @@ import (
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/headline"
 	"github.com/bensadeh/circumflex/style"
+	"github.com/bensadeh/circumflex/view/message"
 
 	"charm.land/lipgloss/v2"
 	xansi "github.com/charmbracelet/x/ansi"
@@ -64,11 +65,27 @@ func TitleHeaderWithBadge(title, badge string, enableNerdFonts bool, leftMargin,
 	return row + "\n" + header.Underline(screenWidth)
 }
 
-// DepthBadge marks a page reached by following links in place: one faint
-// chevron per link behind it, each one a quit-key step back. The floor keeps
-// a linked page with no chain at all from rendering an empty badge.
-func DepthBadge(depth int) string {
-	return style.Faint(strings.Repeat("›", max(1, depth)))
+// DepthBadge marks a page reached by following links in place: one chevron
+// per page behind it, each one a quit-key step back, colored by what that
+// step lands on — green for a comment section, yellow for an article. The
+// faint fallback keeps a linked page with no chain at all from rendering an
+// empty badge.
+func DepthBadge(trail []message.TrailEntry) string {
+	if len(trail) == 0 {
+		return style.Faint("›")
+	}
+
+	var b strings.Builder
+
+	for _, entry := range trail {
+		if entry.Thread != nil {
+			b.WriteString(style.Green("›"))
+		} else {
+			b.WriteString(style.Yellow("›"))
+		}
+	}
+
+	return b.String()
 }
 
 func FooterSeparator(width int) string {

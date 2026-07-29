@@ -132,6 +132,12 @@ func (m *Model) DisableAppKeys() {
 	m.keymap.DisableAppKeys()
 }
 
+// PageTitle names the page on screen — on a followed-link trail that is the
+// linked page, not the story the shell opened. The window title tracks it.
+func (m *Model) PageTitle() string {
+	return m.title
+}
+
 func (m *Model) initViewport(content string, width, height int) {
 	m.Viewport = pane.NewViewport(width, height-layout.PaneChromeHeight)
 	m.setContent(content)
@@ -698,14 +704,14 @@ func imageStatusLine(show, enableNerdFonts bool, paneWidth int) string {
 
 // rebuildTitleHeader renders the title row; a page reached by following
 // links carries the depth badge at the article column's right edge — one
-// chevron per link behind it, each one a quit-key step — faint where the
-// title is bold.
+// chevron per link behind it, each one a quit-key step, colored by the page
+// it lands on.
 func (m *Model) rebuildTitleHeader() {
 	if m.opts.FromLink {
 		// The chain behind a linked page starts at the story article, so its
 		// length is the number of links followed.
 		rightEdge := layout.ReaderViewLeftMargin + layout.ReaderContentWidth(m.paneWidth, m.maxWidth)
-		badge := pane.DepthBadge(len(m.opts.Trail))
+		badge := pane.DepthBadge(m.opts.Trail)
 
 		m.titleHeader = pane.TitleHeaderWithBadge(m.title, badge, m.opts.NerdFonts, layout.ReaderViewLeftMargin, rightEdge, m.paneWidth)
 

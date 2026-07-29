@@ -129,6 +129,12 @@ func (m *Model) DisableAppKeys() {
 	m.keymap.DisableAppKeys()
 }
 
+// PageTitle names the thread on screen — reached through links, that is the
+// linked thread, not the story the shell opened. The window title tracks it.
+func (m *Model) PageTitle() string {
+	return m.title
+}
+
 // SetLinkTrail marks this thread as reached by following a link: trail is
 // the chain of pages behind it, so quit steps back through them instead of
 // closing the detail pane, and the title row carries the depth badge.
@@ -265,7 +271,7 @@ func (m *Model) linkURLRow() string {
 func (m *Model) rebuildTitleHeader() {
 	if len(m.linkTrail) > 0 {
 		rightEdge := layout.CommentSectionLeftMargin + layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
-		badge := pane.DepthBadge(len(m.linkTrail))
+		badge := pane.DepthBadge(m.linkTrail)
 
 		m.titleHeader = pane.TitleHeaderWithBadge(m.title, badge, m.rc.enableNerdFonts, layout.CommentSectionLeftMargin, rightEdge, m.rc.paneWidth)
 

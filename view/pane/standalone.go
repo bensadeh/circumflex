@@ -43,10 +43,9 @@ type standalone struct {
 	width        int
 	height       int
 
-	// title names the terminal window for as long as the program runs. It is
-	// the page the subcommand was invoked on and stays put through followed
-	// links, as the full app keeps the open story's title while the reader
-	// walks a trail.
+	// title names the terminal window until the view exists; from then on the
+	// view's own page title takes over, so followed links rename the window as
+	// they do in the full app.
 	title string
 
 	// bgMsg and fgMsg hold terminal color reports that arrived before the
@@ -305,9 +304,20 @@ func (s standalone) View() tea.View {
 
 	v := tea.NewView(content)
 	v.AltScreen = true
-	v.WindowTitle = s.title
+	v.WindowTitle = s.windowTitle()
 
 	return v
+}
+
+// windowTitle names the window after the page on screen; a view that cannot
+// say — or none yet — leaves the title the program started with. The old page
+// keeps the title while a link fetch runs, exactly as it keeps the screen.
+func (s standalone) windowTitle() string {
+	if page, ok := s.view.(interface{ PageTitle() string }); ok {
+		return WindowTitle(page.PageTitle())
+	}
+
+	return s.title
 }
 
 // RunStandalone runs a detail view as its own program under the window title

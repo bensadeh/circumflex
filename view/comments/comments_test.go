@@ -9,6 +9,7 @@ import (
 	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/nerdfonts"
+	"github.com/bensadeh/circumflex/style"
 	"github.com/bensadeh/circumflex/view/message"
 
 	xansi "github.com/charmbracelet/x/ansi"
@@ -62,6 +63,18 @@ func TestLinkTrail_DepthBadgeOnTitleRow(t *testing.T) {
 
 	rightEdge := layout.CommentSectionLeftMargin + layout.CommentColumnWidth(120, 80)
 	assert.Equal(t, rightEdge, xansi.StringWidth(strings.TrimRight(row, " ")), "the badge ends at the comment column's right edge")
+}
+
+func TestLinkTrail_DepthBadgeColorsStepsByKind(t *testing.T) {
+	m := newTestModel(t, testThread())
+	m.SetLinkTrail([]message.TrailEntry{
+		{Story: true},
+		{Thread: &comment.Thread{}},
+	})
+
+	row := strings.SplitN(m.titleHeader, "\n", 2)[0]
+	assert.Contains(t, row, style.Yellow("›"), "the step back onto an article is yellow")
+	assert.Contains(t, row, style.Green("›"), "the step back onto a comment section is green")
 }
 
 func TestLinkTrail_EmptyTrailKeepsDetailQuit(t *testing.T) {

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/meta"
 	"github.com/bensadeh/circumflex/nerdfonts"
@@ -632,6 +633,20 @@ func TestTitleHeader_DepthBadge(t *testing.T) {
 
 	rightEdge := layout.ReaderViewLeftMargin + layout.ReaderContentWidth(100, 72)
 	assert.Equal(t, rightEdge, xansi.StringWidth(strings.TrimRight(row, " ")), "the badge ends at the article column's right edge")
+}
+
+func TestTitleHeader_DepthBadgeColorsStepsByKind(t *testing.T) {
+	m := NewWithArticle(parseTestArticle(t), "Title", 72, 100, 30, Options{
+		FromLink: true,
+		Trail: []message.TrailEntry{
+			{URL: "https://story.example.com", Story: true},
+			{URL: "https://news.ycombinator.com/item?id=9", Thread: &comment.Thread{}},
+		},
+	}, nil)
+
+	row := strings.SplitN(m.titleHeader, "\n", 2)[0]
+	assert.Contains(t, row, style.Yellow("›"), "the step back onto an article is yellow")
+	assert.Contains(t, row, style.Green("›"), "the step back onto a comment section is green")
 }
 
 func TestTitleHeaderWithBadge_TruncatesLongTitle(t *testing.T) {
