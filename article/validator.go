@@ -92,6 +92,7 @@ func isInvalidDomain(domain string) bool {
 		"news.ycombinator.com",
 		"play.google.com",
 		"reddit.com",
+		"science.org",
 		"twitter.com",
 		"washingtonpost.com",
 		"wsj.com",
