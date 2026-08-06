@@ -511,6 +511,30 @@ func TestParseBlocks_InlineImageBecomesOwnBlock(t *testing.T) {
 	assert.Equal(t, "a chart", blocks[1].plainText())
 }
 
+func TestParseBlocks_NitroPackLazyAttrs(t *testing.T) {
+	t.Parallel()
+
+	// NitroPack replaces src with an empty inline-SVG data URI and moves the
+	// real URLs to nitro-lazy-src/nitro-lazy-srcset (randsinrepose.com).
+	blocks := blocksFromHTML(t, `<img width="1024" height="435" alt="a"
+		nitro-lazy-srcset="a-1024.jpeg 1024w, a-300.jpeg 300w, a-2048.jpeg 2048w"
+		nitro-lazy-src="a-1024.jpeg"
+		src="data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=">`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, "a-2048.jpeg", blocks[0].imageURL, "nitro-lazy-srcset picks like a srcset, data-URI src never wins")
+}
+
+func TestParseBlocks_NitroPackLazySrcOnly(t *testing.T) {
+	t.Parallel()
+
+	blocks := blocksFromHTML(t, `<img alt="a" nitro-lazy-src="real.png"
+		src="data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=">`)
+
+	require.Len(t, blocks, 1)
+	assert.Equal(t, "real.png", blocks[0].imageURL)
+}
+
 func TestParseBlocks_SrcsetPrefersRightSizedVariant(t *testing.T) {
 	t.Parallel()
 

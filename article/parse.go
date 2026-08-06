@@ -351,20 +351,34 @@ func imageDisplayWidth(n *html.Node) int {
 // imageSrc picks the most promising source for an img: the srcset when it
 // advertises widths, then the eager attributes, then the largest srcset
 // candidate. Lazy-loaded images often hold a placeholder in src and the real
-// URL in a data-* attr.
+// URL in a data-* attr; NitroPack goes further and parks an empty inline-SVG
+// data URI in src with the real URLs in nitro-lazy-* attrs.
 func imageSrc(n *html.Node) string {
-	if v := rightSizedFromSrcset(attr(n, "srcset")); v != "" {
-		return v
+	for _, key := range srcsetAttrs {
+		if v := rightSizedFromSrcset(attr(n, key)); v != "" {
+			return v
+		}
 	}
 
-	for _, key := range []string{"src", "data-src", "data-original", "data-lazy-src"} {
+	for _, key := range eagerSrcAttrs {
 		if v := strings.TrimSpace(attr(n, key)); isFetchableImageURL(v) {
 			return v
 		}
 	}
 
-	return bestFromSrcset(attr(n, "srcset"))
+	for _, key := range srcsetAttrs {
+		if v := bestFromSrcset(attr(n, key)); v != "" {
+			return v
+		}
+	}
+
+	return ""
 }
+
+var (
+	srcsetAttrs   = []string{"srcset", "nitro-lazy-srcset"}
+	eagerSrcAttrs = []string{"src", "data-src", "data-original", "data-lazy-src", "nitro-lazy-src"}
+)
 
 type srcsetCandidate struct {
 	url        string

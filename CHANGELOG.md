@@ -2,6 +2,10 @@
 
 ## 5.1 (Unreleased)
 
+**Reader Mode**
+
+- Fix missing images on sites using NitroPack lazy-loading
+
 **Design**
 
 - Links to other Hacker News discussions are now yellow 
