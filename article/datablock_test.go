@@ -98,7 +98,8 @@ func TestExtractReadable_DataBlockSectionsSurvive(t *testing.T) {
 			headings = append(headings, b.text)
 
 		case blockParagraph, blockList, blockQuote, blockCode,
-			blockTable, blockDivider, blockVerbatim, blockInfobox:
+			blockTable, blockDivider, blockVerbatim, blockInfobox,
+			blockComment, blockMore:
 			text.WriteString(b.plainText())
 		}
 	}

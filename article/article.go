@@ -57,7 +57,15 @@ func Parse(ctx context.Context, url string, images bool) (*Parsed, error) {
 
 	base := parsedURL
 
+	if isGitHubIssue(parsedURL) {
+		blocks, title = parseGitHubIssueBlocks(body, parsedURL)
+	}
+
 	switch {
+	case blocks != nil:
+		// Parsed from GitHub's embedded payload; a page without one fell
+		// through to the branches below.
+
 	case isMarkdown(contentType, parsedURL, body):
 		blocks, title, err = parseMarkdownBlocks(body, parsedURL)
 		if err != nil {
@@ -110,6 +118,9 @@ func Parse(ctx context.Context, url string, images bool) (*Parsed, error) {
 func guessCodeLangs(blocks []block) {
 	for i := range blocks {
 		b := &blocks[i]
+
+		guessCodeLangs(b.children)
+
 		if b.kind == blockCode && b.lang == "" {
 			b.lang = highlight.GuessLang(b.text)
 			b.guessed = true
@@ -217,8 +228,10 @@ func (p *Parsed) RenderWithHeader(contentWidth, screenWidth int, header string, 
 
 	var headings []int
 
+	// Comment boxes join headings as jump targets: on an issue page the
+	// section keys step through the conversation.
 	for i, part := range parts {
-		if part.kind == blockHeading {
+		if part.kind == blockHeading || part.kind == blockComment {
 			headings = append(headings, starts[i])
 		}
 	}

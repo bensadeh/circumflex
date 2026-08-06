@@ -18,6 +18,8 @@ const (
 	blockDivider
 	blockVerbatim
 	blockInfobox
+	blockComment
+	blockMore
 )
 
 type block struct {
@@ -40,6 +42,12 @@ type block struct {
 	dispWidth  int         // blockImage: intended display width in CSS px from the width attr, 0 if unknown
 	art        string      // blockImage: rendered placeholder cells memoized for artFor; see cachedImagePart
 	artFor     artKey
+	children   []block // blockComment: the comment's body blocks, boxed under the author rule
+	author     string  // blockComment: login heading the box
+	when       string  // blockComment: date closing the opening rule
+	op         bool    // blockComment: author also started the thread
+	maintainer bool    // blockComment: author owns the repo, judged by the issue URL's owner segment
+	state      string  // blockComment: issue state ("open"/"closed"), on the thread's own box
 }
 
 type inlineFormat int
@@ -101,6 +109,17 @@ func (b *block) plainText() string {
 		}
 
 		return strings.Join(lines, "\n")
+
+	case blockComment:
+		lines := []string{b.author}
+		for i := range b.children {
+			lines = append(lines, b.children[i].plainText())
+		}
+
+		return strings.Join(lines, "\n")
+
+	case blockMore:
+		return spanText(b.spans)
 
 	case blockDivider:
 		return ""

@@ -37,6 +37,21 @@ func isMarkdown(contentType string, parsedURL *nurl.URL, body []byte) bool {
 // leading h1 is the document's own title: it moves to the returned title like
 // readability's, instead of duplicating right under the title header.
 func parseMarkdownBlocks(body []byte, base *nurl.URL) ([]block, string, error) {
+	blocks, err := markdownToBlocks(body, base)
+	if err != nil {
+		return nil, "", err
+	}
+
+	if len(blocks) > 0 && blocks[0].kind == blockHeading && blocks[0].level == 1 {
+		return blocks[1:], blocks[0].text, nil
+	}
+
+	return blocks, "", nil
+}
+
+// markdownToBlocks is the conversion alone, shared with GitHub comment
+// bodies, whose leading headings are content rather than a document title.
+func markdownToBlocks(body []byte, base *nurl.URL) ([]block, error) {
 	md := goldmark.New(
 		goldmark.WithExtensions(extension.GFM, extension.Footnote),
 		goldmark.WithRendererOptions(htmlrenderer.WithUnsafe()),
@@ -44,23 +59,17 @@ func parseMarkdownBlocks(body []byte, base *nurl.URL) ([]block, string, error) {
 
 	var buf bytes.Buffer
 	if err := md.Convert(body, &buf); err != nil {
-		return nil, "", fmt.Errorf("could not parse markdown from %s: %w", base.Host, err)
+		return nil, fmt.Errorf("could not parse markdown from %s: %w", base.Host, err)
 	}
 
 	node, err := html.Parse(&buf)
 	if err != nil {
-		return nil, "", fmt.Errorf("could not parse page from %s: %w", base.Host, err)
+		return nil, fmt.Errorf("could not parse page from %s: %w", base.Host, err)
 	}
 
 	resolveLinkTargets(node, base)
 
-	blocks := parseBlocks(node)
-
-	if len(blocks) > 0 && blocks[0].kind == blockHeading && blocks[0].level == 1 {
-		return blocks[1:], blocks[0].text, nil
-	}
-
-	return blocks, "", nil
+	return parseBlocks(node), nil
 }
 
 // resolveLinkTargets absolutizes anchor hrefs against base, as readability

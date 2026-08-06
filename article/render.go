@@ -124,6 +124,12 @@ func renderBlock(b *block, width, codeWidth int, images ImageOptions) string {
 	case blockImage:
 		return renderImage(b, width, images)
 
+	case blockComment:
+		return renderComment(b, width, images)
+
+	case blockMore:
+		return renderMore(b, width)
+
 	case blockDivider:
 		return renderDivider(width)
 
@@ -685,4 +691,66 @@ func renderInfobox(b *block, width int) string {
 
 func renderDivider(width int) string {
 	return blockIndent + style.Faint(strings.Repeat("-", max(1, width-2*len(blockIndent))))
+}
+
+// A GitHub comment renders in the frame family the meta bar and infoboxes
+// share: the author heads the opening rule the way the meta byline does, and
+// the date closes the rule against the right corner, where the meta bar
+// hangs its stats. The author carries at most one tag, the comment view's
+// precedence: the maintainer tag in the mod color outranks the OP tag. The
+// body is ordinary blocks at the frame's content width — code boxes
+// included, so they nest inside the comment rather than breaking out of it.
+func renderComment(b *block, width int, images ImageOptions) string {
+	inner := frame.ContentWidth(width)
+
+	title := style.Bold(b.author)
+
+	switch {
+	case b.maintainer:
+		title += " " + style.CommentMod("maintainer")
+	case b.op:
+		title += " " + style.CommentOP("OP")
+	}
+
+	var labels []string
+	if b.state != "" {
+		labels = append(labels, stateBadge(b.state))
+	}
+
+	if b.when != "" {
+		labels = append(labels, style.Faint(b.when))
+	}
+
+	rows := []string{frame.OpeningRule(title, labels, width)}
+
+	for line := range strings.SplitSeq(renderBlocks(b.children, inner, inner, images), "\n") {
+		rows = append(rows, frame.Row(line, width))
+	}
+
+	rows = append(rows, frame.ClosingRule(nil, width))
+
+	return frame.Join(rows, width)
+}
+
+// stateBadge colors the state the way GitHub's own badges lean: green for
+// the door still open, magenta for shut. ANSI palette colors, like the
+// thread yellow, so the terminal theme keeps its say.
+func stateBadge(state string) string {
+	if state == "open" {
+		return style.Green(state)
+	}
+
+	return style.Magenta(state)
+}
+
+// renderMore is the tail of a truncated thread: a centered marker in the meta
+// bar's URL styling, linking to the conversation it stands in for.
+func renderMore(b *block, width int) string {
+	if len(b.spans) == 0 {
+		return ""
+	}
+
+	line := style.Faint("── ") + style.MetaURL(b.spans[0].text, b.spans[0].href) + style.Faint(" ──")
+
+	return centerLines(line, width)
 }

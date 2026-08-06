@@ -829,7 +829,7 @@ func parseQuote(n *html.Node) []span {
 				line = line[:len(line)-1]
 			}
 
-		case blockTable, blockInfobox, blockImage, blockDivider:
+		case blockTable, blockInfobox, blockImage, blockDivider, blockComment, blockMore:
 			continue
 
 		default:

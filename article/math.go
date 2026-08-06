@@ -187,7 +187,7 @@ func convertMath(blocks []block) {
 				}
 			}
 
-		case blockCode, blockDivider, blockVerbatim:
+		case blockCode, blockDivider, blockVerbatim, blockComment, blockMore:
 		}
 	}
 }

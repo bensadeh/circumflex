@@ -4,6 +4,7 @@
 
 **Reader Mode**
 
+- GitHub issues now render as a comment thread, with authors, dates and `OP`/`maintainer` labels
 - Fix missing images on sites using NitroPack lazy-loading
 
 **Design**
