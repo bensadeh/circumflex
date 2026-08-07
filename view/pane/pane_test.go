@@ -1,6 +1,7 @@
 package pane
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"image/color"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/bensadeh/circumflex/ansi"
 	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/view/message"
 
 	xansi "github.com/charmbracelet/x/ansi"
@@ -266,6 +268,97 @@ func TestStandalone_RestoreRebuildsPageFromItsParse(t *testing.T) {
 
 	require.Len(t, factory.entries, 1)
 	assert.True(t, factory.entries[0].Story)
+}
+
+// threadFactory records the comment sections it is asked to build.
+type threadFactory struct {
+	threads []*comment.Thread
+	trails  [][]message.TrailEntry
+	view    *fakeView
+}
+
+func (f *threadFactory) make(thread *comment.Thread, _ int64, trail []message.TrailEntry, _, _ int) View {
+	f.threads = append(f.threads, thread)
+	f.trails = append(f.trails, trail)
+
+	return f.view
+}
+
+// neverFetch satisfies the fetcher without network; the tests feed the ready
+// message directly instead of executing the fetch command.
+func neverFetch(context.Context, int, func(fetched, total int)) (*comment.Thread, error) {
+	return nil, errors.New("not reached")
+}
+
+func TestStandalone_ThreadLinkOpensCommentsInPlace(t *testing.T) {
+	factory := &threadFactory{view: &fakeView{}}
+	s := standalone{view: &fakeView{}, makeThreadView: factory.make, fetchThread: neverFetch}
+
+	next, cmd := s.Update(message.OpenReaderLink{URL: "https://news.ycombinator.com/item?id=42"})
+	require.NotNil(t, cmd, "a thread link should start a fetch")
+
+	fetching, ok := next.(standalone)
+	require.True(t, ok)
+	require.True(t, fetching.fetch.InFlight())
+
+	thread := &comment.Thread{}
+	trail := []message.TrailEntry{{URL: "https://example.com/", Story: true}}
+
+	next, initCmd := fetching.Update(message.LinkCommentsReady{
+		Thread: thread, Trail: trail, FetchID: fetching.fetch.CurrentID(),
+	})
+
+	swapped, ok := next.(standalone)
+	require.True(t, ok)
+	assert.Same(t, factory.view, swapped.view, "the fetched thread replaces the view")
+	assert.Nil(t, initCmd, "the fake view's Init returns no command")
+
+	require.Len(t, factory.threads, 1)
+	assert.Same(t, thread, factory.threads[0])
+	assert.Equal(t, trail, factory.trails[0])
+}
+
+func TestStandalone_ThreadLinkFallsBackToBrowserWithoutFactory(t *testing.T) {
+	factory := &pageFactory{view: &fakeView{}}
+	s := standalone{view: &fakeView{}, makePageView: factory.make}
+
+	next, cmd := s.Update(message.OpenReaderLink{URL: "https://news.ycombinator.com/item?id=42"})
+	assert.NotNil(t, cmd)
+
+	updated, ok := next.(standalone)
+	require.True(t, ok)
+	assert.False(t, updated.fetch.InFlight(), "no fetch starts without the thread factories")
+	assert.Empty(t, factory.entries, "the page factory is not for discussions")
+}
+
+func TestStandalone_FailedThreadFetchKeepsThePage(t *testing.T) {
+	original := &fakeView{}
+	factory := &threadFactory{view: &fakeView{}}
+	s := standalone{view: original, makeThreadView: factory.make, fetchThread: neverFetch, fetch: FetchGuard{id: 2, active: true}}
+
+	next, _ := s.Update(message.LinkCommentsReady{FetchID: 2, Err: errors.New("could not fetch comments")})
+
+	updated, ok := next.(standalone)
+	require.True(t, ok)
+	assert.Same(t, original, updated.view, "a failed fetch leaves the open page")
+	assert.NotEmpty(t, updated.status.Message(), "the failure shows on the footer row")
+	assert.Empty(t, factory.threads)
+}
+
+func TestStandalone_RestoreRebuildsThreadFromItsTrail(t *testing.T) {
+	factory := &threadFactory{view: &fakeView{}}
+	s := standalone{view: &fakeView{}, makeThreadView: factory.make}
+
+	thread := &comment.Thread{}
+
+	next, _ := s.Update(message.RestorePage{Entry: message.TrailEntry{Thread: thread}})
+
+	updated, ok := next.(standalone)
+	require.True(t, ok)
+	assert.Same(t, factory.view, updated.view)
+
+	require.Len(t, factory.threads, 1)
+	assert.Same(t, thread, factory.threads[0])
 }
 
 func TestSetLinesCountsAndPads(t *testing.T) {

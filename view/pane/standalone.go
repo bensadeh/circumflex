@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/bensadeh/circumflex/article"
+	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/graphics"
 	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/style"
@@ -28,6 +29,19 @@ type View interface {
 // the chain behind it.
 type MakePageView func(entry message.TrailEntry, trail []message.TrailEntry, width, height int) View
 
+// MakeThreadView rebuilds a comment section around a followed Hacker News
+// discussion link — opening one, or walking back through the trail.
+type MakeThreadView func(thread *comment.Thread, lastVisited int64, trail []message.TrailEntry, width, height int) View
+
+// StandaloneOptions carries the factories a standalone shell follows links
+// with. A nil factory sends its kind of link to the browser instead, so each
+// subcommand grants exactly the views it can build.
+type StandaloneOptions struct {
+	MakePageView   MakePageView
+	MakeThreadView MakeThreadView
+	FetchThread    ThreadFetcher
+}
+
 // CancelKeys stops an in-flight fetch; the app's keymap shares it so both
 // shells cancel on the same keys.
 var CancelKeys = key.NewBinding(key.WithKeys("esc", "backspace", "ctrl+c"))
@@ -37,11 +51,13 @@ var CancelKeys = key.NewBinding(key.WithKeys("esc", "backspace", "ctrl+c"))
 // first WindowSizeMsg because the views need real dimensions at
 // construction.
 type standalone struct {
-	makeView     func(width, height int) View
-	makePageView MakePageView
-	view         View
-	width        int
-	height       int
+	makeView       func(width, height int) View
+	makePageView   MakePageView
+	makeThreadView MakeThreadView
+	fetchThread    ThreadFetcher
+	view           View
+	width          int
+	height         int
 
 	// title names the terminal window until the view exists; from then on the
 	// view's own page title takes over, so followed links rename the window as
@@ -113,6 +129,9 @@ func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case message.LinkArticleReady:
 		return s.receiveLinkedPage(msg)
 
+	case message.LinkCommentsReady:
+		return s.receiveLinkedThread(msg)
+
 	case spinner.TickMsg:
 		var cmd tea.Cmd
 
@@ -130,16 +149,7 @@ func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return s, nil
 
 	case message.RestorePage:
-		// Walking back needs no fetch: the entry carries its parse. Dropped
-		// mid-fetch — minted a cycle after its keypress, it slips past the
-		// in-flight key gate below — mirroring the app shell.
-		if s.makePageView != nil && !s.fetch.InFlight() {
-			var cmd tea.Cmd
-
-			s.view, cmd = s.buildPage(msg.Entry, msg.Trail)
-
-			return s, cmd
-		}
+		return s.restorePage(msg)
 
 	case tea.CapabilityMsg:
 		// Unlike the full app, the page may already be on screen when the
@@ -198,6 +208,28 @@ func (s standalone) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return s, s.view.Update(msg)
 }
 
+// restorePage steps back to a trail entry. Walking back needs no fetch — the
+// entry carries its content: a comment section rode the chain as its thread,
+// a page as its parse. Dropped mid-fetch — minted a cycle after its
+// keypress, it slips past the in-flight key gate — mirroring the app shell.
+func (s standalone) restorePage(msg message.RestorePage) (tea.Model, tea.Cmd) {
+	if s.fetch.InFlight() {
+		return s, nil
+	}
+
+	var cmd tea.Cmd
+
+	switch {
+	case msg.Entry.Thread != nil && s.makeThreadView != nil:
+		s.view, cmd = s.buildThread(msg.Entry.Thread, msg.Entry.LastVisited, msg.Trail)
+
+	case msg.Entry.Thread == nil && s.makePageView != nil:
+		s.view, cmd = s.buildPage(msg.Entry, msg.Trail)
+	}
+
+	return s, cmd
+}
+
 // followLink fetches a link followed inside the article so the page can be
 // swapped in place, as the full app does. A view without a page factory
 // (comments) sends the link to the browser instead. The current page stays
@@ -210,11 +242,22 @@ func (s standalone) followLink(msg message.OpenReaderLink) (tea.Model, tea.Cmd) 
 		return s, nil
 	}
 
-	// A Hacker News discussion link has no native view in the standalone
-	// shells — only the full app can build a comment section — so the
-	// browser stands in for it here.
-	if _, ok := hn.ParseItemURL(msg.URL); ok {
-		return s, message.OpenInBrowser(msg.URL)
+	// A Hacker News discussion link opens the comment section in place when
+	// the shell can build one; without the factories the browser stands in.
+	// Like the app's comment fetch, it reports percentages and carries no
+	// timeout.
+	if id, ok := hn.ParseItemURL(msg.URL); ok {
+		if s.makeThreadView == nil || s.fetchThread == nil {
+			return s, message.OpenInBrowser(msg.URL)
+		}
+
+		tok := s.fetch.Begin(0)
+		s.spinner = NewSpinner()
+		s.view.Update(message.LinkFetchStatus{InFlight: true})
+
+		SetProgressPercent(0)
+
+		return s, tea.Batch(s.spinner.Tick, FetchThread(tok.Ctx, tok.ID, s.fetchThread, id, msg.Trail))
 	}
 
 	if s.makePageView == nil {
@@ -276,6 +319,35 @@ func (s standalone) buildPage(entry message.TrailEntry, trail []message.TrailEnt
 	return view, view.Init()
 }
 
+// receiveLinkedThread swaps the followed discussion in for the article it
+// was linked from, mirroring receiveLinkedPage.
+func (s standalone) receiveLinkedThread(msg message.LinkCommentsReady) (tea.Model, tea.Cmd) {
+	if !s.fetch.Finish(msg.FetchID) {
+		return s, nil
+	}
+
+	SyncProgress(msg.Err)
+
+	if msg.Err != nil {
+		s.view.Update(message.LinkFetchStatus{InFlight: false})
+
+		return s, s.status.Set(FriendlyError(msg.Err), StatusMessageLong)
+	}
+
+	var cmd tea.Cmd
+
+	s.view, cmd = s.buildThread(msg.Thread, msg.LastVisited, msg.Trail)
+
+	return s, cmd
+}
+
+func (s standalone) buildThread(thread *comment.Thread, lastVisited int64, trail []message.TrailEntry) (View, tea.Cmd) {
+	view := s.makeThreadView(thread, lastVisited, trail, s.width, s.height)
+	s.replayColorReports(view)
+
+	return view, view.Init()
+}
+
 func (s standalone) replayColorReports(view View) {
 	if s.bgMsg != nil {
 		view.Update(s.bgMsg)
@@ -322,10 +394,16 @@ func (s standalone) windowTitle() string {
 
 // RunStandalone runs a detail view as its own program under the window title
 // title; makeView receives the terminal dimensions from the first
-// WindowSizeMsg. A non-nil makePageView lets links followed inside the view
-// open in place; without one they fall back to the browser.
-func RunStandalone(title string, makeView func(width, height int) View, makePageView MakePageView) error {
-	p := tea.NewProgram(standalone{title: WindowTitle(title), makeView: makeView, makePageView: makePageView})
+// WindowSizeMsg. The options' factories let links followed inside the view
+// open in place; absent ones fall back to the browser.
+func RunStandalone(title string, makeView func(width, height int) View, opts StandaloneOptions) error {
+	p := tea.NewProgram(standalone{
+		title:          WindowTitle(title),
+		makeView:       makeView,
+		makePageView:   opts.MakePageView,
+		makeThreadView: opts.MakeThreadView,
+		fetchThread:    opts.FetchThread,
+	})
 
 	restoreTitle := SaveWindowTitle()
 	settleProgress := WireProgress(p)

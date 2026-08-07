@@ -1,12 +1,14 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
 
 	"github.com/bensadeh/circumflex/categories"
+	"github.com/bensadeh/circumflex/comment"
 	"github.com/bensadeh/circumflex/graphics"
 	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/hn/provider"
@@ -15,6 +17,10 @@ import (
 	"github.com/bensadeh/circumflex/theme"
 	"github.com/bensadeh/circumflex/version"
 	"github.com/bensadeh/circumflex/view"
+	"github.com/bensadeh/circumflex/view/comments"
+	"github.com/bensadeh/circumflex/view/message"
+	"github.com/bensadeh/circumflex/view/pane"
+	"github.com/bensadeh/circumflex/view/reader"
 
 	"github.com/spf13/cobra"
 )
@@ -227,4 +233,43 @@ func isGhostty() bool {
 
 func newService() hn.Service {
 	return provider.NewService(debugMode, debugFallible)
+}
+
+// standalonePages lets the comments subcommand open article links in place,
+// as the full app does. Every page it builds was reached through a link —
+// the shell's root is the thread itself — so NewPage derives each header
+// from the page's own URL and the story header goes unused.
+func standalonePages(config *settings.Config) pane.MakePageView {
+	opts := reader.Options{NerdFonts: config.EnableNerdFonts, ShowImagesOnOpen: config.ShowImagesOnOpen}
+
+	return func(entry message.TrailEntry, trail []message.TrailEntry, width, height int) pane.View {
+		m := reader.NewPage(entry, trail, nil, config.ArticleWidth, width, height, opts)
+		m.DisableAppKeys()
+
+		return m
+	}
+}
+
+// standaloneThreads lets the reader subcommands open Hacker News discussion
+// links in place, as the full app does. Nothing is marked read — the
+// one-shot commands leave no history — so the thread arrives as if fully
+// visited, matching how the comments subcommand treats its own thread.
+func standaloneThreads(config *settings.Config, service hn.Service) pane.StandaloneOptions {
+	return pane.StandaloneOptions{
+		FetchThread: func(ctx context.Context, id int, onProgress func(fetched, total int)) (*comment.Thread, error) {
+			tree, err := service.FetchComments(ctx, id, onProgress)
+			if err != nil {
+				return nil, err
+			}
+
+			return comment.ToThread(tree), nil
+		},
+		MakeThreadView: func(thread *comment.Thread, lastVisited int64, trail []message.TrailEntry, width, height int) pane.View {
+			m := comments.New(thread, lastVisited, config.CommentWidth, config.Indent, config.EnableNerdFonts, width, height)
+			m.DisableAppKeys()
+			m.SetLinkTrail(trail)
+
+			return m
+		},
+	}
 }

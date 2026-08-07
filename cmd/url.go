@@ -52,7 +52,7 @@ func urlCmd() *cobra.Command {
 			}
 
 			return reader.Run(parsed, title, config.ArticleWidth, opts,
-				meta.ReaderModeURL(url).Render)
+				meta.ReaderModeURL(url).Render, standaloneThreads(config, newService()))
 		},
 	}
 }

@@ -5,6 +5,7 @@
 **Reader Mode**
 
 - GitHub issues now render as a comment thread, with authors, dates and `OP`/`maintainer` labels
+- The standalone commands (`clx url`, `clx article`, `clx comments`) now follow links in place like the full app
 - Fix missing images on sites using NitroPack lazy-loading
 
 **Design**

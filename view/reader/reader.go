@@ -793,8 +793,10 @@ func NewPage(entry message.TrailEntry, trail []message.TrailEntry, storyHeader f
 // Run shows the article in a standalone reader. Links followed through the
 // selector open in place and quit walks back through them, as in the full
 // app; the story page at the trail's root keeps the header it opened with.
-func Run(parsed *article.Parsed, title string, maxWidth int, opts Options, buildHeader func(contentWidth int) string) error {
-	makePage := func(entry message.TrailEntry, trail []message.TrailEntry, width, height int) pane.View {
+// Run hosts the reader as its own program. shell supplies the thread
+// factories from the cmd layer; the page factory is the reader's own.
+func Run(parsed *article.Parsed, title string, maxWidth int, opts Options, buildHeader func(contentWidth int) string, shell pane.StandaloneOptions) error {
+	shell.MakePageView = func(entry message.TrailEntry, trail []message.TrailEntry, width, height int) pane.View {
 		m := NewPage(entry, trail, buildHeader, maxWidth, width, height, opts)
 		m.DisableAppKeys()
 
@@ -806,7 +808,7 @@ func Run(parsed *article.Parsed, title string, maxWidth int, opts Options, build
 		m.DisableAppKeys()
 
 		return m
-	}, makePage)
+	}, shell)
 }
 
 func urlHost(rawURL string) string {

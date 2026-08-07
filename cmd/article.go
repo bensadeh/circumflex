@@ -67,7 +67,8 @@ func articleCmd() *cobra.Command {
 				ShowImagesOnOpen: config.ShowImagesOnOpen,
 			}
 
-			return reader.Run(parsed, item.Title, config.ArticleWidth, opts, block.Render)
+			return reader.Run(parsed, item.Title, config.ArticleWidth, opts, block.Render,
+				standaloneThreads(config, service))
 		},
 	}
 }
