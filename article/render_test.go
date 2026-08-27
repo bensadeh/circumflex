@@ -570,6 +570,6 @@ func TestRenderCode_LabelsDetectedLanguage(t *testing.T) {
 
 	code := ansi.Strip(renderCode(&block{kind: blockCode, text: "for f in *.txt\ndo\n  echo $f\ndone", lang: "bash"}, 20, 40))
 
-	top := strings.Split(code, "\n")[0]
+	top, _, _ := strings.Cut(code, "\n")
 	assert.True(t, strings.HasSuffix(top, " Bash ─╮"), "the label sits right-aligned in the opening rule, got %q", top)
 }

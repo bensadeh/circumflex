@@ -45,8 +45,7 @@ func FriendlyError(err error) string {
 
 	// Returned as-is: the generic first-letter uppercasing below would
 	// mangle the leading domain ("Ft.com").
-	var domainErr *article.UnsupportedDomainError
-	if errors.As(err, &domainErr) {
+	if domainErr, ok := errors.AsType[*article.UnsupportedDomainError](err); ok {
 		return strings.Replace(domainErr.Error(), domainErr.Domain, redText.Render(domainErr.Domain), 1)
 	}
 

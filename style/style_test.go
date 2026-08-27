@@ -58,12 +58,12 @@ func TestWrapWithin_BoxStaysWithinColumn(t *testing.T) {
 func TestRoundedBox_Label(t *testing.T) {
 	t.Parallel()
 
-	unlabeled := ansi.Strip(RoundedBox("some code", 17, ""))
-	assert.Equal(t, "╭───────────────╮", strings.Split(unlabeled, "\n")[0], "no label keeps the plain rule")
+	unlabeled, _, _ := strings.Cut(ansi.Strip(RoundedBox("some code", 17, "")), "\n")
+	assert.Equal(t, "╭───────────────╮", unlabeled, "no label keeps the plain rule")
 
-	labeled := ansi.Strip(RoundedBox("some code", 17, "Go"))
-	assert.Equal(t, "╭────────── Go ─╮", strings.Split(labeled, "\n")[0], "label right-aligns and the rule spans the same width")
+	labeled, _, _ := strings.Cut(ansi.Strip(RoundedBox("some code", 17, "Go")), "\n")
+	assert.Equal(t, "╭────────── Go ─╮", labeled, "label right-aligns and the rule spans the same width")
 
-	tooNarrow := ansi.Strip(RoundedBox("wide", 0, "VeryLongLanguageName"))
-	assert.Equal(t, "╭──────╮", strings.Split(tooNarrow, "\n")[0], "an oversized label drops instead of breaking the frame")
+	tooNarrow, _, _ := strings.Cut(ansi.Strip(RoundedBox("wide", 0, "VeryLongLanguageName")), "\n")
+	assert.Equal(t, "╭──────╮", tooNarrow, "an oversized label drops instead of breaking the frame")
 }

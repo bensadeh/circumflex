@@ -6,7 +6,6 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"github.com/bensadeh/circumflex/comment"
-	"github.com/bensadeh/circumflex/hn"
 	"github.com/bensadeh/circumflex/layout"
 	"github.com/bensadeh/circumflex/nerdfonts"
 	"github.com/bensadeh/circumflex/style"
@@ -58,7 +57,7 @@ func TestLinkTrail_DepthBadgeOnTitleRow(t *testing.T) {
 
 	m.SetLinkTrail([]message.TrailEntry{{Story: true}, {}})
 
-	row := xansi.Strip(strings.SplitN(m.titleHeader, "\n", 2)[0])
+	row, _, _ := strings.Cut(xansi.Strip(m.titleHeader), "\n")
 	assert.Equal(t, 2, strings.Count(row, "›"), "one chevron per link followed")
 
 	rightEdge := layout.CommentSectionLeftMargin + layout.CommentColumnWidth(120, 80)
@@ -72,7 +71,7 @@ func TestLinkTrail_DepthBadgeColorsStepsByKind(t *testing.T) {
 		{Thread: &comment.Thread{}},
 	})
 
-	row := strings.SplitN(m.titleHeader, "\n", 2)[0]
+	row, _, _ := strings.Cut(m.titleHeader, "\n")
 	assert.Contains(t, row, style.Green("›"), "the step back onto an article is green")
 	assert.Contains(t, row, style.Yellow("›"), "the step back onto a comment section is yellow")
 }
@@ -94,7 +93,7 @@ func linkedCommentsModel(t *testing.T) *Model {
 	t.Helper()
 
 	thread := &comment.Thread{
-		Story: hn.Story{ID: 7, Title: "Linky", Author: "op", URL: "https://story.example.com/article"},
+		ID: 7, Title: "Linky", Author: "op", URL: "https://story.example.com/article",
 		Comments: []*comment.Comment{
 			newComment(1, "alice", `See <a href="https://one.example.com/post">first</a> here`),
 			newComment(2, "bob", `And <a href="https://news.ycombinator.com/item?id=99">previously</a>`),

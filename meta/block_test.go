@@ -189,11 +189,11 @@ func TestClosingRuleCarriesID(t *testing.T) {
 func TestCommentTallyCarriesNewComments(t *testing.T) {
 	d := Data{Author: "alice", TimeAgo: "2 hours ago", Points: 100, CommentsCount: 45}
 
-	top := strings.Split(xansi.Strip(CommentSection(d).Render(80)), "\n")[0]
+	top, _, _ := strings.Cut(xansi.Strip(CommentSection(d).Render(80)), "\n")
 	assert.Contains(t, top, "─ 45 comments ─ ", "no parenthetical without new comments: %q", top)
 
 	d.NewComments = 5
-	top = strings.Split(xansi.Strip(CommentSection(d).Render(80)), "\n")[0]
+	top, _, _ = strings.Cut(xansi.Strip(CommentSection(d).Render(80)), "\n")
 	assert.Contains(t, top, "─ 45 comments (5 new) ─ ", "new comments join the tally: %q", top)
 }
 

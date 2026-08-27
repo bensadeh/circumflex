@@ -628,7 +628,7 @@ func TestTitleHeader_DepthBadge(t *testing.T) {
 		},
 	}, nil)
 
-	row := xansi.Strip(strings.SplitN(deep.titleHeader, "\n", 2)[0])
+	row, _, _ := strings.Cut(xansi.Strip(deep.titleHeader), "\n")
 	require.Equal(t, 2, strings.Count(row, "›"), "one chevron per link followed")
 
 	rightEdge := layout.ReaderViewLeftMargin + layout.ReaderContentWidth(100, 72)
@@ -644,7 +644,7 @@ func TestTitleHeader_DepthBadgeColorsStepsByKind(t *testing.T) {
 		},
 	}, nil)
 
-	row := strings.SplitN(m.titleHeader, "\n", 2)[0]
+	row, _, _ := strings.Cut(m.titleHeader, "\n")
 	assert.Contains(t, row, style.Green("›"), "the step back onto an article is green")
 	assert.Contains(t, row, style.Yellow("›"), "the step back onto a comment section is yellow")
 }
@@ -653,7 +653,7 @@ func TestTitleHeaderWithBadge_TruncatesLongTitle(t *testing.T) {
 	long := strings.Repeat("word ", 40)
 	m := NewWithArticle(parseTestArticle(t), long, 72, 100, 30, Options{FromLink: true}, nil)
 
-	row := xansi.Strip(strings.SplitN(m.titleHeader, "\n", 2)[0])
+	row, _, _ := strings.Cut(xansi.Strip(m.titleHeader), "\n")
 	require.Equal(t, 1, strings.Count(row, "›"))
 	assert.Contains(t, row, "…", "the title shortens instead of colliding with the badge")
 

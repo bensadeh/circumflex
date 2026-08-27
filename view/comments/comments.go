@@ -104,17 +104,18 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 	}
 
 	m := Model{
-		Scroller:      pane.Scroller{Viewport: vp, SearchCommittedIcon: nerdfonts.CommentSearchCommitted},
-		keymap:        km,
-		mode:          modeRead,
-		flat:          flat,
-		focusedIdx:    -1,
-		expandedDepth: 0, // initial: only top-level visible
-		maxDepth:      md,
-		title:         thread.Title,
-		prerendered:   prerenderComments(rc, flat),
-		rc:            rc,
-		thread:        thread,
+		Viewport:            vp,
+		SearchCommittedIcon: nerdfonts.CommentSearchCommitted,
+		keymap:              km,
+		mode:                modeRead,
+		flat:                flat,
+		focusedIdx:          -1,
+		expandedDepth:       0, // initial: only top-level visible
+		maxDepth:            md,
+		title:               thread.Title,
+		prerendered:         prerenderComments(rc, flat),
+		rc:                  rc,
+		thread:              thread,
 	}
 
 	m.rebuildTitleHeader()

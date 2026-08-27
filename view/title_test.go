@@ -23,7 +23,7 @@ func TestWindowTitle_OpenStory(t *testing.T) {
 	m := newTestModelReady(t)
 	startTestFetch(m, screenComments)
 
-	thread := &comment.Thread{Story: hn.Story{ID: 1, Title: "First item", CommentsCount: 5}}
+	thread := &comment.Thread{ID: 1, Title: "First item", CommentsCount: 5}
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 	require.NotNil(t, m.detail)
 
@@ -72,7 +72,7 @@ func TestWindowTitle_LinkedThreadNamesTheThread(t *testing.T) {
 
 	_, _ = m.startLinkFetch(0)
 	m, _ = m.Update(message.LinkCommentsReady{
-		Thread:  &comment.Thread{Story: hn.Story{ID: 9, Title: "Linked thread", CommentsCount: 5}},
+		Thread:  &comment.Thread{ID: 9, Title: "Linked thread", CommentsCount: 5},
 		Trail:   []message.TrailEntry{{URL: "https://example.com/1", Story: true}},
 		FetchID: m.fetch.currentID(),
 	})
@@ -106,7 +106,7 @@ func TestWindowTitle_NeutralizesHostileTitles(t *testing.T) {
 
 	startTestFetch(m, screenComments)
 
-	thread := &comment.Thread{Story: hn.Story{ID: 1, Title: hostile[0].Title}}
+	thread := &comment.Thread{ID: 1, Title: hostile[0].Title}
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 
 	assert.Equal(t, "Evil story line two", m.windowTitle())

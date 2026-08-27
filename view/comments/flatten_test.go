@@ -23,7 +23,7 @@ func newComment(id int, author, content string, children ...*comment.Comment) *c
 
 func newThread(comments ...*comment.Comment) *comment.Thread {
 	return &comment.Thread{
-		Story:    hn.Story{ID: 1, Title: "test", Author: "op"},
+		ID: 1, Title: "test", Author: "op",
 		Comments: comments,
 	}
 }

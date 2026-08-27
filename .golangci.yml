@@ -1,7 +1,7 @@
 version: "2"
 
 run:
-  go: "1.26"
+  go: "1.27"
 
 linters:
   default: all
@@ -13,7 +13,8 @@ linters:
     # Impractical for a CLI/TUI app
     - forbidigo        # forbids fmt.Print* — a CLI app needs to print to stdout/stderr
     - gochecknoglobals # flags all globals — Cobra flags are necessarily package-level vars
-    - exhaustruct      # requires every struct field to be set — too strict
+    - exhaustruct      # deprecated, replaced by exhaustruct_v5
+    - exhaustruct_v5   # requires every struct field to be set — too strict
     - ireturn          # forbids returning interfaces — conflicts with factory patterns
     - wrapcheck        # requires all errors to be wrapped — too strict for internal code
     - err113           # requires sentinel errors for all comparisons — overkill

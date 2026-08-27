@@ -36,7 +36,7 @@ func (instantMockService) FetchItems(_ context.Context, _ int, _ string) ([]*hn.
 }
 
 func (instantMockService) FetchComments(_ context.Context, _ int, _ func(int, int)) (*hn.CommentTree, error) {
-	return &hn.CommentTree{Story: hn.Story{ID: 1, Title: "test", CommentsCount: 5}}, nil
+	return &hn.CommentTree{ID: 1, Title: "test", CommentsCount: 5}, nil
 }
 
 func (instantMockService) FetchItem(_ context.Context, _ int) (*hn.Story, error) {
@@ -525,7 +525,7 @@ func TestCommentTreeDataReady_OpensCommentView(t *testing.T) {
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 	startTestFetch(m, screenComments)
 
-	thread := &comment.Thread{Story: hn.Story{ID: 1, Title: "test", CommentsCount: 5}}
+	thread := &comment.Thread{ID: 1, Title: "test", CommentsCount: 5}
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 	assert.Equal(t, screenComments, m.screen)
 	assert.NotNil(t, m.detail)
@@ -543,7 +543,7 @@ func TestTimeRefreshTick_ReschedulesInEveryState(t *testing.T) {
 	m := newTestModelReady(t)
 	startTestFetch(m, screenComments)
 
-	thread := &comment.Thread{Story: hn.Story{ID: 1, Title: "test", CommentsCount: 5}}
+	thread := &comment.Thread{ID: 1, Title: "test", CommentsCount: 5}
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 	require.Equal(t, screenComments, m.screen)
 
@@ -576,7 +576,7 @@ func TestNarrowAdjacentStory_StaysOnOpenStory(t *testing.T) {
 	m := newTestModelReady(t)
 	startTestFetch(m, screenComments)
 
-	thread := &comment.Thread{Story: hn.Story{ID: 1, Title: "An unmistakable thread title", CommentsCount: 5}}
+	thread := &comment.Thread{ID: 1, Title: "An unmistakable thread title", CommentsCount: 5}
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 	require.Equal(t, screenComments, m.screen)
 
@@ -602,7 +602,7 @@ func TestNarrowDetail_StatusMessageShowsOnLastRow(t *testing.T) {
 	m := newTestModelReady(t)
 	startTestFetch(m, screenComments)
 
-	thread := &comment.Thread{Story: hn.Story{ID: 1, Title: "test", CommentsCount: 5}}
+	thread := &comment.Thread{ID: 1, Title: "test", CommentsCount: 5}
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 	require.Equal(t, screenComments, m.screen)
 
@@ -944,7 +944,7 @@ func TestCommentTreeDataReady_HistoryWarning(t *testing.T) {
 	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
 	startTestFetch(m, screenComments)
 
-	thread := &comment.Thread{Story: hn.Story{ID: 1, Title: "test", CommentsCount: 5}}
+	thread := &comment.Thread{ID: 1, Title: "test", CommentsCount: 5}
 	histErr := errors.New("disk full")
 
 	m, cmd := m.Update(message.CommentTreeDataReady{
@@ -1164,7 +1164,7 @@ func TestLinkCommentsReady_OpensThreadWithTrailAndBadge(t *testing.T) {
 
 	_, _ = m.startLinkFetch(0)
 
-	thread := &comment.Thread{Story: hn.Story{ID: 9, Title: "Linked thread", CommentsCount: 5}}
+	thread := &comment.Thread{ID: 9, Title: "Linked thread", CommentsCount: 5}
 	m, _ = m.Update(message.LinkCommentsReady{
 		Thread: thread,
 		Trail: []message.TrailEntry{
@@ -1206,7 +1206,7 @@ func TestLinkCommentsReady_ErrorStaysOnArticle(t *testing.T) {
 func TestRestorePage_ThreadEntryRebuildsCommentSection(t *testing.T) {
 	m := openTestReader(t, newTestModelReady(t))
 
-	thread := &comment.Thread{Story: hn.Story{ID: 9, Title: "The thread behind", CommentsCount: 5}}
+	thread := &comment.Thread{ID: 9, Title: "The thread behind", CommentsCount: 5}
 
 	_, _ = m.startLinkFetch(0)
 	m, _ = m.Update(message.LinkArticleReady{

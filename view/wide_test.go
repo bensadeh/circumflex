@@ -42,7 +42,7 @@ func openTestComments(t *testing.T, m *model) {
 	m, _ = m.Update(keyMsg("enter"))
 	require.True(t, m.fetch.inFlight())
 
-	thread := comment.ToThread(&hn.CommentTree{Story: hn.Story{ID: 1, Title: "First item", Author: "alice", CommentsCount: 5}})
+	thread := comment.ToThread(&hn.CommentTree{ID: 1, Title: "First item", Author: "alice", CommentsCount: 5})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 	require.Equal(t, screenComments, m.screen)
 }
@@ -208,7 +208,7 @@ func TestWideView_LeftPaneDimsOnceWhileStoryIsOpen(t *testing.T) {
 	loading := m.browsingView()
 	assert.NotEqual(t, browsing, loading, "left pane should dim when the story starts loading")
 
-	thread := comment.ToThread(&hn.CommentTree{Story: hn.Story{ID: 1, Title: "First item", CommentsCount: 5}})
+	thread := comment.ToThread(&hn.CommentTree{ID: 1, Title: "First item", CommentsCount: 5})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 	require.Equal(t, screenComments, m.screen)
 	assert.Equal(t, loading, m.browsingView(), "left pane should not change again when the story arrives")
@@ -230,7 +230,7 @@ func TestWideView_LoadingShowsUnboldedTitle(t *testing.T) {
 	assert.Contains(t, xansi.Strip(loading), "First item")
 	assert.NotContains(t, loading, "\x1b[1m", "loading title must not be bold")
 
-	thread := comment.ToThread(&hn.CommentTree{Story: hn.Story{ID: 1, Title: "First item", CommentsCount: 5}})
+	thread := comment.ToThread(&hn.CommentTree{ID: 1, Title: "First item", CommentsCount: 5})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 	assert.Contains(t, m.detailPaneView(), "\x1b[1m", "the opened story's title regains its bold")
 }
@@ -253,10 +253,10 @@ func TestWideView_LoadingShowsMetaBlockPlaceholder(t *testing.T) {
 		assert.Empty(t, frameRunes.Replace(strings.TrimSpace(xansi.Strip(line))), "placeholder row %d must hold no text", i)
 	}
 
-	thread := comment.ToThread(&hn.CommentTree{Story: hn.Story{
+	thread := comment.ToThread(&hn.CommentTree{
 		ID: 1, Title: "First item", CommentsCount: 5,
 		URL: "https://example.com/story", Domain: "example.com",
-	}})
+	})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 
 	loadedBox := metaBoxLines(t, m.detailPaneView())
@@ -347,7 +347,7 @@ func TestWideView_StoryLoadErrorBecomesView(t *testing.T) {
 	require.True(t, m.fetch.inFlight())
 	assert.Equal(t, 2, m.list.Index())
 
-	thread := comment.ToThread(&hn.CommentTree{Story: hn.Story{ID: 3, Title: "Third item", Author: "charlie", CommentsCount: 3}})
+	thread := comment.ToThread(&hn.CommentTree{ID: 3, Title: "Third item", Author: "charlie", CommentsCount: 3})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 	require.Equal(t, screenComments, m.screen)
 	assert.Contains(t, xansi.Strip(m.detailPaneView()), "3 comments")
@@ -470,7 +470,7 @@ func TestWideView_AdjacentStoryNavigationFlipsPages(t *testing.T) {
 	assert.Equal(t, 1, m.list.Index())
 	assert.Equal(t, 0, m.list.Page())
 
-	thread := comment.ToThread(&hn.CommentTree{Story: hn.Story{ID: 2, Title: "Second item", CommentsCount: 3}})
+	thread := comment.ToThread(&hn.CommentTree{ID: 2, Title: "Second item", CommentsCount: 3})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 	require.Equal(t, screenComments, m.screen)
 
@@ -479,7 +479,7 @@ func TestWideView_AdjacentStoryNavigationFlipsPages(t *testing.T) {
 	assert.Equal(t, 1, m.list.Page())
 	assert.Equal(t, 0, m.list.Cursor())
 
-	thread = comment.ToThread(&hn.CommentTree{Story: hn.Story{ID: 3, Title: "Third item", CommentsCount: 1}})
+	thread = comment.ToThread(&hn.CommentTree{ID: 3, Title: "Third item", CommentsCount: 1})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 
 	openAdjacent(t, m, "K")
