@@ -76,6 +76,10 @@ type SearchRequest struct {
 
 type Service interface {
 	FetchItems(ctx context.Context, itemsToFetch int, category string) ([]*Story, error)
+	// FetchActiveItems serves the active category, which has no Firebase
+	// feed to name: its stories are the ones Hacker News currently lists as
+	// active, read off the site itself.
+	FetchActiveItems(ctx context.Context, itemsToFetch int) ([]*Story, error)
 	FetchItem(ctx context.Context, id int) (*Story, error)
 	FetchComments(ctx context.Context, id int, onProgress func(fetched, total int)) (*CommentTree, error)
 	SearchItems(ctx context.Context, req SearchRequest) ([]*Story, error)
