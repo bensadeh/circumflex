@@ -2,6 +2,10 @@
 
 ## 5.1 (Unreleased)
 
+**New Features**
+
+- Added an `active` category, showing Hacker News' [Active Threads](https://news.ycombinator.com/active)
+
 **Reader Mode**
 
 - GitHub issues now render as a comment thread, with authors, dates and `OP`/`maintainer` labels

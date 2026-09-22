@@ -35,6 +35,10 @@ func (instantMockService) FetchItems(_ context.Context, _ int, _ string) ([]*hn.
 	return testItems(), nil
 }
 
+func (instantMockService) FetchActiveItems(_ context.Context, _ int) ([]*hn.Story, error) {
+	return testItems(), nil
+}
+
 func (instantMockService) FetchComments(_ context.Context, _ int, _ func(int, int)) (*hn.CommentTree, error) {
 	return &hn.CommentTree{ID: 1, Title: "test", CommentsCount: 5}, nil
 }
@@ -53,6 +57,27 @@ func (instantMockService) SearchItems(_ context.Context, req hn.SearchRequest) (
 	}
 
 	return hits, nil
+}
+
+// recordingService notes which fetch each category asked for, so a category
+// served off the Hacker News site can be told apart from a Firebase feed.
+type recordingService struct {
+	instantMockService
+
+	activeFetches int
+	feedFetches   []string
+}
+
+func (s *recordingService) FetchItems(ctx context.Context, itemsToFetch int, category string) ([]*hn.Story, error) {
+	s.feedFetches = append(s.feedFetches, category)
+
+	return s.instantMockService.FetchItems(ctx, itemsToFetch, category)
+}
+
+func (s *recordingService) FetchActiveItems(ctx context.Context, itemsToFetch int) ([]*hn.Story, error) {
+	s.activeFetches++
+
+	return s.instantMockService.FetchActiveItems(ctx, itemsToFetch)
 }
 
 func testItems() []*hn.Story {
@@ -733,6 +758,40 @@ func TestStartup_OnEmptyFavorites(t *testing.T) {
 	assert.Equal(t, categories.Favorites, m.cat.CurrentCategory())
 	assert.Empty(t, m.list.VisibleItems())
 	assert.Equal(t, 0, m.list.Cursor(), "the empty favorites tab must not drive the cursor negative")
+}
+
+// Active carries no feed endpoint, so it fetches through its own service
+// call while the Firebase categories keep naming theirs. Both arrive on the
+// same StoriesReady path.
+func TestActiveCategory_FetchesOffTheWebsite(t *testing.T) {
+	config := settings.Default()
+	cat, err := categories.New("top,active")
+	require.NoError(t, err)
+
+	fav, err := favorites.New(filepath.Join(t.TempDir(), "favorites.toml"), filepath.Join(t.TempDir(), "favorites.json"))
+	require.NoError(t, err)
+
+	service := &recordingService{}
+
+	m := newModel(config, cat, fav, 80, 24, service, history.NewMockHistory())
+	m, _ = m.Update(tea.WindowSizeMsg{Width: 80, Height: 24})
+
+	tok := fetchToken{ctx: context.Background(), id: m.fetch.currentID()}
+
+	msg := m.fetchCategory(tok, categories.Active, 1, 0)()
+	stories, ok := msg.(message.StoriesReady)
+	require.True(t, ok)
+	require.NoError(t, stories.Err)
+
+	assert.Equal(t, categories.Active, stories.Category)
+	assert.NotEmpty(t, stories.Stories)
+	assert.Equal(t, 1, service.activeFetches)
+	assert.Empty(t, service.feedFetches, "active names no feed, so none may be fetched")
+
+	_ = m.fetchCategory(tok, categories.Top, 0, 0)()
+
+	assert.Equal(t, []string{"topstories"}, service.feedFetches)
+	assert.Equal(t, 1, service.activeFetches)
 }
 
 func TestFavorites_HeaderAlwaysShown(t *testing.T) {
