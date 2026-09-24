@@ -47,3 +47,16 @@ func TestCommentColumnWidthSharesOneRightEdge(t *testing.T) {
 	assert.Equal(t, CommentContentWidth(50), CommentColumnWidth(50, 70), "narrow panes clamp to the content span")
 	assert.Equal(t, 1, CommentColumnWidth(1, 70), "degenerate panes floor at one column")
 }
+
+func TestCommentLeftMargin(t *testing.T) {
+	t.Parallel()
+
+	assert.Equal(t, CommentSectionLeftMargin, CommentLeftMargin(140, 70, false),
+		"centering off keeps the fixed margin")
+	assert.Equal(t, 35, CommentLeftMargin(140, 70, true),
+		"free space is split evenly around the column")
+	assert.Equal(t, 35, CommentLeftMargin(141, 70, true),
+		"odd slack puts the extra column on the right")
+	assert.Equal(t, CommentSectionLeftMargin, CommentLeftMargin(80, 77, true),
+		"too little slack falls back to the fixed margin")
+}

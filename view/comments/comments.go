@@ -58,7 +58,7 @@ type Model struct {
 
 const scrollPadding = 2 // breathing room above/below when scrolling to a comment
 
-func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, enableNerdFonts bool, width, height int) *Model {
+func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, enableNerdFonts, center bool, width, height int) *Model {
 	km := defaultKeyMap()
 
 	// Viewport handles j/k in scroll mode (toggled off in navigate mode).
@@ -67,7 +67,6 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 	flat := flatten(thread)
 
 	newComments := comment.NewCommentsCount(thread, lastVisited)
-	clampedWidth := layout.CommentColumnWidth(width, commentWidth)
 
 	sf := storyFields{
 		URL:           thread.URL,
@@ -80,21 +79,20 @@ func New(thread *comment.Thread, lastVisited int64, commentWidth, indent int, en
 	}
 
 	rootBlocks := comment.Parse(thread.Content)
-	hdr := buildCommentHeader(sf, rootBlocks, newComments, enableNerdFonts, clampedWidth) + "\n"
-
 	rc := renderContext{
-		header:          hdr,
 		rootBlocks:      rootBlocks,
 		originalPoster:  thread.Author,
 		firstCommentID:  comment.FirstCommentID(thread.Comments),
 		commentWidth:    commentWidth,
 		indent:          indent,
 		enableNerdFonts: enableNerdFonts,
+		center:          center,
 		paneWidth:       width,
 		lastVisited:     lastVisited,
 		story:           sf,
 		newComments:     newComments,
 	}
+	rc.header = buildCommentHeader(rc) + "\n"
 
 	md := 0
 	for _, fc := range flat {
@@ -209,8 +207,7 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 			return nil
 		}
 
-		cw := layout.CommentColumnWidth(msg.Width, m.rc.commentWidth)
-		m.rc.header = buildCommentHeader(m.rc.story, m.rc.rootBlocks, m.rc.newComments, m.rc.enableNerdFonts, cw) + "\n"
+		m.rc.header = buildCommentHeader(m.rc) + "\n"
 
 		m.rebuildTitleHeader()
 		m.prerendered = prerenderComments(m.rc, m.flat)
@@ -234,15 +231,16 @@ func (m *Model) Update(msg tea.Msg) tea.Cmd {
 func (m *Model) View() string {
 	if m.showHelp {
 		contentWidth := layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
+		leftMargin := m.rc.leftMargin()
 		content := help.FitToHeight(
-			help.CommentHelpScreen(layout.CommentSectionLeftMargin, contentWidth, m.rc.enableNerdFonts, m.keymap.NextStory.Enabled()),
+			help.CommentHelpScreen(leftMargin, contentWidth, m.rc.enableNerdFonts, m.keymap.NextStory.Enabled()),
 			m.Viewport.Height(),
 		)
 
-		return header.HelpHeader("Comment Section", m.rc.paneWidth) + "\n" +
+		return header.HelpHeader("Comment Section", leftMargin, m.rc.paneWidth) + "\n" +
 			content + "\n" +
 			pane.FooterSeparator(m.rc.paneWidth) + "\n" +
-			help.Footer(layout.CommentSectionLeftMargin, contentWidth, m.rc.enableNerdFonts)
+			help.Footer(leftMargin, contentWidth, m.rc.enableNerdFonts)
 	}
 
 	content := scrollbar.Attach(m.DecorateView(m.Viewport.View()), m.rc.paneWidth, m.ContentLines, m.Viewport.Height(), m.Viewport.YOffset())
@@ -265,21 +263,23 @@ func (m *Model) linkURLRow() string {
 
 	commentWidth := layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
 
-	return pane.LinkURLRow(m.rc.paneWidth, layout.CommentSectionLeftMargin, commentWidth,
+	return pane.LinkURLRow(m.rc.paneWidth, m.rc.leftMargin(), commentWidth,
 		m.links[m.currentLink].URL, m.termFG, m.termBG)
 }
 
 func (m *Model) rebuildTitleHeader() {
+	leftMargin := m.rc.leftMargin()
+
 	if len(m.linkTrail) > 0 {
-		rightEdge := layout.CommentSectionLeftMargin + layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
+		rightEdge := leftMargin + layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
 		badge := pane.DepthBadge(m.linkTrail)
 
-		m.titleHeader = pane.TitleHeaderWithBadge(m.title, badge, m.rc.enableNerdFonts, layout.CommentSectionLeftMargin, rightEdge, m.rc.paneWidth)
+		m.titleHeader = pane.TitleHeaderWithBadge(m.title, badge, m.rc.enableNerdFonts, leftMargin, rightEdge, m.rc.paneWidth)
 
 		return
 	}
 
-	m.titleHeader = pane.TitleHeader(m.title, m.rc.enableNerdFonts, layout.CommentSectionLeftMargin, m.rc.paneWidth)
+	m.titleHeader = pane.TitleHeader(m.title, m.rc.enableNerdFonts, leftMargin, m.rc.paneWidth)
 }
 
 // updateViewport rebuilds the viewport content from the current fold state:
@@ -431,15 +431,17 @@ func (m *Model) openCommentsInBrowser() tea.Cmd {
 }
 
 func (m *Model) modeIndicator() string {
+	leftMargin := m.rc.leftMargin()
+
 	if m.linkMode {
 		// The counter takes over the depth gauge's slot on the right, like
 		// the search counter does; the URL rides the separator above.
 		commentWidth := layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
-		totalWidth := layout.CommentSectionLeftMargin + commentWidth
+		totalWidth := leftMargin + commentWidth
 
 		viewable := m.currentLink < 0 || m.links[m.currentLink].Viewable
 		result := layout.FooterSections(totalWidth,
-			pane.LinkSelectorLabel(viewable, m.rc.enableNerdFonts),
+			pane.LinkSelectorLabel(leftMargin, viewable, m.rc.enableNerdFonts),
 			pane.MatchCountLabel(m.currentLink, len(m.links)))
 
 		return xansi.Truncate(result, m.rc.paneWidth, "")
@@ -459,8 +461,8 @@ func (m *Model) modeIndicator() string {
 		}
 
 		commentWidth := layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
-		totalWidth := layout.CommentSectionLeftMargin + commentWidth
-		result := layout.FooterSections(totalWidth, "  "+search, counter)
+		totalWidth := leftMargin + commentWidth
+		result := layout.FooterSections(totalWidth, strings.Repeat(" ", leftMargin)+search, counter)
 
 		return xansi.Truncate(result, m.rc.paneWidth, "")
 	}
@@ -500,7 +502,7 @@ func (m *Model) modeIndicator() string {
 	// into the gap).
 	sep := strings.Repeat(" ", 3-xansi.StringWidth(icon))
 
-	label := "  " + icon + sep + style.Faint(text)
+	label := strings.Repeat(" ", leftMargin) + icon + sep + style.Faint(text)
 
 	di := ""
 	if m.mode == modeRead {
@@ -512,7 +514,7 @@ func (m *Model) modeIndicator() string {
 	// same edge the meta block and the separator rule share. The comment
 	// counts live in the meta block's opening rule, not here.
 	commentWidth := layout.CommentColumnWidth(m.rc.paneWidth, m.rc.commentWidth)
-	totalWidth := layout.CommentSectionLeftMargin + commentWidth
+	totalWidth := leftMargin + commentWidth
 
 	result := layout.FooterSections(totalWidth, label, di)
 
@@ -548,21 +550,23 @@ func (m *Model) rebuildContent() {
 	m.updateViewport()
 }
 
-func buildCommentHeader(s storyFields, rootBlocks []comment.Block, newComments int, enableNerdFonts bool, width int) string {
+func buildCommentHeader(rc renderContext) string {
+	width := layout.CommentColumnWidth(rc.paneWidth, rc.commentWidth)
+
 	block := meta.CommentSection(meta.Data{
-		URL:           s.URL,
-		Domain:        s.Domain,
-		Author:        s.Author,
-		TimeAgo:       s.TimeAgo,
-		ID:            s.ID,
-		Points:        s.Points,
-		CommentsCount: s.CommentsCount,
-		NewComments:   newComments,
-		RootComment:   renderRootComment(rootBlocks, meta.ContentWidth(width), enableNerdFonts),
-		NerdFonts:     enableNerdFonts,
+		URL:           rc.story.URL,
+		Domain:        rc.story.Domain,
+		Author:        rc.story.Author,
+		TimeAgo:       rc.story.TimeAgo,
+		ID:            rc.story.ID,
+		Points:        rc.story.Points,
+		CommentsCount: rc.story.CommentsCount,
+		NewComments:   rc.newComments,
+		RootComment:   renderRootComment(rc.rootBlocks, meta.ContentWidth(width), rc.enableNerdFonts),
+		NerdFonts:     rc.enableNerdFonts,
 	}).Render(width)
 
-	return style.PrefixLines(block, strings.Repeat(" ", layout.CommentSectionLeftMargin))
+	return style.PrefixLines(block, strings.Repeat(" ", rc.leftMargin()))
 }
 
 // renderRootComment renders the story's self-text for the meta block. A

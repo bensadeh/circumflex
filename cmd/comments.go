@@ -39,7 +39,7 @@ func commentsCmd() *cobra.Command {
 			shell.MakePageView = standalonePages(config)
 
 			return comments.Run(comment.ToThread(tree), time.Now().Unix(),
-				config.CommentWidth, config.Indent, config.EnableNerdFonts, shell)
+				config.CommentWidth, config.Indent, config.EnableNerdFonts, config.CenterComments, shell)
 		},
 	}
 }
