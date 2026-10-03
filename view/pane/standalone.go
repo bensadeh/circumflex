@@ -403,7 +403,7 @@ func RunStandalone(title string, makeView func(width, height int) View, opts Sta
 		makePageView:   opts.MakePageView,
 		makeThreadView: opts.MakeThreadView,
 		fetchThread:    opts.FetchThread,
-	})
+	}, tea.WithFPS(120))
 
 	restoreTitle := SaveWindowTitle()
 	settleProgress := WireProgress(p)

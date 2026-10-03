@@ -5,6 +5,7 @@
 **Improvements**
 
 - Character width tables are now filled a range at a time instead of one character at a time
+- The screen now redraws at up to 120 frames per second instead of 60
 
 **Reader Mode**
 

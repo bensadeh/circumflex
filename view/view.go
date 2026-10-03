@@ -73,7 +73,7 @@ func Run(config *settings.Config, cat *categories.Categories) error {
 	service := provider.NewService(config.DebugMode, config.DebugFallible)
 	m := newModel(config, cat, fav, 0, 0, service, hist)
 
-	p := tea.NewProgram(teaModel{m: m})
+	p := tea.NewProgram(teaModel{m: m}, tea.WithFPS(120))
 
 	restoreTitle := pane.SaveWindowTitle()
 	settleProgress := pane.WireProgress(p)
