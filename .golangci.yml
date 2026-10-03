@@ -52,8 +52,10 @@ linters:
         - switch
         - map
       # External enum-like types with hundreds of constants (HTML tags, node
-      # types) — listing every case is impossible; internal enums stay checked.
-      ignore-enum-types: "html\\.NodeType|atom\\.Atom|chroma/v\\d+\\.TokenType"
+      # types) — listing every case is impossible — or where handlers only
+      # care about a few members (mouse buttons: just the wheel); internal
+      # enums stay checked.
+      ignore-enum-types: "html\\.NodeType|atom\\.Atom|chroma/v\\d+\\.TokenType|ansi\\.MouseButton"
 
     gocognit:
       min-complexity: 32  # ConvertToMarkdownBlocks is a parser — inherently complex

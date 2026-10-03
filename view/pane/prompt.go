@@ -100,14 +100,14 @@ func ExtractPromptCursor(frame string) (x, y int, cleaned string, ok bool) {
 	lastNL := strings.LastIndexByte(frame, '\n')
 	lastLine := frame[lastNL+1:]
 
-	idx := strings.LastIndex(lastLine, promptCursorMarker)
-	if idx < 0 {
+	before, after, ok := strings.CutLast(lastLine, promptCursorMarker)
+	if !ok {
 		return 0, 0, frame, false
 	}
 
-	x = xansi.StringWidth(lastLine[:idx])
+	x = xansi.StringWidth(before)
 	y = strings.Count(frame, "\n")
-	cleaned = frame[:lastNL+1] + lastLine[:idx] + " " + lastLine[idx+len(promptCursorMarker):]
+	cleaned = frame[:lastNL+1] + before + " " + after
 
 	return x, y, cleaned, true
 }
