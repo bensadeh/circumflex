@@ -6,9 +6,9 @@ import (
 	nurl "net/url"
 	"strings"
 
-	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark/extension"
-	htmlrenderer "github.com/yuin/goldmark/renderer/html"
+	"github.com/yuin/goldmark/v2/extension"
+	"github.com/yuin/goldmark/v2/parser"
+	htmlrenderer "github.com/yuin/goldmark/v2/renderer/html"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 )
@@ -52,13 +52,14 @@ func parseMarkdownBlocks(body []byte, base *nurl.URL) ([]block, string, error) {
 // markdownToBlocks is the conversion alone, shared with GitHub comment
 // bodies, whose leading headings are content rather than a document title.
 func markdownToBlocks(body []byte, base *nurl.URL) ([]block, error) {
-	md := goldmark.New(
-		goldmark.WithExtensions(extension.GFM, extension.Footnote),
-		goldmark.WithRendererOptions(htmlrenderer.WithUnsafe()),
+	p := parser.New(parser.WithExtensions(extension.GFMParser, extension.FootnoteParser))
+	r := htmlrenderer.New(
+		htmlrenderer.WithUnsafe(),
+		htmlrenderer.WithExtensions(extension.GFMHTMLRenderer, extension.FootnoteHTMLRenderer),
 	)
 
 	var buf bytes.Buffer
-	if err := md.Convert(body, &buf); err != nil {
+	if err := r.Render(&buf, body, p.Parse(body)); err != nil {
 		return nil, fmt.Errorf("could not parse markdown from %s: %w", base.Host, err)
 	}
 
