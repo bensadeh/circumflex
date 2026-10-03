@@ -2,6 +2,10 @@
 
 ## 5.1 (Unreleased)
 
+**Improvements**
+
+- Character width tables are now filled a range at a time instead of one character at a time
+
 **Reader Mode**
 
 - GitHub issues now render as a comment thread, with authors, dates and `OP`/`maintainer` labels
