@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.1 (Unreleased)
+## 5.1
 
 **Improvements**
 
