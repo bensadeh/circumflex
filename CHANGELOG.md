@@ -1,5 +1,7 @@
 # Changelog
 
+## 5.2 (Unreleased)
+
 ## 5.1
 
 **Improvements**
@@ -15,7 +17,7 @@
 
 **Design**
 
-- Links to other Hacker News discussions are now yellow 
+- Links to other Hacker News discussions are now yellow
 
 ## 5.0
 
