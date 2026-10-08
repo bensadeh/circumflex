@@ -47,3 +47,34 @@ func TestCommentColumnWidthSharesOneRightEdge(t *testing.T) {
 	assert.Equal(t, CommentContentWidth(50), CommentColumnWidth(50, 70), "narrow panes clamp to the content span")
 	assert.Equal(t, 1, CommentColumnWidth(1, 70), "degenerate panes floor at one column")
 }
+
+func TestCommentLeftMargin(t *testing.T) {
+	t.Parallel()
+
+	assert.Equal(t, CommentSectionLeftMargin, CommentLeftMargin(140, 70, false),
+		"centering off keeps the fixed margin")
+	assert.Equal(t, 35, CommentLeftMargin(140, 70, true),
+		"free space is split evenly around the column")
+	assert.Equal(t, 35, CommentLeftMargin(141, 70, true),
+		"odd slack puts the extra column on the right")
+	assert.Equal(t, CommentSectionLeftMargin, CommentLeftMargin(80, 77, true),
+		"too little slack falls back to the fixed margin")
+}
+
+// Centering moves the column, it never resizes it: the span the comment body
+// gets (content span measured from the centered margin, clamped to the
+// configured width) has to stay equal to CommentColumnWidth — the edge the
+// meta block and the footer indicators share — at every geometry.
+func TestCommentColumnWidthUnaffectedByCentering(t *testing.T) {
+	t.Parallel()
+
+	for paneWidth := 1; paneWidth <= 200; paneWidth++ {
+		for configured := 1; configured <= 200; configured++ {
+			margin := CommentLeftMargin(paneWidth, configured, true)
+			body := min(CommentContentWidthFrom(paneWidth, margin), configured)
+
+			assert.Equal(t, CommentColumnWidth(paneWidth, configured), body,
+				"pane %d, configured %d", paneWidth, configured)
+		}
+	}
+}

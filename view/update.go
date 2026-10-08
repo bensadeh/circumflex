@@ -323,7 +323,7 @@ func (m *model) handleCommentTreeDataReady(msg message.CommentTreeDataReady) (*m
 		return m, tea.Batch(cmds...)
 	}
 
-	c := comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, m.detailWidth(), m.height)
+	c := comments.New(msg.Thread, msg.LastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, m.config.CenterComments, m.detailWidth(), m.height)
 	c.SetTermColors(m.termFG, m.termBG)
 
 	m.detail = c
@@ -454,7 +454,7 @@ func (m *model) handleRestorePage(msg message.RestorePage) (*model, tea.Cmd) {
 // links — followed forward or restored walking back — with the trail behind
 // it attached.
 func (m *model) newLinkedComments(thread *comment.Thread, lastVisited int64, trail []message.TrailEntry) *comments.Model {
-	c := comments.New(thread, lastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, m.detailWidth(), m.height)
+	c := comments.New(thread, lastVisited, m.config.CommentWidth, m.config.Indent, m.config.EnableNerdFonts, m.config.CenterComments, m.detailWidth(), m.height)
 	c.SetTermColors(m.termFG, m.termBG)
 	c.SetLinkTrail(trail)
 

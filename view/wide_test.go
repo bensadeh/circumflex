@@ -245,7 +245,7 @@ func TestWideView_LoadingShowsMetaBlockPlaceholder(t *testing.T) {
 	require.True(t, m.fetch.inFlight())
 
 	loading := m.detailPaneView()
-	loadingBox := metaBoxLines(t, loading)
+	loadingBox := metaBoxLines(t, loading, layout.CommentSectionLeftMargin)
 	assert.Contains(t, loadingBox[len(loadingBox)-1], "\x1b[2m", "the placeholder's closing rule must render dimmed")
 
 	frameRunes := strings.NewReplacer("╭", "", "╮", "", "╰", "", "╯", "", "│", "", "─", "", " ", "")
@@ -259,7 +259,7 @@ func TestWideView_LoadingShowsMetaBlockPlaceholder(t *testing.T) {
 	})
 	m, _ = m.Update(message.CommentTreeDataReady{Thread: thread, FetchID: m.fetch.currentID()})
 
-	loadedBox := metaBoxLines(t, m.detailPaneView())
+	loadedBox := metaBoxLines(t, m.detailPaneView(), layout.CommentSectionLeftMargin)
 	assert.Len(t, loadingBox, len(loadedBox), "placeholder must span the same rows as the loaded meta block")
 }
 
@@ -271,13 +271,63 @@ func TestWideView_ErrorViewKeepsMetaBlockPlaceholder(t *testing.T) {
 	m, _ = m.Update(keyMsg("enter"))
 	require.True(t, m.fetch.inFlight())
 
-	loadingBox := metaBoxLines(t, m.detailPaneView())
+	loadingBox := metaBoxLines(t, m.detailPaneView(), layout.CommentSectionLeftMargin)
 
 	m, _ = m.Update(message.CommentTreeDataReady{Err: errors.New("server returned status 403"), FetchID: m.fetch.currentID()})
 	require.Equal(t, screenComments, m.screen)
 
-	assert.Equal(t, loadingBox, metaBoxLines(t, m.detailPaneView()),
+	assert.Equal(t, loadingBox, metaBoxLines(t, m.detailPaneView(), layout.CommentSectionLeftMargin),
 		"the placeholder must not move or change when the load fails")
+}
+
+func TestWideView_CenteredCommentPlaceholdersStayAligned(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		err  bool
+	}{
+		{name: "success"},
+		{name: "error", err: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			m := newWideTestModel(t)
+			m.config.CenterComments = true
+			margin := m.commentMargin(m.detailWidth())
+
+			m, _ = m.Update(keyMsg("enter"))
+			loading := m.detailPaneView()
+			loadingBox := metaBoxLines(t, loading, margin)
+			assert.Equal(t, margin, leadingSpaceColumns(strings.Split(xansi.Strip(loading), "\n")[0]),
+				"loading title starts at the centered comment margin")
+			assert.Equal(t, margin, leadingSpaceColumns(xansi.Strip(loadingBox[0])),
+				"loading meta block starts at the centered comment margin")
+
+			result := message.CommentTreeDataReady{FetchID: m.fetch.currentID()}
+			if tc.err {
+				result.Err = errors.New("server returned status 403")
+			} else {
+				result.Thread = comment.ToThread(&hn.CommentTree{
+					ID: 1, Title: "First item", CommentsCount: 5,
+					URL: "https://example.com/story", Domain: "example.com",
+				})
+			}
+
+			m, _ = m.Update(result)
+
+			after := m.detailPaneView()
+			afterBox := metaBoxLines(t, after, margin)
+
+			if tc.err {
+				assert.Equal(t, loadingBox, afterBox, "error view keeps the centered meta placeholder in place")
+			} else {
+				assert.Len(t, loadingBox, len(afterBox), "loading and loaded meta blocks keep the same height")
+			}
+
+			assert.Equal(t, margin, leadingSpaceColumns(strings.Split(xansi.Strip(after), "\n")[0]),
+				"the title starts at the centered comment margin")
+			assert.Equal(t, margin, leadingSpaceColumns(xansi.Strip(afterBox[0])),
+				"the meta block starts at the centered comment margin")
+		})
+	}
 }
 
 // metaBoxLines returns the view's run of meta block rows: everything between
@@ -285,7 +335,7 @@ func TestWideView_ErrorViewKeepsMetaBlockPlaceholder(t *testing.T) {
 // directly under the header in the loading, loaded, and error panes alike,
 // so the slice is the block's spot whether it holds the skeleton or the
 // loaded content.
-func metaBoxLines(t *testing.T, view string) []string {
+func metaBoxLines(t *testing.T, view string, leftMargin int) []string {
 	t.Helper()
 
 	lines := strings.Split(view, "\n")
@@ -295,13 +345,17 @@ func metaBoxLines(t *testing.T, view string) []string {
 	})
 	require.GreaterOrEqual(t, top, 0, "no pane header rule in view")
 
-	rulePrefix := strings.Repeat(" ", layout.CommentSectionLeftMargin) + "╰"
+	rulePrefix := strings.Repeat(" ", leftMargin) + "╰"
 	bottom := slices.IndexFunc(lines, func(l string) bool {
 		return strings.HasPrefix(xansi.Strip(l), rulePrefix)
 	})
 	require.Greater(t, bottom, top, "no meta block closing rule in view")
 
 	return lines[top+1 : bottom+1]
+}
+
+func leadingSpaceColumns(line string) int {
+	return len(line) - len(strings.TrimLeft(line, " "))
 }
 
 // A story load that fails swaps the detail pane to an error view — not a

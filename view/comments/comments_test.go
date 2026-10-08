@@ -24,7 +24,7 @@ func TestBackKeysReturnDetailQuit(t *testing.T) {
 	}
 
 	for _, key := range keys {
-		m := New(testThread(), 0, 80, 1, false, 120, 30)
+		m := New(testThread(), 0, 80, 1, false, false, 120, 30)
 
 		cmd := m.handleKeyPress(key)
 		require.NotNil(t, cmd)
@@ -222,11 +222,11 @@ func testThread() *comment.Thread {
 func newTestModel(t *testing.T, thread *comment.Thread) *Model {
 	t.Helper()
 
-	return New(thread, 0, 80, 1, false, 120, 200)
+	return New(thread, 0, 80, 1, false, false, 120, 200)
 }
 
 func TestModeIndicator_NerdFontIcons(t *testing.T) {
-	m := New(testThread(), 0, 80, 1, true, 120, 200)
+	m := New(testThread(), 0, 80, 1, true, false, 120, 200)
 
 	assert.Contains(t, m.modeIndicator(), nerdfonts.CommentSection+"  ", "read mode shows the comment-section glyph, with extra room after the wide glyph")
 
@@ -547,7 +547,7 @@ func deepThread() *comment.Thread {
 func newScrollableModel(t *testing.T) *Model {
 	t.Helper()
 
-	return New(deepThread(), 0, 80, 1, false, 120, 30)
+	return New(deepThread(), 0, 80, 1, false, false, 120, 30)
 }
 
 func TestNavigateMode_PageKeysScrollAndSnapFocus(t *testing.T) {
@@ -871,6 +871,84 @@ func TestMetaBlockAlignsWithCommentColumn(t *testing.T) {
 	assert.Equal(t, sepWidth, blockEdge, "the block must share the separator's right edge")
 }
 
+// Centering shifts the whole comment column as a unit: the meta block, the
+// top-level author headers, the title row and the footer mode label all
+// start at the centered margin, while the column's width — and therefore its
+// right edge — is untouched.
+func TestCenterComments_ShiftsEveryColumn(t *testing.T) {
+	const (
+		paneWidth    = 120
+		commentWidth = 80
+	)
+
+	m := New(testThread(), 0, commentWidth, 1, false, true, paneWidth, 200)
+
+	want := (paneWidth - commentWidth) / 2
+	require.Equal(t, want, m.rc.leftMargin(), "the slack is split evenly around the column")
+
+	openCol, authorCol := -1, -1
+	blockEdge, sepWidth := 0, 0
+
+	for line := range strings.SplitSeq(m.Viewport.View(), "\n") {
+		s := strings.TrimRight(xansi.Strip(line), " ")
+		trimmed := strings.TrimLeft(s, " ")
+
+		switch {
+		case openCol == -1 && strings.HasPrefix(trimmed, "╭"):
+			openCol = len(s) - len(trimmed)
+		case strings.HasPrefix(trimmed, "╰"):
+			blockEdge = max(blockEdge, xansi.StringWidth(s))
+		case strings.HasPrefix(trimmed, "▁"):
+			sepWidth = xansi.StringWidth(s)
+		case authorCol == -1 && strings.HasPrefix(trimmed, "alice"):
+			authorCol = len(s) - len(trimmed)
+		}
+	}
+
+	require.NotEqual(t, -1, openCol, "no meta block opening rule in the view")
+	require.NotEqual(t, -1, authorCol, "no top-level comment header in the view")
+	require.NotZero(t, sepWidth, "no separator rule in the view")
+
+	assert.Equal(t, want, openCol, "the meta block opens at the centered margin")
+	assert.Equal(t, want, authorCol, "top-level authors start at the centered margin")
+	assert.Equal(t, sepWidth, blockEdge, "centering shifts the column without resizing it")
+
+	row, _, _ := strings.Cut(xansi.Strip(m.titleHeader), "\n")
+	assert.Equal(t, want, len(row)-len(strings.TrimLeft(row, " ")), "the title starts at the centered margin")
+
+	label := xansi.Strip(m.modeIndicator())
+	assert.Equal(t, want, len(label)-len(strings.TrimLeft(label, " ")), "the mode label starts at the centered margin")
+}
+
+// The help screen moves as a unit: the title row, the key panel and the
+// footer all sit at the comment column's left margin, centered or not — the
+// title used to stay behind at the fixed margin.
+func TestCenterComments_HelpScreenSharesMargin(t *testing.T) {
+	const (
+		paneWidth    = 160
+		commentWidth = 80
+	)
+
+	for _, center := range []bool{false, true} {
+		m := New(testThread(), 0, commentWidth, 1, false, center, paneWidth, 200)
+		m.showHelp = true
+
+		lines := strings.Split(m.View(), "\n")
+		require.GreaterOrEqual(t, len(lines), 3, "header, rule and panel")
+
+		column := func(line string) int {
+			s := strings.TrimRight(xansi.Strip(line), " ")
+
+			return len(s) - len(strings.TrimLeft(s, " "))
+		}
+
+		want := m.rc.leftMargin()
+		assert.Equal(t, want, column(lines[0]), "the title sits at the comment margin (center=%v)", center)
+		assert.Equal(t, want, column(lines[2]), "the key panel sits at the comment margin (center=%v)", center)
+		assert.Equal(t, want, column(lines[len(lines)-1]), "the footer sits at the comment margin (center=%v)", center)
+	}
+}
+
 // Search match cells are computed on the plain header while focusOverrides
 // swaps in the focused variant at display time: the variants must strip to
 // identical plain text or highlights shift cells on the focused row.
@@ -878,7 +956,7 @@ func TestPrerender_FocusedHeaderKeepsPlainText(t *testing.T) {
 	t.Parallel()
 
 	for _, nerd := range []bool{false, true} {
-		m := New(benchThread(), 0, 80, 1, nerd, 130, 45)
+		m := New(benchThread(), 0, 80, 1, nerd, false, 130, 45)
 
 		for i := range m.prerendered {
 			rc := &m.prerendered[i]
