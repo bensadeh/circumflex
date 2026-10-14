@@ -131,8 +131,8 @@ func assemble(title, content string, width int) string {
 	return row + "\n" + Underline(width)
 }
 
-func HelpHeader(title string, width int) string {
-	padded := strings.Repeat(" ", layout.HeaderLeftMargin) + lipgloss.NewStyle().Bold(true).Render(title)
+func HelpHeader(title string, leftMargin, width int) string {
+	padded := strings.Repeat(" ", leftMargin) + lipgloss.NewStyle().Bold(true).Render(title)
 
 	return xansi.Truncate(padded, width, "") + "\n" + Underline(width)
 }

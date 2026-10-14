@@ -8,9 +8,9 @@ import (
 	"github.com/bensadeh/circumflex/style"
 )
 
-// Main-menu help geometry: the same left margin as the comment section and
-// reader views, and the default comment column's width, so the main help
-// sits exactly where the detail views' help screens sit. The reader and
+// Main-menu help geometry: the comment section's default (uncentered) left
+// margin and the default comment column's width, so the main help sits where
+// the detail views' help screens sit while centering is off. The reader and
 // comment help screens inherit their view's live geometry instead.
 const (
 	panelOuterWidth = 70

@@ -2,6 +2,10 @@
 
 ## 5.2 (Unreleased)
 
+**Comment Section**
+
+- The comment section can now be centered in the pane with `center_comments` in `config.toml` or the `--center-comments` flag
+
 ## 5.1
 
 **Improvements**

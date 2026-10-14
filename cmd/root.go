@@ -29,6 +29,7 @@ var (
 	commentWidth       int
 	articleWidth       int
 	indent             int
+	centerComments     bool
 	noHistory          bool
 	debugMode          bool
 	debugFallible      bool
@@ -110,6 +111,8 @@ func configureFlags(rootCmd *cobra.Command) {
 		"set the article width in reader mode")
 	rootCmd.PersistentFlags().IntVar(&indent, "indent", settings.Default().Indent,
 		"set the comment section indent size")
+	rootCmd.PersistentFlags().BoolVar(&centerComments, "center-comments", false,
+		"center the comment section in the pane")
 	rootCmd.PersistentFlags().BoolVarP(&nerdFontFlag, "nerdfonts", "n", false,
 		"enable or disable Nerd Fonts")
 	rootCmd.PersistentFlags().StringVar(&graphicsMode, "graphics", "auto",
@@ -161,6 +164,10 @@ func getConfig() (*settings.Config, error) {
 
 	if flagChanged("indent") {
 		config.Indent = settings.ClampIndent(indent)
+	}
+
+	if flagChanged("center-comments") {
+		config.CenterComments = centerComments
 	}
 
 	if flagChanged("no-history") {
@@ -265,7 +272,7 @@ func standaloneThreads(config *settings.Config, service hn.Service) pane.Standal
 			return comment.ToThread(tree), nil
 		},
 		MakeThreadView: func(thread *comment.Thread, lastVisited int64, trail []message.TrailEntry, width, height int) pane.View {
-			m := comments.New(thread, lastVisited, config.CommentWidth, config.Indent, config.EnableNerdFonts, width, height)
+			m := comments.New(thread, lastVisited, config.CommentWidth, config.Indent, config.EnableNerdFonts, config.CenterComments, width, height)
 			m.DisableAppKeys()
 			m.SetLinkTrail(trail)
 

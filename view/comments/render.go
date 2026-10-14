@@ -20,10 +20,15 @@ type renderContext struct {
 	commentWidth    int
 	indent          int
 	enableNerdFonts bool
+	center          bool
 	paneWidth       int
 	lastVisited     int64
 	story           storyFields // scalar fields needed for header rebuild on resize
 	newComments     int
+}
+
+func (rc renderContext) leftMargin() int {
+	return layout.CommentLeftMargin(rc.paneWidth, rc.commentWidth, rc.center)
 }
 
 // storyFields holds the thread metadata needed to rebuild the comment header
@@ -70,8 +75,12 @@ func splitLines(s string) []string {
 // prerenderComments renders every comment in flat upfront, so that subsequent
 // collapse/expand operations only concatenate pre-rendered strings.
 func prerenderComments(rc renderContext, flat []flatComment) []renderedComment {
-	leftMargin := strings.Repeat(" ", layout.CommentSectionLeftMargin)
-	contentWidth := layout.CommentContentWidth(rc.paneWidth)
+	leftMargin := strings.Repeat(" ", rc.leftMargin())
+
+	// The span from the column's left margin to the scrollbar. Centering
+	// narrows it, so a code box that outruns the comment column caps lower
+	// when the comment section is centered.
+	contentWidth := layout.CommentContentWidthFrom(rc.paneWidth, rc.leftMargin())
 	commentWidth := min(contentWidth, rc.commentWidth)
 
 	rendered := make([]renderedComment, len(flat))
