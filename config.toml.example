@@ -32,7 +32,7 @@
 #show_images_on_open = false
 
 # Categories shown in the header, in order.
-# Available: top, new, ask, show, best, jobs, favorites
+# Available: top, new, ask, show, best, jobs, active, favorites
 #categories = ["top", "best", "ask", "show", "favorites"]
 
 # Pages to fetch per category (1-5).

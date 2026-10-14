@@ -30,6 +30,12 @@ func (Service) FetchItems(ctx context.Context, _ int, category string) ([]*hn.St
 	return items, nil
 }
 
+// FetchActiveItems stands in for the Active Threads page. There is no page to
+// read in debug mode, so it serves the same stories as any other non-top feed.
+func (s Service) FetchActiveItems(ctx context.Context, itemsToFetch int) ([]*hn.Story, error) {
+	return s.FetchItems(ctx, itemsToFetch, "active")
+}
+
 func (Service) SearchItems(ctx context.Context, req hn.SearchRequest) ([]*hn.Story, error) {
 	// Simulate network latency without ignoring cancellation.
 	select {

@@ -244,13 +244,26 @@ func TestSearchMode(t *testing.T) {
 	assert.Equal(t, 1, c.CurrentIndex())
 }
 
+func TestActive_SelectableWithoutEndpoint(t *testing.T) {
+	assert.Contains(t, AvailableNames(), "active")
+
+	c := newTestCategories(t, "top,active")
+	c.Next()
+
+	assert.Equal(t, Active, c.CurrentCategory())
+	assert.True(t, IsActive(c.CurrentCategory()))
+	assert.Empty(t, Endpoint(Active), "active is read off the website, not a Firebase feed")
+	assert.Equal(t, SinglePage, Policy(Active), "the active page lists one screen of stories and does not page")
+}
+
 func TestCount_MatchesNamedCategories(t *testing.T) {
 	assert.Equal(t, int(Favorites)+1, Count())
 }
 
 // TestCategoryTable_Consistent guards future additions: every category must
-// have a name, and only favorites (served locally) and search (query-driven)
-// may omit an endpoint.
+// have a name, and only the categories no Firebase feed backs — favorites
+// (served locally), search (query-driven) and active (read off the Hacker
+// News site) — may omit an endpoint.
 func TestCategoryTable_Consistent(t *testing.T) {
 	for i := range Count() {
 		cat := Category(i)
@@ -258,7 +271,7 @@ func TestCategoryTable_Consistent(t *testing.T) {
 		assert.NotEmptyf(t, Name(cat), "category %d has no name", i)
 		assert.NotEqualf(t, "unknown", Name(cat), "category %d falls through to unknown", i)
 
-		if IsFavorites(cat) || IsSearch(cat) {
+		if IsFavorites(cat) || IsSearch(cat) || IsActive(cat) {
 			assert.Emptyf(t, Endpoint(cat), "category %q is not a Firebase feed and must not have an endpoint", Name(cat))
 		} else {
 			assert.NotEmptyf(t, Endpoint(cat), "fetched category %q must have an endpoint", Name(cat))
