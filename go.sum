@@ -125,8 +125,8 @@ github.com/tdewolff/font v0.0.0-20260913163313-54f98bb59ee6 h1:phNTWRYLLTlPpUgxk
 github.com/tdewolff/font v0.0.0-20260913163313-54f98bb59ee6/go.mod h1:ipESUihcEdgRBhIwTRHmBTOMamccMQrp4iCxfa1aFws=
 github.com/tdewolff/minify/v2 v2.24.18 h1:qtMOU2TkRxsIxhs7RIpemEIspxfKr8R1TwpZicXtxJE=
 github.com/tdewolff/minify/v2 v2.24.18/go.mod h1:HVgQO08FJeDxQx+lcFOVDi1IySi/77WlN/dDckCkZoA=
-github.com/tdewolff/parse/v2 v2.8.16 h1:bLk5svUOQRkW/Y2SJ+DeENSIkZBcTIkq+Atyv5D8feI=
-github.com/tdewolff/parse/v2 v2.8.16/go.mod h1:XdsoSFThlVIRIajAuqz1evNY7bagZS8LBOPA3aVopwQ=
+github.com/tdewolff/parse/v2 v2.8.18 h1:XkWp4Ow06VF8xGWy3ifh/aOK66UsSAs8p1nsFX0Jj3k=
+github.com/tdewolff/parse/v2 v2.8.18/go.mod h1:OemXEPll2+Sn7pQ6xFxC9cEm1wDnNt1hC2q3jIh+OoI=
 github.com/tdewolff/test v1.0.12 h1:7F21DqIajswxuche0geHdrUZRCWE4oko4b7bcmkkrxk=
 github.com/tdewolff/test v1.0.12/go.mod h1:XPuWBzvdUzhCuxWO1ojpXsyzsA5bFoS3tO/Q3kFuTG8=
 github.com/tetratelabs/wazero v1.12.0 h1:DuWcpNu/FzgEXgGBDp8J1Spc+CWOvvtvVyjKlaZopYU=

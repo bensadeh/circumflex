@@ -16,7 +16,7 @@ require (
 	github.com/spf13/pflag v1.0.10
 	github.com/stretchr/testify v1.12.1
 	github.com/tdewolff/canvas v0.0.0-20260923214215-09804640d00c
-	github.com/tdewolff/parse/v2 v2.8.16
+	github.com/tdewolff/parse/v2 v2.8.18
 	github.com/yuin/goldmark/v2 v2.1.6
 	golang.org/x/image v0.47.0
 	golang.org/x/net v0.61.0
