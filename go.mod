@@ -9,15 +9,15 @@ require (
 	codeberg.org/readeck/go-readability/v2 v2.1.3
 	github.com/BurntSushi/toml v1.6.0
 	github.com/alecthomas/chroma/v3 v3.0.0-alpha.5
-	github.com/charmbracelet/ultraviolet v0.0.0-20261008173134-6b8d4baf91b4
+	github.com/charmbracelet/ultraviolet v0.0.0-20261023060817-a45b7c86333f
 	github.com/charmbracelet/x/ansi v0.11.9
 	github.com/gen2brain/avif v0.6.0
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.0.10
 	github.com/stretchr/testify v1.12.1
 	github.com/tdewolff/canvas v0.0.0-20260923214215-09804640d00c
-	github.com/tdewolff/parse/v2 v2.8.16
-	github.com/yuin/goldmark/v2 v2.1.6
+	github.com/tdewolff/parse/v2 v2.8.20
+	github.com/yuin/goldmark/v2 v2.1.8
 	golang.org/x/image v0.47.0
 	golang.org/x/net v0.61.0
 	golang.org/x/sync v0.24.0
@@ -32,7 +32,7 @@ require (
 	github.com/BurntSushi/xgb v0.0.0-20210121224620-deaf085860bc // indirect
 	github.com/BurntSushi/xgbutil v0.0.0-20190907113008-ad855c713046 // indirect
 	github.com/ByteArena/poly2tri-go v0.0.0-20170716161910-d102ad91854f // indirect
-	github.com/andybalholm/brotli v1.2.6 // indirect
+	github.com/andybalholm/brotli v1.2.7 // indirect
 	github.com/andybalholm/cascadia v1.3.5 // indirect
 	github.com/benoitkugler/textlayout v0.3.2 // indirect
 	github.com/benoitkugler/textprocessing v0.0.6 // indirect
@@ -42,8 +42,8 @@ require (
 	github.com/charmbracelet/x/windows v0.2.2 // indirect
 	github.com/clipperhouse/displaywidth v0.11.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
-	github.com/dlclark/regexp2/v2 v2.8.2 // indirect
-	github.com/ebitengine/purego v0.11.1 // indirect
+	github.com/dlclark/regexp2/v2 v2.9.1 // indirect
+	github.com/ebitengine/purego v0.11.2 // indirect
 	github.com/go-fonts/latin-modern v0.3.3 // indirect
 	github.com/go-shiori/dom v0.0.0-20230515143342-73569d674e1c // indirect
 	github.com/go-text/typesetting v0.3.5 // indirect
@@ -52,13 +52,13 @@ require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/itlightning/dateparse v0.2.1 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.1 // indirect
-	github.com/mattn/go-runewidth v0.0.30 // indirect
+	github.com/mattn/go-runewidth v0.0.31 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef // indirect
 	github.com/srwiley/scanx v0.0.0-20190309010443-e94503791388 // indirect
-	github.com/tdewolff/font v0.0.0-20260913163313-54f98bb59ee6 // indirect
-	github.com/tdewolff/minify/v2 v2.24.18 // indirect
+	github.com/tdewolff/font v0.0.0-20261010204837-88a7f6b56918 // indirect
+	github.com/tdewolff/minify/v2 v2.24.23 // indirect
 	github.com/tetratelabs/wazero v1.12.0 // indirect
 	github.com/xo/terminfo v1.2.0 // indirect
 	github.com/yuin/goldmark v1.8.6 // indirect
