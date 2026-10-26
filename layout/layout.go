@@ -90,7 +90,13 @@ func ReaderContentWidth(paneWidth, maxWidth int) int {
 // CommentContentWidth is the columns a comment may span: from the left margin
 // to the scrollbar column. Deeper comments indent within it.
 func CommentContentWidth(paneWidth int) int {
-	return max(1, paneWidth-CommentSectionLeftMargin-scrollbar.Width)
+	return CommentContentWidthFrom(paneWidth, CommentSectionLeftMargin)
+}
+
+// CommentContentWidthFrom is that span measured from any left margin —
+// centering shifts the column right, so the span starts further along.
+func CommentContentWidthFrom(paneWidth, leftMargin int) int {
+	return max(1, paneWidth-leftMargin-scrollbar.Width)
 }
 
 // CommentColumnWidth is the top-level comment text column: the configured
@@ -98,4 +104,18 @@ func CommentContentWidth(paneWidth int) int {
 // it, so all three right edges stay aligned however narrow the pane gets.
 func CommentColumnWidth(paneWidth, configuredWidth int) int {
 	return min(CommentContentWidth(paneWidth), configuredWidth)
+}
+
+// CommentLeftMargin is where the comment column starts: the fixed left
+// margin normally, or the padding that centers the column in the pane when
+// centering is on. Centering never pulls the column left of the default
+// margin, so panes too narrow to center keep today's layout, and on panes
+// four columns or wider the right edge stays clear of the edge scrollbar —
+// narrower panes crowd it exactly as they do with centering off.
+func CommentLeftMargin(paneWidth, configuredWidth int, center bool) int {
+	if !center {
+		return CommentSectionLeftMargin
+	}
+
+	return max(CommentSectionLeftMargin, (paneWidth-CommentColumnWidth(paneWidth, configuredWidth))/2)
 }

@@ -8,6 +8,9 @@
 # Width of the comment section in columns.
 #comment_width = 70
 
+# Center the comment section horizontally in the pane.
+#center_comments = false
+
 # Width of articles in Reader Mode in columns.
 #article_width = 80
 

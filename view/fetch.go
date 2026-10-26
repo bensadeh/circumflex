@@ -237,7 +237,8 @@ func (m *model) showDetailError(err error, target screen) tea.Cmd {
 		// The placeholder renders from target, not m.fetch.target: validation
 		// errors arrive without a fetch, and the view outlives the fetch state.
 		metaBlock := func(paneWidth int) string { return m.placeholderMetaBlock(paneWidth, target) }
-		m.detail = newErrorView(pane.FriendlyError(err), m.list.SelectedItem().Title, m.config.EnableNerdFonts, metaBlock, m.detailWidth(), m.height)
+		margin := func(paneWidth int) int { return m.titleMargin(target, paneWidth) }
+		m.detail = newErrorView(pane.FriendlyError(err), m.list.SelectedItem().Title, m.config.EnableNerdFonts, metaBlock, margin, m.detailWidth(), m.height)
 		m.screen = target
 
 		fetchID := m.fetch.currentID()
