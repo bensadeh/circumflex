@@ -9,6 +9,10 @@
 - Character width tables are now filled a range at a time instead of one character at a time
 - The screen now redraws at up to 120 frames per second instead of 60
 
+**New Features**
+
+- Added an `active` category, showing Hacker News' [Active Threads](https://news.ycombinator.com/active)
+
 **Reader Mode**
 
 - GitHub issues now render as a comment thread, with authors, dates and `OP`/`maintainer` labels
