@@ -4,7 +4,7 @@ go 1.27
 
 require (
 	charm.land/bubbles/v2 v2.2.1
-	charm.land/bubbletea/v2 v2.1.0
+	charm.land/bubbletea/v2 v2.1.1
 	charm.land/lipgloss/v2 v2.0.6
 	codeberg.org/readeck/go-readability/v2 v2.1.3
 	github.com/BurntSushi/toml v1.6.0
@@ -17,9 +17,9 @@ require (
 	github.com/stretchr/testify v1.12.1
 	github.com/tdewolff/canvas v0.0.0-20260923214215-09804640d00c
 	github.com/tdewolff/parse/v2 v2.8.20
-	github.com/yuin/goldmark/v2 v2.1.8
+	github.com/yuin/goldmark/v2 v2.1.11
 	golang.org/x/image v0.47.0
-	golang.org/x/net v0.61.0
+	golang.org/x/net v0.62.0
 	golang.org/x/sync v0.24.0
 	golang.org/x/term v0.47.0
 	resty.dev/v3 v3.0.0-rc.4
