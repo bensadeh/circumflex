@@ -14,6 +14,7 @@ const (
 	Show
 	Best
 	Jobs
+	Active
 	Search
 	Favorites
 )
@@ -46,6 +47,10 @@ var categoryInfo = [...]info{
 	Show:   {name: "show", endpoint: "showstories", fetchPolicy: SinglePage},
 	Best:   {name: "best", endpoint: "beststories", fetchPolicy: MultiPage},
 	Jobs:   {name: "jobs", endpoint: "jobstories", fetchPolicy: SinglePage},
+	// active has no Firebase endpoint: the API exposes no such feed, so its
+	// stories are read off https://news.ycombinator.com/active instead. That
+	// page lists 30 submissions and does not page, hence SinglePage.
+	Active: {name: "active", endpoint: "", fetchPolicy: SinglePage},
 	// search is a mode, not a tab: it is entered with / rather than selected
 	// via --categories, and fetches from Algolia when a query is committed,
 	// so it has no Firebase endpoint. One page: search shows the top results,
@@ -94,6 +99,10 @@ func IsFavorites(cat Category) bool { return cat == Favorites }
 // IsSearch reports whether cat is the search view, which fetches results when
 // a query is committed rather than on tab-switch.
 func IsSearch(cat Category) bool { return cat == Search }
+
+// IsActive reports whether cat is the active view, which is read off the
+// Hacker News website rather than fetched from a Firebase feed.
+func IsActive(cat Category) bool { return cat == Active }
 
 // Default is the default value for the --categories flag.
 const Default = "top,best,ask,show,favorites"
