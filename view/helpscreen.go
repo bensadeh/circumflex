@@ -5,6 +5,7 @@ import (
 
 	"github.com/bensadeh/circumflex/header"
 	"github.com/bensadeh/circumflex/help"
+	"github.com/bensadeh/circumflex/layout"
 
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
@@ -52,7 +53,7 @@ func (m *model) helpView() string {
 	width := m.detailWidth()
 
 	return fmt.Sprintf("%s\n%s\n%s\n%s",
-		header.HelpHeader("Keyboard Shortcuts", width),
+		header.HelpHeader("Keyboard Shortcuts", layout.HeaderLeftMargin, width),
 		m.helpViewport.View(),
 		m.bottomBar(width),
 		help.MainMenuFooter(width, m.config.EnableNerdFonts))

@@ -596,7 +596,7 @@ func (m *Model) View() string {
 			m.Viewport.Height(),
 		)
 
-		return header.HelpHeader("Reader Mode", m.paneWidth) + "\n" +
+		return header.HelpHeader("Reader Mode", layout.ReaderViewLeftMargin, m.paneWidth) + "\n" +
 			content + "\n" +
 			pane.FooterSeparator(m.paneWidth) + "\n" +
 			help.Footer(layout.ReaderViewLeftMargin, contentWidth, m.opts.NerdFonts)
@@ -640,7 +640,7 @@ func (m *Model) footer() string {
 func (m *Model) linkSelectorLabel() string {
 	viewable := m.currentLink < 0 || m.links[m.currentLink].Viewable
 
-	return pane.LinkSelectorLabel(viewable, m.opts.NerdFonts)
+	return pane.LinkSelectorLabel(layout.ReaderViewLeftMargin, viewable, m.opts.NerdFonts)
 }
 
 // linkURLRow is the footer separator while the selector is up; an empty

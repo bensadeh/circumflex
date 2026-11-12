@@ -135,7 +135,7 @@ func (m *model) loadingPane() string {
 
 	w := m.detailWidth()
 
-	return pane.LoadingTitleHeader(title, m.config.EnableNerdFonts, layout.HeaderLeftMargin, w) +
+	return pane.LoadingTitleHeader(title, m.config.EnableNerdFonts, m.titleMargin(m.fetch.target, w), w) +
 		"\n" + m.loadingBody(w) + "\n" + m.bottomBar(w) + "\n"
 }
 
@@ -198,7 +198,26 @@ func (m *model) placeholderMetaBlock(paneWidth int, target screen) string {
 
 	skeleton := meta.CommentSection(d).Skeleton(layout.CommentColumnWidth(paneWidth, m.config.CommentWidth))
 
-	return style.PrefixLines(skeleton, strings.Repeat(" ", layout.CommentSectionLeftMargin))
+	return style.PrefixLines(skeleton, strings.Repeat(" ", m.commentMargin(paneWidth)))
+}
+
+// commentMargin is where the comment section's columns start in a detail
+// pane of the given width: centered when the setting is on, otherwise at
+// the fixed margin. Loading and error placeholders use it so the skeleton
+// sits exactly where the loaded view's meta block will.
+func (m *model) commentMargin(paneWidth int) int {
+	return layout.CommentLeftMargin(paneWidth, m.config.CommentWidth, m.config.CenterComments)
+}
+
+// titleMargin is where a detail pane's title sits while its target loads:
+// at the comment column when the comment section is what will render there,
+// at the header margin otherwise, so the title never moves when the load lands.
+func (m *model) titleMargin(target screen, paneWidth int) int {
+	if target == screenComments {
+		return m.commentMargin(paneWidth)
+	}
+
+	return layout.HeaderLeftMargin
 }
 
 // placeholderPane frames centered content with the same header and footer

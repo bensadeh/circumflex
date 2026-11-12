@@ -274,6 +274,11 @@ Separate categories with comma.
 The first category is the view shown on launch; it appears as the *clx* logo in the header rather than as a named tab.
 Default: "top,best,ask,show,favorites".
 
+*--center-comments*::
+Center the comment section horizontally in the pane instead of left-aligning it.
+The comment column keeps its width; the slack around it is split evenly.
+Off by default.
+
 *-c* _n_, *--comment-width*=_n_::
 Set the comment width to _n_ columns.
 

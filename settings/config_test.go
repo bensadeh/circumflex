@@ -33,6 +33,7 @@ func TestLoadConfig_AllKeys(t *testing.T) {
 comment_width = 60
 article_width = 90
 indent = 2
+center_comments = true
 history = false
 nerdfonts = true
 graphics = "always"
@@ -51,6 +52,7 @@ wide_view = "always"
 	assert.Equal(t, 60, config.CommentWidth)
 	assert.Equal(t, 90, config.ArticleWidth)
 	assert.Equal(t, 2, config.Indent)
+	assert.True(t, config.CenterComments)
 	assert.True(t, config.DoNotMarkSubmissionsAsRead)
 	assert.True(t, config.EnableNerdFonts)
 	assert.True(t, config.ShowImagesOnOpen)
@@ -152,6 +154,7 @@ func TestDefaultConfig_TemplateMatchesSchema(t *testing.T) {
 	assert.NotNil(t, cfg.CommentWidth)
 	assert.NotNil(t, cfg.ArticleWidth)
 	assert.NotNil(t, cfg.Indent)
+	assert.NotNil(t, cfg.CenterComments)
 	assert.NotNil(t, cfg.History)
 	assert.NotNil(t, cfg.NerdFonts)
 	assert.NotNil(t, cfg.Graphics)

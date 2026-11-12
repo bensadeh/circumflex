@@ -124,11 +124,11 @@ func parseLinkTarget(line string, from int) (string, int) {
 }
 
 // LinkSelectorLabel is the footer label while a URL selector is up: the
-// selector icon and a faint mode label, while the URL itself rides the
+// arrow icon and a faint mode label, while the URL itself rides the
 // separator above. A link the view won't open breaks the arrow, matching its
-// dimmed URL; an empty selection keeps the plain arrow — nothing is inert,
-// there is just nothing selected yet.
-func LinkSelectorLabel(viewable, nerdFonts bool) string {
+// dimmed URL; an empty selection keeps the plain arrow. leftMargin indents
+// the label to the view's own content column.
+func LinkSelectorLabel(leftMargin int, viewable, nerdFonts bool) string {
 	icon, sep := style.Faint("→"), " "
 	if !viewable {
 		icon = style.Faint("↛")
@@ -142,7 +142,7 @@ func LinkSelectorLabel(viewable, nerdFonts bool) string {
 		}
 	}
 
-	return "  " + icon + sep + style.Faint("URL Selection Mode")
+	return strings.Repeat(" ", leftMargin) + icon + sep + style.Faint("URL Selection Mode")
 }
 
 // LinkURLRow is the footer separator while a URL selector is up: the
