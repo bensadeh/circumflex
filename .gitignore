@@ -12,3 +12,6 @@
 .DS_Store
 .idea/
 dist/
+
+# Nix
+/result
