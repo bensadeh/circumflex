@@ -5,7 +5,7 @@ go 1.27
 require (
 	charm.land/bubbles/v2 v2.2.1
 	charm.land/bubbletea/v2 v2.1.1
-	charm.land/lipgloss/v2 v2.0.6
+	charm.land/lipgloss/v2 v2.1.0
 	codeberg.org/readeck/go-readability/v2 v2.1.3
 	github.com/BurntSushi/toml v1.6.0
 	github.com/alecthomas/chroma/v3 v3.0.0-alpha.5
@@ -17,11 +17,11 @@ require (
 	github.com/stretchr/testify v1.12.1
 	github.com/tdewolff/canvas v0.0.0-20260923214215-09804640d00c
 	github.com/tdewolff/parse/v2 v2.8.20
-	github.com/yuin/goldmark/v2 v2.1.15
-	golang.org/x/image v0.47.0
+	github.com/yuin/goldmark/v2 v2.1.16
+	golang.org/x/image v0.48.0
 	golang.org/x/net v0.62.0
-	golang.org/x/sync v0.24.0
-	golang.org/x/term v0.47.0
+	golang.org/x/sync v0.25.0
+	golang.org/x/term v0.48.0
 	resty.dev/v3 v3.0.0-rc.4
 )
 
@@ -63,8 +63,8 @@ require (
 	github.com/xo/terminfo v1.2.0 // indirect
 	github.com/yuin/goldmark v1.8.6 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	golang.org/x/sys v0.49.0 // indirect
-	golang.org/x/text v0.43.0 // indirect
+	golang.org/x/sys v0.50.0 // indirect
+	golang.org/x/text v0.44.0 // indirect
 	modernc.org/knuth v0.6.0 // indirect
 	modernc.org/token v1.1.0 // indirect
 	star-tex.org/x/tex v0.7.1 // indirect
