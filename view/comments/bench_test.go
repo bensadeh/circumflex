@@ -45,7 +45,7 @@ func benchThread() *comment.Thread {
 func benchModel(b *testing.B, search bool) *Model {
 	b.Helper()
 
-	m := New(benchThread(), 0, 80, 1, false, 130, 45)
+	m := New(benchThread(), 0, 80, 1, false, false, 130, 45)
 
 	expandAll(m.flat)
 	m.rebuildContent()

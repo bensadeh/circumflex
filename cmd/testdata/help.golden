@@ -16,6 +16,7 @@
                              (available: top, new, ask, show, best, jobs,
                              favorites)
                              [2m(default [31m"top,best,ask,show,favorites"[0m[2m)[0m
+      [36m--center-comments[0m      center the comment section in the pane
   [36m-c[0m, [36m--comment-width[0m [33mint[0m    set the comment width
                              [2m(default [31m70[0m[2m)[0m
       [36m--graphics[0m [33mstring[0m      whether article images can be drawn: "auto",

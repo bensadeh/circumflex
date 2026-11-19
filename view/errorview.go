@@ -21,17 +21,19 @@ type errorView struct {
 	nerdFonts bool
 	keymap    pane.CommonKeyMap
 	metaBlock func(paneWidth int) string // the loading pane's placeholder, kept so the box doesn't flash away
+	margin    func(paneWidth int) int    // where the title sits, matching the view that failed to load
 	width     int
 	height    int
 }
 
-func newErrorView(msg, title string, nerdFonts bool, metaBlock func(paneWidth int) string, width, height int) *errorView {
+func newErrorView(msg, title string, nerdFonts bool, metaBlock func(paneWidth int) string, margin func(paneWidth int) int, width, height int) *errorView {
 	return &errorView{
 		message:   msg,
 		title:     title,
 		nerdFonts: nerdFonts,
 		keymap:    pane.DefaultCommonKeyMap(),
 		metaBlock: metaBlock,
+		margin:    margin,
 		width:     width,
 		height:    height,
 	}
@@ -79,6 +81,6 @@ func (v *errorView) View() string {
 
 	body := placeholderBody(v.metaBlock(v.width), wrapped, v.width, max(0, v.height-layout.PaneChromeHeight))
 
-	return pane.LoadingTitleHeader(v.title, v.nerdFonts, layout.HeaderLeftMargin, v.width) +
+	return pane.LoadingTitleHeader(v.title, v.nerdFonts, v.margin(v.width), v.width) +
 		"\n" + body + "\n" + pane.FooterSeparator(v.width) + "\n"
 }

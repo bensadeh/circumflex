@@ -51,7 +51,7 @@ func commitCommentSearch(m *Model, query string) {
 }
 
 func TestCommentSearch_NerdFontIcons(t *testing.T) {
-	m := New(newThread(newComment(1, "alice", "top level alpha")), 0, 80, 1, true, 120, 200)
+	m := New(newThread(newComment(1, "alice", "top level alpha")), 0, 80, 1, true, false, 120, 200)
 
 	m.Update(tea.KeyPressMsg{Code: '/', Text: "/"})
 	assert.Contains(t, m.modeIndicator(), nerdfonts.Search+"  ", "the prompt shows the shared magnifier")

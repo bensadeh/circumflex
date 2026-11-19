@@ -30,6 +30,7 @@ type Config struct {
 	CommentWidth               int
 	ArticleWidth               int
 	Indent                     int
+	CenterComments             bool
 	DoNotMarkSubmissionsAsRead bool
 	DebugMode                  bool
 	DebugFallible              bool

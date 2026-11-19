@@ -17,6 +17,7 @@ type FileConfig struct {
 	CommentWidth     *int     `toml:"comment_width"`
 	ArticleWidth     *int     `toml:"article_width"`
 	Indent           *int     `toml:"indent"`
+	CenterComments   *bool    `toml:"center_comments"`
 	History          *bool    `toml:"history"`
 	NerdFonts        *bool    `toml:"nerdfonts"`
 	Graphics         *string  `toml:"graphics"`
@@ -63,6 +64,10 @@ func (f *FileConfig) Apply(c *Config) error {
 
 	if f.Indent != nil {
 		c.Indent = ClampIndent(*f.Indent)
+	}
+
+	if f.CenterComments != nil {
+		c.CenterComments = *f.CenterComments
 	}
 
 	if f.History != nil {
@@ -150,6 +155,9 @@ func defaultConfigBody() string {
 
 	return fmt.Sprintf(`# Width of the comment section in columns.
 #comment_width = %d
+
+# Center the comment section horizontally in the pane.
+#center_comments = false
 
 # Width of articles in Reader Mode in columns.
 #article_width = %d
