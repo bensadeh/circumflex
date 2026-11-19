@@ -68,7 +68,7 @@ func (s *Service) FetchItems(ctx context.Context, itemsToFetch int, category str
 
 	ids = ids[:min(len(ids), itemsToFetch)]
 
-	return s.fetchItemsInParallel(ctx, ids)
+	return s.FetchItemsByID(ctx, ids)
 }
 
 func (s *Service) fetchStoriesList(ctx context.Context, category string) ([]int, error) {
@@ -89,7 +89,11 @@ func (s *Service) fetchStoriesList(ctx context.Context, category string) ([]int,
 	return ids, nil
 }
 
-func (s *Service) fetchItemsInParallel(ctx context.Context, ids []int) ([]*hn.Story, error) {
+// FetchItemsByID fetches the stories behind ids in parallel, keeping the
+// order they were given in. Feeds Firebase does not serve — the Active
+// Threads page — source their IDs elsewhere and hydrate them here, so their
+// stories arrive with the same fields and filtering as every other feed's.
+func (s *Service) FetchItemsByID(ctx context.Context, ids []int) ([]*hn.Story, error) {
 	items := make([]*hn.Story, len(ids))
 
 	g, ctx := errgroup.WithContext(ctx)
