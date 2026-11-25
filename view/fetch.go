@@ -75,9 +75,22 @@ func (m *model) fetchCategory(tok fetchToken, cat categories.Category, index, cu
 	service := m.service
 	numItems := m.numberOfItemsToFetch(cat)
 	endpoint := categories.Endpoint(cat)
+	isActive := categories.IsActive(cat)
 
 	return func() tea.Msg {
-		stories, err := service.FetchItems(tok.ctx, numItems, endpoint)
+		var (
+			stories []*hn.Story
+			err     error
+		)
+
+		// Active has no feed endpoint to name — it is read off the Hacker
+		// News site — so it fetches by its own call. Both land on the same
+		// StoriesReady path.
+		if isActive {
+			stories, err = service.FetchActiveItems(tok.ctx, numItems)
+		} else {
+			stories, err = service.FetchItems(tok.ctx, numItems, endpoint)
+		}
 
 		return message.StoriesReady{
 			Stories:  stories,
